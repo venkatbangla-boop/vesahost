@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" role="img" aria-label="LADIES' APPAREL">
+<defs>
+<linearGradient id="bg" x1="0" x2="1"><stop stop-color="#fbf7ef"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+<filter id="shadow"><feDropShadow dx="0" dy="20" stdDeviation="16" flood-opacity=".13"/></filter>
+</defs>
+<rect width="720" height="520" rx="34" fill="url(#bg)"/>
+<text x="44" y="72" font-family="Arial" font-size="34" font-weight="900" fill="#0B1F3A">LADIES' APPAREL</text>
+
+<g transform="translate(225,96)" filter="url(#shadow)">
+  <circle cx="138" cy="54" r="38" fill="#D6A06F"/>
+  <path d="M58 142 Q138 88 218 142 L282 360 Q138 430 -6 360z" fill="#F1E0CC" stroke="#d5d9df" stroke-width="2"/>
+  <path d="M42 160 Q-8 215 -18 325" stroke="#F1E0CC" stroke-width="40" fill="none" stroke-linecap="round"/>
+  <path d="M234 160 Q286 215 296 325" stroke="#F1E0CC" stroke-width="40" fill="none" stroke-linecap="round"/>
+  <path d="M94 145 Q138 182 182 145" fill="none" stroke="#0B1F3A" stroke-width="10" stroke-linecap="round"/>
+</g>
+<rect x="44" y="420" width="330" height="42" rx="21" fill="#0B1F3A"/>
+<text x="62" y="448" font-family="Arial" font-size="21" font-weight="800" fill="#fff">Tops • Dresses • Denim • Bottoms</text>
+<circle cx="612" cy="112" r="54" fill="#0B1F3A" opacity=".14"/><circle cx="92" cy="404" r="40" fill="#0B1F3A" opacity=".18"/>
+</svg>

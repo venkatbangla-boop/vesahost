@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+<defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#0B1F3A"/><stop offset="1" stop-color="#061423"/></linearGradient></defs>
+<rect width="640" height="360" rx="24" fill="url(#g)"/>
+<g stroke="#C7A15A" stroke-width="2" opacity=".6" fill="none"><path d="M40 260C170 110 290 310 420 160S560 110 620 70"/><circle cx="170" cy="190" r="6" fill="#C7A15A"/><circle cx="420" cy="160" r="6" fill="#C7A15A"/><circle cx="560" cy="110" r="6" fill="#C7A15A"/></g>
+<text x="44" y="86" font-family="Arial" font-size="34" font-weight="900" fill="#fff">Bangladesh Apparel Outlook</text>
+<text x="44" y="130" font-family="Arial" font-size="19" fill="#E7D9B5">Production, capacity and category planning</text>
+</svg>

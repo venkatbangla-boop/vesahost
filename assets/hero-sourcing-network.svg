@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 840" role="img" aria-labelledby="t d">
+<title id="t">Bangladesh and India apparel sourcing network</title>
+<desc id="d">Premium sourcing network graphic showing Bangladesh and India routes.</desc>
+<defs>
+<radialGradient id="globe" cx="38%" cy="28%" r="75%">
+<stop offset="0" stop-color="#ffffff"/><stop offset=".18" stop-color="#dce8f1"/><stop offset=".42" stop-color="#557da0"/><stop offset=".72" stop-color="#12365f"/><stop offset="1" stop-color="#061423"/>
+</radialGradient>
+<linearGradient id="gold" x1="0" x2="1"><stop offset="0" stop-color="#C7A15A" stop-opacity="0"/><stop offset=".5" stop-color="#E7C879"/><stop offset="1" stop-color="#C7A15A" stop-opacity="0"/></linearGradient>
+<filter id="soft"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1320" height="840" fill="#07182b"/>
+<circle cx="660" cy="400" r="325" fill="url(#globe)"/>
+<g opacity=".23" stroke="#fff" stroke-width="1.2" fill="none">
+<ellipse cx="660" cy="400" rx="325" ry="104"/><ellipse cx="660" cy="400" rx="215" ry="325"/><ellipse cx="660" cy="400" rx="96" ry="325"/>
+<path d="M335 400h650M660 75v650M420 190c140 92 330 92 480 0M405 610c160-110 355-110 525 0"/>
+</g>
+<g stroke="url(#gold)" stroke-width="4" fill="none" filter="url(#soft)">
+<path d="M405 410C515 305 620 302 735 350S940 500 1065 390"/>
+<path d="M445 550C570 438 745 455 880 520S1080 590 1170 505"/>
+<path d="M540 252C690 188 820 244 980 300"/>
+</g>
+<g fill="#E7C879" filter="url(#soft)">
+<circle cx="565" cy="335" r="9"/><circle cx="750" cy="375" r="9"/><circle cx="920" cy="478" r="8"/><circle cx="1065" cy="390" r="9"/><circle cx="1115" cy="505" r="8"/>
+</g>
+<text x="722" y="370" fill="#fff" font-family="Arial" font-size="30" font-weight="800">BANGLADESH</text>
+<text x="575" y="505" fill="#fff" font-family="Arial" font-size="30" font-weight="800">INDIA</text>
+<g opacity=".16" fill="#fff"><circle cx="175" cy="175" r="90"/><circle cx="1135" cy="665" r="120"/></g>
+</svg>

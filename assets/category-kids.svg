@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" role="img" aria-label="KIDS' APPAREL">
+<defs>
+<linearGradient id="bg" x1="0" x2="1"><stop stop-color="#fbf7ef"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+<filter id="shadow"><feDropShadow dx="0" dy="20" stdDeviation="16" flood-opacity=".13"/></filter>
+</defs>
+<rect width="720" height="520" rx="34" fill="url(#bg)"/>
+<text x="44" y="72" font-family="Arial" font-size="34" font-weight="900" fill="#0B1F3A">KIDS' APPAREL</text>
+
+<g transform="translate(170,110)" filter="url(#shadow)">
+  <circle cx="70" cy="48" r="28" fill="#D6A06F"/>
+  <path d="M26 104 Q70 76 114 104 L136 252 Q70 304 4 252z" fill="#0B1F3A"/>
+  <path d="M16 115 Q-7 152 -10 220" stroke="#0B1F3A" stroke-width="26" fill="none" stroke-linecap="round"/>
+  <path d="M124 115 Q150 152 154 220" stroke="#0B1F3A" stroke-width="26" fill="none" stroke-linecap="round"/>
+</g>
+<g transform="translate(355,112)" filter="url(#shadow)">
+  <circle cx="70" cy="48" r="28" fill="#D6A06F"/>
+  <path d="M22 104 Q70 74 118 104 L150 252 Q70 300 -10 252z" fill="#F1E0CC"/>
+  <path d="M15 118 Q-10 153 -18 222" stroke="#F1E0CC" stroke-width="26" fill="none" stroke-linecap="round"/>
+  <path d="M127 118 Q155 153 165 222" stroke="#F1E0CC" stroke-width="26" fill="none" stroke-linecap="round"/>
+</g>
+<rect x="44" y="420" width="330" height="42" rx="21" fill="#0B1F3A"/>
+<text x="62" y="448" font-family="Arial" font-size="21" font-weight="800" fill="#fff">Boys • Girls • Baby Basics</text>
+<circle cx="612" cy="112" r="54" fill="#C7A15A" opacity=".14"/><circle cx="92" cy="404" r="40" fill="#C7A15A" opacity=".18"/>
+</svg>

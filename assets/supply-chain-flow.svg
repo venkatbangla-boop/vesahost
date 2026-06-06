@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 330" role="img" aria-label="Design to delivery workflow">
+<defs>
+  <linearGradient id="bg" x1="0" x2="1">
+    <stop stop-color="#0B1F3A"/><stop offset="1" stop-color="#061423"/>
+  </linearGradient>
+  <filter id="glow"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000" flood-opacity=".25"/></filter>
+</defs>
+<rect width="1440" height="330" rx="34" fill="url(#bg)"/>
+<g font-family="Arial, Helvetica, sans-serif" text-anchor="middle" filter="url(#glow)">
+  <g stroke="#C7A15A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Design: pencil and tech pack -->
+    <circle cx="105" cy="110" r="42"/><path d="M84 128l40-40 14 14-40 40-20 6z"/><path d="M76 77h28"/>
+    <!-- Costing: calculator -->
+    <circle cx="310" cy="110" r="42"/><rect x="288" y="82" width="44" height="58" rx="5"/><path d="M296 96h28M297 111h6M310 111h6M323 111h6M297 126h6M310 126h6M323 126h6"/>
+    <!-- Sampling: garment -->
+    <circle cx="515" cy="110" r="42"/><path d="M488 95l17-12h20l17 12 14 32-17 8-7-18v37h-34v-37l-7 18-17-8z"/>
+    <!-- Compliance: shield certificate -->
+    <circle cx="720" cy="110" r="42"/><path d="M720 78l32 12v24c0 24-14 39-32 49-18-10-32-25-32-49V90z"/><path d="M704 115l12 12 24-28"/>
+    <!-- Production: factory -->
+    <circle cx="925" cy="110" r="42"/><path d="M891 142h68V95l-22 13V95l-22 13V90h-24z"/><path d="M904 142v-18h12v18M929 142v-18h12v18"/>
+    <!-- Shipment: ship/container -->
+    <circle cx="1130" cy="110" r="42"/><path d="M1092 119h78l-20 24h-42z"/><path d="M1110 119V94h44v25M1104 151c12-8 24-8 36 0 12 8 24 8 36 0"/>
+    <!-- Delivery: box -->
+    <circle cx="1335" cy="110" r="42"/><path d="M1310 100l25-14 25 14v32l-25 15-25-15z"/><path d="M1310 100l25 15 25-15M1335 115v32"/>
+  </g>
+  <g stroke="#C7A15A" stroke-width="2" opacity=".55">
+    <path d="M149 110h116M354 110h116M559 110h116M764 110h116M969 110h116M1174 110h116"/>
+  </g>
+  <g fill="#FFFFFF" font-weight="800" font-size="20">
+    <text x="105" y="205">Design</text><text x="310" y="205">Costing</text><text x="515" y="205">Sampling</text><text x="720" y="205">Compliance</text><text x="925" y="205">Production</text><text x="1130" y="205">Shipment</text><text x="1335" y="205">Delivery</text>
+  </g>
+  <g fill="#C9D4E2" font-size="13">
+    <text x="105" y="232">Tech pack review</text><text x="310" y="232">FOB optimization</text><text x="515" y="232">Fit approval</text><text x="720" y="232">Factory review</text><text x="925" y="232">Order visibility</text><text x="1130" y="232">Export support</text><text x="1335" y="232">Buyer handover</text>
+  </g>
+</g>
+</svg>
