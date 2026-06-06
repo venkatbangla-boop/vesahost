@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>{const menu=document.querySelector('.mobile-menu');document.querySelectorAll('.mobile-menu a').forEach(a=>a.addEventListener('click',()=>menu.classList.remove('open')));});if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.warn));}
