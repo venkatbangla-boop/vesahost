@@ -79,3 +79,16 @@ V20 Enterprise Motion Polish:
 - Added EGENVA AI scan animation.
 - Added route-line trace animation.
 - Added service worker cache bump for deployment refresh.
+
+
+V21 update:
+- Fixed desktop hero image placement by aligning the visual to the top of the hero grid.
+- Reduced desktop headline max size slightly for better above-the-fold balance.
+- Kept all V20 Enterprise Motion Polish interactions and SEO/PWA files.
+
+
+V22 update:
+- Hero converted to full-width background image only.
+- Removed hero overlay cards, pills, route lines, and shaking/tilt card motion.
+- Text stays separate on the left with clean premium readability.
+- Hero video files remain in assets as optional placeholders but are not used in the hero.

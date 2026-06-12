@@ -1,4 +1,4 @@
-const CACHE='vesa-v20-enterprise-motion-polish';
+const CACHE='vesa-v22-full-bg-hero-r2';
 const ASSETS=[
   "./",
   "./index.html",
