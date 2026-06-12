@@ -92,3 +92,10 @@ V22 update:
 - Removed hero overlay cards, pills, route lines, and shaking/tilt card motion.
 - Text stays separate on the left with clean premium readability.
 - Hero video files remain in assets as optional placeholders but are not used in the hero.
+
+
+V23 update:
+- Fixed mobile menu visibility with a premium drawer.
+- Mobile nav links are now hidden until hamburger click and shown in a clear white glass drawer.
+- Header sizing and mobile hero typography tightened.
+- V22 full-background hero style retained.

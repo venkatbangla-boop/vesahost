@@ -1,4 +1,4 @@
-const CACHE='vesa-v22-full-bg-hero-r2';
+const CACHE='vesa-v23-mobile-drawer';
 const ASSETS=[
   "./",
   "./index.html",
