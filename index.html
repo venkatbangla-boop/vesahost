@@ -9,6 +9,10 @@
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="author" content="VESA Enterprise Inc">
   <meta name="theme-color" content="#071A35">
+  <meta name="application-name" content="VESA Enterprise Inc">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="VESA">
   <meta name="format-detection" content="telephone=no">
   <link rel="canonical" href="https://www.vesaent.com/">
   <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
@@ -104,7 +108,11 @@
   }
   </script>
 </head>
-<body>
+<body data-version="v20-enterprise-motion-polish">
+<canvas id="ambient-canvas" aria-hidden="true"></canvas>
+<div class="scroll-progress" aria-hidden="true"></div>
+<div class="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
 <header class="site-header">
   <div class="container nav-wrap">
     <a href="#top" class="brand" aria-label="VESA Enterprise Inc home">
@@ -143,8 +151,12 @@
         </div>
       </div>
       <div class="hero-visual reveal visible delay-1">
-        <div class="hero-card">
-          <img class="hero-image" src="assets/hero-cinematic.jpg" alt="Premium fashion-led sourcing visual representing Bangladesh and India garment supply chain execution">
+        <div class="hero-card motion-tilt" data-tilt="hero">
+          <video class="hero-image hero-video" autoplay muted loop playsinline preload="metadata" poster="assets/hero-cinematic.jpg" aria-label="Premium apparel sourcing presentation">
+            <source src="assets/hero-loop.webm" type="video/webm">
+            <source src="assets/hero-loop.mp4" type="video/mp4">
+            <img src="assets/hero-cinematic.jpg" alt="Premium fashion-led sourcing visual representing supply chain execution">
+          </video>
           <div class="hero-gradient"></div>
           <div class="route-lines" aria-hidden="true">
             <svg viewBox="0 0 1000 700" preserveAspectRatio="none">
@@ -413,13 +425,13 @@
         <h3>Buyer RFQ / enquiry</h3>
         <form action="mailto:info@vesaent.com" method="post" enctype="text/plain">
           <div class="form-grid">
-            <input class="input" type="text" name="name" placeholder="Your name" aria-label="Your name">
-            <input class="input" type="text" name="company" placeholder="Company / brand" aria-label="Company or brand">
-            <input class="input" type="email" name="email" placeholder="Work email" aria-label="Work email">
-            <select name="buyer_type" aria-label="Buyer type"><option>Buyer type</option><option>Retailer</option><option>Importer</option><option>Brand</option><option>Buying office</option></select>
-            <select name="category" aria-label="Product category"><option>Product category</option><option>Men's apparel</option><option>Ladies' apparel</option><option>Kids' apparel</option><option>Mixed program</option></select>
-            <select name="country_pref" aria-label="Country preference"><option>Country preference</option><option>Bangladesh</option><option>India</option><option>Both Bangladesh & India</option></select>
-            <textarea class="textarea" name="message" placeholder="Tell us about target product, quantity, shipment window or sourcing requirement."></textarea>
+            <input class="input" type="text" name="name" placeholder="Your name" aria-label="Your name" required>
+            <input class="input" type="text" name="company" placeholder="Company / brand" aria-label="Company or brand" required>
+            <input class="input" type="email" name="email" placeholder="Work email" aria-label="Work email" required>
+            <select name="buyer_type" aria-label="Buyer type" required><option value="" disabled selected hidden>Select buyer type</option><option value="Retailer">Retailer</option><option value="Importer">Importer</option><option value="Brand">Brand</option><option value="Buying office">Buying office</option></select>
+            <select name="category" aria-label="Product category" required><option value="" disabled selected hidden>Select product category</option><option value="Men's apparel">Men's apparel</option><option value="Ladies' apparel">Ladies' apparel</option><option value="Kids' apparel">Kids' apparel</option><option value="Mixed program">Mixed program</option></select>
+            <select name="country_pref" aria-label="Country preference" required><option value="" disabled selected hidden>Select country preference</option><option value="Bangladesh">Bangladesh</option><option value="India">India</option><option value="Both Bangladesh & India">Both Bangladesh & India</option></select>
+            <textarea class="textarea" name="message" placeholder="Tell us about target product, quantity, shipment window or sourcing requirement." required></textarea>
           </div>
           <div class="btn-row"><button class="btn primary" type="submit">Email enquiry</button></div>
           <p class="form-note">For website hosting on GitHub Pages, this form can later be connected to Formspree, Netlify Forms or your preferred backend.</p>
