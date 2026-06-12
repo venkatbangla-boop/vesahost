@@ -545,3 +545,183 @@ body.cursor-hover .cursor-ring{box-shadow:0 0 34px rgba(214,176,106,.36);backgro
   .route-lines path,.orb,.hero-card::before,.egenva-section .ai-grid::after{animation:none!important}
   .reveal{opacity:1!important;transform:none!important;filter:none!important}
 }
+
+/* V21 Hero placement correction: align visual with headline instead of vertically centering under tall copy */
+@media (min-width:1081px){
+  .hero{padding:38px 0 58px;}
+  .hero-grid{
+    grid-template-columns:.82fr 1.18fr!important;
+    gap:40px!important;
+    align-items:start!important;
+  }
+  .hero-copy{padding-top:18px;}
+  .hero-copy h1{
+    font-size:clamp(3.35rem,6.15vw,5.75rem)!important;
+    line-height:.96!important;
+    letter-spacing:-.055em;
+    margin-bottom:20px;
+  }
+  .hero-copy .lead{max-width:680px;}
+  .hero-visual{
+    align-self:start!important;
+    padding-top:24px;
+    position:relative;
+    z-index:2;
+  }
+  .hero-card{
+    width:100%;
+    aspect-ratio:16/9!important;
+    min-height:0!important;
+    margin-top:0!important;
+    border-radius:28px;
+  }
+  .hero-image,.hero-video{
+    object-fit:cover!important;
+    object-position:center center!important;
+    transform:translateZ(0) scale(1.005)!important;
+  }
+  .pill-ai{
+    left:18px!important;
+    bottom:18px!important;
+    top:auto!important;
+    right:auto!important;
+    max-width:248px!important;
+  }
+  .pill-location{top:18px!important;left:18px!important;}
+}
+
+@media (min-width:1081px) and (max-width:1280px){
+  .hero-grid{grid-template-columns:.78fr 1.22fr!important;gap:34px!important;}
+  .hero-copy h1{font-size:clamp(3.1rem,5.8vw,5.25rem)!important;}
+  .hero-visual{padding-top:34px;}
+}
+
+
+/* V22 FULL BACKGROUND HERO - clean buyer-facing top section */
+.hero.hero-background-only{
+  position:relative;
+  min-height:calc(100vh - 94px);
+  padding:0;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg,
+      rgba(248,244,237,.98) 0%,
+      rgba(248,244,237,.96) 34%,
+      rgba(248,244,237,.78) 48%,
+      rgba(248,244,237,.30) 60%,
+      rgba(248,244,237,0) 72%),
+    linear-gradient(180deg, rgba(248,244,237,.92), rgba(248,244,237,.78)),
+    url('../assets/hero-cinematic.jpg') right center / cover no-repeat;
+}
+.hero.hero-background-only::before{
+  opacity:.32;
+  background-image:
+    linear-gradient(rgba(7,26,53,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(7,26,53,.035) 1px, transparent 1px);
+}
+.hero.hero-background-only::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(circle at 72% 52%, rgba(214,176,106,.16), transparent 28%),
+             linear-gradient(180deg, transparent 78%, rgba(246,241,231,.95) 100%);
+  animation:heroSoftLightV22 12s ease-in-out infinite alternate;
+}
+.hero.hero-background-only .hero-grid{
+  position:relative;
+  z-index:2;
+  display:block!important;
+  min-height:auto;
+  padding:90px 0 84px!important;
+}
+.hero.hero-background-only .hero-copy{
+  width:min(650px, 48vw);
+  padding:0!important;
+  position:relative;
+  z-index:3;
+}
+.hero.hero-background-only .hero-copy h1{
+  font-size:clamp(4rem,6.4vw,7.2rem)!important;
+  line-height:.92!important;
+  letter-spacing:-.065em!important;
+  margin:18px 0 24px!important;
+}
+.hero.hero-background-only .hero-copy .lead{
+  max-width:620px;
+  font-size:1.2rem;
+  line-height:1.68;
+  color:#26364d;
+}
+.hero.hero-background-only .hero-copy .btn-row{margin-top:30px;}
+.hero.hero-background-only .badge-row{max-width:600px;margin-top:22px;}
+.hero.hero-background-only .badge{
+  background:rgba(255,255,255,.78);
+  border-color:rgba(7,26,53,.12);
+  box-shadow:0 10px 30px rgba(7,26,53,.08);
+}
+.hero.hero-background-only .hero-visual,
+.hero.hero-background-only .hero-card,
+.hero.hero-background-only .floating-pill,
+.hero.hero-background-only .route-lines,
+.hero.hero-background-only .orb,
+.hero.hero-background-only .hero-dots,
+.hero.hero-background-only .hero-gradient{
+  display:none!important;
+}
+@keyframes heroSoftLightV22{
+  0%{opacity:.74;filter:saturate(1)}
+  100%{opacity:1;filter:saturate(1.08)}
+}
+@media(max-width:1080px){
+  .hero.hero-background-only{
+    min-height:auto;
+    background:
+      linear-gradient(180deg,
+        rgba(248,244,237,.98) 0%,
+        rgba(248,244,237,.96) 42%,
+        rgba(248,244,237,.70) 58%,
+        rgba(248,244,237,.25) 76%,
+        rgba(248,244,237,.05) 100%),
+      url('../assets/hero-cinematic.jpg') center bottom / cover no-repeat;
+  }
+  .hero.hero-background-only .hero-grid{padding:60px 0 500px!important;}
+  .hero.hero-background-only .hero-copy{width:min(760px, 92vw);}
+  .hero.hero-background-only .hero-copy h1{font-size:clamp(3.1rem,9vw,5.2rem)!important;line-height:.98!important;}
+}
+@media(max-width:640px){
+  .site-header .nav-wrap{min-height:72px;}
+  .site-header .brand img{width:165px!important;max-width:48vw!important;}
+  .site-header .btn.primary{display:none!important;}
+  .hero.hero-background-only{
+    background:
+      linear-gradient(180deg,
+        rgba(248,244,237,1) 0%,
+        rgba(248,244,237,.98) 44%,
+        rgba(248,244,237,.72) 62%,
+        rgba(248,244,237,.10) 100%),
+      url('../assets/hero-cinematic.jpg') 63% bottom / auto 54% no-repeat;
+  }
+  .hero.hero-background-only .hero-grid{padding:42px 0 350px!important;}
+  .hero.hero-background-only .hero-copy{width:100%;}
+  .hero.hero-background-only .hero-copy .kicker{font-size:.66rem!important;letter-spacing:.16em!important;}
+  .hero.hero-background-only .hero-copy h1{
+    font-size:clamp(2.55rem,11vw,3.75rem)!important;
+    line-height:1.02!important;
+    letter-spacing:-.055em!important;
+    margin:14px 0 16px!important;
+  }
+  .hero.hero-background-only .hero-copy .lead{font-size:1.02rem;line-height:1.58;}
+  .hero.hero-background-only .btn-row{gap:10px;margin-top:20px;}
+  .hero.hero-background-only .badge-row{gap:8px;margin-top:16px;}
+  .hero.hero-background-only .badge{font-size:.82rem;padding:9px 11px;}
+}
+@media(max-width:390px){
+  .hero.hero-background-only .hero-grid{padding-bottom:300px!important;}
+  .hero.hero-background-only{background-size:auto 49%;}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero.hero-background-only::after{animation:none!important;}
+}
