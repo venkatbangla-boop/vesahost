@@ -1,13 +1,24 @@
 
 const navToggle = document.querySelector('.menu-toggle');
 const navLinks = document.querySelector('.nav-links');
-if(navToggle){
-  navToggle.addEventListener('click',()=>navLinks.classList.toggle('open'));
+function closeMobileNav(){
+  if(navLinks){ navLinks.classList.remove('open'); }
+  document.body.classList.remove('mobile-nav-open');
+  if(navToggle){ navToggle.setAttribute('aria-expanded','false'); }
+}
+if(navToggle && navLinks){
+  navToggle.setAttribute('aria-expanded','false');
+  navToggle.addEventListener('click',()=>{
+    const open = navLinks.classList.toggle('open');
+    document.body.classList.toggle('mobile-nav-open', open);
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
 }
 
 document.querySelectorAll('.nav-links a').forEach(link=>{
-  link.addEventListener('click',()=>navLinks.classList.remove('open'));
+  link.addEventListener('click', closeMobileNav);
 });
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeMobileNav(); });
 
 const observer = new IntersectionObserver((entries)=>{
   entries.forEach(entry=>{
