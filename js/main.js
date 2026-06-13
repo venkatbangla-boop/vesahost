@@ -212,3 +212,22 @@ sections.forEach(sec=>sectionObserver.observe(sec));
     });
   }
 })();
+
+// V30 compact sticky header and premium nav movement
+(function(){
+  const header = document.querySelector('.site-header');
+  const nav = document.querySelector('.nav-premium');
+  const links = document.querySelectorAll('.nav-premium a');
+  function syncHeader(){
+    document.body.classList.toggle('header-scrolled', window.scrollY > 18);
+  }
+  window.addEventListener('scroll', syncHeader, {passive:true});
+  syncHeader();
+  links.forEach(link=>{
+    link.addEventListener('click', ()=>{
+      if(nav){nav.classList.remove('open')}
+      if(navToggle){navToggle.setAttribute('aria-expanded','false')}
+      document.body.classList.remove('mobile-nav-open');
+    });
+  });
+})();
