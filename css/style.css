@@ -1431,3 +1431,44 @@ body.header-scrolled .site-header .header-cta{padding:12px 19px!important;}
   .egenva-intelligence-card::after{animation:none!important;display:none!important;}
   .site-header,.site-header *{transition:none!important;}
 }
+
+
+/* V31 Hero Video Loop Fix
+   Use the supplied MP4 as the real hero background. The poster is only fallback.
+   Layer order: fallback image under video, video above fallback, overlays above video, content above overlays. */
+.hero.hero-background-only{background:#081827!important;overflow:hidden;}
+.hero.hero-background-only .hero-bg-fallback{display:block!important;z-index:0!important;opacity:1!important;}
+.hero.hero-background-only .hero-bg-video{
+  display:block!important;
+  z-index:1!important;
+  opacity:.96!important;
+  visibility:visible!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  filter:contrast(1.08) saturate(1.08) brightness(.86)!important;
+  transform:translateZ(0) scale(1.006);
+  will-change:transform;
+}
+.hero.hero-background-only::before,
+.hero.hero-background-only::after{z-index:2!important;}
+.hero.hero-background-only .hero-grid{z-index:3!important;}
+.hero.hero-background-only::before{
+  background:
+    linear-gradient(90deg,
+      rgba(248,244,237,.98) 0%,
+      rgba(248,244,237,.94) 27%,
+      rgba(248,244,237,.72) 42%,
+      rgba(248,244,237,.30) 56%,
+      rgba(248,244,237,.06) 74%,
+      rgba(248,244,237,.00) 100%),
+    linear-gradient(180deg,rgba(248,244,237,.08) 0%,rgba(248,244,237,0) 55%,rgba(248,244,237,.12) 100%)!important;
+}
+@media(max-width:1080px){
+  .hero.hero-background-only .hero-bg-video{object-position:62% bottom!important;opacity:.92!important;}
+}
+@media(max-width:640px){
+  .hero.hero-background-only .hero-bg-video{object-position:64% bottom!important;opacity:.84!important;filter:contrast(1.04) saturate(1.02) brightness(.92)!important;}
+}
+@media (prefers-reduced-motion: reduce){
+  .hero.hero-background-only .hero-bg-video{display:none!important;}
+}
