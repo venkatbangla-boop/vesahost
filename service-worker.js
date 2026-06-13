@@ -1,4 +1,4 @@
-const CACHE='vesa-v30-premium-header-egenva';
+const CACHE='vesa-v31-hero-video-loop-fix';
 const ASSETS=[
   './',
   './index.html',
@@ -15,6 +15,7 @@ const ASSETS=[
   './icon-192.png',
   './icon-512.png',
   './assets/hero-video-poster.jpg',
+  './assets/hero-background-loop.mp4',
   './assets/hero-cinematic.jpg',
   './assets/vesa-logo.png',
   './assets/vesa-logo-black.png',

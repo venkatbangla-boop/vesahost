@@ -1,3 +1,6 @@
-V30 Premium Header Motion + EGENVA Section Rework
-Checked local HTML references: no missing local files found.
-Updated: nav labels, compact sticky header, EGENVA section layout, service worker cache v30.
+V31 build check
+- Hero video source: assets/hero-background-loop.mp4
+- Poster fallback: assets/hero-video-poster.jpg
+- Fallback layer no longer covers the video.
+- Service worker cache: vesa-v31-hero-video-loop-fix
+- Root favicon files retained.
