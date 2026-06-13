@@ -99,3 +99,5 @@ V23 update:
 - Mobile nav links are now hidden until hamburger click and shown in a clear white glass drawer.
 - Header sizing and mobile hero typography tightened.
 - V22 full-background hero style retained.
+
+V24 update: removed internal developer/backend note from the public RFQ form.

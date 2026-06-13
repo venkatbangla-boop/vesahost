@@ -1,4 +1,4 @@
-const CACHE='vesa-v23-mobile-drawer';
+const CACHE='vesa-v24-mobile-drawer';
 const ASSETS=[
   "./",
   "./index.html",
