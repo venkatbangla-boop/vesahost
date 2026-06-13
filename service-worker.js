@@ -1,29 +1,31 @@
-const CACHE='vesa-v24-mobile-drawer';
+const CACHE='vesa-v25-launch-trust-polish';
 const ASSETS=[
-  "./",
-  "./index.html",
-  "./css/style.css",
-  "./js/main.js",
-  "./manifest.webmanifest",
-  "./assets/hero-cinematic.jpg",
-  "./assets/hero-loop.webm",
-  "./assets/hero-loop.mp4",
-  "./assets/vesa-logo.png",
-  "./assets/vesa-logo-black.png",
-  "./assets/vesa-logo-white.png",
-  "./assets/egenva-icon.png",
-  "./assets/egenva-logo-white.png",
-  "./assets/founder-venkatesh.jpg",
-  "./assets/portfolio-men.jpg",
-  "./assets/portfolio-ladies.jpg",
-  "./assets/portfolio-kids.jpg",
-  "./assets/service-factory.jpg",
-  "./assets/service-qc.jpg",
-  "./assets/insight-sourcing.jpg",
-  "./assets/insight-product.jpg",
-  "./assets/icon-192.png",
-  "./assets/icon-512.png",
-  "./assets/favicon.png"
+  './',
+  './index.html',
+  './privacy.html',
+  './terms.html',
+  './llms.txt',
+  './css/style.css',
+  './js/main.js',
+  './manifest.webmanifest',
+  './assets/hero-video-poster.jpg',
+  './assets/hero-cinematic.jpg',
+  './assets/vesa-logo.png',
+  './assets/vesa-logo-black.png',
+  './assets/vesa-logo-white.png',
+  './assets/egenva-icon.png',
+  './assets/egenva-logo-white.png',
+  './assets/founder-venkatesh.jpg',
+  './assets/portfolio-men.jpg',
+  './assets/portfolio-ladies.jpg',
+  './assets/portfolio-kids.jpg',
+  './assets/service-factory.jpg',
+  './assets/service-qc.jpg',
+  './assets/insight-sourcing.jpg',
+  './assets/insight-product.jpg',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
+  './assets/favicon.png'
 ];
 
 self.addEventListener('install', event => {
@@ -37,7 +39,9 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
       const copy = response.clone();
-      caches.open(CACHE).then(cache => cache.put(event.request, copy));
+      if (response.ok && event.request.url.startsWith(self.location.origin)) {
+        caches.open(CACHE).then(cache => cache.put(event.request, copy));
+      }
       return response;
     }).catch(() => caches.match('./index.html')))
   );

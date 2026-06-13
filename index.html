@@ -18,18 +18,21 @@
   <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="preload" as="image" href="assets/hero-cinematic.jpg">
+  <link rel="alternate" type="text/plain" href="llms.txt" title="LLM summary for VESA Enterprise Inc">
+  <link rel="preload" as="image" href="assets/hero-video-poster.jpg">
+  <!-- Google Search Console verification placeholder: add provided meta tag here after Search Console setup. -->
+  <!-- Bing Webmaster verification placeholder: add provided meta tag here after Bing setup. -->
   <link rel="stylesheet" href="css/style.css">
   <meta property="og:title" content="VESA Enterprise Inc | Apparel Sourcing Partner Across Bangladesh & India">
   <meta property="og:description" content="Premium design-to-delivery apparel sourcing for retailers, importers and brands. Powered by experience. Enhanced by intelligence.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.vesaent.com/">
-  <meta property="og:image" content="https://www.vesaent.com/assets/og-image.png">
+  <meta property="og:image" content="https://www.vesaent.com/assets/og-image.jpg">
   <meta property="og:site_name" content="VESA Enterprise Inc">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="VESA Enterprise Inc | Apparel Sourcing Partner Across Bangladesh & India">
   <meta name="twitter:description" content="Global apparel sourcing support across Bangladesh and India, strengthened by EGENVA intelligence.">
-  <meta name="twitter:image" content="https://www.vesaent.com/assets/og-image.png">
+  <meta name="twitter:image" content="https://www.vesaent.com/assets/og-image.jpg">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -108,7 +111,7 @@
   }
   </script>
 </head>
-<body data-version="v20-enterprise-motion-polish">
+<body data-version="v25-launch-trust-polish">
 <canvas id="ambient-canvas" aria-hidden="true"></canvas>
 <div class="scroll-progress" aria-hidden="true"></div>
 <div class="cursor-dot" aria-hidden="true"></div>
@@ -124,6 +127,7 @@
       <a href="#services">Services</a>
       <a href="#platform">Platform</a>
       <a href="#portfolio">Portfolio</a>
+      <a href="#capability-matrix">Categories</a>
       <a href="#egenva">EGENVA AI</a>
       <a href="#insights">Insights</a>
       <a href="#contact">Contact</a>
@@ -133,7 +137,12 @@
 </header>
 
 <main id="top">
-  <section class="hero hero-background-only">
+  <section class="hero hero-background-only" aria-label="VESA apparel sourcing hero">
+    <video class="hero-bg-video" autoplay muted loop playsinline preload="metadata" poster="assets/hero-video-poster.jpg" aria-hidden="true">
+      <source src="assets/hero-background.webm" type="video/webm">
+      <source src="assets/hero-background.mp4" type="video/mp4">
+    </video>
+    <div class="hero-bg-fallback" aria-hidden="true"></div>
     <div class="container hero-grid">
       <div class="hero-copy reveal visible">
         <span class="kicker">VESA Enterprise Inc</span>
@@ -235,6 +244,21 @@
     </div>
   </section>
 
+  <section class="section tight trust-strip" id="compliance">
+    <div class="container">
+      <span class="kicker reveal">Buyer-safe compliance route</span>
+      <div class="grid-2 compliance-grid">
+        <div class="reveal">
+          <h2>Compliance support without over-claiming.</h2>
+        </div>
+        <div class="panel card reveal delay-1">
+          <p><strong>Compliance route depends on buyer requirement, factory nomination, audit status and final supplier selection.</strong></p>
+          <p>VESA can support buyer-required compliance route discussion and supplier alignment where applicable, including Sedex, BSCI, OEKO-TEX and GOTS route support when suitable for the program.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="portfolio">
     <div class="container">
       <span class="kicker reveal">Product portfolio</span>
@@ -264,6 +288,43 @@
             <p>Boys’, girls’ and baby garment basics including tees, polos, dresses, knit bottoms, shorts, hoodies and seasonal essentials.</p>
             <span class="tag">28 Bangladesh-safe categories</span>
           </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight" id="capability-matrix">
+    <div class="container">
+      <span class="kicker reveal">Category matrix</span>
+      <h2 class="reveal">Clear garment programs for buyer planning.</h2>
+      <p class="lead reveal delay-1">These are capability examples for apparel sourcing discussions. Final product acceptance depends on technical details, supplier selection, compliance route, MOQ, target FOB and delivery window.</p>
+      <div class="matrix-grid" style="margin-top:28px">
+        <article class="panel matrix-card reveal">
+          <h3>Men’s Apparel</h3>
+          <ul class="list">
+            <li>Core knits: basic tee, graphic tee, stripe tee, tank, muscle tee, polo, henley and light sweatshirt</li>
+            <li>Woven tops: casual shirts, printed shirts, yarn-dyed checks, denim shirts and lightweight overshirts</li>
+            <li>Bottoms: twill shorts, cargo shorts, denim shorts, woven shorts, casual pants, denim and cargo pants</li>
+            <li>Sport / active: performance tees, mesh tees, track pants and active shorts</li>
+          </ul>
+        </article>
+        <article class="panel matrix-card reveal delay-1">
+          <h3>Ladies’ Apparel</h3>
+          <ul class="list">
+            <li>Knits: basic tees, graphic tees, fashion tees, tanks, sleeveless tops, polos and light sweatshirts</li>
+            <li>Woven tops: casual shirts, printed shirts, denim shirts, lightweight blouses and tunics</li>
+            <li>Bottoms: leggings, knit shorts, twill shorts, woven shorts, denim shorts, pants and skirts</li>
+            <li>Dresses: knit dresses, light woven dresses and casual summer dresses</li>
+          </ul>
+        </article>
+        <article class="panel matrix-card reveal delay-2">
+          <h3>Kids’ Apparel</h3>
+          <ul class="list">
+            <li>Boys: tees, graphic tees, polos, tanks, lightweight sweatshirts, hoodies, shorts, joggers and track pants</li>
+            <li>Girls: tees, graphic tees, polos, leggings, shorts, dresses, skirts, tanks and sweatshirts</li>
+            <li>Baby garment basics where required: onesies, baby tees, baby shorts and baby dresses</li>
+            <li>Program note: garment categories only; no bags, footwear, leather goods, accessories or home textiles</li>
+          </ul>
         </article>
       </div>
     </div>
@@ -389,6 +450,7 @@
       </div>
       <div class="panel form-wrap reveal delay-1">
         <h3>Buyer RFQ / enquiry</h3>
+        <p class="form-instruction">Please share product category, quantity, target FOB, shipment month, packing requirement and preferred production country.</p>
         <form action="mailto:info@vesaent.com" method="post" enctype="text/plain">
           <div class="form-grid">
             <input class="input" type="text" name="name" placeholder="Your name" aria-label="Your name" required>
@@ -397,7 +459,7 @@
             <select name="buyer_type" aria-label="Buyer type" required><option value="" disabled selected hidden>Select buyer type</option><option value="Retailer">Retailer</option><option value="Importer">Importer</option><option value="Brand">Brand</option><option value="Buying office">Buying office</option></select>
             <select name="category" aria-label="Product category" required><option value="" disabled selected hidden>Select product category</option><option value="Men's apparel">Men's apparel</option><option value="Ladies' apparel">Ladies' apparel</option><option value="Kids' apparel">Kids' apparel</option><option value="Mixed program">Mixed program</option></select>
             <select name="country_pref" aria-label="Country preference" required><option value="" disabled selected hidden>Select country preference</option><option value="Bangladesh">Bangladesh</option><option value="India">India</option><option value="Both Bangladesh & India">Both Bangladesh & India</option></select>
-            <textarea class="textarea" name="message" placeholder="Tell us about target product, quantity, shipment window or sourcing requirement." required></textarea>
+            <textarea class="textarea" name="message" placeholder="Tell us about target product, quantity, target FOB, shipment month, packing requirement or sourcing requirement." required></textarea>
           </div>
           <div class="btn-row"><button class="btn primary" type="submit">Email enquiry</button></div>
         </form>
@@ -407,9 +469,19 @@
 </main>
 
 <footer class="site-footer">
-  <div class="container footer-grid">
-    <div class="small">© 2026 VESA Enterprise Inc. Apparel sourcing across Bangladesh & India.</div>
-    <div class="small muted">Powered by experience. Enhanced by intelligence.</div>
+  <div class="container footer-grid footer-enhanced">
+    <div class="footer-brand-block">
+      <img src="assets/vesa-logo.png" alt="VESA Enterprise Inc logo" class="footer-logo">
+      <p class="small">© 2026 VESA Enterprise Inc. Apparel sourcing across Bangladesh & India.</p>
+      <p class="small muted">Powered by experience. Enhanced by intelligence.</p>
+    </div>
+    <div class="footer-links">
+      <a href="mailto:info@vesaent.com">info@vesaent.com</a>
+      <a href="https://www.linkedin.com/company/vesaenterprise/" target="_blank" rel="noopener">VESA LinkedIn</a>
+      <a href="https://www.linkedin.com/in/venkategenva" target="_blank" rel="noopener">Founder LinkedIn</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms</a>
+    </div>
   </div>
 </footer>
 <script src="js/main.js"></script>
