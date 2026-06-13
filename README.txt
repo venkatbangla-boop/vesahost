@@ -15,3 +15,11 @@ Notes:
 - The header is sticky/frozen while scrolling, which is correct for this site. The footer is not sticky.
 - The RFQ form currently uses mailto:info@vesaent.com. A real form backend can be added later.
 - Test the PWA on HTTPS after deployment to vesaent.com.
+
+
+V26 favicon update:
+- Added /favicon.ico at repository root.
+- Added /favicon-16x16.png, /favicon-32x32.png, /favicon-48x48.png.
+- Added /apple-touch-icon.png, /icon-192.png, /icon-512.png at root.
+- Updated icon links in index.html, privacy.html, and terms.html.
+- Updated manifest and service worker cache version to V26.

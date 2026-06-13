@@ -1,4 +1,4 @@
-const CACHE='vesa-v25-launch-trust-polish';
+const CACHE='vesa-v26-launch-trust-polish';
 const ASSETS=[
   './',
   './index.html',
