@@ -1,4 +1,4 @@
-const CACHE='vesa-v26-launch-trust-polish';
+const CACHE='vesa-v30-premium-header-egenva';
 const ASSETS=[
   './',
   './index.html',
@@ -8,6 +8,12 @@ const ASSETS=[
   './css/style.css',
   './js/main.js',
   './manifest.webmanifest',
+  './favicon.ico',
+  './favicon-32x32.png',
+  './favicon-48x48.png',
+  './apple-touch-icon.png',
+  './icon-192.png',
+  './icon-512.png',
   './assets/hero-video-poster.jpg',
   './assets/hero-cinematic.jpg',
   './assets/vesa-logo.png',

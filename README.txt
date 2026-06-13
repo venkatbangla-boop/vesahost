@@ -1,10 +1,12 @@
-VESA Enterprise Inc - V25 Launch Trust Polish
+VESA Enterprise Inc - V30 Premium Header Motion + EGENVA Section Rework
+
+VESA Enterprise Inc - V27 Launch Trust Polish
 
 GitHub Pages-ready static website bundle. Upload all files and folders to the repository root.
 
 Included upgrades:
 - Cinematic homepage hero video background with still poster fallback
-- V25 buyer trust polish: privacy page, terms page, llms.txt
+- V27 buyer trust polish: privacy page, terms page, llms.txt
 - Improved footer with contact and LinkedIn links
 - Buyer RFQ instruction text
 - Category matrix and compliance-safe wording
@@ -23,3 +25,13 @@ V26 favicon update:
 - Added /apple-touch-icon.png, /icon-192.png, /icon-512.png at root.
 - Updated icon links in index.html, privacy.html, and terms.html.
 - Updated manifest and service worker cache version to V26.
+
+V27 Premium Buyer Conversion Polish updates:
+- Stronger CTA wording and buyer path section.
+- Tighter mobile spacing and cleaner buyer journey flow.
+- Enhanced EGENVA intelligence section motion.
+- Improved RFQ checklist and public conversion wording.
+- Google-ready root favicon setup preserved.
+
+
+V30 updates: compact sticky header on scroll, premium pill-style nav movement, cleaner one-line desktop menu, reworked EGENVA intelligence section with mini cards and no empty box.

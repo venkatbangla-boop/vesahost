@@ -35,3 +35,6 @@ VESA uses EGENVA intelligence as an AI-assisted workflow and decision-support la
 ## Compliance note
 
 Compliance route depends on buyer requirement, factory nomination, audit status and final supplier selection. Route support may include buyer-required paths such as Sedex, BSCI, OEKO-TEX or GOTS where applicable.
+
+
+Version note: V27 Premium Buyer Conversion Polish improves buyer journey clarity, mobile conversion flow, CTA wording and EGENVA sourcing intelligence positioning.

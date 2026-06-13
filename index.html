@@ -18,6 +18,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="alternate" type="text/plain" href="llms.txt" title="LLM summary for VESA Enterprise Inc">
   <link rel="preload" as="image" href="assets/hero-video-poster.jpg">
+  <!-- V28 Header + Hero Balance Fix -->
   <!-- Google Search Console verification placeholder: add provided meta tag here after Search Console setup. -->
   <!-- Bing Webmaster verification placeholder: add provided meta tag here after Bing setup. -->
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -29,7 +30,7 @@
   <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
   <link rel="stylesheet" href="css/style.css">
   <meta property="og:title" content="VESA Enterprise Inc | Apparel Sourcing Partner Across Bangladesh & India">
-  <meta property="og:description" content="Premium design-to-delivery apparel sourcing for retailers, importers and brands. Powered by experience. Enhanced by intelligence.">
+  <meta property="og:description" content="Premium design-to-delivery apparel sourcing for retailers, importers and brands. Buyer-focused apparel sourcing. Powered by experience. Enhanced by intelligence.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.vesaent.com/">
   <meta property="og:image" content="https://www.vesaent.com/assets/og-image.jpg">
@@ -116,7 +117,7 @@
   }
   </script>
 </head>
-<body data-version="v25-launch-trust-polish">
+<body data-version="v27-premium-conversion-polish" class="v30-premium-header-egenva">
 <canvas id="ambient-canvas" aria-hidden="true"></canvas>
 <div class="scroll-progress" aria-hidden="true"></div>
 <div class="cursor-dot" aria-hidden="true"></div>
@@ -127,17 +128,15 @@
       <img src="assets/vesa-logo.png" alt="VESA Enterprise Inc logo">
     </a>
     <button class="menu-toggle" aria-label="Toggle navigation">☰</button>
-    <nav class="nav-links" aria-label="Primary navigation">
+    <nav class="nav-links nav-premium" aria-label="Primary navigation">
       <a href="#why-vesa">Why VESA</a>
       <a href="#services">Services</a>
-      <a href="#platform">Platform</a>
       <a href="#portfolio">Portfolio</a>
       <a href="#capability-matrix">Categories</a>
-      <a href="#egenva">EGENVA AI</a>
-      <a href="#insights">Insights</a>
+      <a href="#egenva">EGENVA</a>
       <a href="#contact">Contact</a>
     </nav>
-    <a class="btn primary" href="#contact">Start Project</a>
+    <a class="btn primary header-cta" href="#contact">Start Project</a>
   </div>
 </header>
 
@@ -154,14 +153,14 @@
         <h1>Apparel Sourcing.<br>Built on Experience.<br>Powered by Intelligence.</h1>
         <p class="lead">VESA Enterprise Inc supports <strong>global retailers, importers, brands and buyer liaison offices</strong> through apparel product development, factory sourcing, production management, quality assurance and supply chain execution across Bangladesh and India.</p>
         <div class="btn-row">
-          <a class="btn primary" href="#contact">Start a Sourcing Project</a>
-          <a class="btn secondary" href="#services">Explore Capabilities</a>
+          <a class="btn primary" href="#contact">Start Sourcing Discussion</a>
+          <a class="btn secondary" href="#buyer-path">View Buyer Path</a>
         </div>
         <div class="badge-row">
-          <span class="badge">Garments & apparel only</span>
-          <span class="badge">Bangladesh + India platform</span>
-          <span class="badge">Design to delivery execution</span>
-          <span class="badge">EGENVA AI enabled</span>
+          <span class="badge">Garments only</span>
+          <span class="badge">Bangladesh + India</span>
+          <span class="badge">EGENVA workflow</span>
+          <span class="badge">Buyer RFQ ready</span>
         </div>
       </div>
     </div>
@@ -196,6 +195,42 @@
           <div class="counter" data-target="1">0</div>
           <p>One accountable sourcing partner from design direction to delivery follow-up.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight buyer-path-section" id="buyer-path">
+    <div class="container">
+      <span class="kicker reveal">Buyer conversion path</span>
+      <div class="section-head split-head">
+        <div class="reveal">
+          <h2>From enquiry to production decision, without confusion.</h2>
+        </div>
+        <div class="reveal delay-1">
+          <p class="lead">A buyer should know exactly what happens after contacting VESA. This path turns a general sourcing enquiry into a structured apparel program discussion.</p>
+        </div>
+      </div>
+      <div class="buyer-path-grid">
+        <article class="buyer-step panel reveal">
+          <span>01</span>
+          <h3>Share requirement</h3>
+          <p>Product category, quantity, target FOB, shipment month, packing method and preferred country.</p>
+        </article>
+        <article class="buyer-step panel reveal delay-1">
+          <span>02</span>
+          <h3>Capability check</h3>
+          <p>Bangladesh / India route, category fit, MOQ, lead time, compliance route and supplier direction.</p>
+        </article>
+        <article class="buyer-step panel reveal delay-2">
+          <span>03</span>
+          <h3>Costing & sample path</h3>
+          <p>Fabric direction, trims, technical review, sample coordination and commercial alignment.</p>
+        </article>
+        <article class="buyer-step panel reveal delay-3">
+          <span>04</span>
+          <h3>Production visibility</h3>
+          <p>T&amp;A tracking, merchandising follow-up, quality checkpoints, shipment readiness and buyer communication.</p>
+        </article>
       </div>
     </div>
   </section>
@@ -359,29 +394,35 @@
     </div>
   </section>
 
-  <section class="section wow-band" id="egenva">
+  <section class="section wow-band egenva-section-v30" id="egenva">
     <div class="container">
       <span class="kicker reveal">EGENVA intelligence</span>
-      <div class="grid-2">
-        <div class="reveal">
-          <h2>Advanced sourcing, supported by EGENVA AI.</h2>
-          <p class="lead">VESA stays apparel-first. EGENVA is used to strengthen visibility, workflow structure and decision support—not to distract from execution.</p>
-        </div>
-        <div class="panel soft reveal delay-1" style="padding:24px;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14)">
-          <div style="display:flex;align-items:center;gap:16px">
-            <img src="assets/egenva-icon.png" alt="EGENVA icon" style="width:64px;height:64px;border-radius:18px;object-fit:cover">
-            <div>
-              <h3 style="color:#fff;margin:0 0 8px">EGENVA Intelligence Layer</h3>
-              <p style="margin:0;color:rgba(255,255,255,.78)">Structured support for sourcing workflows and buyer communication discipline.</p>
-            </div>
+      <div class="egenva-premium-layout">
+        <div class="egenva-copy reveal">
+          <h2>Human apparel experience, strengthened by EGENVA.</h2>
+          <p class="lead">VESA stays apparel-first. EGENVA supports the operating layer behind sourcing with structured visibility, faster follow-up discipline and better decision support across supplier selection, costing, T&amp;A and quality checkpoints.</p>
+          <div class="egenva-proof-row" aria-label="EGENVA support areas">
+            <span>Supplier fit</span>
+            <span>Costing visibility</span>
+            <span>T&amp;A discipline</span>
+            <span>Quality checkpoints</span>
           </div>
         </div>
-      </div>
-      <div class="ai-grid">
-        <div class="ai-item reveal"><strong>Supplier intelligence</strong><p>Better matching of category capability, compliance expectation and commercial fit.</p></div>
-        <div class="ai-item reveal delay-1"><strong>Workflow visibility</strong><p>Clearer follow-up structure across T&amp;A, sampling, approvals and buyer communication.</p></div>
-        <div class="ai-item reveal delay-2"><strong>Decision support</strong><p>Practical support for balancing lead time, cost, category strength and shipment readiness.</p></div>
-        <div class="ai-item reveal delay-3"><strong>Knowledge advantage</strong><p>Industry insight and internal learning to help VESA move with more control and speed.</p></div>
+        <div class="egenva-intelligence-card reveal delay-1">
+          <div class="egenva-card-head">
+            <img src="assets/egenva-icon.png" alt="EGENVA icon">
+            <div>
+              <h3>EGENVA Intelligence Layer</h3>
+              <p>Structured support for sourcing workflows and buyer communication.</p>
+            </div>
+          </div>
+          <div class="egenva-mini-grid">
+            <div class="egenva-mini-card"><strong>Supplier intelligence</strong><span>Match category, compliance expectation, lead time and commercial fit.</span></div>
+            <div class="egenva-mini-card"><strong>Workflow visibility</strong><span>Keep sampling, approvals, T&amp;A and escalation follow-up clear.</span></div>
+            <div class="egenva-mini-card"><strong>Decision support</strong><span>Balance cost, capacity, shipment window and quality readiness.</span></div>
+            <div class="egenva-mini-card"><strong>Buyer communication</strong><span>Make sourcing updates more disciplined, readable and action-led.</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -456,6 +497,9 @@
       <div class="panel form-wrap reveal delay-1">
         <h3>Buyer RFQ / enquiry</h3>
         <p class="form-instruction">Please share product category, quantity, target FOB, shipment month, packing requirement and preferred production country.</p>
+        <div class="rfq-helper" aria-label="Buyer RFQ checklist">
+          <span>Category</span><span>Quantity</span><span>FOB</span><span>Shipment month</span><span>Compliance</span>
+        </div>
         <form action="mailto:info@vesaent.com" method="post" enctype="text/plain">
           <div class="form-grid">
             <input class="input" type="text" name="name" placeholder="Your name" aria-label="Your name" required>
@@ -466,7 +510,7 @@
             <select name="country_pref" aria-label="Country preference" required><option value="" disabled selected hidden>Select country preference</option><option value="Bangladesh">Bangladesh</option><option value="India">India</option><option value="Both Bangladesh & India">Both Bangladesh & India</option></select>
             <textarea class="textarea" name="message" placeholder="Tell us about target product, quantity, target FOB, shipment month, packing requirement or sourcing requirement." required></textarea>
           </div>
-          <div class="btn-row"><button class="btn primary" type="submit">Email enquiry</button></div>
+          <div class="btn-row"><button class="btn primary" type="submit">Send Enquiry to VESA</button></div>
         </form>
       </div>
     </div>
@@ -478,7 +522,7 @@
     <div class="footer-brand-block">
       <img src="assets/vesa-logo.png" alt="VESA Enterprise Inc logo" class="footer-logo">
       <p class="small">© 2026 VESA Enterprise Inc. Apparel sourcing across Bangladesh & India.</p>
-      <p class="small muted">Powered by experience. Enhanced by intelligence.</p>
+      <p class="small muted">Buyer-focused apparel sourcing. Powered by experience. Enhanced by intelligence.</p>
     </div>
     <div class="footer-links">
       <a href="mailto:info@vesaent.com">info@vesaent.com</a>
