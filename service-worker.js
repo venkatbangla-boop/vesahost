@@ -1,4 +1,4 @@
-const CACHE='vesa-v31-hero-video-loop-fix';
+const CACHE='vesa-v32-premium-editorial-readability';
 const ASSETS=[
   './',
   './index.html',
@@ -16,6 +16,7 @@ const ASSETS=[
   './icon-512.png',
   './assets/hero-video-poster.jpg',
   './assets/hero-background-loop.mp4',
+  './assets/hero-background-loop.webm',
   './assets/hero-cinematic.jpg',
   './assets/vesa-logo.png',
   './assets/vesa-logo-black.png',

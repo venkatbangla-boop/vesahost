@@ -1,12 +1,13 @@
-VESA Enterprise Inc website - V31 Hero Video Loop Fix
+VESA Enterprise Inc website - V32 Premium Editorial Sourcing Platform
 
 Upload the contents of this ZIP to the GitHub repository root for vesaent.com.
 
-V31 updates:
-- Uses the supplied hero MP4 as the real homepage background video.
-- Adds a 10-second ping-pong loop file to reduce visible loop breaks.
-- Keeps hero-video-poster.jpg as fallback only.
-- Keeps sticky compact header and V30 EGENVA section rework.
+V32 updates:
+- Keeps the supplied hero MP4/WebM as the real desktop and tablet background video.
+- Uses hero-video-poster.jpg as fallback for mobile, reduced motion and video failure.
+- Refines the sticky compact header, one-line desktop nav and premium gold hover states.
+- Reworks buyer path, category matrix and content panels toward editorial line-based structure.
+- Repositions EGENVA as an operating intelligence layer for sourcing discipline.
 - Keeps VESA favicon root setup for Google Search.
 
 Important:

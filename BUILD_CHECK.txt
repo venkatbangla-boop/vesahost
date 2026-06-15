@@ -1,6 +1,6 @@
-V31 build check
-- Hero video source: assets/hero-background-loop.mp4
+V32 build check
+- Hero video sources: assets/hero-background-loop.mp4 and assets/hero-background-loop.webm
 - Poster fallback: assets/hero-video-poster.jpg
-- Fallback layer no longer covers the video.
-- Service worker cache: vesa-v31-hero-video-loop-fix
+- Mobile and reduced-motion views use the poster fallback.
+- Service worker cache: vesa-v32-premium-editorial-readability
 - Root favicon files retained.

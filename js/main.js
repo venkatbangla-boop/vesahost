@@ -67,6 +67,7 @@ sections.forEach(sec=>sectionObserver.observe(sec));
 (function(){
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isCoarse = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+  const isSmallScreen = window.matchMedia('(max-width: 640px)').matches;
   const doc = document.documentElement;
   const progress = document.querySelector('.scroll-progress');
 
@@ -79,7 +80,7 @@ sections.forEach(sec=>sectionObserver.observe(sec));
   window.addEventListener('scroll', updateProgress, {passive:true});
   updateProgress();
 
-  if(!prefersReduced && !isCoarse){
+  if(!prefersReduced && !isCoarse && !isSmallScreen){
     const dot = document.querySelector('.cursor-dot');
     const ring = document.querySelector('.cursor-ring');
     let x = window.innerWidth/2, y = window.innerHeight/2;
@@ -230,4 +231,49 @@ sections.forEach(sec=>sectionObserver.observe(sec));
       document.body.classList.remove('mobile-nav-open');
     });
   });
+})();
+
+// V32 premium editorial interaction refinements
+(function(){
+  const suppressTargets = document.querySelectorAll('.site-header, form, input, textarea, select, label');
+  suppressTargets.forEach(el=>{
+    el.addEventListener('pointerenter',()=>document.body.classList.add('cursor-suppressed'));
+    el.addEventListener('pointerleave',()=>document.body.classList.remove('cursor-suppressed'));
+  });
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const mobilePoster = window.matchMedia('(max-width: 640px)');
+  const heroVideo = document.querySelector('.hero-bg-video');
+
+  function syncHeroVideo(){
+    if(!heroVideo) return;
+    const usePosterOnly = prefersReduced.matches || mobilePoster.matches;
+    if(usePosterOnly){
+      heroVideo.pause();
+      heroVideo.setAttribute('aria-hidden','true');
+      return;
+    }
+    heroVideo.muted = true;
+    heroVideo.loop = true;
+    heroVideo.playsInline = true;
+    const playPromise = heroVideo.play();
+    if(playPromise && typeof playPromise.catch === 'function'){
+      playPromise.catch(()=>{});
+    }
+  }
+
+  if(heroVideo){
+    heroVideo.addEventListener('loadedmetadata',()=>{
+      if(heroVideo.duration && heroVideo.duration > 0.5){
+        heroVideo.currentTime = Math.min(heroVideo.currentTime, 0.05);
+      }
+    }, {once:true});
+    heroVideo.addEventListener('ended',()=>{
+      heroVideo.currentTime = 0.05;
+      heroVideo.play().catch(()=>{});
+    });
+    syncHeroVideo();
+    prefersReduced.addEventListener('change', syncHeroVideo);
+    mobilePoster.addEventListener('change', syncHeroVideo);
+  }
 })();
