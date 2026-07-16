@@ -1,4 +1,4 @@
-const CACHE='vesa-v32-premium-editorial-readability';
+const CACHE='vesa-v32-premium-editorial-readability-hero-mask';
 const ASSETS=[
   './',
   './index.html',

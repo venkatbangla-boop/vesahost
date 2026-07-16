@@ -1600,6 +1600,15 @@ body[data-version="v32-premium-editorial-sourcing"] .hero.hero-background-only::
     radial-gradient(circle at 73% 47%,rgba(210,173,103,.14),transparent 29%)!important;
   opacity:1!important;
 }
+@media(min-width:641px){
+  body[data-version="v32-premium-editorial-sourcing"] .hero.hero-background-only::after{
+    background:
+      radial-gradient(ellipse clamp(210px,20vw,340px) clamp(92px,10vw,150px) at 100% 100%, rgba(247,242,232,.99), rgba(247,242,232,.90) 46%, rgba(247,242,232,.48) 66%, rgba(247,242,232,0) 84%),
+      linear-gradient(135deg, rgba(247,242,232,0) 68%, rgba(247,242,232,.86) 100%),
+      linear-gradient(180deg,transparent 75%,rgba(247,242,232,.92) 100%),
+      radial-gradient(circle at 73% 47%,rgba(210,173,103,.14),transparent 29%)!important;
+  }
+}
 body[data-version="v32-premium-editorial-sourcing"] .hero.hero-background-only .hero-grid{
   padding:70px 0 70px!important;
 }
