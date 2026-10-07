@@ -7,6 +7,7 @@ class BackupCodec {
   /** Decode a legacy record or versioned envelope. Throws before any state mutation. */
   decode(input) {
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw Error('This saved copy could not be opened. Choose a PPM copy downloaded from this app.');
+    if(input.format==='VESA-PPM'&&Number.isInteger(input.schema)&&input.schema>2)throw Error('This saved copy needs a newer app. Check for updates and try again.');
     if (input.format && (input.format !== 'VESA-PPM' || ![1,2].includes(input.schema))) throw Error('This saved copy cannot be opened by this app. Check that you chose a PPM saved copy.');
     const v = input.format ? input.record : input;
     if (!v || !v.meta || !v.statuses || typeof v.id !== 'string' || !/^PPM-[A-Za-z0-9_-]{1,100}$/.test(v.id)) throw Error('This is not a complete PPM saved copy. Choose another saved copy.');
