@@ -1,4 +1,4 @@
-const CACHE='vesa-v32-premium-editorial-readability-hero-mask';
+const CACHE='vesa-v32-ppm-isolation-1';
 const ASSETS=[
   './',
   './index.html',
@@ -40,10 +40,12 @@ self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.map(key => key !== CACHE ? caches.delete(key) : null))).then(() => self.clients.claim()));
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.map(key => key.startsWith('vesa-v32-') && key !== CACHE ? caches.delete(key) : null))).then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  // PPM owns its versioned offline bundle; root cache must not serve stale app HTML.
+  if (new URL(event.request.url).pathname.startsWith('/apps/ppm')) return;
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
       const copy = response.clone();
