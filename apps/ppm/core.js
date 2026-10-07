@@ -11,7 +11,7 @@
  * dashboard calculations remain synchronized. No server or network dependency is required.
  */
 
-const APP_VERSION='5.0.1';
+const APP_VERSION='5.1.0';
 const STATUS_VALUES=['OK','ACTION','PENDING','N/A'];
 const PROCESS_OPTIONS=[
   ['print','Print'],['embroidery','Embroidery'],['heatTransfer','Heat Transfer'],['garmentWash','Garment Wash'],
@@ -298,10 +298,10 @@ class PpmRecordFactory{
     PARTICIPANT_ROLES.forEach(r=>participants[r]={present:false,name:''});
     return {id:U.uid(),version:APP_VERSION,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),locked:false,
       meta:{factory:'',buyer:'',style:'',po:'',profile:'',product:'',orderQty:'',ppmDate:U.today(),deliveryDate:'',market:'',construction:'',productClass:'',sizeRange:'',fabricComposition:'',fabricStructure:'',fabricWeight:'',fabricWidth:'',colorways:'',techPackRev:'',measurementRev:'',bomRev:'',ppSampleRef:'',aqlRef:'',washFinish:'',locationLine:'',specialInstruction:'',processes:[]},
-      statuses,remarks,participants,measurements:Array.from({length:6},()=>PpmRecordFactory.measurement()),actions:[],photos:{style:'',evidence:{}},signatures:{},release:{decision:'',notes:''},ui:{mode:'fast',filter:'all',search:''}
+      statuses,remarks,participants,approvals:[],changeReview:{baseline:null,history:[]},measurements:Array.from({length:6},()=>PpmRecordFactory.measurement()),actions:[],photos:{style:'',evidence:{}},signatures:{},release:{decision:'',notes:''},ui:{mode:'fast',filter:'all',search:''}
     };
   }
-  static measurement(){return {pom:'',spec:'',tol:'',method:'',risk:'',remark:''}}
+  static measurement(){return {pom:'',spec:'',tol:'',method:'',risk:'',remark:'',actual:'',unit:'',tolMinus:'',tolPlus:'',checkRequired:false}}
 }
 
 /**
@@ -347,14 +347,15 @@ class CoverageEngine{
  * CONDITIONAL GO permits open ACTION items only when they have owner, due date and a documented action.
  */
 class ValidationEngine{
-  constructor(relevance,coverage){this.relevance=relevance;this.coverage=coverage}
+  constructor(relevance,coverage,planning=null){this.relevance=relevance;this.coverage=coverage;this.planning=planning}
   keyFields(record){const required=[['Factory',record.meta.factory],['Buyer',record.meta.buyer],['Style',record.meta.style],['PPM date',record.meta.ppmDate],['Construction',record.meta.construction],['Tech pack revision',record.meta.techPackRev]];return required.filter(x=>!String(x[1]||'').trim()).map(x=>x[0])}
   actionGaps(record){return record.actions.filter(a=>a.status!=='Closed'&&(!a.owner||!a.dueDate||!a.action)).map(a=>a.checkpointId||a.issue)}
   signatureCount(record){return SIGNATURE_ROLES.filter(([id])=>{const s=record.signatures[id];return s?.image&&s.name?.trim()&&s.date}).length}
-  readiness(record){const c=this.coverage.compute(record),missing=this.keyFields(record),gaps=this.actionGaps(record),sigs=this.signatureCount(record);return {
+  readiness(record){const c=this.coverage.compute(record),missing=this.keyFields(record),gaps=this.actionGaps(record),sigs=this.signatureCount(record),planning=this.planning?.readiness(record)||{ready:true,approvals:[],measurements:[],changes:[]};return {
+    planning,controlsReady:planning.ready,
     coverage100:c.coverage===100,closure100:c.closure===100,noCritical:c.criticalBlockers===0,headerComplete:missing.length===0,actionsControlled:gaps.length===0,hasSignoff:sigs>=2,
-    go:c.coverage===100&&c.closure===100&&c.criticalBlockers===0&&missing.length===0&&sigs>=2,
-    conditional:c.coverage===100&&c.pending===0&&c.criticalBlockers===0&&missing.length===0&&gaps.length===0&&sigs>=2&&!!record.release.notes.trim(),
+    go:c.coverage===100&&c.closure===100&&c.criticalBlockers===0&&missing.length===0&&sigs>=2&&planning.ready,
+    conditional:c.coverage===100&&c.pending===0&&c.criticalBlockers===0&&missing.length===0&&gaps.length===0&&sigs>=2&&!!record.release.notes.trim()&&planning.ready,
     missing,gaps,sigs,c
   }}
 }
@@ -412,8 +413,9 @@ class SignaturePad{
   start(e){if(document.body.classList.contains('locked'))return;this.drawing=true;this.last=this.point(e);this.canvas.setPointerCapture?.(e.pointerId)}
   move(e){if(!this.drawing)return;const p=this.point(e);this.ctx.beginPath();this.ctx.moveTo(this.last.x,this.last.y);this.ctx.lineTo(p.x,p.y);this.ctx.stroke();this.last=p}
   end(){if(!this.drawing)return;this.drawing=false;this.onChange(this.canvas.toDataURL('image/png'))}
-  clear(){this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);this.onChange('')}
-  restore(src){if(!src)return;const i=new Image();i.onload=()=>{const r=this.canvas.getBoundingClientRect();this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);this.ctx.drawImage(i,0,0,r.width,r.height)};i.src=src}
+  clear(){this.restore('');this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);this.onChange('')}
+  /** Ignore delayed image restores after a sign-off is invalidated or the pad is disposed. */
+  restore(src){const epoch=this.restoreEpoch=(this.restoreEpoch||0)+1;if(!src)return;const i=new Image();i.onload=()=>{if(epoch!==this.restoreEpoch||this.abort?.signal.aborted)return;const r=this.canvas.getBoundingClientRect();this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);this.ctx.drawImage(i,0,0,r.width,r.height)};i.src=src}
 }
 
 /**

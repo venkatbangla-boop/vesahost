@@ -335,3 +335,29 @@ This app is not ready to work without internet yet. You can still use it online 
 We could not complete this step. Try again. If the problem continues, download a saved copy to protect your work.|এই ধাপ শেষ করা যায়নি। আবার চেষ্টা করুন। সমস্যা থাকলে কাজ রক্ষা করতে কপি ডাউনলোড করুন।|यह चरण पूरा नहीं हो सका। फिर कोशिश करें। समस्या रहे तो काम सुरक्षित रखने के लिए कॉपी डाउनलोड करें।|இந்தச் செயலை முடிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும். பிரச்சினை தொடர்ந்தால் உங்கள் வேலையைப் பாதுகாக்க ஒரு நகலைப் பதிவிறக்கவும்.
 `;
 for(const row of PPM_PLAIN_SENTENCES.trim().split('\n')){const [key,bn,hi,ta]=row.split('|');PPM_SENTENCES[key]={bn,hi,ta}}
+
+/** Planning guidance translates explanations/results only, preserving entered approvals
+ * and measurements and the existing English field/status labels. */
+const PPM_PLANNING_SENTENCES=`
+approvalHelp|বায়ারের প্রয়োজনীয় অনুমোদনগুলো যোগ করুন। রিলিজের আগে বাধ্যতামূলক অনুমোদনে নাম, তারিখ ও রেফারেন্স বা প্রমাণের ছবি থাকতে হবে।|बायर के लिए आवश्यक अनुमोदन जोड़ें। रिलीज़ से पहले ज़रूरी अनुमोदन में नाम, तारीख और संदर्भ या प्रमाण की तस्वीर होनी चाहिए।|Buyer-க்குத் தேவையான approvals-ஐ மட்டும் சேர்க்கவும். Release-க்கு முன் கட்டாய approval-ல் பெயர், தேதி மற்றும் approval reference அல்லது ஆதாரப் படம் இருக்க வேண்டும்.
+measurementHelp|বায়ারের স্পেক ও টলারেন্স ব্যবহার করুন। নির্বাচিত এককে সব সংখ্যা লিখুন। একক টলারেন্স ব্যবহার করতে allowed-below/above দুটো ঘরই খালি রাখুন। কোনো টলারেন্স ধরে নেওয়া হয় না।|बायर का स्पेक और टॉलरेंस इस्तेमाल करें। सभी संख्याएँ चुनी हुई इकाई में लिखें। एक टॉलरेंस इस्तेमाल करने के लिए allowed-below/above दोनों खाली रखें। कोई टॉलरेंस अपने आप नहीं माना जाता।|Buyer spec மற்றும் tolerance-ஐ பயன்படுத்தவும். எல்லா எண்களையும் தேர்ந்தெடுத்த unit-ல் எழுதவும். ஒரே tolerance பயன்படுத்த allowed-below/above இரண்டையும் காலியாக விடவும். Tolerance தானாக நிர்ணயிக்கப்படாது.
+changesHelp|মিটিং পর্যালোচনার পরে শুরুর অবস্থা সংরক্ষণ করুন। পরে বদল হলে আগের ও নতুন মান দেখা যাবে। নতুন রিলিজ ও স্বাক্ষরের আগে প্রভাবিত অংশগুলো পর্যালোচনা করুন।|मीटिंग की समीक्षा के बाद शुरुआती स्थिति सहेजें। बाद के बदलाव में पुराने और नए मान दिखेंगे। नई रिलीज़ और हस्ताक्षर से पहले प्रभावित हिस्सों की समीक्षा करें।|Meeting-ஐ சரிபார்த்த பிறகு starting point சேமிக்கவும். பின்னர் மாற்றம் ஏற்பட்டால் பழைய, புதிய values தெரியும். புதிய release/signatures-க்கு முன் பாதிக்கப்பட்ட sections-ஐ மீண்டும் பார்க்கவும்.
+Enter an approval name.|অনুমোদনের নাম লিখুন।|अनुमोदन का नाम लिखें।|Approval பெயரை எழுதவும்.
+Explain why this approval is not needed.|এই অনুমোদন কেন প্রয়োজন নেই তা লিখুন।|यह अनुमोदन आवश्यक क्यों नहीं है, लिखें।|இந்த approval ஏன் தேவையில்லை என்பதை எழுதவும்.
+Approval is still pending or rejected.|অনুমোদন এখনো বাকি বা প্রত্যাখ্যাত।|अनुमोदन अभी लंबित है या अस्वीकार हुआ है।|Approval இன்னும் pending அல்லது rejected ஆக உள்ளது.
+Record who approved it and the approval date.|কে অনুমোদন করেছেন এবং তারিখ লিখুন।|किसने अनुमोदन दिया और तारीख लिखें।|யார் approved செய்தார், approval தேதி ஆகியவற்றை எழுதவும்.
+Add an approval reference or proof photo.|অনুমোদনের রেফারেন্স বা প্রমাণের ছবি যোগ করুন।|अनुमोदन का संदर्भ या प्रमाण की तस्वीर जोड़ें।|Approval reference அல்லது ஆதாரப் படத்தைச் சேர்க்கவும்.
+Required approval complete.|বাধ্যতামূলক অনুমোদন সম্পূর্ণ।|आवश्यक अनुमोदन पूरा है।|கட்டாய approval முழுமையாக உள்ளது.
+Optional approval.|ঐচ্ছিক অনুমোদন।|वैकल्पिक अनुमोदन।|விருப்பத்திற்குரிய approval.
+Not checked|যাচাই করা হয়নি|जाँच नहीं हुई|இன்னும் சரிபார்க்கவில்லை
+Within tolerance|অনুমোদিত সীমার মধ্যে|अनुमत सीमा में|அனுமதிக்கப்பட்ட tolerance-க்குள் உள்ளது
+Outside tolerance|অনুমোদিত সীমার বাইরে|अनुमत सीमा के बाहर|அனுமதிக்கப்பட்ட tolerance-க்கு வெளியே உள்ளது
+Check entries|লেখা তথ্য যাচাই করুন|लिखे मान जाँचें|உள்ளிட்ட values-ஐச் சரிபார்க்கவும்
+Choose a unit and enter valid numbers for the spec, actual and tolerance.|একক বেছে নিয়ে স্পেক, আসল মাপ ও টলারেন্সের সঠিক সংখ্যা লিখুন।|इकाई चुनकर स्पेक, वास्तविक माप और टॉलरेंस के सही अंक लिखें।|Unit தேர்ந்தெடுத்து spec, actual, tolerance-க்கு சரியான எண்களை எழுதவும்.
+Review the changes before adding fresh signatures.|নতুন স্বাক্ষরের আগে পরিবর্তনগুলো পর্যালোচনা করুন।|नए हस्ताक्षर से पहले बदलावों की समीक्षा करें।|புதிய signatures சேர்க்கும் முன் மாற்றங்களைச் சரிபார்க்கவும்.
+Meeting details changed. Review the changes and collect fresh release approval and signatures.|মিটিংয়ের তথ্য বদলেছে। পরিবর্তন পর্যালোচনা করে নতুন রিলিজ অনুমোদন ও স্বাক্ষর নিন।|मीटिंग का विवरण बदला है। बदलाव जाँचकर नई रिलीज़ स्वीकृति और हस्ताक्षर लें।|Meeting விவரங்கள் மாறியுள்ளன. மாற்றங்களைச் சரிபார்த்து புதிய release approval மற்றும் signatures பெறவும்.
+Enter the name of the person who reviewed this meeting.|মিটিং পর্যালোচনাকারীর নাম লিখুন।|मीटिंग की समीक्षा करने वाले का नाम लिखें।|Meeting-ஐ சரிபார்த்தவரின் பெயரை எழுதவும்.
+Review the affected sections and confirm before saving this point.|এই অবস্থা সংরক্ষণের আগে প্রভাবিত অংশগুলো পর্যালোচনা করে নিশ্চিত করুন।|यह स्थिति सहेजने से पहले प्रभावित हिस्सों की समीक्षा करके पुष्टि करें।|இந்த point சேமிக்கும் முன் பாதிக்கப்பட்ட sections-ஐ சரிபார்த்து உறுதிசெய்யவும்.
+Reviewed point saved. Release and signatures still need approval.|পর্যালোচিত অবস্থা সংরক্ষিত। রিলিজ ও স্বাক্ষরের অনুমোদন এখনো প্রয়োজন।|समीक्षा की गई स्थिति सहेजी गई। रिलीज़ और हस्ताक्षर की स्वीकृति अभी चाहिए।|சரிபார்த்த point சேமிக்கப்பட்டது. Release மற்றும் signatures-க்கு இன்னும் approval தேவை.
+`;
+for(const row of PPM_PLANNING_SENTENCES.trim().split('\n')){const [key,bn,hi,ta]=row.split('|');PPM_SENTENCES[key]={bn,hi,ta}}

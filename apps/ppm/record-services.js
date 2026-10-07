@@ -7,7 +7,7 @@ class BackupCodec {
   /** Decode a legacy record or versioned envelope. Throws before any state mutation. */
   decode(input) {
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw Error('This saved copy could not be opened. Choose a PPM copy downloaded from this app.');
-    if (input.format && (input.format !== 'VESA-PPM' || input.schema !== 1)) throw Error('This saved copy cannot be opened by this app. Check that you chose a PPM saved copy.');
+    if (input.format && (input.format !== 'VESA-PPM' || ![1,2].includes(input.schema))) throw Error('This saved copy cannot be opened by this app. Check that you chose a PPM saved copy.');
     const v = input.format ? input.record : input;
     if (!v || !v.meta || !v.statuses || typeof v.id !== 'string' || !/^PPM-[A-Za-z0-9_-]{1,100}$/.test(v.id)) throw Error('This is not a complete PPM saved copy. Choose another saved copy.');
     if (v.version && !/^[45]\./.test(v.version)) throw Error('This saved copy needs a newer app. Check for updates and try again.');
@@ -23,7 +23,11 @@ class BackupCodec {
     if(new Set(ids).size!==ids.length)throw Error('This saved copy contains repeated checkpoints. Choose another saved copy.');
     for(const id of ids){r.statuses[id]=this.enum(v.statuses[id]||'',['',...STATUS_VALUES]);r.remarks[id]=this.string(v.remarks?.[id]||'',5000)}
     for(const role of PARTICIPANT_ROLES){const p=v.participants?.[role];if(p)r.participants[role]={present:this.bool(p.present),name:this.string(p.name||'',200)}}
-    r.measurements=this.array(v.measurements||[],100).map(m=>Object.fromEntries(Object.keys(PpmRecordFactory.measurement()).map(k=>[k,this.string(m[k]||'',500)])));
+    r.measurements=this.array(v.measurements||[],100).map(m=>({...Object.fromEntries(Object.keys(PpmRecordFactory.measurement()).filter(k=>k!=='checkRequired').map(k=>[k,this.string(m[k]??'',500)])),unit:this.enum(m.unit||'',['','cm','in']),checkRequired:this.bool(m.checkRequired)}));
+    r.approvals=this.array(v.approvals||[],30).map(a=>({id:this.id(a.id,'APR-'),label:this.string(a.label||'',200),required:this.bool(a.required),status:this.enum(a.status||'Pending',['Pending','Approved','Rejected','Not needed']),approvedBy:this.string(a.approvedBy||'',200),date:this.date(a.date||''),reference:this.string(a.reference||'',1000),notes:this.string(a.notes||'',2000),photo:this.image(a.photo||''),photoRevision:this.string(a.photoRevision||'',100)}));
+    if(r.approvals.some(a=>!/^APR-[A-Za-z0-9_-]{1,100}$/.test(a.id)||a.photoRevision&&!/^[A-Za-z0-9_-]{1,100}$/.test(a.photoRevision)))throw Error('This saved copy has an incorrect approval reference.');
+    if(new Set(r.approvals.map(a=>a.id)).size!==r.approvals.length)throw Error('This saved copy contains repeated approvals. Choose another saved copy.');
+    r.changeReview=this.reviewState(v.changeReview);
     r.actions=this.array(v.actions||[],300).map(a=>({id:this.id(a.id),checkpointId:this.enum(a.checkpointId,ids),issue:this.string(a.issue||'',1000),action:this.string(a.action||'',5000),owner:this.string(a.owner||'',200),dueDate:this.date(a.dueDate||''),evidence:this.string(a.evidence||'',2000),status:this.enum(a.status,['Open','In Progress','Closed'])}));
     if(new Set(r.actions.map(a=>a.id)).size!==r.actions.length||new Set(r.actions.map(a=>a.checkpointId)).size!==r.actions.length)throw Error('This saved copy contains repeated actions. Choose another saved copy.');
     r.photos={style:this.image(v.photos?.style||''),evidence:{}};
@@ -39,15 +43,18 @@ class BackupCodec {
   /** Validate raster bytes, not executable URLs. Actual decoding is checked before import commit. */
   image(v){if(v==='')return '';if(typeof v!=='string'||v.length>3*1024*1024||!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(v))throw Error('A photo in this saved copy could not be opened. Try another saved copy.');const b=atob(v.split(',')[1]);if(!(b.startsWith('\x89PNG\r\n\x1a\n')||b.startsWith('\xff\xd8\xff')||(b.startsWith('RIFF')&&b.slice(8,12)==='WEBP')))throw Error('A photo in this saved copy could not be opened. Try another saved copy.');return v}
   /** Decode images with a pixel limit before changing active record; rejects corrupt raster bytes. */
-  async verifyImages(r){for(const src of [r.photos.style,...Object.values(r.photos.evidence),...Object.values(r.signatures).map(s=>s.image)].filter(Boolean)){const img=await new ImageService().load(src);if(img.naturalWidth*img.naturalHeight>40000000)throw Error('A photo in this saved copy is too large. Try a copy with smaller photos.')}}
+  async verifyImages(r){for(const src of [r.photos.style,...Object.values(r.photos.evidence),...Object.values(r.signatures).map(s=>s.image),...r.approvals.map(a=>a.photo)].filter(Boolean)){const img=await new ImageService().load(src);if(img.naturalWidth*img.naturalHeight>40000000)throw Error('A photo in this saved copy is too large. Try a copy with smaller photos.')}}
+  /** Whitelist bounded reviewed values/history; unknown keys never enter change tracking.
+   * Access through decode before activation. Returns additive state or rejects atomically. */
+  reviewState(v){if(v===undefined)return ChangeReviewEngine.empty();if(!v||typeof v!=='object'||Array.isArray(v))throw Error('The saved review history could not be opened.');const key=k=>{this.string(k,220);const [kind,index,field,...rest]=k.split('.');const ok=!rest.length&&(kind==='meta'&&Object.hasOwn(ChangeReviewEngine.metaLabels,index)&&field===undefined||kind==='measurement'&&/^(?:0|[1-9]\d?)$/.test(index)&&ChangeReviewEngine.measureFields.includes(field)||kind==='approval'&&/^APR-[A-Za-z0-9_-]{1,100}$/.test(index)&&ChangeReviewEngine.approvalFields.includes(field)||kind==='custom'&&/^CUST-[A-Za-z0-9_-]{1,115}$/.test(index)&&ChangeReviewEngine.customFields.includes(field));if(!ok)throw Error('The saved review history contains an unknown meeting detail.');return k};let baseline=null;if(v.baseline!==null&&v.baseline!==undefined){const b=v.baseline,values=this.array(b.values,1800).map(x=>({key:key(x.key),value:this.string(x.value,5000)}));if(new Set(values.map(x=>x.key)).size!==values.length)throw Error('The saved review history contains repeated details.');baseline={at:this.dateTime(b.at),reviewer:this.string(b.reviewer,200),values};if(!baseline.reviewer.trim())throw Error('The saved review history is missing a reviewer.')}const history=this.array(v.history||[],10).map(h=>{const changes=this.array(h.changes||[],30).map(x=>({key:key(x.key),label:this.string(x.label,500),before:this.string(x.before,5000),after:this.string(x.after,5000)}));if(!Number.isInteger(h.count)||h.count<changes.length||h.count>3600)throw Error('The saved review count could not be read.');return {at:this.dateTime(h.at),reviewer:this.string(h.reviewer,200),note:this.string(h.note||'',1000),count:h.count,changes}});return {baseline,history}}
   string(v,max){if(typeof v!=='string'||v.length>max)throw Error('Some text in this saved copy could not be opened. Choose another saved copy.');return v}
   array(v,max){if(!Array.isArray(v)||v.length>max)throw Error('This saved copy contains too many or incomplete entries. Choose another saved copy.');return v}
   enum(v,values){if(!values.includes(v))throw Error('Some details in this saved copy could not be opened. Choose another saved copy.');return v}
   bool(v){if(v===undefined)return false;if(typeof v!=='boolean')throw Error('Some details in this saved copy could not be opened. Choose another saved copy.');return v}
   id(v,prefix=''){if(typeof v!=='string'||!v.startsWith(prefix)||!/^[A-Za-z0-9_-]{1,120}$/.test(v))throw Error('This saved copy has missing or incorrect meeting details. Choose another saved copy.');return v}
-  date(v){if(v&&!/^\d{4}-\d{2}-\d{2}$/.test(v))throw Error('A date in this saved copy could not be read. Choose another saved copy.');return this.string(v,10)}
+  date(v){this.string(v,10);if(v){const d=new Date(v+'T00:00:00Z');if(!/^\d{4}-\d{2}-\d{2}$/.test(v)||!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==v)throw Error('A date in this saved copy could not be read. Choose another saved copy.')}return v}
   dateTime(v){if(typeof v!=='string'||!Number.isFinite(Date.parse(v)))throw Error('A saved date in this copy could not be read. Choose another saved copy.');return v}
-  encode(r){return JSON.stringify({format:'VESA-PPM',schema:1,exportedAt:new Date().toISOString(),record:r},null,2)}
+  encode(r){return JSON.stringify({format:'VESA-PPM',schema:2,exportedAt:new Date().toISOString(),record:r},null,2)}
 }
 
 /** Owns bounded in-session undo and redo. Controller calls reset on record switches and
