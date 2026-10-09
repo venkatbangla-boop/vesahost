@@ -19,7 +19,7 @@
       <div data-vesa-preferences></div>
       <form id="loginForm" class="auth-form">
         <label><span data-i18n="userId">User ID</span><input class="input" id="email" type="text" autocomplete="username" required></label>
-        <label><span data-i18n="password">Password</span><input class="input" id="password" type="password" autocomplete="current-password" required></label>
+        <label><span data-i18n="password">Password</span><span class="password-control"><input class="input" id="password" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" id="passwordToggle" aria-pressed="false">Show</button></span></label>
         <button class="btn primary" type="submit" data-i18n="login">Login</button>
       </form>
       <p id="authMessage" class="auth-message" role="status"></p>
@@ -27,11 +27,27 @@
   </main>
   <script>
     const params=new URLSearchParams(location.search);
-    const next=params.get('next')||'/apps/';
+    function safeNext(value){
+      try{
+        const url=new URL(value||'/apps/',location.origin);
+        const allowed=['/apps/','/apps/aql/','/apps/ppm/','/admin/'];
+        if(url.origin!==location.origin)return '/apps/';
+        return allowed.some(path=>url.pathname===path||url.pathname.startsWith(path))?url.pathname+url.search+url.hash:'/apps/';
+      }catch{return '/apps/';}
+    }
+    const next=safeNext(params.get('next'));
     const loginForm=document.getElementById('loginForm');
     const emailInput=document.getElementById('email');
     const passwordInput=document.getElementById('password');
     const message=document.getElementById('authMessage');
+    const passwordToggle=document.getElementById('passwordToggle');
+    passwordToggle.addEventListener('click',()=>{
+      const show=passwordInput.type==='password';
+      passwordInput.type=show?'text':'password';
+      passwordToggle.textContent=show?'Hide':'Show';
+      passwordToggle.setAttribute('aria-pressed',String(show));
+      passwordInput.focus();
+    });
     function showMessage(text,bad=true){message.textContent=text;message.className='auth-message '+(bad?'bad':'good');}
     if(VesaAuth.session()) location.replace(next);
     loginForm.addEventListener('submit',async e=>{

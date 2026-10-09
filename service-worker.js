@@ -1,4 +1,4 @@
-const CACHE='vesa-v41-hide-app-menus';
+const CACHE='vesa-v42-uniform-experience';
 const ASSETS=[
   './',
   './index.html',
@@ -15,6 +15,7 @@ const ASSETS=[
   './js/main.js',
   './js/auth.js',
   './js/preferences.js',
+  './js/app-catalogue.js',
   './manifest.webmanifest',
   './favicon.ico',
   './favicon-32x32.png',

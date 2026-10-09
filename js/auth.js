@@ -102,10 +102,17 @@
   }
   function isSetupComplete(){return true;}
   function currentUserKey(){return session()?.userKey||'public';}
+  function updateAuthBarMetrics(bar){
+    const set=()=>document.documentElement.style.setProperty('--vesa-auth-bar-height',`${Math.ceil(bar.getBoundingClientRect().height)}px`);
+    set();
+    try{new ResizeObserver(set).observe(bar);}catch{window.addEventListener('resize',set,{passive:true});}
+  }
   function renderUserBar(target=document.body){
     ensureBarStyle();
     const s=session();
     if(!s)return;
+    const existing=target.querySelector(':scope > .app-user-bar');
+    if(existing){updateAuthBarMetrics(existing);return existing;}
     const bar=document.createElement('div');
     bar.className='app-user-bar';
     const appCentre=globalThis.VesaPrefs?.label?.('appCentre')||'App Centre';
@@ -115,6 +122,8 @@
     bar.innerHTML=`<a class="auth-bar-brand" href="/" aria-label="VESA home"><img src="/assets/vesa-logo-black.png" alt="VESA"></a><span class="auth-bar-spacer"></span><span class="auth-bar-user">${safeText(displayName||s.email)}</span><a href="/apps/">${safeText(appCentre)}</a>${s.role==='admin'?`<a href="/admin/">${safeText(admin)}</a>`:''}<button type="button">${safeText(logoutText)}</button>`;
     bar.querySelector('button').onclick=()=>{logout();location.href='/login/';};
     target.prepend(bar);
+    updateAuthBarMetrics(bar);
+    return bar;
   }
   function ensureBarStyle(){
     if(document.getElementById('vesa-auth-bar-style'))return;
@@ -124,7 +133,7 @@
     document.head.append(style);
   }
 
-  window.VesaAuth={STORE_KEY,SESSION_KEY,DEFAULT_ADMIN,DEMO_USERS,DEMO_PASSWORD,safeText,readStore,writeStore,session,setupAdmin,login,logout,requireAuth,requireAdmin,isSetupComplete,createUser,userKey:currentUserKey,writeEvent,renderUserBar};
+  window.VesaAuth={STORE_KEY,SESSION_KEY,DEFAULT_ADMIN,DEMO_USERS,DEMO_PASSWORD,safeText,readStore,writeStore,session,setupAdmin,login,logout,requireAuth,requireAdmin,isSetupComplete,createUser,userKey:currentUserKey,writeEvent,renderUserBar,updateAuthBarMetrics};
   const script=document.currentScript;
   if(script?.dataset.authGuard==='app'){
     requireAuth();
