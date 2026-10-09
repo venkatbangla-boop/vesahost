@@ -44,8 +44,9 @@ self.addEventListener('activate', event => {
 });
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  // PPM owns its versioned offline bundle; root cache must not serve stale app HTML.
-  if (new URL(event.request.url).pathname.startsWith('/apps/ppm')) return;
+  // App folders own their versioned offline bundles; root cache must not serve stale app HTML.
+  const path = new URL(event.request.url).pathname;
+  if (path.startsWith('/apps/ppm') || path.startsWith('/apps/aql')) return;
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
       const copy = response.clone();
