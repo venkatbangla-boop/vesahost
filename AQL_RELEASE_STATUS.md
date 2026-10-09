@@ -30,6 +30,10 @@ Date: 2026-10-09 (Asia/Dhaka)
 - `apps/ppm/workspace.css`
 - `apps/ppm/index.html`
 - `apps/ppm/service-worker.js`
+- `apps/ppm/core.js`
+- `apps/ppm/tests/regression.cjs`
+- `apps/ppm/tests/planning.cjs`
+- `apps/ppm/tests/update.cjs`
 - `service-worker.js`
 - `AQL_RELEASE_STATUS.md`
 
@@ -76,9 +80,13 @@ Date: 2026-10-09 (Asia/Dhaka)
 ## Tests Run
 
 - `node apps\aql\tests\release-contract.cjs` - passed.
+- `node apps\ppm\tests\regression.cjs` with Playwright Chromium - passed.
+- `node apps\ppm\tests\planning.cjs` with Playwright Chromium - passed.
+- `node apps\ppm\tests\update.cjs` with Playwright Chromium - passed.
 - Playwright/Chromium real browser checks - passed for AQL and PPM at 320, 390, 768, and 1280 CSS-pixel widths after scrolling; Home/File/Edit/View/Tools/Help visible and clickable.
 - Playwright console check - passed with 0 warnings and 0 errors in the tested flow.
+- `git diff --check` - passed.
 
 ## Last Completed Result
 
-AQL app implemented at `/apps/aql/`; PPM menu cache/version and sticky visibility updated. Final pre-push checks are pending.
+AQL app implemented at `/apps/aql/`; PPM menu cache/version and sticky visibility updated. PPM `APP_VERSION` now matches the shipped 5.1.2 asset/service-worker bundle, and the update regression simulates 5.1.3 as the next release. Final pre-push checks passed locally.

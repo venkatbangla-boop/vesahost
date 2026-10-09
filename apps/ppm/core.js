@@ -11,7 +11,7 @@
  * dashboard calculations remain synchronized. No server or network dependency is required.
  */
 
-const APP_VERSION='5.1.1';
+const APP_VERSION='5.1.2';
 const STATUS_VALUES=['OK','ACTION','PENDING','N/A'];
 const PROCESS_OPTIONS=[
   ['print','Print'],['embroidery','Embroidery'],['heatTransfer','Heat Transfer'],['garmentWash','Garment Wash'],
