@@ -2054,3 +2054,130 @@ body.cursor-suppressed .cursor-ring{
     display:none!important;
   }
 }
+
+/* App Centre login and catalogue */
+.app-centre-page{
+  min-height:100vh;
+  background:
+    linear-gradient(120deg,rgba(255,250,240,.94),rgba(246,241,231,.74)),
+    url('../assets/hero-video-poster.jpg') center/cover fixed;
+}
+.auth-shell,.app-centre-shell,.admin-shell{
+  width:min(1120px,calc(100vw - 32px));
+  margin:0 auto;
+  padding:42px 0 70px;
+}
+.auth-shell{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+}
+.auth-card{
+  width:min(520px,100%);
+  padding:34px;
+  border-radius:8px;
+}
+.auth-logo img{
+  width:210px;
+  margin-bottom:28px;
+}
+.auth-form{
+  display:grid;
+  gap:14px;
+  margin:22px 0 14px;
+}
+.auth-form label,.admin-panel label{
+  display:grid;
+  gap:7px;
+  color:#24344b;
+  font-weight:800;
+}
+.auth-message{
+  min-height:24px;
+  font-weight:800;
+  margin:8px 0 12px;
+}
+.auth-message.bad{color:#a43a3a}
+.auth-message.good{color:#236c49}
+.app-user-bar{
+  position:sticky;
+  top:0;
+  z-index:80;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:14px;
+  padding:10px 18px;
+  background:#071A35;
+  color:#fff;
+  font-weight:800;
+}
+.app-user-bar a,.app-user-bar button{
+  color:#fff;
+  border:1px solid rgba(255,255,255,.28);
+  background:transparent;
+  border-radius:999px;
+  padding:8px 12px;
+  font:inherit;
+}
+.app-centre-hero{
+  padding:20px 0 30px;
+}
+.app-centre-hero h1{
+  font-size:clamp(2.6rem,6vw,5.2rem);
+  max-width:850px;
+}
+.app-catalogue{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:22px;
+}
+.app-tile{
+  padding:28px;
+  border-radius:8px;
+}
+.app-tile span{
+  display:inline-flex;
+  margin-bottom:16px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(214,176,106,.18);
+  color:#8a641f;
+  font-weight:900;
+}
+.app-tile h2,.admin-panel h2{
+  font-size:clamp(1.7rem,3vw,2.5rem);
+}
+.admin-grid{
+  display:grid;
+  grid-template-columns:minmax(280px,.8fr) minmax(320px,1.2fr);
+  gap:22px;
+}
+.admin-panel{
+  padding:26px;
+  border-radius:8px;
+}
+.admin-panel.wide{
+  grid-column:1/-1;
+}
+.admin-row{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:center;
+  padding:13px 0;
+  border-top:1px solid rgba(7,26,53,.10);
+}
+.admin-row small{
+  display:block;
+  color:var(--muted);
+  margin-top:4px;
+}
+.btn-row.compact{
+  margin:8px 0 16px;
+}
+@media(max-width:780px){
+  .app-catalogue,.admin-grid{grid-template-columns:1fr}
+  .app-user-bar{position:relative;justify-content:flex-start;flex-wrap:wrap}
+  .auth-card{padding:24px}
+}

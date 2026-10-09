@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login | VESA App Centre</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/auth.js"></script>
+</head>
+<body class="app-centre-page">
+  <main class="auth-shell">
+    <section class="auth-card panel">
+      <a class="auth-logo" href="/"><img src="/assets/vesa-logo-black.png" alt="VESA Enterprise Inc"></a>
+      <span class="kicker">VESA App Centre</span>
+      <h1 id="authTitle">Login</h1>
+      <p id="authIntro">Enter your user ID and password to open the App Centre on this browser.</p>
+      <form id="setupForm" class="auth-form" hidden>
+        <label>Admin user ID<input class="input" value="info@vesaent.com" disabled></label>
+        <label>Create admin password<input class="input" id="setupPassword" type="password" autocomplete="new-password" minlength="6" required></label>
+        <button class="btn primary" type="submit">Create Admin</button>
+      </form>
+      <form id="loginForm" class="auth-form">
+        <label>User ID<input class="input" id="email" type="email" autocomplete="username" required></label>
+        <label>Password<input class="input" id="password" type="password" autocomplete="current-password" required></label>
+        <button class="btn primary" type="submit">Login</button>
+      </form>
+      <p id="authMessage" class="auth-message" role="status"></p>
+      <p class="small muted">This static login controls App Centre navigation in this browser. It is not a server-side security boundary for direct public URLs.</p>
+    </section>
+  </main>
+  <script>
+    const params=new URLSearchParams(location.search);
+    const next=params.get('next')||'/apps/';
+    const setupForm=document.getElementById('setupForm');
+    const loginForm=document.getElementById('loginForm');
+    const message=document.getElementById('authMessage');
+    function showMessage(text,bad=true){message.textContent=text;message.className='auth-message '+(bad?'bad':'good');}
+    if(VesaAuth.session()) location.replace(next);
+    if(!VesaAuth.isSetupComplete()){
+      document.getElementById('authTitle').textContent='Create Admin';
+      document.getElementById('authIntro').textContent='First-time setup for this browser. Create the local admin password for info@vesaent.com.';
+      setupForm.hidden=false;
+      loginForm.hidden=true;
+    }
+    setupForm.addEventListener('submit',async e=>{
+      e.preventDefault();
+      try{
+        await VesaAuth.setupAdmin(document.getElementById('setupPassword').value);
+        showMessage('Admin created. Login with info@vesaent.com.',false);
+        setupForm.hidden=true;
+        loginForm.hidden=false;
+        document.getElementById('email').value=VesaAuth.DEFAULT_ADMIN;
+      }catch(err){showMessage(err.message);}
+    });
+    loginForm.addEventListener('submit',async e=>{
+      e.preventDefault();
+      try{
+        await VesaAuth.login(document.getElementById('email').value,document.getElementById('password').value);
+        location.replace(next);
+      }catch(err){showMessage(err.message);}
+    });
+  </script>
+</body>
+</html>

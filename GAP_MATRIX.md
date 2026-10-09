@@ -8,18 +8,18 @@ This matrix records current repository and live-release evidence. It distinguish
 
 | ID | Requirement | Current file / route evidence | Current result | Local verification | Live verification | Status |
 |---:|---|---|---|---|---|---|
-| AC-01 | Website Login menu | `index.html` primary nav has Why VESA, Services, Portfolio, Categories, EGENVA, Contact, Start Project. | Login menu absent. | Inspected `index.html`. | Not applicable. | Not implemented |
-| AC-02 | `/login/`, `/apps/`, `/admin/` routes | No route folders or server routing for these paths. | Routes absent. | `rg --files` found no route files. | Not verified as protected routes. | Not implemented |
-| AC-03 | Real server-side authentication | Static GitHub Pages deployment only. | No server session validation. | No auth/API code found. | Direct app URLs return content. | Not implemented |
-| AC-04 | Protect app HTML/bundles before delivery | `/apps/aql/`, `/apps/ppm/`, app service workers and bundles are public static assets. | App content is served before any login. | Root service worker deliberately excludes app folders from root cache. | AQL HTTP 200, PPM HTTP 200 without credentials. | Failing |
-| AC-05 | Admin panel | No admin route, account UI, or admin API. | Absent. | Search found no admin implementation. | Not available live. | Not implemented |
-| AC-06 | Login history and backup | No server-side login event store or export. | Absent. | Search found no login-history implementation. | Not available live. | Not implemented |
-| AC-07 | App Centre catalogue | Existing apps are direct routes, not a signed-in catalogue. | Absent. | `/apps/aql/` and `/apps/ppm/` exist as standalone apps. | Apps public. | Not implemented |
-| AC-08 | User-specific local data partitioning | PPM/AQL store local records without authenticated user ID. | No authenticated namespace. | No user identity integration found. | Not verifiable without auth. | Not implemented |
-| AC-09 | Authenticated host/proxy migration | `CNAME` points custom domain to current static deployment. | No protected host cutover. | Repository remains GitHub Pages style static site. | GitHub Pages deployment succeeded and app routes public. | Not implemented |
-| AC-10 | Separate gap matrix file | `GAP_MATRIX.md` | Added. | File present. | Not a live user-facing route. | Implemented locally |
-| AC-11 | Logged-out app URL denial | Live unauthenticated requests return app content. | Fails release gate. | N/A. | AQL HTTP 200, PPM HTTP 200. | Failing |
-| AC-12 | Native Android/Windows packages | AQL/PPM include browser/native-readiness notes only. | No APK/AAB/MSIX. | No native package files found. | Not deployed. | Not implemented |
+| AC-01 | Website Login menu | `index.html` primary nav, header CTA, hero CTA, and footer link include `/login/`. | Visible Login entry added. | Inspected file and browser smoke. | Pending after deployment. | Implemented as static/local login |
+| AC-02 | `/login/`, `/apps/`, `/admin/` routes | `login/index.html`, `apps/index.html`, `admin/index.html`. | Routes exist as static pages. | Browser smoke covers setup/login/catalogue/admin. | Pending after deployment. | Implemented as static/local routes |
+| AC-03 | Real server-side authentication | Static GitHub Pages deployment only; no server session validator. | No server-side auth. | Static source review. | Direct HTTP delivery remains public. | Not implemented |
+| AC-04 | Protect app HTML/bundles before delivery | `/apps/aql/` and `/apps/ppm/` include `js/auth.js` browser guards. | Browser redirects logged-out users, but files are still delivered by the static host. | Local browser guard verified. | Pending browser redirect check after deployment; raw HTTP remains public. | Client-side guard only |
+| AC-05 | Admin panel | `admin/index.html` supports local users, roles, block/reactivate, login history export. | Local browser admin panel added. | Browser smoke covers admin create user. | Pending after deployment. | Implemented locally; no server account store |
+| AC-06 | Login history, retention, export, backup | `js/auth.js` stores up to 500 local events; `admin/index.html` exports CSV. | Local browser history/export added. | Browser smoke and syntax checks. | Pending after deployment. | Implemented locally; no server backup |
+| AC-07 | App Centre catalogue | `apps/index.html` lists AQL and PPM cards behind browser auth guard. | Catalogue added. | Browser smoke covers catalogue. | Pending after deployment. | Implemented as static/local catalogue |
+| AC-08 | User-specific local data partitioning | PPM IndexedDB/local fallback/recovery and AQL main/master stores include `VesaAuth.userKey()`. | New saved local data is partitioned by authenticated user key. | Code review and app tests. | Pending after deployment. | Implemented for new local data; PPM legacy records migrate on first authenticated load, AQL legacy public records are not auto-migrated |
+| AC-09 | Authenticated host/proxy migration | `CNAME` and GitHub Pages static delivery unchanged. | No authenticated host cutover, by user direction. | Repository remains GitHub Pages static site. | Public host still serves static files. | Not implemented |
+| AC-10 | Separate gap matrix file | `GAP_MATRIX.md`. | File present and updated. | File present. | Not a live user-facing route. | Implemented |
+| AC-11 | Logged-out app URL denial | Browser guard redirects logged-out app navigation to `/login/`. | Browser-level denial added; direct raw file delivery still succeeds. | Local browser guard verified. | Pending after deployment. | Client-side guard only |
+| AC-12 | Native Android/Windows packages | AQL/PPM are browser apps with PWA/static assets. | No APK/AAB/MSIX. | No native package files found. | Not deployed. | Not implemented |
 | AC-13 | Real factory/field pilot validation | No pilot files or acceptance evidence supplied. | Unverified. | No evidence in repo. | Not verifiable. | Not supplied |
 
 ## Original AQL 35-Area Matrix
@@ -64,10 +64,11 @@ This matrix records current repository and live-release evidence. It distinguish
 
 ## Current Verification Summary
 
-- `node apps/aql/tests/release-contract.cjs`: passed.
-- `node apps/ppm/tests/regression.cjs` with Playwright Chromium: passed.
-- `node apps/ppm/tests/planning.cjs` with Playwright Chromium: passed.
-- `node apps/ppm/tests/update.cjs` with Playwright Chromium: passed.
-- Browser smoke at 320, 390, 768, and 1280 widths: AQL and PPM menus visible/clickable, no console/page errors in the tested flow.
-- Live static deployment: AQL and PPM return HTTP 200.
-- Auth release gate: failing, because logged-out app routes return protected app content.
+- Static App Centre login implementation added locally: `/login/`, `/apps/`, `/admin/`, local user setup, browser session guard, local admin user management, local login-history CSV export, AQL/PPM catalogue links, and user-key local data partitioning.
+- Client-side browser guard result: logged-out browser navigation is redirected to `/login/` before the app UI initializes.
+- Server-side auth result: still not implemented, because the current GitHub Pages/static host delivers HTML and bundles before any browser script can run.
+- `node apps/aql/tests/release-contract.cjs`: pending re-run after this auth update.
+- `node apps/ppm/tests/regression.cjs` with Playwright Chromium: pending re-run after this auth update.
+- `node apps/ppm/tests/planning.cjs` with Playwright Chromium: pending re-run after this auth update.
+- `node apps/ppm/tests/update.cjs` with Playwright Chromium: pending re-run after this auth update.
+- Live deployment verification: pending after commit/push.

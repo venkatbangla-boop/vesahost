@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin | VESA App Centre</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/auth.js"></script>
+</head>
+<body class="app-centre-page">
+  <script>VesaAuth.requireAdmin();</script>
+  <main class="admin-shell">
+    <section class="app-centre-hero">
+      <a class="auth-logo" href="/"><img src="/assets/vesa-logo-black.png" alt="VESA Enterprise Inc"></a>
+      <span class="kicker">Admin</span>
+      <h1>User Access</h1>
+      <p class="lead">Create users and review local login history for this browser.</p>
+    </section>
+    <section class="admin-grid">
+      <form id="userForm" class="panel admin-panel">
+        <h2>Add User</h2>
+        <label>Name<input class="input" id="newName" required></label>
+        <label>User ID / email<input class="input" id="newEmail" type="email" required></label>
+        <label>Password<input class="input" id="newPassword" type="password" minlength="6" required></label>
+        <label>Role<select class="input" id="newRole"><option value="user">User</option><option value="admin">Admin</option></select></label>
+        <button class="btn primary" type="submit">Create User</button>
+        <p id="adminMessage" class="auth-message" role="status"></p>
+      </form>
+      <section class="panel admin-panel">
+        <h2>Users</h2>
+        <div id="userList"></div>
+      </section>
+      <section class="panel admin-panel wide">
+        <h2>Login History</h2>
+        <div class="btn-row compact"><button class="btn secondary" id="downloadEvents" type="button">Download CSV</button></div>
+        <div id="eventList"></div>
+      </section>
+    </section>
+  </main>
+  <script>
+    VesaAuth.renderUserBar();
+    const esc=VesaAuth.safeText;
+    function render(){
+      const store=VesaAuth.readStore();
+      document.getElementById('userList').innerHTML=store.users.map(u=>`<article class="admin-row"><div><b>${esc(u.name)}</b><small>${esc(u.email)} · ${esc(u.role)}${u.blocked?' · blocked':''}</small></div><button class="btn secondary" data-user="${esc(u.email)}">${u.blocked?'Reactivate':'Block'}</button></article>`).join('');
+      document.querySelectorAll('[data-user]').forEach(btn=>btn.onclick=()=>{
+        const s=VesaAuth.readStore();
+        const user=s.users.find(u=>u.email===btn.dataset.user);
+        if(user&&!(user.role==='admin'&&s.users.filter(x=>x.role==='admin'&&!x.blocked).length===1&&!user.blocked)){
+          user.blocked=!user.blocked;
+          VesaAuth.writeStore(s);
+          VesaAuth.writeEvent(user.blocked?'user-blocked':'user-reactivated',user.email);
+          render();
+        }
+      });
+      document.getElementById('eventList').innerHTML=store.events.slice(0,80).map(e=>`<article class="admin-row"><div><b>${esc(e.type)}</b><small>${esc(e.email||'')} · ${esc(new Date(e.at).toLocaleString())} · ${esc(e.detail||'')}</small></div></article>`).join('')||'<p>No login history yet.</p>';
+    }
+    document.getElementById('userForm').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const msg=document.getElementById('adminMessage');
+      try{
+        await VesaAuth.createUser({name:newName.value,email:newEmail.value,password:newPassword.value,role:newRole.value});
+        msg.textContent='User created.';msg.className='auth-message good';e.target.reset();render();
+      }catch(err){msg.textContent=err.message;msg.className='auth-message bad';}
+    });
+    document.getElementById('downloadEvents').onclick=()=>{
+      const rows=VesaAuth.readStore().events;
+      const safe=v=>`"${String(v??'').replace(/^[-+=@]/,m=>"'"+m).replace(/"/g,'""')}"`;
+      const csv=['type,email,detail,at,agent',...rows.map(e=>[e.type,e.email,e.detail,e.at,e.agent].map(safe).join(','))].join('\n');
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+      a.download='VESA_App_Centre_Login_History.csv';
+      a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+    };
+    render();
+  </script>
+</body>
+</html>

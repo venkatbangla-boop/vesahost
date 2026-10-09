@@ -71,8 +71,8 @@ class RecordHistory {
  * Own database and bounded per-record storage. Failures propagate for visible warning;
  * main-record autosave remains independent. No silent claim of recovery in memory-only mode. */
 class RecoveryRepository {
-  constructor(){this.db=null;this.last=new Map()}
-  async init(){this.db=await new Promise((resolve,reject)=>{const q=indexedDB.open('vesa-ppm-recovery',1);q.onupgradeneeded=()=>q.result.createObjectStore('snapshots',{keyPath:'key'});q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error)})}
+  constructor(){this.db=null;this.last=new Map();this.userKey=globalThis.VesaAuth?.userKey?.()||'public'}
+  async init(){this.db=await new Promise((resolve,reject)=>{const q=indexedDB.open('vesa-ppm-recovery-'+this.userKey,1);q.onupgradeneeded=()=>q.result.createObjectStore('snapshots',{keyPath:'key'});q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error)})}
   async list(id){if(!this.db)return [];return new Promise((resolve,reject)=>{const q=this.db.transaction('snapshots').objectStore('snapshots').getAll();q.onsuccess=()=>resolve(q.result.filter(x=>x.record.id===id).sort((a,b)=>b.at-a.at));q.onerror=()=>reject(q.error)})}
   /** Called after durable save. At most once/minute unless a destructive operation forces it. */
   async save(record,force=false){if(!this.db)throw Error('Earlier saved versions are unavailable');if(!force&&Date.now()-(this.last.get(record.id)||0)<60000)return;const rows=await this.list(record.id),at=Date.now();await new Promise((resolve,reject)=>{const tx=this.db.transaction('snapshots','readwrite'),s=tx.objectStore('snapshots');s.put({key:`${record.id}:${at}`,at,record:U.clone(record)});for(const x of rows.slice(9))s.delete(x.key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});this.last.set(record.id,at)}

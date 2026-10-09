@@ -1,12 +1,19 @@
-const CACHE='vesa-v32-ppm-isolation-1';
+const CACHE='vesa-v33-app-centre-login-1';
 const ASSETS=[
   './',
   './index.html',
   './privacy.html',
   './terms.html',
+  './login/',
+  './login/index.html',
+  './apps/',
+  './apps/index.html',
+  './admin/',
+  './admin/index.html',
   './llms.txt',
   './css/style.css',
   './js/main.js',
+  './js/auth.js',
   './manifest.webmanifest',
   './favicon.ico',
   './favicon-32x32.png',
@@ -40,7 +47,7 @@ self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.map(key => key.startsWith('vesa-v32-') && key !== CACHE ? caches.delete(key) : null))).then(() => self.clients.claim()));
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.map(key => /^vesa-v\d+-/.test(key) && key !== CACHE ? caches.delete(key) : null))).then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
