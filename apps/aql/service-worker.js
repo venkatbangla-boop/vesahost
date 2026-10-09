@@ -1,10 +1,10 @@
-const CACHE = 'vesa-aql-2026-10-10-1';
+const CACHE = 'vesa-aql-2026-10-10-3';
 const ASSETS = [
   './',
   './index.html',
   './service-worker.js',
-  '../../js/auth.js',
-  '../../js/preferences.js'
+  '../../js/auth.js?v=20261010-login-shell',
+  '../../js/preferences.js?v=20261010-login-shell'
 ];
 
 self.addEventListener('install', event => {

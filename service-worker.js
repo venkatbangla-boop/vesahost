@@ -1,4 +1,4 @@
-const CACHE='vesa-v39-login-readability';
+const CACHE='vesa-v41-hide-app-menus';
 const ASSETS=[
   './',
   './index.html',

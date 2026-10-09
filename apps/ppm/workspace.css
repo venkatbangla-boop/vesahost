@@ -28,3 +28,6 @@ html:not([lang="en"]) .cp-title{font-size:14px;font-weight:600}html:not([lang="e
 
 /* Update offer stays available without covering meeting inputs. */
 .ppm-update{position:sticky;top:0;z-index:1200;padding:12px 16px;background:#fff4cf;color:#102d42;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;box-shadow:0 2px 8px #0002}.ppm-update span{flex:1;min-width:180px}.ppm-update button{white-space:nowrap}
+
+/* VESA shell cleanup: keep app commands available through in-page buttons, hide legacy desktop menu bar. */
+#fileMenu{display:none!important}
