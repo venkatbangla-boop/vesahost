@@ -9,7 +9,7 @@ This matrix records current repository and live-release evidence. It distinguish
 | ID | Requirement | Current file / route evidence | Current result | Local verification | Live verification | Status |
 |---:|---|---|---|---|---|---|
 | AC-01 | Website Login menu | `index.html` primary nav, header CTA, hero CTA, and footer link include `/login/`. | Visible Login entry added. | Inspected file and browser smoke. | Live home page shows Login link. | Implemented as static/local login |
-| AC-02 | `/login/`, `/apps/`, `/admin/` routes | `login/index.html`, `apps/index.html`, `admin/index.html`. | Routes exist as static pages. | Browser smoke covers setup/login/catalogue/admin. | Live HTTP 200 and browser smoke passed. | Implemented as static/local routes |
+| AC-02 | `/login/`, `/apps/`, `/admin/` routes | `login/index.html`, `apps/index.html`, `admin/index.html`. | Routes exist as static pages. | Browser smoke covers demo login/catalogue/admin. | Live HTTP 200 and browser smoke passed. | Implemented as static/local routes |
 | AC-03 | Real server-side authentication | Static GitHub Pages deployment only; no server session validator. | No server-side auth. | Static source review. | Direct HTTP delivery remains public. | Not implemented |
 | AC-04 | Protect app HTML/bundles before delivery | `/apps/aql/` and `/apps/ppm/` include `js/auth.js` browser guards. | Browser redirects logged-out users, but files are still delivered by the static host. | Local browser guard verified. | Live logged-out browser redirect passed; raw HTTP still returns app HTML. | Client-side guard only |
 | AC-05 | Admin panel | `admin/index.html` supports local users, roles, block/reactivate, login history export. | Local browser admin panel added. | Browser smoke covers admin create user. | Live admin page opened after local admin login. | Implemented locally; no server account store |
@@ -64,7 +64,7 @@ This matrix records current repository and live-release evidence. It distinguish
 
 ## Current Verification Summary
 
-- Static App Centre login implementation added and deployed: `/login/`, `/apps/`, `/admin/`, local user setup, browser session guard, local admin user management, local login-history CSV export, AQL/PPM catalogue links, and user-key local data partitioning.
+- Static App Centre login implementation added and deployed: `/login/`, `/apps/`, `/admin/`, two built-in demo users, browser session guard, local admin view, local login-history CSV export, AQL/PPM catalogue links, and user-key local data partitioning.
 - Client-side browser guard result: local and live logged-out browser navigation redirects to `/login/` before the app UI initializes.
 - Server-side auth result: still not implemented, because the current GitHub Pages/static host delivers HTML and bundles before any browser script can run.
 - `node apps/aql/tests/release-contract.cjs`: passed.
@@ -73,4 +73,4 @@ This matrix records current repository and live-release evidence. It distinguish
 - `node apps/ppm/tests/update.cjs` with Playwright Chromium: passed.
 - Local App Centre browser smoke: passed.
 - Live HTTP checks: `/`, `/login/`, `/apps/`, `/admin/`, `/js/auth.js`, `/apps/ppm/`, and `/apps/aql/` returned HTTP 200.
-- Live App Centre browser smoke: passed for home Login link, logged-out PPM redirect, first-time local admin setup, PPM open after login, catalogue, and admin page.
+- Live App Centre browser smoke: passed for home Login link, logged-out PPM redirect, demo credential login, PPM open after login, catalogue, and admin page.

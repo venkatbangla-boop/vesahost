@@ -4,7 +4,7 @@ Date: 2026-10-09 (Asia/Dhaka)
 
 ## Current Verdict
 
-A static/local App Centre login flow has now been implemented and deployed because the requested path is to avoid Cloudflare or another authenticated edge host. It adds a visible website Login button, `/login/`, `/apps/`, `/admin/`, local browser users, local login history export, app catalogue cards, browser redirects for logged-out users, and local data partitioning by authenticated user key.
+A static/local App Centre login flow has now been implemented and deployed because the requested path is to avoid Cloudflare or another authenticated edge host. It adds a visible website Login button, `/login/`, `/apps/`, `/admin/`, two built-in demo users, local login history export, app catalogue cards, browser redirects for logged-out users, and local data partitioning by authenticated user key.
 
 This is still not real server-side authentication. GitHub Pages/static hosting serves protected HTML, JavaScript, service workers, and app assets before browser JavaScript can redirect. Therefore direct raw HTTP access to app files remains possible until the apps move behind a server-side auth boundary.
 
@@ -30,12 +30,12 @@ This is still not real server-side authentication. GitHub Pages/static hosting s
 ## Live Verification on 2026-10-09
 
 - HTTP 200 confirmed for `/`, `/login/`, `/apps/`, `/admin/`, `/js/auth.js`, `/apps/ppm/`, and `/apps/aql/`.
-- Clean-browser smoke passed: home Login link, logged-out direct PPM redirect to `/login/`, first-time local admin setup, PPM open after login, catalogue load, and admin page access.
+- Clean-browser smoke passed: home Login link, logged-out direct PPM redirect to `/login/`, demo credential login, PPM open after login, catalogue load, and admin page access.
 - Direct raw HTTP requests to AQL/PPM still return app content, which confirms this is a browser login flow rather than server-side protection.
 
 ## First-Use Behavior
 
-On first visit to `/login/` in a browser, the site asks to create the local admin password for `info@vesaent.com`. After setup, admins can add local users from `/admin/`. These accounts live in that browser's localStorage, so another device or browser needs its own setup unless a server-side account store is added later.
+The demo login accepts two built-in credentials: `admin@vesa` / `vesa` and `user@vesa` / `vesa`. Login history is retained in that browser's localStorage and can be viewed/exported from `/admin/` by the demo admin. No GitHub write-back exists on the static host, because that would require a protected server-side token or GitHub App.
 
 ## Completion Boundary
 

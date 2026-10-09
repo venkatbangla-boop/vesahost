@@ -3,22 +3,30 @@
 
   const STORE_KEY='vesa.appcentre.auth.v1';
   const SESSION_KEY='vesa.appcentre.session.v1';
-  const DEFAULT_ADMIN='info@vesaent.com';
+  const DEFAULT_ADMIN='admin@vesa';
+  const DEMO_PASSWORD='vesa';
+  const DEMO_USERS=[
+    {email:'admin@vesa',name:'VESA Demo Admin',role:'admin',blocked:false,demo:true,createdAt:'2026-10-09T00:00:00.000Z'},
+    {email:'user@vesa',name:'VESA Demo User',role:'user',blocked:false,demo:true,createdAt:'2026-10-09T00:00:00.000Z'}
+  ];
 
   const cleanEmail=value=>String(value||'').trim().toLowerCase();
   const safeText=value=>String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const userKey=email=>cleanEmail(email).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'user';
   const now=()=>new Date().toISOString();
 
+  function normalizeStore(store){
+    const base=store&&typeof store==='object'?store:{};
+    const saved=Array.isArray(base.users)?base.users:[];
+    const savedWithoutDemo=saved.filter(u=>!DEMO_USERS.some(d=>d.email===cleanEmail(u.email)));
+    return {createdAt:base.createdAt||now(),users:[...DEMO_USERS,...savedWithoutDemo],events:Array.isArray(base.events)?base.events:[],apps:base.apps||{ppm:true,aql:true}};
+  }
   function readStore(){
-    try{
-      const store=JSON.parse(localStorage.getItem(STORE_KEY)||'null');
-      if(store&&Array.isArray(store.users))return store;
-    }catch{}
-    return {createdAt:now(),users:[],events:[],apps:{ppm:true,aql:true}};
+    try{return normalizeStore(JSON.parse(localStorage.getItem(STORE_KEY)||'null'));}catch{return normalizeStore(null);}
   }
   function writeStore(store){
-    localStorage.setItem(STORE_KEY,JSON.stringify(store));
+    const normalized=normalizeStore(store);
+    localStorage.setItem(STORE_KEY,JSON.stringify({...normalized,users:normalized.users.filter(u=>!u.demo)}));
   }
   function session(){
     try{
@@ -47,6 +55,7 @@
   async function createUser({email,name,password,role='user'}){
     const id=cleanEmail(email);
     if(!id)throw Error('Enter a user ID or email.');
+    if(DEMO_USERS.some(u=>u.email===id))throw Error('This demo user already exists.');
     if(String(password||'').length<6)throw Error('Password must be at least 6 characters.');
     const store=readStore();
     if(store.users.some(u=>u.email===id))throw Error('This user already exists.');
@@ -55,22 +64,18 @@
     writeStore(store);
     writeEvent('user-created',id,role);
   }
-  async function setupAdmin(password){
-    const store=readStore();
-    if(store.users.length)throw Error('Setup is already complete.');
-    await createUser({email:DEFAULT_ADMIN,name:'VESA Admin',password,role:'admin'});
-  }
+  async function setupAdmin(){return true;}
   async function login(email,password){
     const id=cleanEmail(email);
     const store=readStore();
     const user=store.users.find(u=>u.email===id);
     if(!user){writeEvent('login-failed',id,'unknown-user');throw Error('User ID or password is not correct.');}
     if(user.blocked){writeEvent('login-failed',id,'blocked');throw Error('This user is blocked.');}
-    const ok=await digest(password,user.salt)===user.passwordHash;
+    const ok=user.demo?String(password||'')===DEMO_PASSWORD:await digest(password,user.salt)===user.passwordHash;
     if(!ok){writeEvent('login-failed',id,'bad-password');throw Error('User ID or password is not correct.');}
     const s={email:user.email,name:user.name,role:user.role,userKey:userKey(user.email),loginAt:now(),expiresAt:new Date(Date.now()+8*60*60*1000).toISOString()};
     localStorage.setItem(SESSION_KEY,JSON.stringify(s));
-    writeEvent('login-success',id);
+    writeEvent('login-success',id,user.demo?'demo-user':'local-user');
     return s;
   }
   function logout(reason='logout'){
@@ -95,12 +100,8 @@
     }
     return s;
   }
-  function isSetupComplete(){
-    return readStore().users.length>0;
-  }
-  function currentUserKey(){
-    return session()?.userKey||'public';
-  }
+  function isSetupComplete(){return true;}
+  function currentUserKey(){return session()?.userKey||'public';}
   function renderUserBar(target=document.body){
     ensureBarStyle();
     const s=session();
@@ -119,7 +120,7 @@
     document.head.append(style);
   }
 
-  window.VesaAuth={STORE_KEY,SESSION_KEY,DEFAULT_ADMIN,safeText,readStore,writeStore,session,setupAdmin,login,logout,requireAuth,requireAdmin,isSetupComplete,createUser,userKey:currentUserKey,writeEvent,renderUserBar};
+  window.VesaAuth={STORE_KEY,SESSION_KEY,DEFAULT_ADMIN,DEMO_USERS,DEMO_PASSWORD,safeText,readStore,writeStore,session,setupAdmin,login,logout,requireAuth,requireAdmin,isSetupComplete,createUser,userKey:currentUserKey,writeEvent,renderUserBar};
   const script=document.currentScript;
   if(script?.dataset.authGuard==='app'){
     requireAuth();

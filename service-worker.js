@@ -1,4 +1,4 @@
-const CACHE='vesa-v33-app-centre-login-1';
+const CACHE='vesa-v34-demo-login-1';
 const ASSETS=[
   './',
   './index.html',
