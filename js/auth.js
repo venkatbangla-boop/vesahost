@@ -112,7 +112,7 @@
     const admin=globalThis.VesaPrefs?.label?.('admin')||'Admin';
     const logoutText=globalThis.VesaPrefs?.label?.('logout')||'Logout';
     const displayName=String(s.name||s.email).replace(/\bDemo\s+/ig,'').replace(/\s+Demo\b/ig,'').trim();
-    bar.innerHTML=`<span>${safeText(displayName||s.email)}</span><a href="/apps/">${safeText(appCentre)}</a>${s.role==='admin'?`<a href="/admin/">${safeText(admin)}</a>`:''}<button type="button">${safeText(logoutText)}</button>`;
+    bar.innerHTML=`<a class="auth-bar-brand" href="/" aria-label="VESA home"><img src="/assets/vesa-logo-black.png" alt="VESA"></a><span class="auth-bar-spacer"></span><span class="auth-bar-user">${safeText(displayName||s.email)}</span><a href="/apps/">${safeText(appCentre)}</a>${s.role==='admin'?`<a href="/admin/">${safeText(admin)}</a>`:''}<button type="button">${safeText(logoutText)}</button>`;
     bar.querySelector('button').onclick=()=>{logout();location.href='/login/';};
     target.prepend(bar);
   }
@@ -120,7 +120,7 @@
     if(document.getElementById('vesa-auth-bar-style'))return;
     const style=document.createElement('style');
     style.id='vesa-auth-bar-style';
-    style.textContent='.app-user-bar{position:sticky;top:0;z-index:9999;display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:9px 14px;background:#071A35;color:#fff;font:700 13px/1.3 system-ui,-apple-system,Segoe UI,sans-serif}.app-user-bar a,.app-user-bar button{color:#fff;border:1px solid rgba(255,255,255,.3);background:transparent;border-radius:999px;padding:7px 11px;font:inherit;text-decoration:none;cursor:pointer}@media(max-width:700px){.app-user-bar{position:relative;justify-content:flex-start;flex-wrap:wrap}}';
+    style.textContent='.app-user-bar{position:sticky;top:0;z-index:9999;display:flex;align-items:center;gap:12px;padding:10px 18px;background:rgba(248,244,237,.96);color:#071A35;border-bottom:1px solid rgba(7,26,53,.08);box-shadow:0 18px 45px rgba(7,26,53,.08);backdrop-filter:blur(18px);font:800 13px/1.3 Inter,system-ui,-apple-system,Segoe UI,sans-serif}.app-user-bar .auth-bar-brand{display:flex;align-items:center;border:0;background:transparent;padding:0}.app-user-bar .auth-bar-brand img{width:142px;max-height:52px;object-fit:contain}.app-user-bar .auth-bar-spacer{flex:1}.app-user-bar .auth-bar-user{white-space:nowrap}.app-user-bar a:not(.auth-bar-brand),.app-user-bar button{color:#071A35;border:1px solid rgba(7,26,53,.16);background:rgba(255,255,255,.54);border-radius:999px;padding:9px 13px;font:inherit;text-decoration:none;cursor:pointer}.app-user-bar button{background:#071A35;color:#fff;border-color:#071A35}@media(max-width:700px){.app-user-bar{position:relative;justify-content:flex-start;flex-wrap:wrap}.app-user-bar .auth-bar-spacer{display:none}.app-user-bar .auth-bar-brand img{width:120px}}';
     document.head.append(style);
   }
 

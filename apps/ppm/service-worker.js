@@ -4,7 +4,7 @@
  * Navigations receive one installed bundle, including offline. No record access. */
 class PpmAssetWorker {
   static VERSION='5.1.5';
-  static CACHE='vesa-ppm-'+PpmAssetWorker.VERSION;
+  static CACHE='vesa-ppm-'+PpmAssetWorker.VERSION+'-shell-1';
   static async install(){const cache=await caches.open(this.CACHE);await cache.addAll(FILES.map(url=>new Request(url,{cache:'reload'})));await self.skipWaiting()}
   static async activate(){await self.clients.claim()}
   /** Versioned old requests use exact cache keys, never another release's script. */
