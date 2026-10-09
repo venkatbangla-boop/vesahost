@@ -11,7 +11,7 @@
  * dashboard calculations remain synchronized. No server or network dependency is required.
  */
 
-const APP_VERSION='5.1.3';
+const APP_VERSION='5.1.4';
 const STATUS_VALUES=['OK','ACTION','PENDING','N/A'];
 const PROCESS_OPTIONS=[
   ['print','Print'],['embroidery','Embroidery'],['heatTransfer','Heat Transfer'],['garmentWash','Garment Wash'],
@@ -562,4 +562,3 @@ class AppController{
   closeModal(){document.getElementById('modalBackdrop').classList.remove('show')}
   toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(this.toastTimer);this.toastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
 }
-

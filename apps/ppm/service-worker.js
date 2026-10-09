@@ -3,7 +3,7 @@
  * windows are never reloaded; their exact old versioned assets remain available.
  * Navigations receive one installed bundle, including offline. No record access. */
 class PpmAssetWorker {
-  static VERSION='5.1.3';
+  static VERSION='5.1.4';
   static CACHE='vesa-ppm-'+PpmAssetWorker.VERSION;
   static async install(){const cache=await caches.open(this.CACHE);await cache.addAll(FILES.map(url=>new Request(url,{cache:'reload'})));await self.skipWaiting()}
   static async activate(){await self.clients.claim()}
@@ -18,7 +18,7 @@ class PpmAssetWorker {
     return fetch(request);
   }
 }
-const FILES=['./','./index.html','./core.js?v=5.1.3','./workspace.js?v=5.1.3','./planning-services.js?v=5.1.3','./planning-panel.js?v=5.1.3','./record-services.js?v=5.1.3','./report-service.js?v=5.1.3','./languages.js?v=5.1.3','./workspace.css?v=5.1.3','./vendor/pdf-lib.min.js?v=5.1.3','./fonts/bengali.ttf','./fonts/devanagari.ttf','./fonts/tamil.ttf','./manifest.webmanifest','../../assets/vesa-logo-black.png','../../js/auth.js'];
+const FILES=['./','./index.html','./core.js?v=5.1.4','./workspace.js?v=5.1.4','./planning-services.js?v=5.1.4','./planning-panel.js?v=5.1.4','./record-services.js?v=5.1.4','./report-service.js?v=5.1.4','./languages.js?v=5.1.4','./workspace.css?v=5.1.4','./vendor/pdf-lib.min.js?v=5.1.4','./fonts/bengali.ttf','./fonts/devanagari.ttf','./fonts/tamil.ttf','./manifest.webmanifest','../../assets/vesa-logo-black.png','../../js/auth.js','../../js/preferences.js'];
 self.addEventListener('install',event=>event.waitUntil(PpmAssetWorker.install()));
 self.addEventListener('activate',event=>event.waitUntil(PpmAssetWorker.activate()));
 self.addEventListener('message',event=>{if(event.data?.type==='PPM_VERSION')event.ports[0]?.postMessage(PpmAssetWorker.VERSION)});

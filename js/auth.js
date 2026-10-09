@@ -108,7 +108,10 @@
     if(!s)return;
     const bar=document.createElement('div');
     bar.className='app-user-bar';
-    bar.innerHTML=`<span>${safeText(s.name||s.email)}</span><a href="/apps/">App Centre</a>${s.role==='admin'?'<a href="/admin/">Admin</a>':''}<button type="button">Logout</button>`;
+    const appCentre=globalThis.VesaPrefs?.label?.('appCentre')||'App Centre';
+    const admin=globalThis.VesaPrefs?.label?.('admin')||'Admin';
+    const logoutText=globalThis.VesaPrefs?.label?.('logout')||'Logout';
+    bar.innerHTML=`<span>${safeText(s.name||s.email)}</span><a href="/apps/">${safeText(appCentre)}</a>${s.role==='admin'?`<a href="/admin/">${safeText(admin)}</a>`:''}<button type="button">${safeText(logoutText)}</button>`;
     bar.querySelector('button').onclick=()=>{logout();location.href='/login/';};
     target.prepend(bar);
   }

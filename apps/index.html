@@ -6,6 +6,7 @@
   <title>App Centre | VESA Enterprise Inc</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/preferences.js"></script>
   <script src="/js/auth.js"></script>
 </head>
 <body class="app-centre-page">
@@ -13,22 +14,23 @@
   <main class="app-centre-shell">
     <section class="app-centre-hero">
       <a class="auth-logo" href="/"><img src="/assets/vesa-logo-black.png" alt="VESA Enterprise Inc"></a>
-      <span class="kicker">VESA App Centre</span>
-      <h1>Choose Your Workspace</h1>
-      <p class="lead">Open the approved VESA tools for local forms, calculations, saved copies and reports.</p>
+      <span class="kicker" data-i18n="appCentre">VESA App Centre</span>
+      <h1 data-i18n="choose">Choose Your Workspace</h1>
+      <p class="lead" data-i18n="chooseText">Open the approved VESA tools for local forms, calculations, saved copies and reports.</p>
+      <div data-vesa-preferences></div>
     </section>
     <section class="app-catalogue" aria-label="Applications">
       <article class="app-tile panel">
         <span>AQL</span>
         <h2>Inspection Quality Suite</h2>
         <p>Final inspection, stage workflows, AQL sampling, evidence, quality records and reports.</p>
-        <a class="btn primary" href="/apps/aql/">Open AQL</a>
+        <a class="btn primary" href="/apps/aql/" data-i18n="openAql">Open AQL</a>
       </article>
       <article class="app-tile panel">
         <span>PPM</span>
         <h2>Pre-Production Meeting</h2>
         <p>Production readiness, approvals, measurement checks, change review and printable reports.</p>
-        <a class="btn primary" href="/apps/ppm/">Open PPM</a>
+        <a class="btn primary" href="/apps/ppm/" data-i18n="openPpm">Open PPM</a>
       </article>
     </section>
   </main>

@@ -6,22 +6,24 @@
   <title>Login | VESA App Centre</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/preferences.js"></script>
   <script src="/js/auth.js"></script>
 </head>
 <body class="app-centre-page">
   <main class="auth-shell">
     <section class="auth-card panel">
       <a class="auth-logo" href="/"><img src="/assets/vesa-logo-black.png" alt="VESA Enterprise Inc"></a>
-      <span class="kicker">VESA App Centre</span>
-      <h1>Login</h1>
+      <span class="kicker" data-i18n="appCentre">VESA App Centre</span>
+      <h1 data-i18n="login">Login</h1>
       <p>Enter the demo user ID and password to open the App Centre.</p>
+      <div data-vesa-preferences></div>
       <form id="loginForm" class="auth-form">
-        <label>User ID<input class="input" id="email" type="text" autocomplete="username" required></label>
-        <label>Password<input class="input" id="password" type="password" autocomplete="current-password" required></label>
-        <button class="btn primary" type="submit">Login</button>
+        <label><span data-i18n="userId">User ID</span><input class="input" id="email" type="text" autocomplete="username" required></label>
+        <label><span data-i18n="password">Password</span><input class="input" id="password" type="password" autocomplete="current-password" required></label>
+        <button class="btn primary" type="submit" data-i18n="login">Login</button>
       </form>
       <p id="authMessage" class="auth-message" role="status"></p>
-      <p class="small muted">Demo access: admin@vesa / vesa or user@vesa / vesa.</p>
+      <p class="small muted" data-i18n="demo">Demo access: admin@vesa / vesa or user@vesa / vesa.</p>
     </section>
   </main>
   <script>

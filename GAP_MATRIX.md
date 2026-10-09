@@ -74,3 +74,4 @@ This matrix records current repository and live-release evidence. It distinguish
 - Local App Centre browser smoke: passed.
 - Live HTTP checks: `/`, `/login/`, `/apps/`, `/admin/`, `/js/auth.js`, `/apps/ppm/`, and `/apps/aql/` returned HTTP 200.
 - Live App Centre browser smoke: passed for home Login link, logged-out PPM redirect, demo credential login, PPM open after login, catalogue, and admin page.
+- Unified design/language layer: local browser smoke passed for Login theme/language selection, App Centre carry-over, PPM language/version sync, and AQL language preference sync.

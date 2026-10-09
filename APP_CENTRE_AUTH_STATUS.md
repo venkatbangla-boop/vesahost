@@ -33,6 +33,12 @@ This is still not real server-side authentication. GitHub Pages/static hosting s
 - Clean-browser smoke passed: home Login link, logged-out direct PPM redirect to `/login/`, demo credential login, PPM open after login, catalogue load, and admin page access.
 - Direct raw HTTP requests to AQL/PPM still return app content, which confirms this is a browser login flow rather than server-side protection.
 
+## Unified Visual and Language Layer
+
+The demo App Centre now has a shared browser preference layer for appearance and language. Login, App Centre, Admin, PPM, and AQL load the shared preference script. The shared language preference writes through to AQL guidance (`vesa-guide-language`) and PPM sentence guidance (`vesa.ppm.language`). The shared appearance preference writes through to the AQL appearance preference document and maps common theme tokens into PPM.
+
+Current language scope is English, Tamil, Bengali, and Hindi. It translates App Centre shell controls and syncs app guidance language; it does not translate every technical form label or user-entered data.
+
 ## First-Use Behavior
 
 The demo login accepts two built-in credentials: `admin@vesa` / `vesa` and `user@vesa` / `vesa`. Login history is retained in that browser's localStorage and can be viewed/exported from `/admin/` by the demo admin. No GitHub write-back exists on the static host, because that would require a protected server-side token or GitHub App.

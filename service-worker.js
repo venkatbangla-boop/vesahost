@@ -1,4 +1,4 @@
-const CACHE='vesa-v34-demo-login-1';
+const CACHE='vesa-v35-unified-preferences-1';
 const ASSETS=[
   './',
   './index.html',
@@ -14,6 +14,7 @@ const ASSETS=[
   './css/style.css',
   './js/main.js',
   './js/auth.js',
+  './js/preferences.js',
   './manifest.webmanifest',
   './favicon.ico',
   './favicon-32x32.png',
