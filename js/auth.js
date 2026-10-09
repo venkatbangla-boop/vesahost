@@ -6,8 +6,8 @@
   const DEFAULT_ADMIN='admin@vesa';
   const DEMO_PASSWORD='vesa';
   const DEMO_USERS=[
-    {email:'admin@vesa',name:'VESA Demo Admin',role:'admin',blocked:false,demo:true,createdAt:'2026-10-09T00:00:00.000Z'},
-    {email:'user@vesa',name:'VESA Demo User',role:'user',blocked:false,demo:true,createdAt:'2026-10-09T00:00:00.000Z'}
+    {email:'admin@vesa',name:'VESA Admin',role:'admin',blocked:false,demo:true,createdAt:'2026-10-09T00:00:00.000Z'},
+    {email:'user@vesa',name:'VESA User',role:'user',blocked:false,demo:true,createdAt:'2026-10-09T00:00:00.000Z'}
   ];
 
   const cleanEmail=value=>String(value||'').trim().toLowerCase();
@@ -55,7 +55,7 @@
   async function createUser({email,name,password,role='user'}){
     const id=cleanEmail(email);
     if(!id)throw Error('Enter a user ID or email.');
-    if(DEMO_USERS.some(u=>u.email===id))throw Error('This demo user already exists.');
+    if(DEMO_USERS.some(u=>u.email===id))throw Error('This built-in user already exists.');
     if(String(password||'').length<6)throw Error('Password must be at least 6 characters.');
     const store=readStore();
     if(store.users.some(u=>u.email===id))throw Error('This user already exists.');
@@ -75,7 +75,7 @@
     if(!ok){writeEvent('login-failed',id,'bad-password');throw Error('User ID or password is not correct.');}
     const s={email:user.email,name:user.name,role:user.role,userKey:userKey(user.email),loginAt:now(),expiresAt:new Date(Date.now()+8*60*60*1000).toISOString()};
     localStorage.setItem(SESSION_KEY,JSON.stringify(s));
-    writeEvent('login-success',id,user.demo?'demo-user':'local-user');
+    writeEvent('login-success',id,user.demo?'built-in-user':'local-user');
     return s;
   }
   function logout(reason='logout'){
@@ -111,7 +111,8 @@
     const appCentre=globalThis.VesaPrefs?.label?.('appCentre')||'App Centre';
     const admin=globalThis.VesaPrefs?.label?.('admin')||'Admin';
     const logoutText=globalThis.VesaPrefs?.label?.('logout')||'Logout';
-    bar.innerHTML=`<span>${safeText(s.name||s.email)}</span><a href="/apps/">${safeText(appCentre)}</a>${s.role==='admin'?`<a href="/admin/">${safeText(admin)}</a>`:''}<button type="button">${safeText(logoutText)}</button>`;
+    const displayName=String(s.name||s.email).replace(/\bDemo\s+/ig,'').replace(/\s+Demo\b/ig,'').trim();
+    bar.innerHTML=`<span>${safeText(displayName||s.email)}</span><a href="/apps/">${safeText(appCentre)}</a>${s.role==='admin'?`<a href="/admin/">${safeText(admin)}</a>`:''}<button type="button">${safeText(logoutText)}</button>`;
     bar.querySelector('button').onclick=()=>{logout();location.href='/login/';};
     target.prepend(bar);
   }

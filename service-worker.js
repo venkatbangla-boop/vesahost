@@ -1,4 +1,4 @@
-const CACHE='vesa-v35-unified-preferences-1';
+const CACHE='vesa-v37-login-preferences-only';
 const ASSETS=[
   './',
   './index.html',

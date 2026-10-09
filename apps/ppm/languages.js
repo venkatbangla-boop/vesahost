@@ -177,7 +177,7 @@ GK01|বায়ার/গন্তব্য বাজার অনুযায
 for(const row of PPM_TRANSLATION_ROWS.trim().split('\n')){const [id,bn,hi,ta]=row.split('|');PPM_SENTENCES[id]={bn,hi,ta}}
 
 const PPM_GUIDANCE_ROWS=`
-homeIntro|নতুন মিটিং শুরু করুন, আগের কাজ চালিয়ে যান অথবা ট্রেনিং ডেমো দিয়ে শিখুন।|नई मीटिंग शुरू करें, पिछला काम जारी रखें या ट्रेनिंग डेमो से सीखें।|புதிய meeting தொடங்கவும், பழைய வேலையைத் தொடரவும் அல்லது training demo மூலம் கற்றுக்கொள்ளவும்.
+homeIntro|নতুন মিটিং শুরু করুন, আগের কাজ চালিয়ে যান অথবা training sample দিয়ে শিখুন।|नई meeting शुरू करें, पिछला काम जारी रखें या training sample से सीखें।|புதிய meeting தொடங்கவும், பழைய வேலையைத் தொடரவும் அல்லது training sample மூலம் கற்றுக்கொள்ளவும்.
 newHint|খালি প্রোডাকশন মিটিং শুরু করুন।|खाली प्रोडक्शन मीटिंग शुरू करें।|புதிய production meeting தொடங்கவும்.
 demoHint|ভরা টি-শার্ট উদাহরণ দিয়ে অনুশীলন করুন।|भरे हुए टी-शर्ट उदाहरण से अभ्यास करें।|நிரப்பப்பட்ட T-shirt example மூலம் பயிற்சி செய்யவும்.
 restoreHint|আগে ডাউনলোড করা PPM কপি বেছে নিন।|पहले डाउनलोड की गई PPM कॉपी चुनें।|முன்பு பதிவிறக்கிய PPM நகலைத் தேர்ந்தெடுக்கவும்.
@@ -263,7 +263,7 @@ No external backup recorded. File → Save Backup keeps a separate copy.|বা�
 Recovery storage unavailable. Download a portable backup.|রিকভারি স্টোরেজ পাওয়া যাচ্ছে না। পোর্টেবল ব্যাকআপ ডাউনলোড করুন।|रिकवरी स्टोरेज उपलब्ध नहीं है। पोर्टेबल बैकअप डाउनलोड करें।|Recovery storage கிடைக்கவில்லை. Portable backup download செய்யவும்.
 Sentence language updated. Your entered data is unchanged.|বাক্যের ভাষা বদলেছে। আপনার লেখা তথ্য অপরিবর্তিত আছে।|वाक्यों की भाषा बदल गई है। आपकी भरी जानकारी अपरिवर्तित है।|Sentence மொழி மாற்றப்பட்டது. நீங்கள் நிரப்பிய data மாற்றப்படவில்லை.
 New PPM created.|নতুন PPM তৈরি হয়েছে।|नया PPM बनाया गया है।|புதிய PPM உருவாக்கப்பட்டது.
-Training only. Demo changes are not saved to Recent PPMs.|শুধু প্রশিক্ষণের জন্য। ডেমোর পরিবর্তন Recent PPMs-এ জমা হয় না।|केवल प्रशिक्षण के लिए। डेमो बदलाव Recent PPMs में सहेजे नहीं जाते।|Training மட்டும். Demo changes Recent PPMs-ல் save ஆகாது.
+Training only. Sample changes are not saved to Recent PPMs.|শুধু প্রশিক্ষণের জন্য। Sample changes Recent PPMs-এ জমা হয় না।|केवल training के लिए। Sample changes Recent PPMs में save नहीं होते।|Training மட்டும். Sample changes Recent PPMs-ல் save ஆகாது.
 Backup restored as a separate PPM. Existing records are preserved.|ব্যাকআপ আলাদা PPM হিসেবে খোলা হয়েছে। আগের রেকর্ড রাখা হয়েছে।|बैकअप अलग PPM के रूप में खुला है। पुराने रिकॉर्ड सुरक्षित हैं।|Backup தனி PPM-ஆக restore செய்யப்பட்டது. Existing records பாதுகாக்கப்பட்டன.
 Backup download started. Keep the file in a safe location.|ব্যাকআপ ডাউনলোড শুরু হয়েছে। ফাইল নিরাপদ স্থানে রাখুন।|बैकअप डाउनलोड शुरू हुआ है। फ़ाइल सुरक्षित स्थान पर रखें।|Backup download தொடங்கியது. File-ஐ பாதுகாப்பான இடத்தில் வைத்திருக்கவும்.
 Unlock the finalized record before editing.|সম্পাদনার আগে চূড়ান্ত রেকর্ড আনলক করুন।|संपादन से पहले अंतिम रिकॉर्ड अनलॉक करें।|Edit செய்வதற்கு முன் finalized record-ஐ unlock செய்யவும்.

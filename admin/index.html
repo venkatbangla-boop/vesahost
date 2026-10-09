@@ -17,7 +17,6 @@
       <span class="kicker">Admin</span>
       <h1>User Access</h1>
       <p class="lead">Create users and review local login history for this browser.</p>
-      <div data-vesa-preferences></div>
     </section>
     <section class="admin-grid">
       <form id="userForm" class="panel admin-panel">
@@ -45,7 +44,7 @@
     const esc=VesaAuth.safeText;
     function render(){
       const store=VesaAuth.readStore();
-      document.getElementById('userList').innerHTML=store.users.map(u=>`<article class="admin-row"><div><b>${esc(u.name)}</b><small>${esc(u.email)} · ${esc(u.role)}${u.demo?' · demo':''}${u.blocked?' · blocked':''}</small></div>${u.demo?'<button class="btn secondary" type="button" disabled>Demo</button>':`<button class="btn secondary" data-user="${esc(u.email)}">${u.blocked?'Reactivate':'Block'}</button>`}</article>`).join('');
+      document.getElementById('userList').innerHTML=store.users.map(u=>`<article class="admin-row"><div><b>${esc(u.name)}</b><small>${esc(u.email)} · ${esc(u.role)}${u.demo?' · built-in':''}${u.blocked?' · blocked':''}</small></div>${u.demo?'<button class="btn secondary" type="button" disabled>Built-in</button>':`<button class="btn secondary" data-user="${esc(u.email)}">${u.blocked?'Reactivate':'Block'}</button>`}</article>`).join('');
       document.querySelectorAll('[data-user]').forEach(btn=>btn.onclick=()=>{
         const s=VesaAuth.readStore();
         const user=s.users.find(u=>u.email===btn.dataset.user);
