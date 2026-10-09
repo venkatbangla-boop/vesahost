@@ -8,17 +8,17 @@ This matrix records current repository and live-release evidence. It distinguish
 
 | ID | Requirement | Current file / route evidence | Current result | Local verification | Live verification | Status |
 |---:|---|---|---|---|---|---|
-| AC-01 | Website Login menu | `index.html` primary nav, header CTA, hero CTA, and footer link include `/login/`. | Visible Login entry added. | Inspected file and browser smoke. | Pending after deployment. | Implemented as static/local login |
-| AC-02 | `/login/`, `/apps/`, `/admin/` routes | `login/index.html`, `apps/index.html`, `admin/index.html`. | Routes exist as static pages. | Browser smoke covers setup/login/catalogue/admin. | Pending after deployment. | Implemented as static/local routes |
+| AC-01 | Website Login menu | `index.html` primary nav, header CTA, hero CTA, and footer link include `/login/`. | Visible Login entry added. | Inspected file and browser smoke. | Live home page shows Login link. | Implemented as static/local login |
+| AC-02 | `/login/`, `/apps/`, `/admin/` routes | `login/index.html`, `apps/index.html`, `admin/index.html`. | Routes exist as static pages. | Browser smoke covers setup/login/catalogue/admin. | Live HTTP 200 and browser smoke passed. | Implemented as static/local routes |
 | AC-03 | Real server-side authentication | Static GitHub Pages deployment only; no server session validator. | No server-side auth. | Static source review. | Direct HTTP delivery remains public. | Not implemented |
-| AC-04 | Protect app HTML/bundles before delivery | `/apps/aql/` and `/apps/ppm/` include `js/auth.js` browser guards. | Browser redirects logged-out users, but files are still delivered by the static host. | Local browser guard verified. | Pending browser redirect check after deployment; raw HTTP remains public. | Client-side guard only |
-| AC-05 | Admin panel | `admin/index.html` supports local users, roles, block/reactivate, login history export. | Local browser admin panel added. | Browser smoke covers admin create user. | Pending after deployment. | Implemented locally; no server account store |
-| AC-06 | Login history, retention, export, backup | `js/auth.js` stores up to 500 local events; `admin/index.html` exports CSV. | Local browser history/export added. | Browser smoke and syntax checks. | Pending after deployment. | Implemented locally; no server backup |
-| AC-07 | App Centre catalogue | `apps/index.html` lists AQL and PPM cards behind browser auth guard. | Catalogue added. | Browser smoke covers catalogue. | Pending after deployment. | Implemented as static/local catalogue |
-| AC-08 | User-specific local data partitioning | PPM IndexedDB/local fallback/recovery and AQL main/master stores include `VesaAuth.userKey()`. | New saved local data is partitioned by authenticated user key. | Code review and app tests. | Pending after deployment. | Implemented for new local data; PPM legacy records migrate on first authenticated load, AQL legacy public records are not auto-migrated |
+| AC-04 | Protect app HTML/bundles before delivery | `/apps/aql/` and `/apps/ppm/` include `js/auth.js` browser guards. | Browser redirects logged-out users, but files are still delivered by the static host. | Local browser guard verified. | Live logged-out browser redirect passed; raw HTTP still returns app HTML. | Client-side guard only |
+| AC-05 | Admin panel | `admin/index.html` supports local users, roles, block/reactivate, login history export. | Local browser admin panel added. | Browser smoke covers admin create user. | Live admin page opened after local admin login. | Implemented locally; no server account store |
+| AC-06 | Login history, retention, export, backup | `js/auth.js` stores up to 500 local events; `admin/index.html` exports CSV. | Local browser history/export added. | Browser smoke and syntax checks. | Live admin session reached history/export page. | Implemented locally; no server backup |
+| AC-07 | App Centre catalogue | `apps/index.html` lists AQL and PPM cards behind browser auth guard. | Catalogue added. | Browser smoke covers catalogue. | Live catalogue loaded after login. | Implemented as static/local catalogue |
+| AC-08 | User-specific local data partitioning | PPM IndexedDB/local fallback/recovery and AQL main/master stores include `VesaAuth.userKey()`. | New saved local data is partitioned by authenticated user key. | Code review and app tests. | Live PPM session reported user key `info-vesaent-com`. | Implemented for new local data; PPM legacy records migrate on first authenticated load, AQL legacy public records are not auto-migrated |
 | AC-09 | Authenticated host/proxy migration | `CNAME` and GitHub Pages static delivery unchanged. | No authenticated host cutover, by user direction. | Repository remains GitHub Pages static site. | Public host still serves static files. | Not implemented |
 | AC-10 | Separate gap matrix file | `GAP_MATRIX.md`. | File present and updated. | File present. | Not a live user-facing route. | Implemented |
-| AC-11 | Logged-out app URL denial | Browser guard redirects logged-out app navigation to `/login/`. | Browser-level denial added; direct raw file delivery still succeeds. | Local browser guard verified. | Pending after deployment. | Client-side guard only |
+| AC-11 | Logged-out app URL denial | Browser guard redirects logged-out app navigation to `/login/`. | Browser-level denial added; direct raw file delivery still succeeds. | Local browser guard verified. | Live logged-out `/apps/ppm/` browser navigation redirected to `/login/?next=...`; raw HTTP still returns 200. | Client-side guard only |
 | AC-12 | Native Android/Windows packages | AQL/PPM are browser apps with PWA/static assets. | No APK/AAB/MSIX. | No native package files found. | Not deployed. | Not implemented |
 | AC-13 | Real factory/field pilot validation | No pilot files or acceptance evidence supplied. | Unverified. | No evidence in repo. | Not verifiable. | Not supplied |
 
@@ -64,11 +64,13 @@ This matrix records current repository and live-release evidence. It distinguish
 
 ## Current Verification Summary
 
-- Static App Centre login implementation added locally: `/login/`, `/apps/`, `/admin/`, local user setup, browser session guard, local admin user management, local login-history CSV export, AQL/PPM catalogue links, and user-key local data partitioning.
-- Client-side browser guard result: logged-out browser navigation is redirected to `/login/` before the app UI initializes.
+- Static App Centre login implementation added and deployed: `/login/`, `/apps/`, `/admin/`, local user setup, browser session guard, local admin user management, local login-history CSV export, AQL/PPM catalogue links, and user-key local data partitioning.
+- Client-side browser guard result: local and live logged-out browser navigation redirects to `/login/` before the app UI initializes.
 - Server-side auth result: still not implemented, because the current GitHub Pages/static host delivers HTML and bundles before any browser script can run.
-- `node apps/aql/tests/release-contract.cjs`: pending re-run after this auth update.
-- `node apps/ppm/tests/regression.cjs` with Playwright Chromium: pending re-run after this auth update.
-- `node apps/ppm/tests/planning.cjs` with Playwright Chromium: pending re-run after this auth update.
-- `node apps/ppm/tests/update.cjs` with Playwright Chromium: pending re-run after this auth update.
-- Live deployment verification: pending after commit/push.
+- `node apps/aql/tests/release-contract.cjs`: passed.
+- `node apps/ppm/tests/regression.cjs` with Playwright Chromium: passed.
+- `node apps/ppm/tests/planning.cjs` with Playwright Chromium: passed.
+- `node apps/ppm/tests/update.cjs` with Playwright Chromium: passed.
+- Local App Centre browser smoke: passed.
+- Live HTTP checks: `/`, `/login/`, `/apps/`, `/admin/`, `/js/auth.js`, `/apps/ppm/`, and `/apps/aql/` returned HTTP 200.
+- Live App Centre browser smoke: passed for home Login link, logged-out PPM redirect, first-time local admin setup, PPM open after login, catalogue, and admin page.

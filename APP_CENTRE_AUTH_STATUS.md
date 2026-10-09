@@ -4,7 +4,7 @@ Date: 2026-10-09 (Asia/Dhaka)
 
 ## Current Verdict
 
-A static/local App Centre login flow has now been implemented because the requested path is to avoid Cloudflare or another authenticated edge host. It adds a visible website Login button, `/login/`, `/apps/`, `/admin/`, local browser users, local login history export, app catalogue cards, browser redirects for logged-out users, and local data partitioning by authenticated user key.
+A static/local App Centre login flow has now been implemented and deployed because the requested path is to avoid Cloudflare or another authenticated edge host. It adds a visible website Login button, `/login/`, `/apps/`, `/admin/`, local browser users, local login history export, app catalogue cards, browser redirects for logged-out users, and local data partitioning by authenticated user key.
 
 This is still not real server-side authentication. GitHub Pages/static hosting serves protected HTML, JavaScript, service workers, and app assets before browser JavaScript can redirect. Therefore direct raw HTTP access to app files remains possible until the apps move behind a server-side auth boundary.
 
@@ -22,9 +22,16 @@ This is still not real server-side authentication. GitHub Pages/static hosting s
 | 8 | User-specific local data partitioning by authenticated user ID | Implemented for new data | PPM and AQL storage keys/databases use the authenticated user key. PPM imports legacy public records on first authenticated load for the user; AQL legacy public records are not auto-migrated. | Add migration tool only if legacy browser data must be moved. |
 | 9 | Authenticated hosting/proxy migration or DNS cutover | Not implemented by request | No Cloudflare/auth host cutover. | No action unless server-side protection is later required. |
 | 10 | Full `GAP_MATRIX.md` as separate file | Implemented | Separate file exists and is updated. | Keep updated. |
-| 11 | Live verification that logged-out users cannot open app URLs | Pending deployment verification | Local browser guard is in place; raw HTTP delivery remains public by design of the static host. | Re-test after deployment. |
+| 11 | Live verification that logged-out users cannot open app URLs | Verified for browser redirect; raw HTTP remains public | Live logged-out `/apps/ppm/` browser navigation redirected to `/login/?next=...`; raw HTTP delivery remains public by design of the static host. | Use authenticated hosting later if raw HTTP denial is required. |
 | 12 | Native Android/Windows packages | Not implemented | No APK/AAB/MSIX build pipeline or signed packages. | Separate platform build/signing work. |
 | 13 | Real factory/field pilot validation | Not supplied | No pilot acceptance evidence supplied. | Run field pilot and attach evidence. |
+
+
+## Live Verification on 2026-10-09
+
+- HTTP 200 confirmed for `/`, `/login/`, `/apps/`, `/admin/`, `/js/auth.js`, `/apps/ppm/`, and `/apps/aql/`.
+- Clean-browser smoke passed: home Login link, logged-out direct PPM redirect to `/login/`, first-time local admin setup, PPM open after login, catalogue load, and admin page access.
+- Direct raw HTTP requests to AQL/PPM still return app content, which confirms this is a browser login flow rather than server-side protection.
 
 ## First-Use Behavior
 
