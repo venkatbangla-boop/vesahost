@@ -199,7 +199,7 @@ NEXT ACTION (ONE PRECISE STEP): begin A-G01 shared VESA-UNIFORM-UI-v1 reconcilia
 ```text
 TIME / TIMEZONE: 2026-10-10 20:29 Asia/Dhaka
 GATE / OBJECTIVE: A-G01 — compare one VESA-UNIFORM-UI-v1 shell against real AQL, PPM and TNA routes before a platform-owned change
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / d05caf1 / pending audit commit
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / d05caf1 / 95dc754
 FILES CHANGED (EXACT): docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md; browser evidence under output/playwright/ (ignored)
 FILES WATCHED/FROZEN: apps/aql/index.html, apps/aql/service-worker.js, apps/ppm/*, apps/tna/*, css/style.css, js/auth.js, js/preferences.js, js/app-catalogue.js; no source change in this audit
 LIVE GEOMETRY AT 1280-PROBE: AQL editor = authenticated sticky bar 73px + sidebar sticky top 0px + app topbar sticky top 73px / 76px + `#aqlReleaseMenu` sticky top 149px / 52px; PPM editor = authenticated sticky bar 73px + app `.topbar` sticky + `#fileMenu` sticky top 138px / 54px + dashboard + `.section-nav-wrap` sticky + `.left-rail` sticky + fixed footer; TNA = authenticated sticky bar 73px + `.tna-commandbar` sticky top 73px / 58px. This violates the one-sticky-navigation-region contract even though all three routes rendered.
