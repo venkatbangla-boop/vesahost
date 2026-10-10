@@ -16,7 +16,7 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | Active gate | **TNA G06 - Full workspaces, portfolio, Gantt, accessibility** |
 | Current subtask / subchecks | Continue G06: remaining materials/commercial, approvals, production/capacity and shipment/readiness workspace sections plus keyboard/zoom/tablet/mobile checks |
 | Last ACCEPTED gate | **TNA G05 - Local saving, backup, Excel import and migrations** |
-| Last tested commit SHA | HEAD after partial G06 commit |
+| Last tested commit SHA | 202b2f4 |
 | Last update (UTC) | 2026-10-10 06:37:00 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
