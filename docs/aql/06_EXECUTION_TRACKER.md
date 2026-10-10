@@ -11,9 +11,9 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04 has a conditional stage-workflow fixture/browser slice; PPM baseline dependency and provider services remain separate blockers |
+| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04 and A-G05 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Extended and tested the fixture-only A-G04 stage workflow contract with clean/failing stage decisions and shade tolerance, after browser-verifying a synthetic Fabric Roll Inspection workspace; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
+| LAST COMPLETED ACTION | Added and tested the fixture-only A-G05 readiness/rework/reinspection/loading contract; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
 | NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
@@ -352,6 +352,20 @@ IMPLEMENTED: Added deterministic contract cases for shade Delta E failure, clean
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — decision-guard coverage is locally proven, but full A-G04 35-area/stage matrix and field-device review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then cover the next untested stage-specific record without changing frozen AQL tables.
+```
+
+### A-G05 readiness, rework, reinspection and loading contract — conditional, domain source unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-10 21:20 Asia/Dhaka
+GATE / OBJECTIVE: A-G05 — prove existing pre-final, rework, reinspection, loading and supplier-QA guard contracts before any domain rewrite
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / a86e498 / uncommitted test-only patch
+FILES CHANGED (EXACT): apps/aql/tests/a-g05-readiness-rework.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN: apps/aql/index.html, SamplingEngine, ResultEngine, StageCatalog, ReinspectionService, saved data and all PPM/TNA/shared files; no application/domain source changed
+IMPLEMENTED: Added fixture-only VM checks for pre-final readiness thresholds, incomplete and accepted rework records, carton/piece loading mismatches and complete loading, plus source contracts for new reinspection events, retained original defects, final AQL delegation, CAPA verification, supplier critical-audit failure and denied acknowledgement guards.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
+VERDICT: conditional — pure record guards and source-preservation markers are locally proven; browser reinspection/CAPA/loading evidence, full A-G05 chain, field-device review and real inspection data remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run a browser rework/reinspection or loading slice without changing frozen AQL tables.
 ```
 
 ### A-G04 material-control extension — conditional, domain source unchanged
