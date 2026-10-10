@@ -55,7 +55,7 @@ for (const [stage, module] of Object.entries(expectedStages)) {
   expect(fresh.checks.length > 0 && fresh.checks.every(check => check.status === 'Pending'), `A-G04 ${stage} checklist is not pending by default`);
 }
 
-for (const module of ['incoming', 'roll', 'shade', 'lab', 'ipc', 'cutting', 'inline', 'endline', 'readiness', 'monitor']) {
+for (const module of ['incoming', 'roll', 'shade', 'lab', 'ipc', 'cutting', 'inline', 'endline', 'readiness', 'monitor', 'needle', 'metal', 'equipment']) {
   const fields = StageCatalog.fields(module);
   expect(fields.some(field => field.required), `A-G04 ${module} has no required identity field`);
   expect(fields.every(field => field.key && field.label && field.type), `A-G04 ${module} has an incomplete field definition`);
@@ -146,6 +146,12 @@ expect(readiness.failures.some(issue => issue.includes('production below approve
 const monitor = StageDecision.record(row('monitor', { order: 100, cut: 100, sew: 95, finish: 90, pack: 110 }), '2026-10-10');
 expect(monitor.pending.some(issue => issue.includes('Packed quantity exceeds order')), 'A-G04 production balance guard is absent');
 
+const metal = StageDecision.record(row('metal', { start: 'Fail', middle: 'Pass', end: 'Pass' }), '2026-10-10');
+expect(metal.failures.some(issue => issue.includes('start challenge failed')), 'A-G04 metal challenge failure is absent');
+
+const needle = StageDecision.record(row('needle', { recovered: 'No', detected: 'Pending', release: '' }), '2026-10-10');
+expect(needle.pending.some(issue => issue.includes('Needle containment / supervisor release incomplete')), 'A-G04 needle containment guard is absent');
+
 function project(stage, record, overrides = {}) {
   const stageSuite = StageCatalog.fresh(stage);
   Object.assign(stageSuite, {
@@ -154,7 +160,7 @@ function project(stage, record, overrides = {}) {
     sampling: 'Approved coverage plan',
     orderKey: 'PO-A-G04',
     checks: stageSuite.checks.map(check => ({ ...check, status: 'Pass', note: 'Reviewed' })),
-    records: [record],
+    records: record ? [record] : [],
     ...overrides,
   });
   return {
@@ -196,6 +202,12 @@ const acceptedFabric = StageDecision.evaluate(project('fabric', row('roll', {
 })));
 expect(acceptedFabric.stageDecision === 'ACCEPT', 'A-G04 clean fabric stage did not retain its stage decision');
 
+const missingIncoming = StageDecision.evaluate(project('incoming', null));
+expect(missingIncoming.pending.some(issue => issue.text.includes('Missing Incoming material')), 'A-G04 missing incoming register did not remain pending');
+
+const cleanIncoming = StageDecision.evaluate(project('incoming', row('incoming')));
+expect(cleanIncoming.result === 'CONFORMED', 'A-G04 incoming material record did not reach a conforming decision');
+
 expectThrow(() => StageCatalog.fresh('unsupported-stage'), 'Select an inspection stage');
 for (const requiredText of [
   'StageCatalog.stages',
@@ -204,6 +216,7 @@ for (const requiredText of [
   'Stage report / PDF',
   'Order quality journey',
   'StageReviewPolicy',
+  'Needle containment / supervisor release incomplete',
 ]) {
   expect(html.includes(requiredText), `A-G04 stage workflow source is missing: ${requiredText}`);
 }

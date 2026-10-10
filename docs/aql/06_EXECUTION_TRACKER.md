@@ -348,8 +348,22 @@ GATE / OBJECTIVE: A-G04 — extend fixture coverage from field metadata to clean
 BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 2aa4dc6 / bbaf38b
 FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FROZEN BUSINESS RULES: no `apps/aql/index.html` source, SamplingEngine cell, Ac/Re rule, saved record or shared/sibling file changed
-IMPLEMENTED: Added deterministic contract cases for shade Delta E failure, a clean inline stage reaching CONFORMED, a failed checkpoint remaining NOT CONFORMED, and a clean fabric stage retaining ACCEPT; existing A-G04 material/production record guards remain covered.
+IMPLEMENTED: Added deterministic contract cases for shade Delta E failure, clean inline and incoming stages reaching CONFORMED, a failed checkpoint remaining NOT CONFORMED, a clean fabric stage retaining ACCEPT, metal challenge failure and needle containment pending; existing A-G04 material/production record guards remain covered.
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — decision-guard coverage is locally proven, but full A-G04 35-area/stage matrix and field-device review remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then cover the next untested stage-specific record without changing frozen AQL tables.
+```
+
+### A-G04 material-control extension — conditional, domain source unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-10 21:15 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — cover incoming-stage absence, needle containment and metal challenge evidence
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b26e822 / uncommitted test-only patch
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FROZEN BUSINESS RULES: no `apps/aql/index.html` source, SamplingEngine cell, Ac/Re rule, saved record or shared/sibling file changed
+IMPLEMENTED: Added fixture cases for the required `needle`, `metal` and `equipment` field definitions; a failed metal challenge; incomplete needle containment/release; missing incoming-material register remaining pending; and a complete incoming-material stage reaching CONFORMED.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
+VERDICT: conditional — material-control and incoming-stage guard coverage is locally proven, but full A-G04 35-area/stage matrix and field-device review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then cover the next untested stage-specific record without changing frozen AQL tables.
 ```
