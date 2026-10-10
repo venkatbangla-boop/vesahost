@@ -13,7 +13,7 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Accepted A-G02 locally after authenticated browser proof of the five home actions, saved chooser, latest continuation, practice isolation, editable copy, portable copy import, six-step guide, 13-stage selector and responsive geometry; sampling/Ac-Re/stage data remain frozen |
+| LAST COMPLETED ACTION | Committed A-G03 visible Sampling authorisation entry-point patch after authenticated browser proof of the provenance dialog; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
 | NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
@@ -315,7 +315,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```text
 TIME / TIMEZONE: 2026-10-10 20:58 Asia/Dhaka
 GATE / OBJECTIVE: A-G03 — expose and verify a stable live entry point for plan provenance before approval
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / e7aff20 / uncommitted review patch
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / e7aff20 / af5b49a
 FILES CHANGED (EXACT): apps/aql/index.html; apps/aql/tests/a-g03-sampling.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FROZEN BUSINESS RULES: SamplingEngine, AllocationEngine, ResultEngine, PlanApproval numeric cells, inspection records and saved browser data were not changed; no approval was submitted.
 IMPLEMENTED: Added visible `Sampling authorisation` actions to the Setup buyer-criteria panel and Sampling Plan heading, with a source assertion in the fixture-only A-G03 contract test.
