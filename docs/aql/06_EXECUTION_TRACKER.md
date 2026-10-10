@@ -416,7 +416,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```text
 TIME / TIMEZONE: 2026-10-10 21:45 Asia/Dhaka
 GATE / OBJECTIVE: A-G08 — check responsive width and keyboard focus on a disposable synthetic inspection
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b94c996 / pending documentation commit
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b94c996 / c521cc6
 FILES CHANGED (EXACT): docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FROZEN BUSINESS RULES: no AQL application source, report model, sampling table, inspection record, saved browser data, PPM checkpoint identity or TNA calculation changed.
 BROWSER / DATA EVIDENCE: Authenticated Playwright CLI against disposable `http://127.0.0.1:4177` opened the fictional apparel practice inspection at 390×844. `document.documentElement.scrollWidth`, `document.body.scrollWidth` and `innerWidth` each returned 390. One Tab move reached a visible `Saved locally` button; computed outline was `rgb(36, 79, 214) solid 3px`. Screenshot was captured at ignored `output/playwright/aql-a-g08-mobile-390.png`. No export, release, approval or browser-data clear occurred; browser and disposable server were closed.
