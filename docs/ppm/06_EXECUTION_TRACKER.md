@@ -433,3 +433,16 @@ BLOCKERS / UNRESOLVED RISK: controlled amendment confirmation/history UI and ful
 REVIEWER / VERDICT: CONDITIONAL — the evidence-reference/failed-save checklist item is proven locally, but P-G05 remains active and earns no percentage until controlled amendments and remaining gate acceptance pass.
 NEXT ACTION (ONE PRECISE STEP): add controlled amendment confirmation/history UI for a finalized meeting; prove immutable parent snapshot/linkage, cleared release/signatures/approval proof, draft save/reopen and visible prior-version history.
 ```
+
+### P-G05 pre-code file audit — controlled amendment confirmation and history
+
+```text
+TIME / TIMEZONE: 2026-10-11 01:42 Asia/Dhaka
+PATCH OBJECTIVE: expose the already tested FollowUpService.amend workflow through Edit, require an explicit reason/time/confirmation, and show prior finalized meeting history without unlocking or overwriting the parent in place
+IN-SCOPE FILES: apps/ppm/workspace.js (finite Edit command, active-record transition, save and history UI owner); apps/ppm/tests/p-g05-amendment-ui.cjs (authenticated finalized-parent/create/save/reload/reopen proof); docs/ppm/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md after proof
+OUT-OF-SCOPE / FROZEN: planning-services.js and record-services.js tested service/codec contracts; all 168 checkpoints/statuses; CoverageEngine/ValidationEngine and decision rules; approval policy; service workers; reports/localization beyond the new bounded copy; attachment upload; notifications; AQL/TNA/shared files
+OWNERSHIP / CALL FLOW / STATE: Edit -> controlled amendment dialog -> validate reason/time/explicit acknowledgement -> save finalized parent -> PlanningService.followups.amend(parent snapshot) -> workspace.activate(child draft) -> set optimistic save stamp to the saved parent revision -> queued repository save -> visible version history. Domain service owns frozen snapshot/link/invalidation semantics; workspace owns transition/persistence/rendering only.
+COMPATIBILITY RISKS / GUARDS: command must reject an unlocked parent, a missing reason/time or absent confirmation; save failure before transition leaves the parent active; parent business evidence must survive in a non-recursive frozen snapshot; active child must clear release, signatures, minutes acknowledgement and approval proof; rendered history escapes reasons; ten-version codec bound remains unchanged; reload/reopen must preserve links.
+VERIFICATION / ROLLBACK: new 390px Playwright flow with a synthetic finalized parent, rejected unconfirmed attempt, successful amendment, exact parent-snapshot/child invalidation assertions, durable reload/reopen and visible history; rerun P-G05/P-G04/P-G00/planning/full regression/update/shared-shell/syntax/diff checks. Revert workspace/test/tracker patch; no migration or saved-data deletion.
+PRE-CODE VERDICT: approved for the final functional P-G05 sub-slice; authored-copy four-language parity remains a separate acceptance check.
+```
