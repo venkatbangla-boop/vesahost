@@ -13,8 +13,8 @@
 | Last accepted implementation gate | **P-G04 — PPM approvals, measurement, revision and decision explainability** (`979fec4`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G04 approvals/measurement/revision/decision explainability; P-G05 is next; no production deployment |
 | Current gate | `P-G05 — PPM follow-ups, meeting minutes, evidence and amendment enhancements` |
-| LAST COMPLETED ACTION | Added and passed the P-G04 synthetic decision proof for GO/HOLD, controlled CONDITIONAL GO, required approval evidence/exemption, asymmetric POM boundaries, stale-signoff invalidation and blocker/action explanations; the existing planning/browser regression suite remains green |
-| NEXT ACTION | Audit PPM action ownership/aging/escalation, meeting minutes/waiver compatibility, evidence linkage/save protection and amendment history without inventing notifications or external authority |
+| LAST COMPLETED ACTION | Added and passed the P-G05 conditional sub-slice proof for action owner/due/evidence/status, action closure semantics, photo/history round-trip and explicit absence of minutes, escalation/date-source and immutable amendment schemas; the existing planning/browser regression suite remains green |
+| NEXT ACTION | Design the smallest additive/versioned P-G05 enhancement contract for meeting minutes, explicit authority/waiver records, action date-source/escalation metadata and immutable amendment snapshots; add decode/round-trip guards before any UI change |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -289,5 +289,22 @@ ROLLBACK: revert `979fec4` and this ledger-recording commit to remove only the P
 BLOCKERS / UNRESOLVED RISK: Clean-checkout Playwright package provisioning still needs an intentional manifest/setup; secure backend/role credentials, physical pilot and production authorization remain external blockers. Local evidence does not prove cryptographic buyer authorization or secure multi-user release.
 REVIEWER / VERDICT: ACCEPTED locally — P-G04 is repeatably proven against actual domain/UI owners; no production deployment claim.
 NEXT ACTION (ONE PRECISE STEP): audit P-G05 action ownership/aging/escalation, meeting minutes/waiver compatibility, evidence linkage/save protection and amendment history without inventing notifications or external authority.
+```
+
+### P-G05 existing follow-up sub-slice — conditional, gate remains active
+
+```text
+TIME / TIMEZONE: 2026-10-10 17:52 UTC / 2026-10-10 23:52 Asia/Dhaka
+GATE / OBJECTIVE: P-G05 — audit currently shipped follow-up, evidence and bounded-history behavior without misrepresenting absent Phase-2 enhancement schemas as complete
+BRANCH / BEFORE SHA / EVIDENCE SHA: feature/tna360-continuous / 316323d / 3c5d2ed
+FILES CHANGED (EXACT): apps/ppm/tests/p-g05-followups.cjs; docs/ppm/06_EXECUTION_TRACKER.md (ledger recording follows in the next commit)
+FILES WATCHED/FROZEN: PPM action tracker, photo/evidence fields, `ChangeReviewEngine`, `RecordHistory`, `BackupCodec`, all 168 checkpoint identities/statuses, approval/signature/release rules and existing saved records; no runtime schema or UI behavior changed
+PROVEN: Existing ACTION creates one linked action; owner, due date, corrective action, evidence and Open/In Progress/Closed status survive; checkpoint closure closes its linked action without rewriting the checkpoint status; photo evidence, reviewer-attributed change history and bounded undo round-trip through the current codec/history owners.
+EXPLICIT GAPS: Current source has no `meetingMinutes`, `actionEscalation`/date-source or `meetingVersions` fields. Therefore action aging/escalation, minutes/authority waiver compatibility and immutable amendment snapshots are not claimed or counted as accepted.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/ppm/tests/p-g05-followups.cjs` PASS; `node apps/ppm/tests/p-g05-followups.cjs` PASS; existing PPM `planning.cjs` PASS (16), `regression.cjs` PASS (all named checks), P-G03 PASS, and `git diff --check` PASS in the same cached Playwright 1.64.0 + Chromium 1248 workspace runtime.
+ROLLBACK: revert `3c5d2ed` and this ledger-recording commit to remove only the conditional fixture and evidence; no PPM runtime data migration or browser-store cleanup is required.
+BLOCKERS / UNRESOLVED RISK: P-G05 cannot be accepted until the additive/versioned enhancement contract is implemented and tested. Secure backend notifications/roles remain external and must not be faked; clean-checkout Playwright provisioning and production authorization remain separate blockers.
+REVIEWER / VERDICT: CONDITIONAL — existing follow-up/evidence/history sub-slice is proven; the full P-G05 gate remains active because the explicit enhancement schemas are absent.
+NEXT ACTION (ONE PRECISE STEP): design the smallest additive/versioned P-G05 enhancement contract for meeting minutes, explicit authority/waiver records, action date-source/escalation metadata and immutable amendment snapshots; add decode/round-trip guards before any UI change.
 ```
 ```
