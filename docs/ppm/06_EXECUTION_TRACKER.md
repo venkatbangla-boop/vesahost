@@ -13,8 +13,8 @@
 | Last accepted implementation gate | **P-G04 — PPM approvals, measurement, revision and decision explainability** (`979fec4`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G04 approvals/measurement/revision/decision explainability; P-G05 is next; no production deployment |
 | Current gate | `P-G05 — PPM follow-ups, meeting minutes, evidence and amendment enhancements` |
-| LAST COMPLETED ACTION | Added and passed the P-G05 conditional sub-slice proof for action owner/due/evidence/status, action closure semantics, photo/history round-trip and explicit absence of minutes, escalation/date-source and immutable amendment schemas; the existing planning/browser regression suite remains green |
-| NEXT ACTION | Design the smallest additive/versioned P-G05 enhancement contract for meeting minutes, explicit authority/waiver records, action date-source/escalation metadata and immutable amendment snapshots; add decode/round-trip guards before any UI change |
+| LAST COMPLETED ACTION | Added the additive P-G05 follow-up schema and strict legacy-safe codec for meeting minutes, explicit exceptions/authority, action escalation/date-source metadata and bounded non-recursive full-record amendment snapshots; all PPM gates, planning, update and browser regression remain green |
+| NEXT ACTION | Add a pure P-G05 follow-up service for explicit aging/date-source calculation and controlled amendment creation that snapshots the finalized parent and invalidates copied approvals/signatures, with unit tests before UI wiring |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -307,4 +307,19 @@ BLOCKERS / UNRESOLVED RISK: P-G05 cannot be accepted until the additive/versione
 REVIEWER / VERDICT: CONDITIONAL — existing follow-up/evidence/history sub-slice is proven; the full P-G05 gate remains active because the explicit enhancement schemas are absent.
 NEXT ACTION (ONE PRECISE STEP): design the smallest additive/versioned P-G05 enhancement contract for meeting minutes, explicit authority/waiver records, action date-source/escalation metadata and immutable amendment snapshots; add decode/round-trip guards before any UI change.
 ```
+
+### P-G05 additive follow-up contract — conditional, gate remains active
+
+```text
+TIME / TIMEZONE: 2026-10-10 17:58 UTC / 2026-10-10 23:58 Asia/Dhaka
+GATE / OBJECTIVE: P-G05 — add a portable, legacy-safe data contract before exposing new follow-up controls in the UI
+BRANCH / BEFORE SHA / EVIDENCE SHA: feature/tna360-continuous / 9c5cca6 / cca87c2
+FILES CHANGED (EXACT): apps/ppm/core.js; apps/ppm/record-services.js; apps/ppm/tests/p-g05-followups.cjs; docs/ppm/06_EXECUTION_TRACKER.md (ledger recording follows in the next commit)
+FILES WATCHED/FROZEN: all 168 checkpoint IDs/status meanings; `CoverageEngine` and release decisions; existing action/approval/signature/photo/change-history owners; envelope schema 2 and V4/current import support; no UI, notification, backend or buyer-policy behavior changed
+PROVEN: Fresh and direct legacy records receive follow-up schema 1 defaults. Meeting minutes and attachment references, explicit exception/authority records, escalation metadata with an explicit date source, and up to ten full normalized non-recursive meeting snapshots survive saved-copy round-trip. Unknown follow-up versions, oversized/repeated references, invalid checkpoint/action links, duplicate exceptions, nested snapshots and missing/out-of-order version parents are rejected before activation. Exception status changes do not alter checkpoint coverage/readiness, and no notification-sent field is admitted.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check` for core/record-services/P-G05 PASS; P-G00 PASS (168 identities, V4/current migration); P-G02 home PASS; P-G03 PASS; P-G04 PASS; P-G05 PASS; planning PASS (16); update PASS (7 named checks); full regression PASS (persistence, four-language data preservation, recovery, portable evidence/signatures, all PDF modes, CSV safety, cross-tab/save failure, 390px mobile, offline reload, zero uncaught browser errors); `git diff --check` PASS. Browser tests used the previously recorded cached Playwright 1.64.0 + Chromium 1248 runtime; no dependency files changed.
+ROLLBACK: revert `cca87c2` and this ledger commit. Existing saved records need no cleanup because the new fields are additive and missing fields default safely.
+BLOCKERS / UNRESOLVED RISK: This contract alone does not provide user-facing minutes/authority controls, calculate action aging, upload attachments, protect failed attachment saves, create amendments, or enforce append-only snapshot/signature invalidation. Secure notifications/roles remain external and are not claimed. P-G05 stays CONDITIONAL and does not increase percentages.
+REVIEWER / VERDICT: CONDITIONAL — the additive/versioned contract and portability guard are proven; the full workflow and UI acceptance conditions remain open.
+NEXT ACTION (ONE PRECISE STEP): add a pure follow-up service for explicit aging/date-source calculation and controlled amendment creation that snapshots a finalized parent and invalidates copied approvals/signatures, with unit tests before UI wiring.
 ```
