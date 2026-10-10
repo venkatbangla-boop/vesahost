@@ -36,6 +36,10 @@ for (const lang of ['en', 'bn', 'hi', 'ta']) {
     assert(model.tasks.length === plan.tasks.length, `G07 ${lang} ${item.id} report model should include every activity.`);
     assert(model.labels.noFabrication && model.labels.shareFallback && model.labels.printFallback, `G07 ${lang} ${item.id} should include report fallback notes.`);
     assert(model.tasks.every(task => ['not-started','in-progress','blocked','submitted','approved','rejected','completed','waived','not-applicable'].includes(task.status)), `G07 ${lang} ${item.id} must preserve stable status IDs.`);
+    const jsonExport = JSON.stringify(model, null, 2);
+    assert(jsonExport.includes(item.id) && jsonExport.includes('Buyer Report') && jsonExport.includes('STYLE-RPT'), `G07 ${lang} ${item.id} JSON export should preserve report and order identity.`);
+    const workbook = XLSX.read(storage.exportReportWorkbook(model), { type: 'buffer' });
+    assert(workbook.SheetNames.includes('Report Summary') && workbook.SheetNames.includes('Order Summary') && workbook.SheetNames.includes('Report Activities') && workbook.SheetNames.includes('Report Notes'), `G07 ${lang} ${item.id} workbook export should include all required report sheets.`);
   }
   assert(seen.size === 12, `G07 ${lang} should expose every R01-R12 report exactly once.`);
 }
