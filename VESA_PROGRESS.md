@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **42%** |
-| **REMAINING** | **58%** |
+| **OVERALL VERIFIED** | **44%** |
+| **REMAINING** | **56%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
-| **PPM 360** | **36%** - accepted gates 4 / 11 |
+| **PPM 360** | **45%** - accepted gates 5 / 11 |
 | **AQL 360** | **23%** - accepted gates 3 / 13 |
 | **ONE VESA SHARED UX** | **30%** - accepted gates 3 / 10 |
-| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00 through P-G03 are accepted locally; P-G04 approvals/measurement/revision/decision explainability is the next active gate. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
-| Active gate | **PPM P-G04 - approvals, measurement, revision and decision explainability** |
-| Current subtask / subchecks | P-G03 `d3ff016` proves actual PPM profile/process relevance, N/A/PENDING meaning, 11 section guidance panels, five-step Quick Guide, 16 navigation chips, next-action controls, search/unreviewed/action/critical filters, buyer/market authority text and additive critical custom ACTION behavior while preserving all 168 identities. Next audit P-G04 GO/CONDITIONAL GO/HOLD, required approvals, POM measurement boundaries, controlled revision invalidation and blocker/action explainability. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. Full AQL 35-area/stage, device/restore/large-record/print-PDF/zoom/four-language/share review and live cross-app references remain open. |
-| Last ACCEPTED gate | **PPM P-G03 - PPM applicability, easy workflow, search and custom controls** (`d3ff016`; accepted locally, no deployment) |
-| Last tested commit SHA | `d3ff016` (PPM P-G03 workflow proof); PPM regression/planning/update/P-G00/P-G02, shared contract/matrix, all AQL A-G00/A-G02-A-G09/release, all TNA G01-G09 and `git diff --check` passed in the recorded workspace runtime |
-| Last update (UTC) | 2026-10-10 17:43:00 UTC |
+| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00 through P-G04 are accepted locally; P-G05 follow-ups/evidence/amendments is the next active gate. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
+| Active gate | **PPM P-G05 - follow-ups, meeting minutes, evidence and amendment enhancements** |
+| Current subtask / subchecks | P-G04 `979fec4` proves actual GO/HOLD and controlled CONDITIONAL GO combinations, required approval status/person/date/proof or explained exemption, inclusive asymmetric POM boundaries and invalid-value blocking, controlled revision diff/stale-signoff invalidation, finalized read-only forms and actionable blocker/checkpoint IDs. Next audit P-G05 action ownership/aging/escalation, minutes/waiver compatibility, evidence linkage/save protection and amendment history without inventing notifications or external authority. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. Full AQL 35-area/stage, device/restore/large-record/print-PDF/zoom/four-language/share review and live cross-app references remain open. |
+| Last ACCEPTED gate | **PPM P-G04 - approvals, measurement, revision and decision explainability** (`979fec4`; accepted locally, no deployment) |
+| Last tested commit SHA | `979fec4` (PPM P-G04 decision proof); PPM P-G03/planning/regression, shared contract/matrix, all AQL A-G00/A-G02-A-G09/release, all TNA G01-G09 and `git diff --check` passed in the recorded workspace runtime |
+| Last update (UTC) | 2026-10-10 17:49:14 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=4, a=3, s=3.
+Current counted gates: t=9, p=5, a=3, s=3.
 ```
 
 ## C. Application gate checklist
@@ -64,8 +64,8 @@ Current counted gates: t=9, p=4, a=3, s=3.
 | P-G01 | Common shared VESA shell | ACCEPTED | `582cd34`: one platform-owned Settings dialog backed by central VesaPrefs, mobile Menu Escape/focus return, route links, one sticky region, 390/1280 overflow and zero page errors across PPM/AQL/TNA; six rendered screenshots retained; PPM 168-checkpoint and sibling regressions pass. |
 | P-G02 | PPM Home/menu/navigation | ACCEPTED | `d1ad724`: explicit New/Continue/Open Saved/Practice/Open Saved Copy choices, repository-backed reopen, shared `Saving…`/`Unsaved changes`/`Saved on this device` mapping and home/editor/section-navigation geometry pass at 320/360/390/768/1280; PPM regression/planning/update and 168-baseline suites remain green |
 | P-G03 | Checkpoints, applicability, workflow | ACCEPTED | `d3ff016`: source fixture/browser proof for 168 identities, profile/process relevance, N/A/PENDING semantics, guidance, search/filter, next-action and additive critical custom ACTION behavior; PPM regression/planning/update remain green |
-| P-G04 | Approvals, measurements, revision, decisions | ACTIVE | Next safe gate: synthetic parity audit for GO/CONDITIONAL GO/HOLD, required approvals, POM boundaries, controlled revision invalidation and blocker/action explainability |
-| P-G05 | Actions, minutes, evidence, amendments | NOT STARTED | - |
+| P-G04 | Approvals, measurements, revision, decisions | ACCEPTED | `979fec4`: synthetic decision proof plus planning/browser suites for GO/HOLD, controlled CONDITIONAL GO, approval evidence/exemptions, POM boundaries, stale-signoff invalidation, finalized read-only forms and actionable blocker IDs |
+| P-G05 | Actions, minutes, evidence, amendments | ACTIVE | Next safe gate: audit action ownership/aging/escalation, minutes/waiver compatibility, evidence linkage/save protection and amendment history without inventing notifications or external authority |
 | P-G06 | Offline save/restore/update | NOT STARTED | - |
 | P-G07 | Reports, translations, accessible UX | NOT STARTED | - |
 | P-G08 | TNA/AQL reference integration | NOT STARTED | - |
@@ -170,7 +170,8 @@ Current counted gates: t=9, p=4, a=3, s=3.
 | 2026-10-10 | TNA G01 | ACCEPTED | f089480 app shell and route smoke verified. |
 | 2026-10-10 | TNA G00 | ACCEPTED | a220db9 repository audit and scope map committed. |
 | 2026-10-10 17:43:00 UTC | PPM P-G03 applicability/workflow completion | ACCEPTED LOCALLY | `d3ff016` adds the actual-source VM/browser proof for 168 identities, profile/process relevance, N/A/PENDING semantics, 11 section guidance panels, five-step Quick Guide, 16 navigation chips, next-action controls, search/unreviewed/action/critical filters, buyer/market authority text and additive critical custom ACTION behavior. PPM regression/planning/update/P-G00/P-G02 suites and `git diff --check` pass; no PPM runtime/domain or saved-record policy changed. |
+| 2026-10-10 17:49:14 UTC | PPM P-G04 approvals/decision completion | ACCEPTED LOCALLY | `979fec4` adds the actual-source synthetic proof for GO/HOLD, controlled CONDITIONAL GO, required approval evidence/exemption, inclusive asymmetric POM boundaries, invalid unit/value blocking, controlled revision diff/stale-signoff invalidation and actionable blocker IDs. PPM planning (16), regression, P-G03 and `git diff --check` pass; no PPM runtime/domain or saved-record policy changed. |
 
 ## F. NEXT ACTION
 
-Run the next safe P-G04 synthetic audit: preserve all 168 checkpoint IDs and decisions while proving GO/CONDITIONAL GO/HOLD parity, required approval evidence, POM measurement boundaries, controlled revision invalidation and blocker/action explainability. Keep A-G03's approved carton-randomization requirement/fixture and seeded evidence request explicit; after P-G04, continue PPM actions/minutes/evidence and extend A-G05 through loading/carry-forward/resubmission. Keep clean-checkout Playwright package provisioning, secure provider services, physical pilot and production authorization explicitly documented; do not deploy production.
+Run the next safe P-G05 audit: preserve all 168 checkpoint IDs and decisions while proving action ownership/aging/escalation, minutes/waiver compatibility, evidence linkage/save protection and amendment history. Keep A-G03's approved carton-randomization requirement/fixture and seeded evidence request explicit; after P-G05, continue PPM offline/reports/integration gates and extend A-G05 through loading/carry-forward/resubmission. Keep clean-checkout Playwright package provisioning, secure provider services, physical pilot and production authorization explicitly documented; do not deploy production.

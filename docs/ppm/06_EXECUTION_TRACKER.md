@@ -10,11 +10,11 @@
 | Specs | `apps/ppm/AGENTS.md` + `docs/ppm/01`–`06` |
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
-| Last accepted implementation gate | **P-G03 — PPM applicability, easy workflow, search and custom controls** (`d3ff016`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline, P-G01 shared shell, P-G02 Home/menu/navigation and P-G03 applicability/workflow/custom controls; P-G04 is next; no production deployment |
-| Current gate | `P-G04 — PPM approvals, measurement, revision and decision explainability` |
-| LAST COMPLETED ACTION | Added and passed the P-G03 source fixture/browser proof for profile/process relevance, N/A/PENDING closure, guidance, section navigation, search/filter, next-action controls and additive critical custom checkpoints; all PPM regression/planning/update suites remain green |
-| NEXT ACTION | Audit PPM GO/CONDITIONAL GO/HOLD parity, required approvals, POM measurement boundaries, controlled revision invalidation and blocker/action explainability without changing buyer-specific rules |
+| Last accepted implementation gate | **P-G04 — PPM approvals, measurement, revision and decision explainability** (`979fec4`; accepted locally, not deployed) |
+| Status | `accepted locally` for P-G00 baseline through P-G04 approvals/measurement/revision/decision explainability; P-G05 is next; no production deployment |
+| Current gate | `P-G05 — PPM follow-ups, meeting minutes, evidence and amendment enhancements` |
+| LAST COMPLETED ACTION | Added and passed the P-G04 synthetic decision proof for GO/HOLD, controlled CONDITIONAL GO, required approval evidence/exemption, asymmetric POM boundaries, stale-signoff invalidation and blocker/action explanations; the existing planning/browser regression suite remains green |
+| NEXT ACTION | Audit PPM action ownership/aging/escalation, meeting minutes/waiver compatibility, evidence linkage/save protection and amendment history without inventing notifications or external authority |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -48,11 +48,11 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] Buyer/market/manual authority text and status understood without technical jargon.
 
 ### P-G04 — Approvals, measurement, revision and decision explainability
-- [ ] Frozen GO/CONDITIONAL/HOLD parity passes for all synthetic cases.
-- [ ] Required approvals, excluded statuses, who/date/proof handled with no silent waiver.
-- [ ] POM boundaries, invalid data, unit, asymmetric tolerance tested and explained.
-- [ ] Controlled revision invalidates stale signoff; locked records safe.
-- [ ] Explain blocker/action/owner without inventing new buyer rules.
+- [x] Frozen GO/CONDITIONAL/HOLD parity passes for all synthetic cases.
+- [x] Required approvals, excluded statuses, who/date/proof handled with no silent waiver.
+- [x] POM boundaries, invalid data, unit, asymmetric tolerance tested and explained.
+- [x] Controlled revision invalidates stale signoff; locked records safe.
+- [x] Explain blocker/action/owner without inventing new buyer rules.
 
 ### P-G05 — Follow-ups, meeting minutes, evidence and amendment enhancements
 - [ ] Action ownership/aging/escalation and date-source rules.
@@ -273,5 +273,21 @@ ROLLBACK: revert `d3ff016` and this ledger-recording commit to remove only the P
 BLOCKERS / UNRESOLVED RISK: Clean-checkout Playwright package provisioning still needs an intentional manifest/setup; secure backend/role credentials, physical pilot and production authorization remain external blockers. This gate is local proof, not secure multi-user or production approval.
 REVIEWER / VERDICT: ACCEPTED locally — P-G03 is repeatably proven against actual source and browser behavior; no production deployment claim.
 NEXT ACTION (ONE PRECISE STEP): audit P-G04 GO/CONDITIONAL GO/HOLD parity, required approvals, POM measurement boundaries, controlled revision invalidation and blocker/action explainability with synthetic fixtures before changing runtime code.
+```
+
+### P-G04 approvals/decision completion — accepted locally, no production deployment
+
+```text
+TIME / TIMEZONE: 2026-10-10 17:49 UTC / 2026-10-10 23:49 Asia/Dhaka
+GATE / OBJECTIVE: P-G04 — prove frozen release decisions, explicit approval evidence, POM measurement boundaries, controlled revision invalidation and everyday blocker/action explanations against actual PPM owners
+BRANCH / BEFORE SHA / EVIDENCE SHA: feature/tna360-continuous / 1477237 / 979fec4
+FILES CHANGED (EXACT): apps/ppm/tests/p-g04-decisions.cjs; docs/ppm/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md (ledger-only updates follow in the recording commit)
+FILES WATCHED/FROZEN: `ValidationEngine`, `ApprovalRegister`, `MeasurementCheck`, `ChangeReviewEngine`, `PlanningService`, all 168 checkpoint identities and statuses, GO/CONDITIONAL GO/HOLD semantics, signatures, saved records/codecs, AQL/TNA/shared shell and buyer-specific rules; no runtime/domain migration changed
+IMPLEMENTED / PROVEN: The fixture composes actual source owners and proves complete records are GO-ready, HOLD remains recordable, a non-critical ACTION with owner/due/action/conditions is CONDITIONAL GO only, critical/open/unowned actions block release, required approvals need status/approver/date/reference or a recorded Not needed explanation, inclusive asymmetric tolerance boundaries work, blank/invalid/unit-mismatched values do not pass, a controlled BOM revision is visible in the diff and clears stale GO/signatures, and readiness exposes missing field plus checkpoint/action identifiers for next-step explanation. Existing planning/browser tests additionally prove read-only finalized forms and the rendered approval/measurement/change-review flows.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/ppm/tests/p-g04-decisions.cjs` PASS; `node apps/ppm/tests/p-g04-decisions.cjs` PASS; `node apps/ppm/tests/planning.cjs` PASS (16); `node apps/ppm/tests/regression.cjs` PASS (all named checks including reports, multilingual PDF, CSV formula defense, cross-tab guard, offline reload and no uncaught errors); `node apps/ppm/tests/p-g03-workflow.cjs` PASS; `git diff --check` PASS. Browser tests used cached Playwright 1.64.0 + Chromium 1248 through explicit NODE_PATH/CHROMIUM_PATH in disposable local contexts.
+ROLLBACK: revert `979fec4` and this ledger-recording commit to remove only the P-G04 fixture and acceptance documentation; no PPM runtime data migration or browser-store cleanup is required.
+BLOCKERS / UNRESOLVED RISK: Clean-checkout Playwright package provisioning still needs an intentional manifest/setup; secure backend/role credentials, physical pilot and production authorization remain external blockers. Local evidence does not prove cryptographic buyer authorization or secure multi-user release.
+REVIEWER / VERDICT: ACCEPTED locally — P-G04 is repeatably proven against actual domain/UI owners; no production deployment claim.
+NEXT ACTION (ONE PRECISE STEP): audit P-G05 action ownership/aging/escalation, meeting minutes/waiver compatibility, evidence linkage/save protection and amendment history without inventing notifications or external authority.
 ```
 ```
