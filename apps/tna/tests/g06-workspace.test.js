@@ -40,6 +40,11 @@ for (const fragment of [
   'Editable draft TNA activities',
   'data-edit-task',
   'Save activity edit',
+  'data-workspace-view',
+  'Timeline (Gantt)',
+  'Today / Next 7 Days',
+  'Critical Only',
+  'Table view keeps all calculated date and risk details in text form.',
 ]) {
   assert(bootstrap.includes(fragment), `G06 workspace UI missing: ${fragment}`);
 }
