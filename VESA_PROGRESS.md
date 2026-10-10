@@ -14,10 +14,10 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | **ONE VESA SHARED UX** | **0%** - accepted gates 0 / 10 |
 | Program stage | TNA in-progress checkpoint must be completed first, then shared VESA UI contract, then remaining TNA/PPM/AQL gates |
 | Active gate | **TNA G06 - Full workspaces, portfolio, Gantt, accessibility** |
-| Current subtask / subchecks | Continue G06: complete interactive owner/stage filtering, multi-PO/portfolio filtering proof, activity edit coverage, and final accessibility evidence matrix |
+| Current subtask / subchecks | Continue G06: reconcile remaining primary workspace views from spec 04, add final accessibility/menu evidence matrix, then decide G06 acceptance |
 | Last ACCEPTED gate | **TNA G05 - Local saving, backup, Excel import and migrations** |
-| Last tested commit SHA | f1b05fb |
-| Last update (UTC) | 2026-10-10 06:51:12 UTC |
+| Last tested commit SHA | 0e28d2c |
+| Last update (UTC) | 2026-10-10 06:58:15 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -123,6 +123,7 @@ Current counted gates: t=6, p=0, a=0, s=0.
 | 2026-10-10 06:29:54 UTC | TNA G05 | ACCEPTED | Completed visible Save/Open flows, checksum backup, quota/oversize/unsupported-schema safety, local `xlsx@0.18.5` preview/export, macro/formula defenses, Playwright save/reload/open and CSV preview smoke. |
 | 2026-10-10 06:37:00 UTC | TNA G06 | CONDITIONAL | First workspace slice added: portfolio panel, dashboard action metrics, owner/stage filters, Gantt preview and accessible timeline table. Node regressions and Playwright full-entry/mobile smoke passed; remaining G06 workspace sections/accessibility matrix still open. |
 | 2026-10-10 06:51:12 UTC | TNA G06 | CONDITIONAL | f1b05fb added readiness workspace panels for materials/commercial, approvals, production/capacity and shipment/readiness using existing TNA operations only. PASS: syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; git diff --check. Browser PASS via Playwright CLI: login as admin@vesa, create full-entry TNA with explicit start/ex-factory, readiness panels visible, keyboard Tab focus moved, 768px tablet, 512px zoom-equivalent and 390px mobile overflow=false, console errors=0. G06 remains open for interactive filter behavior, multi-PO portfolio proof and final accessibility matrix. |
+| 2026-10-10 06:58:15 UTC | TNA G06 | CONDITIONAL | 0e28d2c added real owner/stage filter interactions, local multi-PO portfolio proof and domain-backed activity edit controls. PASS: full syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: login as admin@vesa, save two local PO records, portfolio table showed both PO references, owner/stage filters and clear filters updated visible timeline, activity edit completed a task with actual date, keyboard focus moved, 390px overflow=false, console errors=0. G06 remains open for final spec-04 workspace reconciliation and accessibility/menu evidence matrix. |
 | 2026-10-10 | TNA G04 | ACCEPTED | 4d36b2c operational engines tested with g04-operations.test.js. |
 | 2026-10-10 | TNA G03 | ACCEPTED | 56e0856 scheduling engine tested with g03-scheduling.test.js. |
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
@@ -131,4 +132,4 @@ Current counted gates: t=6, p=0, a=0, s=0.
 
 ## F. NEXT ACTION
 
-Continue **TNA G06**: implement real owner/stage filtering behavior, multi-PO portfolio proof, activity edit coverage and the final accessibility evidence matrix. Do not deploy production.
+Continue **TNA G06**: reconcile remaining primary workspace views from `docs/tna/04_UX_LOCALIZATION_REPORTS.md`, add final accessibility/menu evidence matrix, then decide whether G06 can be accepted. Do not deploy production.
