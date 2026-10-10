@@ -14,10 +14,10 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | **ONE VESA SHARED UX** | **0%** - accepted gates 0 / 10 |
 | Program stage | TNA in-progress checkpoint must be completed first, then shared VESA UI contract, then remaining TNA/PPM/AQL gates |
 | Active gate | **TNA G06 - Full workspaces, portfolio, Gantt, accessibility** |
-| Current subtask / subchecks | Start G06: full workspaces, portfolio views, Gantt/timeline with accessible table alternative, filters and responsive/keyboard checks |
+| Current subtask / subchecks | Continue G06: remaining materials/commercial, approvals, production/capacity and shipment/readiness workspace sections plus keyboard/zoom/tablet/mobile checks |
 | Last ACCEPTED gate | **TNA G05 - Local saving, backup, Excel import and migrations** |
-| Last tested commit SHA | c6050d7 |
-| Last update (UTC) | 2026-10-10 06:29:54 UTC |
+| Last tested commit SHA | HEAD after partial G06 commit |
+| Last update (UTC) | 2026-10-10 06:37:00 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -121,6 +121,7 @@ Current counted gates: t=6, p=0, a=0, s=0.
 | 2026-10-10 06:09:46 UTC | Program continuity | CONDITIONAL | Imported continuity, PPM and AQL spec packages without overwriting newer TNA tracker; root AGENTS already matched incoming TNA instructions. Specs/dashboard commit pending tests. |
 | 2026-10-10 | TNA G05 | CONDITIONAL | bcb25a9 added local storage adapter and safety tests; visible Save/Open proof and XLSX dependency decision remain. |
 | 2026-10-10 06:29:54 UTC | TNA G05 | ACCEPTED | Completed visible Save/Open flows, checksum backup, quota/oversize/unsupported-schema safety, local `xlsx@0.18.5` preview/export, macro/formula defenses, Playwright save/reload/open and CSV preview smoke. |
+| 2026-10-10 06:37:00 UTC | TNA G06 | CONDITIONAL | First workspace slice added: portfolio panel, dashboard action metrics, owner/stage filters, Gantt preview and accessible timeline table. Node regressions and Playwright full-entry/mobile smoke passed; remaining G06 workspace sections/accessibility matrix still open. |
 | 2026-10-10 | TNA G04 | ACCEPTED | 4d36b2c operational engines tested with g04-operations.test.js. |
 | 2026-10-10 | TNA G03 | ACCEPTED | 56e0856 scheduling engine tested with g03-scheduling.test.js. |
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
@@ -129,4 +130,4 @@ Current counted gates: t=6, p=0, a=0, s=0.
 
 ## F. NEXT ACTION
 
-Continue **TNA G06**: full workspaces, portfolio, Gantt/timeline with accessible table alternative, action filters and responsive/keyboard checks. Do not deploy production.
+Continue **TNA G06**: add remaining materials/commercial, approvals, production/capacity and shipment/readiness workspace sections, then run keyboard/zoom/tablet/mobile checks. Do not deploy production.

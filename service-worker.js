@@ -1,4 +1,4 @@
-const CACHE='vesa-v49-tna-g05-xlsx';
+const CACHE='vesa-v50-tna-g06-workspace';
 const ASSETS=[
   './',
   './index.html',
