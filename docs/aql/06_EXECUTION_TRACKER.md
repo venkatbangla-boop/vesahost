@@ -359,7 +359,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```text
 TIME / TIMEZONE: 2026-10-10 21:15 Asia/Dhaka
 GATE / OBJECTIVE: A-G04 — cover incoming-stage absence, needle containment and metal challenge evidence
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b26e822 / uncommitted test-only patch
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b26e822 / f22f675
 FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FROZEN BUSINESS RULES: no `apps/aql/index.html` source, SamplingEngine cell, Ac/Re rule, saved record or shared/sibling file changed
 IMPLEMENTED: Added fixture cases for the required `needle`, `metal` and `equipment` field definitions; a failed metal challenge; incomplete needle containment/release; missing incoming-material register remaining pending; and a complete incoming-material stage reaching CONFORMED.
