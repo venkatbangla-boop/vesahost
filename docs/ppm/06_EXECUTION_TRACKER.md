@@ -159,3 +159,14 @@ BLOCKERS / UNRESOLVED RISK: missing resolvable Playwright Node dependency; commi
 REVIEWER / VERDICT (accepted|conditional|blocked|rejected|draft-only): blocked
 NEXT ACTION (ONE PRECISE STEP): make the existing PPM test dependency resolvable without changing repository behavior, rerun the 3 suites, then commit the exact 168-tuple and V4/V5 baseline fixture
 ```
+
+### P-G00 dependency probe
+
+```text
+TIME / TIMEZONE: 2026-10-10 19:49 Asia/Dhaka
+GATE / OBJECTIVE: P-G00 — attempt non-mutating Playwright dependency resolution
+COMMANDS + RESULT: `npm exec --yes --package=playwright -- node -e "require.resolve('playwright')"` — MODULE_NOT_FOUND; `npx --yes -p playwright node -e "require.resolve('playwright')"` — MODULE_NOT_FOUND
+FILES CHANGED: none; no package manifest, lockfile, node_modules or application file added
+VERDICT: BLOCKED — ENVIRONMENT DEPENDENCY remains. The existing PPM suites cannot be run until a resolvable Playwright Node dependency is intentionally provisioned.
+NEXT ACTION: provision/approve the test dependency in the workspace, then rerun regression.cjs, planning.cjs and update.cjs without altering PPM behavior.
+```
