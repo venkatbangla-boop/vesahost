@@ -88,6 +88,50 @@
     if(inspectionDecision.status!=='passed'&&shipped>0)errors.push('Shipment cannot be released without verified final inspection pass.');
     return {ok:errors.length===0,orderQty:Number(orderQty||0),plannedQty:planned,passedQty:passed,shippedQty:shipped,remainingQty:Math.max(0,Number(orderQty||0)-shipped),wholeOrderShipped:shipped>=Number(orderQty||0),errors};
   }
+  /*
+   * Purpose: reconcile split shipment lots against the ordered quantity and each
+   * lot's packed/passed/shipped evidence.
+   * Access: pure calculation; callers provide an immutable order/lots snapshot.
+   * Output: totals, PO allocation roll-up, warnings and blocking errors.
+   * Failure: missing/invalid quantities remain Needs Information; no shipment is
+   * auto-completed and no AQL/PPM decision is inferred.
+   */
+  function reconcileShipmentLots(orderQty,lots=[],options={}){
+    const ordered=Number(orderQty);
+    const errors=[],warnings=[],poTotals={};
+    if(!Number.isFinite(ordered)||ordered<0)errors.push('Ordered quantity must be a non-negative number.');
+    let planned=0,packed=0,passed=0,shipped=0;
+    for(const lot of lots){
+      const ref=lot.lotReference||lot.lotId||'Unnamed lot';
+      const values={plannedQty:Number(lot.plannedQty),packedQty:Number(lot.packedQty||0),passedQty:Number(lot.passedQty||0),shippedQty:Number(lot.shippedQty||0)};
+      if(!Number.isFinite(values.plannedQty)||values.plannedQty<0)errors.push(`${ref}: planned quantity is missing or invalid.`);
+      for(const key of ['packedQty','passedQty','shippedQty'])if(!Number.isFinite(values[key])||values[key]<0)errors.push(`${ref}: ${key} must be a non-negative number.`);
+      if(values.packedQty>values.plannedQty)errors.push(`${ref}: packed quantity exceeds planned quantity.`);
+      if(values.passedQty>values.packedQty)errors.push(`${ref}: passed quantity exceeds packed quantity.`);
+      if(values.shippedQty>values.passedQty)errors.push(`${ref}: shipped quantity exceeds passed quantity.`);
+      planned+=Number.isFinite(values.plannedQty)?values.plannedQty:0;
+      packed+=Number.isFinite(values.packedQty)?values.packedQty:0;
+      passed+=Number.isFinite(values.passedQty)?values.passedQty:0;
+      shipped+=Number.isFinite(values.shippedQty)?values.shippedQty:0;
+      const allocations=Array.isArray(lot.poAllocation)?lot.poAllocation:[];
+      const allocated=allocations.reduce((sum,item)=>sum+Number(item.qty||0),0);
+      if(allocations.length&&allocated!==values.plannedQty)errors.push(`${ref}: PO allocation must equal the lot planned quantity.`);
+      for(const item of allocations){
+        const po=String(item.poNumber||'Unassigned PO');
+        const qty=Number(item.qty||0);
+        if(!Number.isFinite(qty)||qty<0)errors.push(`${ref}: PO allocation for ${po} is invalid.`);
+        poTotals[po]=(poTotals[po]||0)+(Number.isFinite(qty)?qty:0);
+      }
+    }
+    if(Number.isFinite(ordered)&&planned>ordered)errors.push('Planned lot quantity exceeds the ordered quantity.');
+    if(Number.isFinite(ordered)&&shipped>ordered)errors.push('Shipped lot quantity exceeds the ordered quantity.');
+    const allocationTotal=Object.values(poTotals).reduce((sum,value)=>sum+value,0);
+    if(lots.length&&allocationTotal!==planned)errors.push('PO allocations do not reconcile to total planned lot quantity.');
+    if(!lots.length)warnings.push('No shipment lots entered; split shipment readiness remains Needs Information.');
+    if(!options.inspectionPassed&&shipped>0)errors.push('Shipment cannot be released without a verified final inspection pass.');
+    const remaining=Number.isFinite(ordered)?Math.max(0,ordered-shipped):null;
+    return {ok:errors.length===0,status:errors.length?'blocked':lots.length?'calculated':'needs-information',orderQty:Number.isFinite(ordered)?ordered:null,plannedQty:planned,packedQty:packed,passedQty:passed,shippedQty:shipped,remainingQty:remaining,unplannedQty:Number.isFinite(ordered)?Math.max(0,ordered-planned):null,wholeOrderPlanned:Number.isFinite(ordered)&&planned===ordered,wholeOrderShipped:Number.isFinite(ordered)&&shipped===ordered,poTotals,errors,warnings};
+  }
   function rollingForecast(history=[],forecast={}){
     if(!forecast.forecastDate||!forecast.sourceRevision)return {ok:false,error:'Forecast date and source revision are required.'};
     return {ok:true,history:[...history,{forecastDate:forecast.forecastDate,sourceRevision:forecast.sourceRevision,reason:forecast.reason||'',calculatedAt:forecast.calculatedAt||new Date().toISOString(),engineVersion:ENGINE_VERSION}]};
@@ -103,7 +147,7 @@
   function lotTimeline(lot={}){
     return {lotId:lot.lotId||null,requestedExFactory:lot.requestedExFactory||null,currentExFactory:lot.currentExFactory||null,forecastExFactory:lot.forecastExFactory||null,actualExFactory:lot.actualExFactory||null,ETD:lot.ETD||null,ETA:lot.ETA||null,bookingRef:lot.bookingRef||null,inspectionRef:lot.inspectionRef||null,status:lot.status||'open'};
   }
-  const api={ENGINE_VERSION,contractualLead,compareCommercial,approvalState,materialReadiness,verifiedRateDays,smvCapacity,validateOperationQuantity,checkSharedCapacity,shipmentSummary,rollingForecast,riskReasons,lotTimeline};
+  const api={ENGINE_VERSION,contractualLead,compareCommercial,approvalState,materialReadiness,verifiedRateDays,smvCapacity,validateOperationQuantity,checkSharedCapacity,shipmentSummary,reconcileShipmentLots,rollingForecast,riskReasons,lotTimeline};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaOperations=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

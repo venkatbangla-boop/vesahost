@@ -4,6 +4,7 @@ const root = path.resolve(__dirname, '..', '..', '..');
 globalThis.VesaTnaScheduling = require('../src/scheduling.js');
 globalThis.VesaTnaOperations = require('../src/operations.js');
 const domain = require('../src/domain.js');
+const operations = require('../src/operations.js');
 const scenarios = require('../src/scenarios.js');
 const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
@@ -42,8 +43,40 @@ const conflicts = scenarios.detectPortfolioCapacityConflicts([planA, planB]);
 assert(!conflicts.ok && conflicts.conflicts[0].overAllocatedBy === 1, 'G08 portfolio should expose shared line over-allocation without double-booking.');
 assert(conflicts.conflicts[0].orders.length === 2, 'G08 capacity conflict should preserve both order references.');
 
+const advancedPlan = JSON.parse(JSON.stringify(plan));
+advancedPlan.operations = [{ operationId: 'sew-advanced', datedCapacityEntries: [{ resourceId: 'line-1', date: '2026-10-20', allocatedLines: 2, availableLines: 3 }] }];
+const advancedBefore = JSON.stringify(advancedPlan);
+const advancedPreview = scenarios.previewScenario(advancedPlan, {
+  name: 'Alternate line and calendar',
+  durationAdjustments: [{ taskId: task.taskId, durationUnits: Math.max(0, task.durationUnits - 1), reason: 'Verified alternate route' }],
+  calendarChanges: [{ calendarId: 'default', holidays: ['2026-10-20'] }],
+  routeChanges: [{ taskId: task.taskId, ownerParty: 'alternate-sewing-line', calendarId: 'default', reason: 'Approved route review' }],
+  capacityChanges: [{ operationId: 'sew-advanced', resourceId: 'line-1', date: '2026-10-20', allocatedLines: 2, availableLines: 4 }]
+}, { actorId: 'admin@vesa', createdAt: '2026-10-10T07:45:00.000Z' });
+assert(advancedPreview.ok, 'G08 alternative calendar/route preview should succeed.');
+assert(JSON.stringify(advancedPlan) === advancedBefore, 'G08 alternative preview must not mutate operations or calendar.');
+assert(advancedPreview.previewPlan.calendars[0].holidays.includes('2026-10-20'), 'G08 scenario should carry an explicit holiday change.');
+assert(advancedPreview.previewPlan.operations[0].datedCapacityEntries[0].availableLines === 4, 'G08 scenario should compare entered resource capacity.');
+assert(advancedPreview.branch.forecastProvenance.inputRevision === advancedPlan.revision, 'G08 forecast provenance should identify the source revision.');
+
+const filtered = scenarios.portfolioSummary([planA, planB], { buyer: 'Buyer Scenario' });
+assert(filtered.accessibleOrderCount === 2 && filtered.conflictCount === 1, 'G08 portfolio summary should preserve filters and shared conflict count.');
+assert(filtered.orders[0].forecastProvenance.inputRevision === plan.revision, 'G08 portfolio rows should expose forecast provenance.');
+
+const split = operations.reconcileShipmentLots(1000, [
+  { lotReference: 'LOT-1', plannedQty: 600, packedQty: 600, passedQty: 600, shippedQty: 600, poAllocation: [{ poNumber: 'PO-SCN', qty: 600 }] },
+  { lotReference: 'LOT-2', plannedQty: 400, packedQty: 400, passedQty: 400, shippedQty: 0, poAllocation: [{ poNumber: 'PO-SCN', qty: 400 }] }
+], { inspectionPassed: true });
+assert(split.ok && split.remainingQty === 400 && !split.wholeOrderShipped, 'G08 split shipment should reconcile partial shipped quantity.');
+assert(split.poTotals['PO-SCN'] === 1000, 'G08 split shipment should reconcile PO allocation totals.');
+const badSplit = operations.reconcileShipmentLots(1000, [{ lotReference: 'LOT-BAD', plannedQty: 600, packedQty: 601, passedQty: 600, shippedQty: 0 }], { inspectionPassed: true });
+assert(!badSplit.ok && badSplit.errors.some(error => error.includes('packed quantity exceeds')), 'G08 split shipment should reject inconsistent lot quantities.');
+
 const index = read('apps/tna/index.html');
+const bootstrap = read('apps/tna/src/bootstrap.js');
 const worker = read('service-worker.js');
 assert(index.includes('./src/scenarios.js?v=0.8.0'), 'G08 scenarios script should be loaded by TNA route.');
+assert(bootstrap.includes('Compare a recovery option') && bootstrap.includes('data-apply-scenario'), 'G08 scenario comparison/apply UI should be visible in the plan workspace.');
+assert(bootstrap.includes('Portfolio & shared capacity') && bootstrap.includes('Split shipment reconciliation'), 'G08 advanced portfolio and split shipment views should be visible.');
 assert(worker.includes('./apps/tna/src/scenarios.js'), 'G08 scenarios script should be cached for local use.');
 console.log('TNA G08 scenario checks passed');
