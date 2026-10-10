@@ -1,4 +1,4 @@
-const CACHE='vesa-v56-tna-g07-report-excel';
+const CACHE='vesa-v57-tna-g07-print-report';
 const ASSETS=[
   './',
   './index.html',
