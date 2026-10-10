@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const contracts = require('../src/cloud-contracts.js');
+const storage = require('../src/storage.js');
 const { createRemoteApi } = require('../src/remote-api.js');
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const root = path.resolve(__dirname, '..', '..', '..');
@@ -45,6 +46,13 @@ assert(!contracts.validateAttachmentMetadata({ name: '../secret.pdf', mimeType: 
 const intent = contracts.createOfflineIntent(command.command, { intentId: 'INTENT-1', queuedAt: '2026-10-10T09:00:00.000Z' });
 assert(intent.ok && intent.intent.status === 'queued' && !Object.prototype.hasOwnProperty.call(intent.intent, 'accessToken'), 'G09 offline intent must be queued without tokens.');
 assert(!contracts.validateOfflineIntent({ ...intent.intent, tenantId: 'TENANT-2' }).ok, 'G09 offline intent tenant mismatch must fail closed.');
+const localStore = new Map();
+globalThis.localStorage = { getItem:key=>localStore.has(key)?localStore.get(key):null, setItem:(key,value)=>localStore.set(key,String(value)), removeItem:key=>localStore.delete(key) };
+const queued = storage.queueOfflineIntent(intent.intent, 'USER-1');
+assert(queued.status === 'queued' && storage.listOfflineIntents('USER-1').length === 1, 'G09 storage must durably list a queued intent per local user.');
+assert(storage.queueOfflineIntent(intent.intent, 'USER-1').intentId === 'INTENT-1', 'G09 repeated intent enqueue must be idempotent.');
+assert(storage.updateOfflineIntent('INTENT-1', 'conflict', 'USER-1', { serverRevision: 3 }).status === 'conflict', 'G09 queue must retain visible conflict status and metadata.');
+try { storage.queueOfflineIntent({ ...intent.intent, intentId: 'INTENT-2', accessToken: 'must-not-persist' }, 'USER-1'); throw new Error('G09 storage unexpectedly accepted a token-bearing intent.'); } catch (error) { assert(/token/i.test(error.message), 'G09 token-bearing intent rejection should be explicit.'); }
 
 (async()=>{
   let calls = 0;

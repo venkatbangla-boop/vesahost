@@ -365,6 +365,18 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 **G09 rollback:** revert the cloud-contract, adapter, script-cache and test commits; G08 local functionality and local-only wording remain available.
 
+### G09 pre-code file-level audit — local offline intent queue
+
+| Exact path | Responsibility, state & dependencies observed | In/out of scope | Risk / compatibility contract | Verification / rollback |
+|---|---|---|---|---|
+| `apps/tna/src/storage.js` | Owns bounded browser-local saved plans, autosave, backup codecs and undo/redo; no queued remote-intent store exists. | In scope: separate per-user bounded queue for validated cloud command envelopes with queued/sent/conflict/rejected status updates. | Never persist access tokens or private provider credentials; do not auto-send or mutate saved plans; preserve prior queue on quota failure. | G09 storage tests for enqueue/list/status, mismatch rejection, size bound and token exclusion; rollback by reverting storage/test patch. |
+| `apps/tna/index.html` | Loads storage before the newly added cloud modules, although local UI does not currently call the adapter. | In scope: load cloud contracts before storage so the queue can validate its envelope in browser and Node. | Preserve local save/reopen and offline route; no network side effect from module load. | Static script-order assertion plus full route smoke; rollback by reverting two script-order lines. |
+| `apps/tna/tests/g09-backend-contracts.test.js` | Covers pure contract queue creation but not durable browser queue behavior. | In scope: keep contract tests and add storage integration tests using synthetic intents only. | No live provider, account or buyer data; keep verdict conditional until server reconnection/conflict proof exists. | Run all TNA tests, AQL release contract, syntax and diff checks. |
+
+**G09 offline queue call flow:** validated command → `storage.queueOfflineIntent` → bounded per-user local queue → visible status/list API for a future sync coordinator. No automatic request or last-write-wins merge occurs.
+
+**G09 offline queue rollback:** revert the storage, script-order and test changes; cloud adapter remains disabled-by-default and local plan storage is unchanged.
+
 ### Accepted patch work log
 
 | Time | Group | Branch / SHA | Files changed | Tests / evidence | Verdict | Next action |
