@@ -16,7 +16,7 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | Active gate | **AQL A-G03 - Sampling/counting/lot-plan comprehensive audit** |
 | Current subtask / subchecks | A-G03 audit the frozen SamplingEngine codes, levels, lot brackets, sample sizes, Ac/Re/null cells and Q01-Q24 edge fixtures without rewriting policy tables; document reviewer/source/revision/timing evidence. A-G02 browser proof covered all five home actions, saved chooser, practice/copy isolation, portable import, six-step guide, 13 stages and 320–1440 responsive geometry. PPM P-G00 remains blocked by unresolved `playwright` dependency. |
 | Last ACCEPTED gate | **AQL A-G02 - Workflow parity and home/novice flow** (`9608914`; accepted locally, no deployment) |
-| Last tested commit SHA | `9608914` (A-G02 source and browser slice); A-G00 Q01-Q24/portable, AQL release, shared shell, TNA G01-G09, inline-script syntax and `git diff --check` passed |
+| Last tested commit SHA | `9d489a0` (A-G03 fixture-only sampling/provenance slice; A-G02 source/browser slice `9608914`); A-G00 Q01-Q24/portable, AQL release, shared shell, TNA G01-G09, inline-script syntax and `git diff --check` passed |
 | Last update (UTC) | 2026-10-10 14:43:00 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
@@ -79,7 +79,7 @@ Current counted gates: t=9, p=0, a=3, s=2.
 | A-G00 | Inspect large AQL source and freeze sampling baseline | ACCEPTED | `53e52e3`: `a-g00-baseline.cjs` Q01-Q24 and portable round-trip invariants pass; release contract plus prior browser baseline remain green; numeric source untouched |
 | A-G01 | Common shared VESA shell | ACCEPTED | `bb431ae` + `1592b75` + `ff1ae17` + `51d10ec`: authenticated 1280/390 matrix proves one sticky `.vesa-workspace` across AQL/PPM/TNA, six mobile menu items, focus return to Home, zero overflow and console errors/warnings 0; AQL/PPM/TNA File callbacks opened existing dialogs; PPM rendered 168 checkpoints. Root/protected route regression remained clean. No domain source changed. |
 | A-G02 | Audit workflow parity | ACCEPTED | `9608914`: source contract plus authenticated browser proof for five home actions, saved chooser, continuation, practice/copy isolation, portable import, six-step guide, 13-stage selector and 320–1440 responsive geometry; accepted locally, not deployed |
-| A-G03 | Sampling/statistical engine parity | CONDITIONAL | `pending A-G03 slice commit`: fixture-only frozen chart/boundary/null-cell/allocation/provenance contract passes; carton-randomization requirements/fixtures and browser field review remain open |
+| A-G03 | Sampling/statistical engine parity | CONDITIONAL | `9d489a0`: fixture-only frozen chart/boundary/null-cell/allocation/provenance contract passes; carton-randomization requirements/fixtures and browser field review remain open |
 | A-G04 | Defects, scoring, evidence | NOT STARTED | - |
 | A-G05 | AQL local save/restore/export | NOT STARTED | - |
 | A-G06 | Reports, translations, accessibility | NOT STARTED | - |

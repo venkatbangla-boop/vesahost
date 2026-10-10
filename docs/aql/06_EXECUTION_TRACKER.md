@@ -11,7 +11,7 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G01** — common VESA shell platform accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; browser reopen, PPM baseline dependency and provider services remain separate gates/blockers |
+| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance slice is conditional pending approved carton-randomization fixtures and browser field review; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
 | LAST COMPLETED ACTION | Accepted A-G02 locally after authenticated browser proof of the five home actions, saved chooser, latest continuation, practice isolation, editable copy, portable copy import, six-step guide, 13-stage selector and responsive geometry; sampling/Ac-Re/stage data remain frozen |
 | NEXT ACTION | Begin A-G03 comprehensive sampling/counting/lot-plan audit with the Q01-Q24 baseline frozen and no policy-table rewrite |
@@ -288,7 +288,7 @@ NEXT ACTION (ONE PRECISE STEP): begin A-G03 comprehensive sampling/counting/lot-
 ```text
 TIME / TIMEZONE: 2026-10-10 20:55 Asia/Dhaka
 GATE / OBJECTIVE: A-G03 — verify frozen sampling boundaries, unsupported cells, allocation guards and plan provenance without changing inspection policy
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 1f4193b / pending tracker commit
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 1f4193b / 9d489a0
 FILES CHANGED (EXACT): apps/aql/tests/a-g03-sampling.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FILES WATCHED/FROZEN: apps/aql/index.html SamplingEngine, AllocationEngine, ResultEngine, PlanApproval and all inspection records; no application/domain source or numeric table changed
 IMPLEMENTED: fixture-only VM contract extracts shipped pure owners and checks every frozen code/level/AQL/sample array, all 15 lot bands and transitions, null-cell unsupported behavior, largest-remainder allocation and oversize guards, required plan reviewer/source/edition/revision approval, deterministic signature/timestamp and visible timing/provenance fields. A-G00 Q01-Q11 remains the decision/counting evidence; no carton-randomization policy was invented.
