@@ -11,9 +11,9 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; PPM baseline dependency and provider services remain separate blockers |
+| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04 has a conditional stage-workflow fixture/browser slice; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Committed A-G03 visible Sampling authorisation entry-point patch after authenticated browser proof of the provenance dialog; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
+| LAST COMPLETED ACTION | Added and tested the fixture-only A-G04 stage workflow contract, then browser-verified a synthetic Fabric Roll Inspection workspace; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
 | NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
@@ -323,4 +323,19 @@ TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g03-sampling.cjs` PASS; `n
 BROWSER / DATA EVIDENCE: Authenticated Playwright CLI against disposable `http://127.0.0.1:4173` opened Samples 02 / PLAN for a synthetic local Final Random Inspection draft. The page showed visible `Sampling authorisation` actions in the heading and Insight/coverage card; the dialog showed lot/code/sample and Ac/Re/source columns plus Standard / buyer table name, Edition / revision, Approved table / instruction source, Project sampling criteria reference, Reviewer who verified each plan, verification checkbox and Approve plan. Console query returned Errors 0 / Warnings 0. No approval was submitted, no browser data was cleared, and the synthetic draft was not exported or released; browser and disposable server were closed.
 VERDICT: conditional — stable entry point and provenance fields are locally proven; approved carton-randomization requirements/fixtures remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture and test reproducible seed/date/operator/packing-list-version evidence without changing frozen SamplingEngine cells.
+```
+
+### A-G04 stage workflow contract and browser slice — conditional, domain source unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-10 21:06 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — prove the existing stage catalog and material/production workflow guards before any domain rewrite
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b0eaed5 / uncommitted test-only patch
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN: apps/aql/index.html, SamplingEngine, ResultEngine, stage records, saved data and all PPM/TNA/shared files; no application/domain source changed
+IMPLEMENTED: Added a fixture-only VM contract for the 13 StageCatalog entries, their main modules and pending-first checklists; incoming/roll/shade/lab/IPC/cutting/inline/endline/readiness/monitor field definitions; clean record evaluation; inline and endline reconciliation; fabric density, laboratory, readiness and production-balance guards; unsupported-stage rejection; and required stage workspace source markers.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
+BROWSER / DATA EVIDENCE: Authenticated Playwright CLI against disposable `http://127.0.0.1:4174` created a synthetic local Fabric Roll Inspection draft. The stage selector exposed all 13 stages; the rendered workspace showed `Fabric Roll Inspection`, the stage-native six-step navigation, five named fabric checkpoints, `Fabric rolls` stage register, pending decision reasons and an actionable `Complete stage criteria` next step. Console Errors 0 / Warnings 0. No record was exported, released or approved; browser and disposable server were closed without clearing data.
+VERDICT: conditional — the existing stage catalog, pure guards and one representative browser stage are proven locally; full A-G04 35-area evidence, every material/production stage and field-device review remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then extend A-G04 with the next representative stage-record fixture without changing frozen AQL tables.
 ```
