@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **39%** |
-| **REMAINING** | **61%** |
+| **OVERALL VERIFIED** | **42%** |
+| **REMAINING** | **58%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
-| **PPM 360** | **27%** - accepted gates 3 / 11 |
+| **PPM 360** | **36%** - accepted gates 4 / 11 |
 | **AQL 360** | **23%** - accepted gates 3 / 13 |
 | **ONE VESA SHARED UX** | **30%** - accepted gates 3 / 10 |
-| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00, P-G01 and P-G02 are accepted locally; P-G03 applicability/workflow/custom controls is the next active gate. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
-| Active gate | **PPM P-G03 - applicability, easy workflow, search and custom controls** |
-| Current subtask / subchecks | Audit PPM profile/process relevance, N/A handling, novice guidance, checkpoint search/filter and additive custom checkpoint critical/action behavior while preserving all 168 identities and GO/CONDITIONAL GO/HOLD rules. P-G02 `d1ad724` proves explicit New/Continue/Open Saved/Practice/Open Saved Copy home choices, repository-backed reopen, shared real save vocabulary and home/editor/section geometry at 320/360/390/768/1280; P-G01 proves central settings/focus and cross-app shell. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. Full AQL 35-area/stage, device/restore/large-record/print-PDF/zoom/four-language/share review and live cross-app references remain open. |
-| Last ACCEPTED gate | **PPM P-G02 - PPM Home/menu/navigation** (`d1ad724`; accepted locally, no deployment) |
-| Last tested commit SHA | `d1ad724` (PPM P-G02 home/save-state proof; prior P-G02 chooser `c3830fc`; shared shell `582cd34`; PPM P-G00 `e05da03`; AQL browser evidence `df62cec`); PPM regression/planning/update/P-G00/P-G02, shared contract/matrix, all AQL A-G00/A-G02-A-G09/release, all TNA G01-G09 and `git diff --check` passed in the recorded workspace runtime |
-| Last update (UTC) | 2026-10-10 17:32:56 UTC |
+| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00 through P-G03 are accepted locally; P-G04 approvals/measurement/revision/decision explainability is the next active gate. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
+| Active gate | **PPM P-G04 - approvals, measurement, revision and decision explainability** |
+| Current subtask / subchecks | P-G03 `d3ff016` proves actual PPM profile/process relevance, N/A/PENDING meaning, 11 section guidance panels, five-step Quick Guide, 16 navigation chips, next-action controls, search/unreviewed/action/critical filters, buyer/market authority text and additive critical custom ACTION behavior while preserving all 168 identities. Next audit P-G04 GO/CONDITIONAL GO/HOLD, required approvals, POM measurement boundaries, controlled revision invalidation and blocker/action explainability. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. Full AQL 35-area/stage, device/restore/large-record/print-PDF/zoom/four-language/share review and live cross-app references remain open. |
+| Last ACCEPTED gate | **PPM P-G03 - PPM applicability, easy workflow, search and custom controls** (`d3ff016`; accepted locally, no deployment) |
+| Last tested commit SHA | `d3ff016` (PPM P-G03 workflow proof); PPM regression/planning/update/P-G00/P-G02, shared contract/matrix, all AQL A-G00/A-G02-A-G09/release, all TNA G01-G09 and `git diff --check` passed in the recorded workspace runtime |
+| Last update (UTC) | 2026-10-10 17:43:00 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=3, a=3, s=3.
+Current counted gates: t=9, p=4, a=3, s=3.
 ```
 
 ## C. Application gate checklist
@@ -63,8 +63,8 @@ Current counted gates: t=9, p=3, a=3, s=3.
 | P-G00 | Baseline audit, 168 checkpoint parity | ACCEPTED | `e05da03`: fixture-only 168-tuple SHA/profile/process/V4-V5 baseline plus normal/abnormal planning cases; regression/planning/update suites pass with explicit cached Playwright 1.64.0 + Chromium 1248 runtime; baseline screenshots and 0 console errors/warnings retained |
 | P-G01 | Common shared VESA shell | ACCEPTED | `582cd34`: one platform-owned Settings dialog backed by central VesaPrefs, mobile Menu Escape/focus return, route links, one sticky region, 390/1280 overflow and zero page errors across PPM/AQL/TNA; six rendered screenshots retained; PPM 168-checkpoint and sibling regressions pass. |
 | P-G02 | PPM Home/menu/navigation | ACCEPTED | `d1ad724`: explicit New/Continue/Open Saved/Practice/Open Saved Copy choices, repository-backed reopen, shared `Saving…`/`Unsaved changes`/`Saved on this device` mapping and home/editor/section-navigation geometry pass at 320/360/390/768/1280; PPM regression/planning/update and 168-baseline suites remain green |
-| P-G03 | Checkpoints, applicability, workflow | ACTIVE | Next safe gate: preserve 168 identities while auditing profile/process relevance, N/A/search/filter, novice guidance and additive custom controls |
-| P-G04 | Approvals, measurements, revision, decisions | NOT STARTED | - |
+| P-G03 | Checkpoints, applicability, workflow | ACCEPTED | `d3ff016`: source fixture/browser proof for 168 identities, profile/process relevance, N/A/PENDING semantics, guidance, search/filter, next-action and additive critical custom ACTION behavior; PPM regression/planning/update remain green |
+| P-G04 | Approvals, measurements, revision, decisions | ACTIVE | Next safe gate: synthetic parity audit for GO/CONDITIONAL GO/HOLD, required approvals, POM boundaries, controlled revision invalidation and blocker/action explainability |
 | P-G05 | Actions, minutes, evidence, amendments | NOT STARTED | - |
 | P-G06 | Offline save/restore/update | NOT STARTED | - |
 | P-G07 | Reports, translations, accessible UX | NOT STARTED | - |
@@ -169,7 +169,8 @@ Current counted gates: t=9, p=3, a=3, s=3.
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
 | 2026-10-10 | TNA G01 | ACCEPTED | f089480 app shell and route smoke verified. |
 | 2026-10-10 | TNA G00 | ACCEPTED | a220db9 repository audit and scope map committed. |
+| 2026-10-10 17:43:00 UTC | PPM P-G03 applicability/workflow completion | ACCEPTED LOCALLY | `d3ff016` adds the actual-source VM/browser proof for 168 identities, profile/process relevance, N/A/PENDING semantics, 11 section guidance panels, five-step Quick Guide, 16 navigation chips, next-action controls, search/unreviewed/action/critical filters, buyer/market authority text and additive critical custom ACTION behavior. PPM regression/planning/update/P-G00/P-G02 suites and `git diff --check` pass; no PPM runtime/domain or saved-record policy changed. |
 
 ## F. NEXT ACTION
 
-Run the next safe P-G03 applicability/workflow audit: preserve all 168 checkpoint IDs and decisions while proving profile/process relevance, N/A handling, novice guidance, search/filter and additive custom checkpoint critical/action behavior with focused VM/browser tests. Keep A-G03's approved carton-randomization requirement/fixture and seeded evidence request explicit; after P-G03, continue PPM approvals/measurements and extend A-G05 through loading/carry-forward/resubmission. Keep clean-checkout Playwright package provisioning, secure provider services, physical pilot and production authorization explicitly documented; do not deploy production.
+Run the next safe P-G04 synthetic audit: preserve all 168 checkpoint IDs and decisions while proving GO/CONDITIONAL GO/HOLD parity, required approval evidence, POM measurement boundaries, controlled revision invalidation and blocker/action explainability. Keep A-G03's approved carton-randomization requirement/fixture and seeded evidence request explicit; after P-G04, continue PPM actions/minutes/evidence and extend A-G05 through loading/carry-forward/resubmission. Keep clean-checkout Playwright package provisioning, secure provider services, physical pilot and production authorization explicitly documented; do not deploy production.

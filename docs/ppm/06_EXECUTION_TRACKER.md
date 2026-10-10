@@ -10,11 +10,11 @@
 | Specs | `apps/ppm/AGENTS.md` + `docs/ppm/01`–`06` |
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
-| Last accepted implementation gate | **P-G02 — PPM Home/menu/navigation** (`d1ad724`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline, P-G01 shared shell and P-G02 Home/menu/navigation; P-G03 is next; no production deployment |
-| Current gate | `P-G03 — PPM applicability, easy workflow, search and custom controls` |
-| LAST COMPLETED ACTION | Completed the explicit Open Saved PPM home/File action, repository-backed reopen, shared saved-state synchronization and 320/360/390/768/1280 home/editor geometry/section-navigation proof; all PPM regression/planning/update suites remain green |
-| NEXT ACTION | Audit PPM applicability, easy workflow, search and custom controls while preserving every 168 checkpoint identity, profile/process relevance, N/A behavior and additive custom-checkpoint rules |
+| Last accepted implementation gate | **P-G03 — PPM applicability, easy workflow, search and custom controls** (`d3ff016`; accepted locally, not deployed) |
+| Status | `accepted locally` for P-G00 baseline, P-G01 shared shell, P-G02 Home/menu/navigation and P-G03 applicability/workflow/custom controls; P-G04 is next; no production deployment |
+| Current gate | `P-G04 — PPM approvals, measurement, revision and decision explainability` |
+| LAST COMPLETED ACTION | Added and passed the P-G03 source fixture/browser proof for profile/process relevance, N/A/PENDING closure, guidance, section navigation, search/filter, next-action controls and additive critical custom checkpoints; all PPM regression/planning/update suites remain green |
+| NEXT ACTION | Audit PPM GO/CONDITIONAL GO/HOLD parity, required approvals, POM measurement boundaries, controlled revision invalidation and blocker/action explainability without changing buyer-specific rules |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -43,9 +43,9 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] PPM domain and 168 checkpoint parity unchanged.
 
 ### P-G03 — PPM applicability, easy workflow, search and custom controls
-- [ ] Inline step-by-step help, next-action list, all relevant sections/filters available.
-- [ ] Product/process relevance, N/A, custom checkpoints/critical flags exactly preserved.
-- [ ] Buyer/market/manual authority text and status understood without technical jargon.
+- [x] Inline step-by-step help, next-action list, all relevant sections/filters available.
+- [x] Product/process relevance, N/A, custom checkpoints/critical flags exactly preserved.
+- [x] Buyer/market/manual authority text and status understood without technical jargon.
 
 ### P-G04 — Approvals, measurement, revision and decision explainability
 - [ ] Frozen GO/CONDITIONAL/HOLD parity passes for all synthetic cases.
@@ -257,5 +257,21 @@ EVIDENCE FOR FEATURE IDS: P-G02 accepted locally; P-G03-P-G10 remain unaccepted 
 BLOCKERS / UNRESOLVED RISK: Clean-checkout Playwright package provisioning, secure backend/role credentials, physical pilot and production authorization remain external/setup blockers; this is not secure multi-user proof.
 REVIEWER / VERDICT: accepted locally — P-G02 is proven in the local browser/runtime matrix with sibling PPM suites green; no production deployment claim.
 NEXT ACTION (ONE PRECISE STEP): audit P-G03 applicability, easy workflow, search and custom controls while preserving all 168 checkpoint identities and additive custom-checkpoint rules.
+```
+
+### P-G03 applicability/workflow completion — accepted locally, no production deployment
+
+```text
+TIME / TIMEZONE: 2026-10-10 17:43 UTC / 2026-10-10 23:43 Asia/Dhaka
+GATE / OBJECTIVE: P-G03 — prove PPM profile/process applicability, N/A/PENDING meaning, novice guidance, search/filter navigation and additive custom controls without changing the 168-checkpoint domain
+BRANCH / BEFORE SHA / EVIDENCE SHA: feature/tna360-continuous / f4fd405 / d3ff016
+FILES CHANGED (EXACT): apps/ppm/tests/p-g03-workflow.cjs; docs/ppm/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md (ledger-only updates follow in the recording commit)
+FILES WATCHED/FROZEN: apps/ppm/core.js relevance/coverage/action engines, all 168 checkpoint tuples and statuses, profile/process catalogue, GO/CONDITIONAL GO/HOLD decisions, saved records/codecs, AQL/TNA/shared shell and buyer-specific authority rules; no runtime/domain migration changed
+IMPLEMENTED / PROVEN: The fixture layer executes the actual RelevanceEngine, CoverageEngine and PpmRecordFactory and proves 168 fresh status identities, universal-only blank-profile scope, T-shirt/knit versus woven relevance, print-only process relevance, N/A closed-count semantics, PENDING open-count semantics, and one critical custom checkpoint added without replacing master items. The browser layer proves 11 section knowledge panels, five-step Quick Guide, buyer/market guidance text, all four status buttons, 16 navigation chips, next-unreviewed/open-actions controls, search, unreviewed/action/critical filters, and a custom ACTION checkpoint with a linked action.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/ppm/tests/p-g03-workflow.cjs` PASS; `node apps/ppm/tests/p-g03-workflow.cjs` PASS; `node apps/ppm/tests/p-g00-baseline.cjs` PASS (168 tuples, 19 profiles, 12 processes, V4/V5); `node apps/ppm/tests/regression.cjs` PASS (all named checks including multilingual PDF, CSV formula defense, cross-tab guard, offline reload and no uncaught errors); `node apps/ppm/tests/planning.cjs` PASS (16); `node apps/ppm/tests/update.cjs` PASS (7); `node apps/ppm/tests/p-g02-home.cjs` PASS; `git diff --check` PASS. Browser proof used cached Playwright 1.64.0 + Chromium 1248 through explicit NODE_PATH/CHROMIUM_PATH in a disposable local server/context.
+ROLLBACK: revert `d3ff016` and this ledger-recording commit to remove only the P-G03 fixture and acceptance documentation; no PPM runtime data migration or browser-store cleanup is required.
+BLOCKERS / UNRESOLVED RISK: Clean-checkout Playwright package provisioning still needs an intentional manifest/setup; secure backend/role credentials, physical pilot and production authorization remain external blockers. This gate is local proof, not secure multi-user or production approval.
+REVIEWER / VERDICT: ACCEPTED locally — P-G03 is repeatably proven against actual source and browser behavior; no production deployment claim.
+NEXT ACTION (ONE PRECISE STEP): audit P-G04 GO/CONDITIONAL GO/HOLD parity, required approvals, POM measurement boundaries, controlled revision invalidation and blocker/action explainability with synthetic fixtures before changing runtime code.
 ```
 ```
