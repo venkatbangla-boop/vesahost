@@ -81,7 +81,7 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 ```text
 TIME / TIMEZONE: 2026-10-10 21:24 Asia/Dhaka
 GATE / OBJECTIVE: A-G07 — prove portable project decoding, attachment integrity/identity handling and degraded-storage safety boundaries before any persistence rewrite
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / da8d124 / pending A-G07 tracker commit
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / da8d124 / f4b6a28
 FILES CHANGED (EXACT): apps/aql/tests/a-g07-portable-safety.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FILES WATCHED/FROZEN: apps/aql/index.html, LocalRepository, ProjectTransfer, service workers, saved data and all PPM/TNA/shared files; no application/persistence source changed
 IMPLEMENTED: Added fixture-only decode checks for valid/malformed embedded attachments and source guards for format/version/budget/duplicate/integrity/size validation, fresh imported identities, final-sign-off reset, quota/blocked-storage classification, cached-record preservation, explicit backup guidance and restore-as-new-draft behavior.
