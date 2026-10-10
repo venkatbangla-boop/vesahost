@@ -368,3 +368,118 @@ Review the affected sections and confirm before saving this point.|এই অব
 Reviewed point saved. Release and signatures still need approval.|পর্যালোচিত অবস্থা সংরক্ষিত। রিলিজ ও স্বাক্ষরের অনুমোদন এখনো প্রয়োজন।|समीक्षा की गई स्थिति सहेजी गई। रिलीज़ और हस्ताक्षर की स्वीकृति अभी चाहिए।|சரிபார்த்த point சேமிக்கப்பட்டது. Release மற்றும் signatures-க்கு இன்னும் approval தேவை.
 `;
 for(const row of PPM_PLANNING_SENTENCES.trim().split('\n')){const [key,bn,hi,ta]=row.split('|');PPM_SENTENCES[key]={bn,hi,ta}}
+
+/** P-G05 follow-up/amendment UI copy. User-entered minutes, references, names,
+ * reasons and stable decision/status identifiers are intentionally not translated. */
+const PPM_FOLLOWUP_SENTENCES=`
+Follow-Up|ফলো-আপ|फॉलो-अप|தொடர் நடவடிக்கை
+followUpHelp|ঐচ্ছিক মিটিং মিনিটস লিখুন এবং নামযুক্ত উৎস থেকে অ্যাকশনের সময় পর্যালোচনা করুন। এসকেলেশন রেকর্ড কোনো নোটিফিকেশন পাঠায় না বা ছাড় অনুমোদন করে না।|वैकल्पिक मीटिंग मिनट्स दर्ज करें और नामित स्रोत से कार्रवाई का समय जाँचें। एस्केलेशन रिकॉर्ड कोई सूचना नहीं भेजता और न छूट मंज़ूर करता है।|விருப்ப meeting minutes-ஐ பதிவு செய்து, பெயரிடப்பட்ட source மூலம் action timing-ஐ சரிபார்க்கவும். Escalation பதிவு notification அனுப்பாது அல்லது waiver-ஐ approve செய்யாது.
+Meeting minutes|মিটিং মিনিটস|मीटिंग मिनट्स|Meeting minutes
+Chaired by|সভাপতিত্ব করেছেন|अध्यक्षता की|தலைமை தாங்கியவர்
+Agenda|আলোচ্যসূচি|एजेंडा|நிகழ்ச்சி நிரல்
+Decisions|সিদ্ধান্ত|निर्णय|முடிவுகள்
+Notes|নোট|नोट्स|குறிப்புகள்
+SAVE MINUTES|মিনিটস সংরক্ষণ করুন|मिनट्स सहेजें|MINUTES சேமிக்கவும்
+Action aging and escalation|অ্যাকশনের বয়স ও এসকেলেশন|कार्रवाई की अवधि और एस्केलेशन|Action கால அளவு மற்றும் escalation
+Action|অ্যাকশন|कार्रवाई|Action
+No due date|শেষ তারিখ নেই|अंतिम तारीख नहीं|Due date இல்லை
+Review date|পর্যালোচনার তারিখ|समीक्षा तारीख|Review தேதி
+Day basis|দিন গণনার ভিত্তি|दिनों का आधार|நாள் கணக்கீட்டு முறை
+Calendar days|ক্যালেন্ডার দিন|कैलेंडर दिन|Calendar நாட்கள்
+Date source|তারিখের উৎস|तारीख का स्रोत|தேதி source
+Example: buyer comment log dated 11 Oct 2026|উদাহরণ: ১১ অক্টোবর ২০২৬ তারিখের বায়ার মন্তব্য লগ|उदाहरण: 11 अक्टूबर 2026 की बायर टिप्पणी लॉग|உதாரணம்: 11 அக்டோபர் 2026 buyer comment log
+REVIEW ACTION AGE|অ্যাকশনের সময় পর্যালোচনা করুন|कार्रवाई की अवधि जाँचें|ACTION காலத்தைச் சரிபார்க்கவும்
+Choose an action, review date and named source.|একটি অ্যাকশন, পর্যালোচনার তারিখ ও নামযুক্ত উৎস বেছে নিন।|एक कार्रवाई, समीक्षा तारीख और नामित स्रोत चुनें।|ஒரு action, review தேதி மற்றும் பெயரிடப்பட்ட source-ஐத் தேர்ந்தெடுக்கவும்.
+Escalation level|এসকেলেশন স্তর|एस्केलेशन स्तर|Escalation நிலை
+Escalation owner|এসকেলেশনের দায়িত্বপ্রাপ্ত ব্যক্তি|एस्केलेशन ज़िम्मेदार|Escalation owner
+Recorded time|রেকর্ডের সময়|दर्ज समय|பதிவு செய்த நேரம்
+Next review date|পরবর্তী পর্যালোচনার তারিখ|अगली समीक्षा तारीख|அடுத்த review தேதி
+Reason|কারণ|कारण|காரணம்
+RECORD ESCALATION|এসকেলেশন রেকর্ড করুন|एस्केलेशन दर्ज करें|ESCALATION பதிவு செய்யவும்
+No follow-up actions exist yet. Mark a checkpoint ACTION and complete its owner, due date and corrective action first.|এখনো কোনো ফলো-আপ অ্যাকশন নেই। আগে একটি চেকপয়েন্ট ACTION করুন এবং দায়িত্বপ্রাপ্ত ব্যক্তি, শেষ তারিখ ও সংশোধনের কাজ পূরণ করুন।|अभी कोई फॉलो-अप कार्रवाई नहीं है। पहले किसी चेकपॉइंट को ACTION करें और ज़िम्मेदार, अंतिम तारीख व सुधार कार्य पूरा करें।|Follow-up actions இன்னும் இல்லை. முதலில் ஒரு checkpoint-ஐ ACTION எனக் குறித்து owner, due date, corrective action-ஐ நிரப்பவும்.
+Recorded escalations|রেকর্ড করা এসকেলেশন|दर्ज एस्केलेशन|பதிவு செய்யப்பட்ட escalations
+Referenced action|উল্লেখিত অ্যাকশন|संदर्भित कार्रवाई|குறிப்பிடப்பட்ட action
+Time not entered|সময় লেখা হয়নি|समय दर्ज नहीं|நேரம் உள்ளிடப்படவில்லை
+Date source:|তারিখের উৎস:|तारीख स्रोत:|தேதி source:
+Next review:|পরবর্তী পর্যালোচনা:|अगली समीक्षा:|அடுத்த review:
+Not entered|লেখা হয়নি|दर्ज नहीं|உள்ளிடப்படவில்லை
+Authority / exception evidence|কর্তৃপক্ষ / ব্যতিক্রমের প্রমাণ|प्राधिकरण / अपवाद प्रमाण|Authority / exception ஆதாரம்
+This records supplied authority evidence only. It does not approve a waiver, change a checkpoint, or release production.|এটি শুধু দেওয়া কর্তৃপক্ষের প্রমাণ রেকর্ড করে। এটি কোনো ছাড় অনুমোদন, চেকপয়েন্ট পরিবর্তন বা উৎপাদন রিলিজ করে না।|यह केवल दिए गए प्राधिकरण प्रमाण को दर्ज करता है। यह छूट मंज़ूर नहीं करता, चेकपॉइंट नहीं बदलता और उत्पादन रिलीज़ नहीं करता।|இது வழங்கப்பட்ட authority evidence-ஐ மட்டும் பதிவு செய்கிறது. இது waiver-ஐ approve செய்யாது, checkpoint-ஐ மாற்றாது அல்லது production-ஐ release செய்யாது.
+Checkpoint|চেকপয়েন্ট|चेकपॉइंट|Checkpoint
+Buyer policy / source|বায়ার নীতি / উৎস|बायर नीति / स्रोत|Buyer policy / source
+Accountable party|দায়িত্বশীল পক্ষ|उत्तरदायी पक्ष|பொறுப்பான தரப்பு
+Authorized by|অনুমোদনকারী|अधिकृत करने वाला|அங்கீகரித்தவர்
+Authority type|কর্তৃত্বের ধরন|प्राधिकरण प्रकार|Authority வகை
+Example: buyer written authority|উদাহরণ: বায়ারের লিখিত অনুমতি|उदाहरण: बायर की लिखित अनुमति|உதாரணம்: buyer written authority
+Approval date|অনুমোদনের তারিখ|अनुमोदन तारीख|Approval தேதி
+Permitted until (optional)|অনুমতি কার্যকর থাকা পর্যন্ত (ঐচ্ছিক)|अनुमति की अंतिम तारीख (वैकल्पिक)|அனுமதி முடியும் தேதி (விருப்பம்)
+Status|স্ট্যাটাস|स्थिति|Status
+Scope|পরিধি|दायरा|Scope
+Evidence reference|প্রমাণের রেফারেন্স|प्रमाण संदर्भ|ஆதார reference
+RECORD AUTHORITY EVIDENCE|কর্তৃপক্ষের প্রমাণ রেকর্ড করুন|प्राधिकरण प्रमाण दर्ज करें|AUTHORITY EVIDENCE பதிவு செய்யவும்
+Policy/source:|নীতি/উৎস:|नीति/स्रोत:|Policy/source:
+Accountable:|দায়িত্বশীল:|उत्तरदायी:|பொறுப்பு:
+Evidence:|প্রমাণ:|प्रमाण:|ஆதாரம்:
+Until|পর্যন্ত|तक|வரை
+No authority evidence records yet.|এখনো কর্তৃপক্ষের প্রমাণ রেকর্ড নেই।|अभी कोई प्राधिकरण प्रमाण रिकॉर्ड नहीं है।|Authority evidence பதிவுகள் இன்னும் இல்லை.
+Meeting attachment references|মিটিং সংযুক্তির রেফারেন্স|मीटिंग संलग्नक संदर्भ|Meeting attachment references
+Enter a filename, approved document ID, or secure-location reference. This records a reference only; no file is uploaded.|ফাইলের নাম, অনুমোদিত নথি ID বা নিরাপদ অবস্থানের রেফারেন্স লিখুন। এখানে শুধু রেফারেন্স রেকর্ড হয়; কোনো ফাইল আপলোড হয় না।|फ़ाइल नाम, स्वीकृत दस्तावेज़ ID या सुरक्षित स्थान संदर्भ दर्ज करें। केवल संदर्भ दर्ज होगा; कोई फ़ाइल अपलोड नहीं होगी।|Filename, approved document ID அல்லது secure-location reference-ஐ உள்ளிடவும். Reference மட்டும் பதிவு செய்யப்படும்; file upload செய்யப்படாது.
+Attachment reference|সংযুক্তির রেফারেন্স|संलग्नक संदर्भ|Attachment reference
+Example: approved-minutes-R2.pdf or DOC-PPM-204|উদাহরণ: approved-minutes-R2.pdf বা DOC-PPM-204|उदाहरण: approved-minutes-R2.pdf या DOC-PPM-204|உதாரணம்: approved-minutes-R2.pdf அல்லது DOC-PPM-204
+ADD REFERENCE|রেফারেন্স যোগ করুন|संदर्भ जोड़ें|REFERENCE சேர்க்கவும்
+REMOVE REFERENCE|রেফারেন্স সরান|संदर्भ हटाएँ|REFERENCE அகற்றவும்
+No meeting attachment references yet.|এখনো মিটিং সংযুক্তির রেফারেন্স নেই।|अभी कोई मीटिंग संलग्नक संदर्भ नहीं है।|Meeting attachment references இன்னும் இல்லை.
+Overdue|বিলম্বিত|विलंबित|தாமதம்
+Due today|আজ শেষ তারিখ|आज अंतिम तारीख|இன்று due
+Upcoming|সামনে|आगामी|வரவுள்ளது
+calendar days overdue|ক্যালেন্ডার দিন বিলম্বিত|कैलेंडर दिन विलंबित|calendar நாட்கள் தாமதம்
+calendar days remaining|ক্যালেন্ডার দিন বাকি|कैलेंडर दिन शेष|calendar நாட்கள் மீதம்
+calendar days from due date|শেষ তারিখ থেকে ক্যালেন্ডার দিন|अंतिम तारीख से कैलेंडर दिन|due date-இலிருந்து calendar நாட்கள்
+Source:|উৎস:|स्रोत:|Source:
+Choose a valid follow-up date.|ফলো-আপের সঠিক তারিখ বেছে নিন।|फॉलो-अप की सही तारीख चुनें।|சரியான follow-up தேதியைத் தேர்ந்தெடுக்கவும்.
+Name the calendar source used for action aging.|অ্যাকশনের সময় গণনায় ব্যবহৃত ক্যালেন্ডার উৎসের নাম লিখুন।|कार्रवाई अवधि के लिए उपयोग किए कैलेंडर स्रोत का नाम दें।|Action கால கணக்கீட்டிற்கு பயன்படுத்திய calendar source-ஐ குறிப்பிடவும்.
+Choose calendar days or working days for action aging.|অ্যাকশনের সময় গণনায় ক্যালেন্ডার দিন বা কর্মদিবস বেছে নিন।|कार्रवाई अवधि के लिए कैलेंडर या कार्य दिवस चुनें।|Action காலத்திற்கு calendar days அல்லது working days தேர்ந்தெடுக்கவும்.
+Meeting minutes saved on this device.|মিটিং মিনিটস এই ডিভাইসে সংরক্ষিত হয়েছে।|मीटिंग मिनट्स इस डिवाइस पर सहेजे गए।|Meeting minutes இந்தச் சாதனத்தில் சேமிக்கப்பட்டது.
+Choose a follow-up action.|একটি ফলো-আপ অ্যাকশন বেছে নিন।|एक फॉलो-अप कार्रवाई चुनें।|ஒரு follow-up action-ஐத் தேர்ந்தெடுக்கவும்.
+Maximum 300 escalation records per meeting.|প্রতি মিটিংয়ে সর্বোচ্চ ৩০০টি এসকেলেশন রেকর্ড রাখা যাবে।|प्रति मीटिंग अधिकतम 300 एस्केलेशन रिकॉर्ड रखे जा सकते हैं।|ஒரு meeting-க்கு அதிகபட்சம் 300 escalation பதிவுகள்.
+Complete the escalation level, owner, reason, recorded time and next review date.|এসকেলেশন স্তর, দায়িত্বপ্রাপ্ত ব্যক্তি, কারণ, রেকর্ডের সময় ও পরবর্তী পর্যালোচনার তারিখ পূরণ করুন।|एस्केलेशन स्तर, ज़िम्मेदार, कारण, दर्ज समय और अगली समीक्षा तारीख पूरी करें।|Escalation நிலை, owner, காரணம், பதிவு நேரம் மற்றும் அடுத்த review தேதியை நிரப்பவும்.
+Choose a valid recorded time.|রেকর্ডের সঠিক সময় বেছে নিন।|सही दर्ज समय चुनें।|சரியான பதிவு நேரத்தைத் தேர்ந்தெடுக்கவும்.
+Escalation record saved. No notification was sent.|এসকেলেশন রেকর্ড সংরক্ষিত হয়েছে। কোনো নোটিফিকেশন পাঠানো হয়নি।|एस्केलेशन रिकॉर्ड सहेजा गया। कोई सूचना नहीं भेजी गई।|Escalation பதிவு சேமிக்கப்பட்டது. Notification அனுப்பப்படவில்லை.
+Maximum 100 authority records per meeting.|প্রতি মিটিংয়ে সর্বোচ্চ ১০০টি কর্তৃপক্ষ রেকর্ড রাখা যাবে।|प्रति मीटिंग अधिकतम 100 प्राधिकरण रिकॉर्ड रखे जा सकते हैं।|ஒரு meeting-க்கு அதிகபட்சம் 100 authority பதிவுகள்.
+Complete the checkpoint, policy source, scope, accountable party, authorizer, authority type, approval date and evidence reference.|চেকপয়েন্ট, নীতির উৎস, পরিধি, দায়িত্বশীল পক্ষ, অনুমোদনকারী, কর্তৃত্বের ধরন, অনুমোদনের তারিখ ও প্রমাণের রেফারেন্স পূরণ করুন।|चेकपॉइंट, नीति स्रोत, दायरा, उत्तरदायी पक्ष, अधिकृत करने वाला, प्राधिकरण प्रकार, अनुमोदन तारीख और प्रमाण संदर्भ पूरा करें।|Checkpoint, policy source, scope, பொறுப்பான தரப்பு, authorizer, authority வகை, approval தேதி மற்றும் evidence reference-ஐ நிரப்பவும்.
+Authority evidence recorded. Checkpoint and release status are unchanged.|কর্তৃপক্ষের প্রমাণ রেকর্ড হয়েছে। চেকপয়েন্ট ও রিলিজ স্ট্যাটাস অপরিবর্তিত।|प्राधिकरण प्रमाण दर्ज हुआ। चेकपॉइंट और रिलीज़ स्थिति नहीं बदली।|Authority evidence பதிவு செய்யப்பட்டது. Checkpoint மற்றும் release status மாறவில்லை.
+Enter an attachment reference.|একটি সংযুক্তির রেফারেন্স লিখুন।|संलग्नक संदर्भ दर्ज करें।|Attachment reference-ஐ உள்ளிடவும்.
+Keep the attachment reference within 1,000 characters.|সংযুক্তির রেফারেন্স ১,০০০ অক্ষরের মধ্যে রাখুন।|संलग्नक संदर्भ 1,000 अक्षरों के भीतर रखें।|Attachment reference-ஐ 1,000 எழுத்துகளுக்குள் வைத்திருக்கவும்.
+Maximum 30 attachment references per meeting.|প্রতি মিটিংয়ে সর্বোচ্চ ৩০টি সংযুক্তির রেফারেন্স রাখা যাবে।|प्रति मीटिंग अधिकतम 30 संलग्नक संदर्भ रखे जा सकते हैं।|ஒரு meeting-க்கு அதிகபட்சம் 30 attachment references.
+This attachment reference is already recorded.|এই সংযুক্তির রেফারেন্স আগেই রেকর্ড করা হয়েছে।|यह संलग्नक संदर्भ पहले से दर्ज है।|இந்த attachment reference ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது.
+Attachment reference saved on this device.|সংযুক্তির রেফারেন্স এই ডিভাইসে সংরক্ষিত হয়েছে।|संलग्नक संदर्भ इस डिवाइस पर सहेजा गया।|Attachment reference இந்தச் சாதனத்தில் சேமிக்கப்பட்டது.
+Attachment reference removed and saved on this device.|সংযুক্তির রেফারেন্স সরিয়ে এই ডিভাইসে সংরক্ষিত হয়েছে।|संलग्नक संदर्भ हटाकर इस डिवाइस पर सहेजा गया।|Attachment reference அகற்றப்பட்டு இந்தச் சாதனத்தில் சேமிக்கப்பட்டது.
+Saving attachment references…|সংযুক্তির রেফারেন্স সংরক্ষণ হচ্ছে…|संलग्नक संदर्भ सहेजे जा रहे हैं…|Attachment references சேமிக்கப்படுகிறது…
+Could not save — download a saved copy. The reference remains open in this meeting.|সংরক্ষণ করা যায়নি — একটি কপি ডাউনলোড করুন। রেফারেন্সটি এই খোলা মিটিংয়ে আছে।|सहेजा नहीं जा सका — एक कॉपी डाउनलोड करें। संदर्भ इस खुली मीटिंग में मौजूद है।|சேமிக்க முடியவில்லை — saved copy-ஐ பதிவிறக்கவும். Reference இந்தத் திறந்த meeting-ல் உள்ளது.
+Amend / Version History|সংশোধন / সংস্করণ ইতিহাস|संशोधन / संस्करण इतिहास|திருத்தம் / version history
+Controlled Amendment / Version History|নিয়ন্ত্রিত সংশোধন / সংস্করণ ইতিহাস|नियंत्रित संशोधन / संस्करण इतिहास|கட்டுப்படுத்தப்பட்ட திருத்தம் / version history
+Not decided|সিদ্ধান্ত হয়নি|निर्णय नहीं हुआ|முடிவு செய்யப்படவில்லை
+Based on the preceding finalized version|আগের চূড়ান্ত সংস্করণের ভিত্তিতে|पिछले अंतिम संस्करण पर आधारित|முந்தைய finalized version அடிப்படையில்
+First controlled amendment|প্রথম নিয়ন্ত্রিত সংশোধন|पहला नियंत्रित संशोधन|முதல் கட்டுப்படுத்தப்பட்ட திருத்தம்
+approval requires fresh evidence|অনুমোদনে নতুন প্রমাণ প্রয়োজন|अनुमोदन के लिए नया प्रमाण चाहिए|approval-க்கு புதிய ஆதாரம் தேவை
+approvals require fresh evidence|অনুমোদনগুলোতে নতুন প্রমাণ প্রয়োজন|अनुमोदनों के लिए नया प्रमाण चाहिए|approvals-க்கு புதிய ஆதாரம் தேவை
+Prior finalized version|আগের চূড়ান্ত সংস্করণ|पिछला अंतिम संस्करण|முந்தைய finalized version
+Recorded decision:|রেকর্ড করা সিদ্ধান্ত:|दर्ज निर्णय:|பதிவு செய்யப்பட்ட முடிவு:
+No controlled amendments have been created.|কোনো নিয়ন্ত্রিত সংশোধন তৈরি হয়নি।|कोई नियंत्रित संशोधन नहीं बनाया गया है।|கட்டுப்படுத்தப்பட்ட திருத்தம் எதுவும் உருவாக்கப்படவில்லை.
+Finalize the current meeting before creating another controlled amendment. Existing version history remains available below.|আরেকটি নিয়ন্ত্রিত সংশোধন তৈরির আগে বর্তমান মিটিং চূড়ান্ত করুন। আগের সংস্করণের ইতিহাস নিচে থাকবে।|दूसरा नियंत्रित संशोधन बनाने से पहले वर्तमान मीटिंग अंतिम करें। मौजूदा संस्करण इतिहास नीचे उपलब्ध रहेगा।|மற்றொரு கட்டுப்படுத்தப்பட்ட திருத்தத்தை உருவாக்கும் முன் தற்போதைய meeting-ஐ finalize செய்யவும். Version history கீழே இருக்கும்.
+This meeting has reached the local ten-version limit. Download a saved copy before starting a separately controlled record.|এই মিটিং স্থানীয় দশ-সংস্করণের সীমায় পৌঁছেছে। আলাদা নিয়ন্ত্রিত রেকর্ড শুরুর আগে একটি কপি ডাউনলোড করুন।|यह मीटिंग स्थानीय दस-संस्करण सीमा तक पहुँच गई है। अलग नियंत्रित रिकॉर्ड शुरू करने से पहले कॉपी डाउनलोड करें।|இந்த meeting உள்ளூர் பத்து-version வரம்பை எட்டியுள்ளது. தனி கட்டுப்படுத்தப்பட்ட record தொடங்கும் முன் saved copy-ஐ பதிவிறக்கவும்.
+This creates an editable draft from the finalized meeting. The prior decision, signatures and approval evidence remain in a read-only snapshot; the new draft requires fresh review.|এটি চূড়ান্ত মিটিং থেকে সম্পাদনাযোগ্য খসড়া তৈরি করে। আগের সিদ্ধান্ত, স্বাক্ষর ও অনুমোদনের প্রমাণ শুধু-পাঠযোগ্য স্ন্যাপশটে থাকে; নতুন খসড়া নতুন করে পর্যালোচনা করতে হবে।|यह अंतिम मीटिंग से संपादन योग्य ड्राफ्ट बनाता है। पिछला निर्णय, हस्ताक्षर और अनुमोदन प्रमाण केवल-पढ़ने योग्य स्नैपशॉट में रहते हैं; नए ड्राफ्ट की नई समीक्षा आवश्यक है।|இது finalized meeting-லிருந்து editable draft உருவாக்கும். முந்தைய முடிவு, signatures மற்றும் approval evidence read-only snapshot-ல் இருக்கும்; புதிய draft-க்கு புதிய review தேவை.
+Reason for amendment|সংশোধনের কারণ|संशोधन का कारण|திருத்தக் காரணம்
+Amendment time|সংশোধনের সময়|संशोधन समय|திருத்த நேரம்
+I understand the finalized parent stays in version history and the new draft clears release, signatures and approval proof.|চূড়ান্ত মূল রেকর্ড সংস্করণ ইতিহাসে থাকবে এবং নতুন খসড়ায় রিলিজ, স্বাক্ষর ও অনুমোদনের প্রমাণ মুছে যাবে—আমি তা বুঝেছি।|मैं समझता/समझती हूँ कि अंतिम मूल रिकॉर्ड संस्करण इतिहास में रहेगा और नए ड्राफ्ट से रिलीज़, हस्ताक्षर व अनुमोदन प्रमाण हटेंगे।|Finalized parent version history-ல் இருக்கும்; புதிய draft release, signatures மற்றும் approval proof-ஐ அழிக்கும் என்பதை புரிந்துகொண்டேன்.
+CREATE CONTROLLED AMENDMENT|নিয়ন্ত্রিত সংশোধন তৈরি করুন|नियंत्रित संशोधन बनाएँ|கட்டுப்படுத்தப்பட்ட திருத்தம் உருவாக்கவும்
+Prior finalized meetings|আগের চূড়ান্ত মিটিং|पिछली अंतिम मीटिंग|முந்தைய finalized meetings
+Finalize the meeting before creating an amendment.|সংশোধন তৈরির আগে মিটিং চূড়ান্ত করুন।|संशोधन बनाने से पहले मीटिंग अंतिम करें।|திருத்தம் உருவாக்கும் முன் meeting-ஐ finalize செய்யவும்.
+This meeting has reached the local version-history limit.|এই মিটিং স্থানীয় সংস্করণ-ইতিহাসের সীমায় পৌঁছেছে।|यह मीटिंग स्थानीय संस्करण-इतिहास सीमा तक पहुँच गई है।|இந்த meeting உள்ளூர் version-history வரம்பை எட்டியுள்ளது.
+Explain why this meeting is being amended.|এই মিটিং কেন সংশোধন করা হচ্ছে তা লিখুন।|इस मीटिंग में संशोधन का कारण लिखें।|இந்த meeting ஏன் திருத்தப்படுகிறது என்பதை எழுதவும்.
+Record a valid amendment time.|সংশোধনের সঠিক সময় লিখুন।|संशोधन का सही समय दर्ज करें।|சரியான திருத்த நேரத்தை பதிவு செய்யவும்.
+Confirm that fresh release, signatures and approval evidence are required.|নতুন রিলিজ, স্বাক্ষর ও অনুমোদনের প্রমাণ প্রয়োজন—এটি নিশ্চিত করুন।|पुष्टि करें कि नई रिलीज़, हस्ताक्षर और अनुमोदन प्रमाण आवश्यक हैं।|புதிய release, signatures மற்றும் approval evidence தேவை என்பதை உறுதிசெய்யவும்.
+Controlled amendment created. Review changes and collect fresh approval, release and signatures.|নিয়ন্ত্রিত সংশোধন তৈরি হয়েছে। পরিবর্তন পর্যালোচনা করে নতুন অনুমোদন, রিলিজ ও স্বাক্ষর সংগ্রহ করুন।|नियंत्रित संशोधन बनाया गया। बदलाव जाँचकर नई स्वीकृति, रिलीज़ और हस्ताक्षर लें।|கட்டுப்படுத்தப்பட்ட திருத்தம் உருவாக்கப்பட்டது. மாற்றங்களைச் சரிபார்த்து புதிய approval, release மற்றும் signatures பெறவும்.
+The amendment is open but could not be saved. Download a saved copy now.|সংশোধনটি খোলা আছে কিন্তু সংরক্ষণ করা যায়নি। এখনই একটি কপি ডাউনলোড করুন।|संशोधन खुला है लेकिन सहेजा नहीं जा सका। अभी एक कॉपी डाउनलोड करें।|திருத்தம் திறந்துள்ளது ஆனால் சேமிக்க முடியவில்லை. இப்போது saved copy-ஐ பதிவிறக்கவும்.
+`;
+for(const row of PPM_FOLLOWUP_SENTENCES.trim().split('\n')){const [key,bn,hi,ta]=row.split('|');PPM_SENTENCES[key]={bn,hi,ta}}

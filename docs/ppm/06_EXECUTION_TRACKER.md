@@ -446,3 +446,16 @@ COMPATIBILITY RISKS / GUARDS: command must reject an unlocked parent, a missing 
 VERIFICATION / ROLLBACK: new 390px Playwright flow with a synthetic finalized parent, rejected unconfirmed attempt, successful amendment, exact parent-snapshot/child invalidation assertions, durable reload/reopen and visible history; rerun P-G05/P-G04/P-G00/planning/full regression/update/shared-shell/syntax/diff checks. Revert workspace/test/tracker patch; no migration or saved-data deletion.
 PRE-CODE VERDICT: approved for the final functional P-G05 sub-slice; authored-copy four-language parity remains a separate acceptance check.
 ```
+
+### P-G05 pre-code file audit — follow-up and amendment language parity
+
+```text
+TIME / TIMEZONE: 2026-10-11 01:55 Asia/Dhaka
+PATCH OBJECTIVE: route every app-authored P-G05 follow-up, authority, attachment and controlled-amendment label/message through the existing LocaleService in English, Bengali, Hindi and Tamil while preserving entered values and domain identifiers exactly
+IN-SCOPE FILES: apps/ppm/languages.js (sentence-only dictionary owner); apps/ppm/planning-panel.js (P-G05 rendered copy owner); apps/ppm/workspace.js (amendment/menu copy owner); apps/ppm/tests/p-g05-localization.cjs (dictionary/render/data-preservation proof); docs/ppm/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md after proof
+OUT-OF-SCOPE / FROZEN: all 168 checkpoint translations/IDs/statuses; user-entered buyer/style/PO/minutes/reasons/references; GO/CONDITIONAL GO/HOLD and approval/exception status identifiers; domain engines, schemas/codecs, reports, workers, shared files, AQL and TNA
+OWNERSHIP / CALL FLOW / STATE: central language preference -> LocaleService.sentence -> escaped P-G05 render helpers/toasts; changing language rerenders authored UI only and never calls mutate/save or rewrites the record
+COMPATIBILITY RISKS / GUARDS: dictionaries contain plain text only; interpolated translations are escaped; entered text and identifiers retain byte-logical values; locale switching must not create history/save changes; 390px Indic copy must not overflow; missing keys must fail the explicit coverage test instead of silently earning acceptance
+VERIFICATION / ROLLBACK: source key completeness plus authenticated 390px EN/BN/HI/TA follow-up/amendment render, script detection, entered-value equality, stable record serialization, overflow/console checks; rerun P-G05 amendment/follow-up/domain, P-G04/P-G00/planning/full regression/update/shared-shell/syntax/diff. Revert language/UI/test/tracker patch; no record migration or saved-data deletion.
+PRE-CODE VERDICT: approved as the remaining independently safe P-G05 acceptance slice.
+```
