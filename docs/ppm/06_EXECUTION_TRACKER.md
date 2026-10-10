@@ -14,7 +14,7 @@
 | Status | `draft-only` — new PPM rework NOT implemented or deployed by this packet |
 | Current gate | `P-G00 — local clone audit and baseline proof` |
 | LAST COMPLETED ACTION | Documentation packet authored, with GitHub-file evidence |
-| NEXT ACTION | Copy package into repo, inspect current Git HEAD/files, baseline code/tests, lock change scope and proceed P-G00 |
+| NEXT ACTION | Resolve the missing Playwright Node dependency, rerun all three baseline PPM suites, then add the durable 168-tuple/V4/V5 fixture evidence before accepting P-G00 |
 | External blocker | Secured backend and cross-company role/approval credentials not provisioned |
 
 ## Universal session protocol
@@ -22,9 +22,9 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 
 ## Gate sequence (one continuous rework program)
 ### P-G00 — Audit and accepted baseline (NO code edit before passing)
-- [ ] Repository root, branch, dirty tree, HEAD, installed instructions, tests/deps confirmed.
-- [ ] Directly inspect every impacted PPM, platform, service worker and test file; map ownership/state/call/dependencies.
-- [ ] Name exact in-scope/watched/frozen files and rollback posture; create feature branch.
+- [x] Repository root, branch, dirty tree, HEAD, installed instructions, tests/deps confirmed.
+- [x] Directly inspect every currently scoped PPM, platform, service worker and test file; map ownership/state/call/dependencies.
+- [x] Name exact in-scope/watched/frozen files and rollback posture; preserve the existing continuous feature branch.
 - [ ] Capture existing 168 checkpoint tuples, profile list, normal/abnormal readiness fixtures and V4/V5 saves.
 - [ ] Run current 3 PPM test suites; log command, versions, pass/fail; capture desktop/mobile baseline screenshots.
 - [ ] Record audit verdict `accepted` with evidence or `blocked` and exact missing prerequisite.
@@ -126,3 +126,36 @@ NEXT ACTION (ONE PRECISE STEP):
 
 ## Resume prompt
 > Continue PPM 360 from actual Git HEAD and `apps/ppm/AGENTS.md` + `docs/ppm/06_EXECUTION_TRACKER.md`. Reconcile last accepted gate/commit with tests, then implement the earliest incomplete safe patch. Keep one VESA-UNIFORM-UI-v1 interface across PPM/AQL/TNA, preserve all 168 PPM checkpoints and saved copies, append evidence and NEXT ACTION, commit only passing work, never deploy without authorization.
+
+## Current audit — P-G00 (2026-10-10, Asia/Dhaka)
+
+This is an audit-only checkpoint; no PPM source, shared platform file, or test file was changed.
+
+- Repository evidence: root `F:/download temp browser/vesahost-release-work`, branch `feature/tna360-continuous`, clean tree before this tracker entry, HEAD `8b06f6f`, Node `v24.13.1`, npm `11.8.0`, `npx` available. The existing continuous feature branch is preserved; no PPM-only branch was created.
+- File ownership audit: `apps/ppm/core.js` owns `PROCESS_OPTIONS`, `GARMENT_PROFILES`, `SECTION_SCHEMA`, `RelevanceEngine`, `CoverageEngine`, `ValidationEngine`, `PpmRecordFactory`, repository/backup/report/domain orchestration and `AppController`; `workspace.js` owns `V5Workspace` shell/workspace mutation, menus, language and finalized-record guard; `planning-services.js`, `record-services.js`, `planning-panel.js`, `report-service.js` own planning/record/report adapters; `index.html`, `languages.js`, `workspace.css` own markup/localized content/styles; `service-worker.js` owns cache/update behavior. `tests/regression.cjs`, `tests/planning.cjs`, and `tests/update.cjs` own the current browser/domain/update regression suites and all require the `playwright` Node module before execution.
+- Frozen/in-scope paths for the next P-G00 completion: `apps/ppm/core.js`, `apps/ppm/index.html`, `apps/ppm/languages.js`, `apps/ppm/planning-panel.js`, `apps/ppm/planning-services.js`, `apps/ppm/record-services.js`, `apps/ppm/report-service.js`, `apps/ppm/service-worker.js`, `apps/ppm/workspace.css`, `apps/ppm/workspace.js`, and `apps/ppm/tests/*.cjs`. Watched compatibility paths: root auth/App Centre, shared preferences, `/apps/aql/`, `/apps/tna/`; no shared-shell or domain edits are in scope for this audit. Rollback posture: revert the future P-G00 test/fixture-only commit; do not reset or clear local records.
+- Runtime source capture: a VM load of `core.js`, `planning-services.js`, and `record-services.js` reported `APP_VERSION=5.1.5`, `168` master tuples across the 11 sections, `19` profile IDs (including the blank universal and `custom` entries), `12` process IDs, and a fresh record with version `5.1.5`, independent status/remark maps, approvals, change-review, measurement, action, photo, signature, release and UI state. This confirms the source counts; the required committed tuple/V4/V5 fixture is still open.
+- Baseline suites attempted from the clean checkout:
+  - `node apps/ppm/tests/regression.cjs` — **BLOCKED before execution**: `Cannot find module 'playwright'`.
+  - `node apps/ppm/tests/planning.cjs` — **BLOCKED before execution**: `Cannot find module 'playwright'`.
+  - `node apps/ppm/tests/update.cjs` — **BLOCKED before execution**: `Cannot find module 'playwright'`.
+  - `npx --yes --package playwright -c "node apps/ppm/tests/regression.cjs"` — same unresolved module error; no dependency was added to the repository.
+- Browser baseline captured with Playwright CLI `0.1.22` against a disposable local server, authenticated only with the repository’s documented demo account (`admin@vesa` / `vesa`): `output/playwright/ppm-pg00-desktop-home.png`, `ppm-pg00-mobile-home.png`, `ppm-pg00-desktop-editor.png`, `ppm-pg00-mobile-editor.png`. Desktop and mobile pages rendered; CLI console query reported `Errors: 0, Warnings: 0`. Visual inspection found the existing mobile section strip clips horizontally (`TECHNICA...`); this is baseline evidence for a later UX gate, not a P-G00 change.
+- Verdict: **BLOCKED — ENVIRONMENT DEPENDENCY** for P-G00 acceptance. The repository/domain audit and screenshot baseline are captured, but the gate cannot be accepted until the existing suites run and the durable tuple/V4/V5 fixture evidence is committed. No PPM behavior is claimed accepted.
+
+### P-G00 worklog entry
+
+```text
+TIME / TIMEZONE: 2026-10-10 19:48 Asia/Dhaka
+GATE / OBJECTIVE: P-G00 — local clone audit and baseline proof
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 8b06f6f / pending tracker commit
+FILES CHANGED (EXACT): docs/ppm/06_EXECUTION_TRACKER.md only; output/playwright baseline artifacts are ignored local evidence
+FILES WATCHED/FROZEN (DIFF CHECK): all apps/ppm source, worker and tests listed above; no source diff
+DOMAIN/SCHEMA CHANGE & MIGRATION: none
+TEST COMMANDS + OUTPUT/COUNTS: VM source audit = 168 tuples, 19 profiles, 12 processes; 3 PPM suites blocked by missing `playwright`; transient npx retry same error; Node v24.13.1 / npm 11.8.0
+BROWSER SCREENSHOTS / REPORT PATHS: output/playwright/ppm-pg00-desktop-home.png; ppm-pg00-mobile-home.png; ppm-pg00-desktop-editor.png; ppm-pg00-mobile-editor.png; console Errors 0 Warnings 0
+EVIDENCE FOR FEATURE IDs: P-G00 audit only; P01–P52 remain not-started pending accepted baseline
+BLOCKERS / UNRESOLVED RISK: missing resolvable Playwright Node dependency; committed exact tuple/V4/V5 fixture not yet captured; baseline mobile horizontal clipping observed
+REVIEWER / VERDICT (accepted|conditional|blocked|rejected|draft-only): blocked
+NEXT ACTION (ONE PRECISE STEP): make the existing PPM test dependency resolvable without changing repository behavior, rerun the 3 suites, then commit the exact 168-tuple and V4/V5 baseline fixture
+```
