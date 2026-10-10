@@ -29,12 +29,22 @@ for (const fragment of [
   'No hidden current-date assumption is used',
   'Portfolio is browser-local until authenticated backend storage is provisioned',
   'data-filter-owner',
-  'data-filter-stage'
+  'data-filter-stage',
+  'Active timeline filter:',
+  'Accessible TNA timeline table filtered view',
+  'data-clear-filters',
+  'aria-pressed',
+  'Local multi-PO portfolio proof',
+  'PO references',
+  'function openTaskEdit(taskId)',
+  'Editable draft TNA activities',
+  'data-edit-task',
+  'Save activity edit',
 ]) {
   assert(bootstrap.includes(fragment), `G06 workspace UI missing: ${fragment}`);
 }
 
-for (const fragment of ['.tna-workspace-grid', '.tna-dashboard-grid', '.tna-gantt', '.tna-timeline-table', '.tna-readiness-grid', '.tna-readiness-card', '.tna-readiness-list', '@media(max-width:1050px)', '@media(max-width:850px)', '@media(max-width:540px)']) {
+for (const fragment of ['.tna-workspace-grid', '.tna-dashboard-grid', '.tna-gantt', '.tna-timeline-table', '.tna-readiness-grid', '.tna-readiness-card', '.tna-readiness-list', '.tna-mini-btn', '.tna-activity-table', '.tna-portfolio-table', '@media(max-width:1050px)', '@media(max-width:850px)', '@media(max-width:540px)']) {
   assert(css.includes(fragment), `G06 responsive workspace CSS missing: ${fragment}`);
 }
 
@@ -55,5 +65,7 @@ const capacity = operations.verifiedRateDays({ plannedQty: 1000, completedQty: 0
 assert(capacity.status === 'needs-information', 'G06 capacity must require a verified daily output.');
 const shipment = operations.shipmentSummary(1000, [], { status: 'not-entered' });
 assert(shipment.remainingQty === 1000 && shipment.ok === true, 'G06 shipment summary should keep remaining quantity explicit without lots.');
+const taskEdit = domain.updateTaskStatus(plan, plan.tasks[0].taskId, 'completed', { actualDate: '2026-10-20', actorId: 'admin@vesa' });
+assert(taskEdit.ok && taskEdit.plan.tasks[0].dates.actualFinish === '2026-10-20', 'G06 activity edit should use the domain update engine and preserve actual finish separately.');
 
 console.log('TNA G06 workspace contract checks passed');
