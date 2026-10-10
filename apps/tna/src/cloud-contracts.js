@@ -24,6 +24,7 @@
   const ATTACHMENT_MIME_TYPES=Object.freeze(['application/pdf','image/jpeg','image/png','text/plain','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
   const OFFLINE_STATUSES=Object.freeze(['queued','sent','conflict','rejected']);
   const RECONCILIATION_STATUSES=Object.freeze(['accepted','conflict','rejected']);
+  const HEALTH_STATUSES=Object.freeze(['ok','degraded','unavailable']);
   const ENDPOINTS=Object.freeze({
     orders:'/api/v1/tna/orders',
     order:orderId=>`/api/v1/tna/orders/${encodeURIComponent(String(orderId||''))}`,
@@ -51,6 +52,7 @@
   const nonEmpty=value=>text(value).length>0;
   const validId=value=>/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(text(value));
   const validFutureOrCurrentIso=value=>{const time=Date.parse(value);return typeof value==='string'&&Number.isFinite(time)&&time>Date.now();};
+  const validIso=value=>typeof value==='string'&&Number.isFinite(Date.parse(value));
   const containsKey=(value,key)=>{if(!value||typeof value!=='object')return false;if(Object.prototype.hasOwnProperty.call(value,key))return true;return Array.isArray(value)?value.some(item=>containsKey(item,key)):Object.values(value).some(item=>containsKey(item,key));};
   function result(ok,errors=[],warnings=[]){return {ok,errors:[...errors],warnings:[...warnings]};}
   function normalizeConfig(input={}){return {enabled:input.enabled===true,baseUrl:text(input.baseUrl).replace(/\/+$/,''),provider:text(input.provider),configuredBy:text(input.configuredBy)}}
@@ -101,6 +103,14 @@
     if(!Number.isInteger(attachment.size)||attachment.size<1||attachment.size>ATTACHMENT_MAX_BYTES)errors.push('attachment size is outside the allowed bound.');
     if(attachment.sha256&&!/^[a-f0-9]{64}$/i.test(String(attachment.sha256)))errors.push('attachment sha256 must be a hexadecimal digest.');
     if(!['buyer','factory','internal'].includes(text(attachment.visibility)))errors.push('attachment visibility is not supported.');
+    return result(!errors.length,errors);
+  }
+  function validateHealthResponse(payload){
+    const errors=[];
+    if(!payload||typeof payload!=='object'||Array.isArray(payload))return result(false,['Health response must be an object.']);
+    if(payload.contractVersion!==CONTRACT_VERSION)errors.push('Health response contract version is unsupported.');
+    if(!HEALTH_STATUSES.includes(text(payload.status)))errors.push('Health response status is not supported.');
+    if(!validIso(payload.checkedAt))errors.push('Health response checkedAt must be a valid timestamp.');
     return result(!errors.length,errors);
   }
   function authorizeServerCommand(session,order,command){
@@ -164,7 +174,7 @@
     const validation=validateCommand(command);
     return validation.ok?{ok:true,command}:{ok:false,code:ERROR_CODES.INVALID_COMMAND,errors:validation.errors};
   }
-  const api={CONTRACT_VERSION,API_VERSION,MODES,ROLES,RIGHTS,ACTION_RIGHTS,ENDPOINTS,ERROR_CODES,ATTACHMENT_MAX_BYTES,ATTACHMENT_MIME_TYPES,OFFLINE_STATUSES,RECONCILIATION_STATUSES,normalizeConfig,connectionStatus,validateSession,canAccessOrder,validateCommand,createCommand,hasRight,validateAttachmentMetadata,authorizeServerCommand,createAuditEnvelope,createOfflineIntent,validateOfflineIntent,reconcileOfflineIntent};
+  const api={CONTRACT_VERSION,API_VERSION,MODES,ROLES,RIGHTS,ACTION_RIGHTS,ENDPOINTS,ERROR_CODES,ATTACHMENT_MAX_BYTES,ATTACHMENT_MIME_TYPES,OFFLINE_STATUSES,RECONCILIATION_STATUSES,HEALTH_STATUSES,normalizeConfig,connectionStatus,validateSession,canAccessOrder,validateCommand,createCommand,hasRight,validateAttachmentMetadata,validateHealthResponse,authorizeServerCommand,createAuditEnvelope,createOfflineIntent,validateOfflineIntent,reconcileOfflineIntent};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaCloudContracts=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -402,6 +402,18 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 **G09 reconciliation rollback:** revert cloud-contract, storage, adapter, test and tracker changes; the prior bounded queue and read-only review surface remain available.
 
+### G09 pre-code file-level audit — provider health and private attachment boundary
+
+| Exact path | Responsibility, state & dependencies observed | In/out of scope | Risk / compatibility contract | Verification / rollback |
+|---|---|---|---|---|
+| `apps/tna/src/cloud-contracts.js` | Defines the versioned health and attachment endpoints and validates attachment metadata, but has no health-response contract. | In scope: validate bounded, versioned health responses and keep attachment metadata command validation provider-neutral. | Do not expose provider internals to routine users; metadata validation is advisory until a server revalidates it; no private object storage or signed-download claim. | Node tests for valid/invalid health and attachment command policy; preserve existing scope/approval checks. |
+| `apps/tna/src/remote-api.js` | Supports order list/update requests only; the adapter has no health probe or attachment metadata request. | In scope: disabled-by-default `health()` and `addAttachmentMetadata()` methods using the existing authenticated request boundary. | Disabled mode remains zero-network; configured mode sends only runtime session headers and validated metadata; never upload or persist private file bytes in this local slice. | Fetch-spy tests for health parsing, attachment endpoint/idempotency header and safe non-2xx errors. |
+| `apps/tna/tests/g09-backend-contracts.test.js` | Covers contract/session/queue/update boundary but not provider health or attachment adapter calls. | In scope: deterministic provider-neutral adapter tests with synthetic responses only. | Tests cannot prove real storage, malware scanning, private downloads, backup/restore or provider readiness; G09 stays conditional. | Run all TNA tests, AQL release contract, syntax and diff checks; no browser change expected. |
+
+**G09 provider boundary call flow:** local application command → validated versioned metadata/health DTO → disabled-by-default remote adapter → injected HTTPS request only when a verified session exists. No private document is uploaded by this patch.
+
+**G09 provider boundary rollback:** revert cloud-contract, adapter, test and tracker changes; prior order/queue contracts remain available.
+
 ### Accepted patch work log
 
 | Time | Group | Branch / SHA | Files changed | Tests / evidence | Verdict | Next action |

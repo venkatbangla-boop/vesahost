@@ -47,6 +47,8 @@ const evidencedApproval = contracts.createCommand({ requestId: 'REQ-APPROVAL-2',
 assert(evidencedApproval.ok && contracts.authorizeServerCommand(session, order, evidencedApproval.command).ok, 'G09 evidenced approval should pass the contract policy model.');
 assert(contracts.validateAttachmentMetadata({ name: 'inspection.pdf', mimeType: 'application/pdf', size: 2048, sha256: 'a'.repeat(64), visibility: 'factory' }).ok, 'G09 valid private attachment metadata should pass.');
 assert(!contracts.validateAttachmentMetadata({ name: '../secret.pdf', mimeType: 'application/pdf', size: 2048, visibility: 'factory' }).ok, 'G09 unsafe attachment names must fail closed.');
+assert(contracts.validateHealthResponse({ contractVersion: contracts.CONTRACT_VERSION, status: 'ok', checkedAt: '2026-10-10T09:00:00.000Z' }).ok, 'G09 health response contract should accept a versioned timestamped status.');
+assert(!contracts.validateHealthResponse({ contractVersion: 'OLD', status: 'ok', checkedAt: 'not-a-date' }).ok, 'G09 invalid health responses must fail closed.');
 const intent = contracts.createOfflineIntent(command.command, { intentId: 'INTENT-1', queuedAt: '2026-10-10T09:00:00.000Z' });
 assert(intent.ok && intent.intent.status === 'queued' && !Object.prototype.hasOwnProperty.call(intent.intent, 'accessToken'), 'G09 offline intent must be queued without tokens.');
 assert(!contracts.validateOfflineIntent({ ...intent.intent, tenantId: 'TENANT-2' }).ok, 'G09 offline intent tenant mismatch must fail closed.');
@@ -77,7 +79,7 @@ try { storage.queueOfflineIntent({ ...intent.intent, intentId: 'INTENT-2', acces
   let request;
   const connected = createRemoteApi({ enabled: true, baseUrl: 'https://api.example.test' }, {
     session,
-    fetchImpl: async(url, init) => { request = { url, init }; return { ok: true, status: 200, json: async()=>({ data: [] }) }; }
+    fetchImpl: async(url, init) => { request = { url, init }; return { ok: true, status: 200, json: async()=>url.endsWith('/health')?({ contractVersion: contracts.CONTRACT_VERSION, status: 'ok', checkedAt: '2026-10-10T09:00:00.000Z' }):({ data: [] }) }; }
   });
   assert(connected.status().mode === contracts.MODES.CONNECTED, 'G09 configured runtime session should enter connected adapter mode.');
   const response = await connected.listOrders({ factoryId: 'FACTORY-1' });
@@ -85,7 +87,12 @@ try { storage.queueOfflineIntent({ ...intent.intent, intentId: 'INTENT-2', acces
   assert(request.url === 'https://api.example.test/api/v1/tna/orders?factoryId=FACTORY-1', 'G09 adapter must use the versioned tenant API path.');
   assert(request.init.headers['X-VESA-TNA-Contract'] === contracts.CONTRACT_VERSION, 'G09 adapter must send the contract version.');
   assert(request.init.headers.Authorization === 'Bearer runtime-only-token', 'G09 adapter must use a runtime token without logging or persisting it.');
+  assert((await connected.health()).status === 'ok' && request.url === 'https://api.example.test/api/v1/tna/health', 'G09 adapter health must use the versioned health endpoint and validate its response.');
   await connected.updateOrder(order, { requestId: 'REQ-UPDATE', expectedRevision: 2, payload: { note: 'verified change' } });
   assert(request.url === 'https://api.example.test/api/v1/tna/orders/ORDER-1' && request.init.headers['Idempotency-Key'] === 'REQ-UPDATE', 'G09 update adapter must send the command request ID as an idempotency key.');
+  await connected.addAttachmentMetadata(order, { requestId: 'REQ-ATTACH', expectedRevision: 3, attachment: { name: 'inspection.pdf', mimeType: 'application/pdf', size: 2048, visibility: 'factory' } });
+  assert(request.url === 'https://api.example.test/api/v1/tna/orders/ORDER-1/attachments' && request.init.method === 'POST' && request.init.headers['Idempotency-Key'] === 'REQ-ATTACH', 'G09 attachment metadata adapter must use the private attachment endpoint and idempotency key.');
+  const invalidHealth = createRemoteApi({ enabled: true, baseUrl: 'https://api.example.test' }, { session, fetchImpl: async()=>({ ok: true, status: 200, json: async()=>({ status: 'ok' }) }) });
+  try { await invalidHealth.health(); throw new Error('G09 adapter unexpectedly accepted an invalid health response.'); } catch (error) { assert(error.code === contracts.ERROR_CODES.REMOTE_REQUEST_FAILED && /invalid health/i.test(error.message), 'G09 invalid health errors must be user-safe and stable.'); }
   console.log('TNA G09 backend contract checks passed');
 })().catch(error=>{ console.error(error); process.exitCode=1; });

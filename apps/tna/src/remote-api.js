@@ -31,7 +31,9 @@
     }
     function listOrders(filters={}){const query=new URLSearchParams(Object.entries(filters).filter(([,value])=>value!==undefined&&value!==null&&String(value)!==''));return request(`${contracts.ENDPOINTS.orders}${query.toString()?`?${query}`:''}`,{method:'GET'});}
     function updateOrder(order,input={}){const command=contracts.createCommand({requestId:input.requestId,action:'order.update',orderId:order?.orderId,expectedRevision:input.expectedRevision,payload:input.payload||{}},session,order);if(!command.ok)throw adapterError(command.code,command.errors.join(' '));return request(contracts.ENDPOINTS.order(order.orderId),{method:'PATCH',requestId:command.command.requestId,body:JSON.stringify(command.command)});}
-    return Object.freeze({status,setSession,request,listOrders,updateOrder});
+    async function health(){const payload=await request(contracts.ENDPOINTS.health,{method:'GET'});const validation=contracts.validateHealthResponse(payload);if(!validation.ok)throw adapterError(contracts.ERROR_CODES.REMOTE_REQUEST_FAILED,'Connected service returned an invalid health response. Local work remains available.');return payload;}
+    function addAttachmentMetadata(order,input={}){const command=contracts.createCommand({requestId:input.requestId,action:'attachment.add',orderId:order?.orderId,expectedRevision:input.expectedRevision,payload:{attachment:input.attachment}},session,order);if(!command.ok)throw adapterError(command.code,command.errors.join(' '));return request(contracts.ENDPOINTS.attachments(order.orderId),{method:'POST',requestId:command.command.requestId,body:JSON.stringify(command.command)});}
+    return Object.freeze({status,setSession,request,listOrders,updateOrder,health,addAttachmentMetadata});
   }
   const api={createRemoteApi};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
