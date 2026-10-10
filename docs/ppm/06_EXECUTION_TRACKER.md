@@ -402,3 +402,16 @@ BLOCKERS / UNRESOLVED RISK: attachment references/upload failure, controlled ame
 REVIEWER / VERDICT: CONDITIONAL — the optional minutes/waiver/authority compatibility checklist item is proven locally, but P-G05 remains active and earns no percentage until all gate items pass.
 NEXT ACTION (ONE PRECISE STEP): add bounded meeting attachment-reference controls and simulate a failed repository save to prove the record stays open with visible unsaved state before controlled amendment UI.
 ```
+
+### P-G05 pre-code file audit — attachment references and failed-save protection
+
+```text
+TIME / TIMEZONE: 2026-10-11 01:34 Asia/Dhaka
+PATCH OBJECTIVE: expose the existing bounded meetingMinutes.attachmentsRefs contract and prove a repository write failure does not close the Follow-Up dialog, discard the in-memory reference or claim that it was saved
+IN-SCOPE FILES: apps/ppm/planning-panel.js (Follow-Up attachment-reference form/list and persistence feedback owner); apps/ppm/tests/p-g05-followup-ui.cjs (browser round-trip plus forced repository-failure proof); docs/ppm/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md after proof
+OUT-OF-SCOPE / FROZEN: apps/ppm/core.js and record-services.js schema/codec; attachment bytes, upload/network/object storage and malware scanning; all 168 checkpoint IDs/statuses; CoverageEngine/ValidationEngine; GO/CONDITIONAL GO/HOLD; approvals/signatures/release; amendments; notifications; service workers; AQL/TNA/shared files
+OWNERSHIP / CALL FLOW / STATE: Follow-Up modal -> bounded unique text reference -> existing meetingMinutes.attachmentsRefs -> workspace.mutate/history/autosave -> explicit queued workspace.save(true) -> PpmRepository. On rejection, V5Workspace.save keeps the active in-memory record and maps SAVE FAILED to the shared shell failure vocabulary; the modal adds an action-oriented unsaved warning and remains open.
+COMPATIBILITY RISKS / GUARDS: reference-only UI must not imply file upload or authenticity; reject blank/duplicate/over-30/over-1000-character references; escape rendered values; locked meetings stay disabled; a failed save must not roll back or silently retry into a false-success assertion; successful save/reload/reopen must preserve the reference through the existing codec.
+VERIFICATION / ROLLBACK: extend the authenticated 390px P-G05 browser flow with add/save/reload/reopen, then force repo.save rejection while adding a second reference and assert open modal, retained in-memory reference, visible SAVE FAILED/shared-shell failure, and persisted pre-failure record unchanged; rerun P-G05 domain/UI, P-G00/P-G04/planning/full regression/shared-shell/syntax/diff checks. Revert the UI/test/tracker patch; no data migration or browser-store deletion.
+PRE-CODE VERDICT: approved for one additive conditional P-G05 sub-slice; actual attachment upload and controlled amendment UI remain separate work.
+```

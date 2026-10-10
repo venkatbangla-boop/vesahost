@@ -1,7 +1,7 @@
 /**
  * P-G05 rendered follow-up proof.
  * Access: NODE_PATH=<playwright package> CHROMIUM_PATH=<chromium> node this-file
- * Scope: local synthetic record only; no notification, authority or production claim.
+ * Scope: local synthetic record only; no upload, notification, authority or production claim.
  */
 const assert = require('assert/strict');
 const fs = require('fs');
@@ -78,6 +78,10 @@ async function run() {
     await page.waitForFunction(() => app.record.exceptions.length === 1);
     const afterAuthority = await page.evaluate(() => ({ coverage: JSON.stringify(app.coverage.compute(app.record)), readiness: JSON.stringify(app.validation.readiness(app.record)), checkpoint: app.record.statuses.O05, release: JSON.stringify(app.record.release) }));
     assert.deepEqual(afterAuthority, beforeAuthority, 'authority evidence must not change coverage, readiness, checkpoint status or release');
+    await page.locator('#attachmentRef').fill('DOC-PPM-204 · approved-minutes-R2.pdf');
+    await page.locator('[data-plan-action="add-attachment"]').click();
+    await page.waitForFunction(() => app.record.meetingMinutes.attachmentsRefs.length === 1 && document.querySelector('#attachmentSaveStatus')?.textContent.includes('saved on this device'));
+    assert.match(await page.locator('#attachmentRecords').textContent(), /reference only; no file is uploaded/i);
     await page.evaluate(() => app.save(true));
     const id = await page.evaluate(() => app.record.id);
     await page.reload({ waitUntil: 'domcontentloaded' });
@@ -89,18 +93,50 @@ async function run() {
     assert.match(await page.locator('#modalBody').textContent(), /Level 1 · Merchandising Manager/);
     assert.match(await page.locator('#authorityRecords').textContent(), /O05 · Recorded/);
     assert.match(await page.locator('#authorityRecords').textContent(), /Buyer written authority · Buyer QA/);
-    const geometry = await page.evaluate(() => ({ inner: innerWidth, doc: document.documentElement.scrollWidth, body: document.body.scrollWidth, records: app.record.actionEscalation.length, authorityRecords: app.record.exceptions.length, source: app.record.actionEscalation[0].dateSource, authorityEvidence: app.record.exceptions[0].evidence, modalLayer: Number(getComputedStyle(document.getElementById('modalBackdrop')).zIndex), shellLayer: Number(getComputedStyle(document.querySelector('.vesa-workspace')).zIndex) }));
+    assert.match(await page.locator('#attachmentRecords').textContent(), /DOC-PPM-204 · approved-minutes-R2\.pdf/);
+    const geometry = await page.evaluate(() => ({ inner: innerWidth, doc: document.documentElement.scrollWidth, body: document.body.scrollWidth, records: app.record.actionEscalation.length, authorityRecords: app.record.exceptions.length, attachmentRefs: app.record.meetingMinutes.attachmentsRefs.slice(), source: app.record.actionEscalation[0].dateSource, authorityEvidence: app.record.exceptions[0].evidence, modalLayer: Number(getComputedStyle(document.getElementById('modalBackdrop')).zIndex), shellLayer: Number(getComputedStyle(document.querySelector('.vesa-workspace')).zIndex) }));
     assert.ok(geometry.doc <= 391 && geometry.body <= 391, `390px follow-up must not overflow (${geometry.doc}/${geometry.body})`);
     assert.ok(geometry.modalLayer > geometry.shellLayer, `follow-up dialog must render above the shared shell (${geometry.modalLayer}/${geometry.shellLayer})`);
     assert.equal(geometry.records, 1);
     assert.equal(geometry.authorityRecords, 1);
+    assert.deepEqual(geometry.attachmentRefs, ['DOC-PPM-204 · approved-minutes-R2.pdf']);
     assert.equal(geometry.source, 'Buyer comment log dated 11 Oct 2026');
     assert.equal(geometry.authorityEvidence, 'EVIDENCE:buyer-waiver-1');
+    await page.evaluate(() => {
+      app.__pg05OriginalRepoSave = app.repo.save.bind(app.repo);
+      app.repo.save = async () => { throw Error('Simulated repository write failure'); };
+    });
+    await page.locator('#attachmentRef').fill('FAILED-SAVE-REF · buyer-comment-13.pdf');
+    await page.locator('[data-plan-action="add-attachment"]').click();
+    await page.waitForFunction(() => document.querySelector('#attachmentSaveStatus')?.textContent.includes('Could not save'));
+    await page.waitForTimeout(500);
+    const failure = await page.evaluate(async recordId => {
+      await app.saveQueue;
+      const persisted = await app.repo.get(recordId);
+      return {
+        modalOpen: document.getElementById('modalBackdrop').classList.contains('show'),
+        modalTitle: document.getElementById('modalTitle').textContent,
+        saveState: document.getElementById('saveState').textContent,
+        shellState: document.querySelector('[data-vesa-saved]').textContent,
+        status: document.getElementById('attachmentSaveStatus').textContent,
+        inMemory: app.record.meetingMinutes.attachmentsRefs.slice(),
+        persisted: persisted.meetingMinutes.attachmentsRefs.slice()
+      };
+    }, id);
+    assert.equal(failure.modalOpen, true);
+    assert.equal(failure.modalTitle, 'Follow-Up');
+    assert.equal(failure.saveState, 'SAVE FAILED');
+    assert.equal(failure.shellState, 'Could not save — download a saved copy');
+    assert.match(failure.status, /reference remains open in this meeting/);
+    assert.deepEqual(failure.inMemory, ['DOC-PPM-204 · approved-minutes-R2.pdf', 'FAILED-SAVE-REF · buyer-comment-13.pdf']);
+    assert.deepEqual(failure.persisted, ['DOC-PPM-204 · approved-minutes-R2.pdf']);
     fs.mkdirSync(output, { recursive: true });
     await page.screenshot({ path: path.join(output, 'ppm-p-g05-followup-mobile-390.png') });
     await page.locator('.authority-list .planning-item').screenshot({ path: path.join(output, 'ppm-p-g05-authority-mobile-390.png') });
+    await page.locator('#attachmentRecords').screenshot({ path: path.join(output, 'ppm-p-g05-attachments-failed-save-mobile-390.png') });
+    await page.evaluate(() => { app.repo.save = app.__pg05OriginalRepoSave; delete app.__pg05OriginalRepoSave; });
     assert.deepEqual(errors, []);
-    console.log('PPM P-G05 follow-up UI passed: minutes, explicit aging, escalation, non-overriding authority evidence, save/reopen, 390px overflow and console');
+    console.log('PPM P-G05 follow-up UI passed: minutes, aging, escalation, authority, bounded attachment refs, failed-save preservation, save/reopen, 390px overflow and console');
   } finally {
     await context.close();
     await browser.close();
