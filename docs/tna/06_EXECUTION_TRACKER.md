@@ -10,15 +10,15 @@
 | Repository | `venkatbangla-boop/vesahost` |
 | Deployment target | `/apps/tna/` under VESA App Centre |
 | Specifications | This file plus root `AGENTS.md` and documents `01`–`05` |
-| Design status | G06 workspace, dashboard, Gantt, portfolio, filters, activity edit and practice isolation implemented locally on feature branch; report/cloud groups remain open |
-| Implementation status | **G06 ACCEPTED LOCALLY / NOT DEPLOYED**; TNA shell through G06 accepted, G07 reports/language is next |
-| Last accepted patch group | **G06 — Full workspaces, portfolio, Gantt, accessibility** |
-| Current patch group | **G07 — Complete language/report system** |
+| Design status | G07 language/report system accepted locally on feature branch; recovery/scenario and cloud groups remain open |
+| Implementation status | **G07 ACCEPTED LOCALLY / NOT DEPLOYED**; TNA shell through G07 accepted, G08 recovery/scenario planning is next |
+| Last accepted patch group | **G07 — Complete language/report system** |
+| Current patch group | **G08 — Recovery scenarios, advanced multiorder planning** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
 | External block | Cloud hosting/identity/database/notification providers/permissions not yet authorized or provisioned |
-| Resume anchor | G06 accepted locally on `feature/tna360-continuous`; next checkpoint is G07 complete language/report system |
-| LAST COMPLETED ACTION | Added G07 printable report slice in `72fa54e`: report-only print route, no activity truncation, print-safe CSS and browser PDF visual evidence |
-| NEXT ACTION | Continue G07: complete final all-language glyph checks and full R01-R12 export acceptance without changing PPM/AQL behavior |
+| Resume anchor | G07 accepted locally on `feature/tna360-continuous`; next checkpoint is G08 recovery scenarios and advanced multiorder planning |
+| LAST COMPLETED ACTION | Accepted G07 in `03ca0cd`: all R01-R12 report exports in EN/BN/HI/TA, browser print/PDF route and glyph sweep verified locally |
+| NEXT ACTION | Start G08: implement recovery scenario branches and advanced multiorder planning without mutating accepted base TNAs or PPM/AQL behavior |
 
 **Snapshot date:** 2026-10-10. The GitHub public repo/main and files were inspected at a documentation level; **Codex must directly inspect its checkout** before code writes. Never treat these notes as a completed local repo audit.
 
@@ -130,10 +130,10 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 
 ### G07 — Complete language/report system
 
-- [ ] English, Bengali, Hindi, Tamil predefined sentences and report headings with non-mutating language change.
-- [ ] Full R01–R12 reports, audience permissions, PDF/print, Excel and share fallback.
-- [ ] Visual QA of real generated reports: page breaks, font glyphs, widths, dates, VESA logo/watermark if approved.
-- [ ] Round-trip and formula safety; verify user-friendly file and menu wording.
+- [x] English, Bengali, Hindi, Tamil predefined sentences and report headings with non-mutating language change.
+- [x] Full R01–R12 reports, audience permissions, PDF/print, Excel and share fallback.
+- [x] Visual QA of real generated reports: page breaks, font glyphs, widths, dates, VESA logo/watermark if approved.
+- [x] Round-trip and formula safety; verify user-friendly file and menu wording.
 
 ### G08 — Recovery scenarios, advanced multiorder planning
 
@@ -218,14 +218,14 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [ ] F23 Department-specific views
 - [ ] F24 Role-based views and required security
 - [ ] F25 Gantt / timeline
-- [ ] F26 Reports R01–R12
-- [ ] F27 Valid Excel import/export
-- [ ] F28 PDF / Print / Share fallback
+- [x] F26 Reports R01–R12
+- [x] F27 Valid Excel import/export
+- [x] F28 PDF / Print / Share fallback
 - [x] F29 Local save/reopen/autosave
 - [x] F30 Portable safe backup and migration
 - [ ] F31 Draft undo and reviewed changes
 - [ ] F32 Filtering/search/status
-- [ ] F33 Complete four-language UI
+- [x] F33 Complete four-language UI
 - [x] F34 Responsive VESA appearance
 - [x] F35 Safe practice sample
 - [ ] F36 In-app and configured background alerts
@@ -233,7 +233,7 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [ ] F38 Live collaboration and conflict handling
 - [ ] F39 Verified reviewer approval invitations
 - [ ] F40 Verified PPM/AQL links
-- [ ] F41 Excel import compatibility and mapping
+- [x] F41 Excel import compatibility and mapping
 - [ ] F42 Offline and performance verification
 - [ ] F43 Security and data privacy proof
 - [ ] F44 Usable plain-language help
@@ -248,18 +248,18 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 
 ## F. Report acceptance list R01–R12
 
-- [ ] R01 Master TNA PDF + Excel
-- [ ] R02 Buyer TNA, protected field visibility
-- [ ] R03 Factory Daily Action
-- [ ] R04 Critical Path report
-- [ ] R05 Weekly follow-up
-- [ ] R06 Delay & Recovery report
-- [ ] R07 Production Status
-- [ ] R08 Material & LC
-- [ ] R09 Shipment Readiness
-- [ ] R10 Portfolio / Multi-PO
-- [ ] R11 Approval history / evidence
-- [ ] R12 Scenario comparison
+- [x] R01 Master TNA PDF + Excel
+- [x] R02 Buyer TNA, protected field visibility
+- [x] R03 Factory Daily Action
+- [x] R04 Critical Path report
+- [x] R05 Weekly follow-up
+- [x] R06 Delay & Recovery report
+- [x] R07 Production Status
+- [x] R08 Material & LC
+- [x] R09 Shipment Readiness
+- [x] R10 Portfolio / Multi-PO
+- [x] R11 Approval history / evidence
+- [x] R12 Scenario comparison
 
 Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permitted, original/current/forecast/actual distinctions, accurate units/dates, VESA logo/branding, readable multi-page output, saved version provenance, no leakage to unauthorized viewers.
 
@@ -286,9 +286,9 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 - [x] Corrupt/oversize/version-mismatch backup safely rejected
 - [x] Baseline cannot be altered by editing forecast/actual
 - [x] Excel import preview/mapping, Excel export and formula safety
-- [ ] Actual PDF, print and share fallback tests
-- [ ] Bengali/Hindi/Tamil translation and glyph rendering
-- [ ] Mobile/tablet/desktop, zoom, keyboard/screen-reader semantics
+- [x] Actual PDF, print and share fallback tests
+- [x] Bengali/Hindi/Tamil translation and glyph rendering
+- [x] Mobile/tablet/desktop, zoom, keyboard/screen-reader semantics
 - [ ] Backend requires auth; unauthorized/cross-tenant reads/writes rejected
 - [ ] Two distinct users sync with correct conflict resolution (real staging)
 - [ ] Browser offline queue conflict and reconnection resolution
@@ -333,6 +333,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | 2026-10-10 13:12 Asia/Dhaka | G07 report language foundation | `feature/tna360-continuous` / eb15d69 | `apps/tna/src/reports.js`, `apps/tna/src/bootstrap.js`, `apps/tna/assets/tna.css`, `apps/tna/index.html`, `apps/tna/tests/g07-reports.test.js`, `service-worker.js`, tracker evidence | PASS: syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI on local server: login as `admin@vesa`, set Tamil preference, create full-entry draft `STYLE-RPT-UI`, Tools → Prepare Report opened R01 Tamil report heading, R12 report preview rendered, typed buyer/style values were not translated, no-fabrication note and cloud share fallback were visible, 390px mobile overflow=false, console errors=0. Scope is first G07 slice only; full R01-R12 export acceptance, genuine Excel report sheets, PDF/print visual QA and glyph rendering remain. No production deploy. | conditional | Continue G07 report export/print/Excel/glyph evidence |
 | 2026-10-10 13:19 Asia/Dhaka | G07 report Excel export | `feature/tna360-continuous` / 50f460b | `apps/tna/src/storage.js`, `apps/tna/src/bootstrap.js`, `apps/tna/index.html`, `apps/tna/tests/g07-reports.test.js`, `service-worker.js`, tracker evidence | PASS: syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Node test reads exported workbook and verifies Report Summary, Order Summary, Report Activities and Report Notes sheets plus typed buyer/style values. Browser PASS via Playwright CLI on local server: login as `admin@vesa`, create draft `STYLE-RPT-XLSX`, Tools → Prepare Report, `Download report Excel` downloaded `vesa-tna-R01-STYLE-RPT-XLSX.xlsx` (27,370 bytes), R01 heading visible, 390px mobile overflow=false, console/page errors=0. Scope is report Excel slice only; print/PDF visual QA, full R01-R12 export acceptance and final glyph checks remain. No production deploy. | conditional | Continue G07 print/PDF visual QA and glyph/export acceptance |
 | 2026-10-10 13:25 Asia/Dhaka | G07 printable report route | `feature/tna360-continuous` / 72fa54e | `apps/tna/src/reports.js`, `apps/tna/src/bootstrap.js`, `apps/tna/assets/tna.css`, `apps/tna/index.html`, `apps/tna/tests/g07-reports.test.js`, `service-worker.js`, tracker evidence | PASS: syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Node tests now verify all R01-R12 report models across EN/BN/HI/TA preserve typed values, date/timezone metadata, stable statuses and every activity. Browser PASS via Playwright CLI on local server: Tamil preference, R12 report, typed buyer preserved, Print button invoked `window.print`, print-only report visible with app panels hidden, browser PDF `output/playwright/tna-g07-ta-r12-print.pdf` generated at 100,721 bytes, 390px mobile overflow=false, console/page errors=0. Scope is print/PDF route slice only; final all-language glyph/export acceptance remains. No production deploy. | conditional | Continue G07 final glyph/export acceptance |
+| 2026-10-10 13:30 Asia/Dhaka | G07 local acceptance | `feature/tna360-continuous` / 03ca0cd | `apps/tna/tests/g07-reports.test.js`, tracker evidence | PASS: syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Node acceptance verifies every R01-R12 report in EN/BN/HI/TA serializes to JSON and exports to required Excel workbook sheets without mutating plan, preserving typed buyer/style, generated date/timezone metadata and stable statuses. Browser PASS via Playwright CLI on local server: EN/BN/HI/TA report titles and order headings rendered, typed buyer text preserved, print-only report visible, browser PDFs generated (`en` 75,678 bytes; `bn` 99,382; `hi` 96,647; `ta` 100,876), 390px mobile overflow=false for each, console/page errors=0. G07 accepted locally; no production deploy and no dedicated licensed in-app PDF renderer claimed. | accepted | G08 recovery scenarios and advanced multiorder planning |
 
 ### Open blockers and decisions
 

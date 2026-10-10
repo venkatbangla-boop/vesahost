@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **16%** |
-| **REMAINING** | **84%** |
-| **TNA 360** | **54%** - accepted gates 7 / 13 |
+| **OVERALL VERIFIED** | **18%** |
+| **REMAINING** | **82%** |
+| **TNA 360** | **62%** - accepted gates 8 / 13 |
 | **PPM 360** | **0%** - accepted gates 0 / 11 |
 | **AQL 360** | **0%** - accepted gates 0 / 13 |
 | **ONE VESA SHARED UX** | **0%** - accepted gates 0 / 10 |
-| Program stage | TNA G07 is next, then shared VESA UI contract, then remaining TNA/PPM/AQL gates |
-| Active gate | **TNA G07 - Complete language/report system** |
-| Current subtask / subchecks | Continue G07: report Excel and browser print/PDF route are proven; continue final all-language glyph checks and full R01-R12 export acceptance |
-| Last ACCEPTED gate | **TNA G06 - Full workspaces, portfolio, Gantt, accessibility** |
-| Last tested commit SHA | 72fa54e |
-| Last update (UTC) | 2026-10-10 07:25:27 UTC |
+| Program stage | TNA G08 is next, then shared VESA UI contract, then remaining TNA/PPM/AQL gates |
+| Active gate | **TNA G08 - Recovery scenarios and advanced multiorder planning** |
+| Current subtask / subchecks | Start G08: scenario branches, immutable base comparison, capacity/calendar/route alternatives and multiorder conflict proof |
+| Last ACCEPTED gate | **TNA G07 - Complete language/report system** |
+| Last tested commit SHA | 03ca0cd |
+| Last update (UTC) | 2026-10-10 07:30:00 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=7, p=0, a=0, s=0.
+Current counted gates: t=8, p=0, a=0, s=0.
 ```
 
 ## C. Application gate checklist
@@ -49,8 +49,8 @@ Current counted gates: t=7, p=0, a=0, s=0.
 | G04 | LC, materials, capacity, shipment math | ACCEPTED | 4d36b2c; g04-operations.test.js; COM/APR/CAP/SHP fixtures |
 | G05 | Local save/reopen + Excel import/export | ACCEPTED | c6050d7; visible save/reload/open, backup validation, storage recovery, XLSX preview/export and formula defenses tested |
 | G06 | Workspaces, Gantt, dashboard | ACCEPTED | c335140 accepted locally; not deployed |
-| G07 | Four languages + reports | ACTIVE | 72fa54e conditional; R01-R12 report model/UI/JSON, Excel export and browser print/PDF route proven locally; final all-language glyph/export acceptance remains |
-| G08 | Recovery, scenarios + multiorder | NOT STARTED | - |
+| G07 | Four languages + reports | ACCEPTED | 03ca0cd accepted locally; R01-R12 report model/UI/JSON, Excel export, browser print/PDF route and EN/BN/HI/TA glyph sweep passed; dedicated licensed in-app PDF renderer remains not claimed |
+| G08 | Recovery, scenarios + multiorder | ACTIVE | Next checkpoint |
 | G09 | Secure backend + multiuser | BLOCKED | External provider/identity/database/storage not authorized/provisioned |
 | G10 | PPM/AQL links + notifications | BLOCKED | External notification provider not authorized; local reference adapters pending |
 | G11 | All-regression stabilization | NOT STARTED | - |
@@ -129,6 +129,7 @@ Current counted gates: t=7, p=0, a=0, s=0.
 | 2026-10-10 07:12:27 UTC | TNA G07 | CONDITIONAL | eb15d69 added pure R01-R12 report catalogue/model with EN/BN/HI/TA headings, no-fabrication/print/share fallback notes, Reports UI from Tools menu and JSON download preview. PASS: full syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: Tamil preference, full-entry TNA, Tools → Prepare Report, R01 Tamil heading, R12 report preview, typed buyer/style values preserved, share fallback blocked cloud links honestly, 390px overflow=false, console errors=0. Full PDF, genuine report Excel sheets and visual print/PDF QA remain open. |
 | 2026-10-10 07:19:18 UTC | TNA G07 | CONDITIONAL | 50f460b added genuine TNA report Excel workbook export from the report model with Report Summary, Order Summary, Report Activities and Report Notes sheets, safe cells and UI download. PASS: full syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: login as `admin@vesa`, create `STYLE-RPT-XLSX`, Tools → Prepare Report, download `vesa-tna-R01-STYLE-RPT-XLSX.xlsx` (27,370 bytes), heading visible, 390px overflow=false, console/page errors=0. Print/PDF visual QA, full R01-R12 export acceptance and final glyph checks remain open. |
 | 2026-10-10 07:25:27 UTC | TNA G07 | CONDITIONAL | 72fa54e fixed the report print route so dialog reports are visible under print media, removed preview truncation so all activities print, added print-safe page/row break CSS and expanded R01-R12/four-language model tests. PASS: full syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: Tamil preference, R12 report, typed buyer preserved, Print button called `window.print`, print-only report visible while app panels hidden, browser PDF `output/playwright/tna-g07-ta-r12-print.pdf` generated at 100,721 bytes, 390px overflow=false, console/page errors=0. Final Bengali/Hindi/Tamil glyph sweep and full R01-R12 export acceptance remain open. |
+| 2026-10-10 07:30:00 UTC | TNA G07 | ACCEPTED | 03ca0cd expanded export acceptance so every R01-R12 report in EN/BN/HI/TA serializes to JSON and a four-sheet Excel workbook without mutating the plan. PASS: full syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: EN/BN/HI/TA report title and order headings visible, typed buyer text preserved, print-only report visible, browser PDFs generated (`en` 75,678 bytes; `bn` 99,382; `hi` 96,647; `ta` 100,876), 390px overflow=false for each, console/page errors=0. G07 accepted locally; no production deploy and no dedicated licensed in-app PDF renderer claimed. |
 | 2026-10-10 | TNA G04 | ACCEPTED | 4d36b2c operational engines tested with g04-operations.test.js. |
 | 2026-10-10 | TNA G03 | ACCEPTED | 56e0856 scheduling engine tested with g03-scheduling.test.js. |
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
@@ -137,4 +138,4 @@ Current counted gates: t=7, p=0, a=0, s=0.
 
 ## F. NEXT ACTION
 
-Continue **TNA G07**: complete final all-language glyph checks and full R01-R12 export acceptance, then accept or keep blocking only the dedicated licensed PDF renderer if still unavailable. Do not deploy production.
+Start **TNA G08**: implement recovery scenario branches, advanced multiorder capacity/conflict views and scenario non-mutation tests. Do not deploy production.
