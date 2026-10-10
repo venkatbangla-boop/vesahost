@@ -46,11 +46,24 @@ class ChangeReviewEngine {
   review(r,reviewer,note=''){const changes=this.diff(r),at=new Date().toISOString();r.changeReview||=ChangeReviewEngine.empty();r.changeReview.history.push({at,reviewer,note,count:changes.length,changes:changes.slice(0,30).map(({key,label,before,after})=>({key,label,before,after}))});r.changeReview.history=r.changeReview.history.slice(-10);r.changeReview.baseline={at,reviewer,values:this.snapshot(r)}}
 }
 
+/** Pure owner for follow-up dates and controlled meeting amendments. It never assumes
+ * weekends, holidays, buyer authority or notification delivery. Callers must supply an
+ * explicit calendar source; amendments return a new draft and never mutate the parent. */
+class FollowUpService {
+  date(value){if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))throw Error('Choose a valid follow-up date.');const time=Date.parse(value+'T00:00:00Z');if(!Number.isFinite(time)||new Date(time).toISOString().slice(0,10)!==value)throw Error('Choose a valid follow-up date.');return time}
+  /** Signed days from due date: positive overdue, zero due today, negative future. */
+  aging(action,asOf,calendar){const due=this.date(action?.dueDate),now=this.date(asOf),source=String(calendar?.source||'').trim();if(!source)throw Error('Name the calendar source used for action aging.');const basis=calendar?.basis;if(basis==='calendar-days')return {basis,source,daysFromDue:Math.trunc((now-due)/86400000),status:now>due?'Overdue':now===due?'Due today':'Upcoming'};if(basis!=='working-days')throw Error('Choose calendar days or working days for action aging.');const start=this.date(calendar.rangeStart),end=this.date(calendar.rangeEnd);if(start>Math.min(due,now)||end<Math.max(due,now))throw Error('The working calendar does not cover the due date and review date.');const dates=calendar.workingDates;if(!Array.isArray(dates)||dates.length>370)throw Error('The working calendar could not be read.');const times=dates.map(x=>this.date(x));if(new Set(times).size!==times.length||times.some(x=>x<start||x>end))throw Error('The working calendar contains repeated or out-of-range dates.');const low=Math.min(due,now),high=Math.max(due,now),count=times.filter(x=>x>low&&x<=high).length,daysFromDue=now>=due?count:-count;return {basis,source,daysFromDue,status:now>due?'Overdue':now===due?'Due today':'Upcoming'} }
+  /** Snapshot a finalized parent, append one version, and invalidate copied decisions.
+   * The normalized codec validates portability; this owner handles workflow semantics. */
+  amend(parent,{reason,at}={}){if(!parent?.locked)throw Error('Finalize the meeting before creating an amendment.');const amendmentReason=String(reason||'').trim();if(!amendmentReason)throw Error('Explain why this meeting is being amended.');if(typeof at!=='string'||!Number.isFinite(Date.parse(at)))throw Error('Record a valid amendment time.');const snapshot=U.clone(parent);snapshot.meetingVersions=[];this.freeze(snapshot);const copy=U.clone(parent),previous=copy.meetingVersions?.at(-1)?.id||'',invalidated=(copy.approvals||[]).filter(a=>a.status!=='Pending'||a.approvedBy||a.date||a.reference||a.photo).map(a=>a.id);copy.meetingVersions=[...(copy.meetingVersions||[]),{id:'MTGV-'+crypto.randomUUID(),parentId:previous,amendmentReason,approvalsInvalidated:invalidated,signedAt:at,snapshot}];copy.meetingVersions.forEach(v=>this.freeze(v.snapshot));copy.locked=false;copy.updatedAt=at;copy.release={decision:'',notes:''};copy.signatures={};copy.meetingMinutes={...copy.meetingMinutes,acknowledgedAt:''};copy.approvals=(copy.approvals||[]).map(a=>({...a,status:'Pending',approvedBy:'',date:'',reference:'',photo:'',photoRevision:''}));return copy}
+  freeze(value){if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);for(const child of Object.values(value))this.freeze(child)}return value}
+}
+
 /** Integration owner injected into ValidationEngine. Computes additive gates only; old
  * records with no selected controls keep original validation behavior. Invalidation is
  * called by workspace before saving edits, so stale approval cannot survive a mutation. */
 class PlanningService {
-  constructor(){this.approvals=new ApprovalRegister();this.measurements=new MeasurementCheck();this.changes=new ChangeReviewEngine()}
+  constructor(){this.approvals=new ApprovalRegister();this.measurements=new MeasurementCheck();this.changes=new ChangeReviewEngine();this.followups=new FollowUpService()}
   /** Add missing optional controls on activation/mutation; never infer approval/tolerance. */
   ensure(r){r.approvals||=[];r.changeReview||=ChangeReviewEngine.empty();r.measurements.forEach(m=>{for(const [k,v] of Object.entries({actual:'',unit:'',tolMinus:'',tolPlus:'',checkRequired:false}))if(m[k]===undefined)m[k]=v})}
   /** Combine three pure readiness results for the existing release validation owner. */

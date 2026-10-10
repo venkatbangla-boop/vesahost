@@ -15,7 +15,7 @@ const context = vm.createContext({ console, crypto: require('crypto').webcrypto,
 for (const file of ['core.js', 'planning-services.js', 'record-services.js']) {
   vm.runInContext(fs.readFileSync(path.join(root, 'apps/ppm', file), 'utf8'), context, { filename: file });
 }
-const C = vm.runInContext('({PpmRecordFactory,ActionTrackerManager,ChangeReviewEngine,BackupCodec,RecordHistory,RelevanceEngine,CoverageEngine,AppController})', context);
+const C = vm.runInContext('({PpmRecordFactory,ActionTrackerManager,ChangeReviewEngine,FollowUpService,BackupCodec,RecordHistory,RelevanceEngine,CoverageEngine,AppController})', context);
 const record = C.PpmRecordFactory.create();
 assert.equal(record.followUpSchema, 1);
 assert.deepEqual(JSON.parse(JSON.stringify(record.meetingMinutes)), { chairedBy: '', agenda: '', decisions: '', notes: '', acknowledgedAt: '', attachmentsRefs: [] });
@@ -62,6 +62,43 @@ assert.equal(roundTrip.actionEscalation[0].dateSource, 'Calendar days; buyer com
 assert.equal(Object.hasOwn(roundTrip.actionEscalation[0], 'notificationSent'), false, 'local metadata must never claim a notification was sent');
 assert.equal(roundTrip.meetingVersions[0].snapshot.release.decision, record.release.decision);
 assert.deepEqual(JSON.parse(JSON.stringify(roundTrip.meetingVersions[0].snapshot.meetingVersions)), [], 'snapshots cannot recursively contain amendment history');
+assert.equal(Object.isFrozen(roundTrip.meetingVersions[0].snapshot), true, 'decoded finalized snapshots are immutable in active state');
+
+const followups = new C.FollowUpService();
+assert.deepEqual(JSON.parse(JSON.stringify(followups.aging({ dueDate: '2026-10-10' }, '2026-10-13', { basis: 'calendar-days', source: 'Calendar days' }))), { basis: 'calendar-days', source: 'Calendar days', daysFromDue: 3, status: 'Overdue' });
+assert.deepEqual(JSON.parse(JSON.stringify(followups.aging({ dueDate: '2026-10-13' }, '2026-10-10', { basis: 'working-days', source: 'Factory calendar FC-7', rangeStart: '2026-10-01', rangeEnd: '2026-10-31', workingDates: ['2026-10-11', '2026-10-12', '2026-10-13'] }))), { basis: 'working-days', source: 'Factory calendar FC-7', daysFromDue: -3, status: 'Upcoming' });
+assert.throws(() => followups.aging({ dueDate: '2026-10-10' }, '2026-10-13', { basis: 'calendar-days', source: '' }));
+assert.throws(() => followups.aging({ dueDate: '2026-10-10' }, '2026-10-13', { basis: 'working-days', source: 'Partial', rangeStart: '2026-10-11', rangeEnd: '2026-10-31', workingDates: [] }));
+
+const finalized = C.PpmRecordFactory.create();
+finalized.locked = true;
+finalized.updatedAt = '2026-10-10T14:00:00.000Z';
+finalized.release = { decision: 'GO', notes: 'Approved parent.' };
+finalized.signatures.factory = { image: record.photos.evidence.fabricShade, name: 'Factory signer', designation: 'QA', date: '2026-10-10', time: '14:00' };
+finalized.approvals.push({ id: 'APR-PP-1', label: 'PP sample', required: true, status: 'Approved', approvedBy: 'Buyer QA', date: '2026-10-10', reference: 'PP-1', notes: '', photo: '', photoRevision: '' });
+finalized.meetingMinutes.acknowledgedAt = '2026-10-10T14:00:00.000Z';
+const amendment = followups.amend(finalized, { reason: 'BOM revision changed.', at: '2026-10-11T09:00:00.000Z' });
+assert.equal(finalized.locked, true, 'amendment creation must not mutate its finalized parent');
+assert.equal(finalized.release.decision, 'GO');
+assert.equal(amendment.locked, false);
+assert.deepEqual(JSON.parse(JSON.stringify(amendment.release)), { decision: '', notes: '' });
+assert.deepEqual(JSON.parse(JSON.stringify(amendment.signatures)), {});
+assert.equal(amendment.approvals[0].status, 'Pending');
+assert.equal(amendment.approvals[0].approvedBy, '');
+assert.equal(amendment.meetingMinutes.acknowledgedAt, '');
+assert.deepEqual(JSON.parse(JSON.stringify(amendment.meetingVersions[0].approvalsInvalidated)), ['APR-PP-1']);
+assert.equal(amendment.meetingVersions[0].snapshot.release.decision, 'GO');
+assert.equal(Object.isFrozen(amendment.meetingVersions[0].snapshot), true);
+const reopenedAmendment = codec.decode(JSON.parse(codec.encode(amendment)));
+assert.equal(reopenedAmendment.approvals[0].status, 'Pending');
+assert.equal(reopenedAmendment.meetingVersions[0].snapshot.release.decision, 'GO');
+assert.equal(Object.isFrozen(reopenedAmendment.meetingVersions[0].snapshot), true);
+amendment.locked = true;
+amendment.release = { decision: 'HOLD', notes: 'Amended meeting reviewed.' };
+const secondAmendment = followups.amend(amendment, { reason: 'Second controlled revision.', at: '2026-10-12T09:00:00.000Z' });
+assert.equal(secondAmendment.meetingVersions[1].parentId, secondAmendment.meetingVersions[0].id);
+assert.equal(Object.isFrozen(secondAmendment.meetingVersions[0].snapshot), true, 'earlier snapshots remain immutable after another amendment');
+assert.throws(() => followups.amend(C.PpmRecordFactory.create(), { reason: 'Not finalized.', at: '2026-10-11T09:00:00.000Z' }));
 
 const legacy = JSON.parse(JSON.stringify(record));
 delete legacy.followUpSchema; delete legacy.meetingMinutes; delete legacy.exceptions; delete legacy.actionEscalation; delete legacy.meetingVersions;
