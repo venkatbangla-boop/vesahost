@@ -133,11 +133,68 @@ const lab = StageDecision.record(row('lab', {
 }), '2026-10-10');
 expect(lab.failures.some(issue => issue.includes('Laboratory test failed')), 'A-G04 laboratory failure is absent');
 
+const shade = StageDecision.record(row('shade', {
+  delta: 3,
+  method: 'Buyer shade method',
+  limit: 2,
+}), '2026-10-10');
+expect(shade.failures.some(issue => issue.includes('Delta E exceeds approved limit')), 'A-G04 shade tolerance failure is absent');
+
 const readiness = StageDecision.record(row('readiness', { production: 80, packed: 100, minProduction: 90, minPacked: 90 }), '2026-10-10');
 expect(readiness.failures.some(issue => issue.includes('production below approved readiness threshold')), 'A-G04 readiness threshold failure is absent');
 
 const monitor = StageDecision.record(row('monitor', { order: 100, cut: 100, sew: 95, finish: 90, pack: 110 }), '2026-10-10');
 expect(monitor.pending.some(issue => issue.includes('Packed quantity exceeds order')), 'A-G04 production balance guard is absent');
+
+function project(stage, record, overrides = {}) {
+  const stageSuite = StageCatalog.fresh(stage);
+  Object.assign(stageSuite, {
+    reference: 'BUYER-REV-1',
+    approvedBy: 'Quality Reviewer',
+    sampling: 'Approved coverage plan',
+    orderKey: 'PO-A-G04',
+    checks: stageSuite.checks.map(check => ({ ...check, status: 'Pass', note: 'Reviewed' })),
+    records: [record],
+    ...overrides,
+  });
+  return {
+    info: { buyer: 'Buyer A-G04', factory: 'Factory A-G04', inspector: 'Inspector A-G04', date: '2026-10-10' },
+    stageSuite,
+    tests: [],
+    measurements: [],
+    equipment: [],
+    capa: [],
+    evidenceProblems: [],
+    assets: [],
+    rules: {},
+  };
+}
+
+const cleanStage = StageDecision.evaluate(project('inline', row('inline', {
+  inspected: 100,
+  defective: 2,
+  occurrences: 3,
+})), () => { throw new Error('Final engine should not run for inline stage'); });
+expect(cleanStage.result === 'CONFORMED' && cleanStage.stageDecision === 'CONFORMED', 'A-G04 clean stage did not reach a conforming decision');
+
+const failedStage = StageDecision.evaluate(project('inline', row('inline', {
+  inspected: 100,
+  defective: 2,
+  occurrences: 3,
+}), { checks: [{ name: 'Operation coverage', status: 'Fail', note: 'Coverage gap recorded' }] }));
+expect(failedStage.result === 'NOT CONFORMED' && failedStage.failures.some(issue => issue.text.includes('Operation coverage failed')), 'A-G04 failed checkpoint did not remain a failure');
+
+const acceptedFabric = StageDecision.evaluate(project('fabric', row('roll', {
+  length: 1000,
+  widthStart: 100,
+  widthMiddle: 100,
+  widthEnd: 100,
+  limit: 1,
+  method: 'Approved 4-point method / REV-1',
+  basis: '100 m²',
+  defects: '10,Oil,2,3',
+})));
+expect(acceptedFabric.stageDecision === 'ACCEPT', 'A-G04 clean fabric stage did not retain its stage decision');
 
 expectThrow(() => StageCatalog.fresh('unsupported-stage'), 'Select an inspection stage');
 for (const requiredText of [

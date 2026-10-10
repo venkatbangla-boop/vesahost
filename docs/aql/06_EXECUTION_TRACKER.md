@@ -13,7 +13,7 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04 has a conditional stage-workflow fixture/browser slice; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Added and tested the fixture-only A-G04 stage workflow contract, then browser-verified a synthetic Fabric Roll Inspection workspace; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
+| LAST COMPLETED ACTION | Extended and tested the fixture-only A-G04 stage workflow contract with clean/failing stage decisions and shade tolerance, after browser-verifying a synthetic Fabric Roll Inspection workspace; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
 | NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
@@ -333,9 +333,23 @@ GATE / OBJECTIVE: A-G04 — prove the existing stage catalog and material/produc
 BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b0eaed5 / fe56432
 FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FILES WATCHED/FROZEN: apps/aql/index.html, SamplingEngine, ResultEngine, stage records, saved data and all PPM/TNA/shared files; no application/domain source changed
-IMPLEMENTED: Added a fixture-only VM contract for the 13 StageCatalog entries, their main modules and pending-first checklists; incoming/roll/shade/lab/IPC/cutting/inline/endline/readiness/monitor field definitions; clean record evaluation; inline and endline reconciliation; fabric density, laboratory, readiness and production-balance guards; unsupported-stage rejection; and required stage workspace source markers.
+IMPLEMENTED: Added a fixture-only VM contract for the 13 StageCatalog entries, their main modules and pending-first checklists; incoming/roll/shade/lab/IPC/cutting/inline/endline/readiness/monitor field definitions; clean record evaluation; inline and endline reconciliation; fabric density, shade tolerance, laboratory, readiness and production-balance guards; clean conforming and explicit failed-checkpoint stage decisions; unsupported-stage rejection; and required stage workspace source markers.
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 BROWSER / DATA EVIDENCE: Authenticated Playwright CLI against disposable `http://127.0.0.1:4174` created a synthetic local Fabric Roll Inspection draft. The stage selector exposed all 13 stages; the rendered workspace showed `Fabric Roll Inspection`, the stage-native six-step navigation, five named fabric checkpoints, `Fabric rolls` stage register, pending decision reasons and an actionable `Complete stage criteria` next step. Console Errors 0 / Warnings 0. No record was exported, released or approved; browser and disposable server were closed without clearing data.
 VERDICT: conditional — the existing stage catalog, pure guards and one representative browser stage are proven locally; full A-G04 35-area evidence, every material/production stage and field-device review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then extend A-G04 with the next representative stage-record fixture without changing frozen AQL tables.
+```
+
+### A-G04 stage decision extension — conditional, domain source unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-10 21:11 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — extend fixture coverage from field metadata to clean/failing stage decisions
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 2aa4dc6 / uncommitted test-only patch
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FROZEN BUSINESS RULES: no `apps/aql/index.html` source, SamplingEngine cell, Ac/Re rule, saved record or shared/sibling file changed
+IMPLEMENTED: Added deterministic contract cases for shade Delta E failure, a clean inline stage reaching CONFORMED, a failed checkpoint remaining NOT CONFORMED, and a clean fabric stage retaining ACCEPT; existing A-G04 material/production record guards remain covered.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
+VERDICT: conditional — decision-guard coverage is locally proven, but full A-G04 35-area/stage matrix and field-device review remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then cover the next untested stage-specific record without changing frozen AQL tables.
 ```
