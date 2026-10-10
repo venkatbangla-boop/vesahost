@@ -11,6 +11,8 @@ assert(shell.includes('class VesaWorkspaceShell'), 'platform shell class missing
 assert(shell.includes("['Home', 'File', 'Edit', 'View', 'Tools', 'Help']"), 'universal menu order changed');
 assert(shell.includes('Saved on this device') && shell.includes('Could not save'), 'save state vocabulary missing');
 assert(shell.includes('descriptor') && shell.includes('callbacks'), 'descriptor/callback boundary missing');
+assert(shell.includes('openSettings') && shell.includes('data-vesa-settings'), 'platform settings surface missing');
+assert(shell.includes("event.key !== 'Escape'") && shell.includes('data-vesa-mobile-menu'), 'mobile Menu Escape/focus contract missing');
 assert(!/\b(?:tna|ppm|aql)\b/i.test(shell), 'platform shell must not hard-code an app id');
 assert(css.includes('.vesa-workspace') && css.includes('--vesa-brand'), 'shared shell CSS/tokens missing');
 assert((css.match(/position:\s*sticky/g) || []).length === 1, 'shared shell must own one sticky region');

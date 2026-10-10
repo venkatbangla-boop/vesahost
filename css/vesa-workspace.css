@@ -72,3 +72,33 @@
 }
 
 @media print { .vesa-workspace { display: none !important; } }
+
+.vesa-settings-dialog {
+  width: min(460px, calc(100vw - 24px));
+  max-width: 100%;
+  padding: 0;
+  border: 1px solid var(--vesa-border);
+  border-radius: 16px;
+  color: var(--vesa-text);
+  background: var(--vesa-surface);
+  box-shadow: 0 28px 90px rgba(7, 26, 53, .24);
+}
+.vesa-settings-dialog::backdrop { background: rgba(7, 26, 53, .36); }
+.vesa-settings-dialog form { margin: 0; }
+.vesa-settings-dialog header,
+.vesa-settings-dialog footer { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 18px 20px; }
+.vesa-settings-dialog header { border-bottom: 1px solid var(--vesa-border); }
+.vesa-settings-dialog footer { align-items: center; justify-content: flex-end; border-top: 1px solid var(--vesa-border); }
+.vesa-settings-dialog h2 { margin: 2px 0 5px; font-size: 20px; }
+.vesa-settings-dialog p { margin: 0; color: var(--vesa-muted); font-size: 12px; line-height: 1.55; }
+.vesa-settings-dialog .vesa-settings-kicker { color: var(--vesa-action); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.vesa-settings-dialog header > button,
+.vesa-settings-dialog footer > button { min-height: 44px; border: 1px solid var(--vesa-border); border-radius: 999px; padding: 0 14px; color: var(--vesa-text); background: var(--vesa-surface); font: inherit; cursor: pointer; }
+.vesa-settings-dialog header > button { flex: 0 0 44px; padding: 0; font-size: 24px; line-height: 1; }
+.vesa-settings-dialog header > button:focus-visible,
+.vesa-settings-dialog footer > button:focus-visible,
+.vesa-settings-dialog select:focus-visible { outline: 3px solid var(--vesa-focus); outline-offset: 2px; }
+.vesa-settings-body { display: grid; gap: 14px; padding: 20px; }
+.vesa-settings-body .vesa-pref-controls { display: grid; gap: 14px; }
+.vesa-settings-body label { display: grid; gap: 6px; color: var(--vesa-text); font-size: 13px; font-weight: 700; }
+.vesa-settings-body select { min-height: 44px; width: 100%; border: 1px solid var(--vesa-border); border-radius: 8px; padding: 8px 10px; color: var(--vesa-text); background: var(--vesa-surface); font: inherit; }

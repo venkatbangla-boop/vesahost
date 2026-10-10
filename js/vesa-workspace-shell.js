@@ -22,7 +22,10 @@
       this.descriptor = descriptor(config.descriptor);
       this.callbacks = config.callbacks || {};
       this._mounted = false;
+      this._settingsDialog = null;
+      this._settingsReturnFocus = null;
       this._onClick = event => this._handleClick(event);
+      this._onKeydown = event => this._handleKeydown(event);
       this._onResize = () => this.measure();
     }
 
@@ -39,6 +42,7 @@
       this.element = element;
       this._mounted = true;
       this.element.addEventListener('click', this._onClick);
+      this.element.addEventListener('keydown', this._onKeydown);
       global.addEventListener?.('resize', this._onResize, { passive: true });
       this.measure();
       return element;
@@ -58,10 +62,34 @@
       return value;
     }
 
+    /** Open the platform-owned language/theme controls without exposing app data to the shell. */
+    openSettings() {
+      if (!global.VesaPrefs?.controls || !this.document?.body) return this.callbacks.settings?.(this.descriptor);
+      if (!this._settingsDialog) {
+        const dialog = this.document.createElement('dialog');
+        dialog.className = 'vesa-settings-dialog';
+        dialog.setAttribute('data-vesa-settings', 'true');
+        dialog.setAttribute('aria-labelledby', 'vesaSettingsTitle');
+        dialog.innerHTML = `<form method="dialog"><header><div><p class="vesa-settings-kicker">VESA</p><h2 id="vesaSettingsTitle">Settings</h2><p>Language and appearance apply to this browser. Saved records and entered values are unchanged.</p></div><button type="submit" aria-label="Close settings">×</button></header><div class="vesa-settings-body">${global.VesaPrefs.controls()}</div><footer><button type="submit">Close</button></footer></form>`;
+        this.document.body.append(dialog);
+        global.VesaPrefs.wire?.(dialog);
+        dialog.addEventListener('close', () => {
+          const target = this._settingsReturnFocus;
+          this._settingsReturnFocus = null;
+          if (target?.isConnected) target.focus({ preventScroll: true });
+        });
+        this._settingsDialog = dialog;
+      }
+      this._settingsReturnFocus = this.element?.querySelector('[data-vesa-user]') || this.element;
+      this._settingsDialog.querySelector('[data-pref-language]')?.focus({ preventScroll: true });
+      if (!this._settingsDialog.open) this._settingsDialog.showModal();
+      return this._settingsDialog;
+    }
+
     _handleClick(event) {
       const menu = event.target.closest?.('[data-vesa-menu]');
       if (menu) return this.callbacks.menu?.(menu.dataset.vesaMenu, this.descriptor);
-      if (event.target.closest?.('[data-vesa-user]')) return this.callbacks.settings?.(this.descriptor);
+      if (event.target.closest?.('[data-vesa-user]')) return this.openSettings();
       const mobile = event.target.closest?.('[data-vesa-mobile-menu]');
       if (mobile) {
         const open = this.element.dataset.menuOpen !== 'true';
@@ -71,10 +99,20 @@
       }
     }
 
+    _handleKeydown(event) {
+      if (event.key !== 'Escape' || this.element.dataset.menuOpen !== 'true') return;
+      event.preventDefault();
+      this.element.dataset.menuOpen = 'false';
+      this.element.querySelector('[data-vesa-mobile-menu]')?.focus();
+    }
+
     destroy() {
       if (!this._mounted) return;
       this.element.removeEventListener('click', this._onClick);
+      this.element.removeEventListener('keydown', this._onKeydown);
       global.removeEventListener?.('resize', this._onResize);
+      this._settingsDialog?.remove();
+      this._settingsDialog = null;
       this.element.remove();
       this._mounted = false;
       this.element = null;
