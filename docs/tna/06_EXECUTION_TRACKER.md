@@ -389,6 +389,19 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 **G09 offline visibility rollback:** revert the bootstrap/test/tracker slice; the existing queue API and disabled remote adapter remain unchanged.
 
+### G09 pre-code file-level audit — explicit offline reconciliation outcomes
+
+| Exact path | Responsibility, state & dependencies observed | In/out of scope | Risk / compatibility contract | Verification / rollback |
+|---|---|---|---|---|
+| `apps/tna/src/cloud-contracts.js` | Validates versioned sessions, scoped commands, attachment metadata and offline intent envelopes; it has no pure contract for a future server response. | In scope: validate accepted/conflict/rejected outcomes and produce explicit queue metadata retaining client/server versions. | Never last-write-wins or auto-merge approvals/baselines; reject token-bearing responses; accepted means only the server accepted the command, not that a local plan was silently overwritten. | Node tests for each outcome, manual-review marker, token rejection and input nonmutation; rollback cloud-contract/test slice. |
+| `apps/tna/src/storage.js` | Persists bounded per-user intents and exposes status updates; it has no named operation that applies a validated future server outcome. | In scope: `reconcileOfflineIntent` stores only the validated status/metadata returned by the pure contract. | Preserve the queued command and saved TNA records; no fetch, revision mutation, automatic retry or merge; quota failures retain the prior queue. | G09 storage tests for accepted/conflict/rejected outcomes and per-user isolation; rollback storage/test changes. |
+| `apps/tna/src/remote-api.js` | Adds the runtime Authorization and contract headers but does not identify update commands for provider-side idempotency. | In scope: send a request ID as an idempotency header for the existing update command. | Never persist/log tokens; disabled mode remains zero-network; request ID is not a substitute for server authorization or durable deduplication. | Fetch-spy assertion for `Idempotency-Key`, disabled adapter zero calls, syntax and full regression. |
+| `apps/tna/tests/g09-backend-contracts.test.js` | Covers queue status storage and adapter boundary, but not explicit future server outcomes or idempotent update headers. | In scope: deterministic contract and adapter-boundary tests only; no staging backend. | Keep G09 conditional and all live server/reconnection claims blocked until authorized infrastructure exists. | Run all TNA tests, AQL release contract, syntax, diff checks; browser status surface remains unchanged. |
+
+**G09 reconciliation call flow:** future authenticated server result → pure `reconcileOfflineIntent` validation → local queue status/metadata update → visible review list. No response applies a plan mutation or hides a conflict.
+
+**G09 reconciliation rollback:** revert cloud-contract, storage, adapter, test and tracker changes; the prior bounded queue and read-only review surface remain available.
+
 ### Accepted patch work log
 
 | Time | Group | Branch / SHA | Files changed | Tests / evidence | Verdict | Next action |

@@ -23,6 +23,7 @@
   const ATTACHMENT_MAX_BYTES=25*1024*1024;
   const ATTACHMENT_MIME_TYPES=Object.freeze(['application/pdf','image/jpeg','image/png','text/plain','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
   const OFFLINE_STATUSES=Object.freeze(['queued','sent','conflict','rejected']);
+  const RECONCILIATION_STATUSES=Object.freeze(['accepted','conflict','rejected']);
   const ENDPOINTS=Object.freeze({
     orders:'/api/v1/tna/orders',
     order:orderId=>`/api/v1/tna/orders/${encodeURIComponent(String(orderId||''))}`,
@@ -50,6 +51,7 @@
   const nonEmpty=value=>text(value).length>0;
   const validId=value=>/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(text(value));
   const validFutureOrCurrentIso=value=>{const time=Date.parse(value);return typeof value==='string'&&Number.isFinite(time)&&time>Date.now();};
+  const containsKey=(value,key)=>{if(!value||typeof value!=='object')return false;if(Object.prototype.hasOwnProperty.call(value,key))return true;return Array.isArray(value)?value.some(item=>containsKey(item,key)):Object.values(value).some(item=>containsKey(item,key));};
   function result(ok,errors=[],warnings=[]){return {ok,errors:[...errors],warnings:[...warnings]};}
   function normalizeConfig(input={}){return {enabled:input.enabled===true,baseUrl:text(input.baseUrl).replace(/\/+$/,''),provider:text(input.provider),configuredBy:text(input.configuredBy)}}
   function connectionStatus(config={},session=null){
@@ -137,8 +139,22 @@
     const commandResult=validateCommand(intent?.command);
     if(!commandResult.ok)errors.push(...commandResult.errors);
     if(intent?.command?.requestId!==intent?.requestId||intent?.command?.tenantId!==intent?.tenantId)errors.push('Offline intent command identity does not match its envelope.');
-    if(Object.prototype.hasOwnProperty.call(intent||{},'accessToken'))errors.push('Offline intents must never contain access tokens.');
+    if(containsKey(intent,'accessToken'))errors.push('Offline intents must never contain access tokens.');
     return result(!errors.length,errors);
+  }
+  function reconcileOfflineIntent(intent,serverResult={}){
+    const intentValidation=validateOfflineIntent(intent);
+    if(!intentValidation.ok)return {ok:false,code:'INVALID_OFFLINE_INTENT',errors:intentValidation.errors};
+    const status=text(serverResult.status);
+    const errors=[];
+    if(!RECONCILIATION_STATUSES.includes(status))errors.push('Server reconciliation status is not supported.');
+    if(containsKey(serverResult,'accessToken'))errors.push('Server reconciliation results must not contain access tokens.');
+    if(!Number.isInteger(serverResult.serverRevision)||serverResult.serverRevision<0)errors.push('Server reconciliation revision is required.');
+    if(status==='rejected'&&!nonEmpty(serverResult.reason))errors.push('Rejected offline intents require a reason.');
+    if(status==='conflict'&&(!nonEmpty(serverResult.reason)||!serverResult.serverRecord||typeof serverResult.serverRecord!=='object'||Array.isArray(serverResult.serverRecord)))errors.push('Conflicts require a reason and the server version for review.');
+    if(errors.length)return {ok:false,code:'INVALID_RECONCILIATION',errors};
+    const metadata={resolution:'manual-review-required',serverRevision:serverResult.serverRevision,reason:text(serverResult.reason),serverRecord:serverResult.serverRecord?copy(serverResult.serverRecord):null,clientCommand:copy(intent.command)};
+    return {ok:true,status:status==='accepted'?'sent':status,metadata};
   }
   function createCommand(input={},session,order){
     const sessionResult=validateSession(session);
@@ -148,7 +164,7 @@
     const validation=validateCommand(command);
     return validation.ok?{ok:true,command}:{ok:false,code:ERROR_CODES.INVALID_COMMAND,errors:validation.errors};
   }
-  const api={CONTRACT_VERSION,API_VERSION,MODES,ROLES,RIGHTS,ACTION_RIGHTS,ENDPOINTS,ERROR_CODES,ATTACHMENT_MAX_BYTES,ATTACHMENT_MIME_TYPES,OFFLINE_STATUSES,normalizeConfig,connectionStatus,validateSession,canAccessOrder,validateCommand,createCommand,hasRight,validateAttachmentMetadata,authorizeServerCommand,createAuditEnvelope,createOfflineIntent,validateOfflineIntent};
+  const api={CONTRACT_VERSION,API_VERSION,MODES,ROLES,RIGHTS,ACTION_RIGHTS,ENDPOINTS,ERROR_CODES,ATTACHMENT_MAX_BYTES,ATTACHMENT_MIME_TYPES,OFFLINE_STATUSES,RECONCILIATION_STATUSES,normalizeConfig,connectionStatus,validateSession,canAccessOrder,validateCommand,createCommand,hasRight,validateAttachmentMetadata,authorizeServerCommand,createAuditEnvelope,createOfflineIntent,validateOfflineIntent,reconcileOfflineIntent};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaCloudContracts=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

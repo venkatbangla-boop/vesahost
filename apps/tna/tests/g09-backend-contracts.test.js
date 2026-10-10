@@ -50,12 +50,22 @@ assert(!contracts.validateAttachmentMetadata({ name: '../secret.pdf', mimeType: 
 const intent = contracts.createOfflineIntent(command.command, { intentId: 'INTENT-1', queuedAt: '2026-10-10T09:00:00.000Z' });
 assert(intent.ok && intent.intent.status === 'queued' && !Object.prototype.hasOwnProperty.call(intent.intent, 'accessToken'), 'G09 offline intent must be queued without tokens.');
 assert(!contracts.validateOfflineIntent({ ...intent.intent, tenantId: 'TENANT-2' }).ok, 'G09 offline intent tenant mismatch must fail closed.');
+const conflictResult = contracts.reconcileOfflineIntent(intent.intent, { status: 'conflict', serverRevision: 3, reason: 'Server version changed.', serverRecord: { orderId: 'ORDER-1', revision: 3 } });
+assert(conflictResult.ok && conflictResult.status === 'conflict' && conflictResult.metadata.resolution === 'manual-review-required' && conflictResult.metadata.serverRecord.revision === 3, 'G09 conflict reconciliation must retain both versions for manual review.');
+assert(intent.intent.status === 'queued' && !intent.intent.metadata, 'G09 reconciliation must not mutate the queued client intent.');
+assert(!contracts.validateOfflineIntent({ ...intent.intent, command: { ...intent.intent.command, payload: { accessToken: 'must-not-persist' } } }).ok, 'G09 nested token-bearing offline payload must fail closed.');
+try { contracts.reconcileOfflineIntent(intent.intent, { status: 'conflict', serverRevision: 3, reason: 'Server version changed.', serverRecord: { accessToken: 'must-not-persist' } }); throw new Error('G09 reconciliation unexpectedly accepted a token-bearing server result.'); } catch (error) { assert(/token/i.test(error.message), 'G09 token-bearing reconciliation rejection should be explicit.'); }
 const localStore = new Map();
 globalThis.localStorage = { getItem:key=>localStore.has(key)?localStore.get(key):null, setItem:(key,value)=>localStore.set(key,String(value)), removeItem:key=>localStore.delete(key) };
 const queued = storage.queueOfflineIntent(intent.intent, 'USER-1');
 assert(queued.status === 'queued' && storage.listOfflineIntents('USER-1').length === 1, 'G09 storage must durably list a queued intent per local user.');
 assert(storage.queueOfflineIntent(intent.intent, 'USER-1').intentId === 'INTENT-1', 'G09 repeated intent enqueue must be idempotent.');
-assert(storage.updateOfflineIntent('INTENT-1', 'conflict', 'USER-1', { serverRevision: 3 }).status === 'conflict', 'G09 queue must retain visible conflict status and metadata.');
+const storedConflict = storage.reconcileOfflineIntent('INTENT-1', { status: 'conflict', serverRevision: 3, reason: 'Server version changed.', serverRecord: { orderId: 'ORDER-1', revision: 3 } }, 'USER-1');
+assert(storedConflict.status === 'conflict' && storedConflict.metadata.serverRecord.revision === 3 && storedConflict.metadata.clientCommand.requestId === 'REQ-1', 'G09 queue reconciliation must retain visible conflict metadata and client version.');
+const intent2 = contracts.createOfflineIntent({ ...command.command, requestId: 'REQ-2' }, { intentId: 'INTENT-2', queuedAt: '2026-10-10T09:00:00.000Z' });
+assert(intent2.ok, 'G09 second offline intent fixture should be valid.');
+storage.queueOfflineIntent(intent2.intent, 'USER-1');
+assert(storage.reconcileOfflineIntent('INTENT-2', { status: 'accepted', serverRevision: 3 }, 'USER-1').status === 'sent', 'G09 accepted reconciliation must mark the intent sent without mutating a saved plan.');
 try { storage.queueOfflineIntent({ ...intent.intent, intentId: 'INTENT-2', accessToken: 'must-not-persist' }, 'USER-1'); throw new Error('G09 storage unexpectedly accepted a token-bearing intent.'); } catch (error) { assert(/token/i.test(error.message), 'G09 token-bearing intent rejection should be explicit.'); }
 
 (async()=>{
@@ -75,5 +85,7 @@ try { storage.queueOfflineIntent({ ...intent.intent, intentId: 'INTENT-2', acces
   assert(request.url === 'https://api.example.test/api/v1/tna/orders?factoryId=FACTORY-1', 'G09 adapter must use the versioned tenant API path.');
   assert(request.init.headers['X-VESA-TNA-Contract'] === contracts.CONTRACT_VERSION, 'G09 adapter must send the contract version.');
   assert(request.init.headers.Authorization === 'Bearer runtime-only-token', 'G09 adapter must use a runtime token without logging or persisting it.');
+  await connected.updateOrder(order, { requestId: 'REQ-UPDATE', expectedRevision: 2, payload: { note: 'verified change' } });
+  assert(request.url === 'https://api.example.test/api/v1/tna/orders/ORDER-1' && request.init.headers['Idempotency-Key'] === 'REQ-UPDATE', 'G09 update adapter must send the command request ID as an idempotency key.');
   console.log('TNA G09 backend contract checks passed');
 })().catch(error=>{ console.error(error); process.exitCode=1; });
