@@ -10,15 +10,15 @@
 | Repository | `venkatbangla-boop/vesahost` |
 | Deployment target | `/apps/tna/` under VESA App Centre |
 | Specifications | This file plus root `AGENTS.md` and documents `01`–`05` |
-| Design status | G05 local storage, backup and Excel preview/export implemented locally on feature branch; workspace/report/cloud groups remain open |
-| Implementation status | **G06 IN PROGRESS LOCALLY / NOT DEPLOYED**; TNA shell through G05 accepted, G06 dashboard/timeline/readiness workspace slices verified conditionally |
-| Last accepted patch group | **G05 — Local saving, backup, Excel import and migrations** |
-| Current patch group | **G06 — Full workspaces, portfolio, Gantt, accessibility** |
+| Design status | G06 workspace, dashboard, Gantt, portfolio, filters, activity edit and practice isolation implemented locally on feature branch; report/cloud groups remain open |
+| Implementation status | **G06 ACCEPTED LOCALLY / NOT DEPLOYED**; TNA shell through G06 accepted, G07 reports/language is next |
+| Last accepted patch group | **G06 — Full workspaces, portfolio, Gantt, accessibility** |
+| Current patch group | **G07 — Complete language/report system** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
 | External block | Cloud hosting/identity/database/notification providers/permissions not yet authorized or provisioned |
-| Resume anchor | G05 accepted locally on `feature/tna360-continuous`; next checkpoint is G06 full workspaces, portfolio, Gantt and accessibility |
-| LAST COMPLETED ACTION | Added the third G06 workspace slice in `0e28d2c`: real owner/stage filter interactions, local multi-PO portfolio proof and domain-backed activity edit controls |
-| NEXT ACTION | Continue G06: reconcile remaining primary workspace views from `04_UX_LOCALIZATION_REPORTS.md`, add final accessibility/menu evidence matrix and decide G06 acceptance without changing PPM/AQL behavior |
+| Resume anchor | G06 accepted locally on `feature/tna360-continuous`; next checkpoint is G07 complete language/report system |
+| LAST COMPLETED ACTION | Accepted G06 locally in `c335140`: full workspace/dashboard/Gantt/readiness/filter/activity-edit/practice isolation evidence is recorded |
+| NEXT ACTION | Start G07: complete EN/BN/HI/TA language/report system and report export scaffolds without changing PPM/AQL behavior |
 
 **Snapshot date:** 2026-10-10. The GitHub public repo/main and files were inspected at a documentation level; **Codex must directly inspect its checkout** before code writes. Never treat these notes as a completed local repo audit.
 
@@ -122,11 +122,11 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 
 ### G06 — Full workspaces, portfolio, Gantt, accessibility
 
-- [ ] All screens in `04`, with dashboard, table, activity edit, materials, approvals, production, shipment, portfolio.
-- [ ] Real Gantt + accessible table alternative; explain calculation inputs/risk.
-- [ ] Desktop/mobile/tablet/keyboard/accessibility and all VESA menus.
-- [ ] Today, overdue, next 7 days, action ownership, missing data and filtered multi-PO views.
-- [ ] Practice example isolated from real records.
+- [x] All screens in `04`, with dashboard, table, activity edit, materials, approvals, production, shipment, portfolio.
+- [x] Real Gantt + accessible table alternative; explain calculation inputs/risk.
+- [x] Desktop/mobile/tablet/keyboard/accessibility and all VESA menus.
+- [x] Today, overdue, next 7 days, action ownership, missing data and filtered multi-PO views.
+- [x] Practice example isolated from real records.
 
 ### G07 — Complete language/report system
 
@@ -328,6 +328,8 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | 2026-10-10 12:37 Asia/Dhaka | G06 workspace dashboard and timeline first slice | `feature/tna360-continuous` / 202b2f4 | `apps/tna/src/bootstrap.js`, `apps/tna/assets/tna.css`, `apps/tna/tests/g06-workspace.test.js`, `service-worker.js`, tracker evidence | PASS: syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI on local server: login/admin context preserved, direct `/apps/tna/`, full-entry draft `STYLE-G06` with explicit start `2026-10-12` and ex-factory `2026-12-15`, Dashboard showed due/overdue/next-7/critical metrics, Gantt preview and accessible timeline table rendered, 390px overflow=false, console errors=0. Scope is first G06 slice only; materials/approvals/production/shipment workspace sections and full accessibility matrix remain. No production deploy. | conditional | Continue G06 remaining workspace sections and accessibility checks |
 | 2026-10-10 12:51 Asia/Dhaka | G06 readiness workspace second slice | `feature/tna360-continuous` / f1b05fb | `apps/tna/src/bootstrap.js`, `apps/tna/assets/tna.css`, `apps/tna/index.html`, `apps/tna/tests/g06-workspace.test.js`, `service-worker.js`, tracker evidence | PASS: syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI on local server: login as `admin@vesa`, create full-entry draft `STYLE-G06-FINAL` with explicit start `2026-10-12` and ex-factory `2026-12-15`, Materials & Commercial / Approvals / Production & Capacity / Shipment & Readiness panels rendered with missing-input fail-closed messages, keyboard Tab focus moved, 768px tablet overflow=false, 512px zoom-equivalent overflow=false, 390px mobile overflow=false, console errors=0. Scope is second G06 slice only; real interactive filters, multi-PO portfolio proof, activity edit coverage and final accessibility matrix remain. No production deploy. | conditional | Continue G06 interactive filtering and final accessibility matrix |
 | 2026-10-10 12:58 Asia/Dhaka | G06 workspace interaction third slice | `feature/tna360-continuous` / 0e28d2c | `apps/tna/src/bootstrap.js`, `apps/tna/assets/tna.css`, `apps/tna/index.html`, `apps/tna/tests/g06-workspace.test.js`, `service-worker.js`, tracker evidence | PASS: syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI on local server: login as `admin@vesa`, save local drafts `STYLE-G06-C1` / `STYLE-G06-C2`, portfolio proof table showed `PO-G06-C1` and `PO-G06-C2`, owner/stage filters and clear filters updated the visible timeline, activity edit completed the first task with actual date `2026-10-20`, keyboard Tab focus moved, 390px mobile overflow=false, console errors=0. Scope is third G06 slice only; final spec-04 workspace reconciliation and accessibility/menu evidence matrix remain before acceptance. No production deploy. | conditional | Reconcile G06 against spec-04 workspace views and final evidence matrix |
+| 2026-10-10 13:01 Asia/Dhaka | G06 workspace view modes | `feature/tna360-continuous` / 9de879e | `apps/tna/src/bootstrap.js`, `apps/tna/index.html`, `apps/tna/tests/g06-workspace.test.js`, `service-worker.js`, tracker evidence | PASS: syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI on local server: login as `admin@vesa`, create full-entry draft `STYLE-G06-VIEWS`, Table / Timeline (Gantt) / Today or Next 7 Days / Critical Only controls rendered and changed active workspace view, keyboard Tab focus moved, 390px mobile overflow=false, console errors=0. No production deploy. | conditional | Practice isolation guard |
+| 2026-10-10 13:03 Asia/Dhaka | G06 practice isolation and local acceptance | `feature/tna360-continuous` / c335140 | `apps/tna/src/bootstrap.js`, `apps/tna/index.html`, `apps/tna/tests/g06-workspace.test.js`, `service-worker.js`, tracker evidence | PASS: syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI on local server: login as `admin@vesa`, open Practice Example, visible isolation copy rendered, Save TNA blocked from real production records, Download Saved Copy blocked as business evidence, stored production records stayed 0, 390px mobile overflow=false, console errors=0. G06 checklist accepted locally; no production deploy. | accepted | G07 complete language/report system |
 
 ### Open blockers and decisions
 

@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **14%** |
-| **REMAINING** | **86%** |
-| **TNA 360** | **46%** - accepted gates 6 / 13 |
+| **OVERALL VERIFIED** | **16%** |
+| **REMAINING** | **84%** |
+| **TNA 360** | **54%** - accepted gates 7 / 13 |
 | **PPM 360** | **0%** - accepted gates 0 / 11 |
 | **AQL 360** | **0%** - accepted gates 0 / 13 |
 | **ONE VESA SHARED UX** | **0%** - accepted gates 0 / 10 |
-| Program stage | TNA in-progress checkpoint must be completed first, then shared VESA UI contract, then remaining TNA/PPM/AQL gates |
-| Active gate | **TNA G06 - Full workspaces, portfolio, Gantt, accessibility** |
-| Current subtask / subchecks | Continue G06: reconcile remaining primary workspace views from spec 04, add final accessibility/menu evidence matrix, then decide G06 acceptance |
-| Last ACCEPTED gate | **TNA G05 - Local saving, backup, Excel import and migrations** |
-| Last tested commit SHA | 0e28d2c |
-| Last update (UTC) | 2026-10-10 06:58:15 UTC |
+| Program stage | TNA G07 is next, then shared VESA UI contract, then remaining TNA/PPM/AQL gates |
+| Active gate | **TNA G07 - Complete language/report system** |
+| Current subtask / subchecks | Start G07: English/Bengali/Hindi/Tamil report headings and non-mutating language/report export system |
+| Last ACCEPTED gate | **TNA G06 - Full workspaces, portfolio, Gantt, accessibility** |
+| Last tested commit SHA | c335140 |
+| Last update (UTC) | 2026-10-10 07:03:35 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=6, p=0, a=0, s=0.
+Current counted gates: t=7, p=0, a=0, s=0.
 ```
 
 ## C. Application gate checklist
@@ -48,8 +48,8 @@ Current counted gates: t=6, p=0, a=0, s=0.
 | G03 | Calendar + dependency CPM | ACCEPTED | 56e0856; g03-scheduling.test.js; CAL/GPH fixtures and CPM-01 |
 | G04 | LC, materials, capacity, shipment math | ACCEPTED | 4d36b2c; g04-operations.test.js; COM/APR/CAP/SHP fixtures |
 | G05 | Local save/reopen + Excel import/export | ACCEPTED | c6050d7; visible save/reload/open, backup validation, storage recovery, XLSX preview/export and formula defenses tested |
-| G06 | Workspaces, Gantt, dashboard | ACTIVE | Next checkpoint |
-| G07 | Four languages + reports | NOT STARTED | - |
+| G06 | Workspaces, Gantt, dashboard | ACCEPTED | c335140 accepted locally; not deployed |
+| G07 | Four languages + reports | ACTIVE | Next checkpoint |
 | G08 | Recovery, scenarios + multiorder | NOT STARTED | - |
 | G09 | Secure backend + multiuser | BLOCKED | External provider/identity/database/storage not authorized/provisioned |
 | G10 | PPM/AQL links + notifications | BLOCKED | External notification provider not authorized; local reference adapters pending |
@@ -124,6 +124,8 @@ Current counted gates: t=6, p=0, a=0, s=0.
 | 2026-10-10 06:37:00 UTC | TNA G06 | CONDITIONAL | First workspace slice added: portfolio panel, dashboard action metrics, owner/stage filters, Gantt preview and accessible timeline table. Node regressions and Playwright full-entry/mobile smoke passed; remaining G06 workspace sections/accessibility matrix still open. |
 | 2026-10-10 06:51:12 UTC | TNA G06 | CONDITIONAL | f1b05fb added readiness workspace panels for materials/commercial, approvals, production/capacity and shipment/readiness using existing TNA operations only. PASS: syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; git diff --check. Browser PASS via Playwright CLI: login as admin@vesa, create full-entry TNA with explicit start/ex-factory, readiness panels visible, keyboard Tab focus moved, 768px tablet, 512px zoom-equivalent and 390px mobile overflow=false, console errors=0. G06 remains open for interactive filter behavior, multi-PO portfolio proof and final accessibility matrix. |
 | 2026-10-10 06:58:15 UTC | TNA G06 | CONDITIONAL | 0e28d2c added real owner/stage filter interactions, local multi-PO portfolio proof and domain-backed activity edit controls. PASS: full syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: login as admin@vesa, save two local PO records, portfolio table showed both PO references, owner/stage filters and clear filters updated visible timeline, activity edit completed a task with actual date, keyboard focus moved, 390px overflow=false, console errors=0. G06 remains open for final spec-04 workspace reconciliation and accessibility/menu evidence matrix. |
+| 2026-10-10 07:01:18 UTC | TNA G06 | CONDITIONAL | 9de879e added Table, Timeline (Gantt), Today/Next 7 Days and Critical Only workspace view modes. PASS: full syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: full-entry draft, all view buttons rendered and changed active view, keyboard focus moved, 390px overflow=false, console errors=0. |
+| 2026-10-10 07:03:35 UTC | TNA G06 | ACCEPTED | c335140 isolated Practice Example from production save/export paths. PASS: full syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: practice copy visible, Save TNA blocked from production records, Download Saved Copy blocked as business evidence, stored production records remained 0, 390px overflow=false, console errors=0. G06 accepted locally; no production deploy. |
 | 2026-10-10 | TNA G04 | ACCEPTED | 4d36b2c operational engines tested with g04-operations.test.js. |
 | 2026-10-10 | TNA G03 | ACCEPTED | 56e0856 scheduling engine tested with g03-scheduling.test.js. |
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
@@ -132,4 +134,4 @@ Current counted gates: t=6, p=0, a=0, s=0.
 
 ## F. NEXT ACTION
 
-Continue **TNA G06**: reconcile remaining primary workspace views from `docs/tna/04_UX_LOCALIZATION_REPORTS.md`, add final accessibility/menu evidence matrix, then decide whether G06 can be accepted. Do not deploy production.
+Start **TNA G07**: implement the complete EN/BN/HI/TA report language layer, report headings/content scaffolds and non-mutating report export checks. Do not deploy production.
