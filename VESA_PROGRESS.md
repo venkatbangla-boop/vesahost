@@ -15,7 +15,7 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | Program stage | Shared U-G00 route/auth audit accepted locally; AQL A-G00 fixture runner is the next safe patch; PPM P-G00 remains blocked on the unresolved test dependency |
 | Active gate | **AQL A-G00 - Source audit and frozen numerical/portable baseline** |
 | Current subtask / subchecks | Shared route map and auth redirect are proven across root/App Centre/Admin/AQL/PPM/TNA; AQL release contract and 6-step/13-stage browser baseline pass, but no committed Q01-Q24 fixture runner exists. PPM P-G00 remains blocked by unresolved `playwright` dependency |
-| Last ACCEPTED gate | **Shared U-G00 - Route and authenticated shell audit** (`ea52066`, accepted locally; no deployment) |
+| Last ACCEPTED gate | **Shared U-G00 - Route and authenticated shell audit** (`d33576d`, browser evidence at `ea52066`; accepted locally, no deployment) |
 | Last tested commit SHA | ea52066 (shared route/browser audit); AQL release contract at ea52066; TNA 24c42d1; PPM baseline at 8b06f6f |
 | Last update (UTC) | 2026-10-10 13:57:55 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
