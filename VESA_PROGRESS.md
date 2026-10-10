@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **18%** |
-| **REMAINING** | **82%** |
-| **TNA 360** | **62%** - accepted gates 8 / 13 |
+| **OVERALL VERIFIED** | **21%** |
+| **REMAINING** | **79%** |
+| **TNA 360** | **69%** - accepted gates 9 / 13 |
 | **PPM 360** | **0%** - accepted gates 0 / 11 |
 | **AQL 360** | **0%** - accepted gates 0 / 13 |
 | **ONE VESA SHARED UX** | **0%** - accepted gates 0 / 10 |
-| Program stage | TNA G08 is next, then shared VESA UI contract, then remaining TNA/PPM/AQL gates |
-| Active gate | **TNA G08 - Recovery scenarios and advanced multiorder planning** |
-| Current subtask / subchecks | Continue G08: pure scenario preview/apply and portfolio capacity conflict engine are proven; add visible recovery scenario UI, comparison/apply flow and advanced multiorder views |
-| Last ACCEPTED gate | **TNA G07 - Complete language/report system** |
-| Last tested commit SHA | b519279 |
-| Last update (UTC) | 2026-10-10 07:33:14 UTC |
+| Program stage | TNA G09 local contract completion with external cloud blocker; then shared VESA UI and PPM/AQL baseline gates |
+| Active gate | **TNA G09 - Secure backend and collaboration contracts** |
+| Current subtask / subchecks | Provider-neutral health/attachment boundaries are tested locally; remaining server authorization, durable persistence/backup, private object storage/malware policy and provider decisions are open or externally blocked |
+| Last ACCEPTED gate | **TNA G08 - Recovery scenarios and advanced multiorder planning** (`5d4e3b1`, accepted locally) |
+| Last tested commit SHA | 24c42d1 |
+| Last update (UTC) | 2026-10-10 13:43:53 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=8, p=0, a=0, s=0.
+Current counted gates: t=9, p=0, a=0, s=0.
 ```
 
 ## C. Application gate checklist
@@ -50,8 +50,8 @@ Current counted gates: t=8, p=0, a=0, s=0.
 | G05 | Local save/reopen + Excel import/export | ACCEPTED | c6050d7; visible save/reload/open, backup validation, storage recovery, XLSX preview/export and formula defenses tested |
 | G06 | Workspaces, Gantt, dashboard | ACCEPTED | c335140 accepted locally; not deployed |
 | G07 | Four languages + reports | ACCEPTED | 03ca0cd accepted locally; R01-R12 report model/UI/JSON, Excel export, browser print/PDF route and EN/BN/HI/TA glyph sweep passed; dedicated licensed in-app PDF renderer remains not claimed |
-| G08 | Recovery, scenarios + multiorder | ACTIVE | b519279 conditional; pure scenario preview/apply and portfolio capacity conflict engine proven locally; visible UI/comparison workflow remains |
-| G09 | Secure backend + multiuser | BLOCKED | External provider/identity/database/storage not authorized/provisioned |
+| G08 | Recovery, scenarios + multiorder | ACCEPTED | 5d4e3b1 accepted locally; visible scenario/recovery UI, portfolio capacity conflicts, split shipments, uncertainty handling and 390px browser proof recorded in docs/tna tracker |
+| G09 | Secure backend + multiuser | CONDITIONAL | 24c42d1 local v1 contracts, disabled adapter, bounded offline queue/reconciliation, health and attachment boundaries; secure provider/identity/database/object storage not authorized/provisioned |
 | G10 | PPM/AQL links + notifications | BLOCKED | External notification provider not authorized; local reference adapters pending |
 | G11 | All-regression stabilization | NOT STARTED | - |
 | G12 | Release readiness + authorized deploy | BLOCKED | Requires explicit user production authorization |
@@ -131,6 +131,7 @@ Current counted gates: t=8, p=0, a=0, s=0.
 | 2026-10-10 07:25:27 UTC | TNA G07 | CONDITIONAL | 72fa54e fixed the report print route so dialog reports are visible under print media, removed preview truncation so all activities print, added print-safe page/row break CSS and expanded R01-R12/four-language model tests. PASS: full syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: Tamil preference, R12 report, typed buyer preserved, Print button called `window.print`, print-only report visible while app panels hidden, browser PDF `output/playwright/tna-g07-ta-r12-print.pdf` generated at 100,721 bytes, 390px overflow=false, console/page errors=0. Final Bengali/Hindi/Tamil glyph sweep and full R01-R12 export acceptance remain open. |
 | 2026-10-10 07:30:00 UTC | TNA G07 | ACCEPTED | 03ca0cd expanded export acceptance so every R01-R12 report in EN/BN/HI/TA serializes to JSON and a four-sheet Excel workbook without mutating the plan. PASS: full syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: EN/BN/HI/TA report title and order headings visible, typed buyer text preserved, print-only report visible, browser PDFs generated (`en` 75,678 bytes; `bn` 99,382; `hi` 96,647; `ta` 100,876), 390px overflow=false for each, console/page errors=0. G07 accepted locally; no production deploy and no dedicated licensed in-app PDF renderer claimed. |
 | 2026-10-10 07:33:14 UTC | TNA G08 | CONDITIONAL | b519279 added pure scenario engine foundation with immutable preview, explicit confirmed apply, revision/audit evidence and shared resource conflict detection. PASS: full syntax suite for shared/TNA JS; G01-G08 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: `/apps/tna/` loaded `VesaTnaScenarios`, preview did not mutate live plan, apply without confirmation was blocked, shared line conflict overallocated by 1 was detected, 390px overflow=false, console/page errors=0. Visible scenario UI, comparison/apply workflow and advanced multiorder views remain open. |
+| 2026-10-10 13:43:53 UTC | Program reconciliation / TNA G08-G09 | CONDITIONAL | Reconciled `VESA_PROGRESS.md` against actual feature-branch evidence through `24c42d1`: TNA G00-G08 are accepted locally (9/13); G09 remains conditional with provider-neutral contracts only. All 10 TNA Node tests, AQL release contract, shared/TNA syntax checks and `git diff --check` are green. PPM P-G00, AQL A-G00 and shared U-G00 remain NOT STARTED in their real trackers; cloud identity/database/object storage/notifications and production release remain blocked. |
 | 2026-10-10 | TNA G04 | ACCEPTED | 4d36b2c operational engines tested with g04-operations.test.js. |
 | 2026-10-10 | TNA G03 | ACCEPTED | 56e0856 scheduling engine tested with g03-scheduling.test.js. |
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
@@ -139,4 +140,4 @@ Current counted gates: t=8, p=0, a=0, s=0.
 
 ## F. NEXT ACTION
 
-Continue **TNA G08**: add visible recovery scenario UI, scenario comparison/apply flow and advanced multiorder capacity/conflict views. Do not deploy production.
+Continue **TNA G09**: reconcile remaining server-side authorization, durable persistence/backup, private object-storage delivery/malware policy and provider decision requirements. Then begin the earliest safe unstarted platform/app baseline gate; do not deploy production.
