@@ -330,7 +330,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```text
 TIME / TIMEZONE: 2026-10-10 21:06 Asia/Dhaka
 GATE / OBJECTIVE: A-G04 — prove the existing stage catalog and material/production workflow guards before any domain rewrite
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b0eaed5 / uncommitted test-only patch
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b0eaed5 / fe56432
 FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FILES WATCHED/FROZEN: apps/aql/index.html, SamplingEngine, ResultEngine, stage records, saved data and all PPM/TNA/shared files; no application/domain source changed
 IMPLEMENTED: Added a fixture-only VM contract for the 13 StageCatalog entries, their main modules and pending-first checklists; incoming/roll/shade/lab/IPC/cutting/inline/endline/readiness/monitor field definitions; clean record evaluation; inline and endline reconciliation; fabric density, laboratory, readiness and production-balance guards; unsupported-stage rejection; and required stage workspace source markers.
