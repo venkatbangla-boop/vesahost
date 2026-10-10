@@ -22,6 +22,7 @@
   const state={dialog:null,language:'en',currentPlan:null};
   const domain=globalThis.VesaTnaDomain;
   const scheduling=globalThis.VesaTnaScheduling;
+  const operations=globalThis.VesaTnaOperations;
   const text=key=>(COPY[state.language]||COPY.en)[key]||COPY.en[key]||key;
   const esc=value=>String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   function readRecords(){try{const raw=JSON.parse(localStorage.getItem(STORE_KEY)||'null');return Array.isArray(raw?.records)?raw.records:[]}catch{return []}}
@@ -40,6 +41,7 @@
       ${errors.length?`<h3>Errors</h3><ul>${errors.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
       ${warnings.length?`<h3>Warnings</h3><ul>${warnings.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
       ${schedulePanel(plan)}
+      ${operationsPanel(plan)}
       <h3>Stages</h3><div class="tna-stage-chips">${Object.entries(stageCounts).map(([stage,count])=>`<span>${esc(stage)} · ${count}</span>`).join('')}</div>
       <h3>First activities</h3><div class="tna-task-table" role="table" aria-label="Draft TNA activities">${plan.tasks.slice(0,12).map(task=>`<div role="row"><span>${esc(task.templateRef)}</span><span>${esc(task.title)}</span><span>${esc(task.ownerParty)}</span><span>${esc(task.status)}</span></div>`).join('')}</div></div>`}
   function render(){state.language=language();const records=readRecords();const root=document.getElementById('tnaMain');root.innerHTML=`
@@ -90,6 +92,11 @@
     const result=scheduling.schedule(plan.tasks,plan.edges,{calendar:plan.calendars[0],startDate:start,requiredDate:required,asOfDate:start});
     if(result.validity!=='valid')return `<h3>Schedule</h3><p class="tna-note">Schedule unavailable: ${esc([...result.missingInputs,...result.errors].join(', '))}</p>`;
     return `<h3>Schedule</h3><div class="tna-stage-chips"><span>Forecast · ${esc(result.project.forecastDate)}</span><span>${result.project.workingDaysEarlyOrLate>0?'Late':'Float'} · ${esc(result.project.workingDaysEarlyOrLate)} working day(s)</span><span>Critical chains · ${esc(result.project.criticalPaths.length)}</span></div><p class="tna-note">Calculated forecast only. Baseline/current/actual dates are not overwritten.</p>`;
+  }
+  function operationsPanel(plan){if(!operations)return '';
+    const cap=operations.verifiedRateDays({plannedQty:plan.order.totalQty,completedQty:0,verifiedDailyOutput:null});
+    const commercial=operations.compareCommercial(plan.commitments,plan.materials,plan.calendars[0]);
+    return `<h3>Operational checks</h3><div class="tna-stage-chips"><span>Contract lead · ${esc(commercial.lead.status)}</span><span>Capacity · ${esc(cap.status)}</span><span>Material gates · ${esc(plan.materials.length||'none entered')}</span></div><p class="tna-note">Capacity, material release, approvals and shipment release fail closed until verified inputs/evidence are entered. No LC date, approval, QC release or production rate is guessed.</p>`;
   }
   function openCustomTask(){if(!state.currentPlan)return openDialog('Add Activity',`<p>Create a draft TNA first, then add custom checkpoints to that draft.</p>`);
     openDialog('Add Activity',`<form class="tna-wizard" id="tnaCustomTask"><div class="tna-form-grid">${field('title','Activity title','text','',true)}${selectField('stageCode','Stage',Object.entries(domain.STAGE_LABELS).map(([k,v])=>[k,`${k} · ${v}`]),'O')}${field('ownerParty','Owner party','text','merchant')}${field('durationUnits','Duration units','number','0')}</div><p class="tna-note">Custom activities are added as optional draft checkpoints with audit history. They do not change baseline snapshots silently.</p><button class="tna-btn" type="submit">Add Activity</button></form>`);

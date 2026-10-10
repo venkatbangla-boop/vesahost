@@ -21,6 +21,7 @@ assert(index.includes('data-auth-guard="app"'), 'TNA route must be protected by 
 assert(index.includes('/js/preferences.js'), 'TNA route must load shared preferences.');
 assert(index.includes('src/domain.js'), 'TNA route must load its domain model before the UI bootstrap.');
 assert(index.includes('src/scheduling.js'), 'TNA route must load its scheduling engine before the UI bootstrap.');
+assert(index.includes('src/operations.js'), 'TNA route must load its operational engines before the UI bootstrap.');
 assert(index.includes('src/bootstrap.js'), 'TNA route must load its bootstrap module.');
 assert(catalogue.includes("id:'tna'"), 'App catalogue must register TNA.');
 assert(catalogue.includes("route:'/apps/tna/'"), 'App catalogue must point TNA to /apps/tna/.');
@@ -30,6 +31,7 @@ assert(worker.includes("'./apps/tna/'"), 'Root service worker must precache the 
 assert(worker.includes("'./apps/tna/assets/tna.css'"), 'Root service worker must include TNA CSS.');
 assert(worker.includes("'./apps/tna/src/domain.js'"), 'Root service worker must include TNA domain model.');
 assert(worker.includes("'./apps/tna/src/scheduling.js'"), 'Root service worker must include TNA scheduling engine.');
+assert(worker.includes("'./apps/tna/src/operations.js'"), 'Root service worker must include TNA operational engines.');
 assert(worker.includes("'./apps/tna/src/bootstrap.js'"), 'Root service worker must include TNA bootstrap.');
 assert(worker.includes("path.startsWith('/apps/tna')"), 'Root service worker must not serve stale cached TNA app HTML.');
 

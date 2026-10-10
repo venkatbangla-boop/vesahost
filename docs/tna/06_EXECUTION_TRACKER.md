@@ -10,15 +10,15 @@
 | Repository | `venkatbangla-boop/vesahost` |
 | Deployment target | `/apps/tna/` under VESA App Centre |
 | Specifications | This file plus root `AGENTS.md` and documents `01`–`05` |
-| Design status | G03 scheduling implemented locally on feature branch; apparel operational engines/storage/report/cloud groups remain open |
-| Implementation status | **G03 IMPLEMENTED LOCALLY / NOT DEPLOYED**; TNA shell, domain records, templates, draft wizard, validation and deterministic scheduling verified |
-| Last accepted patch group | **G03 — Calendar, precedence and critical path** |
-| Current patch group | **G04 — Apparel operational engines** |
+| Design status | G04 operational engines implemented locally on feature branch; storage/report/cloud groups remain open |
+| Implementation status | **G04 IMPLEMENTED LOCALLY / NOT DEPLOYED**; TNA shell, domain records, scheduling and operational engines verified |
+| Last accepted patch group | **G04 — Apparel operational engines** |
+| Current patch group | **G05 — Local saving, backup, Excel import and migrations** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
 | External block | Cloud hosting/identity/database/notification providers/permissions not yet authorized or provisioned |
-| Resume anchor | G03 accepted locally on `feature/tna360-continuous`; next checkpoint is G04 apparel operational engines |
-| LAST COMPLETED ACTION | Implemented deterministic date-only calendar engine, graph validator, forward/backward schedule pass, float/critical path, negative-float evidence and UI schedule panel gated by explicit start/required dates |
-| NEXT ACTION | Implement G04: commercial/material/approval/capacity/shipment engines, quantity conservation and fixture tests without inventing buyer approvals, LC dates, material release or production rates |
+| Resume anchor | G04 accepted locally on `feature/tna360-continuous`; next checkpoint is G05 local saving, backup, Excel import and migrations |
+| LAST COMPLETED ACTION | Implemented commercial LC anchor comparison, material readiness gates, approval authority checks, verified-rate/SMV capacity, quantity conservation, shared-line over-allocation and shipment release checks |
+| NEXT ACTION | Implement G05: transaction-safe local save/reopen/autosave/recovery, portable saved-copy validation, staged Excel import/export safety and schema migrations |
 
 **Snapshot date:** 2026-10-10. The GitHub public repo/main and files were inspected at a documentation level; **Codex must directly inspect its checkout** before code writes. Never treat these notes as a completed local repo audit.
 
@@ -105,12 +105,12 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 
 ### G04 — Apparel operational engines
 
-- [ ] Master LC contractual lead vs PO vs fabric/trims B2B LC explicit anchors.
-- [ ] Fabric/trims in-house/QC, approvals and buyer/local office authority gates.
-- [ ] Quantity conservation, factory lines, cutting/sewing/wash/finish/pack stage capacities and WIP.
-- [ ] Rolling forecasts, risk reasons, incomplete input handling and overallocated resources.
-- [ ] Lot-specific booking/final inspection/ex-factory/ETD/ETA planning and actuals.
-- [ ] Pass APR/COM/CAP/SHP fixtures in `03`.
+- [x] Master LC contractual lead vs PO vs fabric/trims B2B LC explicit anchors.
+- [x] Fabric/trims in-house/QC, approvals and buyer/local office authority gates.
+- [x] Quantity conservation, factory lines, cutting/sewing/wash/finish/pack stage capacities and WIP.
+- [x] Rolling forecasts, risk reasons, incomplete input handling and overallocated resources.
+- [x] Lot-specific booking/final inspection/ex-factory/ETD/ETA planning and actuals.
+- [x] Pass APR/COM/CAP/SHP fixtures in `03`.
 
 ### G05 — Local saving, backup, Excel import and migrations
 
@@ -204,16 +204,16 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [x] F09 Backward scheduling
 - [x] F10 Working calendars
 - [x] F11 Critical Path and float
-- [ ] F12 Materials & LC milestones
-- [ ] F13 Approval and reviewer authority
-- [ ] F14 Production capacity and WIP
+- [x] F12 Materials & LC milestones
+- [x] F13 Approval and reviewer authority
+- [x] F14 Production capacity and WIP
 - [x] F15 Separate dates, audit and revisions
 - [x] F16 Dependency graph / lag
 - [ ] F17 Daily follow-up and next 7 days
 - [ ] F18 Explainable risk and blocker ownership
 - [ ] F19 Recovery scenarios
-- [ ] F20 Shipment readiness
-- [ ] F21 Split shipments
+- [x] F20 Shipment readiness
+- [x] F21 Split shipments
 - [ ] F22 Multiorder portfolio
 - [ ] F23 Department-specific views
 - [ ] F24 Role-based views and required security
@@ -269,10 +269,10 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 - [ ] CAL-01 to CAL-05 (working days, holidays, timezone/leap/milestones)
 - [ ] GPH-01 to GPH-09 (graph, all supported relations, float, missing inputs, conflicts)
-- [ ] COM-01 and COM-02 (LC anchors, B2B separation)
-- [ ] APR-01 to APR-03 (approval, local authority, resubmission)
-- [ ] CAP-01 to CAP-05 (capacity, WIP, shared resource and quantity integrity)
-- [ ] SHP-01 and SHP-02 (partial shipments / inspection hold)
+- [x] COM-01 and COM-02 (LC anchors, B2B separation)
+- [x] APR-01 to APR-03 (approval, local authority, resubmission)
+- [x] CAP-01 to CAP-05 (capacity, WIP, shared resource and quantity integrity)
+- [x] SHP-01 and SHP-02 (partial shipments / inspection hold)
 - [ ] SCN-01 and SCN-02 (scenario preview vs approved revision)
 - [ ] RSK-01 and RSK-02 (unknown and multiple risk reasons)
 - [ ] PERF-01 (large plan/no stale state)
@@ -322,6 +322,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | 2026-10-10 11:21 Asia/Dhaka | G01 VESA shell and safe app registration | `feature/tna360-continuous` / `HEAD after G01 commit` | `apps/tna/index.html`, `apps/tna/assets/tna.css`, `apps/tna/src/bootstrap.js`, `apps/tna/tests/g01-shell.test.js`, `js/app-catalogue.js`, `js/preferences.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Browser PASS via Playwright CLI on local server: logged-out `/apps/tna/` redirected to `/login/?next=%2Fapps%2Ftna%2F`; login `admin@vesa` opened TNA; App Centre showed AQL/PPM/TNA; TNA 390px and 1280px overflow=false; AQL/PPM opened with 0 console errors. Production not deployed. | accepted | G02 domain records and universal garment templates |
 | 2026-10-10 11:32 Asia/Dhaka | G02 domain records and universal garment templates | `feature/tna360-continuous` / `HEAD after G02 commit` | `apps/tna/src/domain.js`, `apps/tna/src/bootstrap.js`, `apps/tna/assets/tna.css`, `apps/tna/index.html`, `apps/tna/tests/g01-shell.test.js`, `apps/tna/tests/g02-domain.test.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/domain.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/tna/tests/g02-domain.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Browser PASS via Playwright CLI on local server: login opened `/apps/tna/`; New TNA quick draft created `STYLE-100` with 105 knit tasks, stage chips and separate validation count; `window.VesaTnaDomain` exposed 12 profiles and 126 library activities; 390px overflow=false; Excel-entry tab displayed staged-import/G05 workbook parsing warning; console errors=0. No production deploy. | accepted | G03 calendar, precedence and critical path |
 | 2026-10-10 11:40 Asia/Dhaka | G03 calendar, precedence and critical path | `feature/tna360-continuous` / `HEAD after G03 commit` | `apps/tna/src/scheduling.js`, `apps/tna/src/bootstrap.js`, `apps/tna/index.html`, `apps/tna/tests/g01-shell.test.js`, `apps/tna/tests/g03-scheduling.test.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/domain.js`; `node -c apps/tna/src/scheduling.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/tna/tests/g02-domain.test.js`; `node apps/tna/tests/g03-scheduling.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Fixtures: CAL-01/02/05 and GPH-01/02/03/06 passed; CPM-01 A/B/C/D exact October 2026 dates and holiday slip 1 working day passed. Browser PASS via Playwright CLI on local server: full-entry draft with explicit `2026-10-12` start and `2026-11-30` ex-factory displayed forecast `2027-03-08`, late 70 working days, 1 critical chain; no console errors; 390px overflow=false; baseline/current/actual not overwritten. No production deploy. | accepted | G04 apparel operational engines |
+| 2026-10-10 11:44 Asia/Dhaka | G04 apparel operational engines | `feature/tna360-continuous` / `HEAD after G04 commit` | `apps/tna/src/operations.js`, `apps/tna/src/bootstrap.js`, `apps/tna/index.html`, `apps/tna/tests/g01-shell.test.js`, `apps/tna/tests/g04-operations.test.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/domain.js`; `node -c apps/tna/src/scheduling.js`; `node -c apps/tna/src/operations.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/tna/tests/g02-domain.test.js`; `node apps/tna/tests/g03-scheduling.test.js`; `node apps/tna/tests/g04-operations.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Fixtures: COM-01/02, APR-01/02/03, CAP-01/02/03/04/05, SHP-01/02 passed. Browser PASS via Playwright CLI: operations engine loaded; zero production rate returned `needs-information`; draft UI showed contract lead/capacity `needs-information`, material gates none, no console errors. No production deploy. | accepted | G05 local saving, backup, Excel import and migrations |
 
 ### Open blockers and decisions
 
