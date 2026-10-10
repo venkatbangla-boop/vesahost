@@ -411,6 +411,19 @@ VERDICT: conditional — report preview and Bengali guidance rendering are obser
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then repeat A-G08 with a true preference-control language switch and print/PDF/mobile/keyboard review without changing frozen AQL tables.
 ```
 
+### A-G08 mobile layout and keyboard focus browser sub-slice — conditional, no inspection release
+
+```text
+TIME / TIMEZONE: 2026-10-10 21:45 Asia/Dhaka
+GATE / OBJECTIVE: A-G08 — check responsive width and keyboard focus on a disposable synthetic inspection
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b94c996 / pending documentation commit
+FILES CHANGED (EXACT): docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FROZEN BUSINESS RULES: no AQL application source, report model, sampling table, inspection record, saved browser data, PPM checkpoint identity or TNA calculation changed.
+BROWSER / DATA EVIDENCE: Authenticated Playwright CLI against disposable `http://127.0.0.1:4177` opened the fictional apparel practice inspection at 390×844. `document.documentElement.scrollWidth`, `document.body.scrollWidth` and `innerWidth` each returned 390. One Tab move reached a visible `Saved locally` button; computed outline was `rgb(36, 79, 214) solid 3px`. Screenshot was captured at ignored `output/playwright/aql-a-g08-mobile-390.png`. No export, release, approval or browser-data clear occurred; browser and disposable server were closed.
+VERDICT: conditional — the tested mobile width and initial keyboard focus are locally proven; full keyboard traversal, zoom, print/PDF, true preference-control language switching, four-language UI parity and report sandbox console review remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then complete the remaining A-G08 print/PDF and preference-control language checks without changing frozen AQL tables.
+```
+
 ### A-G05 readiness, rework, reinspection and loading contract — conditional, domain source unchanged
 
 ```text
