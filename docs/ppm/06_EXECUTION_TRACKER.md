@@ -10,11 +10,11 @@
 | Specs | `apps/ppm/AGENTS.md` + `docs/ppm/01`–`06` |
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
-| Last accepted implementation gate | **P-G01 — one shared VESA shell platform gate** (`582cd34`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline and P-G01 shared-shell evidence; P-G02 is active/conditional after its explicit saved-meeting sub-slice; no production deployment |
-| Current gate | `P-G02 — PPM Home/menu/navigation` |
-| LAST COMPLETED ACTION | Added the explicit PPM Open Saved home choice/File handler and repository-backed saved-meeting chooser, with Bengali home guidance proof; the P-G01 platform settings/focus/matrix evidence remains accepted locally |
-| NEXT ACTION | Complete P-G02's 320/360/390/768/1280 home/editor geometry and section-navigation review, then wire the shared saved indicator to real PPM repository state before considering acceptance |
+| Last accepted implementation gate | **P-G02 — PPM Home/menu/navigation** (`d1ad724`; accepted locally, not deployed) |
+| Status | `accepted locally` for P-G00 baseline, P-G01 shared shell and P-G02 Home/menu/navigation; P-G03 is next; no production deployment |
+| Current gate | `P-G03 — PPM applicability, easy workflow, search and custom controls` |
+| LAST COMPLETED ACTION | Completed the explicit Open Saved PPM home/File action, repository-backed reopen, shared saved-state synchronization and 320/360/390/768/1280 home/editor geometry/section-navigation proof; all PPM regression/planning/update suites remain green |
+| NEXT ACTION | Audit PPM applicability, easy workflow, search and custom controls while preserving every 168 checkpoint identity, profile/process relevance, N/A behavior and additive custom-checkpoint rules |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -36,11 +36,11 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] Existing app behavior, local accounts, preferences and identity unaffected.
 
 ### P-G02 — PPM adapter, home and toolbar cleanup
-- [ ] Replace PPM `#fileMenu` positional behavior with shared navigation adapter; no duplicate controls.
-- [ ] Home New/Continue/Open Saved/Practice/Open Saved Copy follows same layout as AQL/TNA.
-- [ ] Dashboard, summary cards and section nav scroll normally; no overlap 320/360/390/768/1280.
-- [ ] Show Save state from real repository, not a synthetic success label.
-- [ ] PPM domain and 168 checkpoint parity unchanged.
+- [x] Replace PPM `#fileMenu` positional behavior with shared navigation adapter; no duplicate controls.
+- [x] Home New/Continue/Open Saved/Practice/Open Saved Copy follows same layout as AQL/TNA.
+- [x] Dashboard, summary cards and section nav scroll normally; no overlap 320/360/390/768/1280.
+- [x] Show Save state from real repository, not a synthetic success label.
+- [x] PPM domain and 168 checkpoint parity unchanged.
 
 ### P-G03 — PPM applicability, easy workflow, search and custom controls
 - [ ] Inline step-by-step help, next-action list, all relevant sections/filters available.
@@ -240,5 +240,22 @@ EVIDENCE FOR FEATURE IDS: P-G02 home-choice/saved-reopen sub-slice only; P-G02 r
 BLOCKERS / UNRESOLVED RISK: Full small-width/editor geometry and shared saved-indicator synchronization remain open; clean-checkout Playwright package provisioning, secure backend/role credentials, physical pilot and production authorization remain external/setup blockers.
 REVIEWER / VERDICT: conditional — the explicit saved action is locally proven and sibling PPM suites remain green; the complete gate is not claimed.
 NEXT ACTION (ONE PRECISE STEP): run the P-G02 width matrix at 320/360/390/768/1280 through home and editor, inspect section-navigation overlap/scroll and bind the shared saved indicator to actual PPM save outcomes.
+```
+
+### P-G02 Home/menu/navigation completion — accepted locally, no production deployment
+
+```text
+TIME / TIMEZONE: 2026-10-10 23:32 Asia/Dhaka
+GATE / OBJECTIVE: P-G02 — prove shared home choices, saved-meeting navigation, normal editor geometry and real repository save-state vocabulary
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / 5535b9d / d1ad724
+FILES CHANGED (EXACT): apps/ppm/workspace.js; apps/ppm/tests/p-g02-home.cjs
+FILES WATCHED/FROZEN: all 168 checkpoint identities/statuses, profile/process relevance, GO/CONDITIONAL GO/HOLD decisions, saved-copy codec, AQL/TNA/shared domain engines; no policy or migration changed
+IMPLEMENTED: Explicit PPM home choices now include New, Continue Last when applicable, Open Saved PPM, Practice/Training and Open Saved Copy. Open Saved PPM and File use a real repository-backed chooser that saves the active production record before listing and reopens through the existing codec. The PPM adapter mirrors existing save outcomes into the shared `Saving…`, `Unsaved changes`, `Saved on this device` and failure vocabulary.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/ppm/tests/p-g02-home.cjs` PASS at 320/360/390/768/1280 home/editor probes, saved/unsaved/saved shell state, static section navigation, Bengali hint, repository reopen and File handler; PPM `regression.cjs` PASS all named checks including PDF/CSV/offline/no errors; `planning.cjs` PASS 16 checks; `update.cjs` PASS 7 lifecycle checks; P-G00 baseline PASS 168 tuples/19 profiles/12 processes/V4-V5; shared contract and syntax checks PASS; `git diff --check` PASS; cached Playwright 1.64.0 + Chromium 1248 used only in disposable browser contexts.
+ROLLBACK: revert `d1ad724` plus prior `c3830fc`/`5535b9d` P-G02 commits to remove the additive chooser/state adapter; no saved-record migration or browser-store cleanup is required.
+EVIDENCE FOR FEATURE IDS: P-G02 accepted locally; P-G03-P-G10 remain unaccepted pending later gates.
+BLOCKERS / UNRESOLVED RISK: Clean-checkout Playwright package provisioning, secure backend/role credentials, physical pilot and production authorization remain external/setup blockers; this is not secure multi-user proof.
+REVIEWER / VERDICT: accepted locally — P-G02 is proven in the local browser/runtime matrix with sibling PPM suites green; no production deployment claim.
+NEXT ACTION (ONE PRECISE STEP): audit P-G03 applicability, easy workflow, search and custom controls while preserving all 168 checkpoint identities and additive custom-checkpoint rules.
 ```
 ```

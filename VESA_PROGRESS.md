@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **36%** |
-| **REMAINING** | **64%** |
+| **OVERALL VERIFIED** | **39%** |
+| **REMAINING** | **61%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
-| **PPM 360** | **18%** - accepted gates 2 / 11 |
+| **PPM 360** | **27%** - accepted gates 3 / 11 |
 | **AQL 360** | **23%** - accepted gates 3 / 13 |
 | **ONE VESA SHARED UX** | **30%** - accepted gates 3 / 10 |
-| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00 and P-G01 are accepted locally; P-G02 Home/menu/navigation is active/conditional after its explicit saved-meeting sub-slice. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
-| Active gate | **PPM P-G02 - PPM Home/menu/navigation** |
-| Current subtask / subchecks | Complete P-G02 through the 320/360/390/768/1280 home/editor geometry and section-navigation review, then make the shared saved indicator reflect real PPM repository save outcomes. The explicit Open Saved PPM card/File handler and repository-backed reopen pass at 1280px in `c3830fc`; New/Practice/Open Saved Copy remain present and PPM regression/planning/update/P-G00 baseline suites are green. P-G01 proved central language/theme controls, mobile Menu Escape/focus return, route links, one sticky region, 390/1280 overflow and console safety across PPM/AQL/TNA. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. Full AQL 35-area/stage, device/restore/large-record/print-PDF/zoom/four-language/share review and live cross-app references remain open. |
-| Last ACCEPTED gate | **PPM P-G01 - one shared VESA shell platform gate** (`582cd34`; accepted locally, no deployment) |
-| Last tested commit SHA | `c3830fc` (PPM P-G02 explicit saved-meeting sub-slice; shared shell source `582cd34`; PPM P-G00 source `e05da03`; AQL browser evidence source `df62cec`); PPM regression/planning/update/P-G00/P-G02, shared contract/matrix, all AQL A-G00/A-G02-A-G09/release, all TNA G01-G09 and `git diff --check` passed in the recorded workspace runtime |
-| Last update (UTC) | 2026-10-10 17:25:49 UTC |
+| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00, P-G01 and P-G02 are accepted locally; P-G03 applicability/workflow/custom controls is the next active gate. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
+| Active gate | **PPM P-G03 - applicability, easy workflow, search and custom controls** |
+| Current subtask / subchecks | Audit PPM profile/process relevance, N/A handling, novice guidance, checkpoint search/filter and additive custom checkpoint critical/action behavior while preserving all 168 identities and GO/CONDITIONAL GO/HOLD rules. P-G02 `d1ad724` proves explicit New/Continue/Open Saved/Practice/Open Saved Copy home choices, repository-backed reopen, shared real save vocabulary and home/editor/section geometry at 320/360/390/768/1280; P-G01 proves central settings/focus and cross-app shell. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. Full AQL 35-area/stage, device/restore/large-record/print-PDF/zoom/four-language/share review and live cross-app references remain open. |
+| Last ACCEPTED gate | **PPM P-G02 - PPM Home/menu/navigation** (`d1ad724`; accepted locally, no deployment) |
+| Last tested commit SHA | `d1ad724` (PPM P-G02 home/save-state proof; prior P-G02 chooser `c3830fc`; shared shell `582cd34`; PPM P-G00 `e05da03`; AQL browser evidence `df62cec`); PPM regression/planning/update/P-G00/P-G02, shared contract/matrix, all AQL A-G00/A-G02-A-G09/release, all TNA G01-G09 and `git diff --check` passed in the recorded workspace runtime |
+| Last update (UTC) | 2026-10-10 17:32:56 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=2, a=3, s=3.
+Current counted gates: t=9, p=3, a=3, s=3.
 ```
 
 ## C. Application gate checklist
@@ -62,8 +62,8 @@ Current counted gates: t=9, p=2, a=3, s=3.
 |---|---|---|---|
 | P-G00 | Baseline audit, 168 checkpoint parity | ACCEPTED | `e05da03`: fixture-only 168-tuple SHA/profile/process/V4-V5 baseline plus normal/abnormal planning cases; regression/planning/update suites pass with explicit cached Playwright 1.64.0 + Chromium 1248 runtime; baseline screenshots and 0 console errors/warnings retained |
 | P-G01 | Common shared VESA shell | ACCEPTED | `582cd34`: one platform-owned Settings dialog backed by central VesaPrefs, mobile Menu Escape/focus return, route links, one sticky region, 390/1280 overflow and zero page errors across PPM/AQL/TNA; six rendered screenshots retained; PPM 168-checkpoint and sibling regressions pass. |
-| P-G02 | PPM Home/menu/navigation | CONDITIONAL | `c3830fc`: explicit Open Saved PPM home/File action, repository-backed chooser/reopen, New/Practice/Open Saved Copy choices and Bengali saved hint pass at 1280px; full 320/360/390/768/1280 editor/section-navigation and real shared save-indicator review remain open |
-| P-G03 | Checkpoints, applicability, workflow | NOT STARTED | - |
+| P-G02 | PPM Home/menu/navigation | ACCEPTED | `d1ad724`: explicit New/Continue/Open Saved/Practice/Open Saved Copy choices, repository-backed reopen, shared `Saving…`/`Unsaved changes`/`Saved on this device` mapping and home/editor/section-navigation geometry pass at 320/360/390/768/1280; PPM regression/planning/update and 168-baseline suites remain green |
+| P-G03 | Checkpoints, applicability, workflow | ACTIVE | Next safe gate: preserve 168 identities while auditing profile/process relevance, N/A/search/filter, novice guidance and additive custom controls |
 | P-G04 | Approvals, measurements, revision, decisions | NOT STARTED | - |
 | P-G05 | Actions, minutes, evidence, amendments | NOT STARTED | - |
 | P-G06 | Offline save/restore/update | NOT STARTED | - |
@@ -152,6 +152,7 @@ Current counted gates: t=9, p=2, a=3, s=3.
 | 2026-10-10 16:29:24 UTC | PPM P-G00 baseline completion | ACCEPTED LOCALLY | `e05da03` adds fixture-only checkpoint/profile/process and current/V4 backup baseline proof; explicit cached Playwright 1.64.0 + Chromium 1248 execution passes `regression.cjs`, `planning.cjs` and `update.cjs`, while existing baseline desktop/mobile screenshots remain available. No PPM runtime/domain data changed; clean-checkout dependency provisioning and secure backend remain separate setup/blocker items. |
 | 2026-10-10 17:15:21 UTC | PPM P-G01 / Shared U-G02 shell completion | ACCEPTED LOCALLY | `582cd34` adds the platform-owned central Settings dialog, language/theme controls, mobile Menu Escape/focus return and reusable `tests/vesa-shared-shell-matrix.cjs`. Authenticated local browser probes pass 6/6 at 390/1280 across PPM/AQL/TNA with route links, one sticky shell, no overflow, zero page errors and six rendered screenshots; PPM regression/planning/update, TNA G01-G09 and AQL baseline/release suites pass. No domain, checkpoint, sampling, TNA-history or saved-record policy changed; no production deployment claim. |
 | 2026-10-10 17:25:49 UTC | PPM P-G02 explicit saved-meeting home sub-slice | CONDITIONAL | `c3830fc` adds an explicit Open Saved PPM home/File action and repository-backed chooser/reopen with Bengali guidance. P-G02 browser proof and PPM regression/planning/update/P-G00 baseline suites pass; full 320/360/390/768/1280 editor geometry, section navigation and shared real save-indicator proof remain open. |
+| 2026-10-10 17:32:56 UTC | PPM P-G02 Home/menu/navigation completion | ACCEPTED LOCALLY | `d1ad724` completes P-G02 with shared save-state synchronization and a 320/360/390/768/1280 home/editor browser matrix: explicit shared home choices, repository-backed reopen, static section navigation, no page overflow, `Saving…`/`Unsaved changes`/`Saved on this device` behavior and zero uncaught errors. PPM regression/planning/update and 168-baseline suites pass; no domain or saved-data policy changed. |
 | 2026-10-10 16:06:15 UTC | AQL A-G05 browser session/reinspection slice | CONDITIONAL | Disposable authenticated browser run at `http://127.0.0.1:4179` observed selected PASS cartons, Random select guidance, FINISHED session/audit entries and original fictional `NOT CONFORMED` report `VE-20261010-4B7D16 / R0` (48/80, one major). Accepting New reinspection event created separate fresh draft `VE-20261010-5733F4 / R0` (`PENDING`, 0/80, zero findings, 29 remaining) without changing the prior view. No release/export/approval or data clear; exact server/browser closed. Full loading/carry-forward/resubmission and approved carton-randomization fixture remain open. |
 | 2026-10-10 13:48:21 UTC | PPM P-G00 baseline audit | BLOCKED | Audited PPM source ownership and frozen paths at `8b06f6f`; VM capture confirmed 168 tuples, 19 profiles and 12 process options; desktop/mobile home/editor screenshots captured under `output/playwright/ppm-pg00-*.png` with 0 console errors/warnings. `regression.cjs`, `planning.cjs` and `update.cjs` all stop before execution with `Cannot find module 'playwright'`; transient npx retry did not resolve it. Exact committed tuple/V4/V5 fixture remains the next PPM prerequisite. |
 | 2026-10-10 13:49:02 UTC | PPM P-G00 dependency probe | BLOCKED | Non-mutating `npm exec --package=playwright` and `npx -p playwright` resolution probes both returned `MODULE_NOT_FOUND`; no package manifest, lockfile, node_modules or application file was changed. |
@@ -171,4 +172,4 @@ Current counted gates: t=9, p=2, a=3, s=3.
 
 ## F. NEXT ACTION
 
-Complete P-G02 by running the PPM home/editor/section-navigation matrix at 320/360/390/768/1280 and binding the shared saved indicator to actual repository save outcomes, then rerun PPM/AQL/TNA regressions before deciding acceptance. Keep A-G03's approved carton-randomization requirement/fixture and seeded evidence request explicit; after P-G02, extend A-G05 through loading/carry-forward/resubmission and complete remaining report/device review. Keep clean-checkout Playwright package provisioning, secure provider services, physical pilot and production authorization explicitly documented; do not deploy production.
+Run the next safe P-G03 applicability/workflow audit: preserve all 168 checkpoint IDs and decisions while proving profile/process relevance, N/A handling, novice guidance, search/filter and additive custom checkpoint critical/action behavior with focused VM/browser tests. Keep A-G03's approved carton-randomization requirement/fixture and seeded evidence request explicit; after P-G03, continue PPM approvals/measurements and extend A-G05 through loading/carry-forward/resubmission. Keep clean-checkout Playwright package provisioning, secure provider services, physical pilot and production authorization explicitly documented; do not deploy production.
