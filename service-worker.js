@@ -1,4 +1,4 @@
-const CACHE='vesa-v53-tna-g06-views';
+const CACHE='vesa-v54-tna-g06-practice';
 const ASSETS=[
   './',
   './index.html',

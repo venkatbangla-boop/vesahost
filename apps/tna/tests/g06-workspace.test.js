@@ -45,6 +45,9 @@ for (const fragment of [
   'Today / Next 7 Days',
   'Critical Only',
   'Table view keeps all calculated date and risk details in text form.',
+  'Practice example is isolated from real production records and cannot be saved as a production TNA.',
+  'Practice example is isolated and cannot be saved into real production records.',
+  'Practice example cannot be exported as business evidence.',
 ]) {
   assert(bootstrap.includes(fragment), `G06 workspace UI missing: ${fragment}`);
 }
