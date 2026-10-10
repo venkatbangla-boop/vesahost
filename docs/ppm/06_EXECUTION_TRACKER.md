@@ -13,8 +13,8 @@
 | Last accepted implementation gate | **P-G04 — PPM approvals, measurement, revision and decision explainability** (`979fec4`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G04 approvals/measurement/revision/decision explainability; P-G05 is next; no production deployment |
 | Current gate | `P-G05 — PPM follow-ups, meeting minutes, evidence and amendment enhancements` |
-| LAST COMPLETED ACTION | Added the additive P-G05 follow-up schema and strict legacy-safe codec for meeting minutes, explicit exceptions/authority, action escalation/date-source metadata and bounded non-recursive full-record amendment snapshots; all PPM gates, planning, update and browser regression remain green |
-| NEXT ACTION | Add a pure P-G05 follow-up service for explicit aging/date-source calculation and controlled amendment creation that snapshots the finalized parent and invalidates copied approvals/signatures, with unit tests before UI wiring |
+| LAST COMPLETED ACTION | Added and tested the pure P-G05 follow-up service for explicitly sourced calendar/working-day aging and controlled amendments that preserve immutable finalized snapshots while clearing stale release, signatures, acknowledgement and approval proof; planning/browser regression remain green |
+| NEXT ACTION | Wire one accessible Follow-up workspace for meeting minutes and action aging/escalation with an explicit date source, then prove save/reopen and mobile behavior before adding authority/amendment controls |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -322,4 +322,20 @@ ROLLBACK: revert `cca87c2` and this ledger commit. Existing saved records need n
 BLOCKERS / UNRESOLVED RISK: This contract alone does not provide user-facing minutes/authority controls, calculate action aging, upload attachments, protect failed attachment saves, create amendments, or enforce append-only snapshot/signature invalidation. Secure notifications/roles remain external and are not claimed. P-G05 stays CONDITIONAL and does not increase percentages.
 REVIEWER / VERDICT: CONDITIONAL — the additive/versioned contract and portability guard are proven; the full workflow and UI acceptance conditions remain open.
 NEXT ACTION (ONE PRECISE STEP): add a pure follow-up service for explicit aging/date-source calculation and controlled amendment creation that snapshots a finalized parent and invalidates copied approvals/signatures, with unit tests before UI wiring.
+```
+
+### P-G05 follow-up workflow service — conditional, gate remains active
+
+```text
+TIME / TIMEZONE: 2026-10-10 18:03 UTC / 2026-10-11 00:03 Asia/Dhaka
+GATE / OBJECTIVE: P-G05 — implement deterministic action-aging and controlled-amendment semantics behind the validated additive contract
+BRANCH / BEFORE SHA / EVIDENCE SHA: feature/tna360-continuous / 685b37f / de75446
+FILES CHANGED (EXACT): apps/ppm/planning-services.js; apps/ppm/record-services.js; apps/ppm/tests/p-g05-followups.cjs; docs/ppm/06_EXECUTION_TRACKER.md (ledger recording follows in the next commit)
+FILES WATCHED/FROZEN: all checkpoint identities/statuses; GO/CONDITIONAL GO/HOLD validation; user-entered calendars and authority; parent records; existing saved-copy contract; no UI, notification, backend or external calendar behavior added
+PROVEN: Calendar-day aging reports signed days from due date only when a source is named. Working-day aging counts only explicitly supplied working dates and rejects missing source, duplicate/out-of-range dates or a calendar range that does not cover both due/review dates. A controlled amendment requires a finalized parent and reason/time, leaves the parent untouched, stores a frozen full-record snapshot without recursive history, chains parent version IDs, reopens a draft, clears release/signatures/minutes acknowledgement and resets copied approval proof to Pending. First and second amendments and saved-copy reopen retain frozen snapshots and valid parent linkage.
+TEST COMMANDS + OUTPUT/COUNTS: P-G05 PASS; P-G04 PASS; P-G00 PASS (168 identities and migration); planning PASS (16); full browser regression PASS including persistence, localization, recovery, all PDF modes, mobile, offline and zero uncaught browser errors; `node --check` and `git diff --check` PASS. Browser tests used the existing cached Playwright 1.64.0 + Chromium 1248 runtime; no dependency files changed.
+ROLLBACK: revert `de75446` and this ledger commit. The prior additive fields and saved records remain valid; no browser data cleanup is required.
+BLOCKERS / UNRESOLVED RISK: No rendered controls invoke these services yet. Attachment upload/save failure protection, authority UI, amendment confirmation/history UI and end-to-end signature invalidation remain unproven. Secure notification delivery remains an external dependency and is not represented by local flags. P-G05 remains CONDITIONAL and percentages do not increase.
+REVIEWER / VERDICT: CONDITIONAL — deterministic service behavior is proven in isolation and regression-safe; user workflows and rendered evidence are still required.
+NEXT ACTION (ONE PRECISE STEP): wire one accessible Follow-up workspace for meeting minutes and action aging/escalation with an explicit date source, then prove save/reopen and 390px behavior before adding authority/amendment controls.
 ```
