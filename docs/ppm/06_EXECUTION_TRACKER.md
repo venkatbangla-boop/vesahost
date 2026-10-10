@@ -10,11 +10,11 @@
 | Specs | `apps/ppm/AGENTS.md` + `docs/ppm/01`–`06` |
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
-| Last accepted implementation gate | **P-G04 — PPM approvals, measurement, revision and decision explainability** (`979fec4`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline through P-G04 approvals/measurement/revision/decision explainability; P-G05 is active; no production deployment |
-| Current gate | `P-G05 — PPM follow-ups, meeting minutes, evidence and amendment enhancements` |
-| LAST COMPLETED ACTION | Added and tested P-G05 bounded attachment-reference controls in `2e0d718`: one reference save/reopens, while a forced repository failure keeps the second reference in the open meeting, preserves the prior durable record and shows the shared failure state |
-| NEXT ACTION | Add controlled amendment confirmation/history UI for finalized meetings and prove the parent stays immutable while the new draft clears release/signatures/approval proof through save/reopen |
+| Last accepted implementation gate | **P-G05 — PPM follow-ups, meeting minutes, evidence and amendment enhancements** (`8e9bdee`; accepted locally, not deployed) |
+| Status | `accepted locally` for P-G00 baseline through P-G05 follow-ups/evidence/amendments; P-G06 is active; no production deployment |
+| Current gate | `P-G06 — PPM saving, recovery, offline and update reliability` |
+| LAST COMPLETED ACTION | Completed controlled-amendment UI in `578a1ad`, then EN/BN/HI/TA follow-up/amendment parity and live-result protection in `8e9bdee`; immutable parent history, cleared child sign-off, save/reopen, entered-value preservation and 390px Indic rendering pass |
+| NEXT ACTION | Audit P-G06 existing/new saved-copy decode/reopen and atomic corrupt/oversized/future rejection coverage against the actual codec/repository/import UI, then add only the first missing executable recovery proof |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -58,7 +58,7 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] Action ownership/aging/escalation and date-source rules.
 - [x] Optional minutes/waivers/authority record with versioned compatibility.
 - [x] Evidence links/attachment references and failed save protection (reference-only; no binary upload claim).
-- [ ] Amendment history and approvals/signature invalidation fully tested.
+- [x] Amendment history and approvals/signature invalidation fully tested.
 
 ### P-G06 — Saving, recovery, offline and update reliability
 - [ ] Existing and new saved copies decode/reopen with no loss.
@@ -458,4 +458,35 @@ OWNERSHIP / CALL FLOW / STATE: central language preference -> LocaleService.sent
 COMPATIBILITY RISKS / GUARDS: dictionaries contain plain text only; interpolated translations are escaped; entered text and identifiers retain byte-logical values; locale switching must not create history/save changes; 390px Indic copy must not overflow; missing keys must fail the explicit coverage test instead of silently earning acceptance
 VERIFICATION / ROLLBACK: source key completeness plus authenticated 390px EN/BN/HI/TA follow-up/amendment render, script detection, entered-value equality, stable record serialization, overflow/console checks; rerun P-G05 amendment/follow-up/domain, P-G04/P-G00/planning/full regression/update/shared-shell/syntax/diff. Revert language/UI/test/tracker patch; no record migration or saved-data deletion.
 PRE-CODE VERDICT: approved as the remaining independently safe P-G05 acceptance slice.
+```
+
+### P-G05 controlled amendment workspace — conditional, gate remained active
+
+```text
+TIME / TIMEZONE: 2026-10-10 19:52 UTC / 2026-10-11 01:52 Asia/Dhaka
+GATE / OBJECTIVE: P-G05 — expose controlled amendments through Edit without unlocking or overwriting the finalized parent
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / 151335d / 578a1ad
+FILES CHANGED (EXACT): apps/ppm/workspace.js; apps/ppm/tests/p-g05-amendment-ui.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+IMPLEMENTED / PROVEN: a finalized meeting requires reason, valid time and explicit acknowledgement before the pure amendment service creates an editable child; the prior GO decision, signatures, approval proof and acknowledgement remain in a frozen non-recursive snapshot; the child clears release/signatures/approval proof, save/reopens and displays escaped prior-version history. The ten-version bound and finalized-parent guard remain intact.
+TEST COMMANDS + OUTPUT/COUNTS: P-G05 amendment UI PASS at 390px; P-G05 domain PASS; P-G04 PASS; P-G00 PASS (168 tuples/19 profiles/12 processes); planning PASS 16; update PASS 7; full regression PASS; P-G05 prior UI PASS; shared shell PASS 6/6; syntax and diff checks PASS. Cached Playwright 1.64.0 + Chromium 1248.
+BROWSER / VISUAL EVIDENCE: `output/playwright/ppm-p-g05-amendment-history-mobile-390.png` visually reviewed; readable history, no clipping/overlap, document/body width 390 and console errors zero.
+ROLLBACK: revert `578a1ad`; no schema migration or saved-data deletion.
+REVIEWER / VERDICT: CONDITIONAL — functional P-G05 amendment requirements pass, but authored P-G05 EN/BN/HI/TA copy parity remained before gate acceptance.
+NEXT ACTION: route all P-G05 authored follow-up/amendment copy through LocaleService and prove language switching cannot mutate entered values or stable IDs.
+```
+
+### P-G05 follow-up/amendment localization and gate acceptance
+
+```text
+TIME / TIMEZONE: 2026-10-10 20:02 UTC / 2026-10-11 02:02 Asia/Dhaka
+GATE / OBJECTIVE: P-G05 — complete four-language authored-copy parity and accept the full follow-up, minutes, evidence and amendment gate
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / 578a1ad / 8e9bdee
+FILES CHANGED (EXACT): apps/ppm/languages.js; apps/ppm/planning-panel.js; apps/ppm/workspace.js; apps/ppm/tests/p-g05-localization.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+IMPLEMENTED / PROVEN: every P-G05 follow-up, aging/escalation, authority, reference and amendment label/message uses the existing sentence-only LocaleService. Authenticated EN/BN/HI/TA rendering preserves entered multilingual minutes/reasons/references, O05, Active, GO and the byte-logical record. A regression found the general translator could restore the initial age prompt after a calculation; `data-live-result` now protects that computed evidence and the original follow-up UI test passes again.
+TEST COMMANDS + OUTPUT/COUNTS: P-G05 localization PASS (four locales, complete required keys, stable serialized record, 390px, zero console errors); amendment UI PASS; follow-up UI PASS; P-G05 domain PASS; P-G04 PASS; P-G00 PASS; planning PASS 16; update PASS 7; full regression PASS including multilingual PDF/CSV defense/cross-tab/save failure/offline/no uncaught errors; shared shell PASS 6/6; syntax and `git diff --check` PASS.
+BROWSER / VISUAL EVIDENCE: Bengali and Tamil amendment screenshots `output/playwright/ppm-p-g05-amendment-{bn,ta}-390.png` visually reviewed; headings, safety copy and history are readable with no horizontal overflow while the user-entered multilingual reason remains unchanged.
+ROLLBACK: revert `8e9bdee`, then `578a1ad` if the amendment UI must also be removed; additive follow-up schema remains compatible and no stored-data cleanup is needed.
+BLOCKERS / UNRESOLVED RISK: reference-only attachments do not claim binary upload/authenticity/object storage; secure authority/notifications remain external. These do not invalidate the locally scoped P-G05 acceptance conditions.
+REVIEWER / VERDICT: ACCEPTED LOCALLY — all four P-G05 checklist items have executable domain/browser evidence; no secure-provider or production-deployment claim.
+NEXT ACTION (ONE PRECISE STEP): audit P-G06 existing/new saved-copy decode/reopen and atomic corrupt/oversized/future rejection coverage against the actual codec/repository/import UI, then add only the first missing executable recovery proof.
 ```

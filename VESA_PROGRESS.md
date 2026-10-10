@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **44%** |
-| **REMAINING** | **56%** |
+| **OVERALL VERIFIED** | **47%** |
+| **REMAINING** | **53%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
-| **PPM 360** | **45%** - accepted gates 5 / 11 |
+| **PPM 360** | **55%** - accepted gates 6 / 11 |
 | **AQL 360** | **23%** - accepted gates 3 / 13 |
 | **ONE VESA SHARED UX** | **30%** - accepted gates 3 / 10 |
-| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00 through P-G04 are accepted locally; P-G05 follow-ups/evidence/amendments is the next active gate. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
-| Active gate | **PPM P-G05 - follow-ups, meeting minutes, evidence and amendment enhancements** |
-| Current subtask / subchecks | P-G05 `2e0d718` conditionally proves bounded reference-only meeting attachments and failed-save protection: one reference save/reopens at 390px, while a forced repository failure keeps a second reference in the open active meeting, preserves the prior durable record and shows the shared failure state. The gate is not accepted because controlled amendment UI and full authored-copy language parity remain open. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. Full AQL 35-area/stage, device/restore/large-record/print-PDF/zoom/four-language/share review and live cross-app references remain open. |
-| Last ACCEPTED gate | **PPM P-G04 - approvals, measurement, revision and decision explainability** (`979fec4`; accepted locally, no deployment) |
-| Last tested commit SHA | `2e0d718` (PPM P-G05 attachment references/failed-save protection); P-G00/P-G04/P-G05, planning (16), update (7), full regression, mobile save-reopen/failure preservation, shared-shell contract and `git diff --check` passed in the recorded workspace runtime |
-| Last update (UTC) | 2026-10-10 19:39:51 UTC |
+| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00 through P-G05 are accepted locally; P-G06 saving/recovery/offline/update reliability is the next active gate. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
+| Active gate | **PPM P-G06 - saving, recovery, offline and update reliability** |
+| Current subtask / subchecks | P-G05 `578a1ad` + `8e9bdee` proves controlled amendments, immutable parent history, cleared child release/signatures/approval proof, durable reopen, visible history and complete EN/BN/HI/TA authored-copy rendering without translating entered values or stable IDs. P-G06 now requires a direct audit of saved-copy decode/reopen, atomic corrupt/oversized/future rejection, offline upgrade and quota rescue evidence before selecting the first missing executable proof. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. |
+| Last ACCEPTED gate | **PPM P-G05 - follow-ups, meeting minutes, evidence and amendments** (`8e9bdee`; accepted locally, no deployment) |
+| Last tested commit SHA | `8e9bdee` (P-G05 four-language parity/live-result protection) with `578a1ad` amendment UI; P-G00/P-G04/P-G05 domain/UI/localization, planning (16), update (7), full regression, 390px EN/BN/HI/TA, shared-shell 6/6, syntax and `git diff --check` passed in the recorded workspace runtime |
+| Last update (UTC) | 2026-10-10 20:02:14 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=5, a=3, s=3.
+Current counted gates: t=9, p=6, a=3, s=3.
 ```
 
 ## C. Application gate checklist
@@ -65,7 +65,7 @@ Current counted gates: t=9, p=5, a=3, s=3.
 | P-G02 | PPM Home/menu/navigation | ACCEPTED | `d1ad724`: explicit New/Continue/Open Saved/Practice/Open Saved Copy choices, repository-backed reopen, shared `Saving…`/`Unsaved changes`/`Saved on this device` mapping and home/editor/section-navigation geometry pass at 320/360/390/768/1280; PPM regression/planning/update and 168-baseline suites remain green |
 | P-G03 | Checkpoints, applicability, workflow | ACCEPTED | `d3ff016`: source fixture/browser proof for 168 identities, profile/process relevance, N/A/PENDING semantics, guidance, search/filter, next-action and additive critical custom ACTION behavior; PPM regression/planning/update remain green |
 | P-G04 | Approvals, measurements, revision, decisions | ACCEPTED | `979fec4`: synthetic decision proof plus planning/browser suites for GO/HOLD, controlled CONDITIONAL GO, approval evidence/exemptions, POM boundaries, stale-signoff invalidation, finalized read-only forms and actionable blocker IDs |
-| P-G05 | Actions, minutes, evidence, amendments | ACTIVE | `2e0d718` proves minutes, aging/escalation, non-overriding authority evidence and reference-only attachment save/failure protection; next add controlled amendment confirmation/history UI |
+| P-G05 | Actions, minutes, evidence, amendments | ACCEPTED | `578a1ad` + `8e9bdee`: guarded controlled amendments preserve an immutable finalized snapshot, clear child sign-off, save/reopen visible history and render P-G05 authored copy in EN/BN/HI/TA while entered values/IDs remain unchanged; full regression green |
 | P-G06 | Offline save/restore/update | NOT STARTED | - |
 | P-G07 | Reports, translations, accessible UX | NOT STARTED | - |
 | P-G08 | TNA/AQL reference integration | NOT STARTED | - |
@@ -177,7 +177,9 @@ Current counted gates: t=9, p=5, a=3, s=3.
 | 2026-10-10 18:14:52 UTC | PPM P-G05 accessible Follow-Up workspace | CONDITIONAL | `6c1b666` adds minutes, explicitly sourced calendar-day aging and escalation evidence UI through MEETING CHECKS/Tools. Authenticated 390px proof saved, reloaded and reopened all values, calculated two overdue days, asserted modal above shared shell after visual QA found/fixed the stacking defect, and reported no overflow/console errors. P-G00/P-G04/P-G05, planning (16), full browser regression, shared shell and diff checks pass. Authority/waiver, attachment failure and amendment UI remain open, so percentages stay unchanged. |
 | 2026-10-10 18:20:25 UTC | PPM P-G05 authority/exception evidence controls | CONDITIONAL | `d1f9872` adds bounded explicit checkpoint/policy/scope/accountable-party/authorizer/type/date/evidence controls. Browser proof save/reopened the O05 record and asserted CoverageEngine, ValidationEngine, ACTION status and release were exactly unchanged; the reopened mobile card was visually inspected. Full PPM regression remains green. Attachment/save-failure and amendment UI remain open, so percentages stay unchanged. |
 | 2026-10-10 19:39:51 UTC | PPM P-G05 attachment references and failed-save protection | CONDITIONAL | `2e0d718` adds bounded escaped reference-only meeting attachments. Browser proof save/reopened the first reference, then forced repository writes to fail and asserted the second reference remained in the open active meeting, the durable record retained only the first reference, and local/shared failure indicators stayed visible at 390px. P-G00/P-G04/P-G05, planning 16, update 7, full regression, shared-shell, syntax and diff checks pass. Controlled amendment UI and full authored-copy localization remain open, so percentages stay unchanged. |
+| 2026-10-10 19:52:53 UTC | PPM P-G05 controlled amendment workspace | CONDITIONAL | `578a1ad` adds guarded reason/time/acknowledgement UI and visible history. Browser proof preserves the frozen finalized parent decision/signatures/approval evidence, clears the editable child's release/signatures/approval proof, save/reopens and remains readable at 390px; full PPM and shared-shell regressions pass. Language parity remained before acceptance. |
+| 2026-10-10 20:02:14 UTC | PPM P-G05 localization and gate completion | ACCEPTED LOCALLY | `8e9bdee` routes P-G05 follow-up/authority/reference/amendment authored copy through LocaleService. EN/BN/HI/TA browser proof preserves entered values, O05/Active/GO and exact serialized record at 390px; visual Bengali/Tamil review passes. Regression found/fixed live age-result overwrite. P-G00/P-G04/P-G05, planning 16, update 7, full regression, shared shell 6/6, syntax and diff checks pass. PPM now counts 6/11; no provider or deployment claim. |
 
 ## F. NEXT ACTION
 
-Run the next safe P-G05 UI patch: preserve all 168 checkpoint IDs and release decisions while adding controlled amendment confirmation/history UI for a finalized meeting; prove the parent remains immutable, the child draft links its frozen snapshot, clears release/signatures/approval proof and save/reopens with visible prior-version history. Then reconcile full authored-copy EN/BN/HI/TA parity before P-G05 acceptance. Keep A-G03's approved carton-randomization requirement/fixture and seeded evidence request explicit; after P-G05, continue PPM offline/reports/integration gates and extend A-G05 through loading/carry-forward/resubmission. Keep clean-checkout Playwright package provisioning, secure provider services, physical pilot and production authorization explicitly documented; do not deploy production.
+Audit PPM P-G06 against actual source and tests: map BackupCodec/PpmRepository/RecoveryRepository/import UI/service-worker ownership, reconcile existing/new saved-copy reopen plus atomic corrupt/oversized/future rejection evidence, and implement only the first missing executable recovery proof. Keep all 168 checkpoint IDs, P-G05 history and saved records frozen. Preserve A-G03's approved carton-randomization requirement/fixture request, external secure-provider blockers, physical pilot and production authorization; do not deploy production.
