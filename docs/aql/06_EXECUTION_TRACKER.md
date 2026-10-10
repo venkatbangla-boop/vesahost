@@ -401,7 +401,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```text
 TIME / TIMEZONE: 2026-10-10 21:41 Asia/Dhaka
 GATE / OBJECTIVE: A-G08 — inspect report preview, plain-language report actions and guidance-language rendering on a disposable synthetic inspection
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b557b08 / b296994
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b557b08 / aa3e641
 FILES CHANGED (EXACT): docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FROZEN BUSINESS RULES: no AQL application source, report model, sampling table, inspection record, saved browser data, PPM checkpoint identity or TNA calculation changed; no report export or release was submitted.
 IMPLEMENTED / REVIEWED: Authenticated Playwright CLI against disposable `http://127.0.0.1:4176` opened an apparel `Practice Example` and used `File → Prepare Report → Preview`. The rendered preview showed the fictional training / non-certificate banner and `Print / Save PDF` plus `Export HTML` actions. `View` guidance was then switched through the existing preference event path to Bengali; the guidance sentence rendered Bengali while inspection labels and user data stayed unchanged.
