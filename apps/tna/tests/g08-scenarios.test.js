@@ -62,6 +62,8 @@ assert(advancedPreview.branch.forecastProvenance.inputRevision === advancedPlan.
 const filtered = scenarios.portfolioSummary([planA, planB], { buyer: 'Buyer Scenario' });
 assert(filtered.accessibleOrderCount === 2 && filtered.conflictCount === 1, 'G08 portfolio summary should preserve filters and shared conflict count.');
 assert(filtered.orders[0].forecastProvenance.inputRevision === plan.revision, 'G08 portfolio rows should expose forecast provenance.');
+const filteredPo = scenarios.portfolioSummary([planA, planB], { po: 'PO-B' });
+assert(filteredPo.accessibleOrderCount === 1 && filteredPo.orders[0].po === 'PO-B', 'G08 portfolio summary should narrow rows by PO filter.');
 
 const split = operations.reconcileShipmentLots(1000, [
   { lotReference: 'LOT-1', plannedQty: 600, packedQty: 600, passedQty: 600, shippedQty: 600, poAllocation: [{ poNumber: 'PO-SCN', qty: 600 }] },
@@ -109,5 +111,6 @@ assert(index.includes('./src/scenarios.js?v=0.8.0'), 'G08 scenarios script shoul
 assert(bootstrap.includes('Compare a recovery option') && bootstrap.includes('data-apply-scenario'), 'G08 scenario comparison/apply UI should be visible in the plan workspace.');
 assert(bootstrap.includes('Portfolio & shared capacity') && bootstrap.includes('Split shipment reconciliation'), 'G08 advanced portfolio and split shipment views should be visible.');
 assert(bootstrap.includes('Enter reviewed capacity') && bootstrap.includes('Add shipment lot') && bootstrap.includes('Shipment Lots'), 'G08 reviewed capacity and shipment-lot entry UI should be visible.');
+assert(bootstrap.includes('data-portfolio-po') && bootstrap.includes('PO · '), 'G08 portfolio UI should expose PO management filters.');
 assert(worker.includes('./apps/tna/src/scenarios.js'), 'G08 scenarios script should be cached for local use.');
 console.log('TNA G08 scenario checks passed');

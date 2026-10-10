@@ -336,6 +336,17 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 **G08 reviewed-entry rollback:** revert the implementation and tracker evidence commits; the accepted `61a2078` scenario/portfolio/reconciliation slice remains available.
 
+### G08 pre-code file-level audit — visible PO portfolio filter and two-order proof
+
+| Exact path | Responsibility, state & dependencies observed | In/out of scope | Risk / compatibility contract | Verification / rollback |
+|---|---|---|---|---|
+| `apps/tna/src/bootstrap.js` | `portfolioPanel` already passes `state.portfolioFilter` into the pure summary and computes PO references, but only buyer/factory controls are rendered/bound. | In scope: expose PO filter chips and retain the current local-only portfolio behavior. | Do not change summary calculations, saved-record ownership or cloud wording; current buyer/factory filters and clear action must remain compatible. | G08 direct filter test, static UI assertion and Playwright two-saved-order proof; rollback by reverting controller/test patch. |
+| `apps/tna/tests/g08-scenarios.test.js` | Current tests prove buyer filtering and capacity conflict count; PO-specific summary selection is not directly asserted. | In scope: prove one PO filter narrows the portfolio and preserve both-order conflict behavior. | No external tenant/provider behavior claimed; deterministic fixtures only. | Run all TNA tests, AQL release contract and `git diff --check`. |
+
+**G08 PO-filter call flow:** saved local plan set → `portfolioSummary(plans,{po})` → visible PO chip → filtered rows and metrics. No plan mutation or backend request occurs.
+
+**G08 PO-filter rollback:** revert the UI/test/tracker evidence commit; buyer/factory filtering and prior local portfolio evidence remain available.
+
 **G08 affected call flow:** visible form → `scenarios.previewScenario` / pure portfolio and shipment helpers → preview state only → explicit confirm/reason → `scenarios.applyScenario` → autosave current revision. Base TNA, PPM and AQL records are not mutated by preview or portfolio analysis.
 
 **G08 rollback:** revert the single implementation commit and tracker evidence; existing G08 engine foundation remains at `4557655`/`b519279` and prior accepted G07 behavior is unaffected.
