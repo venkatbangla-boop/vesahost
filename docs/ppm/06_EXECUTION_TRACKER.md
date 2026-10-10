@@ -10,12 +10,12 @@
 | Specs | `apps/ppm/AGENTS.md` + `docs/ppm/01`–`06` |
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
-| Last accepted implementation gate | **NONE in this handover** |
-| Status | `draft-only` — new PPM rework NOT implemented or deployed by this packet |
-| Current gate | `P-G00 — local clone audit and baseline proof` |
-| LAST COMPLETED ACTION | Documentation packet authored, with GitHub-file evidence |
-| NEXT ACTION | Keep P-G00 explicitly blocked until its Playwright dependency and durable tuple/V4/V5 fixture are resolved; the independent P-G01 shell adapter slice is now recorded and must be reconciled with AQL/TNA before shared acceptance |
-| External blocker | Secured backend and cross-company role/approval credentials not provisioned |
+| Last accepted implementation gate | **P-G00 — local clone audit and baseline proof** (`e05da03`; accepted locally, not deployed) |
+| Status | `accepted locally` for P-G00 baseline evidence; P-G01 shell adapter remains conditional; no production deployment |
+| Current gate | `P-G01 — one shared VESA shell platform gate` |
+| LAST COMPLETED ACTION | Added the fixture-only P-G00 baseline runner, updated stale browser-test selectors to use the current app language API, and made update-suite waits explicit for async record restore |
+| NEXT ACTION | Reconcile the existing P-G01 PPM adapter with the AQL/TNA shared-shell matrix at 390/1280, including central settings/language behavior, focus, overflow and console checks; keep all 168 checkpoint and decision rules frozen |
+| External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
 Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits, tests and screenshots with ledger. If there is a discrepancy, downgrade status and inspect before changing. Pick earliest *accepted-prerequisite* group, implement one small patch, run tests, verify other apps not broken, commit, append log, set next action. Any new/changed UI model must be measured against `VESA-UNIFORM-UI-v1` in document 04. Never directly push main without explicit release instruction.
@@ -25,9 +25,9 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] Repository root, branch, dirty tree, HEAD, installed instructions, tests/deps confirmed.
 - [x] Directly inspect every currently scoped PPM, platform, service worker and test file; map ownership/state/call/dependencies.
 - [x] Name exact in-scope/watched/frozen files and rollback posture; preserve the existing continuous feature branch.
-- [ ] Capture existing 168 checkpoint tuples, profile list, normal/abnormal readiness fixtures and V4/V5 saves.
-- [ ] Run current 3 PPM test suites; log command, versions, pass/fail; capture desktop/mobile baseline screenshots.
-- [ ] Record audit verdict `accepted` with evidence or `blocked` and exact missing prerequisite.
+- [x] Capture existing 168 checkpoint tuples, profile list, normal/abnormal readiness fixtures and V4/V5 saves.
+- [x] Run current 3 PPM test suites; log command, versions, pass/fail; capture desktop/mobile baseline screenshots.
+- [x] Record audit verdict `accepted` with evidence or `blocked` and exact missing prerequisite.
 
 ### P-G01 — One shared VESA shell platform gate (coordinate with AQL/TNA)
 - [ ] Audit root auth/preferences/App Centre and coordinate one common shell patch, not one per app.
@@ -189,5 +189,22 @@ VERDICT:
 CONDITIONAL — PPM's visible shell adapter is locally verified without changing checkpoint data, but P-G01 shared acceptance still needs TNA adapter and cross-app geometry/regression; P-G00's missing dependency remains an explicit blocker.
 
 NEXT ACTION (ONE PRECISE STEP): adapt TNA's existing commandbar/menu actions to `VesaWorkspaceShell`, preserve TNA dates and local records, demote its competing sticky commandbar, then rerun authenticated 390/1280 smoke across AQL/PPM/TNA.
+```
+
+### P-G00 baseline completion — accepted locally, no production deployment
+
+```text
+TIME / TIMEZONE: 2026-10-10 22:29 Asia/Dhaka
+GATE / OBJECTIVE: P-G00 — lock the actual 168-checkpoint PPM baseline, durable current/V4 save contract and repeatable browser/domain/update proof
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / 080b2a8 / e05da03
+FILES CHANGED (EXACT): apps/ppm/tests/p-g00-baseline.cjs; apps/ppm/tests/regression.cjs; apps/ppm/tests/update.cjs
+FILES WATCHED/FROZEN: all PPM runtime/domain/worker files, PPM saved records, shared auth/preferences/catalogue, AQL, TNA and shell runtime; no PPM behavior, checkpoint identity, GO/CONDITIONAL GO/HOLD rule or saved customer record changed
+DOMAIN / SCHEMA IMPACT: fixture-only. The new runner locks 168 checkpoint tuples by SHA-256 `4248a7bf5154583c813c50998b3d281d7879e6ba80eb275f5a05a4b2b65df3ad`, 19 profile IDs, 12 process options, current `V5.1.5` schema-2 wrapper, V4.1.1 additive migration, a fresh 168-status record and the existing training baseline (`TS-SAMPLE-001`, HOLD). Regression selectors now call the existing `app.changeLanguage()` API after the shared shell removed the obsolete `#fileMenu .language-select` surface; update waits now require async `app.record` restoration before assertions.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/ppm/tests/p-g00-baseline.cjs` PASS; with cached local Playwright `1.64.0` resolved only through explicit `NODE_PATH` and installed Chromium `chromium-1248` passed `node apps/ppm/tests/regression.cjs` (all named checks, including Bengali/Hindi/Tamil PDF, CSV formula defense, cross-tab guard, offline reload and no uncaught errors), `node apps/ppm/tests/planning.cjs` (16 checks) and `node apps/ppm/tests/update.cjs` (7 lifecycle checks); `node --check apps/ppm/tests/p-g00-baseline.cjs` PASS; prior PPM baseline screenshots remain `output/playwright/ppm-pg00-{desktop-home,mobile-home,desktop-editor,mobile-editor}.png` with console Errors 0 / Warnings 0; `git diff --check` PASS.
+ROLLBACK: revert `e05da03` to remove only the fixture/test compatibility patch; no runtime data migration or browser-store cleanup is required.
+EVIDENCE FOR FEATURE IDS: P-G00 baseline only; P01–P52 remain unaccepted pending later gates.
+BLOCKERS / UNRESOLVED RISK: The package is not declared in a repository manifest, so a clean checkout needs an intentional Playwright/runtime setup before reproducing these commands; the existing mobile section-strip clipping remains baseline evidence for a later UX gate. Secure backend/role credentials remain external.
+REVIEWER / VERDICT: accepted locally — P-G00 baseline is repeatably proven in this workspace; no production or secure multi-user claim.
+NEXT ACTION (ONE PRECISE STEP): reconcile P-G01's existing PPM adapter with the AQL/TNA 390/1280 shared-shell matrix, including central settings/language behavior, focus, overflow and console checks, without changing the 168-checkpoint domain.
 ```
 ```
