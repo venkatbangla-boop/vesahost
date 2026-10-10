@@ -102,7 +102,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```text
 TIME / TIMEZONE: 2026-10-10 21:27 Asia/Dhaka
 GATE / OBJECTIVE: A-G08 — prove report escaping/safety, supported report variants, four-language guided copy and accessibility markers before any report rewrite
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 3b2097a / pending A-G08 tracker commit
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 3b2097a / e3a616e
 FILES CHANGED (EXACT): apps/aql/tests/a-g08-reports-language.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FILES WATCHED/FROZEN: apps/aql/index.html, ReportComposer, SamplingEngine, ResultEngine, saved data and all PPM/TNA/shared files; no application/report source changed
 IMPLEMENTED: Added fixture-only checks that report table cells escape user text, image URLs accept only supported data images, the eight report presets remain available, the 12 guided tasks retain four language label sets, raw user values stay untouched, and report preview/print/accessibility/language preference markers remain present. The existing boundary that full technical interpretation remains English is preserved and not overstated as full report translation.
