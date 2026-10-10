@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **33%** |
-| **REMAINING** | **67%** |
+| **OVERALL VERIFIED** | **27%** |
+| **REMAINING** | **73%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
 | **PPM 360** | **0%** - accepted gates 0 / 11 |
-| **AQL 360** | **8%** - accepted gates 1 / 13 |
-| **ONE VESA SHARED UX** | **10%** - accepted gates 1 / 10 |
-| Program stage | AQL A-G00 frozen numerical/portable baseline accepted locally; A-G01 has AQL and PPM adapter slices conditionally verified, with TNA adapter and cross-app proof remaining; PPM P-G00 remains blocked on the unresolved test dependency |
-| Active gate | **AQL A-G01 - Common VESA shell platform** |
-| Current subtask / subchecks | AQL A-G00 runner passes Q01-Q24 plus portable round-trip invariants. AQL and PPM adapters use the neutral shell; PPM File callback, 168 checkpoint identity count, one sticky shell, static old chrome and 390px overflow=false are proven with console errors 0. TNA adapter and cross-app proof remain; PPM P-G00 remains blocked by unresolved `playwright` dependency |
-| Last ACCEPTED gate | **AQL A-G00 - Frozen numerical/portable baseline** (`53e52e3`; accepted locally, no deployment) |
-| Last tested commit SHA | `1592b75` (PPM A-G01 adapter slice; AQL adapter `ff1ae17`; neutral platform contract `51d10ec`; A-G00 baseline `53e52e3`); shared browser audit `ea52066`; TNA `24c42d1`; PPM baseline `8b06f6f` |
-| Last update (UTC) | 2026-10-10 14:22:43 UTC |
+| **AQL 360** | **15%** - accepted gates 2 / 13 |
+| **ONE VESA SHARED UX** | **20%** - accepted gates 2 / 10 |
+| Program stage | AQL A-G00 and A-G01 are accepted locally; A-G02 is active. PPM P-G00 remains blocked by its unresolved Playwright dependency, while its independent shell adapter is conditional. Secure backend/provider and production authorization remain blocked. |
+| Active gate | **AQL A-G02 - Workflow parity and home/novice flow** |
+| Current subtask / subchecks | Cross-app shell matrix passed at 1280/390: AQL/PPM/TNA each have one sticky `.vesa-workspace`, no overflow, six mobile menu items, focus returned to Home and console errors/warnings 0; PPM rendered 168 checkpoints; AQL/PPM/TNA File callbacks opened existing dialogs. Root homepage was clean; protected `/apps/` and `/admin/` retained login redirects. PPM P-G00 remains blocked by unresolved `playwright` dependency. |
+| Last ACCEPTED gate | **AQL A-G01 - Common VESA shell platform** (`bb431ae` app adapters + `51d10ec` platform contract; accepted locally, no deployment) |
+| Last tested commit SHA | `bb431ae` (TNA adapter; AQL `ff1ae17`; PPM `1592b75`; neutral platform contract `51d10ec`; A-G00 baseline `53e52e3`); root/protected route smoke clean |
+| Last update (UTC) | 2026-10-10 14:29:34 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=0, a=1, s=1.
+Current counted gates: t=9, p=0, a=2, s=2.
 ```
 
 ## C. Application gate checklist
@@ -61,7 +61,7 @@ Current counted gates: t=9, p=0, a=1, s=1.
 | Gate | Work area | Status | Evidence / commit |
 |---|---|---|---|
 | P-G00 | Baseline audit, 168 checkpoint parity | BLOCKED | `docs/ppm/06_EXECUTION_TRACKER.md` current audit: source counts and desktop/mobile screenshots captured; 3 suites blocked by missing `playwright`, exact durable tuple/V4/V5 fixture still open |
-| P-G01 | Common shared VESA shell | NOT STARTED | - |
+| P-G01 | Common shared VESA shell | CONDITIONAL | `1592b75`: PPM adapter uses the shared descriptor shell; 168 checkpoints, existing File callback, static old chrome and 390px overflow=false verified. Shared matrix passes, but P-G00's missing Playwright dependency remains an explicit baseline blocker. |
 | P-G02 | PPM Home/menu/navigation | NOT STARTED | - |
 | P-G03 | Checkpoints, applicability, workflow | NOT STARTED | - |
 | P-G04 | Approvals, measurements, revision, decisions | NOT STARTED | - |
@@ -77,7 +77,7 @@ Current counted gates: t=9, p=0, a=1, s=1.
 | Gate | Work area | Status | Evidence / commit |
 |---|---|---|---|
 | A-G00 | Inspect large AQL source and freeze sampling baseline | ACCEPTED | `53e52e3`: `a-g00-baseline.cjs` Q01-Q24 and portable round-trip invariants pass; release contract plus prior browser baseline remain green; numeric source untouched |
-| A-G01 | Common shared VESA shell | CONDITIONAL | `1592b75` + `ff1ae17` + `51d10ec`: AQL and PPM adapters use the neutral descriptor shell; AQL File/mobile and PPM File/168-checkpoint/one-sticky/overflow checks pass with console errors 0. TNA adapter and cross-app one-region regression remain open; no domain source changed |
+| A-G01 | Common shared VESA shell | ACCEPTED | `bb431ae` + `1592b75` + `ff1ae17` + `51d10ec`: authenticated 1280/390 matrix proves one sticky `.vesa-workspace` across AQL/PPM/TNA, six mobile menu items, focus return to Home, zero overflow and console errors/warnings 0; AQL/PPM/TNA File callbacks opened existing dialogs; PPM rendered 168 checkpoints. Root/protected route regression remained clean. No domain source changed. |
 | A-G02 | Audit workflow parity | NOT STARTED | - |
 | A-G03 | Sampling/statistical engine parity | NOT STARTED | - |
 | A-G04 | Defects, scoring, evidence | NOT STARTED | - |
@@ -95,7 +95,7 @@ Current counted gates: t=9, p=0, a=1, s=1.
 | Gate | Work area | Status | Evidence / commit |
 |---|---|---|---|
 | U-G00 | Shared route/audit map | ACCEPTED | `ea52066` browser smoke: root, login, App Centre, Admin, AQL, PPM and TNA route checks; App Centre shows AQL/PPM/TNA; logout then `/apps/ppm/` redirects to `/login/?next=...`; 1280/390 App Centre screenshots; no console errors |
-| U-G01 | Shared header/nav/auth surface | NOT STARTED | One platform-owned patch still requires sibling regression proof; PPM baseline dependency is unresolved |
+| U-G01 | Shared header/nav/auth surface | ACCEPTED | `bb431ae` cross-app matrix: official logo, App Centre breadcrumb, universal six-menu order, saved indicator, Settings callback, 1280/390 one-region geometry, mobile focus return and root/protected route smoke passed locally; no production deployment claim |
 | U-G02 | Shared theme/language controller | NOT STARTED | - |
 | U-G03 | Shared typography/color/background tokens | NOT STARTED | - |
 | U-G04 | Shared App Centre card pattern | NOT STARTED | - |
@@ -143,6 +143,7 @@ Current counted gates: t=9, p=0, a=1, s=1.
 | 2026-10-10 14:16:05 UTC | AQL A-G01 platform contract | CONDITIONAL | `51d10ec` added neutral `css/vesa-workspace.css`, descriptor/callback `js/vesa-workspace-shell.js`, a dependency-free contract test and route asset registration for AQL/PPM/TNA. Node syntax/contract/AQL baseline/release tests and `git diff --check` passed; authenticated route smoke loaded all three apps with console errors 0. The adapter is intentionally not mounted yet, so one-region parity is not claimed. |
 | 2026-10-10 14:19:11 UTC | AQL A-G01 adapter | CONDITIONAL | `ff1ae17` wired the existing AQL Home/File/Edit/View/Tools/Help callbacks to the platform shell and demoted AQL's old global sticky regions. Node contract/A-G00/release tests passed; authenticated desktop and 390px smoke proved File callback, one sticky shell, overflow false and mobile Menu drawer with console errors 0. PPM/TNA adapters remain open. |
 | 2026-10-10 14:22:43 UTC | PPM P-G01 adapter slice | CONDITIONAL | `1592b75` changed `apps/ppm/workspace.js` and `workspace.css`: shared Home/File/Edit/View/Tools/Help callbacks route through the platform shell, old app sticky regions are static, and browser smoke rendered all 168 checkpoints with overflow false and console errors 0 at desktop/mobile probes. PPM baseline suites remain blocked at `require('playwright')`; no release/signature/checkpoint data was changed. |
+| 2026-10-10 14:29:34 UTC | A-G01 / U-G01 cross-app shell acceptance | ACCEPTED | `bb431ae` completes the TNA adapter. Authenticated 1280/390 AQL/PPM/TNA matrix proved one sticky `.vesa-workspace`, six mobile menu items, focus returned to Home, no overflow, zero console errors/warnings, File callbacks and PPM's 168 checkpoints; root homepage remained clean and protected `/apps/`/`/admin/` redirects remained intact. A-G01 and U-G01 now count locally; PPM P-G00 stays blocked. |
 | 2026-10-10 | TNA G04 | ACCEPTED | 4d36b2c operational engines tested with g04-operations.test.js. |
 | 2026-10-10 | TNA G03 | ACCEPTED | 56e0856 scheduling engine tested with g03-scheduling.test.js. |
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
@@ -151,4 +152,4 @@ Current counted gates: t=9, p=0, a=1, s=1.
 
 ## F. NEXT ACTION
 
-Adapt TNA to the tested neutral `VesaWorkspaceShell` contract: preserve its existing HOME/FILE/EDIT/VIEW/TOOLS/HELP actions, demote only the competing sticky commandbar, then run authenticated 390/1280 smoke across AQL/PPM/TNA; keep PPM P-G00's missing Playwright dependency explicitly blocked, keep AQL sampling/ResultEngine, PPM checkpoint identities and TNA date calculations frozen, and do not deploy production.
+Begin AQL A-G02 workflow parity: audit New/Continue/Open Saved/Practice/Open Saved Copy and guided six-step novice/expert flow against the actual AQL callbacks, then add the smallest fixture/browser proof while keeping sampling/Ac-Re/ResultEngine, PPM checkpoint identities and TNA date calculations frozen. Keep PPM P-G00's missing Playwright dependency, secure provider services and production authorization explicitly blocked; do not deploy production.

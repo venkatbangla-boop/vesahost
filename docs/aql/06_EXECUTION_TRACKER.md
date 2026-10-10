@@ -10,11 +10,11 @@
 | Source baseline | GitHub blob `b733dc700fce47aa04f1cd3f64c5e8f286d65512`, approx 11.7MB inline HTML |
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
-| Last accepted new rework gate | **A-G00** — source-derived deterministic baseline accepted locally; no live deploy |
-| Current verdict | `accepted` locally for the frozen baseline; browser reopen and provider services remain separate gates/blockers |
-| Current gate | **A-G01** — common VESA shell platform and sibling route audit |
-| LAST COMPLETED ACTION | Adapted AQL's existing Home/File/Edit/View/Tools/Help callbacks to `VesaWorkspaceShell`; AQL's old sticky regions are demoted or removed only after callback wiring |
-| NEXT ACTION | Adapt PPM and TNA one at a time to the same shell contract, preserving their app-owned actions and data; then rerun the full sibling geometry/regression matrix |
+| Last accepted new rework gate | **A-G01** — common VESA shell platform accepted locally; no live deploy |
+| Current verdict | `accepted` locally for A-G00 and A-G01; browser reopen, PPM baseline dependency and provider services remain separate gates/blockers |
+| Current gate | **A-G02** — AQL workflow parity and home/novice flow audit |
+| LAST COMPLETED ACTION | Completed the shared A-G01 shell: AQL/PPM/TNA adapters preserve their existing callbacks, all three have one sticky workspace region, and root/protected-route regressions remain clean |
+| NEXT ACTION | Audit AQL A-G02 home, New/Continue/Open Saved/Practice/Open Saved Copy and guided six-step flow against actual callbacks; keep sampling, Ac/Re and inspection records frozen |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
 ## Daily/new-session rule
@@ -248,5 +248,20 @@ EVIDENCE:
 VERDICT:
 CONDITIONAL — AQL adapter is locally verified, but A-G01 cannot be accepted until PPM and TNA use the same shared shell and the cross-app matrix passes. PPM's existing browser suites remain blocked by missing `playwright`.
 
-NEXT ACTION (ONE PRECISE STEP): inspect PPM's startup/controller insertion point, wire its existing `app.menu` callbacks to the platform shell, demote its topbar/file/section/rail/footer sticky regions without changing 168 checkpoint data, then run its available source tests and authenticated desktop/mobile smoke.
+NEXT ACTION (ONE PRECISE STEP): record the cross-app acceptance evidence below, then begin A-G02 AQL workflow parity without altering frozen sampling/decision rules.
+```
+
+### A-G01 final shared acceptance — accepted locally, not deployed
+
+```text
+BRANCH / ACCEPTED SHA: `feature/tna360-continuous` / `bb431ae` (app adapters; platform contract `51d10ec`; ledger reconciliation follows)
+
+ACCEPTANCE EVIDENCE:
+Node: shell contract, TNA G01–G09 suite, AQL A-G00 Q01–Q24 plus portable invariants, AQL release contract, syntax checks for AQL/PPM/TNA and `git diff --check` all passed. PPM `regression.cjs` remains an explicit environment blocker at `Cannot find module 'playwright'` and is not represented as passed.
+
+Authenticated Playwright CLI matrix against a disposable local server: at 1280px AQL, PPM and TNA each reported `scrollWidth <= innerWidth`; AQL/PPM/TNA reported exactly one sticky/fixed element, `.vesa-workspace`; PPM rendered 168 `.checkpoint` elements; TNA had no `.tna-commandbar`. At 390px all three reported overflow false, six shared menu items, mobile Menu open, focus returned to Home, and console errors/warnings 0. File callbacks opened existing AQL, PPM and TNA dialogs. Root homepage console errors were 0; unauthenticated `/apps/` and `/admin/` preserved login redirects.
+
+VERDICT: ACCEPTED LOCALLY — A-G01 shell and sibling adapter contract are proven in the current feature branch. This does not accept PPM P-G00, secure backend services or production release authorization.
+
+NEXT ACTION (ONE PRECISE STEP): begin A-G02 AQL workflow parity audit, starting with New/Continue/Open Saved/Practice/Open Saved Copy and the six-step novice/expert flow; do not alter frozen sampling/decision rules.
 ```
