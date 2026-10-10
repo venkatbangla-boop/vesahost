@@ -10,11 +10,11 @@
 | Specs | `apps/ppm/AGENTS.md` + `docs/ppm/01`–`06` |
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
-| Last accepted implementation gate | **P-G00 — local clone audit and baseline proof** (`e05da03`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline evidence; P-G01 shell adapter remains conditional; no production deployment |
-| Current gate | `P-G01 — one shared VESA shell platform gate` |
-| LAST COMPLETED ACTION | Added the fixture-only P-G00 baseline runner, updated stale browser-test selectors to use the current app language API, and made update-suite waits explicit for async record restore |
-| NEXT ACTION | Reconcile the existing P-G01 PPM adapter with the AQL/TNA shared-shell matrix at 390/1280, including central settings/language behavior, focus, overflow and console checks; keep all 168 checkpoint and decision rules frozen |
+| Last accepted implementation gate | **P-G01 — one shared VESA shell platform gate** (`582cd34`; accepted locally, not deployed) |
+| Status | `accepted locally` for P-G00 baseline and P-G01 shared-shell evidence; P-G02 is next; no production deployment |
+| Current gate | `P-G02 — PPM Home/menu/navigation` |
+| LAST COMPLETED ACTION | Added one platform-owned Settings dialog backed by central `VesaPrefs`, mobile Menu Escape/focus return, a 390/1280 cross-app matrix, route/overflow/sticky/console assertions and rendered screenshots; hardened the existing update-suite wait after worker activation |
+| NEXT ACTION | Audit PPM Home/menu/navigation against the shared Home/File/Edit/View/Tools/Help contract, preserve the 168 checkpoint domain and real repository save state, then add the smallest reversible P-G02 adapter/test patch |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -30,10 +30,10 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] Record audit verdict `accepted` with evidence or `blocked` and exact missing prerequisite.
 
 ### P-G01 — One shared VESA shell platform gate (coordinate with AQL/TNA)
-- [ ] Audit root auth/preferences/App Centre and coordinate one common shell patch, not one per app.
-- [ ] Create/approve shared nav/theme interface; one sticky navigation region and correct return-to-Apps.
-- [ ] Verify root `/`, login, apps, admin, PPM, AQL and available TNA routes across devices before claiming platform accepted.
-- [ ] Existing app behavior, local accounts, preferences and identity unaffected.
+- [x] Audit root auth/preferences/App Centre and coordinate one common shell patch, not one per app.
+- [x] Create/approve shared nav/theme interface; one sticky navigation region and correct return-to-Apps.
+- [x] Verify root `/`, login, apps, admin, PPM, AQL and available TNA routes across devices before claiming platform accepted.
+- [x] Existing app behavior, local accounts, preferences and identity unaffected.
 
 ### P-G02 — PPM adapter, home and toolbar cleanup
 - [ ] Replace PPM `#fileMenu` positional behavior with shared navigation adapter; no duplicate controls.
@@ -206,5 +206,22 @@ EVIDENCE FOR FEATURE IDS: P-G00 baseline only; P01–P52 remain unaccepted pendi
 BLOCKERS / UNRESOLVED RISK: The package is not declared in a repository manifest, so a clean checkout needs an intentional Playwright/runtime setup before reproducing these commands; the existing mobile section-strip clipping remains baseline evidence for a later UX gate. Secure backend/role credentials remain external.
 REVIEWER / VERDICT: accepted locally — P-G00 baseline is repeatably proven in this workspace; no production or secure multi-user claim.
 NEXT ACTION (ONE PRECISE STEP): reconcile P-G01's existing PPM adapter with the AQL/TNA 390/1280 shared-shell matrix, including central settings/language behavior, focus, overflow and console checks, without changing the 168-checkpoint domain.
+```
+
+### P-G01 shared shell completion — accepted locally, no production deployment
+
+```text
+TIME / TIMEZONE: 2026-10-10 23:15 Asia/Dhaka
+GATE / OBJECTIVE: P-G01 — prove one VESA shell, central settings/language/theme behavior, mobile keyboard behavior and cross-app geometry without changing PPM domain rules
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / 02fbb81 / 582cd34
+FILES CHANGED (EXACT): js/vesa-workspace-shell.js; css/vesa-workspace.css; tests/vesa-workspace-shell-contract.cjs; tests/vesa-shared-shell-matrix.cjs; apps/ppm/tests/update.cjs
+FILES WATCHED/FROZEN: PPM core/planning/record/report engines, all 168 checkpoint tuples and decisions, saved records, AQL SamplingEngine/Ac-Re rules, TNA date/history engines, auth identity and App Centre routes; no domain or saved-data migration changed
+IMPLEMENTED: The platform shell now opens one app-neutral `data-vesa-settings` dialog using central `VesaPrefs` language/theme controls, restores focus when closed, and handles mobile Menu Escape/focus return. The matrix runner serves the real repository, authenticates with the existing browser-local session fixture, checks shell/menu/route links, one sticky navigation region, 390/1280 overflow, settings language/theme persistence, mobile focus and uncaught errors, and captures six ignored screenshots. The PPM update test waits for restored `app.record` and `APP_VERSION` after explicit worker activation.
+TEST COMMANDS + OUTPUT/COUNTS: `node tests/vesa-workspace-shell-contract.cjs` PASS; `node tests/vesa-shared-shell-matrix.cjs` PASS 6/6 authenticated local probes at 390/1280 for PPM/AQL/TNA with console errors 0; screenshots `output/playwright/vesa-p-g01-{ppm,aql,tna}-{390,1280}.png`; PPM `regression.cjs` PASS all named checks, `planning.cjs` PASS 16 checks and `update.cjs` PASS 7 lifecycle checks after wait hardening, all under cached Playwright 1.64.0 + Chromium 1248; all TNA G01-G09 tests PASS; all AQL A-G00/A-G02-A-G09 and release-contract suites PASS; `node --check tests/vesa-shared-shell-matrix.cjs` PASS; `git diff --check` PASS.
+ROLLBACK: revert `582cd34` to remove the shared settings/focus/matrix/test patch; no PPM runtime record migration or browser-store cleanup is required.
+EVIDENCE FOR FEATURE IDS: P-G01 shared shell only; P-G02-P-G10 remain unaccepted pending later gates. Shared U-G02 theme/language controller evidence is recorded in the root dashboard separately.
+BLOCKERS / UNRESOLVED RISK: Playwright is not declared in a repository package manifest, so clean-checkout reproduction needs intentional dependency/runtime provisioning; secure backend/role credentials, physical pilot and production authorization remain external blockers. This is local browser authentication, not secure multi-user proof.
+REVIEWER / VERDICT: accepted locally — shared shell/settings/focus behavior and sibling regression matrix are repeatably proven in this workspace; no production or secure multi-user claim.
+NEXT ACTION (ONE PRECISE STEP): audit P-G02 PPM Home/menu/navigation, align its home choices and real repository save state with the shared shell, and preserve all 168 checkpoint identities and decisions.
 ```
 ```
