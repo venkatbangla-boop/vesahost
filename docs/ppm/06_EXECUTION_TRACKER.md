@@ -339,3 +339,17 @@ BLOCKERS / UNRESOLVED RISK: No rendered controls invoke these services yet. Atta
 REVIEWER / VERDICT: CONDITIONAL — deterministic service behavior is proven in isolation and regression-safe; user workflows and rendered evidence are still required.
 NEXT ACTION (ONE PRECISE STEP): wire one accessible Follow-up workspace for meeting minutes and action aging/escalation with an explicit date source, then prove save/reopen and 390px behavior before adding authority/amendment controls.
 ```
+
+### P-G05 pre-code file audit — accessible follow-up workspace
+
+```text
+TIME / TIMEZONE: 2026-10-11 10:00 Asia/Dhaka
+PATCH OBJECTIVE: expose the already validated minutes and action-aging/escalation contract through one accessible modal, then prove repository save/reopen and 390px behavior
+IN-SCOPE FILES: apps/ppm/planning-panel.js (single meeting-controls/modal owner); apps/ppm/workspace.js (finite Tools/command route only); apps/ppm/workspace.css (follow-up modal layout); apps/ppm/tests/p-g05-followup-ui.cjs (real browser flow); docs/ppm/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md after proof
+OUT-OF-SCOPE / FROZEN: apps/ppm/core.js checkpoint identities/statuses; ValidationEngine and GO/CONDITIONAL GO/HOLD; approval/signature/release rules; record-services.js schema/codec; PPM service worker; apps/aql/**; apps/tna/**; shared auth/catalogue/preferences/shell; no notification, upload, backend or buyer-authority claim
+OWNERSHIP / CALL FLOW / STATE: Tools or MEETING CHECKS command -> MeetingControls follow-up modal -> bounded field validation -> existing FollowUpService.aging() for explicitly sourced calendar-day calculation -> workspace.mutate() -> existing history/autosave/repository -> codec-backed reopen. Escalation records remain evidence supplied by the user; the UI never marks a notification sent.
+COMPATIBILITY RISKS: locked meetings must stay read-only; imported/user text must be escaped; language changes must not alter entered values; missing due/review date or source must fail closed; repeated renders must dispose modal listeners; small screens must not overflow; save/reopen must retain minutes and escalation metadata.
+VERIFICATION: syntax; P-G05 domain fixture; new authenticated Playwright browser flow at 390px including minutes, aging, escalation, save/reopen and console/overflow assertions; P-G00/P-G04 and existing PPM planning/regression suites; shared-shell contract; git diff --check.
+ROLLBACK: revert the UI/test/tracker patch. Additive follow-up fields already exist and need no migration or browser-data deletion.
+PRE-CODE VERDICT: approved for the smallest reversible P-G05 UI slice; authority/waiver, attachment failure and amendment controls remain explicitly out of this patch.
+```
