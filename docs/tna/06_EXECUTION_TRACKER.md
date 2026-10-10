@@ -377,6 +377,18 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 **G09 offline queue rollback:** revert the storage, script-order and test changes; cloud adapter remains disabled-by-default and local plan storage is unchanged.
 
+### G09 pre-code file-level audit — offline work visibility
+
+| Exact path | Responsibility, state & dependencies observed | In/out of scope | Risk / compatibility contract | Verification / rollback |
+|---|---|---|---|---|
+| `apps/tna/src/bootstrap.js` | Owns the local TNA shell, localized copy, command menus and browser-local user key; the queue exists in storage but no UI reads or explains it. | In scope: read-only local status/review surface for queued, conflict and rejected intent counts. | Never create or send a remote command from this view; keep provider/identity/database/storage/notification blocker visible; do not expose token or raw payload data. | G09 UI assertions, full TNA regression and mobile route smoke; rollback bootstrap/test/tracker changes together. |
+| `apps/tna/src/storage.js` | Exposes `listOfflineIntents` and `updateOfflineIntent` for bounded per-user local queue; no sync coordinator exists. | In scope only as a read/list dependency; no storage schema or sync behavior change. | Preserve queue idempotency, statuses and per-user isolation; no automatic status mutation or last-write-wins resolution. | Existing G09 queue tests plus browser seeded-queue review; rollback does not touch queue implementation. |
+| `apps/tna/tests/g09-backend-contracts.test.js` | Covers queue persistence and contract validation but not browser-facing status copy or review rendering. | In scope: deterministic bootstrap assertions for localized offline status, read-only review action and explicit no-send wording. | Tests must remain local-only and must not claim reconnection resolution or live collaboration. | Run all TNA tests, AQL release contract, syntax, diff checks and 390px browser smoke; external provider remains blocked. |
+
+**G09 offline visibility call flow:** browser-local user key → `storage.listOfflineIntents` → count/status summary → read-only review dialog. No command creation, request dispatch, conflict auto-resolution or provider access occurs.
+
+**G09 offline visibility rollback:** revert the bootstrap/test/tracker slice; the existing queue API and disabled remote adapter remain unchanged.
+
 ### Accepted patch work log
 
 | Time | Group | Branch / SHA | Files changed | Tests / evidence | Verdict | Next action |

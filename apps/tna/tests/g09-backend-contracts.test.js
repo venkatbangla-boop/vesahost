@@ -8,9 +8,13 @@ const root = path.resolve(__dirname, '..', '..', '..');
 const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
 const index = read('apps/tna/index.html');
 const worker = read('service-worker.js');
+const bootstrap = read('apps/tna/src/bootstrap.js');
 
 assert(index.includes('./src/cloud-contracts.js?v=0.9.0') && index.includes('./src/remote-api.js?v=0.9.0'), 'G09 route must load the versioned cloud modules.');
 assert(worker.includes('./apps/tna/src/cloud-contracts.js') && worker.includes('./apps/tna/src/remote-api.js'), 'G09 offline cache must include only the local contract modules.');
+assert(bootstrap.includes("offlineWork:'Offline work'") && bootstrap.includes('data-offline-work'), 'G09 UI must expose localized offline-work review status.');
+assert(bootstrap.includes('listOfflineIntents') && bootstrap.includes('offlineConflictNote'), 'G09 UI must read local queue status without creating a sync request.');
+assert(bootstrap.includes("action==='Offline Work'") && bootstrap.includes('Nothing is sent'), 'G09 UI must keep offline review read-only and explicit about no sending.');
 
 const session = {
   tenantId: 'TENANT-1', userId: 'USER-1', membershipId: 'MEM-1', role: 'tenant-admin',
