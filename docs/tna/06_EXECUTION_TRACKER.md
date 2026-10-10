@@ -10,15 +10,15 @@
 | Repository | `venkatbangla-boop/vesahost` |
 | Deployment target | `/apps/tna/` under VESA App Centre |
 | Specifications | This file plus root `AGENTS.md` and documents `01`–`05` |
-| Design status | G01 shell implemented locally on feature branch; later domain/calculation/storage/report/cloud groups remain open |
-| Implementation status | **G01 IMPLEMENTED LOCALLY / NOT DEPLOYED**; TNA shell, catalogue registration and route guard verified |
-| Last accepted patch group | **G01 — VESA shell and safe app registration** |
-| Current patch group | **G02 — Domain records and universal garment templates** |
+| Design status | G02 domain/templates implemented locally on feature branch; calendar/calculation/storage/report/cloud groups remain open |
+| Implementation status | **G02 IMPLEMENTED LOCALLY / NOT DEPLOYED**; TNA shell, domain records, templates, draft wizard and validation verified |
+| Last accepted patch group | **G02 — Domain records and universal garment templates** |
+| Current patch group | **G03 — Calendar, precedence and critical path** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
 | External block | Cloud hosting/identity/database/notification providers/permissions not yet authorized or provisioned |
-| Resume anchor | G01 accepted locally on `feature/tna360-continuous`; next checkpoint is G02 domain records/templates |
-| LAST COMPLETED ACTION | Implemented `/apps/tna/` authenticated shell, registered TNA in App Centre/preferences/root cache, verified login/App Centre/TNA responsiveness and AQL/PPM regressions |
-| NEXT ACTION | Implement G02: add versioned TNA domain records, garment lifecycle templates, invariant validation and New TNA wizard without changing PPM/AQL logic |
+| Resume anchor | G02 accepted locally on `feature/tna360-continuous`; next checkpoint is G03 calendar, precedence and critical path |
+| LAST COMPLETED ACTION | Implemented versioned TNA domain model, complete activity-library references, 12 garment templates, validation, baseline/status safeguards, custom activity additions and New TNA quick/full/staged Excel-entry draft wizard |
+| NEXT ACTION | Implement G03: date-only calendars, precedence graph validation and deterministic critical-path calculations without overwriting baseline/current/forecast/actual date separation |
 
 **Snapshot date:** 2026-10-10. The GitHub public repo/main and files were inspected at a documentation level; **Codex must directly inspect its checkout** before code writes. Never treat these notes as a completed local repo audit.
 
@@ -89,11 +89,11 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 
 ### G02 — Domain records and universal garment templates
 
-- [ ] Implement versioned order/task/approval/material/lot schemas; validate all required invariants.
-- [ ] Build full garment lifecycle/activity library in `02`; dynamic conditional profiles and custom task editing.
-- [ ] Implement revision history, immutable baseline, current targets vs actuals, authority/evidence and status transitions.
-- [ ] Complete new-order wizard with Quick/Full/Excel entry and clear unknown fields.
-- [ ] Fixture tests for knit, woven, denim, sweater, activewear, custom and special processes.
+- [x] Implement versioned order/task/approval/material/lot schemas; validate all required invariants.
+- [x] Build full garment lifecycle/activity library in `02`; dynamic conditional profiles and custom task editing.
+- [x] Implement revision history, immutable baseline, current targets vs actuals, authority/evidence and status transitions.
+- [x] Complete new-order wizard with Quick/Full/Excel entry and clear unknown fields.
+- [x] Fixture tests for knit, woven, denim, sweater, activewear, custom and special processes.
 
 ### G03 — Calendar, precedence and critical path
 
@@ -193,11 +193,11 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 | Files & UX | F26, F27, F28, F29, F30, F31, F33, F34, F41, F42, F44 |
 | Cloud & quality | F36, F37, F38, F39, F40, F43, F45, F46, F49, F50 |
 
-- [ ] F01 App Centre integration
-- [ ] F02 Home actions
-- [ ] F03 Quick/Full/Import creation
-- [ ] F04 Universal product templates
-- [ ] F05 Conditional/custom activities
+- [x] F01 App Centre integration
+- [x] F02 Home actions
+- [x] F03 Quick/Full/Import creation
+- [x] F04 Universal product templates
+- [x] F05 Conditional/custom activities
 - [ ] F06 Complete order master
 - [ ] F07 Immutable baseline
 - [ ] F08 Forward scheduling
@@ -226,8 +226,8 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [ ] F31 Draft undo and reviewed changes
 - [ ] F32 Filtering/search/status
 - [ ] F33 Complete four-language UI
-- [ ] F34 Responsive VESA appearance
-- [ ] F35 Safe practice sample
+- [x] F34 Responsive VESA appearance
+- [x] F35 Safe practice sample
 - [ ] F36 In-app and configured background alerts
 - [ ] F37 Tenant-aware cloud data model and server enforcement
 - [ ] F38 Live collaboration and conflict handling
@@ -284,7 +284,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 - [x] TNA Home/new/recent/practice/offline paths
 - [ ] Save → browser reload → reopen exact values
 - [ ] Corrupt/oversize/version-mismatch backup safely rejected
-- [ ] Baseline cannot be altered by editing forecast/actual
+- [x] Baseline cannot be altered by editing forecast/actual
 - [ ] Excel import preview/mapping, Excel export and formula safety
 - [ ] Actual PDF, print and share fallback tests
 - [ ] Bengali/Hindi/Tamil translation and glyph rendering
@@ -320,6 +320,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | 2026-10-10 | documentation handover only | not committed in repo | seven Markdown docs generated for copying | file creation/zip verification pending | draft-only | G00 |
 | 2026-10-10 10:15 Asia/Dhaka | G00 repository audit and scope map | `feature/tna360-continuous` / `a220db9` | `AGENTS.md`, `docs/tna/*.md`, tracker audit updates | Read all six docs; inspected `apps/index.html`, `js/app-catalogue.js`, `js/preferences.js`, `js/auth.js`, PPM/AQL/service workers/tests; baseline syntax checks, AQL release contract and `git diff --check` passed before commit | accepted | G01 app shell and safe registration |
 | 2026-10-10 11:21 Asia/Dhaka | G01 VESA shell and safe app registration | `feature/tna360-continuous` / `HEAD after G01 commit` | `apps/tna/index.html`, `apps/tna/assets/tna.css`, `apps/tna/src/bootstrap.js`, `apps/tna/tests/g01-shell.test.js`, `js/app-catalogue.js`, `js/preferences.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Browser PASS via Playwright CLI on local server: logged-out `/apps/tna/` redirected to `/login/?next=%2Fapps%2Ftna%2F`; login `admin@vesa` opened TNA; App Centre showed AQL/PPM/TNA; TNA 390px and 1280px overflow=false; AQL/PPM opened with 0 console errors. Production not deployed. | accepted | G02 domain records and universal garment templates |
+| 2026-10-10 11:32 Asia/Dhaka | G02 domain records and universal garment templates | `feature/tna360-continuous` / `HEAD after G02 commit` | `apps/tna/src/domain.js`, `apps/tna/src/bootstrap.js`, `apps/tna/assets/tna.css`, `apps/tna/index.html`, `apps/tna/tests/g01-shell.test.js`, `apps/tna/tests/g02-domain.test.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/domain.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/tna/tests/g02-domain.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Browser PASS via Playwright CLI on local server: login opened `/apps/tna/`; New TNA quick draft created `STYLE-100` with 105 knit tasks, stage chips and separate validation count; `window.VesaTnaDomain` exposed 12 profiles and 126 library activities; 390px overflow=false; Excel-entry tab displayed staged-import/G05 workbook parsing warning; console errors=0. No production deploy. | accepted | G03 calendar, precedence and critical path |
 
 ### Open blockers and decisions
 
