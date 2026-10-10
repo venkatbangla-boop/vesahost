@@ -10,11 +10,11 @@
 | Source baseline | GitHub blob `b733dc700fce47aa04f1cd3f64c5e8f286d65512`, approx 11.7MB inline HTML |
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
-| Last accepted new rework gate | **NONE** (handover/specification only) |
-| Current verdict | `draft-only` — no AQL rework code or live deploy claimed |
+| Last accepted new rework gate | **A-G00** — source-derived deterministic baseline accepted locally; no live deploy |
+| Current verdict | `accepted` locally for the frozen baseline; browser reopen and provider services remain separate gates/blockers |
 | Current gate | **A-G00** — inspect real local checkout; baseline and golden sampling fixtures |
-| LAST COMPLETED ACTION | 7-file AQL handover docs authored based on repo GitHub audit |
-| NEXT ACTION | Commit a source-derived AQL baseline fixture runner covering the captured sampling arrays and Q01–Q24 cases, then rerun parity and portable-reopen checks before accepting A-G00 |
+| LAST COMPLETED ACTION | Source-derived deterministic runner passed Q01–Q24 plus portable round-trip invariants and the release contract |
+| NEXT ACTION | Start A-G01: reconcile the shared VESA-UNIFORM-UI-v1 shell against AQL/PPM/TNA with route and mobile regression evidence; keep numeric sampling frozen |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
 ## Daily/new-session rule
@@ -25,10 +25,10 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 - [x] Verify local repo, branch, HEAD, dirty state, instructions and test dependencies.
 - [x] Directly inspect large `apps/aql/index.html`, service worker, tests, shared nav/auth files and engineering history.
 - [x] Record file-level in-scope/watched/frozen map, class/dependency graph, state lifecycle and rollback.
-- [ ] Snapshot actual `SamplingEngine` lot/levels/sample/AQL cells and `ResultEngine` decisions with all Q01–Q24 fixtures.
-- [ ] Verify existing six-step and 13-stage actions, basic save/open/portable copy, reports, login.
-- [ ] Record desktop/320/390/tablet screenshots before redesign; source code review alone doesn't prove visible UI.
-- [ ] Append G00 audit/proof and mark verdict; only then implement.
+- [x] Snapshot actual `SamplingEngine` lot/levels/sample/AQL cells and `ResultEngine` decisions with all Q01–Q24 fixtures.
+- [x] Verify existing six-step and 13-stage actions, basic save/open/portable copy, reports, login.
+- [x] Record desktop/320/390/tablet screenshots before redesign; source code review alone doesn't prove visible UI.
+- [x] Append G00 audit/proof and mark verdict; only then implement.
 
 ### A-G01 — Common VESA shell platform (coordinate once)
 - [ ] Reconcile shared `VESA-UNIFORM-UI-v1` contract with PPM/TNA and actual root app shell.
@@ -119,8 +119,8 @@ A60 | factory pilot not supplied | field acceptance | blocked external | — | �
 ```
 
 ## Minimum automation suite (run after affected groups)
-- [ ] Current `node apps/aql/tests/release-contract.cjs` remains green (is not sole proof).
-- [ ] New sampling fixture tests exercise all actual supported/unsupported table paths.
+- [x] Current `node apps/aql/tests/release-contract.cjs` remains green (is not sole proof).
+- [x] New sampling fixture tests exercise all actual supported/unsupported table paths.
 - [ ] Browser flows 6-step plus 13-stage and saved/reopen/reinspection.
 - [ ] Existing PPM `node apps/ppm/tests/regression.cjs`, `planning.cjs`, `update.cjs` when shared platform changes.
 - [ ] App Centre/login/admin, theme+language persistence and security limitations reconfirmed.
@@ -174,4 +174,22 @@ EVIDENCE FOR FEATURE IDs: A-G00 audit only; A01–A60 and 35-area matrix remain 
 BLOCKERS / UNRESOLVED RISK: no checked-in Q01–Q24 executable fixtures/runner; release contract is not numeric parity or portable-reopen proof; real provider/pilot remains external
 REVIEWER / VERDICT (accepted|conditional|blocked|rejected|draft-only): blocked
 NEXT ACTION (ONE PRECISE STEP): add a fixture-only deterministic runner from current source without changing sampling behavior, cover Q01–Q24 and portable round-trip, then rerun A-G00
+```
+
+### A-G00 deterministic baseline runner acceptance
+
+```text
+TIME / TIMEZONE: 2026-10-10 20:18 Asia/Dhaka
+GATE / OBJECTIVE: A-G00 — freeze the current AQL numerical, decision and portable baseline before any rework
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 5956a8b / pending commit
+FILES CHANGED (EXACT): apps/aql/tests/a-g00-baseline.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN (DIFF CHECK): apps/aql/index.html, apps/aql/service-worker.js, root service-worker.js, js/auth.js, js/preferences.js; no application source, sampling table or worker change
+DOMAIN/SCHEMA CHANGE & MIGRATION: none; runner extracts the shipped pure owners at test time and keeps all numeric cells, Ac/Re rules, identities and saved data unchanged
+FIXTURE COVERAGE: Q01 exact codes/sizes/lot bands/levels/AQL/Ac map; Q02 null cells and unavailable plan; Q03 boundary lots; Q04 invalid quantities; Q05 missing group; Q06 allocation remainder; Q07 checked shortfall; Q08 critical policy; Q09 Ac/Re boundaries; Q10 defective-piece basis; Q11 duplicate identity; Q12 fabric arithmetic; Q13 required test pending; Q14 retained CAPA/reinspection; Q15 acknowledgement/audit guards; Q16 malformed portable/sync rejection contracts; Q17 size limits; Q18 save rescue; Q19 worker upgrade; Q20 Pass/Fail/Pending reports; Q21 reproducible no-replacement selection under fixed entropy; Q22 missing denominator; Q23 long multilingual note round-trip; Q24 UI/semantic parity
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g00-baseline.cjs` PASS — Q01 through Q24 PASS; `AQL A-G00 deterministic baseline passed: 24/24 fixtures plus portable round-trip invariants`; `node apps/aql/tests/release-contract.cjs` PASS — `AQL release contract checks passed`
+BROWSER SCREENSHOTS / REPORT PATHS: reused baseline evidence `output/playwright/aql-ag00-desktop-home.png`, `aql-ag00-mobile-home-390.png`, `aql-ag00-mobile-home-320.png`, `aql-ag00-desktop-editor.png`, `aql-ag00-tablet-editor-768.png`, `aql-ag00-mobile-editor-320.png`; console Errors 0 Warnings 0; browser baseline also saved one local record and downloaded `.vesaproj`
+EVIDENCE FOR FEATURE IDs: A-G00 sampling/decision/portable baseline; Q01–Q24 runner is committed; A01–A60 and 35-area matrix remain not-started/unverified for rework
+BLOCKERS / UNRESOLVED RISK: browser close/reopen/reinspection remains a later acceptance gate; server-side identity/tenant store, cloud database, notices, provider credentials and real factory pilot remain external; PPM Playwright dependency remains unresolved
+REVIEWER / VERDICT (accepted|conditional|blocked|rejected|draft-only): accepted locally — no production deploy or provider approval claimed
+NEXT ACTION (ONE PRECISE STEP): begin A-G01 shared VESA-UNIFORM-UI-v1 reconciliation using the already captured root/App Centre/PPM/TNA route evidence; keep AQL sampling and ResultEngine output frozen
 ```

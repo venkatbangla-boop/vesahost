@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **22%** |
-| **REMAINING** | **78%** |
+| **OVERALL VERIFIED** | **33%** |
+| **REMAINING** | **67%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
 | **PPM 360** | **0%** - accepted gates 0 / 11 |
-| **AQL 360** | **0%** - accepted gates 0 / 13 |
+| **AQL 360** | **8%** - accepted gates 1 / 13 |
 | **ONE VESA SHARED UX** | **10%** - accepted gates 1 / 10 |
-| Program stage | Shared U-G00 route/auth audit accepted locally; AQL A-G00 fixture runner is the next safe patch; PPM P-G00 remains blocked on the unresolved test dependency |
-| Active gate | **AQL A-G00 - Source audit and frozen numerical/portable baseline** |
-| Current subtask / subchecks | Shared route map and auth redirect are proven across root/App Centre/Admin/AQL/PPM/TNA; AQL release contract and 6-step/13-stage browser baseline pass, but no committed Q01-Q24 fixture runner exists. PPM P-G00 remains blocked by unresolved `playwright` dependency |
-| Last ACCEPTED gate | **Shared U-G00 - Route and authenticated shell audit** (`d33576d`, browser evidence at `ea52066`; accepted locally, no deployment) |
-| Last tested commit SHA | ea52066 (shared route/browser audit); AQL release contract at ea52066; TNA 24c42d1; PPM baseline at 8b06f6f |
-| Last update (UTC) | 2026-10-10 13:57:55 UTC |
+| Program stage | AQL A-G00 frozen numerical/portable baseline accepted locally; A-G01 shared shell reconciliation is next safe work; PPM P-G00 remains blocked on the unresolved test dependency |
+| Active gate | **AQL A-G01 - Common VESA shell platform** |
+| Current subtask / subchecks | AQL `a-g00-baseline.cjs` passes Q01-Q24 plus portable round-trip invariants; release contract and prior 6-step/13-stage/save/download browser baseline remain green. PPM P-G00 remains blocked by unresolved `playwright` dependency |
+| Last ACCEPTED gate | **AQL A-G00 - Frozen numerical/portable baseline** (runner commit pending; accepted locally, no deployment) |
+| Last tested commit SHA | pending runner commit (A-G00 baseline); shared browser audit `ea52066`; TNA `24c42d1`; PPM baseline `8b06f6f` |
+| Last update (UTC) | 2026-10-10 14:18:00 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=0, a=0, s=1.
+Current counted gates: t=9, p=0, a=1, s=1.
 ```
 
 ## C. Application gate checklist
@@ -76,7 +76,7 @@ Current counted gates: t=9, p=0, a=0, s=1.
 
 | Gate | Work area | Status | Evidence / commit |
 |---|---|---|---|
-| A-G00 | Inspect large AQL source and freeze sampling baseline | BLOCKED | `docs/aql/06_EXECUTION_TRACKER.md` current audit: release contract pass, 6-step/13-stage/save/portable browser baseline and SamplingEngine arrays captured; checked-in Q01-Q24 fixture runner remains open |
+| A-G00 | Inspect large AQL source and freeze sampling baseline | ACCEPTED | `a-g00-baseline.cjs` runner commit pending: Q01-Q24 and portable round-trip invariants pass; release contract plus prior browser baseline remain green; numeric source untouched |
 | A-G01 | Common shared VESA shell | NOT STARTED | - |
 | A-G02 | Audit workflow parity | NOT STARTED | - |
 | A-G03 | Sampling/statistical engine parity | NOT STARTED | - |
@@ -112,7 +112,7 @@ Current counted gates: t=9, p=0, a=0, s=1.
 | Production deploy / DNS / main push | BLOCKED | Explicit user authorization after release gates pass |
 | Cloud identity, database, object storage, notifications | BLOCKED | Provisioned provider, credentials, tenant policy and deployment target |
 | PPM baseline automation | BLOCKED | Existing `apps/ppm/tests/{regression,planning,update}.cjs` need a resolvable Playwright Node dependency; non-mutating npm/npx probes failed |
-| AQL baseline parity | BLOCKED | Commit a source-derived Q01-Q24 fixture runner; current release contract does not prove numeric or portable parity |
+| AQL baseline parity | CLOSED LOCALLY FOR A-G00 | `apps/aql/tests/a-g00-baseline.cjs` passes Q01-Q24 plus portable round-trip invariants; browser close/reopen and full reinspection remain later A-G05/A-G09 evidence |
 | True server-side app URL protection | BLOCKED for static GitHub Pages | Authenticated hosting/proxy or server route gate |
 | Real XLSX workbook parsing | CLOSED LOCALLY FOR G05/G07 Excel | Bundled Apache-2.0 SheetJS `xlsx@0.18.5` for local workbook preview/export and TNA report workbook sheets; report PDF/print visual review remains G07 |
 
@@ -138,6 +138,7 @@ Current counted gates: t=9, p=0, a=0, s=1.
 | 2026-10-10 13:49:02 UTC | PPM P-G00 dependency probe | BLOCKED | Non-mutating `npm exec --package=playwright` and `npx -p playwright` resolution probes both returned `MODULE_NOT_FOUND`; no package manifest, lockfile, node_modules or application file was changed. |
 | 2026-10-10 13:52:37 UTC | AQL A-G00 baseline audit | BLOCKED | `node apps/aql/tests/release-contract.cjs` passed. Browser baseline at `bda6836` exposed 6 steps, 13 stages, SamplingEngine arrays/AC map and ResultEngine empty pending reasons; synthetic save persisted one local record and portable `VE-20261010-785ED6-R0.vesaproj` downloaded; desktop/320/390/tablet screenshots and console Errors 0/Warn 0 captured. Q01-Q24 executable fixtures/runner are absent, so A-G00 is not accepted. |
 | 2026-10-10 13:57:55 UTC | Shared U-G00 route/auth audit | ACCEPTED | `ea52066` browser smoke: authenticated App Centre rendered AQL/PPM/TNA catalogue; root/App Centre/Admin/AQL/PPM/TNA route titles and authenticated shell were checked at 1280px; logout plus protected PPM navigation redirected to login; 390px App Centre screenshot and console error query were clean. No shared source changed. |
+| 2026-10-10 14:18:00 UTC | AQL A-G00 deterministic baseline | ACCEPTED | Added `apps/aql/tests/a-g00-baseline.cjs` as a fixture-only runner. It extracts the shipped pure domain owners at test time, verifies the frozen sampling arrays/AC map and Q01-Q24 decisions, checks portable semantic round-trip/budget guards, and leaves `apps/aql/index.html` and both service workers unchanged. PASS: `node apps/aql/tests/a-g00-baseline.cjs` (24/24); `node apps/aql/tests/release-contract.cjs`; no production deploy. |
 | 2026-10-10 | TNA G04 | ACCEPTED | 4d36b2c operational engines tested with g04-operations.test.js. |
 | 2026-10-10 | TNA G03 | ACCEPTED | 56e0856 scheduling engine tested with g03-scheduling.test.js. |
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
@@ -146,4 +147,4 @@ Current counted gates: t=9, p=0, a=0, s=1.
 
 ## F. NEXT ACTION
 
-Add a fixture-only deterministic AQL baseline runner from the current source, cover Q01-Q24 plus portable round-trip without changing sampling behavior, and rerun A-G00; keep PPM P-G00 blocked until its Playwright dependency and exact fixture are resolved, and do not deploy production.
+Begin A-G01 shared VESA-UNIFORM-UI-v1 reconciliation using the already captured root/App Centre/PPM/TNA route evidence; keep AQL sampling and ResultEngine output frozen, keep PPM P-G00 blocked until its Playwright dependency and exact fixture are resolved, and do not deploy production.
