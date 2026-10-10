@@ -10,15 +10,15 @@
 | Repository | `venkatbangla-boop/vesahost` |
 | Deployment target | `/apps/tna/` under VESA App Centre |
 | Specifications | This file plus root `AGENTS.md` and documents `01`–`05` |
-| Design status | G08 visible recovery/portfolio/split-shipment, reviewed-entry and PO-filter slices accepted locally on feature branch; full G08 evidence and cloud groups remain open |
-| Implementation status | **G08 CONDITIONAL LOCALLY / NOT DEPLOYED**; scenario comparison/apply, local capacity conflict views, reviewed capacity and lot entry, PO-specific portfolio filtering and provenance are proven, but the full G08 checklist is not complete |
-| Last accepted patch group | **G08 — Visible PO portfolio filter and two-order browser proof** |
+| Design status | **G08 accepted locally** on the feature branch for recovery, portfolio, split-shipment, reviewed-entry, PO-filter and uncertainty/recovery evidence; cloud groups remain open |
+| Implementation status | **G08 ACCEPTED LOCALLY / NOT DEPLOYED**; scenario comparison/apply, local capacity conflicts, reviewed capacity and lot entry, PO-specific filtering, split reconciliation, provenance and fail-closed uncertainty are proven. Production completion remains open. |
+| Last accepted patch group | **G08 — Incomplete-input and recovery browser evidence** |
 | Current patch group | **G08 — Recovery scenarios, advanced multiorder planning** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
 | External block | Cloud hosting/identity/database/notification providers/permissions not yet authorized or provisioned |
-| Resume anchor | G07 accepted locally on `feature/tna360-continuous`; next checkpoint is G08 recovery scenarios and advanced multiorder planning |
-| LAST COMPLETED ACTION | Added visible PO-specific portfolio filtering in `5fb8e81` and proved two saved local orders sharing `shared-line-ui` on `2026-10-22`: unfiltered view reports 2 orders / 1 conflict; `PO-PORT-B` narrows to `STYLE-PORT-B` |
-| NEXT ACTION | Continue G08 reconciliation: capture the remaining incomplete-input and overlap/recovery browser evidence, then compare the complete G08 checklist against specs before deciding whether local acceptance is justified |
+| Resume anchor | G08 accepted locally on `feature/tna360-continuous`; next checkpoint is the G09 secure-backend contract/offline-state audit with external provider blockers preserved |
+| LAST COMPLETED ACTION | Completed G08 local acceptance in `5d4e3b1`: missing start/capacity inputs stayed `Needs Information`, scenario preview retained unavailable forecasts, apply stayed gated until reason + confirmation, and confirmed apply created revision 1 with baseline preserved |
+| NEXT ACTION | Begin G09: inspect the defined backend/security contracts, implement only safe versioned tenant/order/offline-disabled paths possible without provisioned infrastructure, and record `BLOCKED — EXTERNAL DEPENDENCY` for live identity/database/collaboration |
 
 **Snapshot date:** 2026-10-10. The GitHub public repo/main and files were inspected at a documentation level; **Codex must directly inspect its checkout** before code writes. Never treat these notes as a completed local repo audit.
 
@@ -137,11 +137,11 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 
 ### G08 — Recovery scenarios, advanced multiorder planning
 
-- [ ] Scenario branches with immutable base, alternative capacities/calendars/routes, compare/apply-confirm.
-- [ ] Shared factory-line capacity conflicts across orders, resource load, revised delivery analysis.
-- [ ] Split shipment planning and order/lot quantity reconciliation.
-- [ ] Advanced management filters, portfolio risk and provenance of forecast.
-- [ ] Tests for scenario non-mutation, overlapping workloads and uncertainty.
+- [x] Scenario branches with immutable base, alternative capacities/calendars/routes, compare/apply-confirm.
+- [x] Shared factory-line capacity conflicts across orders, resource load, revised delivery analysis.
+- [x] Split shipment planning and order/lot quantity reconciliation.
+- [x] Advanced management filters, portfolio risk and provenance of forecast.
+- [x] Tests for scenario non-mutation, overlapping workloads and uncertainty.
 
 ### G09 — Phase 3 secure backend and collaboration
 
@@ -211,7 +211,7 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [x] F16 Dependency graph / lag
 - [ ] F17 Daily follow-up and next 7 days
 - [ ] F18 Explainable risk and blocker ownership
-- [ ] F19 Recovery scenarios
+- [x] F19 Recovery scenarios
 - [x] F20 Shipment readiness
 - [x] F21 Split shipments
 - [ ] F22 Multiorder portfolio
@@ -273,7 +273,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 - [x] APR-01 to APR-03 (approval, local authority, resubmission)
 - [x] CAP-01 to CAP-05 (capacity, WIP, shared resource and quantity integrity)
 - [x] SHP-01 and SHP-02 (partial shipments / inspection hold)
-- [ ] SCN-01 and SCN-02 (scenario preview vs approved revision)
+- [x] SCN-01 and SCN-02 (scenario preview vs approved revision)
 - [ ] RSK-01 and RSK-02 (unknown and multiple risk reasons)
 - [ ] PERF-01 (large plan/no stale state)
 
@@ -376,6 +376,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | 2026-10-10 15:20 Asia/Dhaka | G08 visible recovery scenarios and advanced local portfolio planning slice | `feature/tna360-continuous` / `61a2078` | `apps/tna/src/scenarios.js`, `apps/tna/src/operations.js`, `apps/tna/src/bootstrap.js`, `apps/tna/assets/tna.css`, `apps/tna/tests/g08-scenarios.test.js`, `docs/tna/06_EXECUTION_TRACKER.md` | PASS: `node --check` on shared/TNA JS; all 9 TNA Node tests G01-G08; AQL release contract; `git diff --check`. Deterministic evidence covers immutable alternative calendar/route/capacity preview, forecast provenance, filtered portfolio conflict summaries, partial split-lot quantity and PO reconciliation, inconsistent lot rejection, explicit scenario confirmation and revision creation. Browser PASS via Playwright CLI on local server: authenticated `/apps/tna/` full-entry draft displayed Recovery & Scenarios, base/scenario forecast comparison, changed critical-chain/resource counts and provenance; Apply opened reason + confirmation gate and produced revision 1 while baseline count stayed unchanged; Portfolio & shared capacity and Split shipment reconciliation rendered; 390px overflow=false; console errors=0/warnings=0; screenshot `.playwright-cli/page-2026-10-10T09-20-12-901Z.png` copied to `output/playwright/tna-g08-scenarios-mobile.png`. No production deploy. | conditional | Continue G08 with reviewed lot/operation entry or import paths and uncertainty/overlap tests |
 | 2026-10-10 15:35 Asia/Dhaka | G08 reviewed capacity and shipment-lot entry slice | `feature/tna360-continuous` / `877066d` | `apps/tna/src/domain.js`, `apps/tna/src/bootstrap.js`, `apps/tna/tests/g08-scenarios.test.js`, `docs/tna/06_EXECUTION_TRACKER.md` | PASS: all 9 TNA Node tests G01-G08; AQL release contract; syntax checks for shared/TNA JS; `git diff --check`. Deterministic evidence proves immutable reviewed capacity/lot transitions, revision/audit history, baseline preservation, duplicate capacity rejection, explicit over-capacity and same-resource overlap warnings, packed/passed/shipped conservation, PO allocation mismatch rejection and over-order rejection. Browser PASS via Playwright CLI on local server: Tools exposed `Production Capacity` and `Shipment Lots`; a local draft entry showed `line-ui-1` over-allocation and portfolio `Capacity conflicts 1`; `LOT-UI-1` rendered with 600 planned / 500 passed / 400 shipped / 600 remaining; final-inspection gate remained visible; 390px viewport had scrollWidth 390 and overflow=false; lot/conflict text was visible; console errors/warnings=0. Screenshot: `output/playwright/tna-g08-reviewed-entry-mobile.png` (53,737 bytes). Final required-marker label cleanup was label-only after the functional browser flow; final syntax/regression remained green. No production deploy. | conditional | Prove two saved local orders sharing a line in browser, add/verify visible PO-specific management filter, and capture incomplete-input/overlap scenario evidence before full G08 acceptance |
 | 2026-10-10 15:40 Asia/Dhaka | G08 visible PO portfolio filter and two-order browser proof | `feature/tna360-continuous` / `5fb8e81` | `apps/tna/src/bootstrap.js`, `apps/tna/tests/g08-scenarios.test.js`, `docs/tna/06_EXECUTION_TRACKER.md`, `output/playwright/tna-g08-po-filter-mobile.png` | PASS: `node --check apps/tna/src/bootstrap.js`; `node apps/tna/tests/g08-scenarios.test.js`; `git diff --check`. Browser PASS via Playwright CLI on local server: two saved local orders `STYLE-PORT-A`/`PO-PORT-A` and `STYLE-PORT-B`/`PO-PORT-B` were visible; both entered `shared-line-ui` on `2026-10-22` with allocated 2 / available 3, producing unfiltered portfolio `Local orders in view 2`, `Capacity conflicts 1`, and shared warning over by 1 line. Visible `PO · PO-PORT-B` filter set `aria-pressed=true`, `Local orders in view 1`, and showed only `STYLE-PORT-B` / `PO-PORT-B`. At 390x844, `scrollWidth=390`, `clientWidth=390`, `overflow=false`; console errors/warnings=0. Screenshot: `output/playwright/tna-g08-po-filter-mobile.png` (75,613 bytes). Local-only browser data; no production deploy or cloud collaboration claim. | conditional | Capture remaining incomplete-input and overlap/recovery browser evidence, then reconcile full G08 checklist |
+| 2026-10-10 15:45 Asia/Dhaka | G08 incomplete-input and recovery browser evidence / local acceptance | `feature/tna360-continuous` / `5d4e3b1` | `docs/tna/06_EXECUTION_TRACKER.md`, `output/playwright/tna-g08-uncertainty-mobile.png` | PASS: full G01-G08 Node suite; AQL release contract; shared/TNA syntax checks; `git diff --check` remained green from the preceding accepted implementation. Browser PASS via Playwright CLI on local server: draft `STYLE-UNCERTAIN` with no explicit start date showed `Schedule unavailable`, capacity `needs-information`, timeline `Needs date`, `No dates are guessed`, and `No production rate is guessed`; blank verified daily output scenario preview retained `Needs Information` for base/scenario/working-days and provenance `revision 0 · schedule unavailable`; Apply stayed open after missing reason/confirmation, then confirmed reason + checkbox produced `Scenario applied` revision 1 with `Baseline snapshots remain preserved`. At 390x844, `scrollWidth=390`, `clientWidth=390`, `overflow=false`; console errors/warnings=0. Screenshot: `output/playwright/tna-g08-uncertainty-mobile.png` (58,464 bytes). No production save/deploy or cloud claim. | accepted locally | Begin G09 secure-backend contract/offline-state audit; preserve external provider blocker |
 
 ### Open blockers and decisions
 
