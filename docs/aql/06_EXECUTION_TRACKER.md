@@ -121,7 +121,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```text
 TIME / TIMEZONE: 2026-10-10 21:28 Asia/Dhaka
 GATE / OBJECTIVE: A-G09 — prove shared catalogue/preferences and explicit PPM/TNA reference boundaries before any integration adapter is enabled
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / ec7932b / pending A-G09 tracker commit
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / ec7932b / 2e86d05
 FILES CHANGED (EXACT): apps/aql/tests/a-g09-cross-app-boundaries.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FILES WATCHED/FROZEN: apps/aql/index.html, js/app-catalogue.js, js/preferences.js, apps/ppm/index.html, apps/tna/index.html, saved data and all domain engines; no application/integration source changed
 IMPLEMENTED: Added fixture-only checks for AQL/PPM/TNA catalogue routes, shared language preference keys/events, documented InspectionRef/ReportRef contracts, explicit authorized-lookup/no-auto-GO boundaries, separate-date preservation, offline separate-draft import and no direct PPM/TNA local-storage namespace reads from AQL.
