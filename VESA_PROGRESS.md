@@ -17,7 +17,7 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | Current subtask / subchecks | AQL A-G00 runner passes Q01-Q24 plus portable round-trip invariants. A-G01 browser audit shows multiple sticky regions in AQL/PPM and a different TNA command bar; route console errors/warnings are zero at 1280/390 probes. PPM P-G00 remains blocked by unresolved `playwright` dependency |
 | Last ACCEPTED gate | **AQL A-G00 - Frozen numerical/portable baseline** (`53e52e3`; accepted locally, no deployment) |
 | Last tested commit SHA | `53e52e3` (A-G00 baseline); shared browser audit `ea52066`; TNA `24c42d1`; PPM baseline `8b06f6f` |
-| Last update (UTC) | 2026-10-10 14:18:00 UTC |
+| Last update (UTC) | 2026-10-10 14:29:00 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
