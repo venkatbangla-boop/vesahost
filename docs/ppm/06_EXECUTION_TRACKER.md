@@ -13,8 +13,8 @@
 | Last accepted implementation gate | **P-G04 — PPM approvals, measurement, revision and decision explainability** (`979fec4`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G04 approvals/measurement/revision/decision explainability; P-G05 is next; no production deployment |
 | Current gate | `P-G05 — PPM follow-ups, meeting minutes, evidence and amendment enhancements` |
-| LAST COMPLETED ACTION | Added and tested the pure P-G05 follow-up service for explicitly sourced calendar/working-day aging and controlled amendments that preserve immutable finalized snapshots while clearing stale release, signatures, acknowledgement and approval proof; planning/browser regression remain green |
-| NEXT ACTION | Wire one accessible Follow-up workspace for meeting minutes and action aging/escalation with an explicit date source, then prove save/reopen and mobile behavior before adding authority/amendment controls |
+| LAST COMPLETED ACTION | Added and tested the accessible P-G05 Follow-Up workspace in `6c1b666`: optional minutes, explicitly sourced calendar-day aging and escalation evidence save/reopen through the real repository at 390px; the dialog stacking defect found during visual review was fixed and regression remains green |
+| NEXT ACTION | Add the explicit exception/waiver authority-record controls to Follow-Up, prove they round-trip without changing checkpoint readiness or release decisions, then continue attachment failure protection and controlled amendment UI |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -55,7 +55,7 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] Explain blocker/action/owner without inventing new buyer rules.
 
 ### P-G05 — Follow-ups, meeting minutes, evidence and amendment enhancements
-- [ ] Action ownership/aging/escalation and date-source rules.
+- [x] Action ownership/aging/escalation and date-source rules.
 - [ ] Optional minutes/waivers/authority record with versioned compatibility.
 - [ ] Evidence links/attachments and failed upload/save protection.
 - [ ] Amendment history and approvals/signature invalidation fully tested.
@@ -352,4 +352,22 @@ COMPATIBILITY RISKS: locked meetings must stay read-only; imported/user text mus
 VERIFICATION: syntax; P-G05 domain fixture; new authenticated Playwright browser flow at 390px including minutes, aging, escalation, save/reopen and console/overflow assertions; P-G00/P-G04 and existing PPM planning/regression suites; shared-shell contract; git diff --check.
 ROLLBACK: revert the UI/test/tracker patch. Additive follow-up fields already exist and need no migration or browser-data deletion.
 PRE-CODE VERDICT: approved for the smallest reversible P-G05 UI slice; authority/waiver, attachment failure and amendment controls remain explicitly out of this patch.
+```
+
+### P-G05 accessible follow-up workspace — conditional, gate remains active
+
+```text
+TIME / TIMEZONE: 2026-10-10 18:14 UTC / 2026-10-11 00:14 Asia/Dhaka
+GATE / OBJECTIVE: P-G05 — expose minutes and explicitly sourced action aging/escalation through the real PPM workspace and prove local save/reopen on mobile
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / c42e10f / 6c1b666
+FILES CHANGED (EXACT): apps/ppm/planning-panel.js; apps/ppm/workspace.js; apps/ppm/workspace.css; apps/ppm/tests/p-g05-followup-ui.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+FILES WATCHED/FROZEN: PPM core.js and record-services.js; all 168 checkpoint IDs/statuses; GO/CONDITIONAL GO/HOLD validation; approvals/signatures/release; PPM service worker; AQL/TNA/shared platform files; no schema, notification, upload, authority or amendment behavior changed
+IMPLEMENTED / PROVEN: Follow-Up is reachable from MEETING CHECKS and Tools. It records bounded optional minutes, calculates signed calendar-day aging only from an entered review date plus named source, and stores user-entered escalation level/owner/reason/time/next-review/source while explicitly stating that no notification or waiver approval occurred. Locked records render disabled controls. User-entered values are escaped. The existing workspace mutation/history/autosave and repository/codec path preserves minutes and escalation evidence after reload/reopen.
+TEST COMMANDS + OUTPUT/COUNTS: P-G00 baseline PASS (168 tuples/19 profiles/12 processes/V4-current migration); P-G04 PASS; P-G05 domain PASS; planning PASS (16); full regression PASS (persistence, EN/BN/HI/TA data preservation, recovery, PDFs, CSV defense, cross-tab/save failure, 390px, offline bundle, zero uncaught errors); shared shell contract PASS; P-G05 UI PASS; planning-panel/workspace syntax PASS; git diff --check PASS. Browser runtime: cached Playwright 1.64.0 + Chromium 1248 through explicit workspace paths.
+BROWSER / VISUAL EVIDENCE: authenticated synthetic local record at 390x844 entered minutes, calculated 2 calendar days overdue from `Buyer comment log dated 11 Oct 2026`, recorded one escalation, saved, reloaded and reopened with values intact; document/body width <=391; console errors 0. Visual inspection found the shared z=10000 shell initially painted over the legacy z=100 dialog; app-scoped modal z=11000 fixed it and the test now asserts modal layer > shell layer. Screenshot: ignored local `output/playwright/ppm-p-g05-followup-mobile-390.png`.
+ROLLBACK: revert 6c1b666. The prior additive follow-up fields remain valid; no saved-record migration or browser-data deletion is needed.
+FEATURE EVIDENCE: P25 existing action ownership/status plus P29 minutes/action-follow-up slice; P27 authority/waiver UI, P30/P31 attachment failure protection and P28 controlled amendment UI remain incomplete.
+BLOCKERS / UNRESOLVED RISK: working-day rules are domain-tested but this first UI intentionally exposes only calendar days; authority/waiver controls, attachment references/upload failure, amendment confirmation/history, full four-language authored-copy parity and secure notification delivery remain open. Secure notifications/roles are external and no send flag exists.
+REVIEWER / VERDICT: CONDITIONAL — the action ownership/aging/escalation/date-source checklist item is proven locally, but P-G05 remains active and earns no additional gate percentage.
+NEXT ACTION (ONE PRECISE STEP): add explicit exception/waiver authority-record controls to Follow-Up and prove save/reopen plus unchanged CoverageEngine/readiness before implementing attachment and amendment UI.
 ```
