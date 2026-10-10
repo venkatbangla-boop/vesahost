@@ -10,11 +10,11 @@
 | Source baseline | GitHub blob `b733dc700fce47aa04f1cd3f64c5e8f286d65512`, approx 11.7MB inline HTML |
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
-| Last accepted new rework gate | **A-G01** — common VESA shell platform accepted locally; no live deploy |
+| Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance slice is conditional pending approved carton-randomization fixtures and browser field review; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
 | LAST COMPLETED ACTION | Accepted A-G02 locally after authenticated browser proof of the five home actions, saved chooser, latest continuation, practice isolation, editable copy, portable copy import, six-step guide, 13-stage selector and responsive geometry; sampling/Ac-Re/stage data remain frozen |
-| NEXT ACTION | Begin A-G03 comprehensive sampling/counting/lot-plan audit with the Q01-Q24 baseline frozen and no policy-table rewrite |
+| NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and expose/recheck a stable visible Sampling authorisation entry point; keep SamplingEngine cells frozen |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
 ## Daily/new-session rule
