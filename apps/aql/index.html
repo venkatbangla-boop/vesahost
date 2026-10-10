@@ -1494,7 +1494,19 @@ class InspectionApp {
     return `<section class="welcome"><div><div class="eyebrow">ONE WORKSPACE. EVERY PRODUCT.</div><h1>Inspect with confidence.<br>Report with clarity.</h1><p>From the first carton to the final sign-off. Keep your buyer criteria, observations and evidence connected - without turning an inspection into paperwork.</p><div class="row-actions">${this.button('Start an inspection','new','plus','primary')}${this.button('Practice Example','demo-menu','play')}</div></div><div class="workflow-graphic">${[['01','Set the standard','Your buyer. Your product. Your rules.'],['02','Capture the evidence','Samples, measurements, photos, findings.'],['03','Close the loop','A clear conclusion and a portable report.']].map(([n,t,s])=>`<div class="workflow-node"><i>${n}</i><div><b>${t}</b><small>${s}</small></div></div>`).join('')}</div></section><div class="home-metrics">${[['Saved inspections',records.length],['Drafts in progress',counts.open],['Finalised reports',counts.final],['Not conformed',counts.issues]].map(([l,n])=>`<div class="home-metric"><span>${l}</span><b>${n}</b></div>`).join('')}</div><div class="grid">${this.panel('Recent inspections','Stored on this browser, not in a cloud account.',recent||this.empty('Your first inspection starts here','Choose a blank inspection or explore a fictional example.',''),'col-8',this.button('Import project','import','upload','small'))}${this.panel('Built for more than apparel','Product kits are starting points, not buyer-approved standards.',`<div class="kit-list">${[['Knit Top / T-Shirt / Polo','Apparel & textiles','Garment-specific knowledge retained.','ruler'],['General consumer goods','Consumer goods','Appearance, function and packing.','box'],['Components & hardware','Components & hardware','Dimensions, assembly and traceability.','layers']].map(([v,t,s,i])=>`<button class="kit" data-action="new-kit" data-category="${this.e(v)}">${this.icon(i)}<span><b>${t}</b><small>${s}</small></span></button>`).join('')}</div><p class="small-note spaced">No login. No runtime internet. No silent AI decisions. Review evidence and approve the criteria that matter.</p>`,'col-4')}</div>`;
   }
   heading(eyebrow,title,description,actions='') {return `<div class="page-heading"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p>${description}</p></div><div class="toolbar">${actions}</div></div>`;}
-  pageView() {return this.insight.panel(this.step)+this.controls.panel(this.step)+[()=>this.setupView(),()=>this.samplesView(),()=>this.inspectView(),()=>this.measureView(),()=>this.packView(),()=>this.reviewView()][this.step]();}
+  pageView() {return (this.p?.stageSuite?'':this.workflowGuide())+this.insight.panel(this.step)+this.controls.panel(this.step)+[()=>this.setupView(),()=>this.samplesView(),()=>this.inspectView(),()=>this.measureView(),()=>this.packView(),()=>this.reviewView()][this.step]();}
+  workflowGuide() {
+    const steps=[
+      ['Set up inspection','Enter the buyer, factory, product and order details before checking anything.'],
+      ['Confirm sample','Review the approved plan, lot grouping, sample size and acceptance limits.'],
+      ['Check products','Record each actual finding, check and evidence against the buyer scope.'],
+      ['Record measurements','Use the approved specification, tolerance, unit and piece identity.'],
+      ['Confirm packing and site','Reconcile cartons, packing checks and the inspection session evidence.'],
+      ['Review result','Resolve pending requirements, preserve failures, then prepare the report.'],
+    ][this.step]||['Review the inspection','Use the detailed sections below to continue the current inspection.'];
+    const next=this.step<5?this.button('Continue to '+InspectionApp.STEPS[this.step+1][0],'navigate','arrow','soft',`data-step="${this.step+1}"`):this.button('Prepare report','report','report','soft');
+    return `<section class="panel workflow-guide col-12"><div class="panel-head"><div><div class="eyebrow">GUIDED START</div><h2>What should I check next?</h2><p>${this.e(steps[1])}</p></div>${next}</div><div class="workflow-guide-steps">${InspectionApp.STEPS.map(([label],i)=>`<span class="${i===this.step?'current':i<this.step?'done':''}"><b>${String(i+1).padStart(2,'0')}</b>${this.e(label)}</span>`).join('')}</div><p class="small-note">Beginner guidance keeps the six-step path clear. Detailed sampling, stage and evidence controls remain available in this inspection and its Tools menu.</p></section>`;
+  }
   setupView() {
     const p=this.p;const info=`<div class="form-grid">${this.field('Buyer / customer','info.buyer',p.info.buyer,{required:true,placeholder:'Buyer name'})}${this.field('Factory / inspection site','info.factory',p.info.factory,{required:true,placeholder:'Factory name'})}${this.field('Supplier','info.supplier',p.info.supplier)}${this.field('Inspector','info.inspector',p.info.inspector,{required:true})}${this.field('Inspection date','info.date',p.info.date,{type:'date',required:true})}${this.field('Inspection type','info.kind',p.info.kind,{options:['Final random inspection','Pre-shipment inspection','Inline / DUPRO','Incoming inspection','Factory internal inspection','Reinspection','Custom inspection']})}${this.field('Destination / market','info.market',p.info.market)}${this.field('Factory address','info.address',p.info.address)}<div class="field full"><label>Active product kit</label><div class="row-actions">${this.badge(p.info.category,'blue')}${this.button('Change kit','category','','small')}</div><div class="hint">Changing the kit does not erase observations. New starter checks can be added separately.</div></div></div>`;
     const body=p.orders.length?`<div class="table-wrap"><table class="data-table"><thead><tr><th>PO *</th><th>Item / style *</th><th>Color / variant</th><th>Size</th><th>Order qty</th><th>Shipment qty *</th><th></th></tr></thead><tbody>${p.orders.map(l=>`<tr><td>${this.entityInput('orders',l,'po')}</td><td>${this.entityInput('orders',l,'item')}</td><td>${this.entityInput('orders',l,'color')}</td><td>${this.entityInput('orders',l,'size','text','class="tiny-input"')}</td><td>${this.entityInput('orders',l,'orderQty','number','class="tiny-input"')}</td><td>${this.entityInput('orders',l,'qty','number','class="tiny-input"')}</td><td>${this.button('Remove','delete','','small danger',`data-collection="orders" data-id="${l.id}" ${p.meta.locked?'disabled':''}`)}</td></tr>`).join('')}</tbody></table></div>`:this.empty('No order lines yet','Use one row per item / color / size, so sampling and findings stay traceable.',this.button('Add order line','add-order','plus','soft'));
@@ -3748,6 +3760,9 @@ globalThis.VESA_WELCOME=new VesaWelcome(document.getElementById('vesa-welcome'),
 globalThis.VESA_WELCOME.bind();
 </script>
 
+<style id="aql-g02-workflow-style">
+.workflow-guide{margin-bottom:18px;border-color:#cfdcf2;background:#fbfdff}.workflow-guide .panel-head{margin-bottom:12px}.workflow-guide h2{margin:3px 0 2px;font-size:16px}.workflow-guide .panel-head p{max-width:680px}.workflow-guide-steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.workflow-guide-steps span{display:flex;flex-direction:column;gap:4px;padding:9px 8px;border:1px solid #e1e8f2;border-radius:8px;color:#718199;font-size:10px}.workflow-guide-steps span b{font:11px var(--mono);color:#91a0b5}.workflow-guide-steps span.current{background:#edf3ff;border-color:#b8ccfb;color:#295adf}.workflow-guide-steps span.current b{color:#295adf}.workflow-guide-steps span.done{background:#edf8f2;border-color:#cae6d6;color:#287150}.workflow-guide-steps span.done b{color:#287150}@media(max-width:700px){.workflow-guide-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.workflow-guide .panel-head{display:block}.workflow-guide .panel-head>.button{margin-top:12px}}
+</style>
 <style id="aql-release-style">
 :root{--aql-menu-h:46px}.aql-release-menu{position:sticky;top:0;z-index:240;display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:5px 14px;background:#fff;border-bottom:1px solid var(--line,#dbe5ec);box-shadow:0 4px 14px rgba(16,34,57,.08)}.aql-release-menu button{border:0;background:transparent;color:var(--navy,#10233f);font-weight:800;min-height:36px;padding:0 12px;border-radius:8px}.aql-release-menu button:hover,.aql-release-menu button:focus-visible{background:#edf6f5;outline:2px solid #c8a33a;outline-offset:2px}.aql-release-menu .menu-spacer{flex:1}.aql-practice-ribbon{position:sticky;top:46px;z-index:230;background:#fff2c7;color:#604200;border-bottom:1px solid #e6c45a;padding:9px 16px;font-weight:800}.aql-guidance-note{margin:10px 0;padding:11px 13px;border:1px solid #d5e3ea;border-radius:9px;background:#f7fbfc;color:#344b5f;line-height:1.55}.aql-release-menu-pop{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.aql-release-menu-pop button{text-align:left;justify-content:flex-start}@media(max-width:520px){.aql-release-menu{gap:2px;padding:4px 7px}.aql-release-menu button{font-size:11px;padding:0 7px}.aql-release-menu .menu-spacer{display:none}.aql-release-menu-pop{grid-template-columns:1fr}.aql-practice-ribbon{top:42px}}
 </style>
@@ -3797,6 +3812,49 @@ globalThis.VESA_WELCOME.bind();
   window.addEventListener('vesa-preferences-change',e=>{if(dict[e.detail?.language]){localStorage.setItem(LANG_KEY,e.detail.language);refreshGuidance();}});
   patchPrototypes();
   if('serviceWorker' in navigator && location.protocol!=='file:')navigator.serviceWorker.register('./service-worker.js',{scope:'./'}).catch(()=>{});
+})();
+</script>
+
+<script id="AQL_G02_WORKFLOW_PATCH_2026_10_10">
+(()=>{
+  'use strict';
+  const app=()=>window.__vesaApp||globalThis.VESA_APP||null;
+  const sortedRecords=a=>a.recent.filter(x=>x&&x.project).sort((x,y)=>String(y.project.meta.updated||'').localeCompare(String(x.project.meta.updated||'')));
+  const reportId=(p,id)=>'VE-'+(p.meta.created||new Date().toISOString()).slice(0,10).replace(/-/g,'')+'-'+id.slice(-6).toUpperCase();
+  if(typeof InspectionApp!=='undefined'&&!InspectionApp.prototype.__aqlG02Installed){
+    InspectionApp.prototype.__aqlG02Installed=true;
+    InspectionApp.prototype.workflowGuide=function(){
+      const steps=[
+        ['Set up inspection','Enter the buyer, factory, product and order details before checking anything.'],
+        ['Confirm sample','Review the approved plan, lot grouping, sample size and acceptance limits.'],
+        ['Check products','Record each actual finding, check and evidence against the buyer scope.'],
+        ['Record measurements','Use the approved specification, tolerance, unit and piece identity.'],
+        ['Confirm packing and site','Reconcile cartons, packing checks and the inspection session evidence.'],
+        ['Review result','Resolve pending requirements, preserve failures, then prepare the report.'],
+      ][this.step]||['Review the inspection','Use the detailed sections below to continue the current inspection.'];
+      const next=this.step<5?this.button('Continue to '+InspectionApp.STEPS[this.step+1][0],'navigate','arrow','soft',`data-step="${this.step+1}"`):this.button('Prepare report','report','report','soft');
+      return `<section class="panel workflow-guide col-12"><div class="panel-head"><div><div class="eyebrow">GUIDED START</div><h2>What should I check next?</h2><p>${this.e(steps[1])}</p></div>${next}</div><div class="workflow-guide-steps">${InspectionApp.STEPS.map(([label],i)=>`<span class="${i===this.step?'current':i<this.step?'done':''}"><b>${String(i+1).padStart(2,'0')}</b>${this.e(label)}</span>`).join('')}</div><p class="small-note">Beginner guidance keeps the six-step path clear. Detailed sampling, stage and evidence controls remain available in this inspection and its Tools menu.</p></section>`;
+    };
+    InspectionApp.prototype.continueLast=async function(){
+      this.recent=await this.repository.list();const record=sortedRecords(this)[0];
+      if(!record){this.toast('No saved inspection is available yet. Choose New Inspection or Practice Example.');this.step='home';this.render();return;}
+      return this.setProject(record.project,record.version);
+    };
+    InspectionApp.prototype.openSavedInspection=async function(){
+      this.recent=await this.repository.list();const records=sortedRecords(this).slice(0,40);
+      const rows=records.map(x=>{const p=x.project,result=ResultEngine.evaluate(p).result;return `<div class="recent-row"><div class="recent-icon">${this.icon('report')}</div><div class="recent-text"><b>${this.e(p.info.buyer||'Untitled inspection')}</b><small>${this.e(p.info.factory||'Factory not recorded')} &nbsp; ${this.e(p.meta.reportId)} / R${p.meta.revision}</small></div>${this.badge(p.meta.demo?'PRACTICE':result,result==='CONFORMED'?'good':result==='NOT CONFORMED'?'bad':'warn')}${this.button('Open','resume','','small',`data-id="${this.e(x.id)}"`)}</div>`;}).join('');
+      this.openDialog('Open saved inspection',this.notice(records.length?'Choose a local record to continue. The original saved record stays unchanged until you save new edits.':'No saved inspections are available in this browser yet.')+(rows||this.empty('No saved inspections','Choose New Inspection or Open Saved Copy to begin.')),'', '', true);
+    };
+    InspectionApp.prototype.makeAnotherCopy=async function(){
+      if(!this.p)throw Error('Open an inspection before making another copy.');
+      await this.autosave.flush();const source=this.p,copy=DomainValue.copy(source),id=DomainValue.id('VESA');
+      copy.meta.parentId=source.meta.id;copy.meta.id=source.meta.demo?'PRACTICE-'+id.slice(-12):id;copy.meta.reportId=reportId(copy,copy.meta.id);copy.meta.revision=0;copy.meta.locked=false;copy.meta.lockedAt='';copy.review.confirmed=false;copy.review.inspectorSignature='';copy.review.factorySignature='';copy.review.signDate='';copy.scope.signature='';copy.planApproval.signature='';copy.measurementPlan.signature='';copy.disposition={...copy.disposition,status:'Not released',basis:''};copy.audit.push(DomainValue.audit('Another editable copy created',{source:source.meta.id}));
+      this.closeDialog();await this.setProject(copy,null);await this.autosave.flush();this.toast(copy.meta.demo?'Practice copy opened. It remains fictional and separate from production records.':'Another editable inspection copy was created. The original record remains unchanged.');
+    };
+    const render=InspectionApp.prototype.render;InspectionApp.prototype.render=function(){render.call(this);if(this.step==='home'){const actions=this.root.querySelector('.welcome .row-actions');if(actions&&!actions.querySelector('[data-action="continue"]'))actions.innerHTML=this.button('New Inspection','new','plus','primary')+this.button('Continue Last','continue','arrow','soft')+this.button('Open Saved','saved','folder','soft')+this.button('Practice Example','demo-menu','play')+this.button('Open Saved Copy','import','upload');}if(this.p&&!this.p.stageSuite&&typeof this.step==='number'){const page=this.root.querySelector('.page-content');if(page&&!page.querySelector('.workflow-guide'))page.insertAdjacentHTML('afterbegin',this.workflowGuide());}};
+    const dispatch=InspectionApp.prototype.dispatch;InspectionApp.prototype.dispatch=async function(action,el){if(action==='continue')return this.continueLast();if(action==='saved')return this.openSavedInspection();if(action==='copy')return this.makeAnotherCopy();if(action==='resume')this.closeDialog();return dispatch.call(this,action,el);};
+    document.addEventListener('click',event=>{const target=event.target.closest?.('[data-aql-menu-action]');if(!target)return;const label=target.textContent.trim(),action=target.dataset.aqlMenuAction;if(label==='Continue Last Inspection'||label==='Open Saved Inspection'||label==='Make Another Copy'||action==='copy'){event.preventDefault();event.stopImmediatePropagation();const a=app();if(label==='Continue Last Inspection')a?.continueLast?.();else if(label==='Open Saved Inspection')a?.openSavedInspection?.();else a?.makeAnotherCopy?.();}},true);
+  }
 })();
 </script>
 

@@ -29,7 +29,7 @@
   align-items: center;
   gap: 12px;
   min-height: 64px;
-  padding: 8px max(16px, env(safe-area-inset-left)) 8px max(16px, env(safe-area-inset-right));
+  padding: 8px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
   color: var(--vesa-text);
   background: color-mix(in srgb, var(--vesa-bg) 96%, transparent);
   border-bottom: 1px solid var(--vesa-border);
