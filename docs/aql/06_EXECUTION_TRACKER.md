@@ -345,7 +345,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```text
 TIME / TIMEZONE: 2026-10-10 21:11 Asia/Dhaka
 GATE / OBJECTIVE: A-G04 — extend fixture coverage from field metadata to clean/failing stage decisions
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 2aa4dc6 / uncommitted test-only patch
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 2aa4dc6 / bbaf38b
 FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FROZEN BUSINESS RULES: no `apps/aql/index.html` source, SamplingEngine cell, Ac/Re rule, saved record or shared/sibling file changed
 IMPLEMENTED: Added deterministic contract cases for shade Delta E failure, a clean inline stage reaching CONFORMED, a failed checkpoint remaining NOT CONFORMED, and a clean fabric stage retaining ACCEPT; existing A-G04 material/production record guards remain covered.
