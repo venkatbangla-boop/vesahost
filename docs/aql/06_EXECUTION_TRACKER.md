@@ -396,6 +396,22 @@ VERDICT: conditional — decision-guard coverage is locally proven, but full A-G
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then cover the next untested stage-specific record without changing frozen AQL tables.
 ```
 
+### A-G05 browser session and separate reinspection slice — conditional, synthetic practice only
+
+```text
+TIME / TIMEZONE: 2026-10-10 22:06 Asia/Dhaka
+GATE / OBJECTIVE: A-G05 — observe carton/session controls, retained failure state and separate reinspection creation on a disposable fictional inspection
+BRANCH / SOURCE HEAD: feature/tna360-continuous / df62cec
+FILES CHANGED (EXACT): docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN: apps/aql/index.html, SamplingEngine, ResultEngine, StageCatalog, ReinspectionService, saved data and all PPM/TNA/shared files; no application/domain source changed
+FROZEN BUSINESS RULES: no AQL sampling/Ac-Re cell, result rule, PPM checkpoint identity, TNA calculation or production inspection record changed. No release, export, approval or browser-data clear was performed.
+IMPLEMENTED / REVIEWED: Authenticated Playwright against disposable `http://127.0.0.1:4179` opened the fictional apparel Practice Example. Pack & site exposed the carton register with CTN-021 and CTN-045 selected/PASS, a `Random select` action and audit-recording guidance. Starting then finishing the inspection produced `FINISHED`, one active minute and audit history entries for session start/finish. Review showed the original fictional report `VE-20261010-4B7D16 / R0` as `NOT CONFORMED` with 48/80 inspected, one major finding and shipment `Not released`. Accepting `New reinspection event` created a separate fresh draft `VE-20261010-5733F4 / R0` with `PENDING`, 0/80 inspected, zero findings, 29 remaining and fresh scope/plan verification fields; the original failure remained unchanged in the prior view.
+TEST COMMANDS + OUTPUT/COUNTS: A-G05 browser evidence was paired with the previously recorded green fixture/contract suites: `a-g05-readiness-rework.cjs`, `a-g04-stage.cjs`, `a-g03-sampling.cjs`, `a-g02-workflow.cjs`, `a-g00-baseline.cjs` (Q01-Q24 plus portable invariants), `release-contract.cjs`, shared shell contract, all TNA G01-G09 tests and `git diff --check` PASS. PPM `regression.cjs`, `planning.cjs` and `update.cjs` remain blocked before execution by `Cannot find module 'playwright'`.
+BROWSER / DATA EVIDENCE: Browser and exact disposable server were closed/stopped after observation. No production record, approval, release or external export was created; all values were fictional practice data.
+VERDICT: conditional — carton/session controls and separate reinspection creation are observed locally, but full loading/reinspection carry-forward, rework/CAPA linkage, stage matrix, device review and approved carton-randomization requirements remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then extend A-G05 browser evidence through loading, prior-finding carry-forward and resubmission without changing frozen SamplingEngine tables.
+```
+
 ### A-G06/A-G07/A-G08 browser evidence chain — conditional, synthetic practice only
 
 ```text
