@@ -14,7 +14,7 @@
 | Current verdict | `draft-only` — no AQL rework code or live deploy claimed |
 | Current gate | **A-G00** — inspect real local checkout; baseline and golden sampling fixtures |
 | LAST COMPLETED ACTION | 7-file AQL handover docs authored based on repo GitHub audit |
-| NEXT ACTION | Put files at `apps/aql/AGENTS.md` and `docs/aql/`, open repo in VS Code, create feature branch, run G00 |
+| NEXT ACTION | Commit a source-derived AQL baseline fixture runner covering the captured sampling arrays and Q01–Q24 cases, then rerun parity and portable-reopen checks before accepting A-G00 |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
 ## Daily/new-session rule
@@ -22,9 +22,9 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 
 ## End-to-end gate sequence
 ### A-G00 — Source audit, frozen numerical/portable baseline
-- [ ] Verify local repo, branch, HEAD, dirty state, instructions and test dependencies.
-- [ ] Directly inspect large `apps/aql/index.html`, service worker, tests, shared nav/auth files and engineering history.
-- [ ] Record file-level in-scope/watched/frozen map, class/dependency graph, state lifecycle and rollback.
+- [x] Verify local repo, branch, HEAD, dirty state, instructions and test dependencies.
+- [x] Directly inspect large `apps/aql/index.html`, service worker, tests, shared nav/auth files and engineering history.
+- [x] Record file-level in-scope/watched/frozen map, class/dependency graph, state lifecycle and rollback.
 - [ ] Snapshot actual `SamplingEngine` lot/levels/sample/AQL cells and `ResultEngine` decisions with all Q01–Q24 fixtures.
 - [ ] Verify existing six-step and 13-stage actions, basic save/open/portable copy, reports, login.
 - [ ] Record desktop/320/390/tablet screenshots before redesign; source code review alone doesn't prove visible UI.
@@ -145,3 +145,33 @@ NEXT ACTION (specific and limited):
 
 ## Session resume command text
 > Resume VESA AQL Quality Centre 360 from real repository HEAD and `apps/aql/AGENTS.md` + `docs/aql/06_EXECUTION_TRACKER.md`. Reconcile prior gates against actual passing fixtures and browser output. Then implement next incomplete safe group; keep all existing sampling/Ac-Re/inspection/reinspection/export behavior frozen unless independently verified and approved. Maintain the same VESA-UNIFORM-UI-v1 shell as PPM/TNA. Record tests and exact NEXT ACTION; commit passing work; never deploy without explicit user approval.
+
+## Current audit — A-G00 (2026-10-10, Asia/Dhaka)
+
+This is an audit-only checkpoint; no AQL source, worker, shared platform file, sampling table or test file was changed.
+
+- Repository evidence: root `F:/download temp browser/vesahost-release-work`, branch `feature/tna360-continuous`, clean tree before this tracker entry, HEAD `bda6836`, Node `v24.13.1`, npm `11.8.0`. The continuous feature branch is preserved; no AQL-only branch or source rewrite was created.
+- File ownership and lifecycle: `apps/aql/index.html` is the single-page owner containing the UI, `SamplingEngine`, `ResultEngine`, `InspectionApp`, `LocalRepository`/`ProjectStore` adapters, embedded report/asset logic, stage catalog and the release/UI shim; `apps/aql/service-worker.js` owns the scoped cache and offline fetch path; `apps/aql/tests/release-contract.cjs` owns the current static contract checks; `js/auth.js` and `js/preferences.js` own browser auth/preferences; root `service-worker.js` excludes AQL and PPM from the root cache. `AQL_RELEASE_STATUS.md`, `GAP_MATRIX.md`, and `apps/aql/ENGINEERING.md` are historical/release-boundary evidence, not replacements for current tests.
+- Frozen/in-scope paths: `apps/aql/index.html`, `apps/aql/service-worker.js`, `apps/aql/tests/release-contract.cjs`, root `service-worker.js`, `js/auth.js`, `js/preferences.js`, and the source-derived sampling/decision output. Watched compatibility paths: `/login/`, `/apps/`, `/admin/`, `/apps/ppm/`, `/apps/tna/`, and shared preference/cache contracts. Rollback posture: revert the future A-G00 fixture-only commit; never clear IndexedDB/localStorage or alter numeric tables as an audit repair.
+- Baseline contract: `node apps/aql/tests/release-contract.cjs` — **PASS** (`AQL release contract checks passed`). The test validates the release patch marker, Home/File/Edit/View/Tools/Help menu, plain-language save/report actions, EN/BN/HI/TA guidance labels, practice isolation, import hardening, scoped worker cache and root worker exclusions.
+- Browser baseline: Playwright CLI `0.1.22` against a disposable local server with documented demo account `admin@vesa` / `vesa`. The live page exposed `InspectionApp.STEPS.length = 6`, `StageCatalog.stages` count `13`, `SamplingEngine`, `ResultEngine` and `LocalRepository`. A synthetic Final Random Inspection was created with buyer/factory/inspector/order values; `saveNow()` persisted one repository row and `backup()` completed with `VE-20261010-785ED6-R0.vesaproj`. Screenshots: `output/playwright/aql-ag00-desktop-home.png`, `aql-ag00-mobile-home-390.png`, `aql-ag00-mobile-home-320.png`, `aql-ag00-desktop-editor.png`, `aql-ag00-tablet-editor-768.png`, `aql-ag00-mobile-editor-320.png`. Console query: `Errors: 0, Warnings: 0`. Visual inspection confirms the current single sticky/desktop shell plus mobile bottom navigation; this is baseline evidence, not uniform-shell acceptance.
+- Source-derived sampling snapshot captured in browser at HEAD `bda6836`: codes `A B C D E F G H J K L M N P Q R`; sizes `2,3,5,8,13,20,32,50,80,125,200,315,500,800,1250,2000`; 15 lot brackets ending with `Infinity -> R`; levels `S-1,S-2,S-3,S-4,I,II,III`; AQLs `0.65,1.0,1.5,2.5,4.0,6.5`; complete `SamplingEngine.AC` map including deliberate `null` unsupported cells. Empty-project `ResultEngine.evaluate` returned `PENDING` with 20 explicit pending reasons, no failures, and no accepted result. Numeric behavior remains frozen and unmodified.
+- Missing prerequisite: the repository contains the Q01–Q24 requirement matrix in `docs/aql/03_ENGINE_RULES_COMPATIBILITY.md`, but no checked-in Q01–Q24 executable fixture set/runner. The current release contract is not numeric parity proof and does not cover portable reopen/reinspection or every AQL cell. Exact fixture capture and a deterministic runner are therefore still open.
+- Verdict: **BLOCKED — BASELINE FIXTURE PREREQUISITE** for A-G00 acceptance. The local static contract and browser baseline are proven, but AQL rework must not begin until the frozen source-derived fixture and Q01–Q24 cases are committed and pass.
+
+### A-G00 worklog entry
+
+```text
+TIME / TIMEZONE: 2026-10-10 19:52 Asia/Dhaka
+GATE / OBJECTIVE: A-G00 — source audit, frozen numerical/portable baseline
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / bda6836 / pending tracker commit
+FILES CHANGED (EXACT): docs/aql/06_EXECUTION_TRACKER.md only; output/playwright/aql-ag00-*.png and .vesaproj are ignored local evidence
+FILES WATCHED/FROZEN (DIFF CHECK): apps/aql/index.html, apps/aql/service-worker.js, apps/aql/tests/release-contract.cjs, root service-worker.js, js/auth.js, js/preferences.js; no source diff
+DOMAIN/SCHEMA CHANGE & MIGRATION: none; sampling/Ac-Re tables untouched
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/release-contract.cjs` PASS; browser source capture = 16 codes, 16 sample sizes, 15 lot brackets, 7 levels, 6 AQLs, complete AC map; six-step/13-stage, local save and portable download verified
+BROWSER SCREENSHOTS / REPORT PATHS: output/playwright/aql-ag00-desktop-home.png; aql-ag00-mobile-home-390.png; aql-ag00-mobile-home-320.png; aql-ag00-desktop-editor.png; aql-ag00-tablet-editor-768.png; aql-ag00-mobile-editor-320.png; console Errors 0 Warnings 0
+EVIDENCE FOR FEATURE IDs: A-G00 audit only; A01–A60 and 35-area matrix remain not-started/unverified for rework
+BLOCKERS / UNRESOLVED RISK: no checked-in Q01–Q24 executable fixtures/runner; release contract is not numeric parity or portable-reopen proof; real provider/pilot remains external
+REVIEWER / VERDICT (accepted|conditional|blocked|rejected|draft-only): blocked
+NEXT ACTION (ONE PRECISE STEP): add a fixture-only deterministic runner from current source without changing sampling behavior, cover Q01–Q24 and portable round-trip, then rerun A-G00
+```

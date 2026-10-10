@@ -12,12 +12,12 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | **PPM 360** | **0%** - accepted gates 0 / 11 |
 | **AQL 360** | **0%** - accepted gates 0 / 13 |
 | **ONE VESA SHARED UX** | **0%** - accepted gates 0 / 10 |
-| Program stage | TNA G09 local contract completion with external cloud blocker; PPM P-G00 audit now blocked on the existing test dependency |
-| Active gate | **PPM P-G00 - Local clone audit and baseline proof** |
-| Current subtask / subchecks | PPM source audit and desktop/mobile screenshots captured; all three existing PPM suites stop before execution because `playwright` cannot be resolved, and the durable exact 168-tuple/V4/V5 fixture remains open |
+| Program stage | TNA G09 local contract completion with external cloud blocker; PPM P-G00 and AQL A-G00 baseline audits are blocked on missing executable evidence |
+| Active gate | **AQL A-G00 - Source audit and frozen numerical/portable baseline** |
+| Current subtask / subchecks | AQL release contract and 6-step/13-stage browser baseline pass; sampling arrays and empty-result pending reasons captured, but no committed Q01-Q24 fixture runner exists. PPM P-G00 remains blocked by unresolved `playwright` dependency |
 | Last ACCEPTED gate | **TNA G08 - Recovery scenarios and advanced multiorder planning** (`5d4e3b1`, accepted locally) |
-| Last tested commit SHA | 24c42d1 (TNA); PPM baseline browser proof at local HEAD 8b06f6f |
-| Last update (UTC) | 2026-10-10 13:49:02 UTC |
+| Last tested commit SHA | bda6836 (AQL release contract/browser audit); TNA 24c42d1; PPM baseline at 8b06f6f |
+| Last update (UTC) | 2026-10-10 13:52:37 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -76,7 +76,7 @@ Current counted gates: t=9, p=0, a=0, s=0.
 
 | Gate | Work area | Status | Evidence / commit |
 |---|---|---|---|
-| A-G00 | Inspect large AQL source and freeze sampling baseline | NOT STARTED | AQL docs imported; real local audit not accepted yet |
+| A-G00 | Inspect large AQL source and freeze sampling baseline | BLOCKED | `docs/aql/06_EXECUTION_TRACKER.md` current audit: release contract pass, 6-step/13-stage/save/portable browser baseline and SamplingEngine arrays captured; checked-in Q01-Q24 fixture runner remains open |
 | A-G01 | Common shared VESA shell | NOT STARTED | - |
 | A-G02 | Audit workflow parity | NOT STARTED | - |
 | A-G03 | Sampling/statistical engine parity | NOT STARTED | - |
@@ -134,6 +134,7 @@ Current counted gates: t=9, p=0, a=0, s=0.
 | 2026-10-10 13:43:53 UTC | Program reconciliation / TNA G08-G09 | CONDITIONAL | Reconciled `VESA_PROGRESS.md` against actual feature-branch evidence through `24c42d1`: TNA G00-G08 are accepted locally (9/13); G09 remains conditional with provider-neutral contracts only. All 10 TNA Node tests, AQL release contract, shared/TNA syntax checks and `git diff --check` are green. PPM P-G00, AQL A-G00 and shared U-G00 remain NOT STARTED in their real trackers; cloud identity/database/object storage/notifications and production release remain blocked. |
 | 2026-10-10 13:48:21 UTC | PPM P-G00 baseline audit | BLOCKED | Audited PPM source ownership and frozen paths at `8b06f6f`; VM capture confirmed 168 tuples, 19 profiles and 12 process options; desktop/mobile home/editor screenshots captured under `output/playwright/ppm-pg00-*.png` with 0 console errors/warnings. `regression.cjs`, `planning.cjs` and `update.cjs` all stop before execution with `Cannot find module 'playwright'`; transient npx retry did not resolve it. Exact committed tuple/V4/V5 fixture remains the next PPM prerequisite. |
 | 2026-10-10 13:49:02 UTC | PPM P-G00 dependency probe | BLOCKED | Non-mutating `npm exec --package=playwright` and `npx -p playwright` resolution probes both returned `MODULE_NOT_FOUND`; no package manifest, lockfile, node_modules or application file was changed. |
+| 2026-10-10 13:52:37 UTC | AQL A-G00 baseline audit | BLOCKED | `node apps/aql/tests/release-contract.cjs` passed. Browser baseline at `bda6836` exposed 6 steps, 13 stages, SamplingEngine arrays/AC map and ResultEngine empty pending reasons; synthetic save persisted one local record and portable `VE-20261010-785ED6-R0.vesaproj` downloaded; desktop/320/390/tablet screenshots and console Errors 0/Warn 0 captured. Q01-Q24 executable fixtures/runner are absent, so A-G00 is not accepted. |
 | 2026-10-10 | TNA G04 | ACCEPTED | 4d36b2c operational engines tested with g04-operations.test.js. |
 | 2026-10-10 | TNA G03 | ACCEPTED | 56e0856 scheduling engine tested with g03-scheduling.test.js. |
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
@@ -142,4 +143,4 @@ Current counted gates: t=9, p=0, a=0, s=0.
 
 ## F. NEXT ACTION
 
-Resolve the existing PPM Playwright dependency without changing app behavior, rerun all three PPM suites, then commit the exact 168-tuple and V4/V5 baseline fixture; keep PPM P-G00 blocked until all evidence passes, and do not deploy production.
+Add a fixture-only deterministic AQL baseline runner from the current source, cover Q01-Q24 plus portable round-trip without changing sampling behavior, and rerun A-G00; keep PPM P-G00 blocked until its Playwright dependency and exact fixture are resolved, and do not deploy production.
