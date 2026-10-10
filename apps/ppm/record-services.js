@@ -5,7 +5,7 @@
 class BackupCodec {
   static MAX_BYTES = 24 * 1024 * 1024;
   /** Decode a legacy record or versioned envelope. Throws before any state mutation. */
-  decode(input) {
+  decode(input, allowMeetingVersions=true) {
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw Error('This saved copy could not be opened. Choose a PPM copy downloaded from this app.');
     if(input.format==='VESA-PPM'&&Number.isInteger(input.schema)&&input.schema>2)throw Error('This saved copy needs a newer app. Check for updates and try again.');
     if (input.format && (input.format !== 'VESA-PPM' || ![1,2].includes(input.schema))) throw Error('This saved copy cannot be opened by this app. Check that you chose a PPM saved copy.');
@@ -31,6 +31,17 @@ class BackupCodec {
     r.changeReview=this.reviewState(v.changeReview);
     r.actions=this.array(v.actions||[],300).map(a=>({id:this.id(a.id),checkpointId:this.enum(a.checkpointId,ids),issue:this.string(a.issue||'',1000),action:this.string(a.action||'',5000),owner:this.string(a.owner||'',200),dueDate:this.date(a.dueDate||''),evidence:this.string(a.evidence||'',2000),status:this.enum(a.status,['Open','In Progress','Closed'])}));
     if(new Set(r.actions.map(a=>a.id)).size!==r.actions.length||new Set(r.actions.map(a=>a.checkpointId)).size!==r.actions.length)throw Error('This saved copy contains repeated actions. Choose another saved copy.');
+    r.followUpSchema=v.followUpSchema===undefined?1:this.integer(v.followUpSchema,1,1);
+    r.meetingMinutes=this.minutes(v.meetingMinutes);
+    r.exceptions=this.array(v.exceptions||[],100).map(x=>({id:this.id(x.id,'EXC-'),checkpointId:this.enum(x.checkpointId,ids),buyerPolicyRef:this.string(x.buyerPolicyRef||'',500),scope:this.string(x.scope||'',2000),accountableParty:this.string(x.accountableParty||'',200),authorizedBy:this.string(x.authorizedBy||'',200),authorityType:this.string(x.authorityType||'',200),approvedDate:this.date(x.approvedDate||''),evidence:this.string(x.evidence||'',2000),permittedUntil:this.date(x.permittedUntil||''),status:this.string(x.status||'',100)}));
+    if(new Set(r.exceptions.map(x=>x.id)).size!==r.exceptions.length)throw Error('This saved copy contains repeated exception records. Choose another saved copy.');
+    const actionIds=r.actions.map(a=>a.id);
+    r.actionEscalation=this.array(v.actionEscalation||[],300).map(x=>({actionId:this.enum(x.actionId,actionIds),escalationLevel:this.string(x.escalationLevel||'',100),escalationOwner:this.string(x.escalationOwner||'',200),reason:this.string(x.reason||'',2000),time:this.optionalDateTime(x.time||''),nextReviewDate:this.date(x.nextReviewDate||''),dateSource:this.string(x.dateSource||'',500)}));
+    const rawVersions=v.meetingVersions||[];
+    if(!allowMeetingVersions&&this.array(rawVersions,0).length)throw Error('A saved meeting version cannot contain another meeting version.');
+    r.meetingVersions=allowMeetingVersions?this.array(rawVersions,10).map(x=>({id:this.id(x.id,'MTGV-'),parentId:x.parentId?this.id(x.parentId,'MTGV-'):'',amendmentReason:this.string(x.amendmentReason||'',2000),approvalsInvalidated:this.uniqueIds(x.approvalsInvalidated||[],'APR-',30),signedAt:this.optionalDateTime(x.signedAt||''),snapshot:this.snapshot(x.snapshot)})):[];
+    const versionIds=r.meetingVersions.map(x=>x.id);
+    if(new Set(versionIds).size!==versionIds.length||r.meetingVersions.some((x,index)=>x.parentId&&!versionIds.slice(0,index).includes(x.parentId)))throw Error('This saved copy contains repeated or out-of-order meeting versions. Choose another saved copy.');
     r.photos={style:this.image(v.photos?.style||''),evidence:{}};
     for(const [id] of EVIDENCE_SLOTS)r.photos.evidence[id]=this.image(v.photos?.evidence?.[id]||'');
     r.signatures={};for(const [id] of SIGNATURE_ROLES){const q=v.signatures?.[id];if(q)r.signatures[id]={image:this.image(q.image||''),name:this.string(q.name||'',200),designation:this.string(q.designation||'',200),date:this.date(q.date||''),time:this.string(q.time||'',10)}}
@@ -48,13 +59,21 @@ class BackupCodec {
   /** Whitelist bounded reviewed values/history; unknown keys never enter change tracking.
    * Access through decode before activation. Returns additive state or rejects atomically. */
   reviewState(v){if(v===undefined)return ChangeReviewEngine.empty();if(!v||typeof v!=='object'||Array.isArray(v))throw Error('The saved review history could not be opened.');const key=k=>{this.string(k,220);const [kind,index,field,...rest]=k.split('.');const ok=!rest.length&&(kind==='meta'&&Object.hasOwn(ChangeReviewEngine.metaLabels,index)&&field===undefined||kind==='measurement'&&/^(?:0|[1-9]\d?)$/.test(index)&&ChangeReviewEngine.measureFields.includes(field)||kind==='approval'&&/^APR-[A-Za-z0-9_-]{1,100}$/.test(index)&&ChangeReviewEngine.approvalFields.includes(field)||kind==='custom'&&/^CUST-[A-Za-z0-9_-]{1,115}$/.test(index)&&ChangeReviewEngine.customFields.includes(field));if(!ok)throw Error('The saved review history contains an unknown meeting detail.');return k};let baseline=null;if(v.baseline!==null&&v.baseline!==undefined){const b=v.baseline,values=this.array(b.values,1800).map(x=>({key:key(x.key),value:this.string(x.value,5000)}));if(new Set(values.map(x=>x.key)).size!==values.length)throw Error('The saved review history contains repeated details.');baseline={at:this.dateTime(b.at),reviewer:this.string(b.reviewer,200),values};if(!baseline.reviewer.trim())throw Error('The saved review history is missing a reviewer.')}const history=this.array(v.history||[],10).map(h=>{const changes=this.array(h.changes||[],30).map(x=>({key:key(x.key),label:this.string(x.label,500),before:this.string(x.before,5000),after:this.string(x.after,5000)}));if(!Number.isInteger(h.count)||h.count<changes.length||h.count>3600)throw Error('The saved review count could not be read.');return {at:this.dateTime(h.at),reviewer:this.string(h.reviewer,200),note:this.string(h.note||'',1000),count:h.count,changes}});return {baseline,history}}
+  minutes(v){if(v===undefined)return {chairedBy:'',agenda:'',decisions:'',notes:'',acknowledgedAt:'',attachmentsRefs:[]};this.object(v);return {chairedBy:this.string(v.chairedBy||'',200),agenda:this.string(v.agenda||'',5000),decisions:this.string(v.decisions||'',5000),notes:this.string(v.notes||'',10000),acknowledgedAt:this.optionalDateTime(v.acknowledgedAt||''),attachmentsRefs:this.uniqueStrings(v.attachmentsRefs||[],30,1000)}}
+  /** A meeting version owns one complete normalized record snapshot. Nested histories are rejected to keep backups bounded and acyclic. */
+  snapshot(v){this.object(v);if(JSON.stringify(v).length>2*1024*1024)throw Error('A saved meeting version is too large to open.');return this.decode(v,false)}
+  object(v){if(!v||typeof v!=='object'||Array.isArray(v))throw Error('Some structured details in this saved copy could not be opened.');return v}
+  uniqueStrings(v,max,size){const values=this.array(v,max).map(x=>this.string(x,size));if(new Set(values).size!==values.length)throw Error('This saved copy contains repeated references. Choose another saved copy.');return values}
+  uniqueIds(v,prefix,max){const values=this.array(v,max).map(x=>this.id(x,prefix));if(new Set(values).size!==values.length)throw Error('This saved copy contains repeated references. Choose another saved copy.');return values}
   string(v,max){if(typeof v!=='string'||v.length>max)throw Error('Some text in this saved copy could not be opened. Choose another saved copy.');return v}
   array(v,max){if(!Array.isArray(v)||v.length>max)throw Error('This saved copy contains too many or incomplete entries. Choose another saved copy.');return v}
   enum(v,values){if(!values.includes(v))throw Error('Some details in this saved copy could not be opened. Choose another saved copy.');return v}
   bool(v){if(v===undefined)return false;if(typeof v!=='boolean')throw Error('Some details in this saved copy could not be opened. Choose another saved copy.');return v}
+  integer(v,min,max){if(!Number.isInteger(v)||v<min||v>max)throw Error('This saved copy uses an unsupported follow-up format.');return v}
   id(v,prefix=''){if(typeof v!=='string'||!v.startsWith(prefix)||!/^[A-Za-z0-9_-]{1,120}$/.test(v))throw Error('This saved copy has missing or incorrect meeting details. Choose another saved copy.');return v}
   date(v){this.string(v,10);if(v){const d=new Date(v+'T00:00:00Z');if(!/^\d{4}-\d{2}-\d{2}$/.test(v)||!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==v)throw Error('A date in this saved copy could not be read. Choose another saved copy.')}return v}
   dateTime(v){if(typeof v!=='string'||!Number.isFinite(Date.parse(v)))throw Error('A saved date in this copy could not be read. Choose another saved copy.');return v}
+  optionalDateTime(v){return v?this.dateTime(v):''}
   encode(r){return JSON.stringify({format:'VESA-PPM',schema:2,exportedAt:new Date().toISOString(),record:r},null,2)}
 }
 
