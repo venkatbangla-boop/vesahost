@@ -5,6 +5,9 @@ body{font-family:Arial,Bengali,Devanagari,Tamil,sans-serif;padding-top:0}
 button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #c8a33a;outline-offset:3px}
 #fileMenu{position:sticky;top:calc(var(--vesa-auth-bar-height,0px) + 65px);left:0;right:0;z-index:1300;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 16px;background:rgba(248,244,237,.96);border-top:1px solid rgba(7,26,53,.06);border-bottom:1px solid rgba(7,26,53,.10);box-shadow:0 8px 24px rgba(7,26,53,.08);backdrop-filter:blur(14px)}
 #fileMenu>button{border:1px solid transparent;background:transparent;min-height:40px;padding:0 13px;font-weight:800;color:#0a2746;border-radius:999px}#fileMenu>button:hover,#fileMenu>button:focus-visible{background:#fff;border-color:#d7cbb9}
+body.vesa-ppm-adapted .app-user-bar{position:relative!important;top:auto!important;z-index:1!important}
+body.vesa-ppm-adapted .topbar,body.vesa-ppm-adapted .section-nav-wrap,body.vesa-ppm-adapted .left-rail,body.vesa-ppm-adapted .footer-bar{position:static!important;top:auto!important;bottom:auto!important;max-height:none}
+body.vesa-ppm-adapted #fileMenu{display:none!important}
 .menu-spacer{flex:1}.version{font-size:11px;color:#657788;padding:8px}.language-select{padding:8px;border-radius:7px;border:1px solid #bbcbd4;background:#fff;min-height:42px}
 #homeScreen{display:none;min-height:100vh;background:linear-gradient(120deg,#f9f7f0,#edf4f6)}
 .at-home #homeScreen{display:block}.at-home .app-shell{display:block;min-height:0}.at-home .app-shell .topbar,.at-home .app-shell .dashboard,.at-home .app-shell .section-nav-wrap,.at-home .app-shell .main,.at-home .app-shell .footer-bar,.at-home .app-shell .mobile-nav{display:none}

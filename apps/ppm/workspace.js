@@ -8,7 +8,22 @@ class V5Workspace extends AppController {
   /** Initialize storage and existing record without creating a phantom production draft. */
   async start(){await this.repo.init();try{await this.recovery.init()}catch{this.recoveryWarning=true}let last=null;try{last=await this.repo.get(this.repo.getActiveId());if(last)last=this.codec.decode(last)}catch(e){this.startWarning='We could not open the last saved meeting. Choose a saved PPM or open a saved copy'}this.record=last||PpmRecordFactory.create();this.production=!!last;this.savedStamp=last?.updatedAt||null;this.ensureCompatibility();this.shell();this.meetingControls.mount();this.buildStatic();this.renderAll();this.bindGlobal();this.bindWorkspace();this.history.reset(this.record);this.locale.set(this.locale.language);await this.home(true);this.registerWorker()}
   /** Install touch-safe shell once. Data-derived text is always escaped or assigned as text. */
-  shell(){const bar=document.createElement('nav');bar.id='fileMenu';bar.setAttribute('aria-label','Application menu');bar.innerHTML=`<button data-command="home">HOME</button>${['File','Edit','View','Tools','Help'].map(x=>`<button data-menu="${x}">${x.toUpperCase()}</button>`).join('')}<span class="menu-spacer"></span><span class="version">V${APP_VERSION}</span>`;document.querySelector('.topbar').after(bar);const home=document.createElement('section');home.id='homeScreen';document.body.prepend(home);const banner=document.createElement('div');banner.id='trainingBanner';banner.innerHTML='<strong>TRAINING ONLY</strong><button data-command="home">BACK TO HOME</button><button data-command="new">START NEW PPM</button><button data-command="profile-copy">USE THIS PROFILE FOR NEW PPM</button>';bar.after(banner);const recovery=document.createElement('div');recovery.id='storageBanner';bar.after(recovery);document.querySelector('#modalBackdrop .modal').setAttribute('role','dialog');document.querySelector('#modalBackdrop .modal').setAttribute('aria-modal','true')}
+  shell(){
+    let bar;
+    if(window.VesaWorkspaceShell){
+      const shell=new VesaWorkspaceShell.VesaWorkspaceShell({
+        root:document.body,
+        descriptor:{id:'ppm-pre-production',name:'Pre-Production Meeting',route:'/apps/ppm/',userLabel:VesaAuth.session()?.name||''},
+        callbacks:{menu:name=>name==='Home'?this.command('home'):this.menu(name),settings:()=>this.menu('Help')}
+      });
+      bar=shell.mount();
+      document.body.classList.add('vesa-ppm-adapted');
+      const auth=document.querySelector('.app-user-bar');if(auth)auth.after(bar);
+      window.__ppmWorkspaceShell=shell;
+    }else{
+      bar=document.createElement('nav');bar.id='fileMenu';bar.setAttribute('aria-label','Application menu');bar.innerHTML=`<button data-command="home">HOME</button>${['File','Edit','View','Tools','Help'].map(x=>`<button data-menu="${x}">${x.toUpperCase()}</button>`).join('')}<span class="menu-spacer"></span><span class="version">V${APP_VERSION}</span>`;document.querySelector('.topbar').after(bar);
+    }
+    const home=document.createElement('section');home.id='homeScreen';document.body.prepend(home);const banner=document.createElement('div');banner.id='trainingBanner';banner.innerHTML='<strong>TRAINING ONLY</strong><button data-command="home">BACK TO HOME</button><button data-command="new">START NEW PPM</button><button data-command="profile-copy">USE THIS PROFILE FOR NEW PPM</button>';bar.after(banner);const recovery=document.createElement('div');recovery.id='storageBanner';bar.after(recovery);document.querySelector('#modalBackdrop .modal').setAttribute('role','dialog');document.querySelector('#modalBackdrop .modal').setAttribute('aria-modal','true')}
   languageOptions(){return [['en','English'],['bn','বাংলা'],['hi','हिन्दी'],['ta','தமிழ்']].map(([v,t])=>`<option value="${v}" ${v===this.locale.language?'selected':''}>${t}</option>`).join('')}
   /** Top-level capture guard blocks edits on finalized records before legacy handlers run. */
   bindWorkspace(){document.addEventListener('click',e=>{const b=e.target.closest('[data-command],[data-menu],[data-custom-add],[data-custom-edit],[data-custom-delete]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();if(b.dataset.menu)this.menu(b.dataset.menu);else if(b.dataset.customAdd)this.customEditor(b.dataset.customAdd);else if(b.dataset.customEdit)this.customEditor('',b.dataset.customEdit);else if(b.dataset.customDelete)this.removeCustom(b.dataset.customDelete);else this.command(b.dataset.command).catch(err=>this.toast(err.message))},true);
