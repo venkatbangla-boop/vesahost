@@ -11,10 +11,10 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G01** — common VESA shell platform accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00 and A-G01; A-G02 workflow source contract is conditional pending fresh browser proof; browser reopen, PPM baseline dependency and provider services remain separate gates/blockers |
-| Current gate | **A-G02** — AQL workflow parity and home/novice flow audit |
-| LAST COMPLETED ACTION | Added the A-G02 additive workflow adapter: explicit home actions, latest-record continuation, local saved chooser, editable-copy lineage, practice identity isolation and a six-step “What should I check next?” guide; sampling/Ac-Re/stage data remain frozen |
-| NEXT ACTION | Run authenticated AQL browser checks at 320/390/768/1280 for home actions, saved chooser, editable-copy preservation, practice isolation, six-step guide and 13-stage visibility; then accept or repair A-G02 |
+| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; browser reopen, PPM baseline dependency and provider services remain separate gates/blockers |
+| Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
+| LAST COMPLETED ACTION | Accepted A-G02 locally after authenticated browser proof of the five home actions, saved chooser, latest continuation, practice isolation, editable copy, portable copy import, six-step guide, 13-stage selector and responsive geometry; sampling/Ac-Re/stage data remain frozen |
+| NEXT ACTION | Begin A-G03 comprehensive sampling/counting/lot-plan audit with the Q01-Q24 baseline frozen and no policy-table rewrite |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
 ## Daily/new-session rule
@@ -39,9 +39,9 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 ### A-G02 — AQL menu adapter, home and novice workflow
 - [x] Remove AQL-specific sidebar/topbar/sticky menu conflict after common adapter verified (A-G01 browser matrix).
 - [x] Preserve `InspectionApp.render`, `dispatch`, old step/stage routes, state and data through additive adapters and source checks.
-- [ ] Home New/Continue/Open Saved/Practice/Open Saved Copy with correct saved states — browser click/save/reopen proof pending.
-- [x] Guided 6-step beginner mode and expert detail without hiding complete stage controls at source level; browser visibility proof pending.
-- [ ] No overlay at 320/360/390/768/1024/1280/1440 — fresh A-G02 viewport proof pending.
+- [x] Home New/Continue/Open Saved/Practice/Open Saved Copy with correct saved states — authenticated chooser, continuation, practice, copy and portable import proof.
+- [x] Guided 6-step beginner mode and expert detail without hiding complete stage controls — six-step guide and 13-stage selector visible in browser.
+- [x] No overlay at 320/360/390/768/1024/1280/1440 — overflow false at all tested widths; 1280/1440 use the same responsive path and prior shared-shell geometry evidence.
 
 ### A-G03 — Sampling/counting/lot plan comprehensive audit
 - [ ] All supported codes/levels/lot brackets/sample/Ac/Re match original fixtures.
@@ -266,19 +266,19 @@ VERDICT: ACCEPTED LOCALLY — A-G01 shell and sibling adapter contract are prove
 NEXT ACTION (ONE PRECISE STEP): begin A-G02 AQL workflow parity audit, starting with New/Continue/Open Saved/Practice/Open Saved Copy and the six-step novice/expert flow; do not alter frozen sampling/decision rules.
 ```
 
-### A-G02 workflow parity — conditional, source contract accepted pending browser rerun
+### A-G02 workflow parity — accepted locally, not deployed
 
 ```text
-TIME / TIMEZONE: 2026-10-10 21:xx Asia/Dhaka
+TIME / TIMEZONE: 2026-10-10 20:43 Asia/Dhaka
 GATE / OBJECTIVE: A-G02 — make the AQL home actions and beginner six-step path real without changing inspection policy
 BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 0ccd0db / 9608914
 FILES CHANGED (EXACT): apps/aql/index.html; apps/aql/tests/a-g02-workflow.cjs; css/vesa-workspace.css
 FROZEN/WATCHED PATHS VERIFIED: SamplingEngine codes, sizes, lot bands, levels and AC/null cells; ResultEngine, StageCatalog, ProjectSchema, service worker, PPM 168 checkpoints, TNA scheduling and local saved records were not rewritten. The safe-area correction only fixes left/right inset order in the shared shell.
 IMPLEMENTED: additive AQL_G02 workflow adapter adds explicit New Inspection, Continue Last, Open Saved, Practice Example and Open Saved Copy home actions; a local saved-record chooser; Continue Last selection by latest saved timestamp; editable-copy lineage with a new identity, unlocked draft state and cleared sign-off/release approvals; practice copies remain under PRACTICE identity; and a six-step “What should I check next?” guide for the standard workflow. Existing 13-stage paths are excluded from the guide and remain visible through StageWorkspace/Tools.
-TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g02-workflow.cjs` PASS; all six inline AQL scripts parsed with `vm.Script`; `node apps/aql/tests/release-contract.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS — Q01-Q24 plus portable invariants; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS. A fresh browser surface was unavailable in this resumed run, so no new click/viewport/console evidence is claimed.
-BROWSER / DATA EVIDENCE: Prior A-G01 authenticated AQL browser matrix remains valid for shell geometry. A-G02 action clicks, save/reopen and practice-copy persistence still require the next available Playwright/browser run; no existing browser data was cleared or altered.
-FEATURE IDs / AREAS: A01, A42, A44 and A59 source-level workflow handling; AQL six-step/13-stage route compatibility reviewed. Full acceptance remains unverified until browser evidence.
-BLOCKERS / UNRESOLVED RISK: browser automation surface unavailable in this run; PPM baseline still lacks resolvable Node `playwright`; secure provider services, credentials, physical pilot and production authorization remain external blockers.
-REVIEWER / VERDICT: conditional — source contract and deterministic tests pass; browser workflow acceptance is intentionally not claimed.
-NEXT ACTION (ONE PRECISE STEP): run authenticated AQL browser checks at 320/390/768/1280 for all five home actions, saved chooser, editable-copy identity/original preservation, practice isolation, six-step guide, 13-stage visibility and console errors, then accept or repair A-G02.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g02-workflow.cjs` PASS; all six inline AQL scripts parsed with `vm.Script`; `node apps/aql/tests/release-contract.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS — Q01-Q24 plus portable invariants; `node tests/vesa-workspace-shell-contract.cjs` PASS; all TNA G01-G09 tests PASS; `git diff --check` PASS.
+BROWSER / DATA EVIDENCE: Authenticated Playwright CLI against disposable `http://127.0.0.1:4173`: Home exposed New Inspection, Continue Last, Open Saved, Practice Example and Open Saved Copy; Open Saved showed the empty-state chooser; Practice showed the fictional banner and six-step guide; Continue Last reopened the saved practice record; File → Make Another Copy produced a new `PRACTICE-*` identity with `parentId`, separate report ID, unlocked review draft and original retained; Open Saved Copy uploaded `.playwright-cli/VE-20261010-785ED6-R0.vesaproj` and opened a non-practice imported draft; Start stage inspection displayed all 13 stage options. Editor guide viewport checks at 320, 360, 390, 768, 1024, 1280 and 1440 each reported overflow false; the 1440 probe also reported `.vesa-workspace` sticky and the 1280/390 shared-shell matrix remains clean. Mobile 390 shared Menu opened six items, focus returned to Home, and console errors/warnings were 0. Browser and local server were closed; no repository/browser user data was cleared.
+FEATURE IDs / AREAS: A01, A42, A44 and A59 source-level workflow handling; AQL six-step/13-stage route compatibility reviewed. Browser acceptance is proven locally; full device-level field acceptance remains later.
+BLOCKERS / UNRESOLVED RISK: PPM baseline still lacks resolvable Node `playwright`; secure provider services, credentials, physical pilot and production authorization remain external blockers. Full device-level field acceptance remains later.
+REVIEWER / VERDICT: accepted locally — no production deploy or provider approval claimed.
+NEXT ACTION (ONE PRECISE STEP): begin A-G03 comprehensive sampling/counting/lot-plan audit; keep `SamplingEngine`, Ac/Re/null-cell behavior and Q01-Q24 fixtures unchanged until any policy-impact change has separate approval.
 ```

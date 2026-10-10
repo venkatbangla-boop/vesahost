@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **27%** |
-| **REMAINING** | **73%** |
+| **OVERALL VERIFIED** | **30%** |
+| **REMAINING** | **70%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
 | **PPM 360** | **0%** - accepted gates 0 / 11 |
-| **AQL 360** | **15%** - accepted gates 2 / 13 |
+| **AQL 360** | **23%** - accepted gates 3 / 13 |
 | **ONE VESA SHARED UX** | **20%** - accepted gates 2 / 10 |
-| Program stage | AQL A-G00 and A-G01 are accepted locally; A-G02 is active. PPM P-G00 remains blocked by its unresolved Playwright dependency, while its independent shell adapter is conditional. Secure backend/provider and production authorization remain blocked. |
-| Active gate | **AQL A-G02 - Workflow parity and home/novice flow** |
-| Current subtask / subchecks | A-G02 source slice `9608914` adds explicit AQL New/Continue Last/Open Saved/Practice/Open Saved Copy actions, a saved-record chooser, editable-copy lineage and a six-step “What should I check next?” guide; AQL Q01-Q24/portable baseline, release contract, shell contract, all TNA tests and inline-script syntax pass. Fresh browser action/save/reopen/viewport proof is unavailable in this run, so A-G02 remains conditional. PPM P-G00 remains blocked by unresolved `playwright` dependency. |
-| Last ACCEPTED gate | **AQL A-G01 - Common VESA shell platform** (`0ccd0db` ledger acceptance; source adapters `bb431ae`, `1592b75`, `ff1ae17`, platform contract `51d10ec`; accepted locally, no deployment) |
-| Last tested commit SHA | `9608914` (conditional A-G02 source slice); A-G00 Q01-Q24/portable, AQL release, shared shell, TNA G01-G09, inline-script syntax and `git diff --check` passed |
-| Last update (UTC) | 2026-10-10 14:35:16 UTC |
+| Program stage | AQL A-G00, A-G01 and A-G02 are accepted locally; A-G03 is active. PPM P-G00 remains blocked by its unresolved Playwright dependency, while its independent shell adapter is conditional. Secure backend/provider and production authorization remain blocked. |
+| Active gate | **AQL A-G03 - Sampling/counting/lot-plan comprehensive audit** |
+| Current subtask / subchecks | A-G03 audit the frozen SamplingEngine codes, levels, lot brackets, sample sizes, Ac/Re/null cells and Q01-Q24 edge fixtures without rewriting policy tables; document reviewer/source/revision/timing evidence. A-G02 browser proof covered all five home actions, saved chooser, practice/copy isolation, portable import, six-step guide, 13 stages and 320–1440 responsive geometry. PPM P-G00 remains blocked by unresolved `playwright` dependency. |
+| Last ACCEPTED gate | **AQL A-G02 - Workflow parity and home/novice flow** (`9608914`; accepted locally, no deployment) |
+| Last tested commit SHA | `9608914` (A-G02 source and browser slice); A-G00 Q01-Q24/portable, AQL release, shared shell, TNA G01-G09, inline-script syntax and `git diff --check` passed |
+| Last update (UTC) | 2026-10-10 14:43:00 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=0, a=2, s=2.
+Current counted gates: t=9, p=0, a=3, s=2.
 ```
 
 ## C. Application gate checklist
@@ -78,7 +78,7 @@ Current counted gates: t=9, p=0, a=2, s=2.
 |---|---|---|---|
 | A-G00 | Inspect large AQL source and freeze sampling baseline | ACCEPTED | `53e52e3`: `a-g00-baseline.cjs` Q01-Q24 and portable round-trip invariants pass; release contract plus prior browser baseline remain green; numeric source untouched |
 | A-G01 | Common shared VESA shell | ACCEPTED | `bb431ae` + `1592b75` + `ff1ae17` + `51d10ec`: authenticated 1280/390 matrix proves one sticky `.vesa-workspace` across AQL/PPM/TNA, six mobile menu items, focus return to Home, zero overflow and console errors/warnings 0; AQL/PPM/TNA File callbacks opened existing dialogs; PPM rendered 168 checkpoints. Root/protected route regression remained clean. No domain source changed. |
-| A-G02 | Audit workflow parity | CONDITIONAL | `9608914`: source contract, explicit home actions, local chooser/copy handlers and six-step guide; fresh browser action/save/reopen proof pending |
+| A-G02 | Audit workflow parity | ACCEPTED | `9608914`: source contract plus authenticated browser proof for five home actions, saved chooser, continuation, practice/copy isolation, portable import, six-step guide, 13-stage selector and 320–1440 responsive geometry; accepted locally, not deployed |
 | A-G03 | Sampling/statistical engine parity | NOT STARTED | - |
 | A-G04 | Defects, scoring, evidence | NOT STARTED | - |
 | A-G05 | AQL local save/restore/export | NOT STARTED | - |
@@ -134,6 +134,7 @@ Current counted gates: t=9, p=0, a=2, s=2.
 | 2026-10-10 07:30:00 UTC | TNA G07 | ACCEPTED | 03ca0cd expanded export acceptance so every R01-R12 report in EN/BN/HI/TA serializes to JSON and a four-sheet Excel workbook without mutating the plan. PASS: full syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: EN/BN/HI/TA report title and order headings visible, typed buyer text preserved, print-only report visible, browser PDFs generated (`en` 75,678 bytes; `bn` 99,382; `hi` 96,647; `ta` 100,876), 390px overflow=false for each, console/page errors=0. G07 accepted locally; no production deploy and no dedicated licensed in-app PDF renderer claimed. |
 | 2026-10-10 07:33:14 UTC | TNA G08 | CONDITIONAL | b519279 added pure scenario engine foundation with immutable preview, explicit confirmed apply, revision/audit evidence and shared resource conflict detection. PASS: full syntax suite for shared/TNA JS; G01-G08 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: `/apps/tna/` loaded `VesaTnaScenarios`, preview did not mutate live plan, apply without confirmation was blocked, shared line conflict overallocated by 1 was detected, 390px overflow=false, console/page errors=0. Visible scenario UI, comparison/apply workflow and advanced multiorder views remain open. |
 | 2026-10-10 13:43:53 UTC | Program reconciliation / TNA G08-G09 | CONDITIONAL | Reconciled `VESA_PROGRESS.md` against actual feature-branch evidence through `24c42d1`: TNA G00-G08 are accepted locally (9/13); G09 remains conditional with provider-neutral contracts only. All 10 TNA Node tests, AQL release contract, shared/TNA syntax checks and `git diff --check` are green. PPM P-G00, AQL A-G00 and shared U-G00 remain NOT STARTED in their real trackers; cloud identity/database/object storage/notifications and production release remain blocked. |
+| 2026-10-10 14:43:00 UTC | AQL A-G02 workflow parity | ACCEPTED LOCALLY | `9608914` source/tests plus authenticated Playwright proof: five home actions, empty saved chooser, Continue Last, fictional practice banner and six-step guide, editable practice copy with parent lineage and retained original, portable saved-copy import, all 13 stages, 320–1440 overflow-free editor checks, 390px shared-menu focus return and zero console errors/warnings. No production deploy. |
 | 2026-10-10 13:48:21 UTC | PPM P-G00 baseline audit | BLOCKED | Audited PPM source ownership and frozen paths at `8b06f6f`; VM capture confirmed 168 tuples, 19 profiles and 12 process options; desktop/mobile home/editor screenshots captured under `output/playwright/ppm-pg00-*.png` with 0 console errors/warnings. `regression.cjs`, `planning.cjs` and `update.cjs` all stop before execution with `Cannot find module 'playwright'`; transient npx retry did not resolve it. Exact committed tuple/V4/V5 fixture remains the next PPM prerequisite. |
 | 2026-10-10 13:49:02 UTC | PPM P-G00 dependency probe | BLOCKED | Non-mutating `npm exec --package=playwright` and `npx -p playwright` resolution probes both returned `MODULE_NOT_FOUND`; no package manifest, lockfile, node_modules or application file was changed. |
 | 2026-10-10 13:52:37 UTC | AQL A-G00 baseline audit | BLOCKED | `node apps/aql/tests/release-contract.cjs` passed. Browser baseline at `bda6836` exposed 6 steps, 13 stages, SamplingEngine arrays/AC map and ResultEngine empty pending reasons; synthetic save persisted one local record and portable `VE-20261010-785ED6-R0.vesaproj` downloaded; desktop/320/390/tablet screenshots and console Errors 0/Warn 0 captured. Q01-Q24 executable fixtures/runner are absent, so A-G00 is not accepted. |
@@ -152,4 +153,4 @@ Current counted gates: t=9, p=0, a=2, s=2.
 
 ## F. NEXT ACTION
 
-Run the authenticated AQL browser proof for `9608914` at 320/390/768/1280: exercise all five home actions, saved chooser, editable-copy preservation, practice isolation, six-step guide, 13-stage visibility and console errors; then accept or repair A-G02. Keep sampling/Ac-Re/ResultEngine, PPM checkpoint identities and TNA date calculations frozen. Keep PPM P-G00's missing Playwright dependency, secure provider services and production authorization explicitly blocked; do not deploy production.
+Begin the AQL A-G03 comprehensive sampling/counting/lot-plan audit from the accepted Q01-Q24 baseline. Verify supported codes, levels, lot brackets, sample sizes, Ac/Re/null cells, allocation and counting-basis edge cases, plus visible reviewer/source/revision/timing evidence. Keep SamplingEngine policy tables, PPM checkpoint identities and TNA date calculations frozen unless a separately approved fixture proves a policy defect. Keep PPM P-G00's missing Playwright dependency, secure provider services, physical pilot and production authorization explicitly blocked; do not deploy production.
