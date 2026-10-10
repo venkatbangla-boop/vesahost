@@ -16,7 +16,7 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | Active gate | **TNA G06 - Full workspaces, portfolio, Gantt, accessibility** |
 | Current subtask / subchecks | Start G06: full workspaces, portfolio views, Gantt/timeline with accessible table alternative, filters and responsive/keyboard checks |
 | Last ACCEPTED gate | **TNA G05 - Local saving, backup, Excel import and migrations** |
-| Last tested commit SHA | HEAD after G05 commit |
+| Last tested commit SHA | c6050d7 |
 | Last update (UTC) | 2026-10-10 06:29:54 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
@@ -47,7 +47,7 @@ Current counted gates: t=6, p=0, a=0, s=0.
 | G02 | Garment templates + schema | ACCEPTED | 94a7105; g02-domain.test.js; 12 profiles, 126 lifecycle activities |
 | G03 | Calendar + dependency CPM | ACCEPTED | 56e0856; g03-scheduling.test.js; CAL/GPH fixtures and CPM-01 |
 | G04 | LC, materials, capacity, shipment math | ACCEPTED | 4d36b2c; g04-operations.test.js; COM/APR/CAP/SHP fixtures |
-| G05 | Local save/reopen + Excel import/export | ACCEPTED | HEAD after G05 commit; visible save/reload/open, backup validation, storage recovery, XLSX preview/export and formula defenses tested |
+| G05 | Local save/reopen + Excel import/export | ACCEPTED | c6050d7; visible save/reload/open, backup validation, storage recovery, XLSX preview/export and formula defenses tested |
 | G06 | Workspaces, Gantt, dashboard | ACTIVE | Next checkpoint |
 | G07 | Four languages + reports | NOT STARTED | - |
 | G08 | Recovery, scenarios + multiorder | NOT STARTED | - |
