@@ -13,8 +13,8 @@
 | Last accepted implementation gate | **P-G04 — PPM approvals, measurement, revision and decision explainability** (`979fec4`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G04 approvals/measurement/revision/decision explainability; P-G05 is next; no production deployment |
 | Current gate | `P-G05 — PPM follow-ups, meeting minutes, evidence and amendment enhancements` |
-| LAST COMPLETED ACTION | Added and tested the accessible P-G05 Follow-Up workspace in `6c1b666`: optional minutes, explicitly sourced calendar-day aging and escalation evidence save/reopen through the real repository at 390px; the dialog stacking defect found during visual review was fixed and regression remains green |
-| NEXT ACTION | Add the explicit exception/waiver authority-record controls to Follow-Up, prove they round-trip without changing checkpoint readiness or release decisions, then continue attachment failure protection and controlled amendment UI |
+| LAST COMPLETED ACTION | Added and tested P-G05 authority/exception evidence controls in `d1f9872`: a bounded evidence record now round-trips at 390px while exact before/after assertions prove coverage, readiness, O05 status and release remain unchanged |
+| NEXT ACTION | Add bounded meeting attachment-reference controls and prove failed save protection keeps the current record and visible unsaved state; then implement controlled amendment confirmation/history UI |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -56,7 +56,7 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 
 ### P-G05 — Follow-ups, meeting minutes, evidence and amendment enhancements
 - [x] Action ownership/aging/escalation and date-source rules.
-- [ ] Optional minutes/waivers/authority record with versioned compatibility.
+- [x] Optional minutes/waivers/authority record with versioned compatibility.
 - [ ] Evidence links/attachments and failed upload/save protection.
 - [ ] Amendment history and approvals/signature invalidation fully tested.
 
@@ -383,4 +383,22 @@ OWNERSHIP / CALL FLOW / STATE: Follow-Up modal -> bounded required evidence fiel
 RISKS / GUARDS: imported/user values escaped; require explicit checkpoint, policy/source, scope, accountable party, named authorizer, authority type, approval date and evidence; bound records to 100; locked record disabled; no `notificationSent`, no status rewrite, no automatic waiver; compare coverage/readiness before and after in browser.
 VERIFICATION / ROLLBACK: extend the authenticated 390px P-G05 test with add/save/reload/reopen and exact before/after coverage/readiness equality; visually inspect authority record; rerun P-G05 domain, P-G04, syntax, shared shell and full PPM regression as proportionate. Revert the UI/test/tracker commit; no migration or stored-data deletion.
 PRE-CODE VERDICT: approved for an additive conditional P-G05 sub-slice; attachments and controlled amendments stay open.
+```
+
+### P-G05 authority/exception evidence controls — conditional, gate remains active
+
+```text
+TIME / TIMEZONE: 2026-10-10 18:20 UTC / 2026-10-11 00:20 Asia/Dhaka
+GATE / OBJECTIVE: P-G05 — expose the existing versioned exception schema without creating an automatic waiver or changing release readiness
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / 7835517 / d1f9872
+FILES CHANGED (EXACT): apps/ppm/planning-panel.js; apps/ppm/tests/p-g05-followup-ui.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+FILES WATCHED/FROZEN: core.js/record-services.js schema; all 168 checkpoints/statuses; CoverageEngine/ValidationEngine; GO/CONDITIONAL GO/HOLD; approvals/signatures/release; uploads, amendments, notifications; AQL/TNA/shared files
+IMPLEMENTED / PROVEN: Follow-Up accepts one of the actual applicable checkpoint IDs plus explicit buyer policy/source, scope, accountable party, named authorizer, authority type, approval date, optional expiry, status and evidence reference. Values are bounded/escaped, records are capped at 100 and locked records are disabled. Copy explicitly says this is supplied evidence only and does not approve a waiver, change a checkpoint or release production.
+TEST COMMANDS + OUTPUT/COUNTS: P-G00 baseline PASS; P-G04 PASS; P-G05 domain PASS; planning PASS 16; full browser regression PASS including four-language data preservation, all PDF modes, CSV defense, cross-tab/save failure, mobile/offline and zero uncaught errors; P-G05 UI PASS; shared shell PASS; syntax/diff checks PASS. Cached Playwright 1.64.0 + Chromium 1248.
+BROWSER / VISUAL EVIDENCE: authenticated 390px synthetic record added O05 authority evidence, asserted exact serialized CoverageEngine and ValidationEngine results plus O05 ACTION/release equality before/after, saved/reloaded/reopened the record and verified every evidence field. Screenshot visually reviewed: ignored local `output/playwright/ppm-p-g05-authority-mobile-390.png`.
+ROLLBACK: revert d1f9872. Existing schema remains compatible; no saved-data cleanup or migration.
+FEATURE EVIDENCE: P27 exception/authority record plus P29 minutes are now locally proven; this remains evidence capture, not authenticated buyer authority.
+BLOCKERS / UNRESOLVED RISK: attachment references/upload failure, controlled amendment confirmation/history UI and full authored-copy localization remain open. Secure identity/authority and notifications remain external.
+REVIEWER / VERDICT: CONDITIONAL — the optional minutes/waiver/authority compatibility checklist item is proven locally, but P-G05 remains active and earns no percentage until all gate items pass.
+NEXT ACTION (ONE PRECISE STEP): add bounded meeting attachment-reference controls and simulate a failed repository save to prove the record stays open with visible unsaved state before controlled amendment UI.
 ```
