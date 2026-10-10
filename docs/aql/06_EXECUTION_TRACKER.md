@@ -396,6 +396,22 @@ VERDICT: conditional — decision-guard coverage is locally proven, but full A-G
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then cover the next untested stage-specific record without changing frozen AQL tables.
 ```
 
+### A-G06/A-G07/A-G08 browser evidence chain — conditional, synthetic practice only
+
+```text
+TIME / TIMEZONE: 2026-10-10 21:58 Asia/Dhaka
+GATE / OBJECTIVE: A-G06/A-G07/A-G08 — verify one measurement/evidence/CAPA chain, local reopen, portable backup, report preview, shared-language preference and mobile keyboard boundaries without changing inspection policy
+BRANCH / SOURCE HEAD: feature/tna360-continuous / d6824e9
+FILES CHANGED: docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md; ignored output/playwright/aql-a-g06-g08-mobile-390.png
+FROZEN BUSINESS RULES: no AQL application source, SamplingEngine/Ac-Re cell, report model, PPM checkpoint identity, TNA calculation or production inspection record changed. All browser data was a disposable fictional Practice Example; no approval, finalisation, shipment release or external export was submitted.
+IMPLEMENTED / REVIEWED: Authenticated Playwright CLI opened an apparel Practice Example, navigated to Measure and Review, retained the fictional 55.4 cm out-of-tolerance reading and `NOT CONFORMED` result after reload/Continue, added a fictional verified CAPA row, and rendered that measurement/CAPA history in Report studio preview. The page exposed `Print / Save PDF` and `Export HTML`; the intentional sandboxed report iframe emitted two script-blocked console errors, so clean preview-console acceptance is not claimed. `Download Saved Copy` produced `VE-20261010-7EEDE5-R0.vesaproj` at 47,360 bytes and the app reported that unfinished drafts are not included in that JSON backup. The shared Login preference control was changed to Bengali; App Centre rendered Bengali labels and AQL View guidance rendered Bengali while inspection labels and user-entered values stayed unchanged. At 390x844, document/body scroll widths were 375 CSS px versus innerWidth 390; one Tab reached `Skip to workspace` with `rgb(36, 79, 214) solid 3px` focus.
+TEST COMMANDS + OUTPUT/COUNTS: AQL `a-g00-baseline.cjs` PASS Q01-Q24 plus portable invariants; `a-g02-workflow.cjs`, `a-g03-sampling.cjs`, `a-g04-stage.cjs`, `a-g05-readiness-rework.cjs`, `a-g06-evidence-analytics.cjs`, `a-g07-portable-safety.cjs`, `a-g08-reports-language.cjs`, `a-g09-cross-app-boundaries.cjs`, `release-contract.cjs` PASS; shared `node tests/vesa-workspace-shell-contract.cjs` PASS; all TNA `g01`-`g09` tests PASS; `git diff --check` PASS. PPM `regression.cjs`, `planning.cjs` and `update.cjs` remain blocked before execution by `Cannot find module 'playwright'`.
+BROWSER / DATA EVIDENCE: Disposable local server `http://127.0.0.1:4178`; screenshot `output/playwright/aql-a-g06-g08-mobile-390.png` (58,350 bytes). Browser and server were closed; no browser-data clear, production export, release or approval occurred. The synthetic Practice Example remains explicitly non-production.
+BLOCKERS / UNRESOLVED RISK: A-G03 still requires an approved carton-randomization requirement/fixture and seeded selection evidence; A-G05/A-G06/A-G07/A-G08 still need full device/restore/large-record/print-PDF/keyboard/zoom/four-language/share review. PPM Playwright dependency, secure provider services, physical pilot and production authorization remain external blockers.
+REVIEWER / VERDICT: conditional — the representative browser chain and safety boundaries are observed locally; this evidence does not accept any gate or claim live collaboration/production readiness.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run reproducible seeded carton-selection evidence while keeping SamplingEngine cells frozen; after that, complete the remaining A-G05-A-G08 device/report review.
+```
+
 ### A-G08 authenticated report preview and guidance browser review — conditional, no inspection release
 
 ```text
