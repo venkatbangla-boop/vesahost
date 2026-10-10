@@ -10,15 +10,15 @@
 | Repository | `venkatbangla-boop/vesahost` |
 | Deployment target | `/apps/tna/` under VESA App Centre |
 | Specifications | This file plus root `AGENTS.md` and documents `01`–`05` |
-| Design status | G04 operational engines implemented locally on feature branch; storage/report/cloud groups remain open |
-| Implementation status | **G04 IMPLEMENTED LOCALLY / NOT DEPLOYED**; TNA shell, domain records, scheduling and operational engines verified |
-| Last accepted patch group | **G04 — Apparel operational engines** |
-| Current patch group | **G05 — Local saving, backup, Excel import and migrations** |
+| Design status | G05 local storage, backup and Excel preview/export implemented locally on feature branch; workspace/report/cloud groups remain open |
+| Implementation status | **G05 IMPLEMENTED LOCALLY / NOT DEPLOYED**; TNA shell, domain records, scheduling, operational engines, local save/reopen, backup and Excel preview/export verified |
+| Last accepted patch group | **G05 — Local saving, backup, Excel import and migrations** |
+| Current patch group | **G06 — Full workspaces, portfolio, Gantt, accessibility** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
 | External block | Cloud hosting/identity/database/notification providers/permissions not yet authorized or provisioned |
-| Resume anchor | G04 accepted locally on `feature/tna360-continuous`; next checkpoint is G05 local saving, backup, Excel import and migrations |
-| LAST COMPLETED ACTION | Implemented commercial LC anchor comparison, material readiness gates, approval authority checks, verified-rate/SMV capacity, quantity conservation, shared-line over-allocation and shipment release checks |
-| NEXT ACTION | Continue G05: wire visible Save/Open Saved Copy flows, add oversize/quota and unsupported-schema recovery tests, and add a real XLSX parser dependency or keep XLSX workbook import explicitly blocked while preserving safe CSV/tabular preview |
+| Resume anchor | G05 accepted locally on `feature/tna360-continuous`; next checkpoint is G06 full workspaces, portfolio, Gantt and accessibility |
+| LAST COMPLETED ACTION | Completed visible local Save/Open Saved TNA flows, checksum backup open/download, storage quota/oversize/unsupported-schema tests, local Apache-2.0 XLSX parser bundle, workbook mapping preview, macro/formula defenses and formula-safe workbook export |
+| NEXT ACTION | Start G06: implement full TNA workspaces, portfolio views, Gantt/timeline with accessible table alternative, action filters and responsive/keyboard checks without changing PPM/AQL behavior |
 
 **Snapshot date:** 2026-10-10. The GitHub public repo/main and files were inspected at a documentation level; **Codex must directly inspect its checkout** before code writes. Never treat these notes as a completed local repo audit.
 
@@ -114,11 +114,11 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 
 ### G05 — Local saving, backup, Excel import and migrations
 
-- [ ] IndexedDB (or accepted equivalent) transaction-safe multiorder save/reopen/autosave/recovery.
-- [ ] Save Now, Make Another Copy, Download/Open Saved Copy with schema and size validation.
-- [ ] Undo/redo of draft changes, baseline revisions protected and export/import round-trip.
-- [ ] Real Excel import mapping preview, ambiguous date detection, safe Excel export and macro/formula defenses.
-- [ ] Simulated storage quota, corrupt backup, interrupted write and unsupported schema tests.
+- [x] IndexedDB (or accepted equivalent) transaction-safe multiorder save/reopen/autosave/recovery.
+- [x] Save Now, Make Another Copy, Download/Open Saved Copy with schema and size validation.
+- [x] Undo/redo of draft changes, baseline revisions protected and export/import round-trip.
+- [x] Real Excel import mapping preview, ambiguous date detection, safe Excel export and macro/formula defenses.
+- [x] Simulated storage quota, corrupt backup, interrupted write and unsupported schema tests.
 
 ### G06 — Full workspaces, portfolio, Gantt, accessibility
 
@@ -221,8 +221,8 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [ ] F26 Reports R01–R12
 - [ ] F27 Valid Excel import/export
 - [ ] F28 PDF / Print / Share fallback
-- [ ] F29 Local save/reopen/autosave
-- [ ] F30 Portable safe backup and migration
+- [x] F29 Local save/reopen/autosave
+- [x] F30 Portable safe backup and migration
 - [ ] F31 Draft undo and reviewed changes
 - [ ] F32 Filtering/search/status
 - [ ] F33 Complete four-language UI
@@ -282,10 +282,10 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 - [x] Direct route `/apps/tna/` and auth redirect; App Centre links work
 - [x] Existing login, App Centre, PPM, AQL regression
 - [x] TNA Home/new/recent/practice/offline paths
-- [ ] Save → browser reload → reopen exact values
-- [ ] Corrupt/oversize/version-mismatch backup safely rejected
+- [x] Save → browser reload → reopen exact values
+- [x] Corrupt/oversize/version-mismatch backup safely rejected
 - [x] Baseline cannot be altered by editing forecast/actual
-- [ ] Excel import preview/mapping, Excel export and formula safety
+- [x] Excel import preview/mapping, Excel export and formula safety
 - [ ] Actual PDF, print and share fallback tests
 - [ ] Bengali/Hindi/Tamil translation and glyph rendering
 - [ ] Mobile/tablet/desktop, zoom, keyboard/screen-reader semantics
@@ -324,6 +324,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | 2026-10-10 11:40 Asia/Dhaka | G03 calendar, precedence and critical path | `feature/tna360-continuous` / `HEAD after G03 commit` | `apps/tna/src/scheduling.js`, `apps/tna/src/bootstrap.js`, `apps/tna/index.html`, `apps/tna/tests/g01-shell.test.js`, `apps/tna/tests/g03-scheduling.test.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/domain.js`; `node -c apps/tna/src/scheduling.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/tna/tests/g02-domain.test.js`; `node apps/tna/tests/g03-scheduling.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Fixtures: CAL-01/02/05 and GPH-01/02/03/06 passed; CPM-01 A/B/C/D exact October 2026 dates and holiday slip 1 working day passed. Browser PASS via Playwright CLI on local server: full-entry draft with explicit `2026-10-12` start and `2026-11-30` ex-factory displayed forecast `2027-03-08`, late 70 working days, 1 critical chain; no console errors; 390px overflow=false; baseline/current/actual not overwritten. No production deploy. | accepted | G04 apparel operational engines |
 | 2026-10-10 11:44 Asia/Dhaka | G04 apparel operational engines | `feature/tna360-continuous` / `HEAD after G04 commit` | `apps/tna/src/operations.js`, `apps/tna/src/bootstrap.js`, `apps/tna/index.html`, `apps/tna/tests/g01-shell.test.js`, `apps/tna/tests/g04-operations.test.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/domain.js`; `node -c apps/tna/src/scheduling.js`; `node -c apps/tna/src/operations.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/tna/tests/g02-domain.test.js`; `node apps/tna/tests/g03-scheduling.test.js`; `node apps/tna/tests/g04-operations.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Fixtures: COM-01/02, APR-01/02/03, CAP-01/02/03/04/05, SHP-01/02 passed. Browser PASS via Playwright CLI: operations engine loaded; zero production rate returned `needs-information`; draft UI showed contract lead/capacity `needs-information`, material gates none, no console errors. No production deploy. | accepted | G05 local saving, backup, Excel import and migrations |
 | 2026-10-10 11:50 Asia/Dhaka | G05 partial local saving/import safety | `feature/tna360-continuous` / `HEAD after partial G05 commit` | `apps/tna/src/storage.js`, `apps/tna/src/bootstrap.js`, `apps/tna/index.html`, `apps/tna/tests/g01-shell.test.js`, `apps/tna/tests/g05-storage.test.js`, `service-worker.js`, tracker evidence | PASS: full syntax suite, G01-G05 node tests, AQL release contract and `git diff --check`. Added browser-local save/reopen/autosave/recovery adapter, checksum-protected saved-copy import/export, undo/redo history, CSV/tabular import preview with formula/ambiguous-date warnings, CSV formula neutralization. Browser smoke: storage adapter loaded; draft creation had 0 console errors. Conditional: visible Save/Open flows and real XLSX workbook parser/viewer dependency are not accepted yet; no production deploy. | conditional | Continue G05 completion items |
+| 2026-10-10 12:29 Asia/Dhaka | G05 local saving, backup, Excel import and migrations | `feature/tna360-continuous` / HEAD after G05 commit | `apps/tna/src/storage.js`, `apps/tna/src/bootstrap.js`, `apps/tna/index.html`, `apps/tna/vendor/xlsx.full.min.js`, `apps/tna/vendor/xlsx.LICENSE.txt`, `apps/tna/tests/g01-shell.test.js`, `apps/tna/tests/g05-storage.test.js`, `apps/tna/tests/g05-ui.test.js`, `service-worker.js`, tracker evidence | PASS: syntax suite for shared/TNA JS; `node apps/tna/tests/g01-shell.test.js`; `node apps/tna/tests/g02-domain.test.js`; `node apps/tna/tests/g03-scheduling.test.js`; `node apps/tna/tests/g04-operations.test.js`; `node apps/tna/tests/g05-storage.test.js`; `node apps/tna/tests/g05-ui.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Tests cover local save/list/load/autosave/recovery, checksum copy import/export, corrupt/oversize/unsupported schema rejection, quota failure with temp cleanup and previous-box preservation, undo/redo, CSV and XLSX preview mapping, ambiguous dates, macro-name rejection, formula detection and formula-safe CSV/XLSX export. Browser PASS via Playwright CLI on local server: login as `admin@vesa`, open TNA, create `STYLE-UI`, Save TNA, reload, Open Saved TNA restored Buyer/Factory/PO/qty, CSV preview showed formula and ambiguous-date warnings, console errors=0. No production deploy. | accepted | G06 full workspaces, portfolio, Gantt and accessibility |
 
 ### Open blockers and decisions
 
@@ -332,7 +333,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | B01 | External configuration missing | User authorizes secure cloud/API+DB provider, identity, data residency and storage | G09 live collaboration |
 | B02 | External configuration missing | User authorizes sender/domain/provider/opt-ins for scheduled alerts | G10 server notification delivery |
 | B03 | Verified for G00 | Repo surfaces, PPM/AQL assets and available tests inspected on `feature/tna360-continuous` | G00 gate closed; keep running regressions after TNA changes |
-| B04 | Partially verified | No XLSX/PDF dependency is currently installed in this static repo; safe CSV/tabular preview and formula defenses were added, but real XLSX/PDF viewer/export proof still requires dependency selection | G05/G07 Excel/PDF acceptance remains conditional |
+| B04 | Partially verified | Local Apache-2.0 SheetJS `xlsx@0.18.5` browser parser is bundled for G05 workbook preview/export; PDF viewer/export proof still requires later G07 report dependency/visual review | G05 Excel portion closed locally; G07 PDF/report acceptance remains open |
 | B05 | Business configuration to be collected per order | Real calendar, buyer approvals, supplier and factory production lead/rates | Per-order reliable calculated forecast, not application code acceptance |
 
 Do not convert an external blocker into a fabricated successful feature. Do not block independent features while awaiting a provider selection.

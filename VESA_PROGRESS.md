@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **12%** |
-| **REMAINING** | **88%** |
-| **TNA 360** | **38%** - accepted gates 5 / 13 |
+| **OVERALL VERIFIED** | **14%** |
+| **REMAINING** | **86%** |
+| **TNA 360** | **46%** - accepted gates 6 / 13 |
 | **PPM 360** | **0%** - accepted gates 0 / 11 |
 | **AQL 360** | **0%** - accepted gates 0 / 13 |
 | **ONE VESA SHARED UX** | **0%** - accepted gates 0 / 10 |
 | Program stage | TNA in-progress checkpoint must be completed first, then shared VESA UI contract, then remaining TNA/PPM/AQL gates |
-| Active gate | **TNA G05 - Local saving, backup, Excel import and migrations** |
-| Current subtask / subchecks | Continue G05 completion items: visible Save/Open flows, oversize/quota/unsupported-schema tests, and real XLSX dependency decision |
-| Last ACCEPTED gate | **TNA G04 - Apparel operational engines** |
-| Last tested commit SHA | bcb25a9 |
-| Last update (UTC) | 2026-10-10 06:09:46 UTC |
+| Active gate | **TNA G06 - Full workspaces, portfolio, Gantt, accessibility** |
+| Current subtask / subchecks | Start G06: full workspaces, portfolio views, Gantt/timeline with accessible table alternative, filters and responsive/keyboard checks |
+| Last ACCEPTED gate | **TNA G05 - Local saving, backup, Excel import and migrations** |
+| Last tested commit SHA | HEAD after G05 commit |
+| Last update (UTC) | 2026-10-10 06:29:54 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=5, p=0, a=0, s=0.
+Current counted gates: t=6, p=0, a=0, s=0.
 ```
 
 ## C. Application gate checklist
@@ -47,8 +47,8 @@ Current counted gates: t=5, p=0, a=0, s=0.
 | G02 | Garment templates + schema | ACCEPTED | 94a7105; g02-domain.test.js; 12 profiles, 126 lifecycle activities |
 | G03 | Calendar + dependency CPM | ACCEPTED | 56e0856; g03-scheduling.test.js; CAL/GPH fixtures and CPM-01 |
 | G04 | LC, materials, capacity, shipment math | ACCEPTED | 4d36b2c; g04-operations.test.js; COM/APR/CAP/SHP fixtures |
-| G05 | Local save/reopen + Excel import/export | CONDITIONAL | bcb25a9; storage/import safety tests pass, but visible Save/Open flows and real XLSX dependency proof remain |
-| G06 | Workspaces, Gantt, dashboard | NOT STARTED | - |
+| G05 | Local save/reopen + Excel import/export | ACCEPTED | HEAD after G05 commit; visible save/reload/open, backup validation, storage recovery, XLSX preview/export and formula defenses tested |
+| G06 | Workspaces, Gantt, dashboard | ACTIVE | Next checkpoint |
 | G07 | Four languages + reports | NOT STARTED | - |
 | G08 | Recovery, scenarios + multiorder | NOT STARTED | - |
 | G09 | Secure backend + multiuser | BLOCKED | External provider/identity/database/storage not authorized/provisioned |
@@ -112,7 +112,7 @@ Current counted gates: t=5, p=0, a=0, s=0.
 | Production deploy / DNS / main push | BLOCKED | Explicit user authorization after release gates pass |
 | Cloud identity, database, object storage, notifications | BLOCKED | Provisioned provider, credentials, tenant policy and deployment target |
 | True server-side app URL protection | BLOCKED for static GitHub Pages | Authenticated hosting/proxy or server route gate |
-| Real XLSX workbook parsing | OPEN | Add a locally bundled, license-checked parser dependency or keep workbook import explicitly blocked while CSV/tabular preview stays safe |
+| Real XLSX workbook parsing | CLOSED LOCALLY FOR G05 | Bundled Apache-2.0 SheetJS `xlsx@0.18.5` for local workbook preview/export; report/PDF visual review remains G07 |
 
 ## E. Work journal
 
@@ -120,6 +120,7 @@ Current counted gates: t=5, p=0, a=0, s=0.
 |---|---|---|---|
 | 2026-10-10 06:09:46 UTC | Program continuity | CONDITIONAL | Imported continuity, PPM and AQL spec packages without overwriting newer TNA tracker; root AGENTS already matched incoming TNA instructions. Specs/dashboard commit pending tests. |
 | 2026-10-10 | TNA G05 | CONDITIONAL | bcb25a9 added local storage adapter and safety tests; visible Save/Open proof and XLSX dependency decision remain. |
+| 2026-10-10 06:29:54 UTC | TNA G05 | ACCEPTED | Completed visible Save/Open flows, checksum backup, quota/oversize/unsupported-schema safety, local `xlsx@0.18.5` preview/export, macro/formula defenses, Playwright save/reload/open and CSV preview smoke. |
 | 2026-10-10 | TNA G04 | ACCEPTED | 4d36b2c operational engines tested with g04-operations.test.js. |
 | 2026-10-10 | TNA G03 | ACCEPTED | 56e0856 scheduling engine tested with g03-scheduling.test.js. |
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
@@ -128,4 +129,4 @@ Current counted gates: t=5, p=0, a=0, s=0.
 
 ## F. NEXT ACTION
 
-Commit the clean continuity/spec import after regression checks, then continue **TNA G05** from its remaining items: visible Save/Open flows, oversize/quota/unsupported-schema tests, and the XLSX parser decision. Do not deploy production.
+Continue **TNA G06**: full workspaces, portfolio, Gantt/timeline with accessible table alternative, action filters and responsive/keyboard checks. Do not deploy production.

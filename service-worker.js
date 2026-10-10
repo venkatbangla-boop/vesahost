@@ -1,4 +1,4 @@
-const CACHE='vesa-v47-tna-g05';
+const CACHE='vesa-v49-tna-g05-xlsx';
 const ASSETS=[
   './',
   './index.html',
@@ -14,6 +14,8 @@ const ASSETS=[
   './apps/tna/src/domain.js',
   './apps/tna/src/scheduling.js',
   './apps/tna/src/operations.js',
+  './apps/tna/vendor/xlsx.full.min.js',
+  './apps/tna/vendor/xlsx.LICENSE.txt',
   './apps/tna/src/storage.js',
   './apps/tna/src/bootstrap.js',
   './admin/',
