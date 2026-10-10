@@ -14,10 +14,10 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | **ONE VESA SHARED UX** | **0%** - accepted gates 0 / 10 |
 | Program stage | TNA G07 is next, then shared VESA UI contract, then remaining TNA/PPM/AQL gates |
 | Active gate | **TNA G07 - Complete language/report system** |
-| Current subtask / subchecks | Start G07: English/Bengali/Hindi/Tamil report headings and non-mutating language/report export system |
+| Current subtask / subchecks | Continue G07: expand report export/download/print evidence, genuine Excel workbook report sheets, PDF/print visual QA and remaining four-language glyph checks |
 | Last ACCEPTED gate | **TNA G06 - Full workspaces, portfolio, Gantt, accessibility** |
-| Last tested commit SHA | c335140 |
-| Last update (UTC) | 2026-10-10 07:03:35 UTC |
+| Last tested commit SHA | eb15d69 |
+| Last update (UTC) | 2026-10-10 07:12:27 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -126,6 +126,7 @@ Current counted gates: t=7, p=0, a=0, s=0.
 | 2026-10-10 06:58:15 UTC | TNA G06 | CONDITIONAL | 0e28d2c added real owner/stage filter interactions, local multi-PO portfolio proof and domain-backed activity edit controls. PASS: full syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: login as admin@vesa, save two local PO records, portfolio table showed both PO references, owner/stage filters and clear filters updated visible timeline, activity edit completed a task with actual date, keyboard focus moved, 390px overflow=false, console errors=0. G06 remains open for final spec-04 workspace reconciliation and accessibility/menu evidence matrix. |
 | 2026-10-10 07:01:18 UTC | TNA G06 | CONDITIONAL | 9de879e added Table, Timeline (Gantt), Today/Next 7 Days and Critical Only workspace view modes. PASS: full syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: full-entry draft, all view buttons rendered and changed active view, keyboard focus moved, 390px overflow=false, console errors=0. |
 | 2026-10-10 07:03:35 UTC | TNA G06 | ACCEPTED | c335140 isolated Practice Example from production save/export paths. PASS: full syntax suite for shared/TNA JS; G01-G06 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: practice copy visible, Save TNA blocked from production records, Download Saved Copy blocked as business evidence, stored production records remained 0, 390px overflow=false, console errors=0. G06 accepted locally; no production deploy. |
+| 2026-10-10 07:12:27 UTC | TNA G07 | CONDITIONAL | eb15d69 added pure R01-R12 report catalogue/model with EN/BN/HI/TA headings, no-fabrication/print/share fallback notes, Reports UI from Tools menu and JSON download preview. PASS: full syntax suite for shared/TNA JS; G01-G07 node tests; AQL release contract; `git diff --check`. Browser PASS via Playwright CLI: Tamil preference, full-entry TNA, Tools → Prepare Report, R01 Tamil heading, R12 report preview, typed buyer/style values preserved, share fallback blocked cloud links honestly, 390px overflow=false, console errors=0. Full PDF, genuine report Excel sheets and visual print/PDF QA remain open. |
 | 2026-10-10 | TNA G04 | ACCEPTED | 4d36b2c operational engines tested with g04-operations.test.js. |
 | 2026-10-10 | TNA G03 | ACCEPTED | 56e0856 scheduling engine tested with g03-scheduling.test.js. |
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
@@ -134,4 +135,4 @@ Current counted gates: t=7, p=0, a=0, s=0.
 
 ## F. NEXT ACTION
 
-Start **TNA G07**: implement the complete EN/BN/HI/TA report language layer, report headings/content scaffolds and non-mutating report export checks. Do not deploy production.
+Continue **TNA G07**: add report export/download/print evidence, genuine Excel report worksheets, PDF/print visual QA and remaining four-language glyph checks. Do not deploy production.
