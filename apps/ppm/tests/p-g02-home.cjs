@@ -39,6 +39,8 @@ async function run() {
     await page.locator('#quickFactory').fill('QA Factory');
     await page.locator('#quickBuyer').fill('QA Buyer');
     await page.waitForTimeout(700);
+    await page.evaluate(async () => app.save(true));
+    await page.waitForFunction(() => document.querySelector('.vesa-workspace__saved')?.textContent === 'Saved on this device');
     const recordId = await page.evaluate(() => app.record.id);
     await page.evaluate(async () => { await app.save(true); await app.home(); });
     await page.waitForFunction(() => document.body.classList.contains('at-home'));
@@ -48,6 +50,24 @@ async function run() {
     await page.locator('[data-open-saved]').click();
     await page.waitForFunction(id => !document.body.classList.contains('at-home') && app.record.id === id, recordId);
     assert.equal(await page.locator('#quickStyle').inputValue(), 'P-G02-HOME-001');
+    await page.locator('#quickFactory').fill('QA Factory Pending');
+    await page.waitForFunction(() => ['Saving…', 'Unsaved changes'].includes(document.querySelector('.vesa-workspace__saved')?.textContent));
+    await page.evaluate(async () => app.save(true));
+    await page.waitForFunction(() => document.querySelector('.vesa-workspace__saved')?.textContent === 'Saved on this device');
+    for (const width of [320, 360, 390, 768, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.evaluate(() => app.home());
+      await page.waitForFunction(() => document.body.classList.contains('at-home'));
+      const homeGeometry = await page.evaluate(() => ({ documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth, actionCount: document.querySelectorAll('#homeScreen .home-cards [data-command]').length }));
+      assert.ok(homeGeometry.documentWidth <= width + 1 && homeGeometry.bodyWidth <= width + 1, `home ${width}px overflow`);
+      assert.equal(homeGeometry.actionCount, 5, `home ${width}px shared choices`);
+      await page.evaluate(() => app.showEditor());
+      await page.waitForFunction(() => !document.body.classList.contains('at-home'));
+      const editorGeometry = await page.evaluate(() => ({ documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth, sectionPosition: getComputedStyle(document.querySelector('.section-nav-wrap')).position }));
+      assert.ok(editorGeometry.documentWidth <= width + 1 && editorGeometry.bodyWidth <= width + 1, `editor ${width}px overflow`);
+      assert.equal(editorGeometry.sectionPosition, 'static', `editor ${width}px section navigation should scroll normally`);
+    }
+    await page.setViewportSize({ width: 1280, height: 900 });
     await page.evaluate(() => app.home());
     await page.waitForFunction(() => document.body.classList.contains('at-home'));
     await page.evaluate(() => app.changeLanguage('bn'));
