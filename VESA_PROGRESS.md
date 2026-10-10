@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **21%** |
-| **REMAINING** | **79%** |
+| **OVERALL VERIFIED** | **22%** |
+| **REMAINING** | **78%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
 | **PPM 360** | **0%** - accepted gates 0 / 11 |
 | **AQL 360** | **0%** - accepted gates 0 / 13 |
-| **ONE VESA SHARED UX** | **0%** - accepted gates 0 / 10 |
-| Program stage | TNA G09 local contract completion with external cloud blocker; PPM P-G00 and AQL A-G00 baseline audits are blocked on missing executable evidence |
+| **ONE VESA SHARED UX** | **10%** - accepted gates 1 / 10 |
+| Program stage | Shared U-G00 route/auth audit accepted locally; AQL A-G00 fixture runner is the next safe patch; PPM P-G00 remains blocked on the unresolved test dependency |
 | Active gate | **AQL A-G00 - Source audit and frozen numerical/portable baseline** |
-| Current subtask / subchecks | AQL release contract and 6-step/13-stage browser baseline pass; sampling arrays and empty-result pending reasons captured, but no committed Q01-Q24 fixture runner exists. PPM P-G00 remains blocked by unresolved `playwright` dependency |
-| Last ACCEPTED gate | **TNA G08 - Recovery scenarios and advanced multiorder planning** (`5d4e3b1`, accepted locally) |
-| Last tested commit SHA | bda6836 (AQL release contract/browser audit); TNA 24c42d1; PPM baseline at 8b06f6f |
-| Last update (UTC) | 2026-10-10 13:52:37 UTC |
+| Current subtask / subchecks | Shared route map and auth redirect are proven across root/App Centre/Admin/AQL/PPM/TNA; AQL release contract and 6-step/13-stage browser baseline pass, but no committed Q01-Q24 fixture runner exists. PPM P-G00 remains blocked by unresolved `playwright` dependency |
+| Last ACCEPTED gate | **Shared U-G00 - Route and authenticated shell audit** (`ea52066`, accepted locally; no deployment) |
+| Last tested commit SHA | ea52066 (shared route/browser audit); AQL release contract at ea52066; TNA 24c42d1; PPM baseline at 8b06f6f |
+| Last update (UTC) | 2026-10-10 13:57:55 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=0, a=0, s=0.
+Current counted gates: t=9, p=0, a=0, s=1.
 ```
 
 ## C. Application gate checklist
@@ -94,8 +94,8 @@ Current counted gates: t=9, p=0, a=0, s=0.
 
 | Gate | Work area | Status | Evidence / commit |
 |---|---|---|---|
-| U-G00 | Shared route/audit map | NOT STARTED | Prior UI work exists, but no formal VESA-UNIFORM-UI-v1 gate accepted yet |
-| U-G01 | Shared header/nav/auth surface | NOT STARTED | - |
+| U-G00 | Shared route/audit map | ACCEPTED | `ea52066` browser smoke: root, login, App Centre, Admin, AQL, PPM and TNA route checks; App Centre shows AQL/PPM/TNA; logout then `/apps/ppm/` redirects to `/login/?next=...`; 1280/390 App Centre screenshots; no console errors |
+| U-G01 | Shared header/nav/auth surface | NOT STARTED | One platform-owned patch still requires sibling regression proof; PPM baseline dependency is unresolved |
 | U-G02 | Shared theme/language controller | NOT STARTED | - |
 | U-G03 | Shared typography/color/background tokens | NOT STARTED | - |
 | U-G04 | Shared App Centre card pattern | NOT STARTED | - |
@@ -111,6 +111,8 @@ Current counted gates: t=9, p=0, a=0, s=0.
 |---|---|---|
 | Production deploy / DNS / main push | BLOCKED | Explicit user authorization after release gates pass |
 | Cloud identity, database, object storage, notifications | BLOCKED | Provisioned provider, credentials, tenant policy and deployment target |
+| PPM baseline automation | BLOCKED | Existing `apps/ppm/tests/{regression,planning,update}.cjs` need a resolvable Playwright Node dependency; non-mutating npm/npx probes failed |
+| AQL baseline parity | BLOCKED | Commit a source-derived Q01-Q24 fixture runner; current release contract does not prove numeric or portable parity |
 | True server-side app URL protection | BLOCKED for static GitHub Pages | Authenticated hosting/proxy or server route gate |
 | Real XLSX workbook parsing | CLOSED LOCALLY FOR G05/G07 Excel | Bundled Apache-2.0 SheetJS `xlsx@0.18.5` for local workbook preview/export and TNA report workbook sheets; report PDF/print visual review remains G07 |
 
@@ -135,6 +137,7 @@ Current counted gates: t=9, p=0, a=0, s=0.
 | 2026-10-10 13:48:21 UTC | PPM P-G00 baseline audit | BLOCKED | Audited PPM source ownership and frozen paths at `8b06f6f`; VM capture confirmed 168 tuples, 19 profiles and 12 process options; desktop/mobile home/editor screenshots captured under `output/playwright/ppm-pg00-*.png` with 0 console errors/warnings. `regression.cjs`, `planning.cjs` and `update.cjs` all stop before execution with `Cannot find module 'playwright'`; transient npx retry did not resolve it. Exact committed tuple/V4/V5 fixture remains the next PPM prerequisite. |
 | 2026-10-10 13:49:02 UTC | PPM P-G00 dependency probe | BLOCKED | Non-mutating `npm exec --package=playwright` and `npx -p playwright` resolution probes both returned `MODULE_NOT_FOUND`; no package manifest, lockfile, node_modules or application file was changed. |
 | 2026-10-10 13:52:37 UTC | AQL A-G00 baseline audit | BLOCKED | `node apps/aql/tests/release-contract.cjs` passed. Browser baseline at `bda6836` exposed 6 steps, 13 stages, SamplingEngine arrays/AC map and ResultEngine empty pending reasons; synthetic save persisted one local record and portable `VE-20261010-785ED6-R0.vesaproj` downloaded; desktop/320/390/tablet screenshots and console Errors 0/Warn 0 captured. Q01-Q24 executable fixtures/runner are absent, so A-G00 is not accepted. |
+| 2026-10-10 13:57:55 UTC | Shared U-G00 route/auth audit | ACCEPTED | `ea52066` browser smoke: authenticated App Centre rendered AQL/PPM/TNA catalogue; root/App Centre/Admin/AQL/PPM/TNA route titles and authenticated shell were checked at 1280px; logout plus protected PPM navigation redirected to login; 390px App Centre screenshot and console error query were clean. No shared source changed. |
 | 2026-10-10 | TNA G04 | ACCEPTED | 4d36b2c operational engines tested with g04-operations.test.js. |
 | 2026-10-10 | TNA G03 | ACCEPTED | 56e0856 scheduling engine tested with g03-scheduling.test.js. |
 | 2026-10-10 | TNA G02 | ACCEPTED | 94a7105 domain records/templates tested with g02-domain.test.js. |
