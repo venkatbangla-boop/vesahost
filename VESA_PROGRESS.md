@@ -14,10 +14,10 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | **ONE VESA SHARED UX** | **20%** - accepted gates 2 / 10 |
 | Program stage | AQL A-G00 and A-G01 are accepted locally; A-G02 is active. PPM P-G00 remains blocked by its unresolved Playwright dependency, while its independent shell adapter is conditional. Secure backend/provider and production authorization remain blocked. |
 | Active gate | **AQL A-G02 - Workflow parity and home/novice flow** |
-| Current subtask / subchecks | Cross-app shell matrix passed at 1280/390: AQL/PPM/TNA each have one sticky `.vesa-workspace`, no overflow, six mobile menu items, focus returned to Home and console errors/warnings 0; PPM rendered 168 checkpoints; AQL/PPM/TNA File callbacks opened existing dialogs. Root homepage was clean; protected `/apps/` and `/admin/` retained login redirects. PPM P-G00 remains blocked by unresolved `playwright` dependency. |
-| Last ACCEPTED gate | **AQL A-G01 - Common VESA shell platform** (`bb431ae` app adapters + `51d10ec` platform contract; accepted locally, no deployment) |
-| Last tested commit SHA | `bb431ae` (TNA adapter; AQL `ff1ae17`; PPM `1592b75`; neutral platform contract `51d10ec`; A-G00 baseline `53e52e3`); root/protected route smoke clean |
-| Last update (UTC) | 2026-10-10 14:29:34 UTC |
+| Current subtask / subchecks | A-G02 source slice `9608914` adds explicit AQL New/Continue Last/Open Saved/Practice/Open Saved Copy actions, a saved-record chooser, editable-copy lineage and a six-step “What should I check next?” guide; AQL Q01-Q24/portable baseline, release contract, shell contract, all TNA tests and inline-script syntax pass. Fresh browser action/save/reopen/viewport proof is unavailable in this run, so A-G02 remains conditional. PPM P-G00 remains blocked by unresolved `playwright` dependency. |
+| Last ACCEPTED gate | **AQL A-G01 - Common VESA shell platform** (`0ccd0db` ledger acceptance; source adapters `bb431ae`, `1592b75`, `ff1ae17`, platform contract `51d10ec`; accepted locally, no deployment) |
+| Last tested commit SHA | `9608914` (conditional A-G02 source slice); A-G00 Q01-Q24/portable, AQL release, shared shell, TNA G01-G09, inline-script syntax and `git diff --check` passed |
+| Last update (UTC) | 2026-10-10 14:35:16 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -78,7 +78,7 @@ Current counted gates: t=9, p=0, a=2, s=2.
 |---|---|---|---|
 | A-G00 | Inspect large AQL source and freeze sampling baseline | ACCEPTED | `53e52e3`: `a-g00-baseline.cjs` Q01-Q24 and portable round-trip invariants pass; release contract plus prior browser baseline remain green; numeric source untouched |
 | A-G01 | Common shared VESA shell | ACCEPTED | `bb431ae` + `1592b75` + `ff1ae17` + `51d10ec`: authenticated 1280/390 matrix proves one sticky `.vesa-workspace` across AQL/PPM/TNA, six mobile menu items, focus return to Home, zero overflow and console errors/warnings 0; AQL/PPM/TNA File callbacks opened existing dialogs; PPM rendered 168 checkpoints. Root/protected route regression remained clean. No domain source changed. |
-| A-G02 | Audit workflow parity | NOT STARTED | - |
+| A-G02 | Audit workflow parity | CONDITIONAL | `9608914`: source contract, explicit home actions, local chooser/copy handlers and six-step guide; fresh browser action/save/reopen proof pending |
 | A-G03 | Sampling/statistical engine parity | NOT STARTED | - |
 | A-G04 | Defects, scoring, evidence | NOT STARTED | - |
 | A-G05 | AQL local save/restore/export | NOT STARTED | - |
@@ -152,4 +152,4 @@ Current counted gates: t=9, p=0, a=2, s=2.
 
 ## F. NEXT ACTION
 
-Begin AQL A-G02 workflow parity: audit New/Continue/Open Saved/Practice/Open Saved Copy and guided six-step novice/expert flow against the actual AQL callbacks, then add the smallest fixture/browser proof while keeping sampling/Ac-Re/ResultEngine, PPM checkpoint identities and TNA date calculations frozen. Keep PPM P-G00's missing Playwright dependency, secure provider services and production authorization explicitly blocked; do not deploy production.
+Run the authenticated AQL browser proof for `9608914` at 320/390/768/1280: exercise all five home actions, saved chooser, editable-copy preservation, practice isolation, six-step guide, 13-stage visibility and console errors; then accept or repair A-G02. Keep sampling/Ac-Re/ResultEngine, PPM checkpoint identities and TNA date calculations frozen. Keep PPM P-G00's missing Playwright dependency, secure provider services and production authorization explicitly blocked; do not deploy production.

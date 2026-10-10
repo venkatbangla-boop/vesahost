@@ -271,7 +271,7 @@ NEXT ACTION (ONE PRECISE STEP): begin A-G02 AQL workflow parity audit, starting 
 ```text
 TIME / TIMEZONE: 2026-10-10 21:xx Asia/Dhaka
 GATE / OBJECTIVE: A-G02 — make the AQL home actions and beginner six-step path real without changing inspection policy
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 0ccd0db / pending commit
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 0ccd0db / 9608914
 FILES CHANGED (EXACT): apps/aql/index.html; apps/aql/tests/a-g02-workflow.cjs; css/vesa-workspace.css
 FROZEN/WATCHED PATHS VERIFIED: SamplingEngine codes, sizes, lot bands, levels and AC/null cells; ResultEngine, StageCatalog, ProjectSchema, service worker, PPM 168 checkpoints, TNA scheduling and local saved records were not rewritten. The safe-area correction only fixes left/right inset order in the shared shell.
 IMPLEMENTED: additive AQL_G02 workflow adapter adds explicit New Inspection, Continue Last, Open Saved, Practice Example and Open Saved Copy home actions; a local saved-record chooser; Continue Last selection by latest saved timestamp; editable-copy lineage with a new identity, unlocked draft state and cleared sign-off/release approvals; practice copies remain under PRACTICE identity; and a six-step “What should I check next?” guide for the standard workflow. Existing 13-stage paths are excluded from the guide and remain visible through StageWorkspace/Tools.
