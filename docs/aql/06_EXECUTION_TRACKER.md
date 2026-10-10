@@ -11,9 +11,9 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07 and A-G08 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
+| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Added and tested the fixture-only A-G08 report, language and accessibility contract; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
+| LAST COMPLETED ACTION | Added and tested the fixture-only A-G09 shared-reference and cross-app-boundary contract; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
 | NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen, then perform A-G06/A-G07/A-G08 browser and rendered review |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
@@ -115,6 +115,20 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 - [ ] Source-labeled PPM link / TNA milestone data with explicit IDs and versions.
 - [ ] No PPM GO inferred from AQL; no TNA original date overwritten by inspection update.
 - [ ] App Centre/login user preferences visible in SAME location and consistent across apps.
+
+### A-G09 shared references and cross-app boundaries — conditional, no live integration claimed
+
+```text
+TIME / TIMEZONE: 2026-10-10 21:28 Asia/Dhaka
+GATE / OBJECTIVE: A-G09 — prove shared catalogue/preferences and explicit PPM/TNA reference boundaries before any integration adapter is enabled
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / ec7932b / pending A-G09 tracker commit
+FILES CHANGED (EXACT): apps/aql/tests/a-g09-cross-app-boundaries.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN: apps/aql/index.html, js/app-catalogue.js, js/preferences.js, apps/ppm/index.html, apps/tna/index.html, saved data and all domain engines; no application/integration source changed
+IMPLEMENTED: Added fixture-only checks for AQL/PPM/TNA catalogue routes, shared language preference keys/events, documented InspectionRef/ReportRef contracts, explicit authorized-lookup/no-auto-GO boundaries, separate-date preservation, offline separate-draft import and no direct PPM/TNA local-storage namespace reads from AQL.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g09-cross-app-boundaries.cjs` PASS; `node apps/aql/tests/a-g08-reports-language.cjs` PASS; `node apps/aql/tests/a-g07-portable-safety.cjs` PASS; `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
+VERDICT: conditional — local route/catalogue/preferences and non-interference contracts are proven; no server-backed PPM/TNA link, tenant authorization, source-record lookup or two-account verification is claimed.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run authenticated cross-app route/preferences regression without applying any synthetic external record.
+```
 - [ ] Cross-app shared CSS/JS file impacts reviewed once, all sibling tests rerun.
 
 ### A-G10 — Server-side roles, collaboration, authorized approvals (provisioned only)
