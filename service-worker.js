@@ -1,4 +1,4 @@
-const CACHE='vesa-v57-tna-g07-print-report';
+const CACHE='vesa-v58-tna-g08-scenarios';
 const ASSETS=[
   './',
   './index.html',
@@ -18,6 +18,7 @@ const ASSETS=[
   './apps/tna/vendor/xlsx.LICENSE.txt',
   './apps/tna/src/storage.js',
   './apps/tna/src/reports.js',
+  './apps/tna/src/scenarios.js',
   './apps/tna/src/bootstrap.js',
   './admin/',
   './admin/index.html',
