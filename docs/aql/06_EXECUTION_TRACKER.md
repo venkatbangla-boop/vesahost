@@ -11,10 +11,10 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04 and A-G05 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
+| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05 and A-G06 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Added and tested the fixture-only A-G05 readiness/rework/reinspection/loading contract; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
-| NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen |
+| LAST COMPLETED ACTION | Added and tested the fixture-only A-G06 measurement, evidence-link, CAPA and analytics contract; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
+| NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen, then perform A-G06 restore/render/large-record review |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
 ## Daily/new-session rule
@@ -366,6 +366,20 @@ IMPLEMENTED: Added fixture-only VM checks for pre-final readiness thresholds, in
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — pure record guards and source-preservation markers are locally proven; browser reinspection/CAPA/loading evidence, full A-G05 chain, field-device review and real inspection data remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run a browser rework/reinspection or loading slice without changing frozen AQL tables.
+```
+
+### A-G06 measurement, evidence, CAPA and analytics contract — conditional, domain source unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-10 21:23 Asia/Dhaka
+GATE / OBJECTIVE: A-G06 — prove measurement tolerance, evidence-link, CAPA and quality-analytics contracts before any domain rewrite
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 6ae5acd / pending A-G06 tracker commit
+FILES CHANGED (EXACT): apps/aql/tests/a-g06-evidence-analytics.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN: apps/aql/index.html, SamplingEngine, ResultEngine, saved data and all PPM/TNA/shared files; no application/domain source changed
+IMPLEMENTED: Added fixture-only VM checks for in-tolerance PASS, out-of-tolerance FAIL, malformed-reading PENDING, approved additional-reading handling and retained raw tokens. Added source guards for visible units, numerator/denominator analytics, missing-denominator safeguards, local-history limitations, evidence/document asset remapping, sample/lot/carton identity, CAPA ownership/closure evidence, bounded records and evidence-card limits.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
+VERDICT: conditional — deterministic measurement and source contracts are locally proven; full asset restore, CAPA history, analytics denominator fixtures, huge-record performance, accessibility and rendered report review remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run browser restore/report evidence for one measurement, document, finding, CAPA and carton chain without changing frozen AQL tables.
 ```
 
 ### A-G04 material-control extension — conditional, domain source unchanged
