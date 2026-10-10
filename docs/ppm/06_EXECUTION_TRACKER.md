@@ -11,10 +11,10 @@
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
 | Last accepted implementation gate | **P-G01 — one shared VESA shell platform gate** (`582cd34`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline and P-G01 shared-shell evidence; P-G02 is next; no production deployment |
+| Status | `accepted locally` for P-G00 baseline and P-G01 shared-shell evidence; P-G02 is active/conditional after its explicit saved-meeting sub-slice; no production deployment |
 | Current gate | `P-G02 — PPM Home/menu/navigation` |
-| LAST COMPLETED ACTION | Added one platform-owned Settings dialog backed by central `VesaPrefs`, mobile Menu Escape/focus return, a 390/1280 cross-app matrix, route/overflow/sticky/console assertions and rendered screenshots; hardened the existing update-suite wait after worker activation |
-| NEXT ACTION | Audit PPM Home/menu/navigation against the shared Home/File/Edit/View/Tools/Help contract, preserve the 168 checkpoint domain and real repository save state, then add the smallest reversible P-G02 adapter/test patch |
+| LAST COMPLETED ACTION | Added the explicit PPM Open Saved home choice/File handler and repository-backed saved-meeting chooser, with Bengali home guidance proof; the P-G01 platform settings/focus/matrix evidence remains accepted locally |
+| NEXT ACTION | Complete P-G02's 320/360/390/768/1280 home/editor geometry and section-navigation review, then wire the shared saved indicator to real PPM repository state before considering acceptance |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -223,5 +223,22 @@ EVIDENCE FOR FEATURE IDS: P-G01 shared shell only; P-G02-P-G10 remain unaccepted
 BLOCKERS / UNRESOLVED RISK: Playwright is not declared in a repository package manifest, so clean-checkout reproduction needs intentional dependency/runtime provisioning; secure backend/role credentials, physical pilot and production authorization remain external blockers. This is local browser authentication, not secure multi-user proof.
 REVIEWER / VERDICT: accepted locally — shared shell/settings/focus behavior and sibling regression matrix are repeatably proven in this workspace; no production or secure multi-user claim.
 NEXT ACTION (ONE PRECISE STEP): audit P-G02 PPM Home/menu/navigation, align its home choices and real repository save state with the shared shell, and preserve all 168 checkpoint identities and decisions.
+```
+
+### P-G02 explicit saved-meeting home action — conditional sub-slice
+
+```text
+TIME / TIMEZONE: 2026-10-10 23:25 Asia/Dhaka
+GATE / OBJECTIVE: P-G02 — make Open Saved PPM an explicit shared-contract home/File action backed by the real PPM repository
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / 8133fbb / c3830fc
+FILES CHANGED (EXACT): apps/ppm/workspace.js; apps/ppm/languages.js; apps/ppm/tests/p-g02-home.cjs
+FILES WATCHED/FROZEN: PPM 168 checkpoint tuples, GO/CONDITIONAL GO/HOLD decisions, approvals, measurements, saved-copy codec, service worker, AQL/TNA/shared platform files; no domain rule or migration changed
+IMPLEMENTED: Added an explicit Open Saved PPM home card and File-menu action, a repository-backed chooser that saves the active production meeting before listing records and reopens the selected record through the existing codec/repository path, plus Bengali saved-meeting guidance. Practice, Continue Last, Open Saved Copy, recent rows and existing Saved Work remain intact.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/ppm/tests/p-g02-home.cjs` PASS (explicit New/Open Saved/Practice/Open Saved Copy choices, saved reopen, Bengali hint and File handler); PPM `regression.cjs` PASS all named checks including PDF/CSV/offline/no errors, `planning.cjs` PASS 16 checks, `update.cjs` PASS 7 lifecycle checks, P-G00 baseline PASS (168 tuples/19 profiles/12 processes/V4-V5), shared shell contract PASS, syntax and `git diff --check` PASS; browser proof used cached Playwright 1.64.0 + Chromium 1248 at 1280px.
+ROLLBACK: revert `c3830fc` to remove only the explicit home/File chooser and its fixture; existing recent-list and saved-copy behavior remains in the prior commit.
+EVIDENCE FOR FEATURE IDS: P-G02 home-choice/saved-reopen sub-slice only; P-G02 remains conditional until the full 320/360/390/768/1280 editor/section-navigation and real shared save-state review is complete.
+BLOCKERS / UNRESOLVED RISK: Full small-width/editor geometry and shared saved-indicator synchronization remain open; clean-checkout Playwright package provisioning, secure backend/role credentials, physical pilot and production authorization remain external/setup blockers.
+REVIEWER / VERDICT: conditional — the explicit saved action is locally proven and sibling PPM suites remain green; the complete gate is not claimed.
+NEXT ACTION (ONE PRECISE STEP): run the P-G02 width matrix at 320/360/390/768/1280 through home and editor, inspect section-navigation overlap/scroll and bind the shared saved indicator to actual PPM save outcomes.
 ```
 ```
