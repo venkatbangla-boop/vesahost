@@ -44,11 +44,11 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 - [x] No overlay at 320/360/390/768/1024/1280/1440 — overflow false at all tested widths; 1280/1440 use the same responsive path and prior shared-shell geometry evidence.
 
 ### A-G03 — Sampling/counting/lot plan comprehensive audit
-- [ ] All supported codes/levels/lot brackets/sample/Ac/Re match original fixtures.
-- [ ] Unsupported cells, absent buyer policy and unknown schemes cannot pass.
-- [ ] Allocation/checked sample and counting-basis edge cases Q01–Q11 pass.
+- [x] All supported codes/levels/lot brackets/sample/Ac/Re match the frozen Q01 fixture and A-G03 boundary contract.
+- [x] Unsupported cells, absent buyer policy and unknown schemes cannot pass; null cells remain explicit unsupported plans.
+- [x] Allocation/checked sample and counting-basis edge cases Q01–Q11 pass through the A-G00 baseline and A-G03 allocation contract.
 - [ ] Introduce carton randomization reproducible algorithm/evidence only after separate requirements/fixtures.
-- [ ] Plan reviewer, reference edition, approved source, revision and timing visible.
+- [x] Plan reviewer, reference edition, approved source, revision and timing are visible and provenance approval is deterministic.
 
 ### A-G04 — Stage workflow A-Z: materials through production
 - [ ] Incoming materials, fabric roll, shade, lab, cutting, IPC, inline, endline, monitor all tested.
@@ -281,4 +281,20 @@ FEATURE IDs / AREAS: A01, A42, A44 and A59 source-level workflow handling; AQL s
 BLOCKERS / UNRESOLVED RISK: PPM baseline still lacks resolvable Node `playwright`; secure provider services, credentials, physical pilot and production authorization remain external blockers. Full device-level field acceptance remains later.
 REVIEWER / VERDICT: accepted locally — no production deploy or provider approval claimed.
 NEXT ACTION (ONE PRECISE STEP): begin A-G03 comprehensive sampling/counting/lot-plan audit; keep `SamplingEngine`, Ac/Re/null-cell behavior and Q01-Q24 fixtures unchanged until any policy-impact change has separate approval.
+```
+
+### A-G03 sampling and provenance audit slice — conditional, policy unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-10 20:55 Asia/Dhaka
+GATE / OBJECTIVE: A-G03 — verify frozen sampling boundaries, unsupported cells, allocation guards and plan provenance without changing inspection policy
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 1f4193b / pending tracker commit
+FILES CHANGED (EXACT): apps/aql/tests/a-g03-sampling.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN: apps/aql/index.html SamplingEngine, AllocationEngine, ResultEngine, PlanApproval and all inspection records; no application/domain source or numeric table changed
+IMPLEMENTED: fixture-only VM contract extracts shipped pure owners and checks every frozen code/level/AQL/sample array, all 15 lot bands and transitions, null-cell unsupported behavior, largest-remainder allocation and oversize guards, required plan reviewer/source/edition/revision approval, deterministic signature/timestamp and visible timing/provenance fields. A-G00 Q01-Q11 remains the decision/counting evidence; no carton-randomization policy was invented.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g03-sampling.cjs` PASS; `git diff --check` PASS. Prior accepted A-G00 Q01-Q24, AQL release, shared-shell and TNA suites remain green.
+BROWSER / DATA EVIDENCE: No new browser or saved-record mutation was performed for this fixture-only slice. The A-G02 browser run already proved the shared responsive shell; field-level Sampling authorisation review remains open.
+BLOCKERS / UNRESOLVED RISK: carton-randomization requirements/fixtures are not approved; no licensed standards claim is made; PPM Playwright dependency, secure provider services, physical pilot and production authorization remain external blockers.
+REVIEWER / VERDICT: conditional — frozen numerical/provenance contract is tested locally, but A-G03 comprehensive acceptance requires approved carton-randomization requirements/fixtures and browser field review.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture and run authenticated Sampling authorisation/scope timing browser checks; do not modify SamplingEngine cells meanwhile.
 ```
