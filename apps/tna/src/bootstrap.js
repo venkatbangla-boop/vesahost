@@ -51,6 +51,7 @@
       ${warnings.length?`<h3>Warnings</h3><ul>${warnings.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
       ${schedulePanel(plan)}
       ${operationsPanel(plan)}
+      ${readinessPanel(plan)}
       ${workspacePanel(plan)}
       <h3>Stages</h3><div class="tna-stage-chips">${Object.entries(stageCounts).map(([stage,count])=>`<span>${esc(stage)} · ${count}</span>`).join('')}</div>
       <h3>First activities</h3><div class="tna-task-table" role="table" aria-label="Draft TNA activities">${plan.tasks.slice(0,12).map(task=>`<div role="row"><span>${esc(task.templateRef)}</span><span>${esc(task.title)}</span><span>${esc(task.ownerParty)}</span><span>${esc(task.status)}</span></div>`).join('')}</div></div>`}
@@ -108,6 +109,35 @@
     const cap=operations.verifiedRateDays({plannedQty:plan.order.totalQty,completedQty:0,verifiedDailyOutput:null});
     const commercial=operations.compareCommercial(plan.commitments,plan.materials,plan.calendars[0]);
     return `<h3>Operational checks</h3><div class="tna-stage-chips"><span>Contract lead · ${esc(commercial.lead.status)}</span><span>Capacity · ${esc(cap.status)}</span><span>Material gates · ${esc(plan.materials.length||'none entered')}</span></div><p class="tna-note">Capacity, material release, approvals and shipment release fail closed until verified inputs/evidence are entered. No LC date, approval, QC release or production rate is guessed.</p>`;
+  }
+  function statusCounts(items,key='status'){return items.reduce((acc,item)=>{const value=item[key]||'needs-information';acc[value]=(acc[value]||0)+1;return acc},{})}
+  function countLine(counts,order){return order.map(key=>`${key}: ${counts[key]||0}`).join(' · ')}
+  function readinessPanel(plan){if(!operations)return '';
+    const materials=plan.materials||[];
+    const approvals=plan.approvals||[];
+    const operationRows=plan.operations||[];
+    const lots=plan.shipmentLots||[];
+    const commercial=operations.compareCommercial(plan.commitments,materials,plan.calendars[0]);
+    const materialStates=materials.map(material=>operations.materialReadiness(material));
+    const materialCounts=statusCounts(materialStates);
+    const approvalStates=approvals.map(approval=>operations.approvalState(approval));
+    const approvalCounts=statusCounts(approvalStates);
+    const capacity=operations.verifiedRateDays({plannedQty:plan.order.totalQty,completedQty:0,verifiedDailyOutput:null});
+    const operationResults=operationRows.map(op=>operations.validateOperationQuantity(op));
+    const operationErrors=operationResults.filter(result=>!result.ok);
+    const shipment=operations.shipmentSummary(plan.order.totalQty,lots,{status:'not-entered'});
+    const shipmentErrors=[...shipment.errors];
+    if(!lots.length)shipmentErrors.push('No shipment lots entered; final inspection pass is required before release.');
+    const materialMessage=materials.length?countLine(materialCounts,['ready','blocked','needs-information']):'No material records entered; material readiness remains needs-information.';
+    const approvalMessage=approvals.length?countLine(approvalCounts,['approved','waived','pending','blocked','rejected','needs-information']):'No approval submissions entered; approvals cannot be assumed.';
+    const capacityMessage=capacity.status==='calculated'?`${capacity.remainingQty} remaining qty · ${capacity.workingDays} verified working day(s)`: 'Verified daily output is missing; capacity remains needs-information.';
+    const shipmentMessage=shipmentErrors.length?shipmentErrors.join(' '):`${shipment.shippedQty} shipped · ${shipment.remainingQty} remaining · final inspection pass recorded.`;
+    return `<section class="tna-readiness-grid" aria-label="TNA readiness workspaces">
+      <article class="tna-readiness-card"><span class="tna-kicker">Materials & Commercial</span><h3>Materials & Commercial</h3><div class="tna-readiness-list"><span>Contract lead · ${esc(commercial.lead.status)}</span><span>Master LC · ${esc(commercial.masterLcOpenedOn||'not entered')}</span><span>B2B LC milestones · ${esc(commercial.b2bLcMilestones.length)}</span><span>Buyer/contract differences · ${esc(commercial.discrepancies.length)}</span></div><p class="tna-note">${esc(materialMessage)}</p></article>
+      <article class="tna-readiness-card"><span class="tna-kicker">Approvals</span><h3>Approvals</h3><div class="tna-readiness-list"><span>Total approval records · ${esc(approvals.length)}</span><span>Approved · ${esc(approvalCounts.approved||0)}</span><span>Pending/blocked · ${esc((approvalCounts.pending||0)+(approvalCounts.blocked||0)+(approvalCounts.rejected||0)+(approvalCounts['needs-information']||0))}</span></div><p class="tna-note">${esc(approvalMessage)}</p></article>
+      <article class="tna-readiness-card"><span class="tna-kicker">Production & Capacity</span><h3>Production & Capacity</h3><div class="tna-readiness-list"><span>Operation rows · ${esc(operationRows.length)}</span><span>Quantity errors · ${esc(operationErrors.length)}</span><span>Capacity status · ${esc(capacity.status)}</span></div><p class="tna-note">${esc(capacityMessage)} No production rate is guessed.</p></article>
+      <article class="tna-readiness-card"><span class="tna-kicker">Shipment & Readiness</span><h3>Shipment & Readiness</h3><div class="tna-readiness-list"><span>Lots · ${esc(lots.length)}</span><span>Passed qty · ${esc(shipment.passedQty)}</span><span>Shipped qty · ${esc(shipment.shippedQty)}</span><span>Remaining qty · ${esc(shipment.remainingQty)}</span></div><p class="tna-note">${esc(shipmentMessage)}</p></article>
+    </section>`;
   }
   function openCustomTask(){if(!state.currentPlan)return openDialog('Add Activity',`<p>Create a draft TNA first, then add custom checkpoints to that draft.</p>`);
     openDialog('Add Activity',`<form class="tna-wizard" id="tnaCustomTask"><div class="tna-form-grid">${field('title','Activity title','text','',true)}${selectField('stageCode','Stage',Object.entries(domain.STAGE_LABELS).map(([k,v])=>[k,`${k} · ${v}`]),'O')}${field('ownerParty','Owner party','text','merchant')}${field('durationUnits','Duration units','number','0')}</div><p class="tna-note">Custom activities are added as optional draft checkpoints with audit history. They do not change baseline snapshots silently.</p><button class="tna-btn" type="submit">Add Activity</button></form>`);
