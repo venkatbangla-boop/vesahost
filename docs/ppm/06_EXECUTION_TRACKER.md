@@ -14,7 +14,7 @@
 | Status | `draft-only` — new PPM rework NOT implemented or deployed by this packet |
 | Current gate | `P-G00 — local clone audit and baseline proof` |
 | LAST COMPLETED ACTION | Documentation packet authored, with GitHub-file evidence |
-| NEXT ACTION | Resolve the missing Playwright Node dependency, rerun all three baseline PPM suites, then add the durable 168-tuple/V4/V5 fixture evidence before accepting P-G00 |
+| NEXT ACTION | Keep P-G00 explicitly blocked until its Playwright dependency and durable tuple/V4/V5 fixture are resolved; the independent P-G01 shell adapter slice is now recorded and must be reconciled with AQL/TNA before shared acceptance |
 | External blocker | Secured backend and cross-company role/approval credentials not provisioned |
 
 ## Universal session protocol
@@ -169,4 +169,25 @@ COMMANDS + RESULT: `npm exec --yes --package=playwright -- node -e "require.reso
 FILES CHANGED: none; no package manifest, lockfile, node_modules or application file added
 VERDICT: BLOCKED — ENVIRONMENT DEPENDENCY remains. The existing PPM suites cannot be run until a resolvable Playwright Node dependency is intentionally provisioned.
 NEXT ACTION: provision/approve the test dependency in the workspace, then rerun regression.cjs, planning.cjs and update.cjs without altering PPM behavior.
+
+### P-G01 shared shell adapter slice — conditional, P-G00 remains blocked
+
+```text
+SCOPE / FROZEN RULES:
+Use the already committed neutral VESA workspace shell. PPM remains the sole owner of the 168 checkpoint identities, applicability, GO/CONDITIONAL GO/HOLD decisions, signatures, save/recovery and reports. This adapter only routes existing menu callbacks and demotes competing sticky regions; it does not rewrite PPM records or claim P-G00 acceptance.
+
+FILES CHANGED:
+`apps/ppm/workspace.js`, `apps/ppm/workspace.css`.
+
+BRANCH / BEFORE SHA / AFTER SHA:
+`feature/tna360-continuous` / `8ba9b8a` / `1592b75`
+
+EVIDENCE:
+`node --check apps/ppm/workspace.js`; `node tests/vesa-workspace-shell-contract.cjs`; `node apps/aql/tests/a-g00-baseline.cjs`; `node apps/aql/tests/release-contract.cjs`; `git diff --check` passed. The existing `node apps/ppm/tests/regression.cjs` still stops before test execution with `Cannot find module 'playwright'`, so P-G00 remains BLOCKED. Authenticated Playwright CLI smoke against a disposable local server verified PPM home and editor, shared File callback opening the existing PPM menu, 168 rendered `.checkpoint` elements, desktop/mobile overflow false, one sticky `.vesa-workspace`, and static PPM topbar/section navigation/rail/footer. Console errors were 0.
+
+VERDICT:
+CONDITIONAL — PPM's visible shell adapter is locally verified without changing checkpoint data, but P-G01 shared acceptance still needs TNA adapter and cross-app geometry/regression; P-G00's missing dependency remains an explicit blocker.
+
+NEXT ACTION (ONE PRECISE STEP): adapt TNA's existing commandbar/menu actions to `VesaWorkspaceShell`, preserve TNA dates and local records, demote its competing sticky commandbar, then rerun authenticated 390/1280 smoke across AQL/PPM/TNA.
+```
 ```
