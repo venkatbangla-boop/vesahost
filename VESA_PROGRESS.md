@@ -15,8 +15,8 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | Program stage | AQL A-G00 frozen numerical/portable baseline accepted locally; A-G01 shared shell reconciliation is next safe work; PPM P-G00 remains blocked on the unresolved test dependency |
 | Active gate | **AQL A-G01 - Common VESA shell platform** |
 | Current subtask / subchecks | AQL `a-g00-baseline.cjs` passes Q01-Q24 plus portable round-trip invariants; release contract and prior 6-step/13-stage/save/download browser baseline remain green. PPM P-G00 remains blocked by unresolved `playwright` dependency |
-| Last ACCEPTED gate | **AQL A-G00 - Frozen numerical/portable baseline** (runner commit pending; accepted locally, no deployment) |
-| Last tested commit SHA | pending runner commit (A-G00 baseline); shared browser audit `ea52066`; TNA `24c42d1`; PPM baseline `8b06f6f` |
+| Last ACCEPTED gate | **AQL A-G00 - Frozen numerical/portable baseline** (`53e52e3`; accepted locally, no deployment) |
+| Last tested commit SHA | `53e52e3` (A-G00 baseline); shared browser audit `ea52066`; TNA `24c42d1`; PPM baseline `8b06f6f` |
 | Last update (UTC) | 2026-10-10 14:18:00 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
@@ -76,7 +76,7 @@ Current counted gates: t=9, p=0, a=1, s=1.
 
 | Gate | Work area | Status | Evidence / commit |
 |---|---|---|---|
-| A-G00 | Inspect large AQL source and freeze sampling baseline | ACCEPTED | `a-g00-baseline.cjs` runner commit pending: Q01-Q24 and portable round-trip invariants pass; release contract plus prior browser baseline remain green; numeric source untouched |
+| A-G00 | Inspect large AQL source and freeze sampling baseline | ACCEPTED | `53e52e3`: `a-g00-baseline.cjs` Q01-Q24 and portable round-trip invariants pass; release contract plus prior browser baseline remain green; numeric source untouched |
 | A-G01 | Common shared VESA shell | NOT STARTED | - |
 | A-G02 | Audit workflow parity | NOT STARTED | - |
 | A-G03 | Sampling/statistical engine parity | NOT STARTED | - |

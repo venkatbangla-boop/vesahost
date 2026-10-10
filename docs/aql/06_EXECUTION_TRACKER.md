@@ -181,7 +181,7 @@ NEXT ACTION (ONE PRECISE STEP): add a fixture-only deterministic runner from cur
 ```text
 TIME / TIMEZONE: 2026-10-10 20:18 Asia/Dhaka
 GATE / OBJECTIVE: A-G00 — freeze the current AQL numerical, decision and portable baseline before any rework
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 5956a8b / pending commit
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 5956a8b / 53e52e3
 FILES CHANGED (EXACT): apps/aql/tests/a-g00-baseline.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FILES WATCHED/FROZEN (DIFF CHECK): apps/aql/index.html, apps/aql/service-worker.js, root service-worker.js, js/auth.js, js/preferences.js; no application source, sampling table or worker change
 DOMAIN/SCHEMA CHANGE & MIGRATION: none; runner extracts the shipped pure owners at test time and keeps all numeric cells, Ac/Re rules, identities and saved data unchanged
