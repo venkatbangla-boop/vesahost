@@ -373,7 +373,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```text
 TIME / TIMEZONE: 2026-10-10 21:23 Asia/Dhaka
 GATE / OBJECTIVE: A-G06 — prove measurement tolerance, evidence-link, CAPA and quality-analytics contracts before any domain rewrite
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 6ae5acd / pending A-G06 tracker commit
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 6ae5acd / 8d8127a
 FILES CHANGED (EXACT): apps/aql/tests/a-g06-evidence-analytics.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FILES WATCHED/FROZEN: apps/aql/index.html, SamplingEngine, ResultEngine, saved data and all PPM/TNA/shared files; no application/domain source changed
 IMPLEMENTED: Added fixture-only VM checks for in-tolerance PASS, out-of-tolerance FAIL, malformed-reading PENDING, approved additional-reading handling and retained raw tokens. Added source guards for visible units, numerator/denominator analytics, missing-denominator safeguards, local-history limitations, evidence/document asset remapping, sample/lot/carton identity, CAPA ownership/closure evidence, bounded records and evidence-card limits.
