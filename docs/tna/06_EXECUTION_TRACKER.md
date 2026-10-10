@@ -10,15 +10,15 @@
 | Repository | `venkatbangla-boop/vesahost` |
 | Deployment target | `/apps/tna/` under VESA App Centre |
 | Specifications | This file plus root `AGENTS.md` and documents `01`–`05` |
-| Design status | `draft-only` for implementation; blueprint written and awaiting repo-local audit |
-| Implementation status | **NOT STARTED BY THIS HANDOVER**; no TNA code, tests or deployment claimed |
-| Last accepted patch group | **NONE** |
-| Current patch group | **G01 — VESA shell and safe app registration** |
+| Design status | G01 shell implemented locally on feature branch; later domain/calculation/storage/report/cloud groups remain open |
+| Implementation status | **G01 IMPLEMENTED LOCALLY / NOT DEPLOYED**; TNA shell, catalogue registration and route guard verified |
+| Last accepted patch group | **G01 — VESA shell and safe app registration** |
+| Current patch group | **G02 — Domain records and universal garment templates** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
 | External block | Cloud hosting/identity/database/notification providers/permissions not yet authorized or provisioned |
-| Resume anchor | G00 accepted on feature branch; next checkpoint is G01 app shell/registration |
-| LAST COMPLETED ACTION | Copied root `AGENTS.md` and all six `docs/tna/*.md`, created feature branch `feature/tna360-continuous`, inspected repo surfaces and recorded G00 audit |
-| NEXT ACTION | Implement G01: create `/apps/tna/` shell, register TNA in App Centre/preferences, verify login/App Centre/PPM/AQL regressions without production deploy |
+| Resume anchor | G01 accepted locally on `feature/tna360-continuous`; next checkpoint is G02 domain records/templates |
+| LAST COMPLETED ACTION | Implemented `/apps/tna/` authenticated shell, registered TNA in App Centre/preferences/root cache, verified login/App Centre/TNA responsiveness and AQL/PPM regressions |
+| NEXT ACTION | Implement G02: add versioned TNA domain records, garment lifecycle templates, invariant validation and New TNA wizard without changing PPM/AQL logic |
 
 **Snapshot date:** 2026-10-10. The GitHub public repo/main and files were inspected at a documentation level; **Codex must directly inspect its checkout** before code writes. Never treat these notes as a completed local repo audit.
 
@@ -82,10 +82,10 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 
 ### G01 — VESA shell and safe app registration
 
-- [ ] Create `/apps/tna/index.html` with consistent branding, login gate, App Centre and Home navigation.
-- [ ] Register TNA in `js/app-catalogue.js`; add `openTna` for all four languages in `js/preferences.js`.
-- [ ] Provide Home actions, app menus, appearance, responsive layout, honest error/loading states.
-- [ ] Verify PPM/AQL/login regression; do not publish nonfunctional app tile to live.
+- [x] Create `/apps/tna/index.html` with consistent branding, login gate, App Centre and Home navigation.
+- [x] Register TNA in `js/app-catalogue.js`; add `openTna` for all four languages in `js/preferences.js`.
+- [x] Provide Home actions, app menus, appearance, responsive layout, honest error/loading states.
+- [x] Verify PPM/AQL/login regression; do not publish nonfunctional app tile to live.
 
 ### G02 — Domain records and universal garment templates
 
@@ -279,9 +279,9 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 ### Browser/file/role checks
 
-- [ ] Direct route `/apps/tna/` and auth redirect; App Centre links work
-- [ ] Existing login, App Centre, PPM, AQL regression
-- [ ] TNA Home/new/recent/practice/offline paths
+- [x] Direct route `/apps/tna/` and auth redirect; App Centre links work
+- [x] Existing login, App Centre, PPM, AQL regression
+- [x] TNA Home/new/recent/practice/offline paths
 - [ ] Save → browser reload → reopen exact values
 - [ ] Corrupt/oversize/version-mismatch backup safely rejected
 - [ ] Baseline cannot be altered by editing forecast/actual
@@ -318,7 +318,8 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | Time | Group | Branch / SHA | Files changed | Tests / evidence | Verdict | Next action |
 |---|---|---|---|---|---|---|
 | 2026-10-10 | documentation handover only | not committed in repo | seven Markdown docs generated for copying | file creation/zip verification pending | draft-only | G00 |
-| 2026-10-10 10:15 Asia/Dhaka | G00 repository audit and scope map | `feature/tna360-continuous` / pending commit | `AGENTS.md`, `docs/tna/*.md`, tracker audit updates | Read all six docs; inspected `apps/index.html`, `js/app-catalogue.js`, `js/preferences.js`, `js/auth.js`, PPM/AQL/service workers/tests; tests to run before commit: syntax + AQL contract | accepted | G01 app shell and safe registration |
+| 2026-10-10 10:15 Asia/Dhaka | G00 repository audit and scope map | `feature/tna360-continuous` / `a220db9` | `AGENTS.md`, `docs/tna/*.md`, tracker audit updates | Read all six docs; inspected `apps/index.html`, `js/app-catalogue.js`, `js/preferences.js`, `js/auth.js`, PPM/AQL/service workers/tests; baseline syntax checks, AQL release contract and `git diff --check` passed before commit | accepted | G01 app shell and safe registration |
+| 2026-10-10 11:21 Asia/Dhaka | G01 VESA shell and safe app registration | `feature/tna360-continuous` / `HEAD after G01 commit` | `apps/tna/index.html`, `apps/tna/assets/tna.css`, `apps/tna/src/bootstrap.js`, `apps/tna/tests/g01-shell.test.js`, `js/app-catalogue.js`, `js/preferences.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Browser PASS via Playwright CLI on local server: logged-out `/apps/tna/` redirected to `/login/?next=%2Fapps%2Ftna%2F`; login `admin@vesa` opened TNA; App Centre showed AQL/PPM/TNA; TNA 390px and 1280px overflow=false; AQL/PPM opened with 0 console errors. Production not deployed. | accepted | G02 domain records and universal garment templates |
 
 ### Open blockers and decisions
 

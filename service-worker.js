@@ -1,4 +1,4 @@
-const CACHE='vesa-v42-uniform-experience';
+const CACHE='vesa-v43-tna-g01';
 const ASSETS=[
   './',
   './index.html',
@@ -8,6 +8,10 @@ const ASSETS=[
   './login/index.html',
   './apps/',
   './apps/index.html',
+  './apps/tna/',
+  './apps/tna/index.html',
+  './apps/tna/assets/tna.css',
+  './apps/tna/src/bootstrap.js',
   './admin/',
   './admin/index.html',
   './llms.txt',
@@ -55,7 +59,7 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   // App folders own their versioned offline bundles; root cache must not serve stale app HTML.
   const path = new URL(event.request.url).pathname;
-  if (path.startsWith('/apps/ppm') || path.startsWith('/apps/aql')) return;
+  if (path.startsWith('/apps/ppm') || path.startsWith('/apps/aql') || path.startsWith('/apps/tna')) return;
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
       const copy = response.clone();
