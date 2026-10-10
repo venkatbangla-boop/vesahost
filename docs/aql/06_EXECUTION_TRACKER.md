@@ -11,10 +11,10 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance slice is conditional pending approved carton-randomization fixtures and browser field review; PPM baseline dependency and provider services remain separate blockers |
+| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
 | LAST COMPLETED ACTION | Accepted A-G02 locally after authenticated browser proof of the five home actions, saved chooser, latest continuation, practice isolation, editable copy, portable copy import, six-step guide, 13-stage selector and responsive geometry; sampling/Ac-Re/stage data remain frozen |
-| NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and expose/recheck a stable visible Sampling authorisation entry point; keep SamplingEngine cells frozen |
+| NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
 ## Daily/new-session rule
@@ -293,10 +293,10 @@ FILES CHANGED (EXACT): apps/aql/tests/a-g03-sampling.cjs; docs/aql/06_EXECUTION_
 FILES WATCHED/FROZEN: apps/aql/index.html SamplingEngine, AllocationEngine, ResultEngine, PlanApproval and all inspection records; no application/domain source or numeric table changed
 IMPLEMENTED: fixture-only VM contract extracts shipped pure owners and checks every frozen code/level/AQL/sample array, all 15 lot bands and transitions, null-cell unsupported behavior, largest-remainder allocation and oversize guards, required plan reviewer/source/edition/revision approval, deterministic signature/timestamp and visible timing/provenance fields. A-G00 Q01-Q11 remains the decision/counting evidence; no carton-randomization policy was invented.
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g03-sampling.cjs` PASS; `git diff --check` PASS. Prior accepted A-G00 Q01-Q24, AQL release, shared-shell and TNA suites remain green.
-BROWSER / DATA EVIDENCE: No new browser or saved-record mutation was performed for this fixture-only slice. The A-G02 browser run already proved the shared responsive shell; field-level Sampling authorisation review remains open.
+BROWSER / DATA EVIDENCE: No new browser or saved-record mutation was performed for this fixture-only slice. The A-G02 browser run already proved the shared responsive shell; the separate A-G03 entry-point/dialog review is recorded below.
 BLOCKERS / UNRESOLVED RISK: carton-randomization requirements/fixtures are not approved; no licensed standards claim is made; PPM Playwright dependency, secure provider services, physical pilot and production authorization remain external blockers.
 REVIEWER / VERDICT: conditional — frozen numerical/provenance contract is tested locally, but A-G03 comprehensive acceptance requires approved carton-randomization requirements/fixtures and browser field review.
-NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture and run authenticated Sampling authorisation/scope timing browser checks; do not modify SamplingEngine cells meanwhile.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; do not modify SamplingEngine cells meanwhile.
 ```
 
 ### A-G03 browser field review — conditional, no policy or release data change
@@ -305,7 +305,22 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 TIME / TIMEZONE: 2026-10-10 20:51 Asia/Dhaka
 GATE / OBJECTIVE: A-G03 — confirm the live AQL setup exposes stage choice and honest missing-plan/timing guards
 EVIDENCE: Authenticated Playwright CLI against disposable `http://127.0.0.1:4173` created a synthetic local Final Random Inspection draft with buyer/factory/inspector/PO labels. The live setup exposed all 13 inspection stages, showed `Verify the actual per-lot sample, Ac/Re and counting basis; approve its source in Sampling authorisation.` and `Finish the inspection session before final review, or document actual manual timing in the scope.` in Decision review, and retained the pending result rather than passing an unapproved plan. After a fresh reload, the console query returned Errors 0 / Warnings 0.
-LIMITATION: The Sampling authorisation dialog itself was not opened through a stable visible control in this route, so this is supporting browser evidence only; the fixture/source contract remains the primary A-G03 proof. Browser and disposable server were closed without clearing browser data; the synthetic draft was not exported or released.
-VERDICT: conditional — live pending guards and 13-stage choice are visible; approved carton-randomization requirements/fixtures and direct Sampling authorisation field interaction remain open.
-NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture and expose/recheck a stable visible Sampling authorisation entry point; keep SamplingEngine cells frozen.
+LIMITATION: The approved carton-randomization requirements/fixtures are still unavailable, so the fixture/source contract remains the primary A-G03 proof. Browser and disposable server were closed without clearing browser data; the synthetic draft was not exported or released.
+VERDICT: conditional — live pending guards, 13-stage choice and direct Sampling authorisation dialog entry/field visibility are proven; approved carton-randomization requirements/fixtures remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen.
+```
+
+### A-G03 visible Sampling authorisation entry point — conditional, policy unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-10 20:58 Asia/Dhaka
+GATE / OBJECTIVE: A-G03 — expose and verify a stable live entry point for plan provenance before approval
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / e7aff20 / uncommitted review patch
+FILES CHANGED (EXACT): apps/aql/index.html; apps/aql/tests/a-g03-sampling.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FROZEN BUSINESS RULES: SamplingEngine, AllocationEngine, ResultEngine, PlanApproval numeric cells, inspection records and saved browser data were not changed; no approval was submitted.
+IMPLEMENTED: Added visible `Sampling authorisation` actions to the Setup buyer-criteria panel and Sampling Plan heading, with a source assertion in the fixture-only A-G03 contract test.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
+BROWSER / DATA EVIDENCE: Authenticated Playwright CLI against disposable `http://127.0.0.1:4173` opened Samples 02 / PLAN for a synthetic local Final Random Inspection draft. The page showed visible `Sampling authorisation` actions in the heading and Insight/coverage card; the dialog showed lot/code/sample and Ac/Re/source columns plus Standard / buyer table name, Edition / revision, Approved table / instruction source, Project sampling criteria reference, Reviewer who verified each plan, verification checkbox and Approve plan. Console query returned Errors 0 / Warnings 0. No approval was submitted, no browser data was cleared, and the synthetic draft was not exported or released; browser and disposable server were closed.
+VERDICT: conditional — stable entry point and provenance fields are locally proven; approved carton-randomization requirements/fixtures remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture and test reproducible seed/date/operator/packing-list-version evidence without changing frozen SamplingEngine cells.
 ```

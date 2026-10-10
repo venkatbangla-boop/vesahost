@@ -131,6 +131,7 @@ expect(PlanApproval.issues(project).length === 0, 'A-G03 approved plan still rep
 
 for (const requiredText of [
   'Sampling authorisation',
+  "this.button('Sampling authorisation','plan','settings','soft')",
   'Standard / buyer table name',
   'Edition / revision',
   'Approved table / instruction source',
