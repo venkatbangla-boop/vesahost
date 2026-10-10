@@ -148,8 +148,53 @@
       if(edge.predecessorTaskId===edge.successorTaskId)errors.push('Dependency cannot link a task to itself.');
       if(!taskIds.has(edge.predecessorTaskId)||!taskIds.has(edge.successorTaskId))errors.push('Dependency references a missing task.');
     }
+    const operationIds=new Set();
+    let totalCapacityEntries=0;
+    for(const operation of plan.operations||[]){
+      if(!clean(operation.operationId))errors.push('Operation is missing operationId.');
+      if(operationIds.has(operation.operationId))errors.push('Duplicate operationId: '+operation.operationId);
+      operationIds.add(operation.operationId);
+      const entryKeys=new Set();
+      for(const entry of operation.datedCapacityEntries||[]){
+        totalCapacityEntries+=1;
+        const key=[clean(entry.resourceId),clean(entry.date)].join('|');
+        if(!clean(entry.resourceId)||!validDateOnly(entry.date))errors.push('Capacity entry requires a valid resource and date.');
+        if(entryKeys.has(key))errors.push('Duplicate capacity entry for '+key+'.');
+        entryKeys.add(key);
+        for(const keyName of ['allocatedLines','availableLines'])if(!isNonNegativeNumber(entry[keyName]))errors.push('Capacity '+keyName+' must be a non-negative number.');
+        if(isNonNegativeNumber(entry.allocatedLines)&&isNonNegativeNumber(entry.availableLines)&&Number(entry.allocatedLines)>Number(entry.availableLines))warnings.push('Capacity entry exceeds available lines for '+key+'.');
+      }
+    }
+    if(totalCapacityEntries>0&&!(plan.operations||[]).length)errors.push('Capacity entries require an operation record.');
+    const lotReferences=new Set();
+    let plannedLots=0;
+    for(const lot of plan.shipmentLots||[]){
+      const reference=clean(lot.lotReference||lot.lotId);
+      if(!reference)errors.push('Shipment lot requires a lot reference.');
+      const normalized=reference.toLowerCase();
+      if(lotReferences.has(normalized))errors.push('Duplicate shipment lot reference: '+reference);
+      lotReferences.add(normalized);
+      const quantities=['plannedQty','packedQty','passedQty','shippedQty'].map(key=>Number(lot[key]));
+      if(quantities.some(value=>!Number.isFinite(value)||value<0))errors.push('Shipment lot quantities must be non-negative numbers.');
+      const [planned,packed,passed,shipped]=quantities;
+      if(Number.isFinite(planned))plannedLots+=planned;
+      if(Number.isFinite(packed)&&Number.isFinite(planned)&&packed>planned)errors.push(reference+': packed quantity exceeds planned quantity.');
+      if(Number.isFinite(passed)&&Number.isFinite(packed)&&passed>packed)errors.push(reference+': passed quantity exceeds packed quantity.');
+      if(Number.isFinite(shipped)&&Number.isFinite(passed)&&shipped>passed)errors.push(reference+': shipped quantity exceeds passed quantity.');
+      for(const key of ['requestedExFactory','currentExFactory','forecastExFactory','actualExFactory','ETD','ETA'])if(clean(lot[key])&&!validDateOnly(lot[key]))errors.push(reference+': '+key+' must use YYYY-MM-DD.');
+      const allocations=Array.isArray(lot.poAllocation)?lot.poAllocation:[];
+      if(allocations.length&&allocations.reduce((sum,item)=>sum+Number(item.qty||0),0)!==planned)errors.push(reference+': PO allocation must equal planned quantity.');
+    }
+    if(plan.order?.totalQty!=null&&Number.isFinite(Number(plan.order.totalQty))&&plannedLots>Number(plan.order.totalQty))errors.push('Planned shipment lots exceed the ordered quantity.');
     return {ok:errors.length===0,errors,warnings};
   }
+  function validDateOnly(value){
+    const date=clean(value);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return false;
+    const parsed=new Date(date+'T00:00:00Z');
+    return !Number.isNaN(parsed.getTime())&&parsed.toISOString().slice(0,10)===date;
+  }
+  function isNonNegativeNumber(value){const number=Number(value);return Number.isFinite(number)&&number>=0;}
   function freezeBaseline(plan,context={}){
     const validation=validatePlan(plan);
     if(!validation.ok)return {ok:false,errors:validation.errors,plan};
@@ -197,7 +242,92 @@
     next.validation=validatePlan(next);
     return {ok:next.validation.ok,plan:next,errors:next.validation.errors};
   }
-  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,createPlan,validatePlan,freezeBaseline,updateTaskStatus,addCustomTask};
+  /*
+   * Purpose: record one reviewed dated capacity input without mutating the source plan.
+   * Access: local controller or an authorized application service; callers supply explicit
+   * operation type/resource/date/line counts. Output: cloned plan plus warnings for overlap.
+   * Failure: malformed or duplicate entries are rejected; no rate or capacity is guessed.
+   */
+  function addCapacityEntry(plan,input={},context={}){
+    if(!plan||!Array.isArray(plan.operations))return {ok:false,error:'Capacity entry requires a valid TNA plan.'};
+    const resourceId=clean(input.resourceId||input.lineId);
+    const date=clean(input.date);
+    const operationType=clean(input.type||input.operationType);
+    const allocatedLines=Number(input.allocatedLines);
+    const availableLines=Number(input.availableLines);
+    if(!resourceId)return {ok:false,error:'Capacity entry requires a reviewed resource or line.'};
+    if(!validDateOnly(date))return {ok:false,error:'Capacity entry date must use YYYY-MM-DD.'};
+    if(!operationType&&!clean(input.operationId))return {ok:false,error:'New capacity entries require an operation type.'};
+    if(!isNonNegativeNumber(input.allocatedLines)||!isNonNegativeNumber(input.availableLines))return {ok:false,error:'Allocated and available lines must be non-negative numbers.'};
+    const next=clone(plan);
+    let operation=next.operations.find(item=>clean(item.operationId)===clean(input.operationId));
+    if(!operation){
+      operation={operationId:clean(input.operationId)||makeId('operation'),type:operationType||'unknown',lotId:clean(input.lotId)||null,qtyInput:0,qtyCompleted:0,qtyRejected:0,qtyReworked:0,qtyWip:0,unit:clean(input.unit)||next.order?.unit||'pcs',availableLines:null,calendarId:clean(input.calendarId)||'default',datedCapacityEntries:[],dailyActuals:[],efficiencyModel:null,smvOrSam:null,overtimePolicy:null,dependencies:[]};
+      next.operations.push(operation);
+    } else if(operationType&&clean(operation.type)&&clean(operation.type)!==operationType){
+      return {ok:false,error:'The existing operation type cannot be changed by a capacity entry.'};
+    }
+    const duplicate=(operation.datedCapacityEntries||[]).some(entry=>clean(entry.resourceId)===resourceId&&clean(entry.date)===date);
+    if(duplicate)return {ok:false,error:'A capacity entry for this operation, resource and date already exists.'};
+    const timestamp=clean(context.createdAt)||now();
+    const entry={capacityEntryId:makeId('capacity'),resourceId,date,allocatedLines,availableLines,calendarId:clean(input.calendarId)||operation.calendarId||'default',source:'reviewed-local',recordedBy:clean(context.actorId)||next.ownerUserId,recordedAt:timestamp};
+    operation.datedCapacityEntries=[...(operation.datedCapacityEntries||[]),entry];
+    const overlaps=next.operations.flatMap(item=>(item.datedCapacityEntries||[]).filter(other=>clean(other.resourceId)===resourceId&&clean(other.date)===date)).length-1;
+    const warnings=[];
+    if(allocatedLines>availableLines)warnings.push('This entry exceeds the available lines for the date and will appear as a capacity conflict.');
+    if(overlaps>0)warnings.push('Another operation already uses this resource and date; portfolio capacity review is required.');
+    next.revision=(Number(next.revision)||0)+1;
+    next.updatedAt=timestamp;
+    next.revisionEvents=[...(next.revisionEvents||[]),{eventId:makeId('revision'),eventType:'capacity-entry-recorded',revision:next.revision,actorId:entry.recordedBy,createdAt:timestamp,details:{operationId:operation.operationId,resourceId,date,allocatedLines,availableLines}}];
+    next.auditEvents=[...(next.auditEvents||[]),{eventId:makeId('audit'),eventType:'capacity-entry-recorded',actorId:entry.recordedBy,createdAt:timestamp,details:{operationId:operation.operationId,capacityEntryId:entry.capacityEntryId}}];
+    next.validation=validatePlan(next);
+    if(!next.validation.ok)return {ok:false,error:next.validation.errors.join(' '),errors:next.validation.errors};
+    return {ok:true,plan:next,entry,warnings:[...warnings,...next.validation.warnings]};
+  }
+  /*
+   * Purpose: add one reviewed split-shipment lot while preserving quantity and PO allocation.
+   * Access: local controller or an authorized application service; no inspection decision is inferred.
+   * Output: cloned plan with lot-level dates/evidence fields and revision/audit history.
+   * Failure: invalid lot quantities, duplicate references or over-order totals are rejected.
+   */
+  function addShipmentLot(plan,input={},context={}){
+    if(!plan||!Array.isArray(plan.shipmentLots))return {ok:false,error:'Shipment lot entry requires a valid TNA plan.'};
+    const totalQty=Number(plan.order?.totalQty);
+    const lotReference=clean(input.lotReference||input.lotId);
+    const plannedQty=Number(input.plannedQty);
+    const packedQty=input.packedQty===''||input.packedQty==null?0:Number(input.packedQty);
+    const passedQty=input.passedQty===''||input.passedQty==null?0:Number(input.passedQty);
+    const shippedQty=input.shippedQty===''||input.shippedQty==null?0:Number(input.shippedQty);
+    if(!Number.isFinite(totalQty)||totalQty<=0)return {ok:false,error:'Enter a positive order quantity before adding shipment lots.'};
+    if(!lotReference)return {ok:false,error:'Shipment lot requires a lot reference.'};
+    if(!Number.isFinite(plannedQty)||plannedQty<=0||![packedQty,passedQty,shippedQty].every(isNonNegativeNumber))return {ok:false,error:'Shipment lot quantities must be valid non-negative numbers, with planned quantity above zero.'};
+    if(packedQty>plannedQty)return {ok:false,error:'Packed quantity cannot exceed planned quantity.'};
+    if(passedQty>packedQty)return {ok:false,error:'Passed quantity cannot exceed packed quantity.'};
+    if(shippedQty>passedQty)return {ok:false,error:'Shipped quantity cannot exceed passed quantity.'};
+    if((plan.shipmentLots||[]).some(lot=>clean(lot.lotReference||lot.lotId).toLowerCase()===lotReference.toLowerCase()))return {ok:false,error:'A shipment lot with this reference already exists.'};
+    const existingPlanned=(plan.shipmentLots||[]).reduce((sum,lot)=>sum+Number(lot.plannedQty||0),0);
+    if(existingPlanned+plannedQty>totalQty)return {ok:false,error:'Planned shipment lots cannot exceed the ordered quantity.'};
+    const dateKeys=['requestedExFactory','currentExFactory','forecastExFactory','actualExFactory','ETD','ETA'];
+    for(const key of dateKeys)if(clean(input[key])&&!validDateOnly(input[key]))return {ok:false,error:key+' must use YYYY-MM-DD.'};
+    let poAllocation=Array.isArray(input.poAllocation)?input.poAllocation.map(item=>({poNumber:clean(item.poNumber),qty:Number(item.qty)})):[];
+    if(!poAllocation.length&&clean(input.poNumber))poAllocation=[{poNumber:clean(input.poNumber),qty:plannedQty}];
+    if(!poAllocation.length)return {ok:false,error:'Shipment lot requires a PO allocation or PO number.'};
+    if(poAllocation.some(item=>!item.poNumber||!isNonNegativeNumber(item.qty)))return {ok:false,error:'PO allocation requires a PO reference and non-negative quantity.'};
+    if(poAllocation.reduce((sum,item)=>sum+item.qty,0)!==plannedQty)return {ok:false,error:'PO allocation must equal the planned lot quantity.'};
+    const timestamp=clean(context.createdAt)||now();
+    const next=clone(plan);
+    const lot={lotId:makeId('lot'),lotReference,plannedQty,packedQty,passedQty,shippedQty,remainingQty:plannedQty-shippedQty,factory:clean(input.factory)||next.order?.factoryName||'',requestedExFactory:clean(input.requestedExFactory)||null,currentExFactory:clean(input.currentExFactory)||null,forecastExFactory:clean(input.forecastExFactory)||null,actualExFactory:clean(input.actualExFactory)||null,ETD:clean(input.ETD)||null,ETA:clean(input.ETA)||null,destinationReceipt:clean(input.destinationReceipt)||null,shipmentMethod:clean(input.shipmentMethod)||next.order?.shipmentMethod||'',bookingRef:clean(input.bookingRef)||null,inspectionRef:clean(input.inspectionRef)||null,poAllocation,status:clean(input.status)||'open'};
+    next.shipmentLots.push(lot);
+    next.revision=(Number(next.revision)||0)+1;
+    next.updatedAt=timestamp;
+    const actorId=clean(context.actorId)||next.ownerUserId;
+    next.revisionEvents=[...(next.revisionEvents||[]),{eventId:makeId('revision'),eventType:'shipment-lot-recorded',revision:next.revision,actorId,createdAt:timestamp,details:{lotId:lot.lotId,lotReference,plannedQty,shippedQty}}];
+    next.auditEvents=[...(next.auditEvents||[]),{eventId:makeId('audit'),eventType:'shipment-lot-recorded',actorId,createdAt:timestamp,details:{lotId:lot.lotId,lotReference,poAllocation}}];
+    next.validation=validatePlan(next);
+    if(!next.validation.ok)return {ok:false,error:next.validation.errors.join(' '),errors:next.validation.errors};
+    return {ok:true,plan:next,lot,warnings:next.validation.warnings};
+  }
+  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,createPlan,validatePlan,freezeBaseline,updateTaskStatus,addCustomTask,addCapacityEntry,addShipmentLot};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaDomain=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

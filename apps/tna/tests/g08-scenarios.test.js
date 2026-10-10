@@ -72,11 +72,42 @@ assert(split.poTotals['PO-SCN'] === 1000, 'G08 split shipment should reconcile P
 const badSplit = operations.reconcileShipmentLots(1000, [{ lotReference: 'LOT-BAD', plannedQty: 600, packedQty: 601, passedQty: 600, shippedQty: 0 }], { inspectionPassed: true });
 assert(!badSplit.ok && badSplit.errors.some(error => error.includes('packed quantity exceeds')), 'G08 split shipment should reject inconsistent lot quantities.');
 
+const capacityEntry = domain.addCapacityEntry(plan, {
+  type: 'sew', operationId: 'sew-reviewed', resourceId: 'line-reviewed', date: '2026-10-21', allocatedLines: 4, availableLines: 3, lotId: 'LOT-1'
+}, { actorId: 'admin@vesa', createdAt: '2026-10-10T07:50:00.000Z' });
+assert(capacityEntry.ok && capacityEntry.plan.operations[0].datedCapacityEntries[0].allocatedLines === 4, 'G08 reviewed capacity entry should be recorded on a cloned operation.');
+assert(capacityEntry.warnings.some(warning => warning.includes('exceeds the available lines')), 'G08 capacity uncertainty should remain visible as an explicit warning.');
+assert(plan.operations.length === 0 && capacityEntry.plan.revision === plan.revision + 1, 'G08 capacity entry must not mutate the source plan and must create a revision.');
+const duplicateCapacity = domain.addCapacityEntry(capacityEntry.plan, {
+  type: 'sew', operationId: 'sew-reviewed', resourceId: 'line-reviewed', date: '2026-10-21', allocatedLines: 1, availableLines: 3
+});
+assert(!duplicateCapacity.ok && duplicateCapacity.error.includes('already exists'), 'G08 duplicate dated capacity entry should be rejected.');
+const overlapCapacity = domain.addCapacityEntry(capacityEntry.plan, {
+  type: 'pack', operationId: 'pack-reviewed', resourceId: 'line-reviewed', date: '2026-10-21', allocatedLines: 2, availableLines: 3
+});
+assert(overlapCapacity.ok && overlapCapacity.warnings.some(warning => warning.includes('Another operation')), 'G08 overlapping operation capacity should be retained with a review warning.');
+const frozen = domain.freezeBaseline(domain.createPlan({
+  templateId: 'woven', buyerName: 'Buyer Lot', factoryName: 'Factory Lot', styleNo: 'STYLE-LOT', poNumber: 'PO-LOT', totalQty: 1000,
+  orderConfirmedOn: '2026-10-12', buyerRequiredExFactory: '2026-12-15'
+}, { ownerUserId: 'admin@vesa' }), { actorId: 'admin@vesa', reason: 'Reviewed baseline' });
+assert(frozen.ok, 'G08 shipment fixture baseline should be confirmable.');
+const lotEntry = domain.addShipmentLot(frozen.plan, {
+  lotReference: 'LOT-REVIEWED', poNumber: 'PO-LOT', plannedQty: 600, packedQty: 500, passedQty: 500, shippedQty: 400,
+  requestedExFactory: '2026-12-01', ETD: '2026-12-03', ETA: '2026-12-08', inspectionRef: 'INS-REVIEW', status: 'partial'
+}, { actorId: 'admin@vesa', createdAt: '2026-10-10T07:55:00.000Z' });
+assert(lotEntry.ok && lotEntry.plan.shipmentLots[0].remainingQty === 200, 'G08 reviewed shipment lot should preserve lot quantities and remaining balance.');
+assert(lotEntry.plan.baselineSnapshots.length === frozen.plan.baselineSnapshots.length && lotEntry.plan.revisionEvents.some(event => event.eventType === 'shipment-lot-recorded'), 'G08 shipment lot must preserve baseline and record revision evidence.');
+const invalidLot = domain.addShipmentLot(lotEntry.plan, { lotReference: 'LOT-BAD-ENTRY', poNumber: 'PO-LOT', plannedQty: 500, packedQty: 500, passedQty: 500, shippedQty: 0 });
+assert(!invalidLot.ok && invalidLot.error.includes('cannot exceed the ordered quantity'), 'G08 over-order shipment lots should be rejected.');
+const badPoAllocation = domain.addShipmentLot(lotEntry.plan, { lotReference: 'LOT-BAD-PO', poNumber: 'PO-LOT', plannedQty: 100, packedQty: 0, passedQty: 0, shippedQty: 0, poAllocation: [{ poNumber: 'PO-LOT', qty: 99 }] });
+assert(!badPoAllocation.ok && badPoAllocation.error.includes('PO allocation'), 'G08 inconsistent PO allocation should be rejected.');
+
 const index = read('apps/tna/index.html');
 const bootstrap = read('apps/tna/src/bootstrap.js');
 const worker = read('service-worker.js');
 assert(index.includes('./src/scenarios.js?v=0.8.0'), 'G08 scenarios script should be loaded by TNA route.');
 assert(bootstrap.includes('Compare a recovery option') && bootstrap.includes('data-apply-scenario'), 'G08 scenario comparison/apply UI should be visible in the plan workspace.');
 assert(bootstrap.includes('Portfolio & shared capacity') && bootstrap.includes('Split shipment reconciliation'), 'G08 advanced portfolio and split shipment views should be visible.');
+assert(bootstrap.includes('Enter reviewed capacity') && bootstrap.includes('Add shipment lot') && bootstrap.includes('Shipment Lots'), 'G08 reviewed capacity and shipment-lot entry UI should be visible.');
 assert(worker.includes('./apps/tna/src/scenarios.js'), 'G08 scenarios script should be cached for local use.');
 console.log('TNA G08 scenario checks passed');
