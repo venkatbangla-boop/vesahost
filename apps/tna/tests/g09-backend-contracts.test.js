@@ -34,6 +34,17 @@ const command = contracts.createCommand({ requestId: 'REQ-1', action: 'order.upd
 assert(command.ok && command.command.tenantId === 'TENANT-1' && command.command.expectedRevision === 2, 'G09 command must carry tenant, actor and optimistic revision.');
 command.command.payload.note = 'changed in test';
 assert(command.command.payload.note === 'changed in test', 'G09 command payload should be independently copied.');
+assert(contracts.authorizeServerCommand(session, order, command.command).ok, 'G09 server policy model should allow an in-scope tenant-admin update.');
+assert(contracts.authorizeServerCommand({ ...session, role: 'read-only' }, order, command.command).code === 'FORBIDDEN', 'G09 server policy model must deny read-only writes.');
+const approval = contracts.createCommand({ requestId: 'REQ-APPROVAL', action: 'approval.submit', expectedRevision: 2, payload: { approvalDecision: 'approved' } }, session, order);
+assert(approval.ok && contracts.authorizeServerCommand(session, order, approval.command).code === 'APPROVAL_EVIDENCE_REQUIRED', 'G09 approvals must require authority and evidence.');
+const evidencedApproval = contracts.createCommand({ requestId: 'REQ-APPROVAL-2', action: 'approval.submit', expectedRevision: 2, payload: { approvalDecision: 'approved', authorityVersion: 'AUTH-1', evidenceReference: 'EVID-1' } }, session, order);
+assert(evidencedApproval.ok && contracts.authorizeServerCommand(session, order, evidencedApproval.command).ok, 'G09 evidenced approval should pass the contract policy model.');
+assert(contracts.validateAttachmentMetadata({ name: 'inspection.pdf', mimeType: 'application/pdf', size: 2048, sha256: 'a'.repeat(64), visibility: 'factory' }).ok, 'G09 valid private attachment metadata should pass.');
+assert(!contracts.validateAttachmentMetadata({ name: '../secret.pdf', mimeType: 'application/pdf', size: 2048, visibility: 'factory' }).ok, 'G09 unsafe attachment names must fail closed.');
+const intent = contracts.createOfflineIntent(command.command, { intentId: 'INTENT-1', queuedAt: '2026-10-10T09:00:00.000Z' });
+assert(intent.ok && intent.intent.status === 'queued' && !Object.prototype.hasOwnProperty.call(intent.intent, 'accessToken'), 'G09 offline intent must be queued without tokens.');
+assert(!contracts.validateOfflineIntent({ ...intent.intent, tenantId: 'TENANT-2' }).ok, 'G09 offline intent tenant mismatch must fail closed.');
 
 (async()=>{
   let calls = 0;
