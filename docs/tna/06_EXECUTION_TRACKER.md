@@ -10,15 +10,15 @@
 | Repository | `venkatbangla-boop/vesahost` |
 | Deployment target | `/apps/tna/` under VESA App Centre |
 | Specifications | This file plus root `AGENTS.md` and documents `01`–`05` |
-| Design status | G02 domain/templates implemented locally on feature branch; calendar/calculation/storage/report/cloud groups remain open |
-| Implementation status | **G02 IMPLEMENTED LOCALLY / NOT DEPLOYED**; TNA shell, domain records, templates, draft wizard and validation verified |
-| Last accepted patch group | **G02 — Domain records and universal garment templates** |
-| Current patch group | **G03 — Calendar, precedence and critical path** |
+| Design status | G03 scheduling implemented locally on feature branch; apparel operational engines/storage/report/cloud groups remain open |
+| Implementation status | **G03 IMPLEMENTED LOCALLY / NOT DEPLOYED**; TNA shell, domain records, templates, draft wizard, validation and deterministic scheduling verified |
+| Last accepted patch group | **G03 — Calendar, precedence and critical path** |
+| Current patch group | **G04 — Apparel operational engines** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
 | External block | Cloud hosting/identity/database/notification providers/permissions not yet authorized or provisioned |
-| Resume anchor | G02 accepted locally on `feature/tna360-continuous`; next checkpoint is G03 calendar, precedence and critical path |
-| LAST COMPLETED ACTION | Implemented versioned TNA domain model, complete activity-library references, 12 garment templates, validation, baseline/status safeguards, custom activity additions and New TNA quick/full/staged Excel-entry draft wizard |
-| NEXT ACTION | Implement G03: date-only calendars, precedence graph validation and deterministic critical-path calculations without overwriting baseline/current/forecast/actual date separation |
+| Resume anchor | G03 accepted locally on `feature/tna360-continuous`; next checkpoint is G04 apparel operational engines |
+| LAST COMPLETED ACTION | Implemented deterministic date-only calendar engine, graph validator, forward/backward schedule pass, float/critical path, negative-float evidence and UI schedule panel gated by explicit start/required dates |
+| NEXT ACTION | Implement G04: commercial/material/approval/capacity/shipment engines, quantity conservation and fixture tests without inventing buyer approvals, LC dates, material release or production rates |
 
 **Snapshot date:** 2026-10-10. The GitHub public repo/main and files were inspected at a documentation level; **Codex must directly inspect its checkout** before code writes. Never treat these notes as a completed local repo audit.
 
@@ -97,11 +97,11 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 
 ### G03 — Calendar, precedence and critical path
 
-- [ ] Implement explicit date-only and working/calendar-day arithmetic with holiday exceptions.
-- [ ] Implement graph validation, FS/SS/FF/SF relationship behavior, lag, cycles/conflicts, zero milestones.
-- [ ] Forward/backward plan, earliest/latest dates, free/total float, critical paths, negative float.
-- [ ] Ensure forecast separated from signed commitments and baseline.
-- [ ] Pass all CAL/GPH fixtures in `03`; reconcile hand-calculated October 2026 example.
+- [x] Implement explicit date-only and working/calendar-day arithmetic with holiday exceptions.
+- [x] Implement graph validation, FS/SS/FF/SF relationship behavior, lag, cycles/conflicts, zero milestones.
+- [x] Forward/backward plan, earliest/latest dates, free/total float, critical paths, negative float.
+- [x] Ensure forecast separated from signed commitments and baseline.
+- [x] Pass all CAL/GPH fixtures in `03`; reconcile hand-calculated October 2026 example.
 
 ### G04 — Apparel operational engines
 
@@ -199,16 +199,16 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [x] F04 Universal product templates
 - [x] F05 Conditional/custom activities
 - [ ] F06 Complete order master
-- [ ] F07 Immutable baseline
-- [ ] F08 Forward scheduling
-- [ ] F09 Backward scheduling
-- [ ] F10 Working calendars
-- [ ] F11 Critical Path and float
+- [x] F07 Immutable baseline
+- [x] F08 Forward scheduling
+- [x] F09 Backward scheduling
+- [x] F10 Working calendars
+- [x] F11 Critical Path and float
 - [ ] F12 Materials & LC milestones
 - [ ] F13 Approval and reviewer authority
 - [ ] F14 Production capacity and WIP
-- [ ] F15 Separate dates, audit and revisions
-- [ ] F16 Dependency graph / lag
+- [x] F15 Separate dates, audit and revisions
+- [x] F16 Dependency graph / lag
 - [ ] F17 Daily follow-up and next 7 days
 - [ ] F18 Explainable risk and blocker ownership
 - [ ] F19 Recovery scenarios
@@ -321,6 +321,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | 2026-10-10 10:15 Asia/Dhaka | G00 repository audit and scope map | `feature/tna360-continuous` / `a220db9` | `AGENTS.md`, `docs/tna/*.md`, tracker audit updates | Read all six docs; inspected `apps/index.html`, `js/app-catalogue.js`, `js/preferences.js`, `js/auth.js`, PPM/AQL/service workers/tests; baseline syntax checks, AQL release contract and `git diff --check` passed before commit | accepted | G01 app shell and safe registration |
 | 2026-10-10 11:21 Asia/Dhaka | G01 VESA shell and safe app registration | `feature/tna360-continuous` / `HEAD after G01 commit` | `apps/tna/index.html`, `apps/tna/assets/tna.css`, `apps/tna/src/bootstrap.js`, `apps/tna/tests/g01-shell.test.js`, `js/app-catalogue.js`, `js/preferences.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Browser PASS via Playwright CLI on local server: logged-out `/apps/tna/` redirected to `/login/?next=%2Fapps%2Ftna%2F`; login `admin@vesa` opened TNA; App Centre showed AQL/PPM/TNA; TNA 390px and 1280px overflow=false; AQL/PPM opened with 0 console errors. Production not deployed. | accepted | G02 domain records and universal garment templates |
 | 2026-10-10 11:32 Asia/Dhaka | G02 domain records and universal garment templates | `feature/tna360-continuous` / `HEAD after G02 commit` | `apps/tna/src/domain.js`, `apps/tna/src/bootstrap.js`, `apps/tna/assets/tna.css`, `apps/tna/index.html`, `apps/tna/tests/g01-shell.test.js`, `apps/tna/tests/g02-domain.test.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/domain.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/tna/tests/g02-domain.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Browser PASS via Playwright CLI on local server: login opened `/apps/tna/`; New TNA quick draft created `STYLE-100` with 105 knit tasks, stage chips and separate validation count; `window.VesaTnaDomain` exposed 12 profiles and 126 library activities; 390px overflow=false; Excel-entry tab displayed staged-import/G05 workbook parsing warning; console errors=0. No production deploy. | accepted | G03 calendar, precedence and critical path |
+| 2026-10-10 11:40 Asia/Dhaka | G03 calendar, precedence and critical path | `feature/tna360-continuous` / `HEAD after G03 commit` | `apps/tna/src/scheduling.js`, `apps/tna/src/bootstrap.js`, `apps/tna/index.html`, `apps/tna/tests/g01-shell.test.js`, `apps/tna/tests/g03-scheduling.test.js`, `service-worker.js`, tracker evidence | PASS: `node -c js/app-catalogue.js`; `node -c js/preferences.js`; `node -c js/auth.js`; `node -c service-worker.js`; `node -c apps/tna/src/domain.js`; `node -c apps/tna/src/scheduling.js`; `node -c apps/tna/src/bootstrap.js`; `node apps/tna/tests/g01-shell.test.js`; `node apps/tna/tests/g02-domain.test.js`; `node apps/tna/tests/g03-scheduling.test.js`; `node apps/aql/tests/release-contract.cjs`; `git diff --check`. Fixtures: CAL-01/02/05 and GPH-01/02/03/06 passed; CPM-01 A/B/C/D exact October 2026 dates and holiday slip 1 working day passed. Browser PASS via Playwright CLI on local server: full-entry draft with explicit `2026-10-12` start and `2026-11-30` ex-factory displayed forecast `2027-03-08`, late 70 working days, 1 critical chain; no console errors; 390px overflow=false; baseline/current/actual not overwritten. No production deploy. | accepted | G04 apparel operational engines |
 
 ### Open blockers and decisions
 

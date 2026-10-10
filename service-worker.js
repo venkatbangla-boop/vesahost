@@ -1,4 +1,4 @@
-const CACHE='vesa-v44-tna-g02';
+const CACHE='vesa-v45-tna-g03';
 const ASSETS=[
   './',
   './index.html',
@@ -12,6 +12,7 @@ const ASSETS=[
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
   './apps/tna/src/domain.js',
+  './apps/tna/src/scheduling.js',
   './apps/tna/src/bootstrap.js',
   './admin/',
   './admin/index.html',

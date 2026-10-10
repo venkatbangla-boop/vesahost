@@ -21,6 +21,7 @@
 
   const state={dialog:null,language:'en',currentPlan:null};
   const domain=globalThis.VesaTnaDomain;
+  const scheduling=globalThis.VesaTnaScheduling;
   const text=key=>(COPY[state.language]||COPY.en)[key]||COPY.en[key]||key;
   const esc=value=>String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   function readRecords(){try{const raw=JSON.parse(localStorage.getItem(STORE_KEY)||'null');return Array.isArray(raw?.records)?raw.records:[]}catch{return []}}
@@ -38,6 +39,7 @@
       ${unknown.length?`<h3>${esc(text('unknown'))}</h3><ul>${unknown.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
       ${errors.length?`<h3>Errors</h3><ul>${errors.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
       ${warnings.length?`<h3>Warnings</h3><ul>${warnings.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
+      ${schedulePanel(plan)}
       <h3>Stages</h3><div class="tna-stage-chips">${Object.entries(stageCounts).map(([stage,count])=>`<span>${esc(stage)} · ${count}</span>`).join('')}</div>
       <h3>First activities</h3><div class="tna-task-table" role="table" aria-label="Draft TNA activities">${plan.tasks.slice(0,12).map(task=>`<div role="row"><span>${esc(task.templateRef)}</span><span>${esc(task.title)}</span><span>${esc(task.ownerParty)}</span><span>${esc(task.status)}</span></div>`).join('')}</div></div>`}
   function render(){state.language=language();const records=readRecords();const root=document.getElementById('tnaMain');root.innerHTML=`
@@ -77,10 +79,18 @@
   function standardEntry(isFull){return `<div class="tna-form-grid">
       ${selectField('templateId','Product template',Object.values(domain.TEMPLATE_PROFILES).map(t=>[t.id,t.name]),'knit')}
       ${field('buyerName','Buyer','text','',true)}${field('factoryName','Factory','text','',true)}${field('styleNo','Style','text','',true)}${field('poNumber','PO / order reference','text','',true)}${field('totalQty','Total quantity','number','',true)}${field('buyerRequiredExFactory','Buyer required ex-factory','date','',true)}
-      ${isFull?`${field('brand','Brand')}${field('destinationMarket','Destination / market')}${field('fabricSpec','Fabric specification')}${selectField('fabricRoute','Fabric route',[['unknown','Unknown'],['local-ready','Local ready fabric'],['local-manufactured','Local manufactured'],['imported-finished','Imported finished'],['imported-greige','Imported greige / yarn']], 'unknown')}${field('techPackRevision','Tech pack revision')}${field('composition','Composition')}${field('sizeRange','Size range')}${field('incoterm','Incoterm')}${field('shipmentMethod','Shipment method')}`:''}
+      ${isFull?`${field('orderConfirmedOn','Explicit start / order confirmed date','date')}${field('poReceivedOn','PO received date','date')}${field('brand','Brand')}${field('destinationMarket','Destination / market')}${field('fabricSpec','Fabric specification')}${selectField('fabricRoute','Fabric route',[['unknown','Unknown'],['local-ready','Local ready fabric'],['local-manufactured','Local manufactured'],['imported-finished','Imported finished'],['imported-greige','Imported greige / yarn']], 'unknown')}${field('techPackRevision','Tech pack revision')}${field('composition','Composition')}${field('sizeRange','Size range')}${field('incoterm','Incoterm')}${field('shipmentMethod','Shipment method')}`:''}
     </div><fieldset class="tna-checks"><legend>Conditional processes</legend>${[['print','Print'],['embroidery','Embroidery'],['aop','AOP / strike-off'],['wash','Wash / garment dye'],['performance','Performance test']].map(([v,l])=>`<label><input type="checkbox" name="processFlags" value="${esc(v)}"> ${esc(l)}</label>`).join('')}</fieldset>`}
   function excelEntry(){return `<div class="tna-form-grid">${field('buyerName','Buyer from sheet')}${field('factoryName','Factory from sheet')}${field('styleNo','Style from sheet')}${field('poNumber','PO from sheet')}${field('totalQty','Quantity from sheet','number')}${field('buyerRequiredExFactory','Ex-factory from sheet','date')}${selectField('templateId','Template mapping',Object.values(domain.TEMPLATE_PROFILES).map(t=>[t.id,t.name]),'custom')}</div><label class="tna-wide"><span>Reviewed import notes / unmatched columns</span><textarea name="commercialNotes" rows="5" placeholder="Paste header mapping notes here. This does not overwrite any existing TNA."></textarea></label>`}
   function createPractice(){state.currentPlan=domain.createPlan({templateId:'denim',buyerName:'Training Buyer',factoryName:'Training Factory',styleNo:'DENIM-PRACTICE',poNumber:'TRAINING-PO',totalQty:1200,buyerRequiredExFactory:'2026-11-30',processFlags:['wash'],fabricRoute:'local-manufactured'},{mode:'practice',ownerUserId:'practice'});render();}
+  function schedulePanel(plan){if(!scheduling)return '';
+    const start=plan.commitments.orderConfirmedOn||plan.commitments.poReceivedOn;
+    const required=plan.commitments.buyerRequiredExFactory;
+    if(!start||!required)return `<h3>Schedule</h3><p class="tna-note">Schedule unavailable: enter an explicit start date and buyer required ex-factory date. No date is invented from PO or today.</p>`;
+    const result=scheduling.schedule(plan.tasks,plan.edges,{calendar:plan.calendars[0],startDate:start,requiredDate:required,asOfDate:start});
+    if(result.validity!=='valid')return `<h3>Schedule</h3><p class="tna-note">Schedule unavailable: ${esc([...result.missingInputs,...result.errors].join(', '))}</p>`;
+    return `<h3>Schedule</h3><div class="tna-stage-chips"><span>Forecast · ${esc(result.project.forecastDate)}</span><span>${result.project.workingDaysEarlyOrLate>0?'Late':'Float'} · ${esc(result.project.workingDaysEarlyOrLate)} working day(s)</span><span>Critical chains · ${esc(result.project.criticalPaths.length)}</span></div><p class="tna-note">Calculated forecast only. Baseline/current/actual dates are not overwritten.</p>`;
+  }
   function openCustomTask(){if(!state.currentPlan)return openDialog('Add Activity',`<p>Create a draft TNA first, then add custom checkpoints to that draft.</p>`);
     openDialog('Add Activity',`<form class="tna-wizard" id="tnaCustomTask"><div class="tna-form-grid">${field('title','Activity title','text','',true)}${selectField('stageCode','Stage',Object.entries(domain.STAGE_LABELS).map(([k,v])=>[k,`${k} · ${v}`]),'O')}${field('ownerParty','Owner party','text','merchant')}${field('durationUnits','Duration units','number','0')}</div><p class="tna-note">Custom activities are added as optional draft checkpoints with audit history. They do not change baseline snapshots silently.</p><button class="tna-btn" type="submit">Add Activity</button></form>`);
     document.getElementById('tnaCustomTask').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());const result=domain.addCustomTask(state.currentPlan,data,{actorId:globalThis.VesaAuth?.userKey?.()||'local-browser-user'});if(result.ok){state.currentPlan=result.plan;state.dialog.close();render();}else openDialog('Add Activity',`<p>${esc(result.error||(result.errors||[]).join(', '))}</p>`);};
