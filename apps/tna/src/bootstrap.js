@@ -23,9 +23,11 @@
   const domain=globalThis.VesaTnaDomain;
   const scheduling=globalThis.VesaTnaScheduling;
   const operations=globalThis.VesaTnaOperations;
+  const storage=globalThis.VesaTnaStorage;
   const text=key=>(COPY[state.language]||COPY.en)[key]||COPY.en[key]||key;
   const esc=value=>String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  function readRecords(){try{const raw=JSON.parse(localStorage.getItem(STORE_KEY)||'null');return Array.isArray(raw?.records)?raw.records:[]}catch{return []}}
+  function userKey(){return globalThis.VesaAuth?.userKey?.()||'local-browser-user'}
+  function readRecords(){try{return storage?storage.listPlans(userKey()):((JSON.parse(localStorage.getItem(STORE_KEY)||'null')?.records)||[])}catch{return []}}
   function language(){const pref=globalThis.VesaPrefs?.read?.().language||document.documentElement.lang||'en';return SUPPORTED_LANGUAGES.includes(pref)?pref:'en'}
   function actionCard(key,secondary=false,disabled=false){return `<article class="tna-action-card"><h2>${esc(text(key))}</h2><p>${esc(text(key+'Text'))}</p><button type="button" class="${secondary?'secondary':''}" data-action="${esc(key)}" ${disabled?'disabled':''}>${esc(text(key))}</button></article>`}
   function templateOptions(selected='knit'){return Object.values(domain?.TEMPLATE_PROFILES||{}).map(t=>`<option value="${esc(t.id)}" ${t.id===selected?'selected':''}>${esc(t.name)}</option>`).join('')}
@@ -67,7 +69,7 @@
     root.querySelectorAll('[data-action]').forEach(btn=>btn.onclick=()=>openAction(btn.dataset.action));
   }
   function openDialog(title,body){document.getElementById('tnaDialogTitle').textContent=title;document.getElementById('tnaDialogBody').innerHTML=body;if(!state.dialog.open)state.dialog.showModal();}
-  function openMenu(name){const items=MENUS[name]||[];openDialog(text('menuTitle')+' · '+text(name),`<div class="menu-grid">${items.map(item=>`<button class="tna-btn secondary" type="button" data-menu-action="${esc(item)}">${esc(item)}</button>`).join('')}</div><p class="tna-note">${esc(text('unavailable'))}</p>`);document.querySelectorAll('[data-menu-action]').forEach(btn=>btn.onclick=()=>btn.textContent==='Add Activity'?openCustomTask():openDialog(btn.textContent,`<p>${esc(text('unavailable'))}</p>`));}
+  function openMenu(name){const items=MENUS[name]||[];openDialog(text('menuTitle')+' · '+text(name),`<div class="menu-grid">${items.map(item=>`<button class="tna-btn secondary" type="button" data-menu-action="${esc(item)}">${esc(item)}</button>`).join('')}</div><p class="tna-note">${esc(text('unavailable'))}</p>`);document.querySelectorAll('[data-menu-action]').forEach(btn=>btn.onclick=()=>{if(btn.textContent==='Add Activity')return openCustomTask();if(btn.textContent==='Save Now')return saveNow();if(btn.textContent==='Download Saved Copy')return downloadCopy();return openDialog(btn.textContent,`<p>${esc(text('unavailable'))}</p>`);});}
   function openAction(action){if(action==='new')return openWizard('quick');if(action==='practice')return createPractice();openDialog(text(action)||action,`<p>${esc(text(action+'Text')||text('unavailable'))}</p><p class="tna-note">${esc(text('unavailable'))}</p>`);}
   function openWizard(mode){const isFull=mode==='full';const body=`<form class="tna-wizard" id="tnaWizard">
       <div class="tna-tabs"><button type="button" data-wizard-tab="quick" class="${mode==='quick'?'active':''}">${esc(text('quick'))}</button><button type="button" data-wizard-tab="full" class="${mode==='full'?'active':''}">${esc(text('full'))}</button><button type="button" data-wizard-tab="excel" class="${mode==='excel'?'active':''}">${esc(text('excel'))}</button></div>
@@ -76,7 +78,7 @@
       <button class="tna-btn" type="submit">${esc(text('createDraft'))}</button></form>`;
     openDialog(text('new'),body);
     document.querySelectorAll('[data-wizard-tab]').forEach(btn=>btn.onclick=()=>openWizard(btn.dataset.wizardTab));
-    document.getElementById('tnaWizard').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());data.processFlags=Array.from(event.currentTarget.querySelectorAll('[name="processFlags"]:checked')).map(input=>input.value);state.currentPlan=domain.createPlan(data,{ownerUserId:globalThis.VesaAuth?.userKey?.()||'local-browser-user'});state.dialog.close();render();};
+    document.getElementById('tnaWizard').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());data.processFlags=Array.from(event.currentTarget.querySelectorAll('[name="processFlags"]:checked')).map(input=>input.value);state.currentPlan=domain.createPlan(data,{ownerUserId:userKey()});if(storage)storage.autosave(state.currentPlan,userKey());state.dialog.close();render();};
   }
   function standardEntry(isFull){return `<div class="tna-form-grid">
       ${selectField('templateId','Product template',Object.values(domain.TEMPLATE_PROFILES).map(t=>[t.id,t.name]),'knit')}
@@ -102,6 +104,8 @@
     openDialog('Add Activity',`<form class="tna-wizard" id="tnaCustomTask"><div class="tna-form-grid">${field('title','Activity title','text','',true)}${selectField('stageCode','Stage',Object.entries(domain.STAGE_LABELS).map(([k,v])=>[k,`${k} · ${v}`]),'O')}${field('ownerParty','Owner party','text','merchant')}${field('durationUnits','Duration units','number','0')}</div><p class="tna-note">Custom activities are added as optional draft checkpoints with audit history. They do not change baseline snapshots silently.</p><button class="tna-btn" type="submit">Add Activity</button></form>`);
     document.getElementById('tnaCustomTask').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());const result=domain.addCustomTask(state.currentPlan,data,{actorId:globalThis.VesaAuth?.userKey?.()||'local-browser-user'});if(result.ok){state.currentPlan=result.plan;state.dialog.close();render();}else openDialog('Add Activity',`<p>${esc(result.error||(result.errors||[]).join(', '))}</p>`);};
   }
+  function saveNow(){if(!state.currentPlan)return openDialog('Save Now','<p>Create or open a TNA draft before saving.</p>');try{const saved=storage.savePlan(state.currentPlan,userKey());openDialog('Save Now',`<p>Saved locally in this browser.</p><p><b>${esc(saved.style||'Untitled TNA')}</b> · ${esc(saved.po||'PO unknown')}</p>`);render();}catch(error){openDialog('Save Now',`<p>${esc(error.message)}</p>`);}}
+  function downloadCopy(){if(!state.currentPlan)return openDialog('Download Saved Copy','<p>Create or open a TNA draft before downloading a saved copy.</p>');try{const text=storage.exportCopy(state.currentPlan);openDialog('Download Saved Copy',`<p>Portable copy prepared and checksum protected. Browser download wiring will be completed with the export UI in G07.</p><textarea readonly rows="6">${esc(text.slice(0,1200))}</textarea>`);}catch(error){openDialog('Download Saved Copy',`<p>${esc(error.message)}</p>`);}}
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.dialog?.open)state.dialog.close();});
   window.addEventListener('vesa-preferences-change',render);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();
