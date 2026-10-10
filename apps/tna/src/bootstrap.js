@@ -73,11 +73,19 @@
       <h3>Stages</h3><div class="tna-stage-chips">${Object.entries(stageCounts).map(([stage,count])=>`<span>${esc(stage)} · ${count}</span>`).join('')}</div>
       <h3>First activities</h3><div class="tna-task-table tna-activity-table" role="table" aria-label="Editable draft TNA activities">${plan.tasks.slice(0,12).map(task=>`<div role="row"><span>${esc(task.templateRef)}</span><span>${esc(task.title)}</span><span>${esc(task.ownerParty)}</span><span>${esc(task.status)}</span><span><button class="tna-mini-btn" type="button" data-edit-task="${esc(task.taskId)}">Edit activity</button></span></div>`).join('')}</div></div>`}
   function openOfflineWork(){const summary=offlineSummary();if(summary.error)return openDialog(text('offlineWork'),`<p>${esc(text('offlineWorkError'))}</p><p class="tna-note">${esc(text('offlineWorkText'))}</p>`);const statusLabel=status=>status==='conflict'?text('offlineConflicts'):status==='rejected'?text('offlineRejected'):status==='sent'?text('offlineSent'):text('offlineQueued');const actionLabel=action=>action==='order.update'?text('offlineOrderChange'):action==='approval.submit'?text('offlineApprovalChange'):text('offlineOtherChange');const rows=summary.items.map(item=>`<article><b>${esc(actionLabel(item.command?.action))}</b><p>${esc(statusLabel(item.status))}</p>${item.status==='conflict'?`<p class="tna-note">${esc(text('offlineConflictNote'))}</p>`:''}</article>`).join('');openDialog(text('offlineWork'),`${summary.total?`<div class="tna-list">${rows}</div>`:`<p>${esc(text('offlineWorkEmpty'))}</p>`}<p class="tna-note">${esc(text('offlineWorkText'))}</p>`);}
-  function render(){state.language=language();const records=readRecords();const offline=offlineSummary();const portfolioPlans=readSavedPlans(records);if(state.currentPlan&&!portfolioPlans.some(plan=>plan.recordId===state.currentPlan.recordId))portfolioPlans.unshift(state.currentPlan);const root=document.getElementById('tnaMain');root.innerHTML=`
-    <nav class="tna-commandbar" aria-label="TNA workspace menu">
-      ${['home','file','edit','view','tools','help'].map(k=>`<button type="button" data-menu="${k}">${esc(text(k))}</button>`).join('')}
-      <span class="spacer"></span><a href="/apps/">${esc(text('appCentre'))}</a><span class="tna-save-state">${esc(text('saved'))}</span>
-    </nav>
+  function ensureWorkspaceShell(){
+    if(window.__tnaWorkspaceShell||!window.VesaWorkspaceShell)return;
+    const shell=new VesaWorkspaceShell.VesaWorkspaceShell({
+      root:document.body,
+      descriptor:{id:'tna-time-action',name:text('app'),route:'/apps/tna/',userLabel:globalThis.VesaAuth?.session?.()?.name||''},
+      callbacks:{menu:name=>openMenu(name.toLowerCase()),settings:()=>openMenu('view')}
+    });
+    shell.mount();
+    const auth=document.querySelector('.app-user-bar');if(auth)auth.after(shell.element);
+    document.body.classList.add('tna-vesa-adapted');
+    window.__tnaWorkspaceShell=shell;
+  }
+  function render(){state.language=language();ensureWorkspaceShell();const records=readRecords();const offline=offlineSummary();const portfolioPlans=readSavedPlans(records);if(state.currentPlan&&!portfolioPlans.some(plan=>plan.recordId===state.currentPlan.recordId))portfolioPlans.unshift(state.currentPlan);const root=document.getElementById('tnaMain');root.innerHTML=`
     <section class="tna-hero">
       <div class="tna-hero-card"><span class="tna-kicker">${esc(text('tag'))}</span><h1>${esc(text('title'))}</h1><p class="tna-lead">${esc(text('lead'))}</p><p class="tna-note">${esc(text('privacy'))}</p></div>
       <aside class="tna-status-card"><span class="tna-status-pill">${esc(text('mode'))}</span><p class="tna-muted">${esc(text('modeText'))}</p><p class="tna-muted">${esc(text('cloud'))}</p></aside>
@@ -94,7 +102,7 @@
     <p class="tna-footer-note">VESA Enterprise Inc. · Powered by EGENVA · ${esc(text('mode'))}</p>
     <dialog class="tna-dialog" id="tnaDialog"><div class="tna-dialog-head"><h2 id="tnaDialogTitle"></h2><button type="button" aria-label="Close">×</button></div><div class="tna-dialog-body" id="tnaDialogBody"></div></dialog>`;
     state.dialog=document.getElementById('tnaDialog');state.dialog.querySelector('button').onclick=()=>state.dialog.close();
-    root.querySelectorAll('[data-menu]').forEach(btn=>btn.onclick=()=>openMenu(btn.dataset.menu));
+    window.__tnaWorkspaceShell?.setSavedState(state.currentPlan?(currentPlanSaved(state.currentPlan)?'saved':'unsaved'):'saved');
     root.querySelectorAll('[data-action]').forEach(btn=>btn.onclick=()=>openAction(btn.dataset.action));
     root.querySelectorAll('[data-offline-work]').forEach(btn=>btn.onclick=openOfflineWork);
     root.querySelectorAll('[data-filter-owner]').forEach(btn=>btn.onclick=()=>{state.workspaceFilter={...(state.workspaceFilter||{}),owner:btn.dataset.filterOwner||null};render();});
