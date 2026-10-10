@@ -1,4 +1,4 @@
-const CACHE='vesa-v58-tna-g08-scenarios';
+const CACHE='vesa-v59-tna-g09-contracts';
 const ASSETS=[
   './',
   './index.html',
@@ -19,6 +19,8 @@ const ASSETS=[
   './apps/tna/src/storage.js',
   './apps/tna/src/reports.js',
   './apps/tna/src/scenarios.js',
+  './apps/tna/src/cloud-contracts.js',
+  './apps/tna/src/remote-api.js',
   './apps/tna/src/bootstrap.js',
   './admin/',
   './admin/index.html',

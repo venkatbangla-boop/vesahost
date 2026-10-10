@@ -351,6 +351,20 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 **G08 rollback:** revert the single implementation commit and tracker evidence; existing G08 engine foundation remains at `4557655`/`b519279` and prior accepted G07 behavior is unaffected.
 
+### G09 pre-code file-level audit — versioned cloud contracts and disabled adapter
+
+| Exact path | Responsibility, state & dependencies observed | In/out of scope | Risk / compatibility contract | Verification / rollback |
+|---|---|---|---|---|
+| `apps/tna/index.html` | TNA currently composes flat browser modules and has no remote API script; local storage and the visible local-only mode are active. | In scope: load a pure cloud-contract module and a tenant-aware remote adapter without enabling network access by default. | Keep local route/offline behavior unchanged; no provider URL, token or credential may be embedded. | G09 contract tests, syntax checks and route smoke; rollback by reverting script/cache additions. |
+| `apps/tna/src/cloud-contracts.js` (new) | No current owner exists for versioned DTOs, endpoint names, session/scope checks or command envelopes. | In scope: pure v1 endpoint/command/session/order-scope validation and explicit external-dependency status. | Client checks are advisory; server must revalidate tenant, order scope, rights, expected revision and approval authority. Never treat a client role flag as authorization. | Node unit tests for cross-tenant denial, explicit scopes, expected revision and stable error codes. |
+| `apps/tna/src/remote-api.js` (new) | No current remote adapter exists; bootstrap intentionally remains local-only. | In scope: disabled-by-default adapter, safe status, authenticated request envelope and test-injectable fetch boundary. | Disabled mode must make zero network calls and state that provider/identity/database are missing; enabled mode accepts runtime session/config only and never logs tokens. | Node tests with a fetch spy; no real network or live backend claim. |
+| `service-worker.js` | Current cache is `vesa-v58-tna-g08-scenarios` and lists the existing TNA modules explicitly. | In scope: cache the new local contract modules and bump the route asset cache version. | Do not cache private cloud documents or introduce a CDN/backend dependency; preserve PPM/AQL cache behavior. | Service-worker syntax, route/cache contract tests and full regression; revert cache-only changes safely. |
+| `apps/tna/tests/g09-backend-contracts.test.js` (new) | No backend tests exist because infrastructure is not provisioned. | In scope: deterministic contract, scope, disabled/offline and adapter-boundary tests only. | Tests must not imply secure server enforcement or live collaboration; external provider remains `BLOCKED — EXTERNAL DEPENDENCY`. | Run G01-G09, AQL release contract, syntax and diff checks; rollback test/module group together. |
+
+**G09 contract call flow:** local UI/status → versioned cloud contract → disabled-by-default remote adapter → explicit provider/session gate → injected authenticated request only when configured. No existing local save/reopen path is redirected.
+
+**G09 rollback:** revert the cloud-contract, adapter, script-cache and test commits; G08 local functionality and local-only wording remain available.
+
 ### Accepted patch work log
 
 | Time | Group | Branch / SHA | Files changed | Tests / evidence | Verdict | Next action |
