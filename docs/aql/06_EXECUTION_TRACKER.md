@@ -11,10 +11,10 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06 and A-G07 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
+| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07 and A-G08 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Added and tested the fixture-only A-G07 portable-transfer and save-safety contract; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
-| NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen, then perform A-G06/A-G07 restore/render/large-record review |
+| LAST COMPLETED ACTION | Added and tested the fixture-only A-G08 report, language and accessibility contract; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
+| NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen, then perform A-G06/A-G07/A-G08 browser and rendered review |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
 ## Daily/new-session rule
@@ -96,6 +96,20 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 - [ ] Bangla/Hindi/Tamil/English authored text; raw user values unchanged.
 - [ ] Report screenshot/PDF review for 320px screens and print page clipping/fonts/brand.
 - [ ] Real accessible controls: keyboard/zoom, focused modal, camera, save, open/report/share fallback.
+
+### A-G08 report, language and accessibility contract — conditional, domain source unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-10 21:27 Asia/Dhaka
+GATE / OBJECTIVE: A-G08 — prove report escaping/safety, supported report variants, four-language guided copy and accessibility markers before any report rewrite
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 3b2097a / pending A-G08 tracker commit
+FILES CHANGED (EXACT): apps/aql/tests/a-g08-reports-language.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN: apps/aql/index.html, ReportComposer, SamplingEngine, ResultEngine, saved data and all PPM/TNA/shared files; no application/report source changed
+IMPLEMENTED: Added fixture-only checks that report table cells escape user text, image URLs accept only supported data images, the eight report presets remain available, the 12 guided tasks retain four language label sets, raw user values stay untouched, and report preview/print/accessibility/language preference markers remain present. The existing boundary that full technical interpretation remains English is preserved and not overstated as full report translation.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g08-reports-language.cjs` PASS; `node apps/aql/tests/a-g07-portable-safety.cjs` PASS; `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
+VERDICT: conditional — deterministic report/language/accessibility contracts are locally proven; AR01-AR15 domain-backed outputs, four-language rendered reports, 320px/print review, keyboard/zoom/focus and share fallback remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run authenticated browser report preview/print and language-switch evidence on a disposable synthetic inspection without exporting or releasing it.
+```
 
 ### A-G09 — Shared data references and App Centre consistency
 - [ ] Source-labeled PPM link / TNA milestone data with explicit IDs and versions.
