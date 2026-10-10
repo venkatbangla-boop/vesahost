@@ -12,9 +12,9 @@
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G00** — source-derived deterministic baseline accepted locally; no live deploy |
 | Current verdict | `accepted` locally for the frozen baseline; browser reopen and provider services remain separate gates/blockers |
-| Current gate | **A-G00** — inspect real local checkout; baseline and golden sampling fixtures |
-| LAST COMPLETED ACTION | Source-derived deterministic runner passed Q01–Q24 plus portable round-trip invariants and the release contract |
-| NEXT ACTION | Start A-G01: reconcile the shared VESA-UNIFORM-UI-v1 shell against AQL/PPM/TNA with route and mobile regression evidence; keep numeric sampling frozen |
+| Current gate | **A-G01** — common VESA shell platform and sibling route audit |
+| LAST COMPLETED ACTION | Added the neutral platform shell contract and shared token asset; source/runtime checks and authenticated AQL/PPM/TNA route smoke passed without mounting an adapter |
+| NEXT ACTION | Adapt AQL to `VesaWorkspaceShell` in one app-owned patch: preserve all existing menu callbacks and state, demote the competing sidebar/topbar/release regions, then rerun desktop/mobile geometry and regression evidence |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
 ## Daily/new-session rule
@@ -208,4 +208,24 @@ BROWSER SCREENSHOTS / REPORT PATHS: `output/playwright/a-g01-aql-home-1280.png`,
 FROZEN BUSINESS RULES / ROLLBACK: no sampling, ResultEngine, 168 checkpoint identity, TNA dates, local records, auth or worker code may change in the platform patch; rollback is revert of the future shared-shell commit, with app-specific menus restored only after browser proof
 VERDICT: conditional — route and visual audit complete, but A-G01 is not accepted because the shared shell does not yet exist and PPM’s committed browser suites still cannot resolve `playwright`
 NEXT ACTION (ONE PRECISE STEP): define and implement one platform-owned shell contract/adapter patch (`css/vesa-workspace.css` plus `js/vesa-workspace-shell.js` only if direct source audit proves the insertion points), then run source checks plus authenticated AQL/PPM/TNA desktop/mobile geometry and cross-app regression before changing any app menu
+
+### A-G01 platform contract — conditional, adapter not yet accepted
+
+```text
+SCOPE / FROZEN RULES:
+The platform owns only the descriptor-driven shell contract, shared semantic tokens, universal menu order, save-state vocabulary and measured shell height. AQL sampling, `ResultEngine`, inspection records, reports, PPM checkpoint identities and TNA scheduling remain untouched. The platform asset must not branch on an exact app id or write application records.
+
+FILES CHANGED:
+`css/vesa-workspace.css`, `js/vesa-workspace-shell.js`, `tests/vesa-workspace-shell-contract.cjs`, and script/style registration in `apps/aql/index.html`, `apps/ppm/index.html`, `apps/tna/index.html`.
+
+BRANCH / BEFORE SHA / AFTER SHA:
+`feature/tna360-continuous` / `53a1ee2` / `51d10ec`
+
+EVIDENCE:
+`node --check js/vesa-workspace-shell.js`; `node tests/vesa-workspace-shell-contract.cjs`; `node apps/aql/tests/a-g00-baseline.cjs` (Q01–Q24 plus portable round-trip invariants); `node apps/aql/tests/release-contract.cjs`; `git diff --check` all passed. Authenticated Playwright CLI smoke against a disposable local server loaded `/apps/aql/`, `/apps/ppm/` and `/apps/tna/` with zero console errors; requested shared CSS/JS assets returned successfully. No shell adapter was mounted, so the competing existing regions remain and A-G01 is not accepted.
+
+VERDICT:
+CONDITIONAL — platform contract is loadable and tested, but visible one-region parity still requires the AQL adapter and then sibling adapter/regression work.
+
+NEXT ACTION (ONE PRECISE STEP): adapt AQL's existing `Home/File/Edit/View/Tools/Help` callbacks to the neutral shell, preserve old routes/state, hide only the redundant AQL chrome after callback wiring is proven, and capture 390/1280 geometry plus console/focus evidence.
 ```
