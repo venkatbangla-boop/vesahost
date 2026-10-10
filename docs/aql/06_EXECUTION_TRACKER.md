@@ -286,7 +286,7 @@ NEXT ACTION (ONE PRECISE STEP): begin A-G03 comprehensive sampling/counting/lot-
 ### A-G03 sampling and provenance audit slice — conditional, policy unchanged
 
 ```text
-TIME / TIMEZONE: 2026-10-10 20:55 Asia/Dhaka
+TIME / TIMEZONE: 2026-10-10 20:47 Asia/Dhaka
 GATE / OBJECTIVE: A-G03 — verify frozen sampling boundaries, unsupported cells, allocation guards and plan provenance without changing inspection policy
 BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / 1f4193b / 9d489a0
 FILES CHANGED (EXACT): apps/aql/tests/a-g03-sampling.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
@@ -297,4 +297,15 @@ BROWSER / DATA EVIDENCE: No new browser or saved-record mutation was performed f
 BLOCKERS / UNRESOLVED RISK: carton-randomization requirements/fixtures are not approved; no licensed standards claim is made; PPM Playwright dependency, secure provider services, physical pilot and production authorization remain external blockers.
 REVIEWER / VERDICT: conditional — frozen numerical/provenance contract is tested locally, but A-G03 comprehensive acceptance requires approved carton-randomization requirements/fixtures and browser field review.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture and run authenticated Sampling authorisation/scope timing browser checks; do not modify SamplingEngine cells meanwhile.
+```
+
+### A-G03 browser field review — conditional, no policy or release data change
+
+```text
+TIME / TIMEZONE: 2026-10-10 20:51 Asia/Dhaka
+GATE / OBJECTIVE: A-G03 — confirm the live AQL setup exposes stage choice and honest missing-plan/timing guards
+EVIDENCE: Authenticated Playwright CLI against disposable `http://127.0.0.1:4173` created a synthetic local Final Random Inspection draft with buyer/factory/inspector/PO labels. The live setup exposed all 13 inspection stages, showed `Verify the actual per-lot sample, Ac/Re and counting basis; approve its source in Sampling authorisation.` and `Finish the inspection session before final review, or document actual manual timing in the scope.` in Decision review, and retained the pending result rather than passing an unapproved plan. After a fresh reload, the console query returned Errors 0 / Warnings 0.
+LIMITATION: The Sampling authorisation dialog itself was not opened through a stable visible control in this route, so this is supporting browser evidence only; the fixture/source contract remains the primary A-G03 proof. Browser and disposable server were closed without clearing browser data; the synthetic draft was not exported or released.
+VERDICT: conditional — live pending guards and 13-stage choice are visible; approved carton-randomization requirements/fixtures and direct Sampling authorisation field interaction remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture and expose/recheck a stable visible Sampling authorisation entry point; keep SamplingEngine cells frozen.
 ```
