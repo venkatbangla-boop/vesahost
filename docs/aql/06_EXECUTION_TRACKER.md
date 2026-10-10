@@ -11,10 +11,10 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05 and A-G06 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
+| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06 and A-G07 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Added and tested the fixture-only A-G06 measurement, evidence-link, CAPA and analytics contract; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
-| NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen, then perform A-G06 restore/render/large-record review |
+| LAST COMPLETED ACTION | Added and tested the fixture-only A-G07 portable-transfer and save-safety contract; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
+| NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen, then perform A-G06/A-G07 restore/render/large-record review |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
 ## Daily/new-session rule
@@ -75,6 +75,20 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 - [ ] Strict atomic import of project/master/sync with malice/duplicate/oversize tests.
 - [ ] Quota, blocked IndexedDB, browser close/update and partial rescue modes honestly described.
 - [ ] Old AQL tab update against service worker cache deletion risk tested/fixed if reproducible.
+
+### A-G07 portable transfer and save-safety contract — conditional, domain source unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-10 21:24 Asia/Dhaka
+GATE / OBJECTIVE: A-G07 — prove portable project decoding, attachment integrity/identity handling and degraded-storage safety boundaries before any persistence rewrite
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / da8d124 / pending A-G07 tracker commit
+FILES CHANGED (EXACT): apps/aql/tests/a-g07-portable-safety.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN: apps/aql/index.html, LocalRepository, ProjectTransfer, service workers, saved data and all PPM/TNA/shared files; no application/persistence source changed
+IMPLEMENTED: Added fixture-only decode checks for valid/malformed embedded attachments and source guards for format/version/budget/duplicate/integrity/size validation, fresh imported identities, final-sign-off reset, quota/blocked-storage classification, cached-record preservation, explicit backup guidance and restore-as-new-draft behavior.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g07-portable-safety.cjs` PASS; `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
+VERDICT: conditional — deterministic portable/safety contracts are locally proven; complete current/legacy import, close/reopen, worker-update, rescue and real-device evidence remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run browser close/reopen or selected-file verification for one portable inspection without clearing local data.
+```
 - [ ] Source extraction from 11.7MB only after verified fixture parity; no hurried whole-file rewrite.
 
 ### A-G08 — Reports, four languages, beginner copy and accessibility
