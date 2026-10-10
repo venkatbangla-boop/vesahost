@@ -13,8 +13,8 @@
 | Last accepted new rework gate | **A-G00** — source-derived deterministic baseline accepted locally; no live deploy |
 | Current verdict | `accepted` locally for the frozen baseline; browser reopen and provider services remain separate gates/blockers |
 | Current gate | **A-G01** — common VESA shell platform and sibling route audit |
-| LAST COMPLETED ACTION | Added the neutral platform shell contract and shared token asset; source/runtime checks and authenticated AQL/PPM/TNA route smoke passed without mounting an adapter |
-| NEXT ACTION | Adapt AQL to `VesaWorkspaceShell` in one app-owned patch: preserve all existing menu callbacks and state, demote the competing sidebar/topbar/release regions, then rerun desktop/mobile geometry and regression evidence |
+| LAST COMPLETED ACTION | Adapted AQL's existing Home/File/Edit/View/Tools/Help callbacks to `VesaWorkspaceShell`; AQL's old sticky regions are demoted or removed only after callback wiring |
+| NEXT ACTION | Adapt PPM and TNA one at a time to the same shell contract, preserving their app-owned actions and data; then rerun the full sibling geometry/regression matrix |
 | External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
 
 ## Daily/new-session rule
@@ -228,4 +228,25 @@ VERDICT:
 CONDITIONAL — platform contract is loadable and tested, but visible one-region parity still requires the AQL adapter and then sibling adapter/regression work.
 
 NEXT ACTION (ONE PRECISE STEP): adapt AQL's existing `Home/File/Edit/View/Tools/Help` callbacks to the neutral shell, preserve old routes/state, hide only the redundant AQL chrome after callback wiring is proven, and capture 390/1280 geometry plus console/focus evidence.
+```
+
+### A-G01 AQL adapter — conditional, sibling adapters remain
+
+```text
+SCOPE / FROZEN RULES:
+Use the platform shell for AQL's existing menu callbacks only. Keep AQL's six-step navigation, inspection state, sampling/Ac-Re decisions, reports and service worker behavior unchanged. The AQL sidebar and content title remain available as non-sticky app content; only competing sticky/global menu regions are demoted or removed.
+
+FILES CHANGED:
+`apps/aql/index.html` only.
+
+BRANCH / BEFORE SHA / AFTER SHA:
+`feature/tna360-continuous` / `01e9d77` / `ff1ae17`
+
+EVIDENCE:
+`node tests/vesa-workspace-shell-contract.cjs`; `node apps/aql/tests/a-g00-baseline.cjs` (Q01–Q24 plus portable round-trip invariants); `node apps/aql/tests/release-contract.cjs`; `git diff --check` passed. Authenticated Playwright CLI smoke against the disposable local server verified the shared banner and six menu buttons, File callback opened the existing AQL dialog, desktop geometry reported one sticky `.vesa-workspace` at 64px while the auth bar/sidebar/topbar were non-sticky and `#aqlReleaseMenu` was absent, and the 390px probe reported overflow false with the shared Menu drawer opening Home/File/Edit/View/Tools/Help. Console errors were 0.
+
+VERDICT:
+CONDITIONAL — AQL adapter is locally verified, but A-G01 cannot be accepted until PPM and TNA use the same shared shell and the cross-app matrix passes. PPM's existing browser suites remain blocked by missing `playwright`.
+
+NEXT ACTION (ONE PRECISE STEP): inspect PPM's startup/controller insertion point, wire its existing `app.menu` callbacks to the platform shell, demote its topbar/file/section/rail/footer sticky regions without changing 168 checkpoint data, then run its available source tests and authenticated desktop/mobile smoke.
 ```
