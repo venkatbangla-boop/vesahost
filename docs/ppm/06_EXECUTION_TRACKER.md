@@ -371,3 +371,16 @@ BLOCKERS / UNRESOLVED RISK: working-day rules are domain-tested but this first U
 REVIEWER / VERDICT: CONDITIONAL — the action ownership/aging/escalation/date-source checklist item is proven locally, but P-G05 remains active and earns no additional gate percentage.
 NEXT ACTION (ONE PRECISE STEP): add explicit exception/waiver authority-record controls to Follow-Up and prove save/reopen plus unchanged CoverageEngine/readiness before implementing attachment and amendment UI.
 ```
+
+### P-G05 pre-code file audit — authority/exception evidence controls
+
+```text
+TIME / TIMEZONE: 2026-10-11 00:16 Asia/Dhaka
+PATCH OBJECTIVE: expose the existing bounded exception schema as an evidence-only authority record without allowing it to change checkpoint status, coverage, readiness or release
+IN-SCOPE FILES: apps/ppm/planning-panel.js (Follow-Up modal and finite mutation owner); apps/ppm/workspace.css (only if the new form needs responsive styling); apps/ppm/tests/p-g05-followup-ui.cjs (browser round-trip and non-override proof); docs/ppm/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md after proof
+OUT-OF-SCOPE / FROZEN: apps/ppm/core.js and record-services.js schemas; all checkpoint IDs/statuses; CoverageEngine/ValidationEngine and GO/CONDITIONAL GO/HOLD; approvals/signatures/release; attachment bytes/uploads; amendment creation; notifications; AQL/TNA/shared files
+OWNERSHIP / CALL FLOW / STATE: Follow-Up modal -> bounded required evidence fields linked to an existing checkpoint -> append to record.exceptions -> workspace.mutate/autosave -> existing repository/codec reopen. The form records who/what/source only; it never authenticates that person or calls coverage/release mutation.
+RISKS / GUARDS: imported/user values escaped; require explicit checkpoint, policy/source, scope, accountable party, named authorizer, authority type, approval date and evidence; bound records to 100; locked record disabled; no `notificationSent`, no status rewrite, no automatic waiver; compare coverage/readiness before and after in browser.
+VERIFICATION / ROLLBACK: extend the authenticated 390px P-G05 test with add/save/reload/reopen and exact before/after coverage/readiness equality; visually inspect authority record; rerun P-G05 domain, P-G04, syntax, shared shell and full PPM regression as proportionate. Revert the UI/test/tracker commit; no migration or stored-data deletion.
+PRE-CODE VERDICT: approved for an additive conditional P-G05 sub-slice; attachments and controlled amendments stay open.
+```
