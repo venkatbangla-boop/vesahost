@@ -396,6 +396,21 @@ VERDICT: conditional — decision-guard coverage is locally proven, but full A-G
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then cover the next untested stage-specific record without changing frozen AQL tables.
 ```
 
+### A-G08 authenticated report preview and guidance browser review — conditional, no inspection release
+
+```text
+TIME / TIMEZONE: 2026-10-10 21:41 Asia/Dhaka
+GATE / OBJECTIVE: A-G08 — inspect report preview, plain-language report actions and guidance-language rendering on a disposable synthetic inspection
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / b557b08 / b296994
+FILES CHANGED (EXACT): docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FROZEN BUSINESS RULES: no AQL application source, report model, sampling table, inspection record, saved browser data, PPM checkpoint identity or TNA calculation changed; no report export or release was submitted.
+IMPLEMENTED / REVIEWED: Authenticated Playwright CLI against disposable `http://127.0.0.1:4176` opened an apparel `Practice Example` and used `File → Prepare Report → Preview`. The rendered preview showed the fictional training / non-certificate banner and `Print / Save PDF` plus `Export HTML` actions. `View` guidance was then switched through the existing preference event path to Bengali; the guidance sentence rendered Bengali while inspection labels and user data stayed unchanged.
+TEST COMMANDS + OUTPUT/COUNTS: available AQL fixture suite `a-g00-baseline.cjs`, `a-g02-workflow.cjs`, `a-g03-sampling.cjs`, `a-g04-stage.cjs`, `a-g05-readiness-rework.cjs`, `a-g06-evidence-analytics.cjs`, `a-g07-portable-safety.cjs`, `a-g08-reports-language.cjs` and `a-g09-cross-app-boundaries.cjs` passed before this browser-only review; `git diff --check` remains required after the documentation patch.
+BROWSER / DATA EVIDENCE: Screenshots were captured under ignored `output/playwright/aql-a-g08-*.png`. The report iframe emitted two console errors stating that script execution was blocked because the document is sandboxed without `allow-scripts`; these are expected from the intentional sandbox boundary but prevent a zero-console-error verdict for the preview. No export, release, approval or browser-data clear occurred; the browser and disposable server were closed.
+VERDICT: conditional — report preview and Bengali guidance rendering are observed, but full four-language UI parity, print/PDF visual output, mobile/keyboard/zoom review, share fallback and clean sandboxed-preview console evidence remain open.
+NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then repeat A-G08 with a true preference-control language switch and print/PDF/mobile/keyboard review without changing frozen AQL tables.
+```
+
 ### A-G05 readiness, rework, reinspection and loading contract — conditional, domain source unchanged
 
 ```text
