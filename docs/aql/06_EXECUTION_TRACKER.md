@@ -359,7 +359,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```text
 TIME / TIMEZONE: 2026-10-10 21:20 Asia/Dhaka
 GATE / OBJECTIVE: A-G05 — prove existing pre-final, rework, reinspection, loading and supplier-QA guard contracts before any domain rewrite
-BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / a86e498 / uncommitted test-only patch
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / a86e498 / 5baf64a
 FILES CHANGED (EXACT): apps/aql/tests/a-g05-readiness-rework.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
 FILES WATCHED/FROZEN: apps/aql/index.html, SamplingEngine, ResultEngine, StageCatalog, ReinspectionService, saved data and all PPM/TNA/shared files; no application/domain source changed
 IMPLEMENTED: Added fixture-only VM checks for pre-final readiness thresholds, incomplete and accepted rework records, carton/piece loading mismatches and complete loading, plus source contracts for new reinspection events, retained original defects, final AQL delegation, CAPA verification, supplier critical-audit failure and denied acknowledgement guards.
