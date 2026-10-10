@@ -11,10 +11,10 @@
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
 | Last accepted implementation gate | **P-G04 — PPM approvals, measurement, revision and decision explainability** (`979fec4`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline through P-G04 approvals/measurement/revision/decision explainability; P-G05 is next; no production deployment |
+| Status | `accepted locally` for P-G00 baseline through P-G04 approvals/measurement/revision/decision explainability; P-G05 is active; no production deployment |
 | Current gate | `P-G05 — PPM follow-ups, meeting minutes, evidence and amendment enhancements` |
-| LAST COMPLETED ACTION | Added and tested P-G05 authority/exception evidence controls in `d1f9872`: a bounded evidence record now round-trips at 390px while exact before/after assertions prove coverage, readiness, O05 status and release remain unchanged |
-| NEXT ACTION | Add bounded meeting attachment-reference controls and prove failed save protection keeps the current record and visible unsaved state; then implement controlled amendment confirmation/history UI |
+| LAST COMPLETED ACTION | Added and tested P-G05 bounded attachment-reference controls in `2e0d718`: one reference save/reopens, while a forced repository failure keeps the second reference in the open meeting, preserves the prior durable record and shows the shared failure state |
+| NEXT ACTION | Add controlled amendment confirmation/history UI for finalized meetings and prove the parent stays immutable while the new draft clears release/signatures/approval proof through save/reopen |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -57,7 +57,7 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 ### P-G05 — Follow-ups, meeting minutes, evidence and amendment enhancements
 - [x] Action ownership/aging/escalation and date-source rules.
 - [x] Optional minutes/waivers/authority record with versioned compatibility.
-- [ ] Evidence links/attachments and failed upload/save protection.
+- [x] Evidence links/attachment references and failed save protection (reference-only; no binary upload claim).
 - [ ] Amendment history and approvals/signature invalidation fully tested.
 
 ### P-G06 — Saving, recovery, offline and update reliability
@@ -414,4 +414,22 @@ OWNERSHIP / CALL FLOW / STATE: Follow-Up modal -> bounded unique text reference 
 COMPATIBILITY RISKS / GUARDS: reference-only UI must not imply file upload or authenticity; reject blank/duplicate/over-30/over-1000-character references; escape rendered values; locked meetings stay disabled; a failed save must not roll back or silently retry into a false-success assertion; successful save/reload/reopen must preserve the reference through the existing codec.
 VERIFICATION / ROLLBACK: extend the authenticated 390px P-G05 browser flow with add/save/reload/reopen, then force repo.save rejection while adding a second reference and assert open modal, retained in-memory reference, visible SAVE FAILED/shared-shell failure, and persisted pre-failure record unchanged; rerun P-G05 domain/UI, P-G00/P-G04/planning/full regression/shared-shell/syntax/diff checks. Revert the UI/test/tracker patch; no data migration or browser-store deletion.
 PRE-CODE VERDICT: approved for one additive conditional P-G05 sub-slice; actual attachment upload and controlled amendment UI remain separate work.
+```
+
+### P-G05 attachment references and failed-save protection — conditional, gate remains active
+
+```text
+TIME / TIMEZONE: 2026-10-10 19:39 UTC / 2026-10-11 01:39 Asia/Dhaka
+GATE / OBJECTIVE: P-G05 — expose bounded meeting attachment references without implying file upload, and fail visibly without discarding active work or overwriting the last durable record
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / c3aa9ab / 2e0d718
+FILES CHANGED (EXACT): apps/ppm/planning-panel.js; apps/ppm/tests/p-g05-followup-ui.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+FILES WATCHED/FROZEN: core.js/record-services.js schema and codec; attachment bytes/upload/network/object storage; all 168 checkpoints/statuses; CoverageEngine/ValidationEngine; GO/CONDITIONAL GO/HOLD; approvals/signatures/release; amendments; notifications; service workers; AQL/TNA/shared files
+IMPLEMENTED / PROVEN: Follow-Up now records/removes up to 30 unique escaped references of at most 1,000 characters, labels the control as reference-only with no upload, disables it for locked records and performs an explicit queued local save. A successful reference round-trips through reload/reopen. With repo.save forced to reject, the dialog remains open, the new reference remains in active memory, the prior durable record remains byte-logically unchanged, local state reads SAVE FAILED, the shared shell reads `Could not save — download a saved copy`, and action-oriented copy tells the user the reference remains open.
+TEST COMMANDS + OUTPUT/COUNTS: syntax checks PASS; P-G00 baseline PASS (168 tuples/19 profiles/12 processes/V4-current migration); P-G04 PASS; P-G05 domain PASS; P-G05 UI PASS; planning PASS 16; update PASS 7 lifecycle checks; full browser regression PASS including persistence, EN/BN/HI/TA data preservation, recovery, all PDF modes, CSV defense, cross-tab/save failure, mobile/offline and zero uncaught errors; shared-shell contract PASS; git diff --check PASS. Cached Playwright 1.64.0 + Chromium 1248.
+BROWSER / VISUAL EVIDENCE: authenticated 390px synthetic record saved/reopened `DOC-PPM-204 · approved-minutes-R2.pdf`; forced failure retained `FAILED-SAVE-REF · buyer-comment-13.pdf` only in the open active record while persisted refs stayed at one. The rendered reference-only/failure panel was visually inspected, overflow stayed within 391px and console errors were zero. Screenshot: ignored local `output/playwright/ppm-p-g05-attachments-failed-save-mobile-390.png`.
+ROLLBACK: revert 2e0d718. Existing records remain compatible; no saved-data cleanup or migration.
+FEATURE EVIDENCE: P30 reference linkage and P31 failed-save/stale-state protection are locally proven for this reference-only workflow; binary upload, authenticity, remote object storage and malware scanning are not claimed.
+BLOCKERS / UNRESOLVED RISK: controlled amendment confirmation/history UI and full authored-copy localization remain open. Secure identity/authority, remote attachments and notifications remain external.
+REVIEWER / VERDICT: CONDITIONAL — the evidence-reference/failed-save checklist item is proven locally, but P-G05 remains active and earns no percentage until controlled amendments and remaining gate acceptance pass.
+NEXT ACTION (ONE PRECISE STEP): add controlled amendment confirmation/history UI for a finalized meeting; prove immutable parent snapshot/linkage, cleared release/signatures/approval proof, draft save/reopen and visible prior-version history.
 ```
