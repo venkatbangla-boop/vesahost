@@ -31,7 +31,7 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 - [x] Append G00 audit/proof and mark verdict; only then implement.
 
 ### A-G01 — Common VESA shell platform (coordinate once)
-- [ ] Reconcile shared `VESA-UNIFORM-UI-v1` contract with PPM/TNA and actual root app shell.
+- [x] Reconcile shared `VESA-UNIFORM-UI-v1` contract with PPM/TNA and actual root app shell.
 - [ ] Platform-owned patch delivers same official logo, global menu, theme tokens, user/settings, navigation.
 - [ ] Max ONE sticky/fixed navigation region, correct mobile collapse, accessible focus and no duplicate CSS overrides.
 - [ ] Root homepage/Login/Apps/Admin/PPM/AQL/future TNA smoke and absence of regressions.
@@ -192,4 +192,20 @@ EVIDENCE FOR FEATURE IDs: A-G00 sampling/decision/portable baseline; Q01–Q24 r
 BLOCKERS / UNRESOLVED RISK: browser close/reopen/reinspection remains a later acceptance gate; server-side identity/tenant store, cloud database, notices, provider credentials and real factory pilot remain external; PPM Playwright dependency remains unresolved
 REVIEWER / VERDICT (accepted|conditional|blocked|rejected|draft-only): accepted locally — no production deploy or provider approval claimed
 NEXT ACTION (ONE PRECISE STEP): begin A-G01 shared VESA-UNIFORM-UI-v1 reconciliation using the already captured root/App Centre/PPM/TNA route evidence; keep AQL sampling and ResultEngine output frozen
+```
+
+### A-G01 shell audit — conditional, implementation not yet accepted
+
+```text
+TIME / TIMEZONE: 2026-10-10 20:29 Asia/Dhaka
+GATE / OBJECTIVE: A-G01 — compare one VESA-UNIFORM-UI-v1 shell against real AQL, PPM and TNA routes before a platform-owned change
+BRANCH / BEFORE SHA / AFTER SHA: feature/tna360-continuous / d05caf1 / pending audit commit
+FILES CHANGED (EXACT): docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md; browser evidence under output/playwright/ (ignored)
+FILES WATCHED/FROZEN: apps/aql/index.html, apps/aql/service-worker.js, apps/ppm/*, apps/tna/*, css/style.css, js/auth.js, js/preferences.js, js/app-catalogue.js; no source change in this audit
+LIVE GEOMETRY AT 1280-PROBE: AQL editor = authenticated sticky bar 73px + sidebar sticky top 0px + app topbar sticky top 73px / 76px + `#aqlReleaseMenu` sticky top 149px / 52px; PPM editor = authenticated sticky bar 73px + app `.topbar` sticky + `#fileMenu` sticky top 138px / 54px + dashboard + `.section-nav-wrap` sticky + `.left-rail` sticky + fixed footer; TNA = authenticated sticky bar 73px + `.tna-commandbar` sticky top 73px / 58px. This violates the one-sticky-navigation-region contract even though all three routes rendered.
+TEST COMMANDS + OUTPUT/COUNTS: Playwright CLI against `http://127.0.0.1:4173`: authenticated AQL/PPM/TNA navigation PASS; console errors/warnings 0 on each route; screenshots captured at 1280 and 390 widths. PPM editor retained 168 checkpoint surface; no data reset was performed.
+BROWSER SCREENSHOTS / REPORT PATHS: `output/playwright/a-g01-aql-home-1280.png`, `a-g01-aql-editor-1280.png`, `a-g01-aql-home-390.png`, `a-g01-ppm-editor-1280.png`, `a-g01-ppm-home-390.png`, `a-g01-tna-home-1280.png`, `a-g01-tna-home-390.png`; one earlier AQL/PPM home screenshot was overwritten by the corrected named capture, no production artifacts added
+FROZEN BUSINESS RULES / ROLLBACK: no sampling, ResultEngine, 168 checkpoint identity, TNA dates, local records, auth or worker code may change in the platform patch; rollback is revert of the future shared-shell commit, with app-specific menus restored only after browser proof
+VERDICT: conditional — route and visual audit complete, but A-G01 is not accepted because the shared shell does not yet exist and PPM’s committed browser suites still cannot resolve `playwright`
+NEXT ACTION (ONE PRECISE STEP): define and implement one platform-owned shell contract/adapter patch (`css/vesa-workspace.css` plus `js/vesa-workspace-shell.js` only if direct source audit proves the insertion points), then run source checks plus authenticated AQL/PPM/TNA desktop/mobile geometry and cross-app regression before changing any app menu
 ```
