@@ -490,3 +490,16 @@ BLOCKERS / UNRESOLVED RISK: reference-only attachments do not claim binary uploa
 REVIEWER / VERDICT: ACCEPTED LOCALLY — all four P-G05 checklist items have executable domain/browser evidence; no secure-provider or production-deployment claim.
 NEXT ACTION (ONE PRECISE STEP): audit P-G06 existing/new saved-copy decode/reopen and atomic corrupt/oversized/future rejection coverage against the actual codec/repository/import UI, then add only the first missing executable recovery proof.
 ```
+
+### P-G06 pre-code file audit — atomic import, recovery and quota rescue proof
+
+```text
+TIME / TIMEZONE: 2026-10-11 02:08 Asia/Dhaka
+PATCH OBJECTIVE: close the first P-G06 evidence gap with one browser fixture proving current/V4 saved-copy activation, atomic rejection of malformed/future/oversized/corrupt-image copies, recovery-as-new-draft and actionable repository-failure rescue without changing persistence code
+IN-SCOPE FILES: apps/ppm/tests/p-g06-recovery.cjs (new authenticated local browser proof); docs/ppm/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md after proof
+OUT-OF-SCOPE / FROZEN: PpmRepository, BackupCodec, RecoveryRepository, workspace import/save implementation, service worker/version strings, all 168 checkpoint/domain rules, P-G05 history, reports, language dictionaries, shared/AQL/TNA files and real customer copies
+OWNERSHIP / CALL FLOW / STATE: file input -> workspace size/JSON boundary -> BackupCodec whitelist -> async raster verification -> save current record -> assign new ID -> activate/save; recovery menu -> save current -> codec decode snapshot -> new unlocked ID/cleared release/signatures -> repository; queued save failure -> retained active state + last durable record + visible rescue copy action
+COMPATIBILITY RISKS / GUARDS: every invalid import must leave active and durable records unchanged; valid imports must never overwrite source IDs; no test may delete browser records; corrupt raster bytes must reject before activation; forced storage failure must be restored within the disposable context; synthetic data only
+VERIFICATION / ROLLBACK: new 390px P-G06 browser test plus P-G00/P-G05/planning/regression/update/shared-shell/syntax/diff checks. Revert the test/tracker patch only; no runtime or stored-data migration.
+PRE-CODE VERDICT: approved as a test-only P-G06 slice; coherent bundle-version advancement remains a separate audited step before full gate acceptance.
+```
