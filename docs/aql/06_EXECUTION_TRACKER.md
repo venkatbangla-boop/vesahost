@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Added and passed the independent A-G07 forced-quota rescue proof at source HEAD `7b5beae`: failed project save preserved the latest tab state and older durable row, emitted only an explicitly partial rescue, rejected complete-backup verification, and resumed the project/draft/warning after a full browser restart. |
-| NEXT ACTION | Audit and extend A-G07 strict atomic selected-file rejection across project, master and sync imports using malicious/duplicate/oversize synthetic fixtures; preserve all existing local records and frozen formats. |
+| LAST COMPLETED ACTION | Commit `8af97b8` hardened and proved A-G07 selected-file rejection: duplicate project attachments; duplicate/prototype-key/oversized masters; and sync packs with either invalid half leave the active project, repository IDs, masters, stored master bytes and staged assets unchanged. |
+| NEXT ACTION | Run a bounded A-G07 real-byte attachment import boundary probe near the 200 MB embedded / 280 MB selected-file limits in a disposable browser profile; record memory/timing and preserve all existing local records and frozen formats. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -76,9 +76,24 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 
 ### A-G07 — Durable saving, portable HTML, import and offline worker
 - [x] Current/legacy portable saved inspection opens and preserves all selected stages/assets — deterministic current inline-stage + attachment-byte restore and legacy migration/reopen browser proof.
-- [ ] Strict atomic import of project/master/sync with malice/duplicate/oversize tests.
+- [x] Strict atomic import of project/master/sync with malice/duplicate/oversize tests — selected-file browser proof covers duplicate project bytes, duplicate/prototype-key/5 MB+ masters, both invalid sync halves, exact local-state preservation and zero external requests/page errors.
 - [x] Quota, blocked IndexedDB, browser close/update and partial rescue modes honestly described — quota demotion, older durable-row preservation, partial-only verification, restart resume and worker update are proven; blocked/context-denied guidance remains source-contracted.
 - [x] Old AQL tab update against service worker cache deletion risk tested/fixed if reproducible — failed install, two dirty old tabs, complete cache replacement and offline saved-record reopen are covered in a disposable browser lifecycle.
+
+### A-G07 strict atomic selected-file imports — conditional, runtime boundary hardened
+
+```text
+TIME / TIMEZONE: 2026-10-12 00:34 Asia/Dhaka
+GATE / OBJECTIVE: A-G07 — reject malicious, duplicate and oversized project/master/sync selections without partially replacing active or durable local state
+BRANCH / SOURCE COMMIT: feature/tna360-continuous / 8af97b8
+FILE-LEVEL AUDIT: Project input routes through InspectionApp.importProject -> ProjectTransfer.unpack -> setProject. Master input routed directly to a mutating QualityOSStore.import with no file limit and silent localStorage failure. Sync unpacked/staged project assets before validating its master half. In scope: apps/aql/index.html import boundaries and apps/aql/tests/a-g07-*.cjs/release-contract.cjs. Watched/frozen: ProjectSchema, ProjectTransfer format/version, SamplingEngine/Ac-Re tables, report decisions, PPM/TNA/shared runtime, service worker and all existing browser records. Compatibility risk was limited to rejecting structurally unsafe/non-scalar/duplicate master payloads that the app itself never exports. Rollback is revert 8af97b8; no schema, cache or record migration is involved.
+FILES CHANGED (EXACT): apps/aql/index.html; apps/aql/tests/a-g07-atomic-import.cjs; apps/aql/tests/a-g07-browser-restore.cjs; apps/aql/tests/release-contract.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+IMPLEMENTED: QualityOSStore now validates the complete master payload into a detached copy, bounds selected files to 5 MB, total records to 10,000 and rows to 64 KB, rejects unsupported/prototype keys, nested values, unsafe/duplicate identities, and restores memory when localStorage cannot commit. Master/sync file-change handlers route failures through the existing visible error owner. Sync validates masters before unpacking project assets, caps the selected pack at 280 MB, snapshots staged asset maps and master storage, and rolls both back on rejection. Existing VESA360-PROJECT, VESA360-QUALITYOS-MASTERS and VESA360-SYNC-PACK formats/versions remain unchanged. The prior restore test now selects the exact saved-work Open action when both Continue/Open share the record identity.
+TEST COMMANDS + OUTPUT/COUNTS: Focused release, portable and atomic tests PASS. Full 15-command AQL/shared sequence PASS after one evidence-selector correction: A-G00 Q01-Q24 plus portable invariants; A-G02 through A-G06; A-G07 portable/current+legacy restore/worker update/quota rescue/atomic import; A-G08; A-G09; release contract; shared workspace-shell contract. `git diff --check` PASS. Browser assertions prove zero uncaught page errors and zero external requests.
+BROWSER / DATA EVIDENCE: A fresh authenticated Chromium context on a disposable local origin selected synthetic files through #projectInput, #m50-master-import and #m50-sync-import. After each rejection, exact serialized project state, sorted durable project IDs, in-memory masters, localStorage master bytes, pending asset IDs and cache asset IDs matched the baseline. No production record, approval, release, deployment, external endpoint or user browser data was touched.
+VERDICT: conditional — the strict project/master/sync atomic-rejection checklist item is accepted locally. A-G07 remains conditional for near-limit real-byte attachment performance and physical/native-device recovery; those are not inferred from synthetic rejection proof.
+NEXT ACTION (ONE PRECISE STEP): run a bounded real-byte attachment import boundary probe near the 200 MB embedded / 280 MB selected-file caps in a disposable browser profile, recording memory/timing and exact state preservation without changing frozen formats.
+```
 
 ### A-G07 portable transfer and save-safety contract — conditional, domain source unchanged
 
