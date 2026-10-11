@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **53%** |
-| **REMAINING** | **47%** |
+| **OVERALL VERIFIED** | **55%** |
+| **REMAINING** | **45%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
-| **PPM 360** | **73%** - accepted gates 8 / 11 |
+| **PPM 360** | **82%** - accepted gates 9 / 11 |
 | **AQL 360** | **23%** - accepted gates 3 / 13 |
 | **ONE VESA SHARED UX** | **30%** - accepted gates 3 / 10 |
-| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00 through P-G07 are accepted locally; P-G08 reference integration is active. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
-| Active gate | **PPM P-G08 - TNA/AQL references and platform compatibility** |
-| Current subtask / subchecks | P-G08 `f053c7e` conditionally proves a bounded typed `linkedOrders` contract with TNA milestone/AQL inspection discriminators, verifier provenance, legacy migration, portable/snapshot round-trip, malformed/duplicate rejection, unchanged PPM readiness/release and zero sibling-store/network access. Explicit Linked Records UI plus save/reopen/removal browser evidence remain. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. |
-| Last ACCEPTED gate | **PPM P-G07 - reports, four languages, print and accessibility** (`177f7b0`; accepted locally, no deployment) |
-| Last tested commit SHA | `f053c7e` (P-G08 typed reference contract) with accepted P-G07 `177f7b0`; P-G08/P-G00/P-G05/P-G06/full browser regression including 24-page multilingual reports/mobile/offline, shared-shell 6/6, AQL 24/24 + release, all TNA G01-G09, syntax and `git diff --check` passed with cached Playwright 1.64.0 + Chromium 1248 |
-| Last update (UTC) | 2026-10-11 02:57:04 UTC |
+| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00 through P-G08 are accepted locally; P-G09 safe client-contract audit is next while live provider integration remains blocked. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
+| Active gate | **PPM P-G09 - secure server collaboration designs and guarded integration** |
+| Current subtask / subchecks | P-G08 `11b582f` is accepted locally: validated TNA/AQL references now have an accessible EN/BN/HI/TA Tools editor, required source/version/verifier/time provenance, save/reopen/removal and locked review-only proof at 390px, unchanged readiness/release and zero sibling access. P-G09 still needs a disabled-by-default tenant/actor/role/approval/audit and offline-conflict contract; live two-account/provider proof is externally blocked. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. |
+| Last ACCEPTED gate | **PPM P-G08 - TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, no deployment or live synchronization claim) |
+| Last tested commit SHA | `11b582f` (P-G08 explicit Linked Records UI) plus `f053c7e` contract; P-G08 browser/pure tests, P-G00/P-G05/P-G06/planning/update/full browser regression including 24-page multilingual reports/mobile/offline, shared-shell 6/6, AQL 24/24 + release, all TNA G01-G09, syntax and `git diff --check` passed with cached Playwright 1.64.0 + Chromium 1248 |
+| Last update (UTC) | 2026-10-11 03:10:15 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=7, a=3, s=3.
+Current counted gates: t=9, p=9, a=3, s=3.
 ```
 
 ## C. Application gate checklist
@@ -68,7 +68,7 @@ Current counted gates: t=9, p=7, a=3, s=3.
 | P-G05 | Actions, minutes, evidence, amendments | ACCEPTED | `578a1ad` + `8e9bdee`: guarded controlled amendments preserve an immutable finalized snapshot, clear child sign-off, save/reopen visible history and render P-G05 authored copy in EN/BN/HI/TA while entered values/IDs remain unchanged; full regression green |
 | P-G06 | Offline save/restore/update | ACCEPTED | `2f14e4a`: current/V4 saved-copy reopen, atomic invalid-copy rejection, recovery-as-new-draft, forced quota rescue, old-tab worker coherence, offline reopen and explicit Save & Update pass with full PPM regression green |
 | P-G07 | Reports, translations, accessible UX | ACCEPTED | `177f7b0`: 40 PDFs plus 12 EN/BN/HI/TA × representative-theme checks pass at 320px and 200% zoom with accessible focus, 4.5:1 primary contrast, local Indic fonts, approved logo, watermark/footer/page markers, immutable values and full proportional regressions |
-| P-G08 | TNA/AQL reference integration | CONDITIONAL | `f053c7e` proves bounded typed local references, verifier provenance, legacy migration, portable/snapshot round-trip, strict malformed/duplicate rejection, unchanged PPM readiness/release and no sibling-store/network access; explicit UI/browser proof remains |
+| P-G08 | TNA/AQL reference integration | ACCEPTED | `f053c7e` + `11b582f`: bounded typed contract plus Tools editor; explicit TNA/AQL identity/version/verifier provenance, save/reopen/removal, locked review-only, EN/BN/HI/TA copy and 390px proof; readiness/release unchanged and no sibling-store/network access |
 | P-G09 | Secured collaboration where provisioned | BLOCKED | External server/identity provider not authorized |
 | P-G10 | Full acceptance and release authorization | BLOCKED | Requires accepted prior gates and release authorization |
 
@@ -184,7 +184,8 @@ Current counted gates: t=9, p=7, a=3, s=3.
 | 2026-10-11 02:27:15 UTC | PPM P-G07 four-language authored report copy | CONDITIONAL | `ac3b34a` routes PR01–PR10 catalogue/page/row/footer/continuation copy through LocaleService. Forty EN/BN/HI/TA PDFs, complete report-key coverage, required page families, exact multilingual entered-value and serialized-record preservation, visually clean Tamil 390px selector, P-G00/P-G06/planning 16/update 7/full regression/shared-shell 6/6/syntax/diff checks pass. Final rendered glyph/print, keyboard/dialog, 200% zoom, 320px and theme QA remain, so percentages stay unchanged. |
 | 2026-10-11 02:50:38 UTC | PPM P-G07 final report/print/accessibility acceptance | ACCEPTED LOCALLY | `177f7b0` adds approved-logo report rendering, accessible dialog naming and theme-correct primary contrast. Forty PDFs plus 12 EN/BN/HI/TA × light/dark/high-contrast combinations pass at 320px and 200% zoom with focus trap/return, 4.5:1 contrast, local Indic fonts, theme-independent print canvases, immutable values and zero page errors. Visual review confirms readable glyphs/rows/logo/watermark/footer/page numbers. P-G00/P-G06/planning 16/full regression/update 7/shared shell 6/6/AQL 24/24+release/all TNA G01-G09/syntax/diff pass. PPM now counts 8/11; no deployment. |
 | 2026-10-11 02:57:04 UTC | PPM P-G08 typed sibling-reference contract | CONDITIONAL | `f053c7e` adds optional bounded TNA milestone/AQL inspection DTOs with fixed reference-only policies, verifier/time provenance, legacy defaults, portable and immutable-snapshot round-trip, strict duplicate/malformed/cross-shape rejection, unchanged PPM readiness/release and runtime source proof of zero sibling-store/network access. P-G00/P-G05/P-G06/full PPM regression/shared shell 6/6/AQL 24/24+release/all TNA G01-G09/syntax/diff pass. Explicit Linked Records UI and save/reopen/removal browser proof remain, so percentages do not change. |
+| 2026-10-11 03:10:15 UTC | PPM P-G08 explicit Linked Records and compatibility | ACCEPTED | `11b582f` adds Tools → Linked Records with source/version/verifier/time requirements, TNA/AQL-specific escaped review cards, explicit confirmed removal, finalized review-only state and EN/BN/HI/TA authored copy. Browser add/save/reopen/remove/second-reopen at 390px preserved the readiness object and HOLD release exactly; screenshot reviewed. P-G08 pure/UI, P-G00/P-G05/P-G06/planning/update/full PPM regression, shared shell 6/6, AQL 24/24+release, all TNA G01-G09, syntax/diff pass. No sibling store/network access and no live synchronization claim. |
 
 ## F. NEXT ACTION
 
-Add an accessible Tools → Linked Records review/editor for the validated P-G08 local contract. Require explicit TNA/AQL identifiers and paired verifier/time provenance; prove save/reopen/removal at 390px and unchanged PPM readiness/release, with no sibling-store access or automatic decision/date propagation. Keep all 168 checkpoint IDs, decisions, P-G05 history and saved records frozen. Preserve A-G03's approved carton-randomization requirement/fixture request, external secure-provider blockers, physical pilot and production authorization; do not deploy production.
+Audit the smallest disabled-by-default P-G09 tenant/actor/role/approval/audit and offline-conflict client contract. Define synthetic authorization, idempotency and conflict tests without attempting a network call unless an authorized endpoint is configured; keep all 168 checkpoint IDs, decisions, P-G05 history, P-G08 references and saved records frozen. Preserve A-G03's approved carton-randomization requirement/fixture request, external secure-provider blockers, physical pilot and production authorization; do not deploy production.

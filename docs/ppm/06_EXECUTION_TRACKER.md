@@ -10,11 +10,11 @@
 | Specs | `apps/ppm/AGENTS.md` + `docs/ppm/01`–`06` |
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
-| Last accepted implementation gate | **P-G07 — PPM reports, four languages, print and accessibility** (`177f7b0`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline through P-G07 reports/languages/print/accessibility; P-G08 is active; no production deployment |
-| Current gate | `P-G08 — TNA/AQL references and platform compatibility` |
-| LAST COMPLETED ACTION | Added the first P-G08 slice in `f053c7e`: optional bounded TNA milestone/AQL inspection references now have strict source-specific validation, legacy/default migration, portable and immutable-snapshot round-trip, duplicate/malformed rejection, unchanged PPM decision proof and zero sibling-store/network access |
-| NEXT ACTION | Add an accessible explicit Linked Records review/editor under PPM Tools for the validated local contract, require user-entered verification provenance, and prove save/reopen/removal at 390px without changing PPM release or any TNA/AQL value |
+| Last accepted implementation gate | **P-G08 — TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, not deployed) |
+| Status | `accepted locally` for P-G00 baseline through P-G08 reference integration; P-G09 local contract audit is next and live provider integration remains blocked; no production deployment |
+| Current gate | `P-G09 — Secure server collaboration designs and guarded integration` |
+| LAST COMPLETED ACTION | Accepted P-G08 in `11b582f`: Tools → Linked Records now adds, reviews, saves, reopens and explicitly removes validated TNA milestone/AQL inspection references with EN/BN/HI/TA authored copy, locked review-only behavior, unchanged PPM readiness/release and zero sibling-store/network access |
+| NEXT ACTION | Audit the smallest P-G09 tenant/actor/role/approval/audit and offline-conflict client contract with a disabled-by-default adapter; do not claim live collaboration or use a provider until authorized infrastructure exists |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -73,9 +73,9 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] Keyboard, dialog, 200% zoom, 320px mobile, light/dark/other themes tested.
 
 ### P-G08 — TNA/AQL references and platform compatibility
-- [ ] Verified record-reference adapters/identity mapping, no direct sibling store writes.
-- [ ] PPM does not alter AQL Ac/Re or TNA forecast; no auto-authorized GO.
-- [ ] Shared shell visual regression across all available apps passed.
+- [x] Verified record-reference adapters/identity mapping, no direct sibling store writes.
+- [x] PPM does not alter AQL Ac/Re or TNA forecast; no auto-authorized GO.
+- [x] Shared shell visual regression across all available apps passed.
 
 ### P-G09 — Secure server collaboration designs and guarded integration
 - [ ] Tenant/actor/role/approval/audit API contracts & offline conflict design.
@@ -655,4 +655,23 @@ OWNERSHIP / CALL FLOW / STATE: Tools command -> V5Workspace local form -> Backup
 COMPATIBILITY RISKS / GUARDS: require source record ID, source version, TNA milestone ID or AQL inspection ID, verifier and verification time; source-specific hidden controls are disabled so cross-shape fields cannot submit; locked meetings are review-only; list values are escaped; 30-link codec ceiling and duplicate targets remain enforced; add/remove must leave readiness and release byte-logically unchanged.
 VERIFICATION / ROLLBACK: authenticated Playwright at 390px adds one TNA and one AQL reference through labels, verifies source/version/provenance after reload, removes one through an explicit confirmation and proves the removal after a second reload; assert modal name/focus/no overflow, locked review-only behavior, identical readiness/release, no page errors, and no sibling-store/network source markers. Rerun P-G08 pure contract, P-G00/P-G05/P-G06/planning/regression/update, shared shell, AQL baseline/release and TNA G01-G09. Revert workspace/style/language/test/tracker commits; no migration or saved-data cleanup.
 PRE-CODE VERDICT: approved as the final local P-G08 implementation slice; live source existence lookup and server authorization remain explicitly outside this static local reference editor.
+```
+
+### P-G08 explicit Linked Records UI and final compatibility — accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-11 03:10 UTC / 2026-10-11 09:10 Asia/Dhaka
+GATE / OBJECTIVE: P-G08 — complete explicit local TNA milestone/AQL inspection reference entry, review and removal without coupling sibling domains or changing PPM release authority
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / 9da5348 / 11b582f
+FILES CHANGED (EXACT): apps/ppm/workspace.js; apps/ppm/workspace.css; apps/ppm/languages.js; apps/ppm/tests/p-g08-linked-ui.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+FILES WATCHED/FROZEN: core.js and record-services.js accepted reference contract; planning-services.js; all 168 checkpoint identities/statuses; readiness/GO/CONDITIONAL GO/HOLD/release/signature rules; reports/repositories/workers; apps/tna/**; apps/aql/**; shared shell/auth/preferences; saved user records
+IMPLEMENTED / PROVEN: Tools now exposes Linked Records. An editable meeting requires explicit source record ID/version, verifier/time and a TNA milestone ID or AQL inspection identity; optional quoted context stays source-specific. DTOs normalize through BackupCodec, duplicate targets and the 30-link ceiling reject, values render escaped, save through the existing queue, survive reopen, and are removed only after confirmation. Finalized meetings show the list as read-only. Authored editor/status copy has EN/BN/HI/TA coverage and states that no synchronization or automatic decision change occurs.
+TEST COMMANDS + OUTPUT/COUNTS: P-G08 browser UI PASS twice after final translation correction; P-G08 pure contract PASS; P-G00 PASS (168 tuples/19 profiles/12 processes/current+V4); P-G05 contract PASS; planning PASS 16; update PASS 7; full PPM regression PASS including autosave/reload, hostile-copy rejection, recovery, 24-page full report, all multilingual PDF modes, download, CSV defense, 390px mobile, offline and zero errors; P-G06 recovery PASS; shared-shell contract PASS; authenticated shared-shell matrix PASS 6/6 at 390/1280; AQL baseline PASS 24/24 plus release contract; all ten TNA G01-G09 tests PASS; modified-file syntax and git diff --check PASS. Cached Playwright 1.64.0 + Chromium 1248.
+BROWSER / VISUAL EVIDENCE: visually reviewed ignored `output/playwright/ppm-p-g08-linked-records-mobile-390.png`; both typed cards, provenance, explicit remove actions and editor heading are readable at 390px without horizontal overflow. Modal has a programmatic name, labels own their controls, focus starts inside the dialog, and page errors are zero.
+DOMAIN / SECURITY / COUPLING: readiness object and HOLD release sentinel remained deeply identical through add, reload, removal and second reload. Runtime UI slice contains no sibling route/import, IndexedDB, fetch or XMLHttpRequest access. AQL Ac/Re, TNA forecast/milestones and PPM GO/HOLD rules were not modified. Source existence is user-verified last-known information, not a server-authenticated claim.
+ROLLBACK: revert 11b582f and f053c7e to remove the optional UI and DTO; no migration, sibling write or saved-data cleanup is required. Records carrying the optional field need the accepted codec commit to reopen with those references.
+FEATURE EVIDENCE: P47/P48 local reference and compatibility scope accepted. Live cross-company lookup, authorization and synchronization remain P-G09 external-provider work.
+BLOCKERS / UNRESOLVED RISK: secure tenant identity/backend/database and two-account source verification are not provisioned; production publication is not authorized. Existing service-worker/app version remains 5.1.5 and must receive a coherent release-bundle version only at an audited update/release patch, not by silently changing cache identity here.
+REVIEWER / VERDICT: ACCEPTED LOCALLY — all three P-G08 checklist items have repeatable evidence; not deployed and not a live integration claim.
+NEXT ACTION (ONE PRECISE STEP): audit the smallest disabled-by-default P-G09 tenant/actor/role/approval/audit and offline-conflict client contract, with synthetic authorization/409/idempotency tests and no network attempt unless an authorized endpoint is configured.
 ```
