@@ -38,8 +38,10 @@ for (const lang of ['en', 'bn', 'hi', 'ta']) {
     assert(model.tasks.every(task => ['not-started','in-progress','blocked','submitted','approved','rejected','completed','waived','not-applicable'].includes(task.status)), `G07 ${lang} ${item.id} must preserve stable status IDs.`);
     const jsonExport = JSON.stringify(model, null, 2);
     assert(jsonExport.includes(item.id) && jsonExport.includes('Buyer Report') && jsonExport.includes('STYLE-RPT'), `G07 ${lang} ${item.id} JSON export should preserve report and order identity.`);
-    const workbook = XLSX.read(storage.exportReportWorkbook(model), { type: 'buffer' });
+    const workbook = XLSX.read(storage.exportReportWorkbook(model), { type: 'buffer', cellStyles: true });
     assert(workbook.SheetNames.includes('Report Summary') && workbook.SheetNames.includes('Order Summary') && workbook.SheetNames.includes('Report Activities') && workbook.SheetNames.includes('Report Notes'), `G07 ${lang} ${item.id} workbook export should include all required report sheets.`);
+    assert(workbook.Sheets['Report Activities']['!cols']?.[1]?.wch >= 40, `G07 ${lang} ${item.id} workbook should provide a readable activity column width.`);
+    assert(workbook.Sheets['Report Activities']['!autofilter']?.ref, `G07 ${lang} ${item.id} workbook should provide an activity filter range.`);
   }
   assert(seen.size === 12, `G07 ${lang} should expose every R01-R12 report exactly once.`);
 }
@@ -52,7 +54,7 @@ assert(bnModel.labels.noFabrication.includes('Needs Information'), 'G07 reports 
 
 for (const model of [bnModel, taModel]) {
   const workbookBuffer = storage.exportReportWorkbook(model);
-  const workbook = XLSX.read(workbookBuffer, { type: 'buffer' });
+  const workbook = XLSX.read(workbookBuffer, { type: 'buffer', cellStyles: true });
   for (const sheet of ['Report Summary', 'Order Summary', 'Report Activities', 'Report Notes']) {
     assert(workbook.SheetNames.includes(sheet), `G07 report workbook missing sheet: ${sheet}`);
   }
@@ -65,7 +67,7 @@ for (const model of [bnModel, taModel]) {
 for (const fragment of [
   './assets/tna.css?v=0.7.2',
   './src/reports.js?v=0.7.2',
-  './src/storage.js?v=0.7.1',
+  './src/storage.js?v=0.7.2',
   './src/bootstrap.js',
   "'./apps/tna/src/reports.js'",
   'const reports=globalThis.VesaTnaReports',

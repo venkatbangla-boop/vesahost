@@ -39,8 +39,13 @@ assert.throws(() => storage.importCopy(corrupt), 'G05 corrupt saved copy must be
 
 const oldSchema = JSON.parse(copy);
 oldSchema.record.schemaVersion = 'TNA360-ORDERPLAN-0.0.0';
+oldSchema.schemaVersion = oldSchema.record.schemaVersion;
 oldSchema.checksum = storage.checksum(JSON.stringify(oldSchema.record));
 assert.throws(() => storage.importCopy(JSON.stringify(oldSchema)), 'G05 unsupported saved-copy schema must be rejected.');
+
+const mismatchedSchema = JSON.parse(copy);
+mismatchedSchema.schemaVersion = 'TNA360-ORDERPLAN-1.0.0';
+assert.throws(() => storage.importCopy(JSON.stringify(mismatchedSchema)), 'G05 mismatched saved-copy schema metadata must be rejected.');
 
 assert.throws(() => storage.importPreview('A'.repeat(storage.MAX_BYTES + 1)), 'G05 oversized import text must be rejected.');
 

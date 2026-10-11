@@ -50,6 +50,7 @@ function main(){
   preflight();
   for(const file of files('apps/tna/tests',/\.test\.js$/))run('automated','TNA '+path.basename(file),node,[rel(file)]);
   run('browser','TNA G10 mobile workflow',node,['apps/tna/tests/g10-linked-ui.cjs']);
+  run('browser','TNA G11 saved-copy/report artifacts',node,['apps/tna/tests/g11-artifact-viewers.cjs']);
 
   const ppm=files('apps/ppm/tests',/\.cjs$/);
   for(const file of ppm)run(/(?:ui|home|recovery|reports|regression|planning|update)/.test(path.basename(file))?'browser':'automated','PPM '+path.basename(file),node,[rel(file)]);

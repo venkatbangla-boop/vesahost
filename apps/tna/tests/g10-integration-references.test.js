@@ -15,7 +15,7 @@ assert(conflict.state==='identity-conflict'&&conflict.mismatches.includes('po'),
 
 const linkedPpm=links.attachReference(plan,ppm,{actorId:'synthetic-user',eventId:'audit-link-ppm-g10',changedAt:'2026-10-11T04:03:00.000Z'});
 assert(linkedPpm.ok&&linkedPpm.displayStatus==='PPM recorded GO','G10 should retain a verified PPM status as display-only source evidence.');
-assert(plan.integrationReferences===undefined&&plan.revision===0,'G10 linking must not mutate its input plan.');
+assert(Array.isArray(plan.integrationReferences)&&plan.integrationReferences.length===0&&plan.revision===0,'G10 linking must not mutate its input plan.');
 assert(linkedPpm.plan.tasks.every((task,index)=>task.status===plan.tasks[index].status),'G10 PPM GO must never approve or complete a TNA task.');
 const linkedAql=links.attachReference(linkedPpm.plan,aql,{actorId:'synthetic-user',eventId:'audit-link-aql-g10',changedAt:'2026-10-11T04:04:00.000Z'});
 assert(linkedAql.ok&&linkedAql.displayStatus==='AQL recorded NOT CONFORMED','G10 should retain an AQL result without replacing AQL inspection logic.');
