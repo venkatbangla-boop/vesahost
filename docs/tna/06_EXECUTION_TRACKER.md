@@ -180,6 +180,8 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 
 **Route-regression file audit — 2026-10-11:** In scope: a new read-only G11 browser test and the regression runner only; `/login/`, `/apps/`, `/apps/tna/`, `/apps/ppm/`, `/apps/aql/`, `js/auth.js`, `js/app-catalogue.js` and the shared shell are observed but frozen. The call flow is unauthenticated protected URL -> auth guard -> encoded same-origin login return, then authenticated App Centre catalogue -> registered app route -> shared Home/App Centre links. Risks are redirect loops, missing catalogue cards, broken direct paths, accidental outside requests and uncaught route errors. Verification requires fresh anonymous/authenticated browser contexts, exact redirect/route/link assertions, direct TNA/PPM/AQL opens, App Centre return navigation and zero unexpected page errors/external requests. Rollback removes only the additive test/runner entry; no runtime, cache, record or domain behavior changes.
 
+**F01–F50 / R01–R12 reconciliation audit — 2026-10-11:** Documentation-only scope: compare every feature/report definition in `01_MASTER_BLUEPRINT.md` and `04_UX_LOCALIZATION_REPORTS.md` with accepted G01–G11 tests and source; change only stale tracker markers. Frozen: all runtime/domain/storage/report code, records, service workers and prior evidence. Newly provable local items are F17/F18/F22/F23/F25/F31/F32/F42/F47/F48. F06 remains incomplete because the full order master (including ports and structured color/size breakdown) is not yet captured end to end. F24, F36–F40, F43, F46, F49 and F50 retain provider/security/authority/retention portions and stay open; F44 and F45 remain open for final authored-help cleanup and release proof. R01–R12 remain accepted locally from G07/G11 workbook/PDF/browser evidence, with Microsoft Excel desktop-reader proof still explicitly missing. Verification: exact 50-feature/12-report ID inventory, full 61-command evidence reference and `git diff --check`. Rollback is this tracker/dashboard-only reconciliation.
+
 - [x] Conditional orchestration slice: `node tests/vesa-g11-regression.cjs` ran 54 commands in 420.1 seconds: 30 automated, 11 browser, 12 syntax and 1 repository check. The first audit run exposed a transient P-G02 readiness timeout; isolated rerun passed, the runner gained one visible browser retry, and the complete second run passed without a retry. This does not satisfy large-portfolio performance, physical/assistive-technology or provider-security acceptance.
 
 - [x] Run deterministic tests from `03` + browser end-to-end suite and bounded large-portfolio performance tests. Evidence: 54-command matrix plus 250 synthetic orders / 25,250 tasks; initial median 4,968.5 ms / filtered PO 21.6 ms and post-documentation rerun median 5,027.9 ms / filtered PO 19.8 ms on the recorded 6 GiB Windows test machine.
@@ -190,8 +192,8 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [x] Verify all 4 languages, keyboard/mobile/theme, as-of date and timezone invariants. Evidence: authenticated EN/BN/HI/TA browser switching preserved the exact saved-plan serialization and user-entered multilingual values; 360/390/768/1280 layouts, 200% browser scale, light/dark themes, mobile-menu and Settings keyboard focus/Escape paths, Indic glyph screenshots and zero page errors passed. `Pacific/Honolulu` and `Pacific/Kiritimati` produced identical normalized schedule dates, critical path, report business dates/statuses and explicit `2026-10-10` as-of alerts. The run exposed and fixed tablet menu overlap plus stale `aria-expanded` on Escape.
 - [x] Local/free-only security audit: per-user browser-key partitioning; cross-tenant/guessed-order/read-only denial in the provider-neutral contract; stored/report/import XSS probes; malformed/oversized/formula/macro guards; recursive credential-shaped field rejection; protected request headers/options; bounded metadata-only attachment contract; disabled zero-network mode; and a 211-file tracked high-confidence secret inventory. Actual server IDOR/RBAC/CORS/CSRF/malware/object-storage testing remains `DEFERRED_BY_SCOPE` and is not claimed.
 - [x] Login/App Centre/PPM/AQL regression and console errors, standalone direct route, back links. Evidence: anonymous `/apps/tna/` redirected to `/login/?next=/apps/tna/`; authenticated App Centre exposed exactly AQL/PPM/TNA; all three direct routes mounted the shared shell with Home/app/App Centre links; return navigation worked; outside requests and page errors were zero. The full 61-command matrix also passed, with one visible successful retry of the known PPM P-G02 browser timeout.
-- [ ] Reconcile all F01–F50 and R01–R12 against actual code/evidence.
-- [ ] Document external blockers precisely; no "all tests passed" without logs.
+- [x] Reconcile all F01–F50 and R01–R12 against actual code/evidence. Ten stale local feature markers were corrected; mixed/provider/release gaps remain open below. R01–R12 remain accepted locally from G07/G11 evidence.
+- [x] Document external blockers precisely; no "all tests passed" without logs. Provider security/delivery/collaboration, Excel desktop-reader, real-device/screen-reader/factory acceptance and production authorization remain explicit.
 
 ### G12 — Preview, production readiness and handoff
 
@@ -232,22 +234,22 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [x] F14 Production capacity and WIP
 - [x] F15 Separate dates, audit and revisions
 - [x] F16 Dependency graph / lag
-- [ ] F17 Daily follow-up and next 7 days
-- [ ] F18 Explainable risk and blocker ownership
+- [x] F17 Daily follow-up and next 7 days
+- [x] F18 Explainable risk and blocker ownership
 - [x] F19 Recovery scenarios
 - [x] F20 Shipment readiness
 - [x] F21 Split shipments
-- [ ] F22 Multiorder portfolio
-- [ ] F23 Department-specific views
+- [x] F22 Multiorder portfolio
+- [x] F23 Department-specific views
 - [ ] F24 Role-based views and required security
-- [ ] F25 Gantt / timeline
+- [x] F25 Gantt / timeline
 - [x] F26 Reports R01–R12
 - [x] F27 Valid Excel import/export
 - [x] F28 PDF / Print / Share fallback
 - [x] F29 Local save/reopen/autosave
 - [x] F30 Portable safe backup and migration
-- [ ] F31 Draft undo and reviewed changes
-- [ ] F32 Filtering/search/status
+- [x] F31 Draft undo and reviewed changes
+- [x] F32 Filtering/search/status
 - [x] F33 Complete four-language UI
 - [x] F34 Responsive VESA appearance
 - [x] F35 Safe practice sample
@@ -257,13 +259,13 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [ ] F39 Verified reviewer approval invitations
 - [ ] F40 Verified PPM/AQL links
 - [x] F41 Excel import compatibility and mapping
-- [ ] F42 Offline and performance verification
+- [x] F42 Offline and performance verification
 - [ ] F43 Security and data privacy proof
 - [ ] F44 Usable plain-language help
 - [ ] F45 Test/QA/regression/release evidence
 - [ ] F46 Scheduled reminders with deduplication
-- [ ] F47 Scenario revision history
-- [ ] F48 Shared resource load balancing
+- [x] F47 Scenario revision history
+- [x] F48 Shared resource load balancing
 - [ ] F49 Versioned integration contracts
 - [ ] F50 Audit/retention/export governance
 
@@ -478,6 +480,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | 2026-10-11 15:21 Asia/Dhaka | G11 language, accessibility and civil-date matrix | `feature/tna360-continuous` / `13ec37d` | `apps/tna/tests/g11-localization-accessibility.cjs`, shared shell JS/CSS/contract, root+AQL cache refresh, G11 runner, `output/playwright/tna-g11-{bn-midnight-mono-390,ta-warm-ivory-1280,ta-200-percent}.png` | PASS: exact saved TNA serialization and entered Buyer/Style/PO/status values survived real Settings changes across EN/BN/HI/TA and four themes; 360/390/768/1280, 200% scale, menu/Settings keyboard open/Escape/focus return, report headings, Indic glyphs, overflow and page-error checks passed. Honolulu/Kiritimati contexts returned identical normalized schedule, critical-path, report date/status and explicit as-of alert results. The matrix exposed and fixed stale mobile `aria-expanded` after Escape and a 768px Tools hit-target collision. Complete regression PASS: 58 commands / 434.9s (automated 32, browser 13, syntax 12, repository 1), no retries; post-cache syntax, AQL release, TNA G01, shared contract/matrix and diff checks passed. No real-device/screen-reader/provider/deployment claim; Excel desktop reader remains unproven. | conditional | Run the G11 local security audit while retaining external-provider and Excel-reader gaps |
 | 2026-10-11 22:19 Asia/Dhaka | G11 local/free-only security audit | `feature/tna360-continuous` / `f1b778a` | TNA cloud/storage/remote boundaries, asset versions/cache, `g11-security-audit.test.js`, `g11-security-ui.cjs`, G05/G07/G09 compatibility tests, G11 runner, `output/playwright/tna-g11-security-import-mobile.png` | PASS: local-user keys isolated records/autosave; cross-tenant, guessed-order and read-only commands failed closed; stored/report/import hostile markup stayed inert; malformed/oversized/formula inputs failed or warned; credential-shaped fields including separator variants were rejected recursively; caller headers/options could not override trusted authorization/tenant/contract/JSON/no-cache/no-referrer settings; attachment metadata remained bounded; disabled provider made zero network requests; 211 tracked files had no high-confidence secret hit. Screenshot visually reviewed at 390px. Complete matrix PASS without retry: 60 commands / 464.9s (33 automated, 14 browser, 12 syntax, 1 repository), including TNA/PPM/AQL/shared regressions and `git diff --check`. Actual hosted authorization/IDOR/CORS/CSRF/malware/object storage remains `DEFERRED_BY_SCOPE`; Excel desktop-reader proof remains open. | conditional | Run dedicated Login/App Centre/direct-route/back-link regression, then reconcile F01–F50 and R01–R12 evidence |
 | 2026-10-11 22:32 Asia/Dhaka | G11 Login/App Centre/direct-route regression | `feature/tna360-continuous` / `44d6310` | `apps/tna/tests/g11-route-regression.cjs`, G11 runner | PASS: a fresh anonymous context preserved `/apps/tna/` as the same-origin login return target; an authenticated context found exactly `/apps/aql/`, `/apps/ppm/`, `/apps/tna/`; each direct route mounted one shared workspace with correct Home, app breadcrumb and App Centre return links; return navigation restored all three cards; outside requests and page errors were zero. Updated full matrix PASS: 61 commands / 470.7s (33 automated, 15 browser, 12 syntax, 1 repository). One pre-existing PPM P-G02 first-attempt timeout was visibly retained and passed on the runner's single retry. No runtime/domain/cache/record behavior changed. | conditional | Reconcile F01–F50 and R01–R12 against source and executable evidence; retain provider and Excel-reader gaps |
+| 2026-10-11 22:35 Asia/Dhaka | G11 F01–F50 / R01–R12 reconciliation | `feature/tna360-continuous` / documentation-only after `44d6310` | `docs/tna/06_EXECUTION_TRACKER.md`, `VESA_PROGRESS.md` | Compared all blueprint IDs with accepted source/tests. Corrected ten stale local markers: F17/F18/F22/F23/F25/F31/F32/F42/F47/F48. All 50 unique F IDs and 12 unique R IDs remain present. R01–R12 stay accepted locally. F06, F24, F36–F40, F43–F46, F49 and F50 remain honestly open for missing order-master/help/release or provider-dependent proof. Full matrix baseline remains 61 commands / 470.7s; documentation inventory and `git diff --check` pass. No runtime or percentage changed. | conditional | Audit and implement the smallest F06 complete-order-master slice without changing scheduling or saved-record compatibility |
 
 ### Open blockers and decisions
 
