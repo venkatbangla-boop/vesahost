@@ -13,8 +13,8 @@
 | Last accepted implementation gate | **P-G07 — PPM reports, four languages, print and accessibility** (`177f7b0`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G07 reports/languages/print/accessibility; P-G08 is active; no production deployment |
 | Current gate | `P-G08 — TNA/AQL references and platform compatibility` |
-| LAST COMPLETED ACTION | Accepted P-G07 in `177f7b0`: 40 PDFs plus 12 EN/BN/HI/TA × light/dark/high-contrast browser combinations pass at 320px and 200% zoom with dialog focus/name/return, 4.5:1 primary-action contrast, local Indic fonts, approved logo, watermark/footer/page markers, immutable source values and full PPM/TNA/AQL regressions |
-| NEXT ACTION | Audit the existing PPM record schema/codec/workspace for a bounded versioned `linkedOrders` reference adapter, then add pure validation/round-trip tests for explicit TNA milestone and AQL inspection references without reading or writing sibling stores |
+| LAST COMPLETED ACTION | Added the first P-G08 slice in `f053c7e`: optional bounded TNA milestone/AQL inspection references now have strict source-specific validation, legacy/default migration, portable and immutable-snapshot round-trip, duplicate/malformed rejection, unchanged PPM decision proof and zero sibling-store/network access |
+| NEXT ACTION | Add an accessible explicit Linked Records review/editor under PPM Tools for the validated local contract, require user-entered verification provenance, and prove save/reopen/removal at 390px without changing PPM release or any TNA/AQL value |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -623,4 +623,23 @@ OWNERSHIP / CALL FLOW / STATE: future explicit PPM command -> typed local refere
 COMPATIBILITY RISKS / GUARDS: legacy/current records without `linkedOrders` migrate to an empty list; maximum 30 links; source-specific fields are bounded and discriminated; verifiedBy/verifiedAt must be paired; duplicate IDs/source targets reject atomically; mapping policy is fixed to reference-only; AQL decision and TNA revision remain quoted last-known values with no authorization effect.
 VERIFICATION / ROLLBACK: pure Node test for fresh/legacy defaults, TNA/AQL round-trip, snapshot preservation, duplicate/malformed/cross-shape rejection, immutable input and unchanged PPM release/readiness; scan the implementation/test for forbidden sibling storage/network APIs; rerun P-G00/P-G05/P-G06/planning/regression and sibling domain baselines. Revert the additive core/codec/test/tracker patch; no migration or saved-data cleanup.
 PRE-CODE VERDICT: approved as the first conditional P-G08 slice; visible explicit entry/review and final cross-app compatibility acceptance remain separate.
+```
+
+### P-G08 typed sibling-record reference contract — conditional
+
+```text
+TIME / TIMEZONE: 2026-10-11 02:57 UTC / 2026-10-11 08:57 Asia/Dhaka
+GATE / OBJECTIVE: P-G08 — preserve explicit, typed last-known TNA milestone and AQL inspection references inside a PPM record without coupling domain engines or sibling stores
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / 0d23564 / f053c7e
+FILES CHANGED (EXACT): apps/ppm/core.js; apps/ppm/record-services.js; apps/ppm/tests/p-g08-references.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+FILES WATCHED/FROZEN: PPM checkpoint/relevance/coverage/readiness/release engines, all 168 IDs, report behavior, workspace UI, repositories/workers, apps/tna/**, apps/aql/**, shared platform files and saved user records
+IMPLEMENTED / PROVEN: fresh and directly activated legacy records receive an empty `linkedOrders` list only. The codec accepts at most 30 explicit discriminated references with fixed `tna-milestone-reference-v1` or `aql-inspection-reference-v1` policies, bounded identifiers/context, paired verifier/time provenance, source/detail identity agreement, unique IDs/targets and no cross-shape fields. Portable saves and immutable meeting-version snapshots retain references; malformed, duplicated, oversized, mismatched and authorization-like mapping policies reject atomically.
+TEST COMMANDS + OUTPUT/COUNTS: syntax checks for core/record-services/new test PASS; P-G08 pure contract PASS; P-G00 PASS (168/19/12/current+V4); P-G05 contract PASS; P-G06 browser recovery PASS; full PPM regression PASS including 24-page report/all multilingual PDF modes/mobile/offline/zero errors; shared-shell contract and authenticated matrix PASS 6/6; AQL baseline PASS 24/24 plus release contract; all ten TNA G01-G09 tests PASS; git diff --check PASS.
+DOMAIN / API / SCHEMA IMPACT: additive optional local PPM field only; saved-copy envelope remains schema 2 and old records migrate to `[]`. No TNA/AQL schema or decision changed. References quote last-known source values and have no readiness/release authority.
+SECURITY / COUPLING PROOF: runtime sources are scanned for forbidden TNA/AQL IndexedDB or network access; no sibling import, store open, fetch or XMLHttpRequest was added. No automatic GO, date, forecast, Ac/Re or inspection-decision propagation exists.
+ROLLBACK: revert f053c7e; old/current records require no cleanup because the field is additive and optional.
+FEATURE EVIDENCE: P47/P48 contract foundation only. Visible explicit add/review/remove, save/reopen browser proof and final cross-app gate reconciliation remain.
+BLOCKERS / UNRESOLVED RISK: this slice does not verify that a typed reference exists in another app and does not claim cloud synchronization. Secure remote verification remains BLOCKED — EXTERNAL DEPENDENCY.
+REVIEWER / VERDICT: CONDITIONAL — pure reference/migration/coupling boundaries are proven; P-G08 is not accepted until explicit UI and final compatibility evidence pass.
+NEXT ACTION (ONE PRECISE STEP): add a Tools → Linked Records review/editor using only the validated local DTO, then prove explicit TNA/AQL entry, verification provenance, save/reopen/removal, 390px accessibility and unchanged PPM readiness/release.
 ```
