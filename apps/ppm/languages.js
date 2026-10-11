@@ -605,3 +605,45 @@ of|এর মধ্যে|में से|இல்
 `;
 for(const row of PPM_REPORT_TRANSLATION_ROWS.trim().split('\n')){const [key,bn,hi,ta]=row.split('|');PPM_SENTENCES[key]={bn,hi,ta}}
 const PPM_REPORT_KEYS=Object.freeze(PPM_REPORT_TRANSLATION_ROWS.trim().split('\n').map(row=>row.split('|')[0]));
+
+/** P-G08 linked-record UI copy. Source identifiers, versions, decisions and all
+ * user-entered provenance remain literal and are never translated. */
+const PPM_LINKED_RECORD_SENTENCES=`
+Linked Records|সংযুক্ত রেকর্ড|जुड़े हुए रिकॉर्ड्स|இணைக்கப்பட்ட பதிவுகள்
+TNA milestone|TNA মাইলস্টোন|TNA माइलस्टोन|TNA milestone
+AQL inspection|AQL পরিদর্শন|AQL निरीक्षण|AQL inspection
+Source record|উৎস রেকর্ড|स्रोत रिकॉर्ड|மூலப் பதிவு
+Version|সংস্করণ|संस्करण|பதிப்பு
+Verified by|যাচাই করেছেন|सत्यापित करने वाला|சரிபார்த்தவர்
+REMOVE REFERENCE|রেফারেন্স সরান|संदर्भ हटाएँ|குறிப்பை நீக்குக
+No linked records have been added.|কোনো সংযুক্ত রেকর্ড যোগ করা হয়নি।|कोई जुड़ा हुआ रिकॉर्ड नहीं जोड़ा गया।|இணைக்கப்பட்ட பதிவு எதுவும் சேர்க்கப்படவில்லை.
+This finalized meeting is read-only. Unlock it before changing linked records.|এই চূড়ান্ত মিটিং শুধু দেখা যাবে। সংযুক্ত রেকর্ড বদলানোর আগে আনলক করুন।|यह अंतिम मीटिंग केवल पढ़ने के लिए है। जुड़े रिकॉर्ड बदलने से पहले अनलॉक करें।|இந்த இறுதி செய்யப்பட்ட meeting வாசிக்க மட்டுமே. பதிவுகளை மாற்றும் முன் unlock செய்யவும்.
+Add a verified reference|যাচাই করা রেফারেন্স যোগ করুন|सत्यापित संदर्भ जोड़ें|சரிபார்க்கப்பட்ட குறிப்பைச் சேர்க்கவும்
+Enter identifiers from the source record. This reference does not synchronize data or authorize a release decision.|উৎস রেকর্ডের পরিচয় লিখুন। এটি তথ্য সিঙ্ক বা রিলিজ অনুমোদন করে না।|स्रोत रिकॉर्ड के पहचानकर्ता लिखें। यह संदर्भ डेटा सिंक या रिलीज़ अधिकृत नहीं करता।|மூலப் பதிவின் அடையாளங்களை உள்ளிடவும். இது data sync அல்லது release approval செய்யாது.
+Record type|রেকর্ডের ধরন|रिकॉर्ड का प्रकार|பதிவு வகை
+Source record ID|উৎস রেকর্ড ID|स्रोत रिकॉर्ड ID|மூலப் பதிவு ID
+Source version|উৎস সংস্করণ|स्रोत संस्करण|மூலப் பதிப்பு
+Source updated time|উৎস হালনাগাদের সময়|स्रोत अपडेट समय|மூலப் புதுப்பித்த நேரம்
+Verification time|যাচাইয়ের সময়|सत्यापन समय|சரிபார்ப்பு நேரம்
+TNA milestone details|TNA মাইলস্টোনের বিবরণ|TNA माइलस्टोन विवरण|TNA milestone விவரங்கள்
+Milestone ID|মাইলস্টোন ID|माइलस्टोन ID|Milestone ID
+Style|স্টাইল|स्टाइल|ஸ்டைல்
+PO|PO|PO|PO
+Approved revision|অনুমোদিত রিভিশন|स्वीकृत संशोधन|அங்கீகரிக்கப்பட்ட revision
+AQL inspection details|AQL পরিদর্শনের বিবরণ|AQL निरीक्षण विवरण|AQL inspection விவரங்கள்
+Stage|পর্যায়|चरण|நிலை
+Report reference|রিপোর্ট রেফারেন্স|रिपोर्ट संदर्भ|அறிக்கை குறிப்பு
+Recorded decision|রেকর্ড করা সিদ্ধান্ত|दर्ज निर्णय|பதிவு செய்யப்பட்ட முடிவு
+Decision time|সিদ্ধান্তের সময়|निर्णय समय|முடிவு நேரம்
+ADD VERIFIED REFERENCE|যাচাই করা রেফারেন্স যোগ করুন|सत्यापित संदर्भ जोड़ें|சரிபார்க்கப்பட்ட குறிப்பைச் சேர்க்கவும்
+References are last-known information only. Confirm the source record yourself; nothing is synchronized and no PPM, TNA or AQL decision changes automatically.|রেফারেন্স শুধু সর্বশেষ জানা তথ্য। উৎস রেকর্ড নিজে যাচাই করুন; কিছু সিঙ্ক হয় না এবং কোনো সিদ্ধান্ত আপনাআপনি বদলায় না।|संदर्भ केवल अंतिम ज्ञात जानकारी है। स्रोत रिकॉर्ड खुद जाँचें; कुछ सिंक नहीं होता और कोई निर्णय अपने आप नहीं बदलता।|குறிப்புகள் கடைசியாக அறியப்பட்ட தகவல் மட்டுமே. மூலப் பதிவை நீங்களே சரிபார்க்கவும்; sync இல்லை, முடிவுகள் தானாக மாறாது.
+Complete the required identifiers, version, verifier and verification time.|প্রয়োজনীয় পরিচয়, সংস্করণ, যাচাইকারী ও যাচাইয়ের সময় পূরণ করুন।|आवश्यक ID, संस्करण, सत्यापक और सत्यापन समय भरें।|தேவையான ID, பதிப்பு, சரிபார்ப்பவர் மற்றும் சரிபார்ப்பு நேரத்தை நிரப்பவும்.
+This source record is already linked.|এই উৎস রেকর্ড ইতিমধ্যে সংযুক্ত।|यह स्रोत रिकॉर्ड पहले से जुड़ा है।|இந்த மூலப் பதிவு ஏற்கனவே இணைக்கப்பட்டது.
+This meeting already has the maximum 30 linked records.|এই মিটিংয়ে সর্বোচ্চ ৩০টি সংযুক্ত রেকর্ড আছে।|इस मीटिंग में अधिकतम 30 जुड़े रिकॉर्ड हैं।|இந்த meeting-ல் அதிகபட்சம் 30 இணைக்கப்பட்ட பதிவுகள் உள்ளன.
+Verified reference added.|যাচাই করা রেফারেন্স যোগ হয়েছে।|सत्यापित संदर्भ जोड़ा गया।|சரிபார்க்கப்பட்ட குறிப்பு சேர்க்கப்பட்டது.
+Enter a valid date and time.|সঠিক তারিখ ও সময় লিখুন।|सही तारीख और समय लिखें।|சரியான தேதி மற்றும் நேரத்தை உள்ளிடவும்.
+Remove this linked record?|এই সংযুক্ত রেকর্ড সরাবেন?|इस जुड़े रिकॉर्ड को हटाएँ?|இந்த இணைக்கப்பட்ட பதிவை நீக்கவா?
+The source record is not changed. This only removes the reference from this PPM.|উৎস রেকর্ড বদলাবে না। শুধু এই PPM থেকে রেফারেন্স সরবে।|स्रोत रिकॉर्ड नहीं बदलेगा। केवल इस PPM से संदर्भ हटेगा।|மூலப் பதிவு மாறாது. இந்த PPM-ல் இருந்து குறிப்பு மட்டுமே நீங்கும்.
+Linked record removed.|সংযুক্ত রেকর্ড সরানো হয়েছে।|जुड़ा हुआ रिकॉर्ड हटाया गया।|இணைக்கப்பட்ட பதிவு நீக்கப்பட்டது.
+`;
+for(const row of PPM_LINKED_RECORD_SENTENCES.trim().split('\n')){const [key,bn,hi,ta]=row.split('|');PPM_SENTENCES[key]={bn,hi,ta}}

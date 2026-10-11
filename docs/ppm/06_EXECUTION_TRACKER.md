@@ -643,3 +643,16 @@ BLOCKERS / UNRESOLVED RISK: this slice does not verify that a typed reference ex
 REVIEWER / VERDICT: CONDITIONAL — pure reference/migration/coupling boundaries are proven; P-G08 is not accepted until explicit UI and final compatibility evidence pass.
 NEXT ACTION (ONE PRECISE STEP): add a Tools → Linked Records review/editor using only the validated local DTO, then prove explicit TNA/AQL entry, verification provenance, save/reopen/removal, 390px accessibility and unchanged PPM readiness/release.
 ```
+
+### P-G08 pre-code file audit — explicit Linked Records review/editor
+
+```text
+TIME / TIMEZONE: 2026-10-11 09:15 Asia/Dhaka
+PATCH OBJECTIVE: expose the accepted local `linkedOrders` DTO through one accessible Tools → Linked Records review/editor, requiring typed source identity/version plus verifier/time and making removal explicit, while keeping every reference informational and non-authorizing
+IN-SCOPE FILES: apps/ppm/workspace.js (command, bounded form/list orchestration and save lifecycle); apps/ppm/workspace.css (responsive modal fields/cards only); apps/ppm/languages.js (EN/BN/HI/TA authored Linked Records copy); apps/ppm/tests/p-g08-linked-ui.cjs (authenticated 390px add/save/reopen/remove/lock and invariance proof); docs/ppm/06_EXECUTION_TRACKER.md and VESA_PROGRESS.md after proof
+OUT-OF-SCOPE / FROZEN: apps/ppm/core.js, planning-services.js, record-services.js validated DTO rules, report-service.js, all 168 checkpoint identities/statuses, readiness/GO/CONDITIONAL GO/HOLD/release/signature logic, repositories/workers, apps/tna/**, apps/aql/**, shared shell/auth/preferences and all existing saved user records
+OWNERSHIP / CALL FLOW / STATE: Tools command -> V5Workspace local form -> BackupCodec.linkedRecord whitelist -> explicit duplicate-target check -> PPM-owned `record.linkedOrders` -> RecordHistory capture -> existing queued PpmRepository save -> decode on reopen. Review reads last-known quoted values only; no sibling import, database open, fetch, engine invocation or source mutation exists.
+COMPATIBILITY RISKS / GUARDS: require source record ID, source version, TNA milestone ID or AQL inspection ID, verifier and verification time; source-specific hidden controls are disabled so cross-shape fields cannot submit; locked meetings are review-only; list values are escaped; 30-link codec ceiling and duplicate targets remain enforced; add/remove must leave readiness and release byte-logically unchanged.
+VERIFICATION / ROLLBACK: authenticated Playwright at 390px adds one TNA and one AQL reference through labels, verifies source/version/provenance after reload, removes one through an explicit confirmation and proves the removal after a second reload; assert modal name/focus/no overflow, locked review-only behavior, identical readiness/release, no page errors, and no sibling-store/network source markers. Rerun P-G08 pure contract, P-G00/P-G05/P-G06/planning/regression/update, shared shell, AQL baseline/release and TNA G01-G09. Revert workspace/style/language/test/tracker commits; no migration or saved-data cleanup.
+PRE-CODE VERDICT: approved as the final local P-G08 implementation slice; live source existence lookup and server authorization remain explicitly outside this static local reference editor.
+```
