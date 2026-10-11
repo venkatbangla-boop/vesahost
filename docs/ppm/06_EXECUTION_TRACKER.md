@@ -4,6 +4,8 @@
 
 **Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` makes hosted identity/backend/database, remote collaboration and external notification delivery `DEFERRED_BY_SCOPE`. PPM local records, all 168 checkpoint identities, GO/signature rules, saved-copy compatibility, reports and local cross-app references remain active and frozen.
 
+**Free-only denominator:** 10 active gates; P-G09 is excluded. P-G10 retains one active local acceptance/readiness unit while public deployment is deferred. Current accepted numerator: 9. See `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`.
+
 ## Initial reality snapshot (handover creation: 2026-10-10)
 | Field | Status |
 |---|---|

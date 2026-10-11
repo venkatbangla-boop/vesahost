@@ -4,6 +4,8 @@
 
 **Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` makes hosted identity/backend/database, remote collaboration and external notification delivery `DEFERRED_BY_SCOPE`. Sampling/Ac-Re provenance, stage behavior, reinspection history, local records, saved-copy recovery, reports and shared UX remain active; no carton-randomization policy may be invented.
 
+**Free-only denominator:** 12 active gates; A-G10 is excluded. A-G09 and A-G12 retain one active local unit each while provider/deployment portions are deferred. Current accepted numerator: 3. See `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`.
+
 ## Starting snapshot — 2026-10-10
 | Field | Current reality |
 |---|---|

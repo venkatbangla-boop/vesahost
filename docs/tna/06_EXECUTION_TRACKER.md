@@ -4,6 +4,8 @@
 
 **Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` governs platform choices. Hosted backend/identity/database/object storage, remote multiuser synchronization and external notification delivery are `DEFERRED_BY_SCOPE`, not failed or accepted. Local planning, references, in-app alerts, saved-copy safety and regression work remain active.
 
+**Free-only denominator:** 12 active gates; G09 is excluded. G10 and G12 retain one active local unit each while their provider/deployment portions are deferred. Current accepted numerator: 9. See `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`.
+
 ## A. Current execution snapshot — initial handover
 
 | Field | Current value |
