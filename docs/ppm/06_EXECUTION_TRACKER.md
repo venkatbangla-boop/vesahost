@@ -611,3 +611,16 @@ BLOCKERS / UNRESOLVED RISK: physical printer/device variation and production pub
 REVIEWER / VERDICT: ACCEPTED LOCALLY — all four P-G07 checklist items have repeatable evidence and proportional sibling regressions pass; not deployed.
 NEXT ACTION (ONE PRECISE STEP): audit and implement the smallest versioned P-G08 `linkedOrders` reference contract for explicit TNA milestone and AQL inspection references, proving validation/round-trip and zero sibling-store access before any UI wiring.
 ```
+
+### P-G08 pre-code file audit — typed sibling-record reference contract
+
+```text
+TIME / TIMEZONE: 2026-10-11 08:55 Asia/Dhaka
+PATCH OBJECTIVE: add an optional bounded `linkedOrders` contract that can preserve explicitly entered TNA milestone and AQL inspection references in PPM saves without opening sibling databases or changing any PPM/TNA/AQL decision
+IN-SCOPE FILES: apps/ppm/core.js (empty canonical default and legacy compatibility only); apps/ppm/record-services.js (typed whitelist/validation/portable round-trip owner); apps/ppm/tests/p-g08-references.cjs (new pure contract proof); docs/ppm/06_EXECUTION_TRACKER.md and VESA_PROGRESS.md after proof
+OUT-OF-SCOPE / FROZEN: PPM checkpoint/relevance/coverage/readiness/release engines, all 168 IDs, report selection, workspace UI, repositories/workers, apps/tna/**, apps/aql/**, shared shell/auth/preferences, every saved user record and any network/backend synchronization
+OWNERSHIP / CALL FLOW / STATE: future explicit PPM command -> typed local reference DTO -> BackupCodec whitelist/validation -> versioned PPM record/save copy. A reference stores last-known source identity/version/provenance only; no adapter reads a sibling IndexedDB store, invokes a sibling engine or writes a source decision/date.
+COMPATIBILITY RISKS / GUARDS: legacy/current records without `linkedOrders` migrate to an empty list; maximum 30 links; source-specific fields are bounded and discriminated; verifiedBy/verifiedAt must be paired; duplicate IDs/source targets reject atomically; mapping policy is fixed to reference-only; AQL decision and TNA revision remain quoted last-known values with no authorization effect.
+VERIFICATION / ROLLBACK: pure Node test for fresh/legacy defaults, TNA/AQL round-trip, snapshot preservation, duplicate/malformed/cross-shape rejection, immutable input and unchanged PPM release/readiness; scan the implementation/test for forbidden sibling storage/network APIs; rerun P-G00/P-G05/P-G06/planning/regression and sibling domain baselines. Revert the additive core/codec/test/tracker patch; no migration or saved-data cleanup.
+PRE-CODE VERDICT: approved as the first conditional P-G08 slice; visible explicit entry/review and final cross-app compatibility acceptance remain separate.
+```
