@@ -675,3 +675,16 @@ BLOCKERS / UNRESOLVED RISK: secure tenant identity/backend/database and two-acco
 REVIEWER / VERDICT: ACCEPTED LOCALLY — all three P-G08 checklist items have repeatable evidence; not deployed and not a live integration claim.
 NEXT ACTION (ONE PRECISE STEP): audit the smallest disabled-by-default P-G09 tenant/actor/role/approval/audit and offline-conflict client contract, with synthetic authorization/409/idempotency tests and no network attempt unless an authorized endpoint is configured.
 ```
+
+### P-G09 pre-code file audit — disabled collaboration boundary
+
+```text
+TIME / TIMEZONE: 2026-10-11 09:18 Asia/Dhaka
+PATCH OBJECTIVE: define the first pure P-G09 collaboration boundary for tenant/actor/session scope, PPM meeting commands, explicit approval authority/evidence, immutable audit metadata, idempotency and manual conflict reconciliation, with a disabled-by-default adapter that performs zero network calls without authorized HTTPS configuration
+IN-SCOPE FILES: apps/ppm/collaboration-contracts.js (new pure contract/adapter boundary); apps/ppm/tests/p-g09-collaboration-contracts.cjs (synthetic authorization, conflict, redaction and zero-network proof); docs/ppm/06_EXECUTION_TRACKER.md and VESA_PROGRESS.md after proof
+OUT-OF-SCOPE / FROZEN: index.html/runtime script loading, service worker/cache version, workspace UI, core.js, planning-services.js, record-services.js, all 168 checkpoint identities/statuses, readiness/release/signatures, P-G08 references, repositories and saved records, apps/tna/**, apps/aql/**, shared files, provider deployment, credentials and production configuration
+OWNERSHIP / CALL FLOW / STATE: future authorized UI command -> pure contract validation -> runtime-only session + scoped PPM meeting identity -> versioned command/idempotency key -> disabled or injected HTTPS adapter -> validated response/reconciliation. No command mutates a local record; conflict output retains client and server versions for manual review; token-like fields reject before any queue/persistence boundary.
+COMPATIBILITY RISKS / GUARDS: browser-local VesaAuth is never accepted as server authorization; missing/HTTP config stays external-dependency/invalid-config with zero fetch; expected revision is mandatory for writes; cross-tenant/scope and read-only writes fail closed; approval requires an approver role plus authority version and evidence reference; no notification-sent or sync-success flag is fabricated.
+VERIFICATION / ROLLBACK: pure Node test covers valid/expired/cross-tenant sessions, roles, approval evidence, idempotency, immutable command input, token rejection, accepted/conflict reconciliation, disabled adapter zero calls, encoded HTTPS endpoints and injected 409 handling. Rerun syntax, P-G08 contract/UI and proportional PPM/sibling baselines. Revert the new contract/test/tracker patch; no runtime bundle, schema migration, network, storage or saved-data cleanup.
+PRE-CODE VERDICT: approved as a conditional local P-G09 contract slice only; live provider, server-side enforcement, two-account verification, notification delivery and production security remain BLOCKED — EXTERNAL DEPENDENCY.
+```
