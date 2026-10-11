@@ -1,4 +1,4 @@
-const CACHE='vesa-v59-tna-g09-contracts';
+const CACHE='vesa-v60-tna-g10-reference';
 const ASSETS=[
   './',
   './index.html',
@@ -17,6 +17,7 @@ const ASSETS=[
   './apps/tna/vendor/xlsx.full.min.js',
   './apps/tna/vendor/xlsx.LICENSE.txt',
   './apps/tna/src/cloud-contracts.js',
+  './apps/tna/src/integration-references.js',
   './apps/tna/src/storage.js',
   './apps/tna/src/reports.js',
   './apps/tna/src/scenarios.js',

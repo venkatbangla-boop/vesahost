@@ -1,8 +1,8 @@
 # VESA 360 Release-Readiness Review
 
-**Review date:** 2026-10-11  
-**Branch:** `feature/tna360-continuous`  
-**Evidence baseline:** `48ec023`  
+**Review date:** 2026-10-11
+**Branch:** `feature/tna360-continuous`
+**Evidence baseline:** `48ec023`
 **Decision:** **HOLD — not ready for production deployment**
 
 This review reconciles the application execution trackers and the master dashboard. It authorizes no push, merge, deployment, DNS change, live App Centre route change, provider activation or production-data use.
