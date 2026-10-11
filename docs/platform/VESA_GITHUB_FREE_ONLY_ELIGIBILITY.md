@@ -1,7 +1,9 @@
 # VESA 360 — GitHub-Free-only Eligibility Baseline
 
-**Baseline date:** 2026-10-11  
-**Scope authority:** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md`  
+**Baseline date:** 2026-10-11
+
+**Scope authority:** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md`
+
 **Historical baseline retained:** 55% under the original 13/11/13/10 full-scope gate formula.
 
 ## Counting rule
@@ -85,7 +87,8 @@ ROUND(
 ) = ROUND(60.0) = 60%
 ```
 
-**FREE-ONLY VERIFIED: 60%**  
+**FREE-ONLY VERIFIED: 60%**
+
 **FREE-ONLY REMAINING: 40%**
 
 This 60% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. Any later eligibility change requires a dated audit entry and must not rewrite this baseline silently.
