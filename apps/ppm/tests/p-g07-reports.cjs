@@ -71,10 +71,52 @@ async function run(){
       if(languages[language])assert.ok(proof.selector.options.slice(0,10).every(label=>languages[language].test(label)),`${language} selector title was not localized`);
       assert.ok(proof.selector.doc<=391&&proof.selector.body<=391,`${language} selector overflowed 390px viewport`);
     }
-    await page.evaluate(()=>{app.changeLanguage('ta');app.exportMenu()});
-    const output=path.join(root,'output','playwright');fs.mkdirSync(output,{recursive:true});await page.locator('#modalBackdrop .modal').screenshot({path:path.join(output,'ppm-p-g07-report-catalogue-390.png')});
+    const output=path.join(root,'output','playwright');fs.mkdirSync(output,{recursive:true});
+    const themes=['clear-blue','midnight-mono','pure-mono'],printHashes={};
+    for(const language of Object.keys(languages)){
+      printHashes[language]=[];
+      for(const theme of themes){
+        await page.setViewportSize({width:320,height:844});
+        await page.evaluate(({language,theme})=>{
+          document.documentElement.style.zoom='1';window.scrollTo(0,0);
+          const preferences=VesaPrefs.write({...VesaPrefs.read(),language,theme});
+          VesaPrefs.apply(preferences);VesaPrefs.translate();app.changeLanguage(language);
+          document.getElementById('printBtn').focus();app.exportMenu();
+        },{language,theme});
+        await page.waitForFunction(()=>document.activeElement?.id==='modalClose');
+        const mobile=await page.evaluate(()=>{
+          const modal=document.querySelector('#modalBackdrop .modal'),active=document.activeElement,style=getComputedStyle(active),label=document.getElementById(modal.getAttribute('aria-labelledby'));
+          const primary=getComputedStyle(document.getElementById('makePdf')),rgb=value=>(value.match(/[\d.]+/g)||[]).slice(0,3).map(Number),luminance=value=>{const channels=rgb(value).map(channel=>{channel/=255;return channel<=.04045?channel/12.92:((channel+.055)/1.055)**2.4});return .2126*channels[0]+.7152*channels[1]+.0722*channels[2]},lighter=Math.max(luminance(primary.color),luminance(primary.backgroundColor)),darker=Math.min(luminance(primary.color),luminance(primary.backgroundColor));
+          return {role:modal.getAttribute('role'),ariaModal:modal.getAttribute('aria-modal'),name:label?.textContent?.trim(),active:active.id,outline:parseFloat(style.outlineWidth),primaryContrast:(lighter+.05)/(darker+.05),doc:document.documentElement.scrollWidth,body:document.body.scrollWidth,client:document.documentElement.clientWidth,theme:document.documentElement.dataset.vesaTheme,language:document.documentElement.lang,record:JSON.stringify(app.record)};
+        });
+        assert.equal(mobile.role,'dialog');assert.equal(mobile.ariaModal,'true');assert.ok(mobile.name);assert.equal(mobile.active,'modalClose');assert.ok(mobile.outline>=3,'report dialog focus is not visibly outlined');assert.ok(mobile.primaryContrast>=4.5,`${language}/${theme} primary report action contrast was ${mobile.primaryContrast}`);assert.ok(mobile.doc<=mobile.client+1&&mobile.body<=mobile.client+1,`${language}/${theme} overflowed 320px`);assert.equal(mobile.theme,theme);assert.equal(mobile.language,language);assert.equal(mobile.record,baseline);
+        await page.keyboard.press('Shift+Tab');assert.equal(await page.evaluate(()=>document.activeElement?.id),'shareSummary',`${language}/${theme} did not wrap focus to the last report action`);
+        await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement?.id),'modalClose',`${language}/${theme} did not trap focus in the report dialog`);
+        await page.screenshot({path:path.join(output,`ppm-p-g07-${language}-${theme}-320.png`)});
+        await page.keyboard.press('Escape');assert.equal(await page.evaluate(()=>document.activeElement?.id),'printBtn',`${language}/${theme} did not return focus after closing the report dialog`);
+
+        await page.setViewportSize({width:1280,height:900});
+        await page.evaluate(()=>{document.documentElement.style.zoom='2';window.scrollTo(0,0);document.getElementById('printBtn').focus();app.exportMenu()});
+        await page.waitForFunction(()=>document.activeElement?.id==='modalClose');
+        const zoom=await page.evaluate(()=>({doc:document.documentElement.scrollWidth,body:document.body.scrollWidth,client:document.documentElement.clientWidth,modal:document.querySelector('#modalBackdrop .modal').getBoundingClientRect().toJSON()}));
+        assert.ok(zoom.body<=zoom.client+1,`${language}/${theme} report surface overflowed at 200% zoom: ${JSON.stringify(zoom)}`);assert.ok(zoom.modal.left>=0&&zoom.modal.right<=1281,`${language}/${theme} report dialog clipped at 200% zoom: ${JSON.stringify(zoom)}`);
+        await page.screenshot({path:path.join(output,`ppm-p-g07-${language}-${theme}-zoom200.png`)});
+        await page.keyboard.press('Escape');
+
+        const print=await page.evaluate(async language=>{
+          document.documentElement.style.zoom='1';const pages=await app.reports.build(app.record,'summary'),canvas=pages[0],data=canvas.toDataURL('image/png'),pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;let hash=2166136261;
+          for(let y=0;y<canvas.height;y+=8)for(let x=0;x<canvas.width;x+=8){if(y<170&&x>1450)continue;const index=(y*canvas.width+x)*4;hash^=pixels[index];hash=Math.imul(hash,16777619);hash^=pixels[index+1];hash=Math.imul(hash,16777619);hash^=pixels[index+2];hash=Math.imul(hash,16777619)}
+          const sample={en:'VESA',bn:'বাংলা',hi:'हिन्दी',ta:'தமிழ்'}[language];
+          return {hash:hash>>>0,bytes:data.length,width:canvas.width,height:canvas.height,evidence:app.reports.renderEvidence,fontReady:document.fonts.check('16px Arial, Bengali, Devanagari, Tamil, sans-serif',sample),record:JSON.stringify(app.record)};
+        },language);
+        assert.ok(print.bytes>10000&&print.width===2244&&print.height===1587,`${language}/${theme} printable canvas is invalid`);assert.equal(print.evidence.logo,true);assert.equal(print.evidence.watermark,'VESA Enterprise Inc.');assert.equal(print.evidence.footer,'Powered by EGENVA');assert.ok(print.evidence.pageCount>=1);assert.deepEqual(print.evidence.pageNumbers,Array.from({length:print.evidence.pageCount},(_,index)=>`${index+1}/${print.evidence.pageCount}`));assert.equal(print.fontReady,true,`${language}/${theme} report font was not ready`);assert.equal(print.record,baseline);printHashes[language].push(print.hash);
+        if(theme==='clear-blue'){const png=await page.evaluate(()=>app.reports.pages[0].toDataURL('image/png').split(',')[1]);fs.writeFileSync(path.join(output,`ppm-p-g07-${language}-print.png`),Buffer.from(png,'base64'))}
+      }
+      assert.equal(new Set(printHashes[language]).size,1,`${language} printable output changed with the UI theme`);
+    }
+    await page.setViewportSize({width:390,height:844});await page.evaluate(()=>{document.documentElement.style.zoom='1';window.scrollTo(0,0);app.changeLanguage('ta');app.exportMenu()});await page.waitForFunction(()=>document.activeElement?.id==='modalClose');await page.screenshot({path:path.join(output,'ppm-p-g07-report-catalogue-390.png')});
     assert.deepEqual(errors,[]);
-    console.log('PPM P-G07 report coverage passed: 40 PDFs across EN/BN/HI/TA, complete report dictionary, localized authored labels, immutable multilingual user values, 390px selector and zero page errors');
+    console.log('PPM P-G07 report coverage passed: 40 PDFs; 12 language/theme checks at 320px and 200% zoom; dialog focus/name/return; local Indic fonts; logo/watermark/footer/page markers; theme-independent print canvases; immutable multilingual values; zero page errors');
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve))}
 }
 run().catch(error=>{console.error(error);process.exitCode=1});

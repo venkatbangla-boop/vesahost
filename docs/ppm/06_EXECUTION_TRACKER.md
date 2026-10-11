@@ -579,3 +579,16 @@ BLOCKERS / UNRESOLVED RISK: final rendered print/PDF glyph and no-clipping inspe
 REVIEWER / VERDICT: CONDITIONAL — the second P-G07 checklist item is accepted locally, but P-G07 earns no percentage until the final print/accessibility matrix passes.
 NEXT ACTION (ONE PRECISE STEP): execute and visually inspect the final EN/BN/HI/TA PDF/print matrix at 320px and 200% zoom across light/dark/high-contrast themes, asserting keyboard/dialog focus plus readable glyphs/rows, logo, watermark and page numbers without clipping.
 ```
+
+### P-G07 pre-code file audit — final print, zoom, theme and keyboard acceptance
+
+```text
+TIME / TIMEZONE: 2026-10-11 08:45 Asia/Dhaka
+PATCH OBJECTIVE: turn the remaining P-G07 visual/accessibility claims into a repeatable authenticated browser matrix for EN/BN/HI/TA across representative light, dark and high-contrast themes at 320px and 200% zoom, and repair only defects directly exposed by that matrix
+IN-SCOPE FILES: apps/ppm/tests/p-g07-reports.cjs (matrix/evidence owner); apps/ppm/workspace.js and workspace.css (report-dialog accessibility/theme defects only if proved); apps/ppm/report-service.js (approved logo/header evidence only if the renderer lacks it); docs/ppm/06_EXECUTION_TRACKER.md and VESA_PROGRESS.md (evidence/status after proof); ignored output/playwright artifacts
+OUT-OF-SCOPE / FROZEN: core.js, planning-services.js, record-services.js, report data selection/pagination/decision semantics, languages.js authored translations, all 168 checkpoint IDs/statuses, GO/CONDITIONAL GO/HOLD, buyer/style/PO/minutes/actions/custom values, P-G05 history, repository/backup/recovery, workers, shared/AQL/TNA source and all saved records
+OWNERSHIP / CALL FLOW / STATE: VesaPrefs applies language/theme -> V5Workspace opens the existing report dialog and owns focus return/trapping -> explicit Prepare/Print action -> ReportService reads a clone into transient canvas/PDF/print images. Matrix state is synthetic and browser-local; no report action persists, authorizes or mutates the meeting.
+COMPATIBILITY RISKS / GUARDS: browser zoom emulation must be test-only; print output must stay theme-independent and readable; modal naming/focus changes cannot alter report commands; generated artifacts contain synthetic values only; no local store clearing or production data access.
+VERIFICATION / ROLLBACK: assert dialog role/name/focus trap/focus return and visible focus, 320px no-overflow, 200% zoom no-overflow, applied theme/language, immutable serialized source, nonblank printable canvases, logo/watermark/footer/page numbering markers and zero page errors; capture the 12 language/theme UI and print representatives; rerun P-G00/P-G06/P-G07/planning/regression/update/shared-shell/syntax/diff. Revert the test/accessibility/tracker commit; no schema migration or saved-data cleanup.
+PRE-CODE VERDICT: approved as the final local P-G07 acceptance slice; secure hosted collaboration, production publication and physical-print validation remain outside this local gate.
+```
