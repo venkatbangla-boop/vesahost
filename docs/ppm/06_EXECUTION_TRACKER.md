@@ -13,8 +13,8 @@
 | Last accepted implementation gate | **P-G06 — PPM saving, recovery, offline and update reliability** (`2f14e4a`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G06 saving/recovery/offline/update; P-G07 is active; no production deployment |
 | Current gate | `P-G07 — PPM reports, four languages, print and accessibility` |
-| LAST COMPLETED ACTION | Added `p-g06-recovery.cjs` in `2f14e4a`; current/V4 saved-copy reopen, atomic malformed/future/oversized/corrupt-image rejection, recovery-as-new-draft, quota rescue, coherent old/new service-worker tabs and offline reopen all pass with the full PPM regression set |
-| NEXT ACTION | Audit ReportService and current browser suites against PR01–PR10, then add only the first missing executable P-G07 report/language/print/accessibility proof without changing PPM domain rules |
+| LAST COMPLETED ACTION | Added the explicit additive PR01–PR10 catalogue and dedicated release, blocker, attendance/minutes and custom-evidence reports in `f881f0c`; all ten synthetic PDFs, immutable source, 390px selector and full PPM regressions pass |
+| NEXT ACTION | Route every PR01–PR10 authored heading/label through LocaleService for EN/BN/HI/TA and prove all ten report modes preserve entered values before final print/zoom/theme accessibility QA |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -67,7 +67,7 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] Quota/browser-storage failures result in actionable rescue flow, not fake saved status.
 
 ### P-G07 — Reports, four languages, print and accessibility
-- [ ] Report PR01–PR10 coverage recorded; existing producer not broken.
+- [x] Report PR01–PR10 coverage recorded; existing producer not broken.
 - [ ] English/Bengali/Hindi/Tamil authored language views; user values unchanged.
 - [ ] PDF/print readable, no missing font glyphs/rows, logo/brand/watermark correct.
 - [ ] Keyboard, dialog, 200% zoom, 320px mobile, light/dark/other themes tested.
@@ -533,4 +533,22 @@ OWNERSHIP / CALL FLOW / STATE: File/Reports selector -> existing explicit Prepar
 COMPATIBILITY RISKS / GUARDS: retain legacy `full`, `summary`, `actions`, `checklist`, `evidence`, `approvals`, `measurements` and `changes` modes for old callers; new report modes show `Not recorded` rather than inventing authority/source/time; escape or canvas-render entered text; preserve formula-safe CSV; no report generation may change serialized record state.
 VERIFICATION / ROLLBACK: generate all PR01–PR10 PDFs from one bounded synthetic record, assert required page families and immutable serialized source, verify the 390px selector exposes ten IDs with zero page errors, rerun planning/regression/P-G06/shared-shell/syntax/diff checks. Revert report/UI/test/tracker commit; no migration or saved-data deletion.
 PRE-CODE VERDICT: approved as an additive conditional P-G07 report-coverage slice; full four-language authored headings, print visual/glyph QA and keyboard/zoom/theme acceptance remain separate before gate acceptance.
+```
+
+### P-G07 PR01–PR10 report catalogue and semantic coverage — conditional, gate remains active
+
+```text
+TIME / TIMEZONE: 2026-10-11 02:08 UTC / 2026-10-11 08:08 Asia/Dhaka
+GATE / OBJECTIVE: P-G07 — expose every specified PPM report as an additive read-only mode and prove required page families without breaking the existing producer
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / ad0670c / f881f0c
+FILES CHANGED (EXACT): apps/ppm/report-service.js; apps/ppm/workspace.js; apps/ppm/tests/p-g07-reports.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+FILES WATCHED/FROZEN: core.js, planning-services.js, record-services.js, all 168 checkpoint IDs/statuses, relevance/coverage/validation and release rules, P-G05 history, repository/backup/recovery, worker, shared/AQL/TNA files and saved records
+IMPLEMENTED / PROVEN: Added immutable PR01–PR10 catalogue routing to the existing report owner. Existing `full`, `summary`, `actions`, `approvals`, `measurements`, `changes`, `checklist` and `evidence` callers remain valid. PR07 release shows decision/rationale/version/signers plus an honest offline-authentication note; PR08 shows actual critical/approval/measurement/action blockers without invented pending time; PR09 renders attendance/minutes/actions/references; PR10 renders additive custom checkpoints and linked evidence and states when source/revision was not recorded. Full PR01 includes these new read-only sections. Every page now includes a generated timestamp in addition to existing VESA identity, draft/final state, page number, watermark and Powered by EGENVA.
+TEST COMMANDS + OUTPUT/COUNTS: `p-g07-reports.cjs` PASS for PR01–PR10 PDF bytes/required page families/immutable serialized source/390px selector/zero page errors; P-G00 PASS (168 tuples/19 profiles/12 processes/current+V4); P-G06 PASS; planning PASS 16; regression PASS including 24-page full PDF, Bengali all modes, Hindi/Tamil action PDFs, download, CSV formula defense, cross-tab/save failure, mobile/offline/no uncaught errors; update PASS 7; shared-shell contract PASS; syntax and `git diff --check` PASS. Cached Playwright 1.64.0 + Chromium 1248.
+BROWSER / VISUAL EVIDENCE: visually reviewed ignored `output/playwright/ppm-p-g07-report-catalogue-390.png`; report selector and five actions are readable with no clipping/overlap, and document/body widths remain within 391px.
+ROLLBACK: revert `f881f0c`; additive report modes and test are removed with no schema migration or stored-data cleanup.
+FEATURE EVIDENCE: P43 existing report semantics remain executable; P44 now has explicit buyer/action/approval/measurement/change/release/blocker/minutes/custom report modes; P45 page identity/timestamp/page count/watermark/provenance shell is executable. Four-language authored report headings and final visual print/accessibility acceptance remain open.
+BLOCKERS / UNRESOLVED RISK: reports honestly show missing source/revision rather than inventing it; no independently authenticated signature claim. Full EN/BN/HI/TA authored-heading parity, all-mode glyph screenshots/print review, keyboard traversal, 200% zoom, 320px and theme matrix remain before acceptance.
+REVIEWER / VERDICT: CONDITIONAL — PR01–PR10 structural/data coverage and existing-producer compatibility are locally proven; P-G07 earns no percentage until remaining language/print/accessibility checks pass.
+NEXT ACTION (ONE PRECISE STEP): route every PR01–PR10 authored heading and row label through LocaleService in EN/BN/HI/TA, then generate all ten modes per language and assert entered buyer/style/PO/minutes/action/custom values plus serialized record remain unchanged.
 ```
