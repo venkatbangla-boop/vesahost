@@ -47,6 +47,24 @@
   });
   const clone=value=>JSON.parse(JSON.stringify(value));
   const clean=value=>String(value??'').trim();
+  function normalizeColorSizeBreakdown(value){
+    const source=Array.isArray(value)?value:String(value??'').split(/\r?\n/).filter(line=>clean(line));
+    const rows=[],errors=[],seen=new Set();
+    if(source.length>500)errors.push('Color / size breakdown cannot exceed 500 rows.');
+    source.slice(0,500).forEach((item,index)=>{
+      const parts=Array.isArray(value)?[item?.color,item?.size,item?.quantity]:String(item).split(/\s*[|\t,]\s*/);
+      const color=clean(parts[0]),size=clean(parts[1]),quantity=Number(parts[2]);
+      if(parts.length!==3||!color||!size||!Number.isInteger(quantity)||quantity<=0){
+        errors.push(`Color / size row ${index+1} must contain Color | Size | positive whole quantity.`);
+        return;
+      }
+      if(color.length>100||size.length>100){errors.push(`Color / size row ${index+1} exceeds 100 characters.`);return;}
+      const key=`${color.toLocaleLowerCase()}\u0000${size.toLocaleLowerCase()}`;
+      if(seen.has(key)){errors.push(`Color / size row ${index+1} duplicates ${color} / ${size}.`);return;}
+      seen.add(key);rows.push({color,size,quantity});
+    });
+    return {rows,errors};
+  }
   const makeId=prefix=>prefix+'-'+(root.crypto?.randomUUID?.()||Math.random().toString(36).slice(2)+Date.now().toString(36));
   const now=()=>new Date().toISOString();
   function flagsFrom(input){return Array.from(new Set([...(input.processFlags||[]),...(TEMPLATE_PROFILES[input.templateId]?.defaultFlags||[])].map(clean).filter(Boolean)));}
@@ -108,24 +126,26 @@
     const createdAt=now();
     const flags=flagsFrom({...input,templateId:template.id});
     const poNumbers=clean(input.poNumber)?[clean(input.poNumber)]:[];
-    const styles=clean(input.styleNo)?[{styleNo:clean(input.styleNo),description:clean(input.styleDescription),colorways:[],sizeRange:clean(input.sizeRange)}]:[];
+    const breakdown=normalizeColorSizeBreakdown(input.colorSizeBreakdown);
+    const colorways=[...new Set(breakdown.rows.map(row=>row.color))];
+    const styles=clean(input.styleNo)?[{styleNo:clean(input.styleNo),description:clean(input.styleDescription),colorways,sizeRange:clean(input.sizeRange)}]:[];
     const tasks=buildTasks({...input,templateId:template.id,processFlags:flags});
     const edges=tasks.slice(1).map((task,index)=>({edgeId:makeId('edge'),predecessorTaskId:tasks[index].taskId,successorTaskId:task.taskId,relation:'FS',lagUnits:0,lagBasis:'working',calendarPolicy:'successor'}));
     const plan={
       schemaVersion:SCHEMA_VERSION,recordId:makeId('tna'),createdAt,updatedAt:createdAt,revision:0,mode:context.mode||'local',recordStatus:'draft',
       tenantId:context.tenantId||null,ownerUserId:context.ownerUserId||'local-browser-user',visibilityPolicyId:'local-private',permissionsSnapshot:{mode:'local-browser-only'},
-      order:{buyerId:null,buyerName:clean(input.buyerName),brand:clean(input.brand),factoryId:null,factoryName:clean(input.factoryName),vendor:clean(input.vendor),sourcingAgent:clean(input.sourcingAgent),poNumbers,styles,productProfile:template.id,construction:clean(input.construction)||template.construction,destinationMarket:clean(input.destinationMarket),fabricSpec:clean(input.fabricSpec),fabricRoute:clean(input.fabricRoute)||'unknown',trimRoute:clean(input.trimRoute)||'unknown',processFlags:flags,techPackRevision:clean(input.techPackRevision),buyerManualRevision:clean(input.buyerManualRevision),composition:clean(input.composition),colorSizeBreakdown:[],totalQty:input.totalQty===''||input.totalQty==null?null:Number(input.totalQty),unit:clean(input.unit)||'pcs',incoterm:clean(input.incoterm),shipmentMethod:clean(input.shipmentMethod),currency:clean(input.currency),commercialNotes:clean(input.commercialNotes)},
+      order:{buyerId:null,buyerName:clean(input.buyerName),brand:clean(input.brand),factoryId:null,factoryName:clean(input.factoryName),vendor:clean(input.vendor),sourcingAgent:clean(input.sourcingAgent),poNumbers,styles,productProfile:template.id,construction:clean(input.construction)||template.construction,destinationMarket:clean(input.destinationMarket),portOfLoading:clean(input.portOfLoading),portOfDischarge:clean(input.portOfDischarge),fabricSpec:clean(input.fabricSpec),fabricRoute:clean(input.fabricRoute)||'unknown',trimRoute:clean(input.trimRoute)||'unknown',processFlags:flags,techPackRevision:clean(input.techPackRevision),buyerManualRevision:clean(input.buyerManualRevision),composition:clean(input.composition),colorSizeBreakdown:breakdown.rows,totalQty:input.totalQty===''||input.totalQty==null?null:Number(input.totalQty),unit:clean(input.unit)||'pcs',incoterm:clean(input.incoterm),shipmentMethod:clean(input.shipmentMethod),currency:clean(input.currency),commercialNotes:clean(input.commercialNotes)},
       commitments:{orderConfirmedOn:clean(input.orderConfirmedOn)||null,poReceivedOn:clean(input.poReceivedOn)||null,masterLcOpenedOn:clean(input.masterLcOpenedOn)||null,leadTimeAnchor:clean(input.leadTimeAnchor)||'unknown',leadTimeBasis:clean(input.leadTimeBasis)||'calendar',contractualLeadDays:input.contractualLeadDays?Number(input.contractualLeadDays):null,buyerRequiredExFactory:clean(input.buyerRequiredExFactory)||null,buyerRequiredETD:clean(input.buyerRequiredETD)||null,buyerRequiredETA:clean(input.buyerRequiredETA)||null,destinationRequiredDate:clean(input.destinationRequiredDate)||null},
       calendars:[{calendarId:'default',name:'Default order calendar',weekendDays:[],holidays:[],source:'user-not-configured'}],
       selectedCalendarIds:['default'],templateId:template.id,templateVersion:template.version,tasks,edges,approvals:[],materials:[],suppliers:[],operations:[],quantityLedger:[],shipmentLots:[],constraints:[],baselineSnapshots:[],revisionEvents:[],auditEvents:[{eventId:makeId('audit'),eventType:'created-draft',actorId:context.ownerUserId||'local-browser-user',createdAt,details:{unknownFields:requiredUnknowns(input),templateId:template.id}}],evidenceReferences:[],scenarioBranches:[],integrationReferences:[],notificationPolicies:[],uiPreferences:{}
     };
     plan.unknownFields=requiredUnknowns(input);
-    const validation=validatePlan(plan);
+    const validation=validatePlan(plan,{inputErrors:breakdown.errors});
     plan.validation=validation;
     return plan;
   }
-  function validatePlan(plan){
-    const errors=[],warnings=[];
+  function validatePlan(plan,options={}){
+    const errors=[...(options.inputErrors||[])],warnings=[];
     if(plan.schemaVersion!==SCHEMA_VERSION)errors.push('Unsupported TNA schema version.');
     if(!clean(plan.recordId))errors.push('Missing recordId.');
     if(!STATUSES.includes(plan.tasks?.[0]?.status||'not-started'))warnings.push('Task statuses will be checked per task.');
@@ -134,6 +154,12 @@
     if(!plan.order?.styles?.length)warnings.push('Style is missing.');
     if(!plan.order?.poNumbers?.length)warnings.push('PO / order reference is missing.');
     if(plan.order?.totalQty!=null && (!(Number.isFinite(plan.order.totalQty)) || plan.order.totalQty<=0))errors.push('Total quantity must be a positive number.');
+    const breakdown=normalizeColorSizeBreakdown(plan.order?.colorSizeBreakdown||[]);
+    errors.push(...breakdown.errors);
+    if(breakdown.rows.length&&Number.isFinite(plan.order?.totalQty)){
+      const breakdownQty=breakdown.rows.reduce((sum,row)=>sum+row.quantity,0);
+      if(breakdownQty!==plan.order.totalQty)warnings.push(`Color / size breakdown totals ${breakdownQty}, not the order quantity ${plan.order.totalQty}.`);
+    }
     if(!plan.commitments?.buyerRequiredExFactory)warnings.push('Buyer required ex-factory date is missing.');
     const taskIds=new Set();
     for(const task of plan.tasks||[]){
@@ -327,7 +353,7 @@
     if(!next.validation.ok)return {ok:false,error:next.validation.errors.join(' '),errors:next.validation.errors};
     return {ok:true,plan:next,lot,warnings:next.validation.warnings};
   }
-  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,createPlan,validatePlan,freezeBaseline,updateTaskStatus,addCustomTask,addCapacityEntry,addShipmentLot};
+  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,normalizeColorSizeBreakdown,createPlan,validatePlan,freezeBaseline,updateTaskStatus,addCustomTask,addCapacityEntry,addShipmentLot};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaDomain=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

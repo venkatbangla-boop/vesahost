@@ -1,4 +1,4 @@
-const CACHE='vesa-v65-g11-local-security';
+const CACHE='vesa-v66-tna-f06-order-master';
 const ASSETS=[
   './',
   './index.html',
