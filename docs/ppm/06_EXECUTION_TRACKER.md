@@ -13,8 +13,8 @@
 | Last accepted implementation gate | **P-G08 — TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G08 reference integration; P-G09 has a tested local contract but remains `BLOCKED — EXTERNAL DEPENDENCY` for live provider/two-account proof; no production deployment |
 | Current gate | `P-G10 — Final acceptance evidence audit (P-G09 remains externally blocked)` |
-| LAST COMPLETED ACTION | Added the conditional P-G09 contract in `4c6e490`: tenant/meeting scope, roles, approval evidence, expected revisions, idempotency, immutable audit-response shape, token rejection, manual conflict retention and disabled zero-network behavior are pure-tested without loading a runtime adapter |
-| NEXT ACTION | Reconcile P01–P52 against actual accepted commits/tests and populate the feature verification ledger, then identify the first missing independently testable P-G10 acceptance artifact without bypassing the P-G09 provider block or release approval |
+| LAST COMPLETED ACTION | Reconciled all 52 PPM feature IDs against executable gate evidence at HEAD: P01–P48 and P51 are accepted locally, P49/P50 remain externally blocked, and P52 remains conditional pending independent screen-reader/performance/physical-device review; P-G10 is not accepted |
+| NEXT ACTION | Create the separate program release-readiness report from all three trackers, including verified/incomplete/blocked features, missing tests, saved-record upgrade posture, internal staging prerequisites and production authorization gates |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -91,18 +91,67 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [ ] After approved deploy, cache/version and live checks recorded with exact commit.
 
 ## Feature verification ledger — do not leave IDs silently unchecked
-For each ID P01 through P52 defined in `01_AUDIT_MASTER_BLUEPRINT.md` record `accepted | conditional | blocked | rejected | not-started` and evidence link/command. A `PRESERVE` capability is not automatically complete until verified against the real baseline. Recommended machine-readable rows:
+For each ID P01 through P52 defined in `01_AUDIT_MASTER_BLUEPRINT.md` record `accepted | conditional | blocked | rejected | not-started` and evidence link/command. A `PRESERVE` capability is not automatically complete until verified against the real baseline.
 ```text
 FEATURE-ID | STATUS | GATE | TEST/SCREENSHOT/FILE | LAST VERIFIED COMMIT | COMMENTS
-P01 | not-started | P-G00 | — | — | verify existing identity preservation
-...
-P52 | not-started | P-G10 | — | — | visual/device/a11y proof
+P01 | accepted | P-G00/P-G02 | p-g00-baseline.cjs; regression.cjs; Home/save/reopen proof | d1ad724 | order identity fields persist; synthetic fixtures only
+P02 | accepted | P-G02/P-G03 | p-g03-workflow.cjs; regression.cjs | d3ff016 | Fast/360° modes share one record and persisted statuses
+P03 | accepted | P-G00/P-G03 | 19-profile baseline + browser relevance proof | d3ff016 | profile identities/applicability preserved
+P04 | accepted | P-G00/P-G03 | 12-process baseline + relevance proof | d3ff016 | process selections add checks without removing universal controls
+P05 | accepted | P-G04 | planning.cjs change-review/revision cases | 979fec4 | explicit revisions and stale sign-off invalidation proven
+P06 | accepted | P-G05 | p-g05-followups.cjs; follow-up UI/save-reopen | 578a1ad | participants, minutes, responsibilities and acknowledgement time retained
+P07 | accepted | P-G03 | p-g03-workflow.cjs next-action/guidance browser proof | d3ff016 | guided preparation and missing-information actions visible
+P08 | accepted | P-G03/P-G04 | source fixture + readiness tests | 979fec4 | buyer/market references stay inputs; no universal policy invented
+P09 | accepted | P-G00/P-G03 | 168-tuple SHA/identity fixture | e05da03 | all source checkpoint IDs/labels/critical/relevance tuples frozen
+P10 | accepted | P-G00/P-G03 | profile/process relevance and coverage tests | d3ff016 | cutoff/applicability decisions preserved
+P11 | accepted | P-G00/P-G03 | 168 category/reachability fixture | d3ff016 | technical construction/fit/pattern/measurement controls retained
+P12 | accepted | P-G00/P-G03 | 168 category/reachability fixture | d3ff016 | material/shade/quantity/testing controls retained
+P13 | accepted | P-G00/P-G03 | 168 category/reachability fixture | d3ff016 | trims/process/packing/artwork controls retained
+P14 | accepted | P-G00/P-G03 | 168 category/reachability fixture | d3ff016 | line/machine/pilot/first-output readiness controls retained
+P15 | accepted | P-G05 | exception authority contract/UI save-reopen | 578a1ad | authority is explicit and never auto-waives a blocker
+P16 | accepted | P-G04/P-G07 | actionable blocker IDs; PR08 report proof | 177f7b0 | owner/action/evidence summaries use existing decisions
+P17 | accepted | P-G03 | custom ACTION add/edit/delete/undo/coverage proof | d3ff016 | additive stable custom controls only
+P18 | accepted | P-G03 | beginner guidance/search/filter browser proof | d3ff016 | contextual help without hiding the complete scope
+P19 | accepted | P-G04 | planning.cjs approvals + mobile proof | 979fec4 | required/status/who/date/reference/photo rules proven
+P20 | accepted | P-G04 | planning.cjs numeric/asymmetric tolerance fixtures | 979fec4 | unit/spec/actual/tolerance boundaries preserved
+P21 | accepted | P-G04 | invalid/absent numeric fixtures | 979fec4 | invalid measurements remain Not checked/blocked
+P22 | accepted | P-G04 | GO/CONDITIONAL GO/HOLD parity cases | 979fec4 | no missing item becomes authorized GO
+P23 | accepted | P-G04/P-G06 | finalized read-only/signature restore/race tests | 2f14e4a | sign-off and lock persistence proven locally
+P24 | accepted | P-G04/P-G05 | change review + controlled amendment proof | 8e9bdee | material changes clear current sign-off; parent history retained
+P25 | accepted | P-G05 | action aging/status/evidence/save-reopen tests | 578a1ad | closing action does not auto-approve release
+P26 | accepted | P-G04 | blocker explanation/next-action browser assertions | 979fec4 | blocker IDs and actions remain domain-derived
+P27 | accepted | P-G05 | bounded exception/authority/evidence UI + codec | 578a1ad | explicit authority record cannot override release automatically
+P28 | accepted | P-G05 | p-g05-amendment-ui.cjs | 8e9bdee | immutable finalized parent; new child clears release/signatures/proof
+P29 | accepted | P-G05/P-G07 | minutes/action ownership + PR03/PR09 proof | 177f7b0 | optional minutes and downloadable action report available
+P30 | accepted | P-G05/P-G06 | evidence reference + approval photo round-trip | 2f14e4a | bounded references/images remain linked after reopen
+P31 | accepted | P-G06 | corrupt image rejection + delayed signature restore test | 2f14e4a | corrupt/stale image paths fail safely
+P32 | accepted | P-G02/P-G06 | autosave/reload/multi-record reopen/quota tests | 2f14e4a | repository-backed save state and recovery proven
+P33 | accepted | P-G02/P-G06 | copy/import/duplicate/recovery browser tests | 2f14e4a | saved copy opens separately; existing meetings unchanged
+P34 | accepted | P-G00/P-G06 | current/V4/schema-1/2 strict decode fixtures | 2f14e4a | malformed/future/oversized copies reject atomically
+P35 | accepted | P-G06 | update.cjs seven lifecycle cases | 2f14e4a | old tabs/assets retained; explicit Save & Update only
+P36 | accepted | P-G02/P-G03 | recent records/save badge + checkpoint search/filter matrix | d3ff016 | local recent list and workflow filters proven
+P37 | accepted | P-G02 | p-g02-home.cjs width/save/open matrix | d1ad724 | New/Continue/Open/Practice/Open Copy parity proven
+P38 | accepted | P-G01 | shared-shell contract + authenticated 6/6 matrix | 582cd34 | one platform shell across PPM/AQL/TNA
+P39 | accepted | P-G02/P-G07 | 320/360/390/768/1280 and 200% report matrix | 177f7b0 | tested widths reflow without horizontal page overflow
+P40 | accepted | P-G01/P-G02 | one-sticky-region/shared-shell geometry matrix | 582cd34 | legacy command surfaces demoted from fixed navigation
+P41 | accepted | P-G02/P-G06 | authored UI/error/recovery browser assertions | 2f14e4a | routine copy avoids raw storage/stack terminology
+P42 | accepted | P-G07 | 40 PDFs + EN/BN/HI/TA UI/report matrices | 177f7b0 | authored text translated; entered values/IDs immutable
+P43 | accepted | P-G07 | PR01/full and legacy report regression | 177f7b0 | existing report semantics remain executable/read-only
+P44 | accepted | P-G07 | PR01–PR10 catalogue; action CSV; 40 PDFs | 177f7b0 | additive buyer/factory/action/approval/report modes proven
+P45 | accepted | P-G07 | logo/watermark/footer/page/glyph visual matrix | 177f7b0 | generated timestamp/version/state/provenance visible
+P46 | accepted | P-G06 | quota/corrupt/future/recovery/update failure flows | 2f14e4a | actionable rescue with no fake saved state
+P47 | accepted | P-G08 | p-g08-references.cjs; p-g08-linked-ui.cjs | 11b582f | explicit TNA order/milestone/version/provenance; no date write
+P48 | accepted | P-G08 | p-g08-references.cjs; p-g08-linked-ui.cjs | 11b582f | explicit AQL inspection/version/decision quote; no Ac/Re or GO write
+P49 | blocked | P-G09 | p-g09-collaboration-contracts.cjs | 4c6e490 | local contract only; authorized identity/provider/two-account proof absent
+P50 | blocked | P-G09 | p-g09-collaboration-contracts.cjs | 4c6e490 | conflict/audit/idempotency contract only; no central service/notifications live
+P51 | accepted | P-G01/P-G02 | route smoke + shared-shell authenticated matrix | 582cd34 | App Centre/session/menu flow consistent across three apps
+P52 | conditional | P-G07/P-G10 | p-g07-reports.cjs; shared-shell matrix | 177f7b0 | strong local accessibility/visual proof; independent screen-reader, broad performance and physical-device review remain
 ```
 
 ## Mandatory test coverage checklist
-- [ ] All 168 checkpoint IDs/profile guards/decision invariants.
-- [ ] Approval, measurement, change review, finalized lock, duplicate/invalid ID.
-- [ ] V4 and current V5 saved-copy + PDF report + offline upgrade.
+- [x] All 168 checkpoint IDs/profile guards/decision invariants.
+- [x] Approval, measurement, change review, finalized lock, duplicate/invalid ID.
+- [x] V4 and current V5 saved-copy + PDF report + offline upgrade.
 - [ ] Mobile scroll, one-sticky-only, focus/mouse/touch/screen reader, languages/themes.
 - [ ] No browser console/runtime errors, broken links or horizontal clipping.
 - [ ] Never reset local buyer/factory records as a repair step.
@@ -706,4 +755,34 @@ FEATURE EVIDENCE: P49/P50 contract foundation is conditional. P51 remains covere
 REVIEWER / VERDICT: BLOCKED — EXTERNAL DEPENDENCY for the live gate; conditional local contract accepted as preparatory evidence only.
 EXACT SETUP REQUIRED: approved HTTPS PPM API endpoint; tenant identity provider and roles; database/audit/event storage; secure secret injection outside the public repo; staging buyer/factory accounts in separate tenants/scopes; notification provider if delivery is required; documented retention/privacy policy; and permission to run security/concurrency/two-account tests.
 NEXT ACTION (ONE PRECISE STEP): proceed independently to P-G10 evidence reconciliation by mapping P01–P52 to accepted commits/tests and locating the first missing local acceptance artifact; do not mark release ready or deploy while P-G09 and user authorization remain blocked.
+```
+
+### P-G10 pre-change audit — P01–P52 evidence reconciliation
+
+```text
+TIME / TIMEZONE: 2026-10-11 09:32 Asia/Dhaka
+PATCH OBJECTIVE: replace the placeholder P01–P52 feature ledger with evidence-linked dispositions from actual accepted gates, explicitly leave P49/P50 blocked and P52 conditional, and identify remaining P-G10 proof without changing runtime code or percentages
+IN-SCOPE FILES: docs/ppm/06_EXECUTION_TRACKER.md (feature ledger and mandatory-test evidence only); VESA_PROGRESS.md after proof; new program release-readiness report only after this ledger is reconciled
+OUT-OF-SCOPE / FROZEN: all runtime/source/test files, service workers/cache versions, all 168 checkpoint identities/statuses, PPM release rules and saved records, sibling/shared applications, remote branch/public repository, main, deployment and DNS
+EVIDENCE SOURCES: P-G00–P-G08 accepted commits/tests and screenshots; conditional P-G09 `4c6e490`; actual HEAD `ea4d35d`; `01_AUDIT_MASTER_BLUEPRINT.md` P01–P52 definitions; tracker append-only logs; rerun P-G09 pure contract and P-G08 authenticated browser flow at HEAD
+SENSITIVE-DATA CHECK: tracked filename scan found no `.pem`, `.key`, `.p12`, `.pfx`, `.env`, credentials/secrets path or buyer/customer inspection/order/factory data file. Pattern hits were synthetic `runtime-only-token`/`must-not-persist` rejection fixtures in PPM/TNA tests and ordinary localized Password labels in `js/preferences.js`; no push is authorized or attempted.
+COMPATIBILITY RISKS / GUARDS: preserve `accepted` only where a named gate has executable proof; use `blocked` for P49/P50 live server capabilities; keep P52 `conditional` because a broad independent performance/screen-reader/device matrix is not complete; do not award P-G10 or change the fixed score for a documentation reconciliation.
+VERIFICATION / ROLLBACK: assert exactly 52 unique rows, allowed status vocabulary and P49/P50/P52 dispositions; cross-check accepted rows to named gate/commit evidence; run `git diff --check`. Revert the documentation commit with no runtime/data impact.
+PRE-CHANGE VERDICT: approved as an evidence-only P-G10 slice; it cannot accept P-G10, unblock P-G09 or authorize release.
+```
+
+### P-G10 P01–P52 evidence reconciliation — conditional
+
+```text
+TIME / TIMEZONE: 2026-10-11 09:38 Asia/Dhaka
+GATE / OBJECTIVE: P-G10 — replace the placeholder feature ledger with exact evidence-backed dispositions without converting blocked/conditional work into completion credit
+FILES CHANGED (EXACT): docs/ppm/06_EXECUTION_TRACKER.md
+IMPLEMENTED / PROVEN: exactly 52 unique rows now map every PPM feature to a gate, repeatable test/file or screenshot evidence, last verified commit and limitation. P01–P48 plus P51 are accepted locally; P49/P50 are blocked for authenticated server/central collaboration; P52 is conditional for independent screen-reader, broader performance and physical-device proof. The first three mandatory coverage rows are checked from existing executable evidence; remaining broad acceptance rows stay open.
+HEAD RECONCILIATION: actual HEAD before this evidence patch was `ea4d35d`, a documentation-only commit after tested P-G09 code `4c6e490`. At actual HEAD, `p-g09-collaboration-contracts.cjs` and authenticated `p-g08-linked-ui.cjs` both passed. `git status` was clean before the audit; no runtime source changed.
+SENSITIVE/PUBLIC-REPOSITORY REVIEW: no tracked key/certificate/environment/credentials path or buyer/customer inspection/order/factory data artifact was found. Pattern hits were ordinary localized Password labels and explicitly synthetic token-rejection fixtures (`runtime-only-token`, `must-not-persist`). This is not a complete specialist secret-history audit because gitleaks is unavailable; no remote backup/push is proposed or performed.
+TEST / VALIDATION: ledger parser PASS: 52 rows / 52 unique IDs / zero missing; allowed disposition vocabulary only; P49/P50 blocked and P52 conditional; `git diff --check` PASS. Evidence is documentation reconciliation, not a new browser/factory acceptance run.
+PERCENTAGE IMPACT: none. P-G10 remains conditional/active, P-G09 remains blocked, accepted gate counts stay t=9/p=9/a=3/s=3 and overall remains 55%.
+ROLLBACK: revert this documentation patch; no application, record, cache or deployment impact.
+REVIEWER / VERDICT: CONDITIONAL — feature omission risk is now explicit, but P-G10 cannot pass until its remaining test/review/release prerequisites and blocked P-G09 dependency are resolved.
+NEXT ACTION (ONE PRECISE STEP): create `docs/VESA_360_RELEASE_READINESS.md` from current trackers with verified vs incomplete/blocked scope, missing tests, saved-record upgrade posture, a non-public internal staging checklist and exact production-authorization prerequisites.
 ```
