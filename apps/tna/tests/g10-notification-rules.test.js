@@ -1,0 +1,32 @@
+const assert=(condition,message)=>{if(!condition)throw new Error(message)};
+const domain=require('../src/domain.js');
+const rules=require('../src/notification-rules.js');
+
+const plan=domain.createPlan({templateId:'knit',buyerName:'Synthetic Buyer',factoryName:'Synthetic Factory',styleNo:'STYLE-ALERT',poNumber:'PO-ALERT',totalQty:500,buyerRequiredExFactory:'2026-11-30'});
+const original=JSON.stringify(plan),[overdue,today,upcoming,blocked,closed]=plan.tasks;
+overdue.dates.currentTargetFinish='2026-10-09';
+today.dates.forecastFinish='2026-10-10';
+upcoming.dates.baselineFinish='2026-10-15';
+blocked.status='blocked';
+closed.status='approved';closed.dates.currentTargetFinish='2026-10-08';
+const changed=JSON.stringify(plan);
+const alerts=rules.buildInAppAlerts(plan,{asOfDate:'2026-10-10',upcomingDays:7});
+assert(alerts.some(alert=>alert.taskId===overdue.taskId&&alert.rule==='overdue-action'),'G10 alerts must identify overdue open action.');
+assert(alerts.some(alert=>alert.taskId===today.taskId&&alert.rule==='due-today'),'G10 alerts must identify due-today action.');
+assert(alerts.some(alert=>alert.taskId===upcoming.taskId&&alert.rule==='upcoming-action'),'G10 alerts must identify next-seven-day action.');
+assert(alerts.some(alert=>alert.taskId===blocked.taskId&&alert.rule==='blocked-action'),'G10 alerts must identify blocked action without inventing a due date.');
+assert(!alerts.some(alert=>alert.taskId===closed.taskId),'G10 alerts must not notify for approved/closed work.');
+assert(JSON.stringify(plan)===changed&&original!==changed,'G10 alert evaluation must not mutate plan state or approve work.');
+
+const alert=alerts[0],policy={enabled:true,channel:'in-app',quietHours:{start:22,end:7}},recipient={userId:'USER-ALLOWED',enabled:true,allowedRecordIds:[plan.recordId]};
+const allowed=rules.prepareDelivery(alert,policy,recipient,{localHour:10,createdAt:'2026-10-10T10:00:00.000Z',deliveredKeys:[]});
+assert(allowed.ok&&allowed.intent.channel==='in-app','G10 should prepare a permission-scoped in-app intent.');
+assert(rules.prepareDelivery(alert,policy,recipient,{localHour:10,deliveredKeys:[alert.dedupeKey]}).code==='DUPLICATE','G10 must suppress duplicate delivery.');
+assert(rules.prepareDelivery(alert,policy,recipient,{localHour:23,deliveredKeys:[]}).code==='QUIET_HOURS','G10 must hold alerts during quiet hours.');
+assert(rules.prepareDelivery(alert,policy,{...recipient,allowedRecordIds:[]},{localHour:10,deliveredKeys:[]}).code==='UNAUTHORIZED_RECIPIENT','G10 must fail closed for unauthorized recipients.');
+assert(rules.prepareDelivery(alert,{...policy,channel:'email'},recipient,{localHour:10,deliveredKeys:[]}).code==='EXTERNAL_DEPENDENCY','G10 must not claim external delivery without a provider.');
+assert(rules.prepareDelivery(alert,{...policy,enabled:false},recipient,{localHour:10,deliveredKeys:[]}).code==='POLICY_DISABLED','G10 must fail closed when notification policy is disabled.');
+assert(plan.tasks.every(task=>!['completed'].includes(task.status)),'G10 notification preparation must not create false task completion or approval.');
+const source=require('fs').readFileSync(require('path').join(__dirname,'../src/notification-rules.js'),'utf8');
+assert(!/fetch\s*\(|XMLHttpRequest|localStorage|indexedDB|\.status\s*=\s*['"]approved/.test(source),'G10 notification rules must be pure and provider/store independent.');
+console.log('TNA G10 notification rule checks passed');

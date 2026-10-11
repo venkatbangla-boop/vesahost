@@ -1,4 +1,4 @@
-const CACHE='vesa-v61-tna-g10-linked-ui';
+const CACHE='vesa-v62-tna-g10-alerts';
 const ASSETS=[
   './',
   './index.html',
@@ -18,6 +18,7 @@ const ASSETS=[
   './apps/tna/vendor/xlsx.LICENSE.txt',
   './apps/tna/src/cloud-contracts.js',
   './apps/tna/src/integration-references.js',
+  './apps/tna/src/notification-rules.js',
   './apps/tna/src/storage.js',
   './apps/tna/src/reports.js',
   './apps/tna/src/scenarios.js',
