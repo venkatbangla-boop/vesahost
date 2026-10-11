@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Added and passed the independent A-G07 service-worker lifecycle proof at source HEAD `c8f9f45`: incomplete install retained the old active cache, complete replacement left two dirty old tabs intact, stale/partial caches were removed only after a complete install, and a saved draft reopened offline. |
-| NEXT ACTION | Audit and run the independently achievable A-G07 forced-quota/degraded-storage rescue flow across a disposable browser restart without clearing existing records or changing SamplingEngine/saved-format contracts. |
+| LAST COMPLETED ACTION | Added and passed the independent A-G07 forced-quota rescue proof at source HEAD `7b5beae`: failed project save preserved the latest tab state and older durable row, emitted only an explicitly partial rescue, rejected complete-backup verification, and resumed the project/draft/warning after a full browser restart. |
+| NEXT ACTION | Audit and extend A-G07 strict atomic selected-file rejection across project, master and sync imports using malicious/duplicate/oversize synthetic fixtures; preserve all existing local records and frozen formats. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -77,7 +77,7 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 ### A-G07 — Durable saving, portable HTML, import and offline worker
 - [x] Current/legacy portable saved inspection opens and preserves all selected stages/assets — deterministic current inline-stage + attachment-byte restore and legacy migration/reopen browser proof.
 - [ ] Strict atomic import of project/master/sync with malice/duplicate/oversize tests.
-- [ ] Quota, blocked IndexedDB, browser close/update and partial rescue modes honestly described.
+- [x] Quota, blocked IndexedDB, browser close/update and partial rescue modes honestly described — quota demotion, older durable-row preservation, partial-only verification, restart resume and worker update are proven; blocked/context-denied guidance remains source-contracted.
 - [x] Old AQL tab update against service worker cache deletion risk tested/fixed if reproducible — failed install, two dirty old tabs, complete cache replacement and offline saved-record reopen are covered in a disposable browser lifecycle.
 
 ### A-G07 portable transfer and save-safety contract — conditional, domain source unchanged
@@ -431,6 +431,22 @@ BROWSER / DATA EVIDENCE: Fresh Playwright browser context and disposable HTTP or
 LIMITATIONS / UNRESOLVED RISK: A-G07 still needs forced quota/degraded-storage rescue across restart, very large real attachments, master/sync selected-file malice/atomicity expansion and real-device recovery. An incomplete install can leave an inert partial cache until a later complete activation; it does not replace the active worker or delete the complete old cache.
 REVIEWER / VERDICT: conditional — the old-tab/current-worker cache-deletion subcheck is accepted locally without a worker source change; the overall A-G07 gate remains conditional.
 NEXT ACTION (ONE PRECISE STEP): audit and run the A-G07 forced-quota/degraded-storage rescue flow across a disposable browser restart without clearing existing records or changing SamplingEngine/saved-format contracts.
+```
+
+### A-G07 forced-quota partial rescue and browser restart — conditional, application source unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-12 00:26 Asia/Dhaka
+GATE / OBJECTIVE: A-G07 — prove that a failed quota write cannot overwrite the last durable project, cannot be reported as saved, and can produce only an explicitly incomplete portable rescue that remains incomplete after a full browser restart
+BRANCH / SOURCE HEAD: feature/tna360-continuous / 7b5beae
+FILES CHANGED (EXACT): apps/aql/tests/a-g07-quota-rescue.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN: apps/aql/index.html, LocalRepository, StorageIO, SaveSafety, DraftJournal, PortableInspection, ProjectTransfer, service worker, SamplingEngine, saved formats, PPM/TNA/shared files and production browser data; no application/domain source changed
+IMPLEMENTED: Added a reproducible raw-Playwright quota/rescue lifecycle with two separately launched browser processes. The first browser saved a fictional baseline, retained a newer project edit and unfinished CAPA draft in memory, then injected a bounded `QuotaExceededError` at the project transaction. Assertions prove the repository demoted to in-session mode, remained dirty, classified the quota cause, kept departure protection, did not overwrite the older durable record and rendered portable-rescue guidance. The user-facing Save inspection HTML action required confirmation and downloaded a `PARTIAL-RESCUE` snapshot containing the latest project and available draft. Selecting that file in Verify saved HTML was rejected as a complete backup and did not clear departure protection. After closing the complete first browser, a fresh second browser with no inherited device database selected the rescue through Save centre; preview disclosed `PARTIAL RECOVERY SNAPSHOT`, exact project identity/current values and the available draft reopened, and recovery remained incomplete/unverified.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g07-quota-rescue.cjs` PASS. Expanded full sequence PASS without retry: `a-g00-baseline.cjs` (Q01-Q24 plus portable invariants), `a-g02-workflow.cjs`, `a-g03-sampling.cjs`, `a-g04-stage.cjs`, `a-g05-readiness-rework.cjs`, `a-g06-evidence-analytics.cjs`, `a-g07-portable-safety.cjs`, `a-g07-browser-restore.cjs`, `a-g07-worker-update.cjs`, `a-g07-quota-rescue.cjs`, `a-g08-reports-language.cjs`, `a-g09-cross-app-boundaries.cjs`, `release-contract.cjs`, `tests/vesa-workspace-shell-contract.cjs`; `git diff --check` PASS. Browser assertions also prove zero uncaught page errors and zero external requests.
+BROWSER / DATA EVIDENCE: Disposable server, two fresh Chromium processes and a temporary rescue path outside the repository. The rescue file and browser profiles were removed during cleanup. No existing browser data was cleared, no production record was opened and no approval, release, deployment or external request occurred.
+LIMITATIONS / UNRESOLVED RISK: The quota path was deterministically injected at the real repository transaction boundary; physical disk exhaustion and native/mobile shutdown still require device acceptance. Blocked/context-denied behavior has deterministic source coverage but was not reproduced through an actual browser policy denial here. A-G07 still needs selected-file atomicity expansion for master/sync malicious, duplicate and oversize fixtures plus large real-attachment/device review.
+REVIEWER / VERDICT: conditional — the quota/degraded-storage/partial-rescue/restart subcheck is accepted locally; overall A-G07 remains conditional.
+NEXT ACTION (ONE PRECISE STEP): audit and extend A-G07 strict atomic selected-file rejection across project, master and sync imports using malicious/duplicate/oversize synthetic fixtures; preserve all existing local records and frozen formats.
 ```
 
 ### A-G08 four-language Settings and rendered A4 report review — conditional, source unchanged
