@@ -483,3 +483,125 @@ Controlled amendment created. Review changes and collect fresh approval, release
 The amendment is open but could not be saved. Download a saved copy now.|সংশোধনটি খোলা আছে কিন্তু সংরক্ষণ করা যায়নি। এখনই একটি কপি ডাউনলোড করুন।|संशोधन खुला है लेकिन सहेजा नहीं जा सका। अभी एक कॉपी डाउनलोड करें।|திருத்தம் திறந்துள்ளது ஆனால் சேமிக்க முடியவில்லை. இப்போது saved copy-ஐ பதிவிறக்கவும்.
 `;
 for(const row of PPM_FOLLOWUP_SENTENCES.trim().split('\n')){const [key,bn,hi,ta]=row.split('|');PPM_SENTENCES[key]={bn,hi,ta}}
+
+/** Authored report chrome only. User-entered record values and stable IDs never use these keys. */
+const PPM_REPORT_TRANSLATION_ROWS = `
+Full PPM Meeting Report|সম্পূর্ণ PPM মিটিং রিপোর্ট|पूर्ण PPM मीटिंग रिपोर्ट|முழுமையான PPM meeting report
+One-Page Buyer Summary|এক পৃষ্ঠার বায়ার সারাংশ|एक-पृष्ठ बायर सारांश|ஒரு பக்க buyer summary
+Factory Action List|ফ্যাক্টরি অ্যাকশন তালিকা|फैक्टरी कार्रवाई सूची|Factory action பட்டியல்
+Approval Register|অনুমোদন রেজিস্টার|अनुमोदन रजिस्टर|Approval பதிவு
+Measurement Check Report|মাপ যাচাই রিপোর্ট|माप जाँच रिपोर्ट|Measurement சரிபார்ப்பு report
+Change & Revision Report|পরিবর্তন ও রিভিশন রিপোর্ট|बदलाव और संशोधन रिपोर्ट|மாற்றம் மற்றும் revision report
+Production Release Decision|উৎপাদন রিলিজ সিদ্ধান্ত|उत्पादन रिलीज़ निर्णय|Production release முடிவு
+Management Blocker Summary|ম্যানেজমেন্ট ব্লকার সারাংশ|प्रबंधन अवरोध सारांश|மேலாண்மைத் தடைகள் சுருக்கம்
+Attendance & Minutes|উপস্থিতি ও কার্যবিবরণী|उपस्थिति और कार्यवृत्त|வருகை மற்றும் minutes
+Custom Checkpoint & Evidence|কাস্টম চেকপয়েন্ট ও প্রমাণ|कस्टम चेकपॉइंट और प्रमाण|Custom checkpoint மற்றும் ஆதாரம்
+Executive summary|নির্বাহী সারাংশ|कार्यकारी सारांश|நிர்வாகச் சுருக்கம்
+Generated|তৈরির সময়|बनाने का समय|உருவாக்கிய நேரம்
+continued|চলমান|जारी|தொடர்ச்சி
+FINALIZED|চূড়ান্ত|अंतिम|இறுதி
+DRAFT|খসড়া|ड्राफ्ट|வரைவு
+TRAINING ONLY|শুধু প্রশিক্ষণ|केवल प्रशिक्षण|பயிற்சிக்கு மட்டும்
+Factory / Buyer|ফ্যাক্টরি / বায়ার|फैक्टरी / बायर|Factory / Buyer
+Readiness|প্রস্তুতি|तैयारी|தயார்நிலை
+Coverage|কভারেজ|कवरेज|Coverage
+Closure|সমাপ্তি|समापन|Closure
+Critical blockers|গুরুতর বাধা|गंभीर अवरोध|Critical blockers
+Release|রিলিজ|रिलीज़|Release
+Meeting checks|মিটিং যাচাই|मीटिंग जाँच|Meeting checks
+Required approval gaps|প্রয়োজনীয় অনুমোদনের ঘাটতি|आवश्यक अनुमोदन कमियाँ|தேவையான approval குறைகள்
+Required measurement gaps|প্রয়োজনীয় মাপের ঘাটতি|आवश्यक माप कमियाँ|தேவையான measurement குறைகள்
+Changes to review|পর্যালোচনার পরিবর্তন|समीक्षा के बदलाव|Review செய்ய வேண்டிய மாற்றங்கள்
+Participants|অংশগ্রহণকারী|प्रतिभागी|பங்கேற்பாளர்கள்
+Outstanding actions|অসমাপ্ত অ্যাকশন|लंबित कार्रवाइयाँ|நிலுவை actions
+Pending buyer approvals|বাকি বায়ার অনুমোদন|लंबित बायर अनुमोदन|நிலுவை buyer approvals
+Release conditions|রিলিজের শর্ত|रिलीज़ शर्तें|Release நிபந்தனைகள்
+Approved style / PP sample|অনুমোদিত স্টাইল / PP স্যাম্পল|स्वीकृत स्टाइल / PP सैंपल|அங்கீகரிக்கப்பட்ட style / PP sample
+None recorded|কিছু রেকর্ড করা হয়নি|कुछ दर्ज नहीं|எதுவும் பதிவு செய்யப்படவில்லை
+No owner|দায়িত্বপ্রাপ্ত কেউ নেই|कोई ज़िम्मेदार नहीं|Owner பதிவு இல்லை
+No due date|শেষ তারিখ নেই|अंतिम तारीख नहीं|Due date பதிவு இல்லை
+Note / evidence|নোট / প্রমাণ|टिप्पणी / प्रमाण|குறிப்பு / ஆதாரம்
+Critical POM / measurement control|গুরুত্বপূর্ণ POM / মাপ নিয়ন্ত্রণ|महत्वपूर्ण POM / माप नियंत्रण|முக்கிய POM / measurement control
+POM|POM|POM|POM
+Spec|স্পেক|स्पेक|Spec
+Tolerance|টলারেন্স|टॉलरेंस|Tolerance
+Method|পদ্ধতি|विधि|முறை
+Risk|ঝুঁকি|जोखिम|ஆபத்து
+Approvals|অনুমোদন|अनुमोदन|Approvals
+No approvals added.|কোনো অনুমোদন যোগ করা হয়নি।|कोई अनुमोदन नहीं जोड़ा गया।|Approval எதுவும் சேர்க்கப்படவில்லை.
+Unnamed approval|নামহীন অনুমোদন|बेनाम अनुमोदन|பெயரிடாத approval
+Required|প্রয়োজনীয়|आवश्यक|தேவையான
+Optional|ঐচ্ছিক|वैकल्पिक|விருப்பம்
+Approved by|অনুমোদনকারী|अनुमोदित करने वाला|அங்கீகரித்தவர்
+Date|তারিখ|तारीख|தேதி
+Reference|রেফারেন্স|संदर्भ|Reference
+Approval proof|অনুমোদনের প্রমাণ|अनुमोदन प्रमाण|Approval ஆதாரம்
+Measurement check|মাপ যাচাই|माप जाँच|Measurement சரிபார்ப்பு
+Measurements|মাপ|माप|Measurements
+No measurements entered.|কোনো মাপ লেখা হয়নি।|कोई माप दर्ज नहीं।|Measurement எதுவும் உள்ளிடப்படவில்லை.
+Measurement|মাপ|माप|Measurement
+Actual|প্রকৃত|वास्तविक|உண்மை அளவு
+Unit|একক|इकाई|அலகு
+Not selected|নির্বাচিত নয়|चुना नहीं गया|தேர்வு செய்யப்படவில்லை
+Not entered|লেখা হয়নি|दर्ज नहीं|உள்ளிடப்படவில்லை
+Difference|পার্থক্য|अंतर|வேறுபாடு
+Allowed|অনুমোদিত সীমা|अनुमत|அனுமதிக்கப்பட்டது
+to|থেকে|से|முதல்
+What changed?|কী পরিবর্তন হয়েছে?|क्या बदला?|என்ன மாறியது?
+Review point|পর্যালোচনা পয়েন্ট|समीक्षा बिंदु|Review point
+No starting point saved.|শুরুর অবস্থা সংরক্ষিত নেই।|आरंभिक स्थिति सहेजी नहीं गई।|தொடக்க நிலை சேமிக்கப்படவில்லை.
+Current changes|বর্তমান পরিবর্তন|वर्तमान बदलाव|தற்போதைய மாற்றங்கள்
+Before|আগে|पहले|முன்பு
+Now|এখন|अब|இப்போது
+Reviewed|পর্যালোচিত|समीक्षित|சரிபார்க்கப்பட்டது
+After review|পর্যালোচনার পরে|समीक्षा के बाद|Review-க்கு பிறகு
+Review details|পর্যালোচনার বিস্তারিত|समीक्षा विवरण|Review விவரங்கள்
+First 30 changes retained; total count is recorded.|প্রথম ৩০টি পরিবর্তন রাখা হয়েছে; মোট সংখ্যা রেকর্ড আছে।|पहले 30 बदलाव रखे गए हैं; कुल संख्या दर्ज है।|முதல் 30 மாற்றங்கள் வைக்கப்பட்டுள்ளன; மொத்த எண்ணிக்கை பதிவு செய்யப்பட்டுள்ளது.
+Action tracker|অ্যাকশন ট্র্যাকার|कार्रवाई ट्रैकर|Action tracker
+Actions|অ্যাকশন|कार्रवाइयाँ|Actions
+No tracked actions.|ট্র্যাক করা অ্যাকশন নেই।|कोई ट्रैक की गई कार्रवाई नहीं।|கண்காணிக்கப்படும் action இல்லை.
+CRITICAL|গুরুতর|गंभीर|முக்கியம்
+CUSTOM|কাস্টম|कस्टम|தனிப்பயன்
+OPEN|খোলা|खुला|திறந்தது
+Action|অ্যাকশন|कार्रवाई|Action
+Owner|দায়িত্বপ্রাপ্ত|ज़िम्मेदार|Owner
+Due|শেষ তারিখ|अंतिम तारीख|Due
+Evidence|প্রমাণ|प्रमाण|ஆதாரம்
+Photo evidence|ছবির প্রমাণ|फोटो प्रमाण|பட ஆதாரம்
+No evidence attached.|কোনো প্রমাণ সংযুক্ত নেই।|कोई प्रमाण संलग्न नहीं।|ஆதாரம் எதுவும் இணைக்கப்படவில்லை.
+Authorization & sign-off|অনুমোদন ও স্বাক্ষর|प्राधिकरण और हस्ताक्षर|அங்கீகாரம் மற்றும் sign-off
+Signature|স্বাক্ষর|हस्ताक्षर|கையொப்பம்
+Decision|সিদ্ধান্ত|निर्णय|முடிவு
+Rationale / conditions|কারণ / শর্ত|कारण / शर्तें|காரணம் / நிபந்தனைகள்
+Record version|রেকর্ড সংস্করণ|रिकॉर्ड संस्करण|Record version
+Finalized|চূড়ান্ত|अंतिम|இறுதி
+Draft|খসড়া|ड्राफ्ट|வரைவு
+Approvers / signers|অনুমোদনকারী / স্বাক্ষরকারী|अनुमोदक / हस्ताक्षरकर्ता|Approvers / signers
+Authentication note|পরিচয় যাচাই নোট|पहचान सत्यापन टिप्पणी|அடையாளச் சரிபார்ப்பு குறிப்பு
+Names and signature images are meeting evidence; this offline report does not independently authenticate identity.|নাম ও স্বাক্ষরের ছবি মিটিংয়ের প্রমাণ; এই অফলাইন রিপোর্ট আলাদাভাবে পরিচয় যাচাই করে না।|नाम और हस्ताक्षर चित्र मीटिंग प्रमाण हैं; यह ऑफलाइन रिपोर्ट स्वतंत्र रूप से पहचान सत्यापित नहीं करती।|பெயர்கள் மற்றும் கையொப்பப் படங்கள் meeting ஆதாரம்; இந்த offline report தனியாக அடையாளத்தை உறுதிப்படுத்தாது.
+Critical checkpoints|গুরুতর চেকপয়েন্ট|गंभीर चेकपॉइंट|முக்கிய checkpoints
+Approval blockers|অনুমোদনের বাধা|अनुमोदन अवरोध|Approval blockers
+Measurement blockers|মাপের বাধা|माप अवरोध|Measurement blockers
+Next owner / action|পরবর্তী দায়িত্বপ্রাপ্ত / অ্যাকশন|अगला ज़िम्मेदार / कार्रवाई|அடுத்த owner / action
+No action recorded|কোনো অ্যাকশন রেকর্ড নেই|कोई कार्रवाई दर्ज नहीं|Action பதிவு இல்லை
+not recorded|রেকর্ড নেই|दर्ज नहीं|பதிவு இல்லை
+Meeting date|মিটিংয়ের তারিখ|मीटिंग तारीख|Meeting தேதி
+Attendance|উপস্থিতি|उपस्थिति|வருகை
+Chair|সভাপতি|अध्यक्ष|தலைமை
+Agenda|আলোচ্যসূচি|कार्यसूची|நிகழ்ச்சி நிரல்
+Decisions|সিদ্ধান্তসমূহ|निर्णय|முடிவுகள்
+Notes|নোট|टिप्पणियाँ|குறிப்புகள்
+Action assignments|অ্যাকশন দায়িত্ব|कार्रवाई दायित्व|Action பொறுப்புகள்
+Evidence references|প্রমাণের রেফারেন্স|प्रमाण संदर्भ|ஆதார references
+Custom checkpoints|কাস্টম চেকপয়েন্ট|कस्टम चेकपॉइंट|Custom checkpoints
+None recorded.|কিছু রেকর্ড করা হয়নি।|कुछ दर्ज नहीं।|எதுவும் பதிவு செய்யப்படவில்லை.
+Guidance|নির্দেশনা|मार्गदर्शन|வழிகாட்டல்
+Remark / evidence|মন্তব্য / প্রমাণ|टिप्पणी / प्रमाण|குறிப்பு / ஆதாரம்
+Source / revision|উৎস / রিভিশন|स्रोत / संशोधन|Source / revision
+Not recorded in this meeting|এই মিটিংয়ে রেকর্ড নেই|इस मीटिंग में दर्ज नहीं|இந்த meeting-ல் பதிவு இல்லை
+Linked evidence references|সংযুক্ত প্রমাণের রেফারেন্স|जुड़े प्रमाण संदर्भ|இணைக்கப்பட்ட ஆதார references
+Page|পৃষ্ঠা|पृष्ठ|பக்கம்
+of|এর মধ্যে|में से|இல்
+`;
+for(const row of PPM_REPORT_TRANSLATION_ROWS.trim().split('\n')){const [key,bn,hi,ta]=row.split('|');PPM_SENTENCES[key]={bn,hi,ta}}
+const PPM_REPORT_KEYS=Object.freeze(PPM_REPORT_TRANSLATION_ROWS.trim().split('\n').map(row=>row.split('|')[0]));

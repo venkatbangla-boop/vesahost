@@ -552,3 +552,16 @@ BLOCKERS / UNRESOLVED RISK: reports honestly show missing source/revision rather
 REVIEWER / VERDICT: CONDITIONAL — PR01–PR10 structural/data coverage and existing-producer compatibility are locally proven; P-G07 earns no percentage until remaining language/print/accessibility checks pass.
 NEXT ACTION (ONE PRECISE STEP): route every PR01–PR10 authored heading and row label through LocaleService in EN/BN/HI/TA, then generate all ten modes per language and assert entered buyer/style/PO/minutes/action/custom values plus serialized record remain unchanged.
 ```
+
+### P-G07 pre-code file audit — four-language authored report copy
+
+```text
+TIME / TIMEZONE: 2026-10-11 02:14 UTC / 2026-10-11 08:14 Asia/Dhaka
+PATCH OBJECTIVE: route PR01–PR10 catalogue titles, page headings, row labels and standard explanatory report copy through the existing sentence-only LocaleService in EN/BN/HI/TA without translating entered values or stable domain identifiers
+IN-SCOPE FILES: apps/ppm/languages.js (authored report dictionary owner); apps/ppm/report-service.js (read-only translated report renderer); apps/ppm/tests/p-g07-reports.cjs (four-language catalogue/render/value-preservation proof); docs/ppm/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md after proof
+OUT-OF-SCOPE / FROZEN: core.js, planning-services.js, record-services.js, workspace.js report command behavior, all 168 checkpoint IDs/statuses, GO/CONDITIONAL GO/HOLD, buyer/style/PO/minutes/actions/custom text, schemas/repositories/workers, shared/AQL/TNA files and saved records
+OWNERSHIP / CALL FLOW / STATE: central language preference -> LocaleService.sentence -> ReportService catalogue/page/row authored copy -> transient canvas/PDF. Checkpoint descriptions continue through LocaleService.checkpoint; entered values and IDs bypass translation; report generation reads a clone and cannot persist.
+COMPATIBILITY RISKS / GUARDS: English remains the dictionary key/fallback; every required report key must have bn/hi/ta coverage; translated labels must not become lookup keys for domain state; page continuation labels and missing-value guidance are authored copy; status/record/checkpoint IDs remain exact; language switching must leave serialized record and save state unchanged.
+VERIFICATION / ROLLBACK: expand the P-G07 browser proof to require complete report-key coverage, render all ten modes in each language, detect the expected Indic script in catalogue/page/row authored text, assert multilingual entered values and stable IDs remain exact, and rerun P-G00/P-G06/planning/regression/update/shared-shell/syntax/diff. Revert language/report/test/tracker patch; no migration or stored-data cleanup.
+PRE-CODE VERDICT: approved as the second conditional P-G07 slice; final print visual/glyph, keyboard, 200% zoom, 320px and theme acceptance remain separate.
+```
