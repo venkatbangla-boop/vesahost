@@ -61,7 +61,7 @@
 .vesa-workspace__mobile-menu { display: none; margin-left: auto; }
 .vesa-workspace :where(a, button):focus-visible { outline: 3px solid var(--vesa-focus); outline-offset: 2px; }
 
-@media (max-width: 767px) {
+@media (max-width: 900px) {
   .vesa-workspace { flex-wrap: wrap; min-height: 60px; padding-inline: max(12px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-right)); }
   .vesa-workspace__brand img { width: 104px; }
   .vesa-workspace__app { max-width: 38vw; overflow: hidden; text-overflow: ellipsis; }

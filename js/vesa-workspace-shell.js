@@ -103,7 +103,9 @@
       if (event.key !== 'Escape' || this.element.dataset.menuOpen !== 'true') return;
       event.preventDefault();
       this.element.dataset.menuOpen = 'false';
-      this.element.querySelector('[data-vesa-mobile-menu]')?.focus();
+      const mobile = this.element.querySelector('[data-vesa-mobile-menu]');
+      mobile?.setAttribute('aria-expanded', 'false');
+      mobile?.focus();
     }
 
     destroy() {

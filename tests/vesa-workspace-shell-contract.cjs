@@ -13,6 +13,7 @@ assert(shell.includes('Saved on this device') && shell.includes('Could not save'
 assert(shell.includes('descriptor') && shell.includes('callbacks'), 'descriptor/callback boundary missing');
 assert(shell.includes('openSettings') && shell.includes('data-vesa-settings'), 'platform settings surface missing');
 assert(shell.includes("event.key !== 'Escape'") && shell.includes('data-vesa-mobile-menu'), 'mobile Menu Escape/focus contract missing');
+assert(shell.includes("setAttribute('aria-expanded', 'false')"), 'mobile Menu Escape must expose its closed state');
 assert(!/\b(?:tna|ppm|aql)\b/i.test(shell), 'platform shell must not hard-code an app id');
 assert(css.includes('.vesa-workspace') && css.includes('--vesa-brand'), 'shared shell CSS/tokens missing');
 assert((css.match(/position:\s*sticky/g) || []).length === 1, 'shared shell must own one sticky region');
