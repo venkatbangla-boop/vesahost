@@ -2,7 +2,19 @@
 
 This is the single human dashboard for the VESA 360 program. It is updated from repository evidence, app execution trackers and passing tests. Only ACCEPTED gates count toward percentages; CONDITIONAL, ACTIVE, BLOCKED, REJECTED and NOT STARTED count as zero.
 
-## A. Program at a glance
+## Current GitHub-Free-only scope
+
+| Field | Current audited value |
+|---|---|
+| **FREE-ONLY VERIFIED** | **NOT YET RECALCULATED** — eligibility denominators are being audited; no excluded provider work is counted as complete |
+| **FREE-ONLY REMAINING** | **NOT YET RECALCULATED** |
+| **TNA / PPM / AQL / SHARED** | **NOT YET RECALCULATED** |
+| Architecture | GitHub source/version control plus local browser calculation/storage and manual saved-copy transfer only |
+| Canonical contract | `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` |
+| Deferred by scope | Hosted backend/identity/database/object storage, remote multiuser sync, external notification delivery, paid services and commercial SaaS hosting on GitHub Pages |
+| Active migration task | Freeze an explicit gate/subrequirement eligibility map before calculating the new percentage |
+
+## A. Historical full-scope program at a glance
 
 | Field | Current saved value |
 |---|---|
@@ -13,11 +25,11 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | **AQL 360** | **23%** - accepted gates 3 / 13 |
 | **ONE VESA SHARED UX** | **30%** - accepted gates 3 / 10 |
 | Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00 through P-G08 are accepted locally; P-G09 remains externally blocked and P-G10 has a complete P01–P52 evidence ledger but remains conditional. TNA G10 independently achievable local references and in-app alerts are conditional, with provider delivery blocked. TNA G11 now has a reproducible 54-command local matrix but remains conditional. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
-| Active gate | **TNA G11 - full verification and stabilization (G09/G10 provider items externally blocked)** |
-| Current subtask / subchecks | G11 now has the 54-command matrix plus a bounded 250-order/25,250-task performance fixture (latest median 5,027.9 ms; exact PO filter 19.8 ms on the recorded 6 GiB Windows machine). Deterministic/browser/performance subcheck is locally proven. Saved-copy/schema viewer evidence, four-language/timezone matrix, security audit and physical/assistive acceptance remain open, so G11 receives no credit. |
+| Active gate | **GitHub-Free-only scope migration and eligibility audit; TNA G11 remains the next application checkpoint** |
+| Current subtask / subchecks | Canonical free-only scope and resume instructions installed; provider work classified `DEFERRED_BY_SCOPE`; local tracked/release sizes and sensitive-file patterns audited. The free-only denominator is not yet frozen, so no new percentage is claimed. |
 | Last ACCEPTED gate | **PPM P-G08 - TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, no deployment or live synchronization claim) |
 | Last tested commit SHA | Performance commit `f3b39e0`: complete 54-command matrix at preceding runner commit `3caeccd` PASS in 420.1s; post-run full TNA suite and 250-order/25,250-task performance PASS (median 5,027.9 ms; filter 19.8 ms). G09/G10 remain provider-blocked and conditional G11 evidence does not supersede last accepted P-G08 `11b582f`. |
-| Last update (UTC) | 2026-10-11 05:20:00 UTC |
+| Last update (UTC) | 2026-10-11 08:32:56 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -110,10 +122,12 @@ Current counted gates: t=9, p=9, a=3, s=3.
 | Area | Status | What is needed |
 |---|---|---|
 | Production deploy / DNS / main push | BLOCKED | Explicit user authorization after release gates pass |
-| Cloud identity, database, object storage, notifications | BLOCKED | Provisioned provider, credentials, tenant policy and deployment target |
+| Hosted identity, database, object storage, remote sync, external notifications | DEFERRED_BY_SCOPE | Retained in historical requirements; excluded from current implementation without being counted as accepted |
 | PPM baseline automation | CLOSED LOCALLY FOR P-G00 | Existing suites pass with the explicitly recorded cached Playwright 1.64.0 runtime and Chromium 1248 path; clean-checkout package provisioning remains required for independent reproduction |
 | AQL baseline parity | CLOSED LOCALLY FOR A-G00 | `apps/aql/tests/a-g00-baseline.cjs` passes Q01-Q24 plus portable round-trip invariants; browser close/reopen and full reinspection remain later A-G05/A-G09 evidence |
-| True server-side app URL protection | BLOCKED for static GitHub Pages | Authenticated hosting/proxy or server route gate |
+| True server-side app URL protection | DEFERRED_BY_SCOPE | Static GitHub/browser login remains an explicitly local convenience, never secure tenant authorization |
+| AQL carton-randomization requirement | BLOCKED — MISSING APPROVED POLICY | Approved policy/fixture is required; do not invent selection rules |
+| Public commercial hosting decision | BLOCKED | GitHub Pages terms prohibit using Pages as free hosting for an online business/commercial SaaS; no deploy is authorized |
 | Real XLSX workbook parsing | CLOSED LOCALLY FOR G05/G07 Excel | Bundled Apache-2.0 SheetJS `xlsx@0.18.5` for local workbook preview/export and TNA report workbook sheets; report PDF/print visual review remains G07 |
 
 ## E. Work journal
@@ -193,7 +207,17 @@ Current counted gates: t=9, p=9, a=3, s=3.
 | 2026-10-11 04:45:00 UTC | TNA G10 in-app alert rules | CONDITIONAL | Added explicit-as-of overdue/due/upcoming/blocked alerts and a provider-independent in-app delivery contract. Tests prove plan decisions unchanged, duplicate suppression, quiet hours, record-scoped recipient authorization, disabled-policy rejection and external-channel blocker. Authenticated 390px alert panel, full TNA, shared-shell, PPM reference and AQL baseline/release regressions pass. Server delivery/receipts/retries/unsubscribe remain blocked; percentages unchanged. |
 | 2026-10-11 05:05:00 UTC | TNA G11 reproducible regression matrix | CONDITIONAL | Added `tests/vesa-g11-regression.cjs` with explicit Playwright/Chromium prerequisites and evidence classification. Complete second run PASS: 54 commands / 420.1s (30 automated, 11 browser, 12 syntax, 1 repository), covering TNA G01-G10, PPM 168 through P-G09 plus 40 PDFs/planning/regression/update, AQL A-G00-A-G09/release and shared shell 6/6. First run exposed one transient P-G02 timeout; isolated and full reruns passed. Large performance, assistive technology, provider security and physical acceptance remain open; percentages unchanged. |
 | 2026-10-11 05:15:00 UTC | TNA G11 large-portfolio performance | CONDITIONAL | Added a bounded synthetic 250-order/25,250-task fixture. Initial PASS on recorded Node/Windows/i3/6 GiB environment: median 4,968.5 ms / exact PO filter 21.6 ms; post-documentation full TNA rerun PASS at median 5,027.9 ms / filter 19.8 ms. Deterministic identity/forecast and no input mutation hold. This is a local regression guardrail, not a production SLA or device/factory acceptance. G11 remains conditional; percentages unchanged. |
+| 2026-10-11 08:32:56 UTC | GitHub-Free-only scope migration | CONDITIONAL | Installed the canonical scope and reusable resume prompt; updated root/app governance with `DEFERRED_BY_SCOPE`; preserved the historical 55% view. Local audit: 205 tracked files / 29,775,030 bytes (28.396 MiB); static release-path estimate 167 files / 29,103,137 bytes (27.755 MiB); largest file `apps/aql/index.html` 11,703,744 bytes; no sensitive filenames found and two secret-pattern hits are intentional token-rejection fixtures. Official GitHub limits/policy were rechecked on 2026-10-11. Free-only eligibility denominators remain unverified, so no new percentage is claimed. No application code, record, route, worker, remote branch or deployment changed. |
 
 ## F. NEXT ACTION
 
-Reconcile TNA G11 saved-copy/schema-change and genuine Excel/PDF viewer/no-clipping evidence against existing G05/G07 artifacts. Add only the smallest missing reproducible proof, preserve saved data, and do not duplicate storage/report engines.
+Audit and freeze the GitHub-Free-only eligible subrequirement denominator for TNA, PPM, AQL and Shared UX under the existing 30/30/30/10 weights. Split mixed local/provider gates explicitly, preserve the historical 55% baseline, and report `NOT YET RECALCULATED` until every denominator and accepted numerator is evidence-backed.
+
+## G. GitHub-Free-only migration audit
+
+- **In scope:** canonical scope/resume documents; governance references; tracker status overlays; local repository size/sensitive-content evidence; separate progress views.
+- **Frozen:** all TNA/PPM/AQL application code, calculations, 168 PPM checkpoint identities, AQL sampling/Ac-Re tables, TNA baselines/history, saved formats, service workers, routes and prior acceptance evidence.
+- **Dependency direction:** the platform scope overrides older documents only for excluded provider services; app/domain specifications remain authoritative for local behavior.
+- **Risk controls:** no application record belongs in Git; manual saved copies stay user-controlled; browser login is not server security; GitHub Pages is not approved as commercial SaaS hosting.
+- **Verification:** exact installed-document hashes/content, official policy links, tracked/release byte counts, sensitive filename/pattern review, tracker terminology, historical formula preservation and `git diff --check`.
+- **Rollback:** revert the single documentation-only migration commit; no schema/data/cache migration is involved.

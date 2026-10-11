@@ -2,6 +2,8 @@
 
 **DURABLE source of truth for VS Code Codex.** Exactly one ongoing program: Phase 1 (safe UI/foundation), Phase 2 (complete domain-quality rework), Phase 3 (secured integrations). Each gate is individually testable and reversible. A narrative, old report or checked box alone is not proof.
 
+**Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` makes hosted identity/backend/database, remote collaboration and external notification delivery `DEFERRED_BY_SCOPE`. Sampling/Ac-Re provenance, stage behavior, reinspection history, local records, saved-copy recovery, reports and shared UX remain active; no carton-randomization policy may be invented.
+
 ## Starting snapshot — 2026-10-10
 | Field | Current reality |
 |---|---|
@@ -15,7 +17,7 @@
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
 | LAST COMPLETED ACTION | Added and tested the fixture-only A-G09 shared-reference and cross-app-boundary contract; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
 | NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen, then perform A-G06/A-G07/A-G08 browser and rendered review |
-| External blockers | Server-side identity/tenant store, cloud database, notices, provider credentials, real factory pilot |
+| Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
 At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git status --short`, current branch/HEAD, last accepted commit and real test output. Reconcile the log before any new code. Read topic-specific document as required, then pick earliest incomplete unblocked gate, name exact change files/frozen files, test and record acceptance. Do not claim a feature finished while actual code/output differs. A current domain fixture change requires explicit review; don't turn a cosmetic issue into inspection-policy rewrite.
@@ -131,7 +133,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```
 - [ ] Cross-app shared CSS/JS file impacts reviewed once, all sibling tests rerun.
 
-### A-G10 — Server-side roles, collaboration, authorized approvals (provisioned only)
+### A-G10 — Server-side roles, collaboration, authorized approvals — `DEFERRED_BY_SCOPE`
 - [ ] API, tenant authorization, audit, optimistic concurrency and offline queue designs.
 - [ ] Real server-backed sync enabled only with authorized backend/secrets/hosting; else BLOCKED EXTERNAL.
 - [ ] Never call static local login secure multiuser or local entered signature externally verified.

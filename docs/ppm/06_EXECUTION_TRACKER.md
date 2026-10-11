@@ -2,6 +2,8 @@
 
 **MANDATORY living ledger for VS Code Codex.** Update in Git after every verified patch. Do not fabricate a completed checkbox, percent, screenshot, test or push. Scope includes Phase 1+2+3; each gate is reversible and independently tested. External backend work may remain BLOCKED while other gates complete.
 
+**Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` makes hosted identity/backend/database, remote collaboration and external notification delivery `DEFERRED_BY_SCOPE`. PPM local records, all 168 checkpoint identities, GO/signature rules, saved-copy compatibility, reports and local cross-app references remain active and frozen.
+
 ## Initial reality snapshot (handover creation: 2026-10-10)
 | Field | Status |
 |---|---|
@@ -11,11 +13,11 @@
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
 | Last accepted implementation gate | **P-G08 — TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline through P-G08 reference integration; P-G09 has a tested local contract but remains `BLOCKED — EXTERNAL DEPENDENCY` for live provider/two-account proof; no production deployment |
+| Status | `accepted locally` for P-G00 baseline through P-G08 reference integration; P-G09 has a tested dormant local contract while its live provider/two-account portion is `DEFERRED_BY_SCOPE`; no production deployment |
 | Current gate | `P-G10 — Final acceptance evidence audit (P-G09 remains externally blocked)` |
 | LAST COMPLETED ACTION | Reconciled all 52 PPM feature IDs against executable gate evidence at HEAD: P01–P48 and P51 are accepted locally, P49/P50 remain externally blocked, and P52 remains conditional pending independent screen-reader/performance/physical-device review; P-G10 is not accepted |
 | NEXT ACTION | Create the separate program release-readiness report from all three trackers, including verified/incomplete/blocked features, missing tests, saved-record upgrade posture, internal staging prerequisites and production authorization gates |
-| External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
+| Deferred / active setup issue | Hosted backend and cross-company provider roles are `DEFERRED_BY_SCOPE`; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
 Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits, tests and screenshots with ledger. If there is a discrepancy, downgrade status and inspect before changing. Pick earliest *accepted-prerequisite* group, implement one small patch, run tests, verify other apps not broken, commit, append log, set next action. Any new/changed UI model must be measured against `VESA-UNIFORM-UI-v1` in document 04. Never directly push main without explicit release instruction.
@@ -77,7 +79,7 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] PPM does not alter AQL Ac/Re or TNA forecast; no auto-authorized GO.
 - [x] Shared shell visual regression across all available apps passed.
 
-### P-G09 — Secure server collaboration designs and guarded integration
+### P-G09 — Secure server collaboration — `DEFERRED_BY_SCOPE`
 - [x] Tenant/actor/role/approval/audit API contracts & offline conflict design.
 - [ ] Server-side integration tested only with authorized provider; otherwise explicit BLOCKED — EXTERNAL DEPENDENCY.
 - [x] No claim of secure multi-user while running static local login.

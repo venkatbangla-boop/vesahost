@@ -2,6 +2,10 @@
 
 > Scope: `venkatbangla-boop/vesahost`, default branch `main`; target `/apps/tna/`; VESA Enterprise Inc. This file belongs at the **repository root**. It is a small navigation and governance file, not the entire specification.
 
+## Current platform-scope authority
+
+Read `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` before selecting work. It is the current user-approved platform contract and takes precedence over older documents **only** where they require a paid/external backend, cloud database, provider identity, remote synchronization, or external notification delivery. Those items are retained historically and marked `DEFERRED_BY_SCOPE`; frozen TNA/PPM/AQL rules, local data safety, tests, and accepted evidence remain unchanged.
+
 ## One continuous project, seven durable documents
 
 Implement **all capabilities described for Phase 1 + Phase 2 + Phase 3** as one cohesive product, in tested, reversible patch groups. Do not interpret the phases as permission to omit advanced functionality. The documents are the source of truth:
@@ -44,11 +48,11 @@ Read `06_EXECUTION_TRACKER.md` at the start of **every new Codex task or resumed
 - Canonical flow: UI command → controller → validation → domain engine → versioned record state → repository adapter → recompute dashboard/reports. Backend: authenticated request → tenant/order authorization → validated application command → domain → persistence → audited response.
 - Implement all three stages continuously **with gates**, not as three disconnected apps. Re-evaluate after tests and preserve accepted contracts.
 
-## Security / external dependency hard boundaries
+## Security / platform boundaries
 
-GitHub Pages is static. The existing browser-local login cannot by itself provide secure cross-company access, centralized collaboration or trusted server notifications. Phase 3 requires an authenticated server-side service and provisioned infrastructure; never expose tokens, use production demo credentials, claim cloud synchronization when none exists, or treat client-side role hiding as authorization.
+GitHub Pages is static. The existing browser-local login cannot by itself provide secure cross-company access, centralized collaboration or trusted server notifications. Under the current GitHub-Free/local-only contract, provider-backed Phase 3 deployment is `DEFERRED_BY_SCOPE`; never expose tokens, use production demo credentials, claim cloud synchronization, or treat client-side role hiding as authorization.
 
-Implement Phase 3 data contracts, tenant-aware clients, permission-checked server architecture, tests and safe disabled/offline states as far as environment permits. For actual hosted collaboration, secure notifications or external APIs: use only provisioned, user-authorized provider configuration. If infrastructure/secrets/access are missing, record `BLOCKED — EXTERNAL DEPENDENCY`, prove all other work, give the exact setup required, and **do not falsely mark Phase 3 live or project fully complete**. Never guess provider credentials or alter unrelated systems.
+Preserve already-audited provider-neutral contracts and safe disabled/offline states where removal would add risk, but do not build, connect, purchase, or require a hosted backend, external identity, cloud database, or notification provider. Mark those historical requirements `DEFERRED_BY_SCOPE`, continue every local/browser-native requirement, and **do not falsely mark secure multiuser collaboration or commercial SaaS hosting complete**. Never guess provider credentials or alter unrelated systems.
 
 ## Final acceptance / output
 

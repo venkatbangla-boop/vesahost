@@ -5,9 +5,11 @@
 **Work location:** The user's local VS Code repository; do not treat this handover as deployed code.
 **Program control files (repository root):** `VESA_CONTINUITY_RULES.md`, `VESA_PROGRESS.md`, `VESA_RESUME_PROMPT.md`.
 
+**Current scope authority:** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md`. It supersedes older instructions only for paid/external backend, identity, database, synchronization, notification-provider and commercial SaaS hosting work. Preserve those requirements in history as `DEFERRED_BY_SCOPE`; do not treat them as failed or completed.
+
 ## 1. Outcome and boundaries
 
-Build and verify **all specified Phase 1 + Phase 2 + Phase 3 work** for TNA, PPM, and AQL as ONE coordinated program. Continue automatically from one safe, accepted local development checkpoint to the next *while the Codex session is running*. The user does not need to type `continue` after ordinary completed checkpoints.
+Build and verify all GitHub-Free/browser-local portions of the specified Phase 1 + Phase 2 + Phase 3 work for TNA, PPM, and AQL as ONE coordinated program. Retain the original full-scope baseline separately. Continue automatically from one safe, accepted local development checkpoint to the next *while the Codex session is running*. The user does not need to type `continue` after ordinary completed checkpoints.
 
 **This is not an unattended always-on job.** Codex cannot independently relaunch VS Code, log in again, renew expired sessions, obtain unavailable credentials, or work after its environment closes. The SAME prompt in `VESA_RESUME_PROMPT.md` restarts the workflow using committed repository state and `VESA_PROGRESS.md`. Never claim background execution or a guaranteed uninterrupted run.
 
@@ -74,6 +76,8 @@ Use **fixed gate-count weighting** so a new session calculates the exact same sc
 
 Always count source gate IDs once; never double count sub-checklists. These are **verified checkpoint scores, not labor hours or effort estimates**. If repository evidence has not yet been inspected, show `NOT MEASURED / RECONCILIATION REQUIRED`, not an invented 0% or 90%. Accepted gates can be downgraded when regression proves a failure; recalculate accordingly. BLOCKED gates do not earn completion credit. Mark blocked externally dependent work precisely and do not claim 100% while required gates remain blocked.
 
+This formula remains the **historical full-scope baseline**. `VESA_PROGRESS.md` must also show a separately audited GitHub-Free-only view using explicit eligible subrequirements and the same 30/30/30/10 weights. Until that eligibility map is complete, report `NOT YET RECALCULATED`; never increase completion merely by excluding provider work.
+
 ## 7. One-click dashboard contract
 
 `VESA_PROGRESS.md` is the single page the user clicks after one day or two days away. After each accepted checkpoint, update at minimum:
@@ -89,7 +93,7 @@ Do not use a running session's chat history as the only tracker. Durable data be
 
 ## 8. Security and release limits
 
-The existing static GitHub Pages login is only a browser-local gate, **not secure hosted multi-tenant authentication**. Actual factory/buyer collaboration, server notifications and role-based data isolation require a provisioned, authorized backend and independent security testing. It is acceptable to complete safe contracts/adapters/tests locally and mark external deployment blocked. Never say a backend is live without verifiable two-account server tests.
+The existing static GitHub Pages login is only a browser-local convenience, **not secure hosted multi-tenant authentication**. Actual factory/buyer collaboration, server notifications and role-based data isolation would require services excluded by the current scope and are therefore `DEFERRED_BY_SCOPE`. Preserve safe local contracts/adapters/tests, require manual saved-copy transfer, and never say a backend, remote sync, protected portal, or external notification channel is live.
 
 Normal, scoped, reversible local coding and test commits are authorized by this program request; do not take it as permission to change buyer/quality policies, delete records, expose secrets, alter unrelated products, pay for services, or push/deploy to the public `main` branch without explicit user release approval. Never claim a complete program while required tasks remain untested or blocked.
 

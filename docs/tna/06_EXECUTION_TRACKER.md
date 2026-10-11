@@ -2,6 +2,8 @@
 
 **THIS FILE IS THE RESUMPTION SOURCE OF TRUTH FOR VS CODE CODEX.** Keep it in Git. Reconcile it with real code/commits/tests before advancing; do not mark boxes from confidence or narrative alone.
 
+**Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` governs platform choices. Hosted backend/identity/database/object storage, remote multiuser synchronization and external notification delivery are `DEFERRED_BY_SCOPE`, not failed or accepted. Local planning, references, in-app alerts, saved-copy safety and regression work remain active.
+
 ## A. Current execution snapshot — initial handover
 
 | Field | Current value |
@@ -15,7 +17,7 @@
 | Last accepted patch group | **G08 — Incomplete-input and recovery browser evidence** |
 | Current patch group | **G11 — Full verification and stabilization (conditional preparation)** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
-| External block | Cloud hosting/identity/database/notification providers/permissions not yet authorized or provisioned |
+| Deferred by current scope | Cloud hosting/identity/database/object storage, remote collaboration and external notification providers |
 | Resume anchor | G08 accepted locally on `feature/tna360-continuous`; G09 contract slice is conditionally local and not connected |
 | LAST COMPLETED ACTION | Added the TNA adapter slice in `bb431ae`: existing HOME/FILE/EDIT/VIEW/TOOLS/HELP actions now route through the neutral VESA workspace shell, the old commandbar is removed, and TNA save state is reflected in the shared indicator; G09 provider boundaries remain unchanged |
 | NEXT ACTION | Reconcile G11 saved-copy/schema-change and genuine Excel/PDF viewer/no-clipping evidence against existing G05/G07 artifacts. Add only the smallest missing reproducible proof; do not reimplement storage or reports and do not count G11 until every remaining item is accepted. |
@@ -143,7 +145,7 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [x] Advanced management filters, portfolio risk and provenance of forecast.
 - [x] Tests for scenario non-mutation, overlapping workloads and uncertainty.
 
-### G09 — Phase 3 secure backend and collaboration
+### G09 — Phase 3 secure backend and collaboration — `DEFERRED_BY_SCOPE`
 
 - [ ] Document user-approved hosting/identity/DB/storage/email provider and production security decisions; **if unavailable, mark remaining deployment BLOCKED rather than faking it**.
 - [ ] Implement versioned tenant/order API contracts, schema migration and secure backend against chosen authorized runtime.
@@ -161,7 +163,7 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [x] PPM and AQL reference matching and verified display-status mapping, without touching their release/inspection logic.
 - [x] Safe unavailable/unverified references and stale schema conditions.
 - [x] In-app action alerts from rules; permission-scoped notifications and quiet-hours/deduplication policies.
-- [ ] Configured server-delivered notification channels, delivery receipts/retries and unsubscribe; if external provider missing, explicitly blocked—not 'sent'.
+- [ ] `DEFERRED_BY_SCOPE`: configured server-delivered notification channels, delivery receipts/retries and unsubscribe; never label these 'sent'.
 - [x] Local contract tests for false approval, duplicate delivery, unauthorized recipients, quiet hours, disabled policy and fail-closed external channels. Actual provider delivery/retry tests remain part of the blocked item above.
 
 ### G11 — Full verification and stabilization
