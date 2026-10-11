@@ -53,7 +53,9 @@
   const validId=value=>/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(text(value));
   const validFutureOrCurrentIso=value=>{const time=Date.parse(value);return typeof value==='string'&&Number.isFinite(time)&&time>Date.now();};
   const validIso=value=>typeof value==='string'&&Number.isFinite(Date.parse(value));
-  const containsKey=(value,key)=>{if(!value||typeof value!=='object')return false;if(Object.prototype.hasOwnProperty.call(value,key))return true;return Array.isArray(value)?value.some(item=>containsKey(item,key)):Object.values(value).some(item=>containsKey(item,key));};
+  const SENSITIVE_FIELD_NAMES=Object.freeze(['accesstoken','refreshtoken','authorization','password','apikey','clientsecret']);
+  const normalizeFieldName=value=>String(value).toLowerCase().replace(/[^a-z0-9]/g,'');
+  const containsSensitiveField=value=>{if(!value||typeof value!=='object')return false;return Object.entries(value).some(([key,item])=>SENSITIVE_FIELD_NAMES.includes(normalizeFieldName(key))||containsSensitiveField(item));};
   function result(ok,errors=[],warnings=[]){return {ok,errors:[...errors],warnings:[...warnings]};}
   function normalizeConfig(input={}){return {enabled:input.enabled===true,baseUrl:text(input.baseUrl).replace(/\/+$/,''),provider:text(input.provider),configuredBy:text(input.configuredBy)}}
   function connectionStatus(config={},session=null){
@@ -92,6 +94,7 @@
     if(!nonEmpty(command.action))errors.push('action is required.');
     if(!Number.isInteger(command.expectedRevision)||command.expectedRevision<0)errors.push(ERROR_CODES.EXPECTED_REVISION_REQUIRED);
     if(!command.payload||typeof command.payload!=='object'||Array.isArray(command.payload))errors.push('payload must be an object.');
+    if(containsSensitiveField(command.payload))errors.push('Command payloads must not contain tokens, credentials or authorization fields.');
     return result(!errors.length,errors);
   }
   function hasRight(session,action){const rights=RIGHTS[session?.role]||[];const required=ACTION_RIGHTS[action];return !!required&&(rights.includes('*')||rights.includes(required));}
@@ -149,7 +152,7 @@
     const commandResult=validateCommand(intent?.command);
     if(!commandResult.ok)errors.push(...commandResult.errors);
     if(intent?.command?.requestId!==intent?.requestId||intent?.command?.tenantId!==intent?.tenantId)errors.push('Offline intent command identity does not match its envelope.');
-    if(containsKey(intent,'accessToken'))errors.push('Offline intents must never contain access tokens.');
+    if(containsSensitiveField(intent))errors.push('Offline intents must never contain tokens, credentials or authorization fields.');
     return result(!errors.length,errors);
   }
   function reconcileOfflineIntent(intent,serverResult={}){
@@ -158,7 +161,7 @@
     const status=text(serverResult.status);
     const errors=[];
     if(!RECONCILIATION_STATUSES.includes(status))errors.push('Server reconciliation status is not supported.');
-    if(containsKey(serverResult,'accessToken'))errors.push('Server reconciliation results must not contain access tokens.');
+    if(containsSensitiveField(serverResult))errors.push('Server reconciliation results must not contain tokens, credentials or authorization fields.');
     if(!Number.isInteger(serverResult.serverRevision)||serverResult.serverRevision<0)errors.push('Server reconciliation revision is required.');
     if(status==='rejected'&&!nonEmpty(serverResult.reason))errors.push('Rejected offline intents require a reason.');
     if(status==='conflict'&&(!nonEmpty(serverResult.reason)||!serverResult.serverRecord||typeof serverResult.serverRecord!=='object'||Array.isArray(serverResult.serverRecord)))errors.push('Conflicts require a reason and the server version for review.');
@@ -174,7 +177,7 @@
     const validation=validateCommand(command);
     return validation.ok?{ok:true,command}:{ok:false,code:ERROR_CODES.INVALID_COMMAND,errors:validation.errors};
   }
-  const api={CONTRACT_VERSION,API_VERSION,MODES,ROLES,RIGHTS,ACTION_RIGHTS,ENDPOINTS,ERROR_CODES,ATTACHMENT_MAX_BYTES,ATTACHMENT_MIME_TYPES,OFFLINE_STATUSES,RECONCILIATION_STATUSES,HEALTH_STATUSES,normalizeConfig,connectionStatus,validateSession,canAccessOrder,validateCommand,createCommand,hasRight,validateAttachmentMetadata,validateHealthResponse,authorizeServerCommand,createAuditEnvelope,createOfflineIntent,validateOfflineIntent,reconcileOfflineIntent};
+  const api={CONTRACT_VERSION,API_VERSION,MODES,ROLES,RIGHTS,ACTION_RIGHTS,ENDPOINTS,ERROR_CODES,ATTACHMENT_MAX_BYTES,ATTACHMENT_MIME_TYPES,OFFLINE_STATUSES,RECONCILIATION_STATUSES,HEALTH_STATUSES,SENSITIVE_FIELD_NAMES,normalizeConfig,connectionStatus,validateSession,canAccessOrder,validateCommand,createCommand,hasRight,validateAttachmentMetadata,validateHealthResponse,authorizeServerCommand,createAuditEnvelope,createOfflineIntent,validateOfflineIntent,reconcileOfflineIntent};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaCloudContracts=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

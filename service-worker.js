@@ -1,4 +1,4 @@
-const CACHE='vesa-v64-g11-language-accessibility';
+const CACHE='vesa-v65-g11-local-security';
 const ASSETS=[
   './',
   './index.html',

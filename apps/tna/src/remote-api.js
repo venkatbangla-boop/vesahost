@@ -9,6 +9,7 @@
   // outputs are parsed responses or stable user-safe errors. State is the current
   // session only. No token is logged or persisted by this adapter.
   function adapterError(code,message){const error=new Error(message);error.code=code;return error;}
+  const PROTECTED_HEADERS=new Set(['authorization','content-type','idempotency-key','x-vesa-tna-contract','x-vesa-tna-tenant']);
   function createRemoteApi(config={},options={}){
     const normalized=contracts.normalizeConfig(config);
     const fetchImpl=options.fetchImpl||root.fetch;
@@ -20,11 +21,12 @@
       if(!current.enabled)throw adapterError(current.code,current.userMessage);
       if(typeof fetchImpl!=='function')throw adapterError(contracts.ERROR_CODES.EXTERNAL_DEPENDENCY,'Connected collaboration is unavailable in this browser context.');
       const {requestId,...requestInit}=init;
-      const headers={Accept:'application/json','Content-Type':'application/json','X-VESA-TNA-Contract':contracts.CONTRACT_VERSION,'X-VESA-TNA-Tenant':session.tenantId,...(requestInit.headers||{})};
+      const callerHeaders=Object.fromEntries(Object.entries(requestInit.headers||{}).filter(([name])=>!PROTECTED_HEADERS.has(String(name).toLowerCase())));
+      const headers={...callerHeaders,Accept:'application/json','Content-Type':'application/json','X-VESA-TNA-Contract':contracts.CONTRACT_VERSION,'X-VESA-TNA-Tenant':session.tenantId};
       if(session.accessToken)headers.Authorization=`Bearer ${session.accessToken}`;
       if(requestId)headers['Idempotency-Key']=requestId;
       let response;
-      try{response=await fetchImpl(`${normalized.baseUrl}${path}`,{...requestInit,headers});}catch(error){throw adapterError(contracts.ERROR_CODES.REMOTE_REQUEST_FAILED,'The connected service could not be reached. Local work remains available.');}
+      try{response=await fetchImpl(`${normalized.baseUrl}${path}`,{...requestInit,headers,credentials:'omit',cache:'no-store',redirect:'error',referrerPolicy:'no-referrer'});}catch(error){throw adapterError(contracts.ERROR_CODES.REMOTE_REQUEST_FAILED,'The connected service could not be reached. Local work remains available.');}
       if(!response?.ok)throw adapterError(contracts.ERROR_CODES.REMOTE_REQUEST_FAILED,`Connected service returned status ${Number(response?.status)||'unknown'}. Local work remains available.`);
       if(response.status===204)return null;
       try{return await response.json();}catch{throw adapterError(contracts.ERROR_CODES.REMOTE_REQUEST_FAILED,'Connected service returned an unreadable response. Local work remains available.');}
