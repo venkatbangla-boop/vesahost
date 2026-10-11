@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Completed the independent A-G08 Settings-language and rendered-report browser slice at source HEAD `7708672`: EN/BN/HI/TA guidance, exact saved practice identity/result preservation, 320px preview geometry and a visually reviewed four-page A4 PDF; the two sandbox-blocked preview script errors remain explicit. |
-| NEXT ACTION | Audit and run the independently achievable A-G07 current/legacy selected-file restore flow in a disposable browser profile without clearing existing records; keep SamplingEngine and saved-format contracts frozen. |
+| LAST COMPLETED ACTION | Added and passed the independent A-G07 browser restore proof at source HEAD `3239ca4`: current and legacy files opened through the selected-file flow in a disposable profile; selected inline-stage state and evidence bytes survived, identities/approvals were reset safely, existing records remained, and the migrated legacy draft reopened after reload. |
+| NEXT ACTION | Audit the independently achievable A-G07 old-tab/service-worker cache-update risk in disposable browser contexts and add reproducible evidence without clearing user records or changing SamplingEngine/saved-format contracts. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -75,7 +75,7 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 - [ ] Performance and accessibility for huge evidence/long records.
 
 ### A-G07 — Durable saving, portable HTML, import and offline worker
-- [ ] Current/legacy portable saved inspection opens and preserves all selected stages/assets.
+- [x] Current/legacy portable saved inspection opens and preserves all selected stages/assets — deterministic current inline-stage + attachment-byte restore and legacy migration/reopen browser proof.
 - [ ] Strict atomic import of project/master/sync with malice/duplicate/oversize tests.
 - [ ] Quota, blocked IndexedDB, browser close/update and partial rescue modes honestly described.
 - [ ] Old AQL tab update against service worker cache deletion risk tested/fixed if reproducible.
@@ -398,6 +398,22 @@ IMPLEMENTED: Added deterministic contract cases for shade Delta E failure, clean
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — decision-guard coverage is locally proven, but full A-G04 35-area/stage matrix and field-device review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then cover the next untested stage-specific record without changing frozen AQL tables.
+```
+
+### A-G07 current/legacy selected-file restore — conditional, application source unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-12 00:15 Asia/Dhaka
+GATE / OBJECTIVE: A-G07 — prove current and legacy saved-copy restore through the real file chooser, including selected stage state, evidence bytes, safe identity/approval reset, non-destructive local persistence and reload/reopen
+BRANCH / SOURCE HEAD: feature/tna360-continuous / 3239ca4
+FILES CHANGED (EXACT): apps/aql/tests/a-g07-browser-restore.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN: apps/aql/index.html, ProjectTransfer, ProjectSchema, SamplingEngine, saved-format version, service worker, PPM/TNA/shared files and production browser data; no application/domain source or existing record was changed
+IMPLEMENTED: Added a reproducible raw-Playwright browser contract using a fresh isolated context and temporary fictional files. A current-format project with an explicit inline stage record and text evidence was selected through the app file chooser; the imported draft retained buyer/factory/order/finding/measurement/stage data and exact evidence bytes while remapping the attachment identity, assigning a fresh project identity, retaining source lineage, unlocking the draft, clearing scope/plan/measurement/review approvals and resetting disposition to Not released. A synthetic legacy file was then selected through the same UI; mapped buyer/factory/order/finding/measurement/check/CAPA data, migration warnings, full legacyArchive and historical source audit were retained in a separate draft. All earlier local record IDs survived both imports. After reload, Open Saved + keyboard Enter reopened the exact migrated identity with its archived legacy source and Not released state intact.
+TEST COMMANDS + OUTPUT/COUNTS: Focused `node apps/aql/tests/a-g07-browser-restore.cjs` PASS after the final fixture extension. Full sequence PASS without retry: `a-g00-baseline.cjs` (Q01-Q24 plus portable invariants), `a-g02-workflow.cjs`, `a-g03-sampling.cjs`, `a-g04-stage.cjs`, `a-g05-readiness-rework.cjs`, `a-g06-evidence-analytics.cjs`, `a-g07-portable-safety.cjs`, `a-g07-browser-restore.cjs`, `a-g08-reports-language.cjs`, `a-g09-cross-app-boundaries.cjs`, `release-contract.cjs`, `tests/vesa-workspace-shell-contract.cjs`; `git diff --check` PASS. Browser assertions also proved zero uncaught page errors and zero external requests.
+BROWSER / DATA EVIDENCE: Disposable HTTP server and Chromium context only; temporary `.vesaproj`/`.aqlproj` fixtures were removed in `finally`. No repository/browser user data was cleared, no production record was opened, and no approval, release, external export or network request occurred.
+LIMITATIONS / UNRESOLVED RISK: This accepts the current/legacy selected-stage/asset restore subcheck, not the complete A-G07 gate. Strict import guards have deterministic source/fixture coverage, but service-worker old-tab update/cache deletion, forced quota/rescue across a browser restart, very large real attachments and real-device recovery remain open.
+REVIEWER / VERDICT: conditional — the selected-file restore/reload slice is accepted locally and repeatable; A-G07 remains conditional for its remaining worker/rescue/device evidence.
+NEXT ACTION (ONE PRECISE STEP): audit the AQL old-tab/service-worker cache-update risk in disposable browser contexts and add a reproducible test without clearing user records or changing SamplingEngine/saved-format contracts.
 ```
 
 ### A-G08 four-language Settings and rendered A4 report review — conditional, source unchanged
