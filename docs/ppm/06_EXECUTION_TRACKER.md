@@ -10,11 +10,11 @@
 | Specs | `apps/ppm/AGENTS.md` + `docs/ppm/01`–`06` |
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
-| Last accepted implementation gate | **P-G06 — PPM saving, recovery, offline and update reliability** (`2f14e4a`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline through P-G06 saving/recovery/offline/update; P-G07 is active; no production deployment |
-| Current gate | `P-G07 — PPM reports, four languages, print and accessibility` |
-| LAST COMPLETED ACTION | Localized PR01–PR10 catalogue/page/row authored copy in `ac3b34a`; 40 PDFs across EN/BN/HI/TA, complete report-key coverage, exact multilingual entered-value preservation, a visually clean Tamil 390px selector and full proportional regressions pass |
-| NEXT ACTION | Run the final P-G07 rendered PDF/print accessibility matrix for EN/BN/HI/TA at 320px and 200% zoom across light/dark/high-contrast themes, including keyboard/dialog focus, glyph, row, logo, watermark and page-number checks |
+| Last accepted implementation gate | **P-G07 — PPM reports, four languages, print and accessibility** (`177f7b0`; accepted locally, not deployed) |
+| Status | `accepted locally` for P-G00 baseline through P-G07 reports/languages/print/accessibility; P-G08 is active; no production deployment |
+| Current gate | `P-G08 — TNA/AQL references and platform compatibility` |
+| LAST COMPLETED ACTION | Accepted P-G07 in `177f7b0`: 40 PDFs plus 12 EN/BN/HI/TA × light/dark/high-contrast browser combinations pass at 320px and 200% zoom with dialog focus/name/return, 4.5:1 primary-action contrast, local Indic fonts, approved logo, watermark/footer/page markers, immutable source values and full PPM/TNA/AQL regressions |
+| NEXT ACTION | Audit the existing PPM record schema/codec/workspace for a bounded versioned `linkedOrders` reference adapter, then add pure validation/round-trip tests for explicit TNA milestone and AQL inspection references without reading or writing sibling stores |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -69,8 +69,8 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 ### P-G07 — Reports, four languages, print and accessibility
 - [x] Report PR01–PR10 coverage recorded; existing producer not broken.
 - [x] English/Bengali/Hindi/Tamil authored language views; user values unchanged.
-- [ ] PDF/print readable, no missing font glyphs/rows, logo/brand/watermark correct.
-- [ ] Keyboard, dialog, 200% zoom, 320px mobile, light/dark/other themes tested.
+- [x] PDF/print readable, no missing font glyphs/rows, logo/brand/watermark correct.
+- [x] Keyboard, dialog, 200% zoom, 320px mobile, light/dark/other themes tested.
 
 ### P-G08 — TNA/AQL references and platform compatibility
 - [ ] Verified record-reference adapters/identity mapping, no direct sibling store writes.
@@ -591,4 +591,23 @@ OWNERSHIP / CALL FLOW / STATE: VesaPrefs applies language/theme -> V5Workspace o
 COMPATIBILITY RISKS / GUARDS: browser zoom emulation must be test-only; print output must stay theme-independent and readable; modal naming/focus changes cannot alter report commands; generated artifacts contain synthetic values only; no local store clearing or production data access.
 VERIFICATION / ROLLBACK: assert dialog role/name/focus trap/focus return and visible focus, 320px no-overflow, 200% zoom no-overflow, applied theme/language, immutable serialized source, nonblank printable canvases, logo/watermark/footer/page numbering markers and zero page errors; capture the 12 language/theme UI and print representatives; rerun P-G00/P-G06/P-G07/planning/regression/update/shared-shell/syntax/diff. Revert the test/accessibility/tracker commit; no schema migration or saved-data cleanup.
 PRE-CODE VERDICT: approved as the final local P-G07 acceptance slice; secure hosted collaboration, production publication and physical-print validation remain outside this local gate.
+```
+
+### P-G07 final print, zoom, theme and keyboard acceptance — accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-11 02:50 UTC / 2026-10-11 08:50 Asia/Dhaka
+GATE / OBJECTIVE: P-G07 — close local report, four-language, print and accessibility acceptance with rendered evidence and proportional regressions
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / c0ee576 / 177f7b0
+FILES CHANGED (EXACT): apps/ppm/report-service.js; apps/ppm/workspace.js; apps/ppm/workspace.css; apps/ppm/tests/p-g07-reports.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+FILES WATCHED/FROZEN: core.js, planning-services.js, record-services.js, languages.js, all 168 checkpoint identities/statuses, GO/CONDITIONAL GO/HOLD, P-G05 history, repositories/backups/workers, shared/AQL/TNA source and saved records
+IMPLEMENTED / PROVEN: approved VESA logo now renders on each report canvas; every modal has an accessible name; report primary actions use the shared on-accent token. The test renders 40 PR01–PR10 PDFs and 12 EN/BN/HI/TA × clear-blue/midnight-mono/pure-mono combinations at 320px and 200% zoom, asserts focus trap/return and visible focus, 4.5:1 primary-action contrast, no 320px overflow or zoom dialog clipping, local Indic font readiness, immutable serialized source, theme-independent print canvases, logo/watermark/footer/page markers and zero page errors.
+TEST COMMANDS + OUTPUT/COUNTS: P-G00 PASS (168 tuples/19 profiles/12 processes/current+V4); P-G06 PASS; P-G07 PASS (40 PDFs, 12 language/theme combinations at 320px + 200% zoom); planning PASS 16; regression PASS including 24-page full PDF, all PDF modes, EN/BN/HI/TA, CSV defense, recovery/mobile/offline and zero uncaught errors; update PASS 7; shared-shell contract PASS; authenticated shared-shell matrix PASS 6/6 at 390/1280; AQL baseline PASS 24/24 plus release contract; all ten TNA G01-G09 tests PASS; modified-file syntax and git diff --check PASS. Cached Playwright 1.64.0 + Chromium 1248; no package files changed.
+BROWSER / VISUAL EVIDENCE: visually reviewed `output/playwright/ppm-p-g07-{en,bn,hi,ta}-print.png`, representative 320px and 200% zoom screenshots, and the 390px catalogue. Logo, Indic glyphs, rows, watermark, footer and page numbers are readable without clipping; dark-theme contrast defect found during review was repaired and re-proven. Artifacts are ignored and contain synthetic values only.
+DOMAIN / SCHEMA / MIGRATION: none. Report generation remains read-only and all serialized meeting values remain byte-logically unchanged. No saved-data cleanup or migration.
+ROLLBACK: revert 177f7b0; no record migration or external state change is required.
+FEATURE EVIDENCE: P42 four-language authored UI/report behavior; P43 full report; P44 report variants; P45 print breaks/logo/watermark/provenance/version; P52 responsive/accessibility/visual regression are accepted for P-G07 scope.
+BLOCKERS / UNRESOLVED RISK: physical printer/device variation and production publication remain release-gate work; secure hosted collaboration remains BLOCKED — EXTERNAL DEPENDENCY.
+REVIEWER / VERDICT: ACCEPTED LOCALLY — all four P-G07 checklist items have repeatable evidence and proportional sibling regressions pass; not deployed.
+NEXT ACTION (ONE PRECISE STEP): audit and implement the smallest versioned P-G08 `linkedOrders` reference contract for explicit TNA milestone and AQL inspection references, proving validation/round-trip and zero sibling-store access before any UI wiring.
 ```
