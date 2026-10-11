@@ -19,7 +19,7 @@ assert(html.includes('Save Now') && html.includes('Make Another Copy') && html.i
 assert(html.includes('Bengali') && html.includes('Hindi') && html.includes('Tamil'), 'Guidance language options are incomplete');
 assert(html.includes('PRACTICE-') && html.includes('Practice Example - fictional data only'), 'Practice isolation markers are missing');
 assert(html.includes("String(row.stages||'')"), 'Competency import guard is missing');
-assert(html.includes('cleanId') && html.includes('clone.import(raw.masters)'), 'Master import hardening is missing');
+assert(html.includes('cleanId') && html.includes('this.masters.stage(raw.masters)') && html.includes('Duplicate master identity'), 'Master import hardening is missing');
 
 new vm.Script(sw, { filename: 'apps/aql/service-worker.js' });
 assert(sw.includes("vesa-aql-2026-10-11-5"), 'AQL cache version is missing');

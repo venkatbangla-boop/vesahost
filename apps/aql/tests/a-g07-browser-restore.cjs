@@ -174,7 +174,7 @@ async function run() {
     if (await reenter.count()) await reenter.click();
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db);
     await page.locator('[data-action="saved"]').click();
-    const reopenButton = page.locator(`[data-action="resume"][data-id="${restoredLegacy.project.meta.id}"]`);
+    const reopenButton = page.locator(`[data-action="resume"][data-id="${restoredLegacy.project.meta.id}"]`).filter({ hasText: /^Open$/ });
     await reopenButton.focus();
     await page.keyboard.press('Enter');
     await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, restoredLegacy.project.meta.id);
