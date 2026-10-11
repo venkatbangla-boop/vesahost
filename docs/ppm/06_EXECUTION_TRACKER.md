@@ -11,10 +11,10 @@
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
 | Last accepted implementation gate | **P-G08 — TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline through P-G08 reference integration; P-G09 local contract audit is next and live provider integration remains blocked; no production deployment |
-| Current gate | `P-G09 — Secure server collaboration designs and guarded integration` |
-| LAST COMPLETED ACTION | Accepted P-G08 in `11b582f`: Tools → Linked Records now adds, reviews, saves, reopens and explicitly removes validated TNA milestone/AQL inspection references with EN/BN/HI/TA authored copy, locked review-only behavior, unchanged PPM readiness/release and zero sibling-store/network access |
-| NEXT ACTION | Audit the smallest P-G09 tenant/actor/role/approval/audit and offline-conflict client contract with a disabled-by-default adapter; do not claim live collaboration or use a provider until authorized infrastructure exists |
+| Status | `accepted locally` for P-G00 baseline through P-G08 reference integration; P-G09 has a tested local contract but remains `BLOCKED — EXTERNAL DEPENDENCY` for live provider/two-account proof; no production deployment |
+| Current gate | `P-G10 — Final acceptance evidence audit (P-G09 remains externally blocked)` |
+| LAST COMPLETED ACTION | Added the conditional P-G09 contract in `4c6e490`: tenant/meeting scope, roles, approval evidence, expected revisions, idempotency, immutable audit-response shape, token rejection, manual conflict retention and disabled zero-network behavior are pure-tested without loading a runtime adapter |
+| NEXT ACTION | Reconcile P01–P52 against actual accepted commits/tests and populate the feature verification ledger, then identify the first missing independently testable P-G10 acceptance artifact without bypassing the P-G09 provider block or release approval |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -78,9 +78,9 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] Shared shell visual regression across all available apps passed.
 
 ### P-G09 — Secure server collaboration designs and guarded integration
-- [ ] Tenant/actor/role/approval/audit API contracts & offline conflict design.
+- [x] Tenant/actor/role/approval/audit API contracts & offline conflict design.
 - [ ] Server-side integration tested only with authorized provider; otherwise explicit BLOCKED — EXTERNAL DEPENDENCY.
-- [ ] No claim of secure multi-user while running static local login.
+- [x] No claim of secure multi-user while running static local login.
 
 ### P-G10 — Final acceptance & release gate
 - [ ] Every P01–P52 feature has evidence-backed disposition; no silent omission.
@@ -687,4 +687,23 @@ OWNERSHIP / CALL FLOW / STATE: future authorized UI command -> pure contract val
 COMPATIBILITY RISKS / GUARDS: browser-local VesaAuth is never accepted as server authorization; missing/HTTP config stays external-dependency/invalid-config with zero fetch; expected revision is mandatory for writes; cross-tenant/scope and read-only writes fail closed; approval requires an approver role plus authority version and evidence reference; no notification-sent or sync-success flag is fabricated.
 VERIFICATION / ROLLBACK: pure Node test covers valid/expired/cross-tenant sessions, roles, approval evidence, idempotency, immutable command input, token rejection, accepted/conflict reconciliation, disabled adapter zero calls, encoded HTTPS endpoints and injected 409 handling. Rerun syntax, P-G08 contract/UI and proportional PPM/sibling baselines. Revert the new contract/test/tracker patch; no runtime bundle, schema migration, network, storage or saved-data cleanup.
 PRE-CODE VERDICT: approved as a conditional local P-G09 contract slice only; live provider, server-side enforcement, two-account verification, notification delivery and production security remain BLOCKED — EXTERNAL DEPENDENCY.
+```
+
+### P-G09 guarded collaboration contract — conditional local contract, live gate blocked
+
+```text
+TIME / TIMEZONE: 2026-10-11 03:18 UTC / 2026-10-11 09:18 Asia/Dhaka
+GATE / OBJECTIVE: P-G09 — define a fail-closed collaboration contract and disabled adapter without presenting static local login as secure multi-user service
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / a4ee9fa / 4c6e490
+FILES CHANGED (EXACT): apps/ppm/collaboration-contracts.js; apps/ppm/tests/p-g09-collaboration-contracts.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+FILES WATCHED/FROZEN: index.html/runtime loading, service worker/cache identity, workspace/core/planning/record/report services, all 168 checkpoint IDs/statuses, readiness/release/signatures, P-G08 references, repositories/saved records and all sibling/shared source
+IMPLEMENTED / PROVEN: pure `vesa-ppm-collaboration-v1` shapes validate tenant/user/membership, explicit meeting/factory/buyer scopes, roles, expiry and runtime-only access token presence. Versioned commands require actor, expected revision, timestamp and idempotent request ID. Read-only/editor roles fail closed for protected actions; approval submission requires approver role, authority version, approved/rejected decision and evidence reference. Offline intents exclude token-like fields; accepted reconciliation marks only the intent result, while conflicts preserve cloned client command plus server meeting for manual review. Valid server envelopes require revision and immutable audit identity/time. Missing or non-HTTPS configuration stays local and makes zero fetch calls.
+TEST COMMANDS + OUTPUT/COUNTS: P-G09 collaboration contract PASS; syntax PASS; P-G08 reference contract PASS; P-G00 PASS (168/19/12/current+V4); shared-shell contract PASS; AQL baseline PASS 24/24 plus release contract; TNA G09 backend contract PASS; git diff --check PASS. The earlier same-session P-G08/full PPM/update/shared matrix/all TNA G01-G09 evidence remains green at accepted commits.
+DOMAIN / RUNTIME IMPACT: none. The new module is not loaded by index.html or cached by the worker, makes no request without an injected authorized configuration, touches no record/storage and cannot grant GO/CONDITIONAL GO/HOLD or approval. The connected-path test uses an injected synthetic fetch only.
+SECURITY LIMIT: client guards are defense-in-depth examples, not server authorization. No provider, credentials, tenant database, notification channel or two-account staging environment was supplied; no live request, approval, notification or synchronization occurred.
+ROLLBACK: revert 4c6e490; no runtime bundle, schema, cache, browser storage, server or customer data cleanup.
+FEATURE EVIDENCE: P49/P50 contract foundation is conditional. P51 remains covered by accepted shared shell/session routing evidence. P-G09 receives no completion credit while authorized server enforcement and two-account integration proof are absent.
+REVIEWER / VERDICT: BLOCKED — EXTERNAL DEPENDENCY for the live gate; conditional local contract accepted as preparatory evidence only.
+EXACT SETUP REQUIRED: approved HTTPS PPM API endpoint; tenant identity provider and roles; database/audit/event storage; secure secret injection outside the public repo; staging buyer/factory accounts in separate tenants/scopes; notification provider if delivery is required; documented retention/privacy policy; and permission to run security/concurrency/two-account tests.
+NEXT ACTION (ONE PRECISE STEP): proceed independently to P-G10 evidence reconciliation by mapping P01–P52 to accepted commits/tests and locating the first missing local acceptance artifact; do not mark release ready or deploy while P-G09 and user authorization remain blocked.
 ```
