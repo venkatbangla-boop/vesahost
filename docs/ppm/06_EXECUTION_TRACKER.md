@@ -13,8 +13,8 @@
 | Last accepted implementation gate | **P-G06 — PPM saving, recovery, offline and update reliability** (`2f14e4a`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G06 saving/recovery/offline/update; P-G07 is active; no production deployment |
 | Current gate | `P-G07 — PPM reports, four languages, print and accessibility` |
-| LAST COMPLETED ACTION | Added the explicit additive PR01–PR10 catalogue and dedicated release, blocker, attendance/minutes and custom-evidence reports in `f881f0c`; all ten synthetic PDFs, immutable source, 390px selector and full PPM regressions pass |
-| NEXT ACTION | Route every PR01–PR10 authored heading/label through LocaleService for EN/BN/HI/TA and prove all ten report modes preserve entered values before final print/zoom/theme accessibility QA |
+| LAST COMPLETED ACTION | Localized PR01–PR10 catalogue/page/row authored copy in `ac3b34a`; 40 PDFs across EN/BN/HI/TA, complete report-key coverage, exact multilingual entered-value preservation, a visually clean Tamil 390px selector and full proportional regressions pass |
+| NEXT ACTION | Run the final P-G07 rendered PDF/print accessibility matrix for EN/BN/HI/TA at 320px and 200% zoom across light/dark/high-contrast themes, including keyboard/dialog focus, glyph, row, logo, watermark and page-number checks |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -68,7 +68,7 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 
 ### P-G07 — Reports, four languages, print and accessibility
 - [x] Report PR01–PR10 coverage recorded; existing producer not broken.
-- [ ] English/Bengali/Hindi/Tamil authored language views; user values unchanged.
+- [x] English/Bengali/Hindi/Tamil authored language views; user values unchanged.
 - [ ] PDF/print readable, no missing font glyphs/rows, logo/brand/watermark correct.
 - [ ] Keyboard, dialog, 200% zoom, 320px mobile, light/dark/other themes tested.
 
@@ -564,4 +564,18 @@ OWNERSHIP / CALL FLOW / STATE: central language preference -> LocaleService.sent
 COMPATIBILITY RISKS / GUARDS: English remains the dictionary key/fallback; every required report key must have bn/hi/ta coverage; translated labels must not become lookup keys for domain state; page continuation labels and missing-value guidance are authored copy; status/record/checkpoint IDs remain exact; language switching must leave serialized record and save state unchanged.
 VERIFICATION / ROLLBACK: expand the P-G07 browser proof to require complete report-key coverage, render all ten modes in each language, detect the expected Indic script in catalogue/page/row authored text, assert multilingual entered values and stable IDs remain exact, and rerun P-G00/P-G06/planning/regression/update/shared-shell/syntax/diff. Revert language/report/test/tracker patch; no migration or stored-data cleanup.
 PRE-CODE VERDICT: approved as the second conditional P-G07 slice; final print visual/glyph, keyboard, 200% zoom, 320px and theme acceptance remain separate.
+```
+
+### P-G07 four-language authored report copy — conditional, gate remains active
+
+```text
+TIME / TIMEZONE: 2026-10-11 02:27:15 UTC / 2026-10-11 08:27:15 Asia/Dhaka
+GATE / OBJECTIVE: P-G07 — render PR01–PR10 authored catalogue titles, page headings, row labels and standard report guidance in EN/BN/HI/TA while preserving all entered meeting data and domain identifiers exactly
+FILES CHANGED (EXACT): apps/ppm/languages.js; apps/ppm/report-service.js; apps/ppm/tests/p-g07-reports.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+IMPLEMENTED / PROVEN: `ac3b34a` adds a report-only authored-copy dictionary and routes catalogue/page/row/footer/continuation labels through LocaleService. One bounded synthetic record containing Bengali/Hindi/Tamil entered values generated all ten report modes in every language (40 PDFs); each non-English report contained the expected script, the report dictionary had no missing locale entries, all required page families appeared, and the serialized record plus style/buyer/custom/action/minutes sentinels remained exact. The Tamil 390px selector screenshot `output/playwright/ppm-p-g07-report-catalogue-390.png` was visually inspected with no clipping or overflow.
+TEST COMMANDS + OUTPUT/COUNTS: P-G00 PASS (168 tuples/19 profiles/12 processes/current+V4); P-G06 PASS; P-G07 PASS (40 PDFs, complete EN/BN/HI/TA report keys, immutable multilingual source, 390px, zero page errors); planning PASS 16; regression PASS including 24-page full report, Bengali all modes, Hindi/Tamil PDFs, download, CSV defense, persistence/recovery/mobile/offline and zero uncaught errors; update PASS 7; shared-shell contract PASS; shared-shell matrix PASS 6/6 for PPM/AQL/TNA at 390/1280; modified-file syntax and `git diff --check` PASS. Cached Playwright 1.64.0 + Chromium 1248; no package files changed.
+FROZEN RULES / REGRESSION: all 168 checkpoint identities/statuses, GO/CONDITIONAL GO/HOLD, planning/approval/measurement/revision behavior, stable IDs, record schema, user-entered values, persistence and sibling app domain code remained unchanged.
+BLOCKERS / UNRESOLVED RISK: final rendered print/PDF glyph and no-clipping inspection, keyboard/dialog focus, 200% zoom, 320px and light/dark/high-contrast theme acceptance remain; secure hosted collaboration remains an external dependency.
+REVIEWER / VERDICT: CONDITIONAL — the second P-G07 checklist item is accepted locally, but P-G07 earns no percentage until the final print/accessibility matrix passes.
+NEXT ACTION (ONE PRECISE STEP): execute and visually inspect the final EN/BN/HI/TA PDF/print matrix at 320px and 200% zoom across light/dark/high-contrast themes, asserting keyboard/dialog focus plus readable glyphs/rows, logo, watermark and page numbers without clipping.
 ```
