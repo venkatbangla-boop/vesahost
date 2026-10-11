@@ -16,8 +16,8 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | Active gate | **TNA G11 - full verification and stabilization (G09/G10 provider items externally blocked)** |
 | Current subtask / subchecks | G11 now has the 54-command matrix plus a bounded 250-order/25,250-task performance fixture (latest median 5,027.9 ms; exact PO filter 19.8 ms on the recorded 6 GiB Windows machine). Deterministic/browser/performance subcheck is locally proven. Saved-copy/schema viewer evidence, four-language/timezone matrix, security audit and physical/assistive acceptance remain open, so G11 receives no credit. |
 | Last ACCEPTED gate | **PPM P-G08 - TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, no deployment or live synchronization claim) |
-| Last tested commit SHA | G11 runner commit `3caeccd` plus pending performance fixture: complete 54-command matrix PASS in 420.1s; latest full TNA rerun and 250-order/25,250-task performance PASS (median 5,027.9 ms; filter 19.8 ms). G09/G10 remain provider-blocked and conditional G11 evidence does not supersede last accepted P-G08 `11b582f`. |
-| Last update (UTC) | 2026-10-11 05:15:00 UTC |
+| Last tested commit SHA | Performance commit `f3b39e0`: complete 54-command matrix at preceding runner commit `3caeccd` PASS in 420.1s; post-run full TNA suite and 250-order/25,250-task performance PASS (median 5,027.9 ms; filter 19.8 ms). G09/G10 remain provider-blocked and conditional G11 evidence does not supersede last accepted P-G08 `11b582f`. |
+| Last update (UTC) | 2026-10-11 05:20:00 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
