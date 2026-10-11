@@ -2,10 +2,75 @@
 
 **Review date:** 2026-10-11
 **Branch:** `feature/tna360-continuous`
-**Evidence baseline:** `48ec023`
+**Local handoff candidate:** `ffa0b1c` (latest runtime implementation: `3291786`)
 **Decision:** **HOLD — not ready for production deployment**
 
 This review reconciles the application execution trackers and the master dashboard. It authorizes no push, merge, deployment, DNS change, live App Centre route change, provider activation or production-data use.
+
+## Current local handoff supplement — 2026-10-11
+
+This supplement is the current handoff authority. The older `48ec023` review remains below as immutable historical context and must not be used as the current next-action list.
+
+### Candidate and verified local status
+
+| Item | Current evidence |
+|---|---|
+| Branch | `feature/tna360-continuous`; committed locally, not pushed or merged by this handoff |
+| Local handoff SHA | `ffa0b1c` — adds the G12 migration/restore/offline inventory proof; no runtime behavior change |
+| Latest runtime SHA | `3291786` — localized F44 Help/recovery; follows F06 runtime SHA `a554282` |
+| Regression | `node tests/vesa-g11-regression.cjs`: PASS, 65 commands / 449.9s, no retry; 35 automated, 17 browser, 12 syntax, 1 repository |
+| Local TNA state | G00–G08 accepted; G10/G11 conditional local evidence; G12 local handoff proof complete but gate remains blocked from release |
+| Production state | Not staged, not deployed, not live-verified, not authorized |
+
+### Clean local verification recipe
+
+Run from the repository root on Windows PowerShell with Node.js and the already installed Playwright/Chromium paths adjusted for the verifying machine:
+
+```powershell
+git status --short
+git branch --show-current
+git rev-parse HEAD
+$env:NODE_PATH='<playwright node_modules directory>'
+$env:CHROMIUM_PATH='<Chromium executable>'
+node apps/tna/tests/g12-local-handoff.test.js
+node tests/vesa-g11-regression.cjs
+git diff --check
+```
+
+Expected candidate facts: branch `feature/tna360-continuous`; handoff SHA `ffa0b1c` or a later documentation-only evidence commit; the G12 test reports lossless current restore, `1.0.0` migration, corrupt-restore preservation and 13 offline assets. The full matrix must pass without hiding any retry. A later SHA requires a fresh recorded run.
+
+### Migration and backup/restore rehearsal
+
+- `apps/tna/tests/g12-local-handoff.test.js` creates a synthetic order with baseline, actual, history, evidence and complete order-master fields.
+- A current `1.1.0` portable copy restores byte-for-byte to the same plan.
+- A synthetic `1.0.0` copy migrates to `1.1.0` without changing identity, dates, baseline, revision/audit history or evidence, and without inventing ports or color/size quantities.
+- A corrupt restore is rejected while the previously saved good record remains exactly unchanged.
+- The tested `/apps/tna/` entry references 13 route-local assets, all present in the `vesa-v67-tna-f44-help` offline bundle.
+- This is synthetic local proof. Representative anonymized business copies still require owner-controlled staging rehearsal before any release authorization.
+
+### Safe rollback and recovery
+
+1. Before any future staging update, use **Save TNA** and **Download Saved Copy** for every important local order. Store those files outside the browser profile.
+2. Never clear browser storage, delete the service-worker data, or overwrite the only surviving order as a rollback technique.
+3. If a future code candidate fails, keep saved copies untouched and use a normal `git revert <sha>` on the exact offending commit. Do not use `git reset --hard` against the shared workspace.
+4. F44 runtime rollback target is commit `3291786`; F06 runtime rollback target is `a554282`. Reverting either must be followed by the full regression and an offline-cache version review.
+5. If a saved copy is rejected, leave the current good order open and retry with the original unedited VESA saved copy. A failed import must not replace the current record.
+6. No rollback is presently required because nothing in this handoff was staged or deployed.
+
+### Known issues and support handoff
+
+- Microsoft Excel desktop-reader inspection remains unproven; SheetJS round-trip evidence is not a substitute.
+- Real phones/tablets, independent screen-reader review, physical factory acceptance and representative anonymized business-record rehearsal remain external evidence gaps.
+- Hosted identity, tenant enforcement, database/object storage, remote synchronization, server-side audit/retention and external message delivery are `DEFERRED_BY_SCOPE` and not live.
+- AQL still requires an approved carton-randomization policy/fixture; no rule may be invented.
+- Production merge/deploy/DNS/App Centre activation requires an explicit user decision naming the approved SHA and rollback window.
+- Support should begin with `AGENTS.md`, `VESA_PROGRESS.md`, each app tracker, this runbook, then the failing command/log. Preserve the user’s saved copies and record the exact branch/SHA before troubleshooting.
+
+### Current handoff verdict
+
+`LOCALLY TESTED / HOLD`. The independently achievable TNA G12 migration, backup/restore, asset-inventory, rollback and support handoff work is complete. Staging verification, production publication, provider functions and external acceptance are blocked or unauthorized. No percentage or production claim changes.
+
+## Historical review at `48ec023` — retained, not current
 
 ## 1. Evidence basis and limits
 
