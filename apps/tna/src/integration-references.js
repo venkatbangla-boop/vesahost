@@ -78,7 +78,24 @@
     return {ok:true,plan:next,reference:copy(assessment.reference),displayStatus:displayStatus(assessment.reference)};
   }
 
-  const api={CONTRACT_VERSION,MAX_REFERENCES,SOURCE_POLICIES,orderIdentity,normalizeReference,assessReference,displayStatus,attachReference};
+  function removeReference(plan,referenceId,context={}){
+    if(!plan||typeof plan!=='object'||Array.isArray(plan))return {ok:false,error:'A valid TNA plan is required.'};
+    let id;
+    try{id=key(referenceId)}catch(error){return {ok:false,error:error.message};}
+    const current=Array.isArray(plan.integrationReferences)?plan.integrationReferences:[];
+    const removed=current.find(item=>item.id===id);
+    if(!removed)return {ok:false,error:'Integration reference was not found.'};
+    const changedAt=context.changedAt?dateTime(context.changedAt):new Date().toISOString();
+    const next=copy(plan);
+    next.integrationReferences=current.filter(item=>item.id!==id);
+    next.revision=Number.isInteger(next.revision)?next.revision+1:1;
+    next.updatedAt=changedAt;
+    next.auditEvents=Array.isArray(next.auditEvents)?next.auditEvents:[];
+    next.auditEvents.push({eventId:key(context.eventId||`audit-unlink-${Date.now().toString(36)}`),eventType:'integration-reference-removed',actorId:clean(context.actorId||'local-browser-user',200),createdAt:changedAt,details:{referenceId:id,sourceApp:removed.sourceApp,sourceRecordId:removed.sourceRecordId}});
+    return {ok:true,plan:next,removed:copy(removed)};
+  }
+
+  const api={CONTRACT_VERSION,MAX_REFERENCES,SOURCE_POLICIES,orderIdentity,normalizeReference,assessReference,displayStatus,attachReference,removeReference};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaIntegrationReferences=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

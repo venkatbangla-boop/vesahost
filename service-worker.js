@@ -1,4 +1,4 @@
-const CACHE='vesa-v60-tna-g10-reference';
+const CACHE='vesa-v61-tna-g10-linked-ui';
 const ASSETS=[
   './',
   './index.html',

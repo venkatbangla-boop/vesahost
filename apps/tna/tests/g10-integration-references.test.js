@@ -29,6 +29,10 @@ const reopened=storage.loadPlan(linkedAql.plan.recordId,'G10-USER');
 assert(reopened.integrationReferences.length===2,'G10 integration references must survive local save/reopen.');
 assert(reopened.integrationReferences[0].sourceRecordId==='PPM-G10'&&reopened.integrationReferences[1].sourceRecordId==='VE-20261011-G10','G10 save/reopen must preserve exact source identities.');
 assert(reopened.auditEvents.filter(event=>event.eventType==='integration-reference-linked').length===2,'G10 links must retain their local audit events.');
+const removed=links.removeReference(reopened,'REF-PPM-G10',{actorId:'synthetic-user',eventId:'audit-unlink-ppm-g10',changedAt:'2026-10-11T04:05:00.000Z'});
+assert(removed.ok&&removed.plan.integrationReferences.length===1&&removed.plan.integrationReferences[0].sourceApp==='aql','G10 must remove only the explicitly selected reference.');
+assert(reopened.integrationReferences.length===2,'G10 removal must not mutate the input plan.');
+assert(removed.plan.auditEvents.at(-1).eventType==='integration-reference-removed','G10 removal must retain an audit event.');
 
 const source=String(links.attachReference);
 assert(!/localStorage|indexedDB|fetch\(|XMLHttpRequest|\.release\s*=|\.disposition\s*=/.test(source),'G10 integration owner must not read sibling stores, call the network or write release/disposition fields.');
