@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Added and passed the independent A-G07 browser restore proof at source HEAD `3239ca4`: current and legacy files opened through the selected-file flow in a disposable profile; selected inline-stage state and evidence bytes survived, identities/approvals were reset safely, existing records remained, and the migrated legacy draft reopened after reload. |
-| NEXT ACTION | Audit the independently achievable A-G07 old-tab/service-worker cache-update risk in disposable browser contexts and add reproducible evidence without clearing user records or changing SamplingEngine/saved-format contracts. |
+| LAST COMPLETED ACTION | Added and passed the independent A-G07 service-worker lifecycle proof at source HEAD `c8f9f45`: incomplete install retained the old active cache, complete replacement left two dirty old tabs intact, stale/partial caches were removed only after a complete install, and a saved draft reopened offline. |
+| NEXT ACTION | Audit and run the independently achievable A-G07 forced-quota/degraded-storage rescue flow across a disposable browser restart without clearing existing records or changing SamplingEngine/saved-format contracts. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -78,7 +78,7 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 - [x] Current/legacy portable saved inspection opens and preserves all selected stages/assets — deterministic current inline-stage + attachment-byte restore and legacy migration/reopen browser proof.
 - [ ] Strict atomic import of project/master/sync with malice/duplicate/oversize tests.
 - [ ] Quota, blocked IndexedDB, browser close/update and partial rescue modes honestly described.
-- [ ] Old AQL tab update against service worker cache deletion risk tested/fixed if reproducible.
+- [x] Old AQL tab update against service worker cache deletion risk tested/fixed if reproducible — failed install, two dirty old tabs, complete cache replacement and offline saved-record reopen are covered in a disposable browser lifecycle.
 
 ### A-G07 portable transfer and save-safety contract — conditional, domain source unchanged
 
@@ -414,6 +414,23 @@ BROWSER / DATA EVIDENCE: Disposable HTTP server and Chromium context only; tempo
 LIMITATIONS / UNRESOLVED RISK: This accepts the current/legacy selected-stage/asset restore subcheck, not the complete A-G07 gate. Strict import guards have deterministic source/fixture coverage, but service-worker old-tab update/cache deletion, forced quota/rescue across a browser restart, very large real attachments and real-device recovery remain open.
 REVIEWER / VERDICT: conditional — the selected-file restore/reload slice is accepted locally and repeatable; A-G07 remains conditional for its remaining worker/rescue/device evidence.
 NEXT ACTION (ONE PRECISE STEP): audit the AQL old-tab/service-worker cache-update risk in disposable browser contexts and add a reproducible test without clearing user records or changing SamplingEngine/saved-format contracts.
+```
+
+### A-G07 service-worker old-tab lifecycle — conditional, worker source unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-12 00:21 Asia/Dhaka
+GATE / OBJECTIVE: A-G07 — determine whether current AQL cache cleanup strands open tabs or loses unsaved/saved work, including incomplete installation and offline reopen
+BRANCH / SOURCE HEAD: feature/tna360-continuous / c8f9f45
+FILES CHANGED (EXACT): apps/aql/tests/a-g07-worker-update.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+FILES WATCHED/FROZEN: apps/aql/service-worker.js, apps/aql/index.html, all IndexedDB records, saved formats, SamplingEngine, PPM/TNA/shared files and production browser data; no application, worker or domain source changed
+IMPLEMENTED: Added a reproducible raw-Playwright worker lifecycle using a disposable origin and dynamic test-only worker responses. Two open AQL tabs held different unsaved fictional projects with autosave paused. A deliberately incomplete replacement became redundant, retained the complete active old cache and both dirty in-memory records, and left only an inert partial cache. A complete replacement then claimed both tabs and removed the old/partial AQL caches without navigation, reload, dirty-state loss or record mutation. After explicitly saving one draft, offline reload used the complete new cache and reopened the exact IndexedDB identity and buyer value.
+RISK VERDICT: The documented cache deletion is observable, but stranding/data loss was not reproducible for the current monolithic AQL bundle: install must complete before activation cleanup, open documents already contain the application code, activation does not reload windows, and record storage is not touched. This evidence does not generalize to a future extracted/lazy-loaded bundle; any extraction must version assets or retain compatible prior caches and rerun this contract.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g07-worker-update.cjs` PASS: incomplete install rollback; two old unsaved tabs preserved through complete replacement; old/partial caches removed after complete install; saved draft reopened offline. Browser assertions also prove explicit dirty state before save, exact saved identity/value after reopen, zero uncaught page errors and zero external requests. Full AQL/shared regression sequence is recorded after this journal update.
+BROWSER / DATA EVIDENCE: Fresh Playwright browser context and disposable HTTP origin only; worker/cache/IndexedDB state disappeared with the context. No user browser store, production record, external export, approval, release or network service was touched.
+LIMITATIONS / UNRESOLVED RISK: A-G07 still needs forced quota/degraded-storage rescue across restart, very large real attachments, master/sync selected-file malice/atomicity expansion and real-device recovery. An incomplete install can leave an inert partial cache until a later complete activation; it does not replace the active worker or delete the complete old cache.
+REVIEWER / VERDICT: conditional — the old-tab/current-worker cache-deletion subcheck is accepted locally without a worker source change; the overall A-G07 gate remains conditional.
+NEXT ACTION (ONE PRECISE STEP): audit and run the A-G07 forced-quota/degraded-storage rescue flow across a disposable browser restart without clearing existing records or changing SamplingEngine/saved-format contracts.
 ```
 
 ### A-G08 four-language Settings and rendered A4 report review — conditional, source unchanged
