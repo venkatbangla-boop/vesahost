@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Added and tested the fixture-only A-G09 shared-reference and cross-app-boundary contract; sampling/Ac-Re/stage data remain frozen and A-G03 stays conditional on approved carton-randomization fixtures |
-| NEXT ACTION | Obtain or document the approved carton-randomization requirement/fixture and run reproducible seeded carton-selection evidence; keep SamplingEngine cells frozen, then perform A-G06/A-G07/A-G08 browser and rendered review |
+| LAST COMPLETED ACTION | Completed the independent A-G08 Settings-language and rendered-report browser slice at source HEAD `7708672`: EN/BN/HI/TA guidance, exact saved practice identity/result preservation, 320px preview geometry and a visually reviewed four-page A4 PDF; the two sandbox-blocked preview script errors remain explicit. |
+| NEXT ACTION | Audit and run the independently achievable A-G07 current/legacy selected-file restore flow in a disposable browser profile without clearing existing records; keep SamplingEngine and saved-format contracts frozen. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -398,6 +398,22 @@ IMPLEMENTED: Added deterministic contract cases for shade Delta E failure, clean
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — decision-guard coverage is locally proven, but full A-G04 35-area/stage matrix and field-device review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then cover the next untested stage-specific record without changing frozen AQL tables.
+```
+
+### A-G08 four-language Settings and rendered A4 report review — conditional, source unchanged
+
+```text
+TIME / TIMEZONE: 2026-10-12 00:01 Asia/Dhaka
+GATE / OBJECTIVE: A-G08 — verify the real Settings language path, saved-value immutability, 320px report preview and rendered A4 output without changing inspection policy
+BRANCH / SOURCE HEAD: feature/tna360-continuous / 7708672
+FILES CHANGED: docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md; ignored screenshots under output/playwright
+FILES WATCHED/FROZEN: apps/aql/index.html, SamplingEngine, ResultEngine, ReportComposer, saved formats, service workers and all PPM/TNA/shared runtime files; no application source changed
+FROZEN BUSINESS RULES: no sampling/Ac-Re cell, result rule, buyer policy, report model, saved schema or production record changed. The browser used only a fictional Practice Example; no approval, finalisation, shipment release, share or production export occurred.
+IMPLEMENTED / REVIEWED: Authenticated Playwright CLI opened the fictional apparel Practice Example and generated the existing Standard buyer report. The preview retained `NOT CONFORMED`, 48/80 checked, one major finding, the 55.4 cm out-of-tolerance reading, PO/style quantities, fictional-training/non-certificate warnings and `Not released`. At 320x844 the page width stayed within the viewport (`documentElement`/body 305 CSS px for `innerWidth` 320) and the 222px preview frame remained readable. A print-media A4 PDF rendered as four pages (203,576 bytes); Chromium PDF-viewer inspection of pages 1 and 4 showed intact logo, watermark, headings, tables, signature caveat, verification token and footer without clipping. The real Settings control switched guidance through Tamil, Hindi, Bengali and English; EN was restored, and reopening the saved practice record preserved `VE-20261011-43F707`, buyer `Sample Buyer - Fictional`, factory `Sample Quality Site` and `NOT CONFORMED` exactly.
+TEST COMMANDS + OUTPUT/COUNTS: `a-g00-baseline.cjs` PASS Q01-Q24 plus portable invariants; AQL A-G02 through A-G09 contract suites PASS; `release-contract.cjs` PASS; shared `vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS. Eleven commands completed without retry after the evidence patch.
+BROWSER / CONSOLE EVIDENCE: Reviewed `output/playwright/aql-a-g08-report-mobile-320-20261011.png`, `aql-a-g08-pdf-viewer-first-20261011.png` and `aql-a-g08-pdf-viewer-page4-20261011.png`. Report preview reproducibly emitted two sandbox errors because scripts in `about:srcdoc` are blocked without `allow-scripts`; after reopening the record the ordinary workspace reported zero errors/warnings. Clean preview-console acceptance is not claimed.
+VERDICT: conditional — four-language guidance, saved-value stability, mobile preview and four-page print layout are locally proven. Full AR01-AR15 output coverage, complete keyboard/200% zoom/screen-reader/share fallback, clean preview console, real-device/factory review and approved carton-randomization evidence remain open.
+NEXT ACTION (ONE PRECISE STEP): audit and run the A-G07 current/legacy selected-file restore flow in a disposable browser profile without clearing existing records or changing SamplingEngine/saved-format contracts.
 ```
 
 ### A-G05 browser session and separate reinspection slice — conditional, synthetic practice only
