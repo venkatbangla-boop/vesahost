@@ -521,3 +521,16 @@ BLOCKERS / UNRESOLVED RISK: clean-checkout Playwright provisioning remains an en
 REVIEWER / VERDICT: ACCEPTED LOCALLY — all four P-G06 checklist items have repeatable browser evidence and the full proportional PPM regression set is green; no production or server-security claim.
 NEXT ACTION (ONE PRECISE STEP): audit ReportService and current browser suites against PR01–PR10, then add the first missing executable P-G07 report/language/print/accessibility proof without changing frozen PPM domain rules.
 ```
+
+### P-G07 pre-code file audit — PR01–PR10 report catalogue and semantic coverage
+
+```text
+TIME / TIMEZONE: 2026-10-11 02:08 UTC / 2026-10-11 08:08 Asia/Dhaka
+PATCH OBJECTIVE: add an explicit additive PR01–PR10 report catalogue and dedicated report modes for release, blockers, attendance/minutes and custom-checkpoint evidence while preserving every existing report mode and record byte-logically
+IN-SCOPE FILES: apps/ppm/report-service.js (read-only report catalogue/render owner); apps/ppm/workspace.js (report selector only); apps/ppm/tests/p-g07-reports.cjs (authenticated synthetic browser/PDF proof); docs/ppm/06_EXECUTION_TRACKER.md
+OUT-OF-SCOPE / FROZEN: core.js, planning-services.js, record-services.js, all 168 checkpoint IDs/statuses, relevance/coverage/validation and GO/CONDITIONAL GO/HOLD rules, P-G05 history, repository/backup/recovery, service worker, shared/AQL/TNA files, user-entered values and real records
+OWNERSHIP / CALL FLOW / STATE: File/Reports selector -> existing explicit Prepare/Print action -> ReportService clones the active record -> existing deterministic relevance/coverage/planning readers -> transient canvases/PDF bytes. The report catalogue owns only labels/mode routing; it cannot mutate or authorize the meeting.
+COMPATIBILITY RISKS / GUARDS: retain legacy `full`, `summary`, `actions`, `checklist`, `evidence`, `approvals`, `measurements` and `changes` modes for old callers; new report modes show `Not recorded` rather than inventing authority/source/time; escape or canvas-render entered text; preserve formula-safe CSV; no report generation may change serialized record state.
+VERIFICATION / ROLLBACK: generate all PR01–PR10 PDFs from one bounded synthetic record, assert required page families and immutable serialized source, verify the 390px selector exposes ten IDs with zero page errors, rerun planning/regression/P-G06/shared-shell/syntax/diff checks. Revert report/UI/test/tracker commit; no migration or saved-data deletion.
+PRE-CODE VERDICT: approved as an additive conditional P-G07 report-coverage slice; full four-language authored headings, print visual/glyph QA and keyboard/zoom/theme acceptance remain separate before gate acceptance.
+```
