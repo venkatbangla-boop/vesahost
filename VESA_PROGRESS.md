@@ -6,18 +6,18 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **47%** |
-| **REMAINING** | **53%** |
+| **OVERALL VERIFIED** | **50%** |
+| **REMAINING** | **50%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
-| **PPM 360** | **55%** - accepted gates 6 / 11 |
+| **PPM 360** | **64%** - accepted gates 7 / 11 |
 | **AQL 360** | **23%** - accepted gates 3 / 13 |
 | **ONE VESA SHARED UX** | **30%** - accepted gates 3 / 10 |
-| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00 through P-G05 are accepted locally; P-G06 saving/recovery/offline/update reliability is the next active gate. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
-| Active gate | **PPM P-G06 - saving, recovery, offline and update reliability** |
-| Current subtask / subchecks | P-G05 `578a1ad` + `8e9bdee` proves controlled amendments, immutable parent history, cleared child release/signatures/approval proof, durable reopen, visible history and complete EN/BN/HI/TA authored-copy rendering without translating entered values or stable IDs. P-G06 now requires a direct audit of saved-copy decode/reopen, atomic corrupt/oversized/future rejection, offline upgrade and quota rescue evidence before selecting the first missing executable proof. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. |
-| Last ACCEPTED gate | **PPM P-G05 - follow-ups, meeting minutes, evidence and amendments** (`8e9bdee`; accepted locally, no deployment) |
-| Last tested commit SHA | `8e9bdee` (P-G05 four-language parity/live-result protection) with `578a1ad` amendment UI; P-G00/P-G04/P-G05 domain/UI/localization, planning (16), update (7), full regression, 390px EN/BN/HI/TA, shared-shell 6/6, syntax and `git diff --check` passed in the recorded workspace runtime |
-| Last update (UTC) | 2026-10-10 20:02:14 UTC |
+| Program stage | AQL A-G00, A-G01 and A-G02 remain accepted locally; A-G03 is active with its visible Sampling authorisation entry point proven conditionally, and independent A-G04/A-G05/A-G06/A-G07/A-G08/A-G09 workflow slices are conditionally tested. PPM P-G00 through P-G06 are accepted locally; P-G07 reports/languages/print/accessibility is active. Shared U-G02 central theme/language controller is accepted locally. Secure backend/provider and production authorization remain blocked. |
+| Active gate | **PPM P-G07 - reports, four languages, print and accessibility** |
+| Current subtask / subchecks | P-G06 `2f14e4a` proves current/V4 reopen, atomic malformed/future/oversized/corrupt-image rejection, recovery-as-new-draft, actionable quota rescue, coherent old/new worker tabs and offline reopen with full PPM regression green. P-G07 now requires a direct PR01–PR10/report/language/print/accessibility evidence audit before adding only the first missing executable proof. A-G03 still needs an approved carton-randomization requirement/fixture and seeded evidence. |
+| Last ACCEPTED gate | **PPM P-G06 - saving, recovery, offline and update reliability** (`2f14e4a`; accepted locally, no deployment) |
+| Last tested commit SHA | `2f14e4a` (P-G06 browser recovery fixture); P-G00/P-G04/P-G05/P-G06, planning (16), update (7), full regression including multilingual PDF/import/recovery/mobile/offline, shared-shell contract, syntax and `git diff --check` passed with cached Playwright 1.64.0 + Chromium 1248 |
+| Last update (UTC) | 2026-10-11 01:59:59 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -33,7 +33,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=6, a=3, s=3.
+Current counted gates: t=9, p=7, a=3, s=3.
 ```
 
 ## C. Application gate checklist
@@ -66,7 +66,7 @@ Current counted gates: t=9, p=6, a=3, s=3.
 | P-G03 | Checkpoints, applicability, workflow | ACCEPTED | `d3ff016`: source fixture/browser proof for 168 identities, profile/process relevance, N/A/PENDING semantics, guidance, search/filter, next-action and additive critical custom ACTION behavior; PPM regression/planning/update remain green |
 | P-G04 | Approvals, measurements, revision, decisions | ACCEPTED | `979fec4`: synthetic decision proof plus planning/browser suites for GO/HOLD, controlled CONDITIONAL GO, approval evidence/exemptions, POM boundaries, stale-signoff invalidation, finalized read-only forms and actionable blocker IDs |
 | P-G05 | Actions, minutes, evidence, amendments | ACCEPTED | `578a1ad` + `8e9bdee`: guarded controlled amendments preserve an immutable finalized snapshot, clear child sign-off, save/reopen visible history and render P-G05 authored copy in EN/BN/HI/TA while entered values/IDs remain unchanged; full regression green |
-| P-G06 | Offline save/restore/update | NOT STARTED | - |
+| P-G06 | Offline save/restore/update | ACCEPTED | `2f14e4a`: current/V4 saved-copy reopen, atomic invalid-copy rejection, recovery-as-new-draft, forced quota rescue, old-tab worker coherence, offline reopen and explicit Save & Update pass with full PPM regression green |
 | P-G07 | Reports, translations, accessible UX | NOT STARTED | - |
 | P-G08 | TNA/AQL reference integration | NOT STARTED | - |
 | P-G09 | Secured collaboration where provisioned | BLOCKED | External server/identity provider not authorized |
@@ -179,7 +179,8 @@ Current counted gates: t=9, p=6, a=3, s=3.
 | 2026-10-10 19:39:51 UTC | PPM P-G05 attachment references and failed-save protection | CONDITIONAL | `2e0d718` adds bounded escaped reference-only meeting attachments. Browser proof save/reopened the first reference, then forced repository writes to fail and asserted the second reference remained in the open active meeting, the durable record retained only the first reference, and local/shared failure indicators stayed visible at 390px. P-G00/P-G04/P-G05, planning 16, update 7, full regression, shared-shell, syntax and diff checks pass. Controlled amendment UI and full authored-copy localization remain open, so percentages stay unchanged. |
 | 2026-10-10 19:52:53 UTC | PPM P-G05 controlled amendment workspace | CONDITIONAL | `578a1ad` adds guarded reason/time/acknowledgement UI and visible history. Browser proof preserves the frozen finalized parent decision/signatures/approval evidence, clears the editable child's release/signatures/approval proof, save/reopens and remains readable at 390px; full PPM and shared-shell regressions pass. Language parity remained before acceptance. |
 | 2026-10-10 20:02:14 UTC | PPM P-G05 localization and gate completion | ACCEPTED LOCALLY | `8e9bdee` routes P-G05 follow-up/authority/reference/amendment authored copy through LocaleService. EN/BN/HI/TA browser proof preserves entered values, O05/Active/GO and exact serialized record at 390px; visual Bengali/Tamil review passes. Regression found/fixed live age-result overwrite. P-G00/P-G04/P-G05, planning 16, update 7, full regression, shared shell 6/6, syntax and diff checks pass. PPM now counts 6/11; no provider or deployment claim. |
+| 2026-10-11 01:59:59 UTC | PPM P-G06 recovery/offline/update completion | ACCEPTED LOCALLY | `2f14e4a` adds authenticated 390px proof for lossless current/V4 reopen under fresh IDs, atomic malformed/future/oversized/corrupt-image rejection, recovery-as-new-draft and forced quota rescue. Existing update coverage proves incomplete-install rollback, coherent old tabs/assets, offline new-bundle reopen, failed/changed-save reload blocking and explicit Save & Update. P-G00/P-G04/P-G05/P-G06, planning 16, update 7, full regression, shared shell, syntax and diff checks pass. PPM now counts 7/11; no runtime source, customer data or production deployment changed. |
 
 ## F. NEXT ACTION
 
-Audit PPM P-G06 against actual source and tests: map BackupCodec/PpmRepository/RecoveryRepository/import UI/service-worker ownership, reconcile existing/new saved-copy reopen plus atomic corrupt/oversized/future rejection evidence, and implement only the first missing executable recovery proof. Keep all 168 checkpoint IDs, P-G05 history and saved records frozen. Preserve A-G03's approved carton-randomization requirement/fixture request, external secure-provider blockers, physical pilot and production authorization; do not deploy production.
+Audit PPM P-G07 against actual `report-service.js`, `languages.js`, report/browser suites and PR01–PR10 requirements; add only the first missing executable report/language/print/accessibility proof while keeping all 168 checkpoint IDs, decisions, P-G05 history and saved records frozen. Preserve A-G03's approved carton-randomization requirement/fixture request, external secure-provider blockers, physical pilot and production authorization; do not deploy production.

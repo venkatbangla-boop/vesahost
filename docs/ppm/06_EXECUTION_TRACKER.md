@@ -10,11 +10,11 @@
 | Specs | `apps/ppm/AGENTS.md` + `docs/ppm/01`–`06` |
 | Original PPM app | Exists; multi-file JS, old header/sticky menu + complex domain |
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
-| Last accepted implementation gate | **P-G05 — PPM follow-ups, meeting minutes, evidence and amendment enhancements** (`8e9bdee`; accepted locally, not deployed) |
-| Status | `accepted locally` for P-G00 baseline through P-G05 follow-ups/evidence/amendments; P-G06 is active; no production deployment |
-| Current gate | `P-G06 — PPM saving, recovery, offline and update reliability` |
-| LAST COMPLETED ACTION | Completed controlled-amendment UI in `578a1ad`, then EN/BN/HI/TA follow-up/amendment parity and live-result protection in `8e9bdee`; immutable parent history, cleared child sign-off, save/reopen, entered-value preservation and 390px Indic rendering pass |
-| NEXT ACTION | Audit P-G06 existing/new saved-copy decode/reopen and atomic corrupt/oversized/future rejection coverage against the actual codec/repository/import UI, then add only the first missing executable recovery proof |
+| Last accepted implementation gate | **P-G06 — PPM saving, recovery, offline and update reliability** (`2f14e4a`; accepted locally, not deployed) |
+| Status | `accepted locally` for P-G00 baseline through P-G06 saving/recovery/offline/update; P-G07 is active; no production deployment |
+| Current gate | `P-G07 — PPM reports, four languages, print and accessibility` |
+| LAST COMPLETED ACTION | Added `p-g06-recovery.cjs` in `2f14e4a`; current/V4 saved-copy reopen, atomic malformed/future/oversized/corrupt-image rejection, recovery-as-new-draft, quota rescue, coherent old/new service-worker tabs and offline reopen all pass with the full PPM regression set |
+| NEXT ACTION | Audit ReportService and current browser suites against PR01–PR10, then add only the first missing executable P-G07 report/language/print/accessibility proof without changing PPM domain rules |
 | External blocker | Secured backend and cross-company role/approval credentials are not provisioned; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -61,10 +61,10 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] Amendment history and approvals/signature invalidation fully tested.
 
 ### P-G06 — Saving, recovery, offline and update reliability
-- [ ] Existing and new saved copies decode/reopen with no loss.
-- [ ] Corrupt/oversized/future data rejected atomically; previous draft preserved.
-- [ ] Offline first open and upgrade while old tab remains open.
-- [ ] Quota/browser-storage failures result in actionable rescue flow, not fake saved status.
+- [x] Existing and new saved copies decode/reopen with no loss.
+- [x] Corrupt/oversized/future data rejected atomically; previous draft preserved.
+- [x] Offline first open and upgrade while old tab remains open.
+- [x] Quota/browser-storage failures result in actionable rescue flow, not fake saved status.
 
 ### P-G07 — Reports, four languages, print and accessibility
 - [ ] Report PR01–PR10 coverage recorded; existing producer not broken.
@@ -502,4 +502,22 @@ OWNERSHIP / CALL FLOW / STATE: file input -> workspace size/JSON boundary -> Bac
 COMPATIBILITY RISKS / GUARDS: every invalid import must leave active and durable records unchanged; valid imports must never overwrite source IDs; no test may delete browser records; corrupt raster bytes must reject before activation; forced storage failure must be restored within the disposable context; synthetic data only
 VERIFICATION / ROLLBACK: new 390px P-G06 browser test plus P-G00/P-G05/planning/regression/update/shared-shell/syntax/diff checks. Revert the test/tracker patch only; no runtime or stored-data migration.
 PRE-CODE VERDICT: approved as a test-only P-G06 slice; coherent bundle-version advancement remains a separate audited step before full gate acceptance.
+```
+
+### P-G06 recovery/offline/update completion — accepted locally, no production deployment
+
+```text
+TIME / TIMEZONE: 2026-10-11 01:59 UTC / 2026-10-11 07:59 Asia/Dhaka
+GATE / OBJECTIVE: P-G06 — prove saved-copy compatibility, atomic rejection, recovery-as-new-draft, storage-failure rescue and coherent offline update behavior without changing runtime persistence or domain rules
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / b7ad8aa / 2f14e4a
+FILES CHANGED (EXACT): apps/ppm/tests/p-g06-recovery.cjs; docs/ppm/06_EXECUTION_TRACKER.md
+FILES WATCHED/FROZEN: apps/ppm/core.js; apps/ppm/record-services.js; apps/ppm/workspace.js; apps/ppm/service-worker.js; all 168 checkpoints/statuses; GO/CONDITIONAL GO/HOLD; P-G05 history; reports; languages; shared/AQL/TNA files; no runtime source, schema, worker version or saved record changed
+IMPLEMENTED / PROVEN: authenticated 390px browser fixture preserves semantic style/action/minutes/reference data through current schema-2 import under a fresh ID and migrates a V4 record to V5 defaults. Malformed JSON, future schema, oversized bytes and corrupt raster signatures leave both the active meeting and durable source unchanged. A named earlier snapshot opens as a new unlocked draft with cleared release/signatures while its parent remains durable. Forced repository failure retains unsaved memory, preserves the prior durable record, sets local/shared failure states and exposes Download Saved Copy. Existing update coverage proves incomplete installs retain the old worker, old tabs/assets remain coherent, legacy readers reject newer saves until upgrade, the new bundle reopens offline, failed/changed saves block reload and explicit Save & Update preserves the latest meeting.
+TEST COMMANDS + OUTPUT/COUNTS: `node apps/ppm/tests/p-g06-recovery.cjs` PASS; `update.cjs` PASS 7; `planning.cjs` PASS 16; `regression.cjs` PASS all named persistence/import/recovery/report/language/mobile/offline/error checks; P-G00 PASS (168 tuples/19 profiles/12 processes/current+V4); P-G04 PASS; all P-G05 domain/UI/amendment/localization suites PASS; shared-shell contract PASS; PPM runtime/test syntax checks PASS; `git diff --check` PASS. Browser runtime: cached Playwright 1.64.0 + Chromium 1248 in disposable contexts.
+BROWSER / DATA EVIDENCE: 390px test asserts document/body width at most 391px and zero uncaught page errors. Synthetic records only; no browser data deletion, customer copy, production release or deployment.
+ROLLBACK: revert `2f14e4a`; only the executable test and its pre-code audit are removed, with no runtime migration or stored-data cleanup.
+FEATURE EVIDENCE: P31 corrupt-image/stale-state import guard, P32 local save/reopen, P33 saved-copy/open-as-new behavior, P34 V4/current schema and strict import boundaries, P35 coherent offline update, and P46 storage-failure rescue are locally proven for this gate.
+BLOCKERS / UNRESOLVED RISK: clean-checkout Playwright provisioning remains an environment setup requirement because the repository has no package manifest; secure provider services and production authorization remain external. Real customer/private copies were not used.
+REVIEWER / VERDICT: ACCEPTED LOCALLY — all four P-G06 checklist items have repeatable browser evidence and the full proportional PPM regression set is green; no production or server-security claim.
+NEXT ACTION (ONE PRECISE STEP): audit ReportService and current browser suites against PR01–PR10, then add the first missing executable P-G07 report/language/print/accessibility proof without changing frozen PPM domain rules.
 ```
