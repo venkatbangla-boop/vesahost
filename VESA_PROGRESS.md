@@ -6,30 +6,30 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current audited value |
 |---|---|
-| **FREE-ONLY VERIFIED** | **60%** — 30/30/30/10 weighted score from the frozen eligibility map |
-| **FREE-ONLY REMAINING** | **40%** |
-| **TNA / PPM / AQL / SHARED** | **75% / 90% / 25% / 30%** |
+| **FREE-ONLY VERIFIED** | **61%** — 30/30/30/10 weighted score from the frozen eligibility map |
+| **FREE-ONLY REMAINING** | **39%** |
+| **TNA / PPM / AQL / SHARED** | **75% / 90% / 25% / 40%** |
 | Architecture | GitHub source/version control plus local browser calculation/storage and manual saved-copy transfer only |
 | Canonical contract | `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` |
 | Deferred by scope | Hosted backend/identity/database/object storage, remote multiuser sync, external notification delivery, paid services and commercial SaaS hosting on GitHub Pages |
-| Eligibility map | `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`: TNA 9/12, PPM 9/10, AQL 3/12, Shared 3/10 |
+| Eligibility map | `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`: TNA 9/12, PPM 9/10, AQL 3/12, Shared 4/10 |
 
 ## A. Historical full-scope program at a glance
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **55%** |
-| **REMAINING** | **45%** |
+| **OVERALL VERIFIED** | **56%** |
+| **REMAINING** | **44%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
 | **PPM 360** | **82%** - accepted gates 9 / 11 |
 | **AQL 360** | **23%** - accepted gates 3 / 13 |
-| **ONE VESA SHARED UX** | **30%** - accepted gates 3 / 10 |
-| Program stage | One VESA UI remediation is active. Shared runtime `d64b32a` plus accepted local adapters `74657a8` (TNA) and `800d074` (PPM) now give both apps one visible platform shell. PPM's duplicate home brand header and editor brand row are removed; its meeting context, section navigation, rail, update notice and footer flow below the shared shell. AQL still has its branded entrance/internal chrome, so U-G01 remains conditional. The complete 82-command TNA/PPM/AQL/shared matrix passes; no domain formula, saved format, production record, provider or deployment changed. |
-| Active gate | **ONE VESA SHARED UX U-G01/U-G03/U-G05/U-G07 — one centralized page shell and visual system** |
-| Current subtask / subchecks | Audit and adapt AQL entrance/internal chrome so its welcome branding, menu/account/save owners and fixed regions defer to the one shared shell; preserve frozen SamplingEngine/Ac-Re rules, saved inspections, evidence and reports. |
-| Last ACCEPTED gate | **PPM P-G08 - TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, no deployment or live synchronization claim) |
-| Last tested commit SHA | `800d074`: PPM home/editor one-shell adapter on runtime `d64b32a`. Complete matrix PASS without retry: 82 commands / 654.2s (50 automated, 19 browser, 12 syntax, 1 repository). |
-| Last update (UTC) | 2026-10-12 16:15:43 UTC |
+| **ONE VESA SHARED UX** | **40%** - accepted gates 4 / 10 |
+| Program stage | Shared U-G01 is accepted locally. Runtime `d64b32a` plus TNA `74657a8`, PPM `800d074` and AQL `a907fc7` adapters give all three authenticated applications one visible platform shell, logo, ordered command system, save state and account/Settings owner. The complete 83-command matrix passes; no domain formula, saved format, production record, provider or deployment changed. |
+| Active gate | **ONE VESA SHARED UX U-G03/U-G04/U-G05/U-G06/U-G07/U-G09 — shared tokens, App Centre, responsive/accessibility and regression completion** |
+| Current subtask / subchecks | Audit Login, App Centre and Admin against the accepted shell language, then prove shared typography/color/spacing tokens and cross-route desktop/tablet/mobile/zoom/keyboard behavior without changing application domain rules. |
+| Last ACCEPTED gate | **ONE VESA SHARED UX U-G01 — shared header/nav/auth surface** (`d64b32a` + `74657a8` + `800d074` + `a907fc7`; accepted locally, no deployment claim) |
+| Last tested commit SHA | `a907fc7`: AQL entrance/home/inspection one-shell adapter on runtime `d64b32a`. Complete matrix PASS: 83 commands / 1081.9s (51 automated, 19 browser, 12 syntax, 1 repository); an initial full run and one isolated performance retry exceeded the timing guard before the isolated test passed at 5.21s and the final full run passed it at 6.85s. |
+| Last update (UTC) | 2026-10-12 16:51:46 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -45,7 +45,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=9, a=3, s=3.
+Current counted gates: t=9, p=9, a=3, s=4.
 ```
 
 ## C. Application gate checklist
@@ -107,7 +107,7 @@ Current counted gates: t=9, p=9, a=3, s=3.
 | Gate | Work area | Status | Evidence / commit |
 |---|---|---|---|
 | U-G00 | Shared route/audit map | ACCEPTED | `ea52066` browser smoke: root, login, App Centre, Admin, AQL, PPM and TNA route checks; App Centre shows AQL/PPM/TNA; logout then `/apps/ppm/` redirects to `/login/?next=...`; 1280/390 App Centre screenshots; no console errors |
-| U-G01 | Shared header/nav/auth surface | CONDITIONAL — TNA + PPM ADAPTERS ACCEPTED | `d64b32a` centralizes the shell and removes the separate legacy authenticated bar. `74657a8` proves TNA exact ownership; `800d074` proves PPM home/editor exact ownership at 320/360/390/768/1024/1280/1440 plus 200% scale, including mobile keyboard behavior, Settings focus return, preference/record immutability, no overflow, zero external requests/page errors and reviewed 390/1280 screenshots. AQL entrance/internal chrome still requires adapter cleanup, so the shared gate remains conditional. |
+| U-G01 | Shared header/nav/auth surface | ACCEPTED | `d64b32a` centralizes the platform shell and removes the separate authenticated bar. Exact adapters `74657a8` (TNA), `800d074` (PPM) and `a907fc7` (AQL entrance/home/inspection) prove one visible logo/header/account/Settings/save/menu owner at 320/360/390/768/1024/1280/1440 plus 200% scale, mobile keyboard/focus behavior, preference/record immutability, no overflow and zero external requests/page errors. Reviewed 390/1280 screenshots cover every application state. |
 | U-G02 | Shared theme/language controller | ACCEPTED | `582cd34`: central Settings dialog exposes VesaPrefs language/theme controls; authenticated PPM/AQL/TNA matrix changed Bengali and Pure Mono in ephemeral browser contexts with saved values unchanged and route/domain regressions green |
 | U-G03 | Shared typography/color/background tokens | NOT STARTED | - |
 | U-G04 | Shared App Centre card pattern | NOT STARTED | - |
@@ -251,10 +251,11 @@ Current counted gates: t=9, p=9, a=3, s=3.
 | 2026-10-12 15:43:49 UTC | One VESA shell v2 runtime foundation | CONDITIONAL U-G01 / ACCEPTED LOCAL SLICE | Commit `d64b32a` makes the platform shell the authenticated-bar handoff owner, adds an explicit App Centre/current-app breadcrumb, shared Settings/Admin/Logout and the same account actions in the mobile drawer, while preserving menu focus/Escape/outside-click and dialog focus return. Reviewed 390px TNA evidence shows one logo/header; the 1280px PPM evidence still exposes its app-owned home brand layer, so the gate remains conditional. After focused Help-focus and route-selector compatibility repairs, the complete cross-app matrix passed without retry: 80 commands / 684.0s (50 automated, 17 browser, 12 syntax, 1 repository), including TNA scheduling/storage/security, PPM 168 checkpoints/planning/reports, AQL sampling/stages/portable recovery and six shared-shell probes. No domain formula, saved schema, user record, provider or deployment changed; percentages remain fixed. |
 | 2026-10-12 15:56:05 UTC | TNA unified-shell adapter acceptance | ACCEPTED LOCAL SLICE / U-G01 REMAINS CONDITIONAL | Commit `74657a8` adds exact browser ownership evidence for TNA at 320/360/390/768/1024/1280/1440 plus Chromium 200% scale. Every viewport has one visible VESA chrome logo, one sticky shell, one ordered six-menu system, one save state, one Settings/Admin/Logout set, no legacy auth/TNA command bar and no horizontal overflow. Mobile Menu/Escape/focus and desktop Settings return pass; Bengali/Pure Mono changes preserve a synthetic saved TNA byte-for-byte; reviewed `output/playwright/vesa-unified-tna-{390,1280}.png` are clean. Complete matrix PASS without retry: 81 commands / 617.6s (50 automated, 18 browser, 12 syntax, 1 repository). PPM/AQL adapter gaps keep U-G01 conditional; scores remain fixed. |
 | 2026-10-12 16:15:43 UTC | PPM unified-shell home/editor adapter acceptance | ACCEPTED LOCAL SLICE / U-G01 REMAINS CONDITIONAL | Commit `800d074` removes the duplicate PPM home brand header and editor brand block, demotes the editor topbar to a context section, hides the compatibility-only legacy save output and keeps meeting navigation/rail/update/footer in document flow beneath the shared shell. A visual audit exposed and fixed home-before-shell DOM ordering. Exact home/editor ownership passes at 320/360/390/768/1024/1280/1440 plus Chromium 200% scale, with mobile Menu/Escape/focus, File callback, Settings return, byte-exact record preservation through Bengali/Pure Mono, no overflow and zero external requests/page errors. Reviewed `output/playwright/vesa-unified-ppm-{home,editor}-{390,1280}.png` are clean. Complete matrix PASS without retry: 82 commands / 654.2s (50 automated, 19 browser, 12 syntax, 1 repository). Frozen 168 checkpoints, GO/HOLD rules, save/reopen, reports and sibling apps remain green. AQL chrome keeps U-G01 conditional; scores remain fixed. |
+| 2026-10-12 16:51:46 UTC | AQL unified-shell adapter and U-G01 acceptance | ACCEPTED | Commit `a907fc7` removes the entrance brand owner, sidebar brand/Settings duplication, visible legacy save control and fixed secondary navigation/launchers while retaining the domain start choices, inspection workflow and compatibility state. Exact entrance/home/inspection ownership passes at 320/360/390/768/1024/1280/1440 plus Chromium 200% scale, mobile keyboard/focus, File callback, byte-exact inspection preservation through Bengali/Pure Mono, no overflow and zero external requests/page errors. Reviewed 390/1280 screenshots are clean. Full matrix PASS: 83 commands / 1081.9s; the initial full run and one isolated performance retry exceeded the timing guard, then isolated 5.21s and final full-run 6.85s timings passed. TNA/PPM/AQL now all satisfy the one-shell owner contract, so U-G01 is accepted; shared becomes 4/10, historical overall 56%, free-only 61%. No sampling/Ac-Re/domain/schema/provider/deployment change. |
 
 ## F. NEXT ACTION
 
-Audit PPM `homeScreen`, `.topbar`, `#fileMenu`, section navigation, save-state and command callbacks against the shared shell; convert only duplicate top-level chrome into flowing domain content, then prove home/editor ownership at all required widths without changing the 168 checkpoints, decisions, records or reports.
+Audit Login, App Centre and Admin against the accepted One VESA shell language, then implement/prove the smallest incomplete shared token or responsive/accessibility gate without changing TNA/PPM/AQL domain behavior, records or deployment state.
 
 ## G. GitHub-Free-only migration audit
 

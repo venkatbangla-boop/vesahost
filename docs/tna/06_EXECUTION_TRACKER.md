@@ -55,6 +55,18 @@ VERDICT: accepted | rejected | blocked | conditional
 NEXT ACTION: <one exact next patch or external request>
 ```
 
+### One VESA cross-app U-G01 closure — accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 16:51:46 UTC / 2026-10-12 22:51:46 Asia/Dhaka
+GATE / OBJECTIVE: shared U-G01 — reconcile the accepted TNA and PPM adapters with the final AQL entrance/Home/Inspection adapter
+COMMITS / FILE BOUNDARY: shared runtime d64b32a; TNA adapter 74657a8; PPM adapter 800d074; AQL adapter a907fc7. This patch changes tracker/program evidence only; TNA scheduling, records and reports remain frozen.
+EVIDENCE: every application now proves one visible VESA logo, one platform header, one ordered Home/File/Edit/View/Tools/Help system, one save owner and one Settings/Admin/Logout owner at 320/360/390/768/1024/1280/1440 plus Chromium 200% scale. Mobile Menu/Escape/focus, desktop Settings return, File callbacks, no overflow, zero external requests/page errors and domain-record immutability pass. Reviewed 390/1280 screenshots cover TNA, PPM Home/Editor and AQL entrance/Home/Inspection.
+FULL REGRESSION: PASS — 83 commands / 1081.9s (51 automated, 19 browser, 12 syntax, 1 repository). An initial full run and one isolated performance retry exceeded the timing guard; isolated 5.21s and final full-run 6.85s timings passed before acceptance.
+VERDICT / SCORE: U-G01 ACCEPTED LOCALLY. Shared accepted gates become 4/10; historical overall becomes 56%; GitHub-Free-only becomes 61%. No provider, production deployment or release approval is claimed.
+NEXT ACTION (ONE PRECISE STEP): audit Login, App Centre and Admin, then select the first independently provable U-G03/U-G04/U-G05/U-G06/U-G07/U-G09 local slice.
+```
+
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
 ## C. Gate definitions and approval authority

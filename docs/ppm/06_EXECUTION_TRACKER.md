@@ -152,6 +152,17 @@ P51 | accepted | P-G01/P-G02 | route smoke + shared-shell authenticated matrix |
 P52 | conditional | P-G07/P-G10 | p-g07-reports.cjs; shared-shell matrix | 177f7b0 | strong local accessibility/visual proof; independent screen-reader, broad performance and physical-device review remain
 ```
 
+### One VESA cross-app U-G01 closure — accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 16:51:46 UTC / 2026-10-12 22:51:46 Asia/Dhaka
+GATE / OBJECTIVE: shared U-G01 — close the remaining AQL adapter gap after accepted TNA and PPM one-shell slices
+EVIDENCE BOUNDARY: runtime d64b32a plus TNA 74657a8, PPM 800d074 and AQL a907fc7 now prove exact one-logo/header/account/Settings/save/six-menu ownership across all three apps at 320–1440px and 200% scale. The complete 83-command matrix passes in 1081.9s (51 automated, 19 browser, 12 syntax, 1 repository), including frozen PPM 168-checkpoint, planning, recovery, report and update suites. The first full attempt and one isolated performance retry exceeded the timing guard; isolated 5.21s and the final full run's 6.85s performance result passed.
+PPM IMPACT: documentation reconciliation only. No PPM checkpoint, decision, meeting record, saved format, report rule, provider or deployment changed.
+VERDICT / SCORE: shared U-G01 ACCEPTED LOCALLY; Shared is 4/10, historical overall 56% and GitHub-Free-only 61%. P-G09/P-G10 and release authorization remain blocked/conditional as recorded.
+NEXT ACTION (ONE PRECISE STEP): preserve the accepted PPM adapter while Login/App Centre/Admin and remaining shared token/responsive/accessibility gates are audited.
+```
+
 ## Mandatory test coverage checklist
 - [x] All 168 checkpoint IDs/profile guards/decision invariants.
 - [x] Approval, measurement, change review, finalized lock, duplicate/invalid ID.

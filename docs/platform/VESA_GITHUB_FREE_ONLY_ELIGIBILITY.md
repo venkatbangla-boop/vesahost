@@ -70,11 +70,11 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 
 `AQL free-only = ROUND(100 × 3 / 12) = 25%`.
 
-## Shared UX eligibility — 10 active gates, 3 accepted
+## Shared UX eligibility — 10 active gates, 4 accepted
 
-All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-10-12 rendered audit reopened U-G01 as `CONDITIONAL`: current TNA shows a global authenticated bar plus a second logo/app header, PPM shows legacy branding plus global and workspace bars, and AQL shows a separate branded entrance beneath the authenticated bar. Commit `38a7eea` accepts U-G08 documentation/rollback governance through `docs/platform/VESA_UNIFIED_UI_CONTRACT.md`. The three accepted units are therefore U-G00, U-G02 and U-G08; U-G01 is conditional and U-G03–U-G07/U-G09 remain incomplete. The numerator stays 3, so this dated reassessment does not change the score.
+All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-10-12 rendered audit reopened U-G01 as `CONDITIONAL`; the subsequent shared runtime and TNA/PPM/AQL adapter sequence (`d64b32a`, `74657a8`, `800d074`, `a907fc7`) removed the stacked authenticated/app chrome and proved exact one-shell ownership across all three applications. U-G01 is therefore accepted locally. The four accepted units are U-G00, U-G01, U-G02 and U-G08; U-G03–U-G07/U-G09 remain incomplete.
 
-`Shared free-only = ROUND(100 × 3 / 10) = 30%`.
+`Shared free-only = ROUND(100 × 4 / 10) = 40%`.
 
 ## Weighted result
 
@@ -83,12 +83,12 @@ ROUND(
   30 × 9/12 +
   30 × 9/10 +
   30 × 3/12 +
-  10 × 3/10
-) = ROUND(60.0) = 60%
+  10 × 4/10
+) = ROUND(61.0) = 61%
 ```
 
-**FREE-ONLY VERIFIED: 60%**
+**FREE-ONLY VERIFIED: 61%**
 
-**FREE-ONLY REMAINING: 40%**
+**FREE-ONLY REMAINING: 39%**
 
-This 60% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. Any later eligibility change requires a dated audit entry and must not rewrite this baseline silently.
+This 61% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; this dated 2026-10-12 reassessment adds only the newly accepted U-G01 unit. Any later eligibility change requires a dated audit entry and must not rewrite this history silently.

@@ -15,11 +15,27 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
-| Current gate | **A-G03** remains policy-blocked; active independent slice is **A-G06** inspection evidence/measurements |
-| LAST COMPLETED ACTION | Commit `14aeb66` proved visible POM entry and measurement-matrix approval, registered-piece readings, exact OOT report output and durable reopen; the 80-command cross-app regression passed without retry. |
-| NEXT ACTION | Prove one authenticated evidence-link lifecycle: attach synthetic photo/document bytes to explicit registered piece/carton context, then save, portable-restore and reopen with exact owner/reference/bytes; do not infer physical inspection or external approval. |
+| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; the AQL unified-page v2 adapter closes the final application gap and shared U-G01 is accepted locally. A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; provider services remain separate blockers. |
+| Current gate | Shared U-G03/U-G04/U-G05/U-G06/U-G07/U-G09 remain incomplete; **A-G03** remains policy-blocked and A-G06 evidence linkage remains the next independent AQL-domain slice. |
+| LAST COMPLETED ACTION | Commit `a907fc7` removed the duplicate AQL entrance/internal brand, Settings and save owners, made workflow/context regions flow beneath the shared shell and refreshed the offline asset set. The final complete 83-command matrix passed in 1081.9 seconds after the recorded performance timing retries. |
+| NEXT ACTION | Audit Login, App Centre and Admin against the unified-page contract, then select the smallest independently provable shared token/responsive/accessibility gate; do not change app domain rules or records. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
+
+### A-G01 unified-page v2 AQL adapter — accepted local slice; shared U-G01 accepted
+
+FILE-LEVEL AUDIT: `ensureMenu` owns the AQL descriptor/callback handoff to `VesaWorkspaceShell`; `InspectionApp.render` owned a second internal brand/sidebar/topbar/Settings/save surface; `refreshChrome` owns actual local save status; the AQL service worker owns route-local and shared-shell offline assets. In scope: `apps/aql/index.html`, its route worker/cache contracts, one additive ownership browser test and continuity evidence. Frozen/out of scope: `SamplingEngine`, Ac/Re cells, `ResultEngine`, stage decisions, schemas/saved formats, inspection/evidence bytes, PPM/TNA runtime, public routes, providers and deployment. Risks: losing an existing command callback, hiding the only save state, stale offline shell assets, mobile overlap or mutating inspection data during preference changes. Verification: entrance/home/practice inspection at 320/360/390/768/1024/1280/1440 and 200% scale; exact single visible logo/header/six-menu/account/Settings/save ownership; mobile Menu/Escape/focus; File callback; preference immutability; no overflow, external requests or page errors; worker replacement and complete cross-app regression. Rollback: revert `a907fc7`; no record migration or browser-data cleanup is required, and the cache suffix rollback is self-contained.
+
+```text
+TIME / TIMEZONE: 2026-10-12 22:51 Asia/Dhaka
+GATE / OBJECTIVE: A-G01 / shared U-G01 — adapt AQL entrance, Home and inspection chrome to the mandatory unified page shell without changing inspection rules or records
+BRANCH / BASE COMMIT / RESULT COMMIT: feature/tna360-continuous / e010b49 / a907fc7
+FILES CHANGED (EXACT): apps/aql/index.html; apps/aql/service-worker.js; apps/aql/tests/a-g01-unified-ui.cjs; apps/aql/tests/a-g07-worker-update.cjs; apps/aql/tests/release-contract.cjs
+FROZEN / OUT OF SCOPE: SamplingEngine/Ac-Re/ResultEngine/stage formulas, ProjectSchema and saved formats, evidence/inspection records, sibling app source, public/Login/App Centre/Admin adaptation, providers and deployment
+IMPLEMENTED / EVIDENCE: The shared shell mounts before AQL entry. The old entrance logo/top brand, internal VE brand row, duplicate Settings action and legacy save button are removed or compatibility-hidden; the platform save owner receives real AQL autosave state. Inspection context is a flowing section, desktop workflow steps are an inline horizontal region, mobile steps are non-fixed, duplicate floating tool launchers are hidden and the old release menu is disconnected. The service worker cache `vesa-aql-2026-10-12-8` includes the shared shell JS/CSS. The authenticated proof loads entrance, Home and a fictional practice inspection at seven widths, checks exactly one visible logo/sticky shell/ordered Home-File-Edit-View-Tools-Help system/Settings/Admin/Logout/save owner, verifies mobile Escape focus, File callback, 200% scale and byte-exact inspection preservation through Bengali/Pure Mono changes. Reviewed 390/1280 entrance, Home and inspection screenshots plus the 200% capture show no duplicate top-level chrome.
+TEST COMMANDS + OUTPUT/COUNTS: focused AQL unified-shell browser PASS; A-G00 24/24, release contract, worker replacement/offline reopen and shared-shell contract PASS. Complete regression PASS using cached Playwright 1.64.0 and Chromium 1248: 83 commands / 1081.9s (51 automated, 19 browser, 12 syntax, 1 repository). The first full attempt and one isolated performance retry exceeded the 8s timing guard; a third isolated run passed at 5.21s and the final complete run passed at 6.85s. It includes current TNA domain/storage/security/report/browser suites, PPM 168-checkpoint/planning/recovery/40-PDF/report/update suites, all AQL sampling/stage/final/packing/measurement/import/quota/worker/report/reference suites, shared 390/1280 probes and git diff checking. Browser assertions report zero external requests and zero uncaught page errors; no failed assertion was waived.
+VERDICT: accepted local AQL adapter slice and shared U-G01 accepted locally. Runtime `d64b32a` plus TNA `74657a8`, PPM `800d074` and AQL `a907fc7` now prove exact ownership across all three applications. Shared becomes 4/10, historical overall 56% and GitHub-Free-only 61%; no release/deployment is authorized.
+NEXT ACTION (ONE PRECISE STEP): audit Login, App Centre and Admin against `VESA-UNIFIED-PAGE-SHELL-v2`, then select the first independently provable U-G03/U-G04/U-G05/U-G06/U-G07/U-G09 slice.
+```
 
 ### A-G06 measurement specification/readings lifecycle — conditional slice accepted locally
 
@@ -148,9 +164,9 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 
 ### A-G01 — Common VESA shell platform (coordinate once)
 - [x] Reconcile shared `VESA-UNIFORM-UI-v1` contract with PPM/TNA and actual root app shell.
-- [ ] Platform-owned patch delivers same official logo, global menu, theme tokens, user/settings, navigation.
-- [ ] Max ONE sticky/fixed navigation region, correct mobile collapse, accessible focus and no duplicate CSS overrides.
-- [ ] Root homepage/Login/Apps/Admin/PPM/AQL/future TNA smoke and absence of regressions.
+- [x] Platform-owned patch delivers same official logo, global menu, theme tokens, user/settings, navigation; AQL entrance/Home/inspection v2 adapter proven in `a907fc7`.
+- [x] Max ONE sticky/fixed navigation region, correct mobile collapse, accessible focus and no duplicate AQL top-level owner at seven widths and 200% scale.
+- [x] Root homepage/Login/Apps/Admin/PPM/AQL/TNA smoke and absence of regressions are retained through U-G00 plus the current 83-command matrix; deeper shared-token/responsive review continues separately.
 
 ### A-G02 — AQL menu adapter, home and novice workflow
 - [x] Remove AQL-specific sidebar/topbar/sticky menu conflict after common adapter verified (A-G01 browser matrix).
