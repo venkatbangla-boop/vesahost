@@ -72,7 +72,7 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 
 ## Shared UX eligibility — 10 active gates, 3 accepted
 
-All U-G00 through U-G09 outcomes are browser-local and remain active. U-G00, U-G01 and U-G02 are accepted; U-G03 through U-G09 are not started.
+All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-10-12 rendered audit reopened U-G01 as `CONDITIONAL`: current TNA shows a global authenticated bar plus a second logo/app header, PPM shows legacy branding plus global and workspace bars, and AQL shows a separate branded entrance beneath the authenticated bar. Commit `38a7eea` accepts U-G08 documentation/rollback governance through `docs/platform/VESA_UNIFIED_UI_CONTRACT.md`. The three accepted units are therefore U-G00, U-G02 and U-G08; U-G01 is conditional and U-G03–U-G07/U-G09 remain incomplete. The numerator stays 3, so this dated reassessment does not change the score.
 
 `Shared free-only = ROUND(100 × 3 / 10) = 30%`.
 
