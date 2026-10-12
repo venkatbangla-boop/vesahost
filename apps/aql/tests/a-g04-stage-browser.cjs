@@ -11,6 +11,7 @@ const readinessOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-prefi
 const fabricOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-fabric-reject-hold-mobile.png');
 const controlOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-equipment-needle-metal-mobile.png');
 const traceabilityOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-compliance-custody-mobile.png');
+const journeyOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-linked-stage-journey-mobile.png');
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
 const mime = file => ({ '.css': 'text/css', '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.webmanifest': 'application/manifest+json' })[path.extname(file)] || 'application/octet-stream';
 
@@ -170,6 +171,57 @@ async function run() {
     await page.screenshot({ path: fabricOutput, fullPage: true });
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
+
+    const parentStoredBefore = await page.evaluate(async id => {
+      const row = (await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id);
+      return JSON.parse(JSON.stringify(row.project));
+    }, ipc.id);
+    await page.locator(`[data-action="resume"][data-id="${ipc.id}"]:visible`).first().click();
+    await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, ipc.id);
+    await page.locator('[data-action="stage-linked"]:visible').first().click();
+    await page.locator('#dialog [name="stage"]').selectOption('endline');
+    await page.locator('#dialog [name="inspector"]').fill('A-G04 Linked Inspector - Fictional');
+    assert.equal(await page.locator('#dialog [name="buyer"]').inputValue(), parentStoredBefore.info.buyer, 'linked buyer context was not carried into the dialog');
+    assert.equal(await page.locator('#dialog [name="factory"]').inputValue(), parentStoredBefore.info.factory, 'linked factory context was not carried into the dialog');
+    assert.equal(await page.locator('#dialog [name="orderKey"]').inputValue(), parentStoredBefore.stageSuite.orderKey, 'linked order context was not carried into the dialog');
+    await saveDialog(page);
+    await page.waitForFunction(parentId => window.__vesaApp?.p?.stageSuite?.parent === parentId, ipc.id);
+    const freshChild = await page.evaluate(() => JSON.parse(JSON.stringify(window.__vesaApp.p)));
+    assert.notEqual(freshChild.meta.id, ipc.id, 'linked inspection reused the parent identity');
+    assert.equal(freshChild.stageSuite.stage, 'endline', 'linked inspection created the wrong stage');
+    assert.equal(freshChild.stageSuite.parent, ipc.id, 'linked inspection lost its parent identity');
+    assert.deepEqual(freshChild.stageSuite.records, [], 'linked inspection copied parent observations');
+    assert.ok(freshChild.stageSuite.checks.every(check => check.status === 'Pending' && check.note === ''), 'linked inspection did not start with fresh checkpoints');
+    await page.locator('[data-action="stage-criteria"]:visible').first().click();
+    await page.locator('#dialog [name="reference"]').fill('LINKED-ENDLINE-CRITERIA-REV-1');
+    await page.locator('#dialog [name="approvedBy"]').fill('Fictional Linked Reviewer');
+    await page.locator('#dialog [name="sampling"]').fill('Fictional linked endline sample; fixture only');
+    await saveDialog(page);
+    await page.locator('[data-action="stage-record"][data-module="endline"]:visible').first().click();
+    const linkedRecord = { identity: 'LINKED-ENDLINE-A-G04-001', date: '2026-10-12', shift: 'B', line: 'LINE-LINKED', style: 'STYLE-LINKED-A-G04', color: 'GREEN', size: 'S', inspected: 20, defective: 1, occurrences: 1, firstPass: 19, repair: 1, recheck: 1, passRepair: 1, defects: 'One fictional linked-stage observation', supervisor: 'Fictional Linked Supervisor', capa: 'CAPA-LINKED-A-G04', reference: 'LINKED-ENDLINE-CRITERIA-REV-1', status: 'Pass', note: 'Child-only observation; parent must remain unchanged' };
+    for (const [name, value] of Object.entries(linkedRecord)) {
+      const field = page.locator(`#dialog [name="${name}"]`);
+      if (await field.evaluate(element => element.tagName === 'SELECT')) await field.selectOption(value);
+      else await field.fill(String(value));
+    }
+    await saveDialog(page);
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const linkedChild = await page.evaluate(() => ({ id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)) }));
+    assert.equal(linkedChild.project.stageSuite.records.length, 1, 'linked child observation was not saved independently');
+    assert.equal(linkedChild.project.stageSuite.records[0].identity, linkedRecord.identity, 'linked child observation identity changed');
+    const parentStoredAfter = await page.evaluate(async id => {
+      const row = (await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id);
+      return JSON.parse(JSON.stringify(row.project));
+    }, ipc.id);
+    assert.deepEqual(parentStoredAfter, parentStoredBefore, 'saving the linked child mutated the durable parent event');
+    await page.locator('[data-action="stage-journey"]:visible').first().click();
+    await page.locator('#dialog').getByText(parentStoredBefore.meta.reportId, { exact: true }).waitFor({ state: 'visible' });
+    await page.locator('#dialog').getByText(linkedChild.project.meta.reportId, { exact: true }).waitFor({ state: 'visible' });
+    await page.screenshot({ path: journeyOutput, fullPage: true });
+    await page.locator('#dialog [data-action="dialog-close"]').click();
+    await page.locator('#app [data-action="home"]:visible').first().click();
+    await page.waitForFunction(() => window.__vesaApp?.step === 'home');
     await page.locator(`[data-action="resume"][data-id="${incoming.id}"]:visible`).first().click();
     await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, incoming.id);
     await addSupportingRecord(page, 'compliance', { identity: 'COMPLIANCE-A-G04-001', revision: 'BUYER-MANUAL-REV-1', market: 'Fictional Market', product: 'Fictional knit top', age: 'Adult', report: 'COMPLIANCE-REPORT-FICTIONAL-01', expiry: '2026-10-20', artwork: 'ARTWORK-FICTIONAL-REV-1', reviewer: 'Fictional Compliance Reviewer', reference: 'COMPLIANCE-CRITERIA-REV-1', status: 'Pass', note: 'Report reference is recorded but evidence is deliberately unattached' });
@@ -221,10 +273,16 @@ async function run() {
     await reopen(page, incomingFinal);
     await reopen(page, monitor);
     await reopen(page, fabricFinal);
+    await reopen(page, linkedChild);
+    const parentAfterReload = await page.evaluate(async id => {
+      const row = (await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id);
+      return JSON.parse(JSON.stringify(row.project));
+    }, ipc.id);
+    assert.deepEqual(parentAfterReload, parentStoredBefore, 'reload/reopen changed the durable parent event');
     assert.deepEqual(pageErrors, [], 'stage lifecycle must have no uncaught page errors');
     assert.deepEqual(external, [], 'stage lifecycle must make no external requests');
     await context.close();
-    console.log('AQL A-G04 stage browser passed: nine stage lifecycles plus fabric, material-control and compliance/custody supporting registers, exact reopen, honest fail-closed outcomes, 390px no overflow, zero external requests/page errors');
+    console.log('AQL A-G04 stage browser passed: independent linked parent/child plus nine stage lifecycles and supporting registers, exact reopen, honest fail-closed outcomes, 390px no overflow, zero external requests/page errors');
   } finally { if (browser) await browser.close(); await host.stop().catch(() => {}); }
 }
 
