@@ -17,13 +17,25 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Commit `f9cf172` proved visible loading before/after photo binding with exact original bytes, reconciled quantities, retained seal/handover and explicit carton-randomization boundary. The 18-command matrix passed in 108.0 seconds. |
-| NEXT ACTION | Prove authenticated pre-final ready thresholds remain PENDING until selected checkpoints/evidence are explicitly reviewed; do not change readiness policy, SamplingEngine or Ac/Re. |
+| LAST COMPLETED ACTION | Commit `f371834` proved passing pre-final percentages remain PENDING until all 11 checkpoints are visibly reviewed, then yield only READY FOR FINAL INSPECTION with no lock or shipment release. The 18-command matrix passed in 123.0 seconds. |
+| NEXT ACTION | Prove one authenticated Final AQL sample/result boundary with a synthetic approved plan and explicit defect severity while preserving the frozen SamplingEngine/Ac-Re/ResultEngine outputs. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
-### A-G05 pre-final readiness/checkpoint audit — in progress
+### A-G05 pre-final readiness/checkpoint audit — conditional slice accepted locally
 
 FILE-LEVEL AUDIT: `PreFinalReadinessEngine` owns only explicit production/packing threshold comparison; `StageDecision.evaluate` separately requires every catalog checkpoint to be reviewed and preserves pending/failed reasons. For pre-final, `stageDecision` maps a complete failure-free stage to `READY FOR FINAL INSPECTION`, not final AQL acceptance. `StageWorkspace.check` records each actual Pass/Fail/N/A plus observation through `ProjectStore`, while repository autosave owns durability. In scope: extend `apps/aql/tests/a-g04-stage-browser.cjs` and, after proof, AQL/program trackers and the A-G05 pre-final checklist. Frozen/out of scope: `apps/aql/index.html`, readiness thresholds/policy, SamplingEngine/Ac-Re/ResultEngine, schemas/saved formats, final AQL decisions, shipment disposition, other stages, sibling apps, production data and deployment. Risks: treating passing percentages as complete readiness, bulk-filling checkpoints without visible review, confusing READY FOR FINAL INSPECTION with AQL pass/release, or losing observations on reopen. Verification: authenticated visible ready record remains PENDING with untouched checkpoints; individually review all pre-final checkpoints through dialogs; assert readiness-only decision, unlocked/not-released state, exact save/reload/reopen, 390px screenshot, zero network/page errors, focused and full regression. Rollback: revert additive test/tracker changes; disposable browser state is destroyed.
+
+```text
+TIME / TIMEZONE: 2026-10-12 16:35 Asia/Dhaka
+GATE / OBJECTIVE: A-G05 — prove passing pre-final thresholds cannot bypass explicit checkpoint review and produce only a readiness decision
+BRANCH / BASE COMMIT / TEST COMMIT: feature/tna360-continuous / 7218fa3 / f371834
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md evidence follows
+FROZEN / OUT OF SCOPE: apps/aql/index.html/runtime, readiness policy/thresholds, SamplingEngine/Ac-Re/ResultEngine, schemas/saved formats, final AQL, shipment disposition, sibling apps, production records and deployment
+IMPLEMENTED / EVIDENCE: The authenticated 390px workflow created a separate pre-final event with 100% production and packing against explicit fictional 90%/80% thresholds. Its readiness record passed, but all 11 untouched stage checkpoints kept the stage PENDING. Each checkpoint was then opened and visibly saved as Pass with its own synthetic observation. Only after all reviews did the stage return READY FOR FINAL INSPECTION with zero pending/failure reasons. The event stayed editable/unlocked and shipment disposition stayed Not released; exact readiness record and checkpoint observations survived save/reload/reopen. No Final AQL pass, buyer approval or release was inferred.
+TEST COMMANDS + OUTPUT/COUNTS: syntax, focused authenticated browser and `git diff --check` PASS. Full AQL/shared regression PASS: 18 commands / 123.0s, including Q01-Q24, stage/35-area contracts, current+legacy restore, atomic and 200/280 MiB boundary imports, quota rescue/restart, worker replacement/offline reopen, reports/language, cross-app boundaries, release and shared shell. Zero external requests or uncaught page errors. Visual evidence reviewed at `output/playwright/aql-a-g05-prefinal-ready-mobile.png`.
+VERDICT: conditional — the pre-final readiness prerequisite/checkpoint lifecycle and its A-G05 checklist item are accepted locally. Completed approved Final AQL, barcode/device, randomization-policy and physical/factory acceptance remain open; gate scores and 35-area counts do not change.
+NEXT ACTION (ONE PRECISE STEP): prove one authenticated Final AQL sample/result boundary with a synthetic approved plan and explicit defect severity while preserving the frozen SamplingEngine/Ac-Re/ResultEngine outputs.
+```
 
 ### A-G05 loading evidence/reconciliation audit — conditional slice accepted locally
 
@@ -177,7 +189,7 @@ NEXT ACTION (ONE PRECISE STEP): add the smallest fail-closed laboratory-report e
 ```
 
 ### A-G05 — Pre-final/final/rework/reinspection/load/supplier QA
-- [ ] Prefinal readiness prerequisites and pending evidence cannot be bypassed.
+- [x] Prefinal readiness prerequisites and pending evidence cannot be bypassed — passing thresholds remain PENDING until all 11 checkpoints are visibly reviewed; READY FOR FINAL INSPECTION remains unlocked and Not released through reopen.
 - [ ] Final AQL defect/severity result matches approved plan and original engine.
 - [x] Rework/CAPA/reinspection creates linked history and never deletes prior failure — authenticated three-event browser chain, repository deep-equality checks, visible journey and exact reload/reopen.
 - [ ] Loading/carton/barcode/seal/handover traceability complete where selected.
