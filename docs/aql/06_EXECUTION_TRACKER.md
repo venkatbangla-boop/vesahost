@@ -17,9 +17,25 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Commit `f371834` proved passing pre-final percentages remain PENDING until all 11 checkpoints are visibly reviewed, then yield only READY FOR FINAL INSPECTION with no lock or shipment release. The 18-command matrix passed in 123.0 seconds. |
-| NEXT ACTION | Prove one authenticated Final AQL sample/result boundary with a synthetic approved plan and explicit defect severity while preserving the frozen SamplingEngine/Ac-Re/ResultEngine outputs. |
+| LAST COMPLETED ACTION | Commit `a59d618` proved the frozen Final code F / n20 / Major Ac1-Re2 boundary through visible finding entry, exact save/reload/reopen and a 78-command cross-app regression with no retry. |
+| NEXT ACTION | Prove one authenticated packing/barcode record lifecycle with explicitly entered synthetic codes, duplicate/range guards and exact reopen; do not claim device scanning or approved carton randomization. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
+
+### A-G05 Final Ac/Re boundary audit — conditional slice accepted locally
+
+FILE-LEVEL AUDIT: `SamplingEngine` owns the frozen direct-cell lookup; `PlanApproval` signs its source; `SampleRegistry` owns inspected-piece identities; `ResultEngine` applies Critical/Major/Minor limits; `StageDecision` delegates Final and reinspection stages to the original result. In scope: one authenticated browser test and tracker/dashboard evidence. Frozen/out of scope: `apps/aql/index.html`, sampling cells, Ac/Re/ResultEngine logic, schemas/saved formats, service worker, sibling apps, production records and deployment. Risks: manufacturing buyer approval, omitting piece identity/severity, treating the acceptance boundary as overall release, or hiding unrelated pending controls. Verification: engine-derived level III / lot 90 / Major 1.5 plan; complete registered sample; visible Major findings at Ac and Re; exact local save/reload/reopen; 390px screenshot; zero external requests/page errors; complete cross-app regression. Rollback: revert `a59d618` and the evidence-only tracker/dashboard commit; no runtime or data migration is involved.
+
+```text
+TIME / TIMEZONE: 2026-10-12 16:58 Asia/Dhaka
+GATE / OBJECTIVE: A-G05 — prove an authenticated Final workmanship Ac/Re transition using a synthetic approved plan and explicit severity without changing the frozen engines
+BRANCH / BASE COMMIT / TEST COMMIT: feature/tna360-continuous / 3831a3b / a59d618
+FILES CHANGED (EXACT): apps/aql/tests/a-g05-final-boundary-browser.cjs; docs/tna/06_EXECUTION_TRACKER.md pre-code audit; this tracker and VESA_PROGRESS.md evidence follow
+FROZEN / OUT OF SCOPE: apps/aql/index.html/runtime, service worker, SamplingEngine/Ac-Re/ResultEngine, schemas/saved formats, other stages, sibling app source, production records, release/deployment
+IMPLEMENTED / EVIDENCE: The authenticated 390px flow creates Final through the visible dialog, then prepares an explicitly fictional signed plan through the audited store boundary. The unchanged engine returns code F, sample 20 and Major Ac=1/Re=2 for lot 90, level III and AQL 1.5. Twenty unique sample pieces are registered. The first Major finding entered through the visible defect dialog leaves the workmanship group PASS while the overall inspection honestly remains PENDING for closing controls; the second explicit Major finding makes the group FAIL and overall result NOT CONFORMED. Plan provenance, pending reasons, editable/unlocked state and Not released disposition remain unchanged. Exact project bytes, plan and counts survive local save, reload and Home reopen.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/aql/tests/a-g05-final-boundary-browser.cjs` PASS; focused browser PASS. Complete cross-app regression PASS without retry: 78 commands / 635.1s (48 automated, 17 browser, 12 syntax, 1 repository), including TNA, PPM, AQL Q01-Q24/stage/restore/import/quota/worker/report/reference/release, shared 390/1280 shell, syntax and `git diff --check`. Browser assertions report zero external requests and zero uncaught page errors. Visual evidence reviewed at `output/playwright/aql-a-g05-final-ac-re-boundary-mobile.png`; no horizontal clipping.
+VERDICT: conditional — the A-G05 Final defect/severity result checklist item is accepted locally. It does not prove buyer approval, shipment release, physical-device/factory acceptance or the entire A-G05 gate; scores and 35-area counts remain fixed.
+NEXT ACTION (ONE PRECISE STEP): prove one authenticated packing/barcode record lifecycle with explicitly entered synthetic codes, duplicate/range guards and exact save/reload/reopen; do not claim device scanning or approved carton randomization.
+```
 
 ### A-G05 pre-final readiness/checkpoint audit — conditional slice accepted locally
 
@@ -190,7 +206,7 @@ NEXT ACTION (ONE PRECISE STEP): add the smallest fail-closed laboratory-report e
 
 ### A-G05 — Pre-final/final/rework/reinspection/load/supplier QA
 - [x] Prefinal readiness prerequisites and pending evidence cannot be bypassed — passing thresholds remain PENDING until all 11 checkpoints are visibly reviewed; READY FOR FINAL INSPECTION remains unlocked and Not released through reopen.
-- [ ] Final AQL defect/severity result matches approved plan and original engine.
+- [x] Final AQL defect/severity result matches approved plan and original engine — authenticated code F / n20 / Major Ac1-Re2 browser proof with explicit piece IDs/severity and exact reopen.
 - [x] Rework/CAPA/reinspection creates linked history and never deletes prior failure — authenticated three-event browser chain, repository deep-equality checks, visible journey and exact reload/reopen.
 - [ ] Loading/carton/barcode/seal/handover traceability complete where selected.
 - [x] Supplier QMS critical audit failure and factory denied acknowledgement remain blocked; authenticated browser evidence proves later partial acknowledgement does not clear the Critical failure or imply VESA approval.
