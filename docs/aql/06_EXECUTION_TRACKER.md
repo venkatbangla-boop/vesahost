@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | The A-G04 incoming lifecycle now requires compliance and sample-custody registers; a typed but unattached compliance report stays explicitly pending while exact custody metadata reopens. The 17-command matrix passed. |
-| NEXT ACTION | Prove a real linked-stage transition creates a new child event while preserving the parent event’s original observations, identity and durable reopen state. |
+| LAST COMPLETED ACTION | The visible linked-stage workflow now proves a fresh child identity/observations and exact parent pointer while the durable parent object remains byte-for-byte unchanged across child save and reload. The 17-command matrix passed. |
+| NEXT ACTION | Reconcile the original 35 AQL areas against actual source/tests/browser evidence and record each as proven, conditional, blocked or deferred without inflating the gate. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -58,7 +58,7 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 - [x] Incoming materials, fabric roll, shade, lab, cutting, IPC, inline, endline and monitor have deterministic contracts plus authenticated create/save/reload/reopen evidence.
 - [ ] Material quantity, roll/lot, buyer manual, traceability, equipment/needle controls when required.
 - [ ] 35 original areas audited with honest pass/partial/blocked evidence.
-- [ ] Stage transitions and original observations preserved.
+- [x] Linked-stage transition creates a fresh child event with explicit parent identity; the parent repository snapshot and original observations remain byte-for-byte unchanged through child save and reload.
 
 ### A-G05 — Pre-final/final/rework/reinspection/load/supplier QA
 - [ ] Prefinal readiness prerequisites and pending evidence cannot be bypassed.
@@ -581,6 +581,21 @@ IMPLEMENTED: Added fixture-only VM checks for in-tolerance PASS, out-of-toleranc
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — deterministic measurement and source contracts are locally proven; full asset restore, CAPA history, analytics denominator fixtures, huge-record performance, accessibility and rendered report review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run browser restore/report evidence for one measurement, document, finding, CAPA and carton chain without changing frozen AQL tables.
+```
+
+### A-G04 linked-stage parent/child lifecycle — conditional, browser slice accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 10:36 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — prove visible linked-stage creation preserves the durable parent event and starts an independent child observation set
+BRANCH / BASE COMMIT: feature/tna360-continuous / ec6aab9 (tested browser commit 4e403bb)
+TEST COMMIT: 30fd383
+FILE-LEVEL AUDIT: StageWorkspace.create(category,true) owns linked creation: it reads the active event, initializes ProjectSchema.fresh, sets a new identity, copies buyer/factory/order context, stores the old meta.id in stageSuite.parent, creates fresh check/record state and copies only order lines under fresh IDs. StageWorkspace.journey reads repository snapshots by orderKey and renders parent/result lineage. InspectionApp.saveNow → AutosaveService → LocalRepository owns each independent durable row. In scope: extend apps/aql/tests/a-g04-stage-browser.cjs and both trackers. Frozen/out of scope: apps/aql/index.html/runtime, service workers, SamplingEngine/Ac-Re, schemas/formats, other stage rules, sibling apps, production records and release. Risks are accidentally comparing only active memory, copying parent observations, overwriting the parent row, or confusing same-order context with shared mutable state. Verification: repository snapshot before/after child save, visible New linked inspection dialog, fresh child identity/checks/records, explicit child record, exact parent pointer, visible journey, reload/reopen of both, 390px/no-network/no-page-error/full matrix. Rollback: revert additive test/docs; disposable browser state is destroyed.
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+IMPLEMENTED / EVIDENCE: Reopened the saved IPC event and captured its complete durable repository project before using the visible New linked inspection action. The dialog retained the explicit buyer/factory/order context; selecting Endline created a different project ID with `stageSuite.parent` equal to the IPC ID, zero copied records, and all fresh Pending checkpoints. After entering separate criteria and one coherent child-only endline observation, Ctrl+S persisted the child while a second repository read proved the entire parent project object byte-for-byte unchanged. Order quality journey visibly listed both report IDs/stages/results; after full page reload both exact parent and child reopened, and the durable parent still deep-equalled its pre-child snapshot. No observation, record ID or approval was inferred or copied.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/aql/tests/a-g04-stage-browser.cjs` PASS; focused browser lifecycle PASS; full 17-command AQL/shared matrix PASS in 103.2 seconds, including A-G00 Q01-Q24, A-G02 through A-G09, all A-G07 browser/storage/import/worker suites, release contract and shared shell contract; `git diff --check` PASS. Browser assertions report zero uncaught page errors and zero external requests. Visual evidence reviewed at output/playwright/aql-a-g04-linked-stage-journey-mobile.png.
+VERDICT: conditional — linked-stage transition/original-observation preservation is accepted locally and the fourth A-G04 checklist item is proven. A-G04 remains conditional for the explicit 35-area evidence reconciliation, incomplete compliance attachment/other material-control acceptance, physical-device review and field acceptance; percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): reconcile all 35 original AQL areas in `docs/aql/01_AUDIT_MASTER_BLUEPRINT.md` against committed code/tests/browser evidence, record each honest proven/conditional/blocked/deferred status, and add only the smallest missing deterministic contract needed to make the matrix auditable without altering frozen SamplingEngine/Ac-Re rules.
 ```
 
 ### A-G04 compliance/custody browser lifecycle — conditional, browser slice accepted locally
