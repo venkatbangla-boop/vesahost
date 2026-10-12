@@ -473,6 +473,18 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 **A-G05 rollback:** remove the new browser test and generated screenshot, then revert the documentation evidence; no production data or application code is touched.
 
+### AQL A-G05 pre-code file-level audit — packing/barcode lifecycle
+
+| Exact path | Responsibility, state & dependencies observed | In/out of scope | Risk / compatibility contract | Verification / rollback |
+|---|---|---|---|---|
+| `apps/aql/index.html` | `StageQualityControls` owns packing-register duplicate/range reconciliation; `StageWorkspace` owns criteria and supporting-record dialogs; `PackingEngine`, `CartonIdentity` and `InspectionApp.cartonDialog` own carton applicability, barcode comparison and unique PO/style/local-carton identity; repository/autosave owns durable reopen. | Read-only dependency. No runtime, packing rule, carton randomization, barcode-device API, schema, worker or domain-engine change. | Typed codes are observations, not scanner evidence. Range values are explicit fixture criteria, not a buyer policy. Duplicate rejection must preserve the accepted carton and all earlier stage records. | Authenticated visible criteria/support/carton dialogs; assert duplicate/missing-range reasons then correction; equal barcode comparison PASS; rejected duplicate carton leaves exact state unchanged; save/reload/reopen; 390px screenshot; zero external requests/page errors; focused plus complete regression. |
+| `apps/aql/tests/a-g05-packing-barcode-browser.cjs` (new) | Dedicated browser proof for the two existing packing boundaries and their persistence; no existing test combines visible stage-range and carton-barcode workflows. | Additive synthetic test only. | Do not press Random select, call native barcode APIs, infer buyer approval, finalise, release or modify production records. | Rollback removes only this test, its ignored screenshot and evidence documentation. |
+| `02_UNIVERSAL_RESUME_PROMPT.md` (new alias copy), `VESA_PROGRESS.md` and trackers | Durable resume instruction/evidence and one exact next action. | Install the user-supplied prompt without replacing the existing canonical `VESA_RESUME_PROMPT.md`; update evidence only after tests pass. | Both resume files must retain the same Free-only/local-data contract; scores remain fixed unless a whole eligible gate is independently accepted. | Content-compare the prompt copies while allowing one conventional final newline; `git diff --check`; clean committed worktree. |
+
+**A-G05 packing call flow:** authenticated stage UI → explicit criteria/range → supporting packing records → `StageQualityControls` reconciliation → Pack & site carton dialog → `CartonIdentity` uniqueness + `PackingEngine` barcode comparison → local repository save/reopen.
+
+**A-G05 packing rollback:** revert the additive test/governance/evidence commits; application source, service workers, browser formats and user records are unchanged.
+
 ### Accepted patch work log
 
 | Time | Group | Branch / SHA | Files changed | Tests / evidence | Verdict | Next action |
