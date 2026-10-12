@@ -28,7 +28,7 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 | Active gate | **AQL A-G04 — stage/35-area coverage expansion (A-G03 policy input blocked)** |
 | Current subtask / subchecks | Extend authenticated disposable-browser A-G04 lifecycle evidence to loading and supplier-audit stages with honest pending/failure guards and exact reopen. Approved carton-randomization policy, real-device/screen-reader/factory acceptance and release authorization remain external blockers. |
 | Last ACCEPTED gate | **PPM P-G08 - TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, no deployment or live synchronization claim) |
-| Last tested commit SHA | Source HEAD `b4d81fe`: authenticated IPC/cutting browser lifecycle and the expanded 17-command AQL/shared matrix passed; the pure A-G04 matrix is committed at this SHA. Follow-on evidence commit pending. |
+| Last tested commit SHA | `7b05a98`: authenticated IPC/cutting browser lifecycle and the expanded 17-command AQL/shared matrix passed; no runtime/domain/saved-format file changed. |
 | Last update (UTC) | 2026-10-12 04:03:06 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |

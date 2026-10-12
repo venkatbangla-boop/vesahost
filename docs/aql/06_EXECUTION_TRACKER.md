@@ -17,7 +17,7 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Commit `b4d81fe` accepted the expanded A-G04 pure matrix; authenticated 390px IPC/cutting UI create, criteria, record, explicit save, reload and reopen now pass at source HEAD `b4d81fe`, with the expanded 17-command AQL/shared matrix green. |
+| LAST COMPLETED ACTION | Commit `7b05a98` added and proved authenticated 390px IPC/cutting UI create, criteria, record, explicit save, reload and reopen; exact fictional stage values survived and the expanded 17-command AQL/shared matrix passed. |
 | NEXT ACTION | Extend the same disposable-browser A-G04 lifecycle evidence to loading and supplier-audit stages, including honest pending/failure guards and exact reopen, without changing frozen domain rules. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
