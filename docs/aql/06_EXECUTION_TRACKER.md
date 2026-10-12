@@ -16,9 +16,9 @@
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; the AQL unified-page v2 adapter closes the final application gap and shared U-G01 is accepted locally. A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; provider services remain separate blockers. |
-| Current gate | Shared U-G03/U-G04/U-G05/U-G06/U-G07/U-G09 remain incomplete; **A-G03** remains policy-blocked and A-G06 evidence linkage remains the next independent AQL-domain slice. |
+| Current gate | Shared U-G03/U-G06/U-G09 remain incomplete after accepted platform-page U-G04/U-G05/U-G07; **A-G03** remains policy-blocked and A-G06 evidence linkage remains the next independent AQL-domain slice. |
 | LAST COMPLETED ACTION | Commit `a907fc7` removed the duplicate AQL entrance/internal brand, Settings and save owners, made workflow/context regions flow beneath the shared shell and refreshed the offline asset set. The final complete 83-command matrix passed in 1081.9 seconds after the recorded performance timing retries. |
-| NEXT ACTION | Audit Login, App Centre and Admin against the unified-page contract, then select the smallest independently provable shared token/responsive/accessibility gate; do not change app domain rules or records. |
+| NEXT ACTION | Consolidate shared typography/colour/spacing/card/control tokens for U-G03, then run deeper U-G06 accessibility and U-G09 uniform review; do not change app domain rules or records. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ### A-G01 unified-page v2 AQL adapter — accepted local slice; shared U-G01 accepted

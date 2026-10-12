@@ -67,6 +67,20 @@ VERDICT / SCORE: U-G01 ACCEPTED LOCALLY. Shared accepted gates become 4/10; hist
 NEXT ACTION (ONE PRECISE STEP): audit Login, App Centre and Admin, then select the first independently provable U-G03/U-G04/U-G05/U-G06/U-G07/U-G09 local slice.
 ```
 
+### One VESA Login/App Centre/Admin platform-page closure — accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 17:12:36 UTC / 2026-10-12 23:12:36 Asia/Dhaka
+GATES / OBJECTIVE: shared U-G04/U-G05/U-G07 — remove duplicate authenticated utility-page branding, retain one logged-out Login brand, prove registered catalogue cards/responsive behavior and make the evidence a permanent regression command
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / 6084992 / 082493d
+FILE-LEVEL AUDIT / SCOPE: App Centre and Admin used legacy app-user-bar plus a second content logo; Login had one valid standalone brand panel. In scope: apps/index.html, admin/index.html, two shared style alignment rules, tests/vesa-platform-pages.cjs and the full runner registration. Frozen: auth/user store schema and records, catalogue entries/routes, TNA/PPM/AQL domain source/schemas, providers, main and deployment.
+IMPLEMENTED / EVIDENCE: authenticated App Centre/Admin now supply page descriptors/callbacks to the authoritative shared shell and remove their duplicate content logos. App Centre retains exactly the three registered AQL/PPM/TNA cards; Admin retains user creation/list/history and CSV actions. Login remains standalone. Exact page evidence passes at 320/360/390/768/1024/1280/1440 and 200% scale with one visible logo, one shell/account/Settings/state/six-menu owner, mobile Menu/Escape/focus, Settings auth-store immutability, no overflow and zero external requests/page errors. Reviewed Login/App Centre/Admin 390/1280 screenshots are clean.
+FULL REGRESSION: PASS without retry — 84 commands / 698.4s (51 automated, 20 browser, 12 syntax, 1 repository), including all TNA, PPM and AQL domain/saved-copy/report/offline suites plus route and shell matrices.
+ROLLBACK: revert 082493d; no data migration, local-storage clearing or worker change is required.
+VERDICT / SCORE: U-G04, U-G05 and U-G07 ACCEPTED LOCALLY. Shared becomes 7/10; historical overall 59%; GitHub-Free-only 64%. U-G03, U-G06 and U-G09 remain open. No provider/release/deployment is claimed.
+NEXT ACTION (ONE PRECISE STEP): consolidate the root/shared typography, colour, spacing, card and control tokens for U-G03, then run deeper U-G06 accessibility and U-G09 final uniform review.
+```
+
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
 ## C. Gate definitions and approval authority
