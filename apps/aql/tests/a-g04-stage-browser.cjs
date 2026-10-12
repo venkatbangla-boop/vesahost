@@ -8,6 +8,7 @@ const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '../../..');
 const output = path.join(root, 'output', 'playwright', 'aql-a-g04-material-monitor-mobile.png');
 const readinessOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-prefinal-not-ready-mobile.png');
+const fabricOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-fabric-reject-hold-mobile.png');
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
 const mime = file => ({ '.css': 'text/css', '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.webmanifest': 'application/manifest+json' })[path.extname(file)] || 'application/octet-stream';
 
@@ -83,6 +84,19 @@ async function reopen(page, saved) {
   await page.waitForFunction(() => window.__vesaApp?.step === 'home');
 }
 
+async function addSupportingRecord(page, module, record) {
+  await page.locator('[data-action="stage-support"]:visible').first().click();
+  await page.locator(`#dialog [data-action="stage-require"][data-module="${module}"]`).click();
+  await page.waitForFunction(() => !document.getElementById('dialog').open);
+  await page.locator(`[data-action="stage-record"][data-module="${module}"]:visible`).first().click();
+  for (const [name, value] of Object.entries(record)) {
+    const field = page.locator(`#dialog [name="${name}"]`);
+    if (await field.evaluate(element => element.tagName === 'SELECT')) await field.selectOption(value);
+    else await field.fill(String(value));
+  }
+  await saveDialog(page);
+}
+
 async function run() {
   const host = serve(); let browser;
   try {
@@ -134,6 +148,26 @@ async function run() {
       stage: 'monitor', module: 'monitor', expectedPending: 'MONITOR-A-G04-001: Packed quantity exceeds order', buyer: 'A-G04 Monitor Buyer - Fictional', factory: 'A-G04 Monitor Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-MONITOR', reference: 'MONITOR-CRITERIA-REV-1', reviewer: 'Fictional Monitor Reviewer', coverage: 'Fictional daily production reconciliation; fixture only',
       record: { identity: 'MONITOR-A-G04-001', date: '2026-10-12', style: 'STYLE-A-G04', order: 100, cut: 120, sew: 115, finish: 110, pack: 105, reject: 2, repair: 3, today: 25, planned: '2026-10-20', forecast: '2026-10-22', risk: 'Fictional output exceeds entered order and requires reconciliation', quality: 'Fictional stable trend', reference: 'MONITOR-CRITERIA-REV-1', status: 'Pass', note: 'Deliberate packed-over-order balance mismatch; must remain pending' },
     });
+    const fabric = await createStage(page, {
+      stage: 'fabric', module: 'roll', buyer: 'A-G04 Fabric Buyer - Fictional', factory: 'A-G04 Fabric Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-FABRIC', reference: 'FABRIC-CRITERIA-REV-1', reviewer: 'Fictional Fabric Reviewer', coverage: 'One fictional roll plus shade and lab records; fixture only',
+      record: { identity: 'ROLL-A-G04-001', mill: 'Fictional Mill', batch: 'DYELOT-FICTIONAL-01', ticket: 'TICKET-FICTIONAL-01', invoice: 1000, received: 1000, ticketLength: 1000, length: 1000, widthStart: 150, widthMiddle: 150, widthEnd: 150, basis: '100 m²', limit: 5, method: 'Approved fictional four-point method REV-1', sampling: 'One fictional roll selected', shade: 'SHADE-A', endShade: 'No fictional variation claimed', edgeShade: 'No fictional variation claimed', splices: 0, spliceLocations: 'None', selvedge: 'Fictional acceptable observation', handle: 'Matches fictional reference', odour: 'No fictional odour claimed', construction: 'Fictional knit construction', disposition: 'Accept', defects: '10,Oil,2,3', reference: 'FABRIC-CRITERIA-REV-1', status: 'Pass', note: 'Valid fictional roll record before supporting failures' },
+    });
+    await page.locator(`[data-action="resume"][data-id="${fabric.id}"]:visible`).first().click();
+    await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, fabric.id);
+    await addSupportingRecord(page, 'shade', { identity: 'SHADE-A-G04-001', standard: 'FICTIONAL-STANDARD-REV-1', labdip: 'LABDIP-FICTIONAL-01', light: 'D65', lot: 'DYELOT-FICTIONAL-01', shade: 'SHADE-A', component: 'Body', endShade: 'Fictional observation', edgeShade: 'Fictional observation', grade: 'Fictional grade', method: 'Approved fictional Delta E method', delta: 2.5, limit: 1.5, evaluator: 'Fictional Shade Reviewer', disposition: 'Reject', reference: 'SHADE-CRITERIA-REV-1', status: 'Pass', note: 'Deliberate Delta E exceedance; fixture only' });
+    await addSupportingRecord(page, 'lab', { identity: 'LAB-A-G04-001', lot: 'DYELOT-FICTIONAL-01', method: 'Fictional test method', revision: 'REV-1', buyer: 'A-G04 Fabric Buyer - Fictional', equipment: 'LAB-EQ-FICTIONAL-01', due: '2026-10-12', validUntil: '2026-10-20', external: 'LAB-REPORT-FICTIONAL-01', criterion: 'Fictional approved criterion', actual: 'Deliberate fictional failing result', testStatus: 'Fail', reviewer: 'Fictional Lab Reviewer', reference: 'LAB-CRITERIA-REV-1', status: 'Pass', note: 'Deliberate laboratory failure; fixture only' });
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const fabricFinal = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text) }; });
+    assert.equal(fabricFinal.stageDecision, 'REJECT / HOLD', 'fabric supporting failures must visibly reject/hold the stage');
+    assert.equal(fabricFinal.result, 'NOT CONFORMED', 'fabric supporting failures must not conform');
+    assert.ok(fabricFinal.failures.includes('SHADE-A-G04-001: Delta E exceeds approved limit'), 'fabric shade failure reason is missing');
+    assert.ok(fabricFinal.failures.includes('LAB-A-G04-001: Laboratory test failed'), 'fabric laboratory failure reason is missing');
+    assert.deepEqual(fabricFinal.project.stageSuite.requiredModules, ['shade', 'lab'], 'fabric supporting-register requirements changed');
+    await page.getByText('REJECT / HOLD', { exact: true }).first().waitFor({ state: 'visible' });
+    await page.screenshot({ path: fabricOutput, fullPage: true });
+    await page.locator('#app [data-action="home"]:visible').first().click();
+    await page.waitForFunction(() => window.__vesaApp?.step === 'home');
 
     fs.mkdirSync(path.dirname(output), { recursive: true });
     await page.screenshot({ path: output, fullPage: true });
@@ -152,10 +186,11 @@ async function run() {
     await reopen(page, prefinal);
     await reopen(page, incoming);
     await reopen(page, monitor);
+    await reopen(page, fabricFinal);
     assert.deepEqual(pageErrors, [], 'stage lifecycle must have no uncaught page errors');
     assert.deepEqual(external, [], 'stage lifecycle must make no external requests');
     await context.close();
-    console.log('AQL A-G04 stage browser passed: IPC + cutting + loading + supplier-audit + inline + endline + pre-final + incoming + monitor UI create/criteria/record/save/reload/reopen, exact values, honest quantity/balance/failure/readiness outcomes, 390px no overflow, zero external requests/page errors');
+    console.log('AQL A-G04 stage browser passed: nine stage lifecycles plus fabric roll/shade/lab supporting registers, exact reopen, honest quantity/balance/failure/readiness outcomes, 390px no overflow, zero external requests/page errors');
   } finally { if (browser) await browser.close(); await host.stop().catch(() => {}); }
 }
 
