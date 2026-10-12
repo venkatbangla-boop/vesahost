@@ -136,8 +136,9 @@
     if(!forecast.forecastDate||!forecast.sourceRevision)return {ok:false,error:'Forecast date and source revision are required.'};
     return {ok:true,history:[...history,{forecastDate:forecast.forecastDate,sourceRevision:forecast.sourceRevision,reason:forecast.reason||'',calculatedAt:forecast.calculatedAt||new Date().toISOString(),engineVersion:ENGINE_VERSION}]};
   }
-  function riskReasons({approval,material,capacity,schedule}={}){
+  function riskReasons({dueDate,approval,material,capacity,schedule}={}){
     const reasons=[];
+    if(!dueDate)reasons.push({type:'due-date',status:'needs-information',reason:'Required due date is missing; schedule risk cannot be shown as on track.'});
     if(approval&&['blocked','pending','rejected','needs-information'].includes(approval.status))reasons.push({type:'approval',status:approval.status,reason:approval.reason});
     if(material&&material.status!=='ready')reasons.push({type:'material',status:material.status,reason:material.reason});
     if(capacity&&capacity.status!=='calculated')reasons.push({type:'capacity',status:capacity.status,reason:capacity.message});

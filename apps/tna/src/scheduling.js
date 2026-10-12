@@ -120,9 +120,12 @@
       const isOverdue=asOfDate?compareDate(asOfDate,result[id].earlyFinish)>0&&!['completed','approved','waived','not-applicable'].includes(task.status):false;
       result[id]={...result[id],lateStart,lateFinish,floatDays:totalFloat,freeFloatDays:freeFloat,isCritical,isNearCritical:totalFloat>0&&totalFloat<=Number(options.nearCriticalDays||0),isOverdue,risk:totalFloat<0?'delayed':isOverdue?'delayed':isCritical?'at-risk':'on-track'};
     }
-    const criticalPaths=[];
-    function trace(id,path=[]){const nextPath=[...path,id];const critSucc=(outgoing.get(id)||[]).filter(edge=>result[edge.successorTaskId].isCritical);if(!critSucc.length){criticalPaths.push(nextPath);return;}critSucc.forEach(edge=>trace(edge.successorTaskId,nextPath));}
-    tasks.filter(t=>!incoming.get(t.taskId).length&&result[t.taskId].isCritical).forEach(t=>trace(t.taskId));
+    const criticalPaths=[],traceStack=tasks.filter(t=>!incoming.get(t.taskId).length&&result[t.taskId].isCritical).reverse().map(task=>({id:task.taskId,path:[]}));
+    while(traceStack.length){
+      const {id,path}=traceStack.pop(),nextPath=[...path,id],criticalSuccessors=(outgoing.get(id)||[]).filter(edge=>result[edge.successorTaskId].isCritical);
+      if(!criticalSuccessors.length)criticalPaths.push(nextPath);
+      else for(const edge of criticalSuccessors.slice().reverse())traceStack.push({id:edge.successorTaskId,path:nextPath});
+    }
     const workingDaysEarlyOrLate=requiredDate?workdayDifference(requiredDate,forecastDate,calendar,'working'):0;
     const constraintViolations=requiredDate&&workingDaysEarlyOrLate>0?[{type:'required-date-miss',requiredDate,forecastDate,workingDaysLate:workingDaysEarlyOrLate,explanation:`Forecast is ${workingDaysEarlyOrLate} working day(s) later than the required project endpoint.`}]:[];
     return {engineVersion:ENGINE_VERSION,validity:'valid',missingInputs,errors,warnings,constraintViolations,taskResults:result,project:{selectedDeadlineType:requiredDate?'requiredDate':'forecastDate',requiredDate:requiredDate||null,forecastDate,workingDaysEarlyOrLate,criticalPaths,scheduleConfidence:'deterministic'},generatedAt:new Date().toISOString(),calendarRevisions:calendars.revisions};
