@@ -12,6 +12,7 @@ const fabricOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-fabric-r
 const controlOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-equipment-needle-metal-mobile.png');
 const competencyOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-inspector-competency-mobile.png');
 const acknowledgementOutput = path.join(root, 'output', 'playwright', 'aql-a-g05-factory-acknowledgement-mobile.png');
+const reinspectionOutput = path.join(root, 'output', 'playwright', 'aql-a-g05-rework-reinspection-mobile.png');
 const traceabilityOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-compliance-custody-mobile.png');
 const journeyOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-linked-stage-journey-mobile.png');
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
@@ -78,15 +79,23 @@ async function createStage(page, fixture) {
 }
 
 async function reopen(page, saved) {
-  const button = page.locator(`[data-action="resume"][data-id="${saved.id}"]:visible`).first();
-  await button.click();
-  await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, saved.id);
+  await openProject(page, saved.id);
   const reopened = await page.evaluate(() => JSON.parse(JSON.stringify(window.__vesaApp.p)));
   assert.deepEqual(reopened.stageSuite, saved.project.stageSuite, `${saved.project.stageSuite.stage} stage data changed after reload/reopen`);
   assert.equal(reopened.info.buyer, saved.project.info.buyer, 'buyer changed after reload/reopen');
   assert.equal(reopened.info.factory, saved.project.info.factory, 'factory changed after reload/reopen');
   await page.locator('#app [data-action="home"]:visible').first().click();
   await page.waitForFunction(() => window.__vesaApp?.step === 'home');
+}
+
+async function openProject(page, id) {
+  let button = page.locator(`[data-action="resume"][data-id="${id}"]:visible`).first();
+  if (!await button.count()) {
+    await page.locator('#app [data-action="saved"]:visible').first().click();
+    button = page.locator(`#dialog [data-action="resume"][data-id="${id}"]:visible`).first();
+  }
+  await button.click();
+  await page.waitForFunction(projectId => window.__vesaApp?.p?.meta?.id === projectId, id);
 }
 
 async function addSupportingRecord(page, module, record) {
@@ -157,7 +166,7 @@ async function run() {
       stage: 'fabric', module: 'roll', buyer: 'A-G04 Fabric Buyer - Fictional', factory: 'A-G04 Fabric Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-FABRIC', reference: 'FABRIC-CRITERIA-REV-1', reviewer: 'Fictional Fabric Reviewer', coverage: 'One fictional roll plus shade and lab records; fixture only',
       record: { identity: 'ROLL-A-G04-001', mill: 'Fictional Mill', batch: 'DYELOT-FICTIONAL-01', ticket: 'TICKET-FICTIONAL-01', invoice: 1000, received: 1000, ticketLength: 1000, length: 1000, widthStart: 150, widthMiddle: 150, widthEnd: 150, basis: '100 m²', limit: 5, method: 'Approved fictional four-point method REV-1', sampling: 'One fictional roll selected', shade: 'SHADE-A', endShade: 'No fictional variation claimed', edgeShade: 'No fictional variation claimed', splices: 0, spliceLocations: 'None', selvedge: 'Fictional acceptable observation', handle: 'Matches fictional reference', odour: 'No fictional odour claimed', construction: 'Fictional knit construction', disposition: 'Accept', defects: '10,Oil,2,3', reference: 'FABRIC-CRITERIA-REV-1', status: 'Pass', note: 'Valid fictional roll record before supporting failures' },
     });
-    await page.locator(`[data-action="resume"][data-id="${fabric.id}"]:visible`).first().click();
+    await openProject(page, fabric.id);
     await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, fabric.id);
     await addSupportingRecord(page, 'shade', { identity: 'SHADE-A-G04-001', standard: 'FICTIONAL-STANDARD-REV-1', labdip: 'LABDIP-FICTIONAL-01', light: 'D65', lot: 'DYELOT-FICTIONAL-01', shade: 'SHADE-A', component: 'Body', endShade: 'Fictional observation', edgeShade: 'Fictional observation', grade: 'Fictional grade', method: 'Approved fictional Delta E method', delta: 2.5, limit: 1.5, evaluator: 'Fictional Shade Reviewer', disposition: 'Reject', reference: 'SHADE-CRITERIA-REV-1', status: 'Pass', note: 'Deliberate Delta E exceedance; fixture only' });
     await addSupportingRecord(page, 'lab', { identity: 'LAB-A-G04-001', lot: 'DYELOT-FICTIONAL-01', method: 'Fictional test method', revision: 'REV-1', buyer: 'A-G04 Fabric Buyer - Fictional', equipment: 'LAB-EQ-FICTIONAL-01', due: '2026-10-12', validUntil: '2026-10-20', external: 'LAB-REPORT-FICTIONAL-01', criterion: 'Fictional approved criterion', actual: 'Deliberate fictional failing result', testStatus: 'Fail', reviewer: 'Fictional Lab Reviewer', reference: 'LAB-CRITERIA-REV-1', status: 'Pass', note: 'Deliberate laboratory failure; fixture only' });
@@ -220,7 +229,7 @@ async function run() {
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
 
-    await page.locator(`[data-action="resume"][data-id="${ipc.id}"]:visible`).first().click();
+    await openProject(page, ipc.id);
     await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, ipc.id);
     await addSupportingRecord(page, 'competency', { identity: 'A-G04 Inspector - Fictional', skills: 'Fictional IPC workmanship review', categories: 'Fictional knit top', stages: 'ipc', training: '2026-10-01', evaluator: 'Fictional Competency Reviewer', expiry: '2026-10-11', authorization: 'Local assignment record only; not accreditation', reference: 'COMPETENCY-REV-1', status: 'Pass', note: 'Deliberately expired before correction' });
     const expiredCompetency = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { failures: evaluated.failures.map(item => item.text), warnings: evaluated.warnings.map(item => item.text) }; });
@@ -251,7 +260,7 @@ async function run() {
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
 
-    await page.locator(`[data-action="resume"][data-id="${audit.id}"]:visible`).first().click();
+    await openProject(page, audit.id);
     await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, audit.id);
     await addSupportingRecord(page, 'acknowledgement', { identity: 'Fictional Factory Representative', designation: 'Fictional Quality Manager', received: 'No', agreement: 'Disagree', comments: 'Fictional findings not received; fixture only', statement: 'No VESA approval or shipment release is represented', signature: 'Fictional typed acknowledgement', timestamp: '2026-10-12 12:00', reference: 'ACKNOWLEDGEMENT-REV-1', status: 'Pass', note: 'A Pass review cannot override denied receipt' });
     const deniedAcknowledgement = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text) }; });
@@ -280,11 +289,120 @@ async function run() {
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
 
+    await openProject(page, inline.id);
+    await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, inline.id);
+    const originalInlineFinding = inline.project.stageSuite.records.find(row => row.module === 'inline');
+    await page.locator('[data-action="stage-capa"]:visible').first().click();
+    await page.locator('#dialog [data-action="stage-capa-add"]').click();
+    const verifiedCapa = {
+      identity: 'INLINE-A-G04-001 recorded failure',
+      containment: 'Fictional affected pieces isolated for 100% screening',
+      cause: 'Fictional seam guide setup variation',
+      action: 'Fictional guide reset and one-piece recheck',
+      owner: 'Fictional Production Quality Owner',
+      due: '2026-10-13',
+      verification: 'Independent fictional recheck recorded against the retained source finding',
+      effectiveness: 'One identified fictional piece passed repair recheck',
+      closure: '',
+    };
+    for (const [name, value] of Object.entries(verifiedCapa)) await page.locator(`#dialog [name="${name}"]`).fill(value);
+    await page.locator('#dialog [name="status"]').selectOption('Verified');
+    await page.locator('#dialog [data-action="dialog-save"]').click();
+    await page.locator('#dialog [data-action="stage-capa-add"]').waitFor({ state: 'visible' });
+    await page.locator('#dialog [data-action="dialog-close"]').click();
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const inlineWithCapa = await page.evaluate(() => {
+      const evaluated = ResultEngine.evaluate(window.__vesaApp.p);
+      return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, failures: evaluated.failures.map(item => item.text) };
+    });
+    assert.equal(inlineWithCapa.result, 'NOT CONFORMED', 'verified CAPA must not rewrite the failed source decision');
+    assert.ok(inlineWithCapa.failures.includes('INLINE-A-G04-001: Recorded failure'), 'verified CAPA removed the original inline failure');
+    assert.deepEqual(inlineWithCapa.project.stageSuite.records.find(row => row.module === 'inline'), originalInlineFinding, 'CAPA changed the immutable source finding');
+    assert.equal(inlineWithCapa.project.capa.length, 1, 'verified CAPA was not retained on the failed source event');
+    assert.equal(inlineWithCapa.project.capa[0].status, 'Verified', 'CAPA verification status changed');
+    assert.equal(inlineWithCapa.project.capa[0].verification, verifiedCapa.verification, 'CAPA verification evidence changed');
+    const failedParentStored = await page.evaluate(async id => {
+      const row = (await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id);
+      return JSON.parse(JSON.stringify(row.project));
+    }, inline.id);
+
+    await page.locator('[data-action="stage-linked"]:visible').first().click();
+    await page.locator('#dialog [name="stage"]').selectOption('rework');
+    await page.locator('#dialog [name="inspector"]').fill('A-G05 Rework Inspector - Fictional');
+    assert.equal(await page.locator('#dialog [name="orderKey"]').inputValue(), failedParentStored.stageSuite.orderKey, 'rework did not carry the failed order context');
+    await saveDialog(page);
+    await page.waitForFunction(parentId => window.__vesaApp?.p?.stageSuite?.parent === parentId, inline.id);
+    const freshRework = await page.evaluate(() => JSON.parse(JSON.stringify(window.__vesaApp.p)));
+    assert.notEqual(freshRework.meta.id, inline.id, 'rework reused the failed event identity');
+    assert.deepEqual(freshRework.stageSuite.records, [], 'rework copied the failed parent observation');
+    assert.deepEqual(freshRework.capa, [], 'rework copied the parent CAPA instead of keeping it with the source failure');
+    await page.locator('[data-action="stage-criteria"]:visible').first().click();
+    await page.locator('#dialog [name="reference"]').fill('REWORK-CRITERIA-REV-1');
+    await page.locator('#dialog [name="approvedBy"]').fill('Fictional Rework Reviewer');
+    await page.locator('#dialog [name="sampling"]').fill('100% screening of one identified fictional piece');
+    await page.locator('#dialog [name="expected"]').fill('1');
+    await saveDialog(page);
+    await page.locator('[data-action="stage-record"][data-module="rework"]:visible').first().click();
+    const reworkRecord = { identity: 'REWORK-PIECE-A-G05-001', defect: 'Retained reference to INLINE-A-G04-001 seam failure', repairRequired: 'Yes', repair: 'Yes', rechecker: 'Fictional Independent Rechecker', recheck: 'Pass', disposition: 'Accept', batch: 'BATCH-FICTIONAL-A-G05', quantity: 1, reference: 'REWORK-CRITERIA-REV-1', status: 'Pass', note: 'Fictional corrected piece; source finding remains immutable' };
+    for (const [name, value] of Object.entries(reworkRecord)) {
+      const field = page.locator(`#dialog [name="${name}"]`);
+      if (await field.evaluate(element => element.tagName === 'SELECT')) await field.selectOption(value);
+      else await field.fill(String(value));
+    }
+    await saveDialog(page);
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const reworkChild = await page.evaluate(() => {
+      const evaluated = ResultEngine.evaluate(window.__vesaApp.p);
+      return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), pending: evaluated.pending.map(item => item.text) };
+    });
+    assert.equal(reworkChild.project.stageSuite.parent, inline.id, 'rework lost its failed parent link');
+    assert.equal(reworkChild.project.stageSuite.records[0].identity, reworkRecord.identity, 'rework observation identity changed');
+    assert.ok(!reworkChild.pending.includes('100% screening piece count must match approved target quantity'), 'one-piece rework did not satisfy the approved target');
+    assert.deepEqual(await page.evaluate(async id => JSON.parse(JSON.stringify((await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id).project)), inline.id), failedParentStored, 'saving rework mutated the failed parent event');
+
+    await page.locator('[data-action="stage-linked"]:visible').first().click();
+    await page.locator('#dialog [name="stage"]').selectOption('reinspection');
+    await page.locator('#dialog [name="inspector"]').fill('A-G05 Reinspection Inspector - Fictional');
+    await saveDialog(page);
+    await page.waitForFunction(parentId => window.__vesaApp?.p?.stageSuite?.parent === parentId, reworkChild.id);
+    const freshReinspection = await page.evaluate(() => JSON.parse(JSON.stringify(window.__vesaApp.p)));
+    assert.notEqual(freshReinspection.meta.id, reworkChild.id, 'reinspection reused the rework event identity');
+    assert.equal(freshReinspection.stageSuite.parent, reworkChild.id, 'reinspection lost the rework parent link');
+    assert.deepEqual(freshReinspection.stageSuite.records, [], 'reinspection copied the rework observation');
+    await page.locator('[data-action="stage-criteria"]:visible').first().click();
+    await page.locator('#dialog [name="reference"]').fill('REINSPECTION-CRITERIA-REV-1');
+    await page.locator('#dialog [name="approvedBy"]').fill('Fictional Reinspection Reviewer');
+    await page.locator('#dialog [name="sampling"]').fill('Fresh fictional reinspection readiness observation; no pass inferred');
+    await saveDialog(page);
+    await page.locator('[data-action="stage-record"][data-module="readiness"]:visible').first().click();
+    const reinspectionRecord = { identity: 'REINSPECTION-A-G05-001', production: 100, packed: 100, minProduction: 90, minPacked: 80, reference: 'REINSPECTION-CRITERIA-REV-1', shipment: 1000, packingRevision: 'PACK-REV-A-G05', openIssues: 'Final AQL sampling and approvals remain independently pending', declaration: 'Fictional readiness declaration only', previous: reworkChild.project.meta.reportId, status: 'Pass', note: 'Fresh child observation; no release or approval claimed' };
+    for (const [name, value] of Object.entries(reinspectionRecord)) {
+      const field = page.locator(`#dialog [name="${name}"]`);
+      if (await field.evaluate(element => element.tagName === 'SELECT')) await field.selectOption(value);
+      else await field.fill(String(value));
+    }
+    await saveDialog(page);
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const reinspectionChild = await page.evaluate(() => ({ id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)) }));
+    assert.equal(reinspectionChild.project.stageSuite.records.length, 1, 'reinspection observation was not saved independently');
+    assert.equal(reinspectionChild.project.stageSuite.records[0].identity, reinspectionRecord.identity, 'reinspection observation identity changed');
+    assert.deepEqual(await page.evaluate(async id => JSON.parse(JSON.stringify((await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id).project)), reworkChild.id), reworkChild.project, 'saving reinspection mutated the rework event');
+    assert.deepEqual(await page.evaluate(async id => JSON.parse(JSON.stringify((await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id).project)), inline.id), failedParentStored, 'saving reinspection mutated the failed source event');
+    await page.locator('[data-action="stage-journey"]:visible').first().click();
+    for (const reportId of [failedParentStored.meta.reportId, reworkChild.project.meta.reportId, reinspectionChild.project.meta.reportId]) await page.locator('#dialog').getByText(reportId, { exact: true }).waitFor({ state: 'visible' });
+    await page.screenshot({ path: reinspectionOutput, fullPage: true });
+    await page.locator('#dialog [data-action="dialog-close"]').click();
+    await page.locator('#app [data-action="home"]:visible').first().click();
+    await page.waitForFunction(() => window.__vesaApp?.step === 'home');
+
     const parentStoredBefore = await page.evaluate(async id => {
       const row = (await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id);
       return JSON.parse(JSON.stringify(row.project));
     }, ipcFinal.id);
-    await page.locator(`[data-action="resume"][data-id="${ipc.id}"]:visible`).first().click();
+    await openProject(page, ipc.id);
     await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, ipc.id);
     await page.locator('[data-action="stage-linked"]:visible').first().click();
     await page.locator('#dialog [name="stage"]').selectOption('endline');
@@ -330,7 +448,7 @@ async function run() {
     await page.locator('#dialog [data-action="dialog-close"]').click();
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
-    await page.locator(`[data-action="resume"][data-id="${incoming.id}"]:visible`).first().click();
+    await openProject(page, incoming.id);
     await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, incoming.id);
     await addSupportingRecord(page, 'compliance', { identity: 'COMPLIANCE-A-G04-001', revision: 'BUYER-MANUAL-REV-1', market: 'Fictional Market', product: 'Fictional knit top', age: 'Adult', report: 'COMPLIANCE-REPORT-FICTIONAL-01', expiry: '2026-10-20', artwork: 'ARTWORK-FICTIONAL-REV-1', reviewer: 'Fictional Compliance Reviewer', reference: 'COMPLIANCE-CRITERIA-REV-1', status: 'Pass', note: 'Report reference is recorded but evidence is deliberately unattached' });
     await addSupportingRecord(page, 'custody', { identity: 'SAMPLE-A-G04-001', kind: 'Lab', sealed: 'Yes', seal: 'SAMPLE-SEAL-FICTIONAL-01', recipient: 'Fictional Independent Lab', date: '2026-10-12', location: 'Fictional custody cabinet', return: 'Return after fictional review', photo: '', reference: 'CUSTODY-CRITERIA-REV-1', status: 'Pass', note: 'Fictional custody chain; no evidence attachment claimed' });
@@ -388,7 +506,7 @@ async function run() {
     await page.screenshot({ path: traceabilityOutput, fullPage: true });
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
-    await page.locator(`[data-action="resume"][data-id="${cutting.id}"]:visible`).first().click();
+    await openProject(page, cutting.id);
     await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, cutting.id);
     await addSupportingRecord(page, 'equipment', { identity: 'EQUIPMENT-A-G04-001', name: 'Fictional metal detector', location: 'Fictional finishing area', expiry: '2026-10-11', verification: 'Fictional pre-use check recorded', investigation: 'Deliberately expired one day before inspection', affected: 'CUTTING-A-G04-001', history: 'Fictional calibration history', reference: 'EQUIPMENT-CRITERIA-REV-1', status: 'Pass', note: 'Pass review cannot override expired calibration' });
     await addSupportingRecord(page, 'needle', { identity: 'NEEDLE-A-G04-001', issued: 'Needle type DBX1', broken: 'Broken tip', recovered: 'No', machine: 'MACHINE-FICTIONAL-01', operator: 'Fictional Operator', isolated: 50, detected: 'No', release: '', fragments: '', reference: 'NEEDLE-CRITERIA-REV-1', status: 'Pass', note: 'Deliberately incomplete containment; fixture only' });
@@ -418,7 +536,9 @@ async function run() {
     await reopen(page, cuttingFinal);
     await reopen(page, loading);
     await reopen(page, auditFinal);
-    await reopen(page, inline);
+    await reopen(page, inlineWithCapa);
+    await reopen(page, reworkChild);
+    await reopen(page, reinspectionChild);
     await reopen(page, endline);
     await reopen(page, prefinal);
     await reopen(page, incomingFinal);
@@ -430,10 +550,15 @@ async function run() {
       return JSON.parse(JSON.stringify(row.project));
     }, ipc.id);
     assert.deepEqual(parentAfterReload, parentStoredBefore, 'reload/reopen changed the durable parent event');
+    const failedParentAfterReload = await page.evaluate(async id => {
+      const row = (await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id);
+      return JSON.parse(JSON.stringify(row.project));
+    }, inline.id);
+    assert.deepEqual(failedParentAfterReload, failedParentStored, 'reload/reopen changed the failed source finding or CAPA');
     assert.deepEqual(pageErrors, [], 'stage lifecycle must have no uncaught page errors');
     assert.deepEqual(external, [], 'stage lifecycle must make no external requests');
     await context.close();
-    console.log('AQL A-G04 stage browser passed: independent linked parent/child plus nine stage lifecycles and supporting registers, exact reopen, honest fail-closed outcomes, 390px no overflow, zero external requests/page errors');
+    console.log('AQL A-G04/A-G05 stage browser passed: immutable failure plus verified CAPA, one-piece rework and fresh linked reinspection; independent linked parent/child plus nine stage lifecycles and supporting registers, exact reopen, honest fail-closed outcomes, 390px no overflow, zero external requests/page errors');
   } finally { if (browser) await browser.close(); await host.stop().catch(() => {}); }
 }
 
