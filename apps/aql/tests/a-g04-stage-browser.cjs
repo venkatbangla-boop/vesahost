@@ -10,6 +10,7 @@ const output = path.join(root, 'output', 'playwright', 'aql-a-g04-material-monit
 const readinessOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-prefinal-not-ready-mobile.png');
 const fabricOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-fabric-reject-hold-mobile.png');
 const controlOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-equipment-needle-metal-mobile.png');
+const traceabilityOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-compliance-custody-mobile.png');
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
 const mime = file => ({ '.css': 'text/css', '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.webmanifest': 'application/manifest+json' })[path.extname(file)] || 'application/octet-stream';
 
@@ -169,6 +170,21 @@ async function run() {
     await page.screenshot({ path: fabricOutput, fullPage: true });
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
+    await page.locator(`[data-action="resume"][data-id="${incoming.id}"]:visible`).first().click();
+    await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, incoming.id);
+    await addSupportingRecord(page, 'compliance', { identity: 'COMPLIANCE-A-G04-001', revision: 'BUYER-MANUAL-REV-1', market: 'Fictional Market', product: 'Fictional knit top', age: 'Adult', report: 'COMPLIANCE-REPORT-FICTIONAL-01', expiry: '2026-10-20', artwork: 'ARTWORK-FICTIONAL-REV-1', reviewer: 'Fictional Compliance Reviewer', reference: 'COMPLIANCE-CRITERIA-REV-1', status: 'Pass', note: 'Report reference is recorded but evidence is deliberately unattached' });
+    await addSupportingRecord(page, 'custody', { identity: 'SAMPLE-A-G04-001', kind: 'Lab', sealed: 'Yes', seal: 'SAMPLE-SEAL-FICTIONAL-01', recipient: 'Fictional Independent Lab', date: '2026-10-12', location: 'Fictional custody cabinet', return: 'Return after fictional review', photo: '', reference: 'CUSTODY-CRITERIA-REV-1', status: 'Pass', note: 'Fictional custody chain; no evidence attachment claimed' });
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const incomingFinal = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text) }; });
+    assert.equal(incomingFinal.stageDecision, 'PENDING', 'unattached compliance evidence must keep incoming inspection pending');
+    assert.ok(incomingFinal.pending.includes('Required compliance evidence not attached: COMPLIANCE-REPORT-FICTIONAL-01'), 'unattached compliance-report reason is missing');
+    assert.deepEqual(incomingFinal.project.stageSuite.requiredModules, ['compliance', 'custody'], 'traceability required-register order changed');
+    assert.equal(incomingFinal.project.stageSuite.records.find(row => row.module === 'custody').seal, 'SAMPLE-SEAL-FICTIONAL-01', 'custody seal was not retained');
+    await page.getByText('PENDING', { exact: true }).first().waitFor({ state: 'visible' });
+    await page.screenshot({ path: traceabilityOutput, fullPage: true });
+    await page.locator('#app [data-action="home"]:visible').first().click();
+    await page.waitForFunction(() => window.__vesaApp?.step === 'home');
     await page.locator(`[data-action="resume"][data-id="${cutting.id}"]:visible`).first().click();
     await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, cutting.id);
     await addSupportingRecord(page, 'equipment', { identity: 'EQUIPMENT-A-G04-001', name: 'Fictional metal detector', location: 'Fictional finishing area', expiry: '2026-10-11', verification: 'Fictional pre-use check recorded', investigation: 'Deliberately expired one day before inspection', affected: 'CUTTING-A-G04-001', history: 'Fictional calibration history', reference: 'EQUIPMENT-CRITERIA-REV-1', status: 'Pass', note: 'Pass review cannot override expired calibration' });
@@ -202,13 +218,13 @@ async function run() {
     await reopen(page, inline);
     await reopen(page, endline);
     await reopen(page, prefinal);
-    await reopen(page, incoming);
+    await reopen(page, incomingFinal);
     await reopen(page, monitor);
     await reopen(page, fabricFinal);
     assert.deepEqual(pageErrors, [], 'stage lifecycle must have no uncaught page errors');
     assert.deepEqual(external, [], 'stage lifecycle must make no external requests');
     await context.close();
-    console.log('AQL A-G04 stage browser passed: nine stage lifecycles plus fabric and equipment/needle/metal supporting registers, exact reopen, honest quantity/balance/control/failure/readiness outcomes, 390px no overflow, zero external requests/page errors');
+    console.log('AQL A-G04 stage browser passed: nine stage lifecycles plus fabric, material-control and compliance/custody supporting registers, exact reopen, honest fail-closed outcomes, 390px no overflow, zero external requests/page errors');
   } finally { if (browser) await browser.close(); await host.stop().catch(() => {}); }
 }
 
