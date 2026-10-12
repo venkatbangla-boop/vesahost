@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Commit `3441219` accepted the A-G07 real-byte boundary slice locally; the follow-on A-G04 pure matrix now covers all 13 stages and 21 register definitions plus rework/loading/calibration guards, with the full 16-command AQL/shared matrix passing at source HEAD `3441219`. |
-| NEXT ACTION | Add authenticated disposable-browser A-G04 evidence for IPC and cutting stage create/save/reload/reopen at 390px, without changing SamplingEngine/Ac-Re, saved formats or production data. |
+| LAST COMPLETED ACTION | Commit `b4d81fe` accepted the expanded A-G04 pure matrix; authenticated 390px IPC/cutting UI create, criteria, record, explicit save, reload and reopen now pass at source HEAD `b4d81fe`, with the expanded 17-command AQL/shared matrix green. |
+| NEXT ACTION | Extend the same disposable-browser A-G04 lifecycle evidence to loading and supplier-audit stages, including honest pending/failure guards and exact reopen, without changing frozen domain rules. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -581,6 +581,20 @@ IMPLEMENTED: Added fixture-only VM checks for in-tolerance PASS, out-of-toleranc
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — deterministic measurement and source contracts are locally proven; full asset restore, CAPA history, analytics denominator fixtures, huge-record performance, accessibility and rendered report review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run browser restore/report evidence for one measurement, document, finding, CAPA and carton chain without changing frozen AQL tables.
+```
+
+### A-G04 IPC/cutting browser lifecycle — conditional, browser slice accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 10:03 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — prove real authenticated 390px create, criteria, record, explicit save, reload and reopen for IPC and cutting stages
+BRANCH / BASE COMMIT: feature/tna360-continuous / b4d81fe
+FILE-LEVEL AUDIT: StageWorkspace.create owns explicit stage selection and new event identity; StageWorkspace.criteria/record route modal form values through ProjectStore; InspectionApp.saveNow -> AutosaveService -> LocalRepository owns durable save; Home recent-record Resume reopens the saved identity. In scope: one additive raw-Playwright A-G04 test plus tracker/dashboard evidence. Frozen/out of scope: apps/aql/index.html, all stage/domain/sampling rules, saved formats, workers, PPM/TNA/shared runtime, production browser data and release actions. Risks are selector drift, dialog timing and accidental inference of buyer approval; use explicit fictional values, leave unresolved checklists pending, assert exact saved record bytes/identity, viewport overflow and zero external requests/page errors. Verification: focused browser test, full AQL/shared matrix, syntax and git diff checks. Rollback: revert the additive test/docs patch; disposable browser storage is destroyed with its context.
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+IMPLEMENTED / EVIDENCE: The additive raw-Playwright test uses the visible mobile controls and real StageWorkspace dialogs to create separate fictional IPC and cutting events, enter explicit criteria/reviewer/coverage, add stage-specific records, invoke Ctrl+S, reload the app and reopen each exact durable identity from Home. Exact stageSuite objects and buyer/factory values survive reload/reopen; both events remain PENDING because their checklists were deliberately not fabricated. The 390px page has no horizontal overflow, and the reviewed screenshot shows two separate pending saved records plus local-backup guidance.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/aql/tests/a-g04-stage-browser.cjs` PASS; focused browser run PASS after correcting two test-only hidden/duplicate mobile selectors; full expanded 17-command AQL/shared matrix PASS in 57.2 seconds, including A-G00 Q01-Q24, A-G02 through A-G09, all A-G07 browser/storage/import suites, release contract and shared shell contract; `git diff --check` PASS. Browser assertions report zero uncaught page errors and zero external requests. Visual evidence reviewed at output/playwright/aql-a-g04-ipc-cutting-mobile.png.
+VERDICT: conditional — the IPC/cutting browser lifecycle slice is accepted locally. A-G04 remains conditional for remaining stage-family browser evidence, physical-device review and field acceptance.
+NEXT ACTION (ONE PRECISE STEP): extend the same disposable-browser A-G04 lifecycle evidence to loading and supplier-audit stages, including honest pending/failure guards and exact reopen, without changing frozen domain rules.
 ```
 
 ### A-G04 complete stage/register contract — conditional, pure matrix accepted locally
