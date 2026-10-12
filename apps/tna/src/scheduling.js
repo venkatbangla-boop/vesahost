@@ -35,6 +35,12 @@
   function compareDate(a,b){return toDay(a)-toDay(b);}
   function maxDate(values){return values.filter(Boolean).sort(compareDate).at(-1)||null;}
   function minDate(values){return values.filter(Boolean).sort(compareDate)[0]||null;}
+  function calendarResolver(options={}){
+    const primary=normalizeCalendar(options.calendar||options.calendars?.[0]||DEFAULT_CALENDAR);
+    const calendars=new Map((options.calendars||[]).map(calendar=>[calendar.calendarId,normalizeCalendar(calendar)]));
+    if(primary.calendarId&&!calendars.has(primary.calendarId))calendars.set(primary.calendarId,primary);
+    return {primary,forTask(task){return task?.calendarId?calendars.get(task.calendarId)||null:primary;},revisions:[...calendars.values()].map(calendar=>calendar.revision||0)};
+  }
   function workdayDifference(start,end,calendar=DEFAULT_CALENDAR,basis='working'){
     assertDate(start);assertDate(end);if(start===end)return 0;
     if(basis==='calendar')return toDay(end)-toDay(start);
@@ -63,48 +69,51 @@
     return {ok:errors.length===0,errors,warnings,order};
   }
   function schedule(tasks=[],edges=[],options={}){
-    const calendar=normalizeCalendar(options.calendar||DEFAULT_CALENDAR);
+    const calendars=calendarResolver(options),calendar=calendars.primary;
     const startDate=options.startDate||null,requiredDate=options.requiredDate||null,asOfDate=options.asOfDate||null;
     const errors=[],warnings=[],missingInputs=[];
     if(!startDate)missingInputs.push('startDate');
-    for(const task of tasks)if(task.durationUnits==null||task.durationUnits===''||task.durationUnits<0)missingInputs.push('duration:'+task.taskId);
+    for(const task of tasks){
+      if(task.durationUnits==null||task.durationUnits===''||task.durationUnits<0)missingInputs.push('duration:'+task.taskId);
+      if(!calendars.forTask(task))missingInputs.push('calendar:'+task.taskId);
+    }
     const graph=validateGraph(tasks,edges);
     errors.push(...graph.errors);
-    if(errors.length||missingInputs.length)return {engineVersion:ENGINE_VERSION,validity:errors.length?'invalid':'incomplete',missingInputs,errors,warnings,taskResults:{},project:{criticalPaths:[],scheduleConfidence:'unavailable'},generatedAt:new Date().toISOString(),calendarRevisions:[calendar.revision||0]};
+    if(errors.length||missingInputs.length)return {engineVersion:ENGINE_VERSION,validity:errors.length?'invalid':'incomplete',missingInputs,errors,warnings,taskResults:{},project:{criticalPaths:[],scheduleConfidence:'unavailable'},generatedAt:new Date().toISOString(),calendarRevisions:calendars.revisions};
     const byId=new Map(tasks.map(t=>[t.taskId,t]));
     const incoming=new Map(tasks.map(t=>[t.taskId,[]])),outgoing=new Map(tasks.map(t=>[t.taskId,[]]));
     edges.forEach(edge=>{incoming.get(edge.successorTaskId).push(edge);outgoing.get(edge.predecessorTaskId).push(edge);});
     const result={};
     for(const id of graph.order){
-      const task=byId.get(id),basis=task.durationBasis||'working',duration=Number(task.durationUnits||0),candidates=[];
-      if(!incoming.get(id).length)candidates.push(nextWorkingDate(startDate,calendar,true));
+      const task=byId.get(id),taskCalendar=calendars.forTask(task),basis=task.durationBasis||'working',duration=Number(task.durationUnits||0),candidates=[];
+      if(!incoming.get(id).length)candidates.push(nextWorkingDate(startDate,taskCalendar,true));
       for(const edge of incoming.get(id)){
         const pred=result[edge.predecessorTaskId],lag=edge.lagUnits||0,relation=edge.relation||'FS';
-        if(relation==='FS')candidates.push(shiftDate(pred.earlyFinish,lag+1,calendar,edge.lagBasis||basis));
-        if(relation==='SS')candidates.push(shiftDate(pred.earlyStart,lag,calendar,edge.lagBasis||basis));
-        if(relation==='FF')candidates.push(startFromFinish(shiftDate(pred.earlyFinish,lag,calendar,edge.lagBasis||basis),duration,calendar,basis));
-        if(relation==='SF')candidates.push(startFromFinish(shiftDate(pred.earlyStart,lag,calendar,edge.lagBasis||basis),duration,calendar,basis));
+        if(relation==='FS')candidates.push(shiftDate(pred.earlyFinish,lag+1,taskCalendar,edge.lagBasis||basis));
+        if(relation==='SS')candidates.push(shiftDate(pred.earlyStart,lag,taskCalendar,edge.lagBasis||basis));
+        if(relation==='FF')candidates.push(startFromFinish(shiftDate(pred.earlyFinish,lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
+        if(relation==='SF')candidates.push(startFromFinish(shiftDate(pred.earlyStart,lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
       }
-      const earlyStart=maxDate(candidates),earlyFinish=finishFromStart(earlyStart,duration,calendar,basis);
+      const earlyStart=maxDate(candidates),earlyFinish=finishFromStart(earlyStart,duration,taskCalendar,basis);
       result[id]={taskId:id,earlyStart,earlyFinish,blockingPredecessors:incoming.get(id).map(e=>e.predecessorTaskId),explanation:[`Earliest dates calculated from ${incoming.get(id).length||'project'} predecessor(s).`]};
     }
     const terminalIds=tasks.filter(t=>!outgoing.get(t.taskId).length).map(t=>t.taskId);
     const forecastDate=maxDate(terminalIds.map(id=>result[id].earlyFinish));
     const endDate=requiredDate||forecastDate;
     for(const id of graph.order.slice().reverse()){
-      const task=byId.get(id),basis=task.durationBasis||'working',duration=Number(task.durationUnits||0),constraints=[];
+      const task=byId.get(id),taskCalendar=calendars.forTask(task),basis=task.durationBasis||'working',duration=Number(task.durationUnits||0),constraints=[];
       if(!outgoing.get(id).length)constraints.push(endDate);
       for(const edge of outgoing.get(id)){
         const succ=result[edge.successorTaskId],lag=edge.lagUnits||0,relation=edge.relation||'FS';
-        if(relation==='FS')constraints.push(shiftDate(succ.lateStart,(-lag)-1,calendar,edge.lagBasis||basis));
-        if(relation==='SS')constraints.push(startFromFinish(shiftDate(succ.lateStart,-lag,calendar,edge.lagBasis||basis),duration,calendar,basis));
-        if(relation==='FF')constraints.push(shiftDate(succ.lateFinish,-lag,calendar,edge.lagBasis||basis));
-        if(relation==='SF')constraints.push(startFromFinish(shiftDate(succ.lateFinish,-lag,calendar,edge.lagBasis||basis),duration,calendar,basis));
+        if(relation==='FS')constraints.push(shiftDate(succ.lateStart,(-lag)-1,taskCalendar,edge.lagBasis||basis));
+        if(relation==='SS')constraints.push(startFromFinish(shiftDate(succ.lateStart,-lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
+        if(relation==='FF')constraints.push(shiftDate(succ.lateFinish,-lag,taskCalendar,edge.lagBasis||basis));
+        if(relation==='SF')constraints.push(startFromFinish(shiftDate(succ.lateFinish,-lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
       }
-      const lateFinish=minDate(constraints),lateStart=startFromFinish(lateFinish,duration,calendar,basis);
-      const totalFloat=workdayDifference(result[id].earlyStart,lateStart,calendar,basis);
+      const lateFinish=minDate(constraints),lateStart=startFromFinish(lateFinish,duration,taskCalendar,basis);
+      const totalFloat=workdayDifference(result[id].earlyStart,lateStart,taskCalendar,basis);
       const successorStarts=outgoing.get(id).map(edge=>result[edge.successorTaskId].earlyStart);
-      const freeFloat=successorStarts.length?Math.max(0,workdayDifference(shiftDate(result[id].earlyFinish,1,calendar,basis),minDate(successorStarts),calendar,basis)):totalFloat;
+      const freeFloat=successorStarts.length?Math.max(0,workdayDifference(shiftDate(result[id].earlyFinish,1,taskCalendar,basis),minDate(successorStarts),taskCalendar,basis)):totalFloat;
       const isCritical=totalFloat<=0;
       const isOverdue=asOfDate?compareDate(asOfDate,result[id].earlyFinish)>0&&!['completed','approved','waived','not-applicable'].includes(task.status):false;
       result[id]={...result[id],lateStart,lateFinish,floatDays:totalFloat,freeFloatDays:freeFloat,isCritical,isNearCritical:totalFloat>0&&totalFloat<=Number(options.nearCriticalDays||0),isOverdue,risk:totalFloat<0?'delayed':isOverdue?'delayed':isCritical?'at-risk':'on-track'};
@@ -113,7 +122,7 @@
     function trace(id,path=[]){const nextPath=[...path,id];const critSucc=(outgoing.get(id)||[]).filter(edge=>result[edge.successorTaskId].isCritical);if(!critSucc.length){criticalPaths.push(nextPath);return;}critSucc.forEach(edge=>trace(edge.successorTaskId,nextPath));}
     tasks.filter(t=>!incoming.get(t.taskId).length&&result[t.taskId].isCritical).forEach(t=>trace(t.taskId));
     const workingDaysEarlyOrLate=requiredDate?workdayDifference(requiredDate,forecastDate,calendar,'working'):0;
-    return {engineVersion:ENGINE_VERSION,validity:'valid',missingInputs,errors,warnings,taskResults:result,project:{selectedDeadlineType:requiredDate?'requiredDate':'forecastDate',requiredDate:requiredDate||null,forecastDate,workingDaysEarlyOrLate,criticalPaths,scheduleConfidence:'deterministic'},generatedAt:new Date().toISOString(),calendarRevisions:[calendar.revision||0]};
+    return {engineVersion:ENGINE_VERSION,validity:'valid',missingInputs,errors,warnings,taskResults:result,project:{selectedDeadlineType:requiredDate?'requiredDate':'forecastDate',requiredDate:requiredDate||null,forecastDate,workingDaysEarlyOrLate,criticalPaths,scheduleConfidence:'deterministic'},generatedAt:new Date().toISOString(),calendarRevisions:calendars.revisions};
   }
   const api={ENGINE_VERSION,DEFAULT_CALENDAR,toDay,fromDay,isWorkingDate,nextWorkingDate,previousWorkingDate,shiftDate,finishFromStart,startFromFinish,workdayDifference,validateGraph,schedule};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;

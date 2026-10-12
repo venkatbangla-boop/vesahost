@@ -13,7 +13,7 @@
     const required=plan?.commitments?.buyerRequiredExFactory;
     if(!scheduling)return {status:'needs-information',reason:'Scheduling engine is not loaded.'};
     if(!start||!required)return {status:'needs-information',reason:'Explicit order start and buyer required ex-factory dates are required.'};
-    const result=scheduling.schedule(plan.tasks||[],plan.edges||[],{calendar:plan.calendars?.[0],startDate:start,requiredDate:required,asOfDate:start,nearCriticalDays:3});
+    const result=scheduling.schedule(plan.tasks||[],plan.edges||[],{calendar:plan.calendars?.[0],calendars:plan.calendars||[],startDate:start,requiredDate:required,asOfDate:start,nearCriticalDays:3});
     if(result.validity!=='valid')return {status:'blocked',reason:[...(result.errors||[]),...(result.missingInputs||[])].join('; ')||'Schedule is invalid.',raw:result};
     return {status:'calculated',forecastDate:result.project.forecastDate,workingDaysEarlyOrLate:result.project.workingDaysEarlyOrLate,criticalTaskIds:Object.values(result.taskResults||{}).filter(item=>item.isCritical).map(item=>item.taskId),raw:result};
   }
