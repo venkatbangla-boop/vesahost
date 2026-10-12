@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Commit `f9907d5` proved the visible inspector-competency create/edit/save/reload/reopen lifecycle, fail-closed expiry, stage assignment warning and explicit local-only/not-accreditation boundary. The 18-command matrix passed in 89.0 seconds. |
-| NEXT ACTION | Prove the existing factory-acknowledgement register through authenticated create/edit/save/reload/reopen, retaining a denied receipt as pending and never treating acknowledgement as VESA approval. |
+| LAST COMPLETED ACTION | Commit `4ebe87a` proved the visible factory-acknowledgement create/edit/save/reload/reopen lifecycle: denied receipt stayed pending, partial receipt cleared only that reason, and the original Critical supplier failure remained NOT CONFORMED. The 18-command matrix passed in 90.6 seconds. |
+| NEXT ACTION | Prove one authenticated failure → rework/CAPA → linked reinspection chain with immutable parent findings and independent child observations; do not change SamplingEngine/Ac-Re rules. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -96,6 +96,20 @@ VERDICT: conditional — the inspector-competency local lifecycle slice and area
 NEXT ACTION (ONE PRECISE STEP): prove the existing factory-acknowledgement register through authenticated create/edit/save/reload/reopen, retaining a denied receipt as pending and never treating acknowledgement as VESA approval.
 ```
 
+### A-G05 factory acknowledgement lifecycle — conditional slice accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 15:49 Asia/Dhaka
+GATE / OBJECTIVE: A-G05 — prove denied factory receipt stays pending and later acknowledgement cannot override the original supplier Critical failure
+BRANCH / BASE COMMIT / TEST COMMIT: feature/tna360-continuous / 8d49d1f / 4ebe87a
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; apps/aql/tests/a-g04-35-area-matrix.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md evidence follows
+FROZEN / OUT OF SCOPE: apps/aql/index.html, service workers, schemas/saved formats, SamplingEngine/Ac-Re, supplier critical-failure policy, PPM/TNA/shared runtime, production data and deployment
+IMPLEMENTED / EVIDENCE: The authenticated 390px supplier-audit workflow adds a fictional factory acknowledgement with `received=No` and record review Pass; the exact denied-receipt reason remains pending and the Critical audit failure remains. A visible edit records receipt with a Partial response and explicit `No VESA approval or shipment release is represented` wording. Only the denied-receipt pending reason clears; the supplier audit stays NOT CONFORMED, and exact audit/acknowledgement records survive local save/reload/reopen.
+TEST COMMANDS + OUTPUT/COUNTS: syntax and focused authenticated browser PASS; full AQL/shared regression PASS, 18 commands / 90.6s, including Q01-Q24, all 35-area/stage contracts, portable/current+legacy restore, atomic and 200/280 MiB boundary imports, quota rescue, worker replacement/offline reopen, reports/language, cross-app boundaries and shared shell. Zero external requests or uncaught page errors. The post-ledger 35-area validator reports 23 PROVEN_LOCAL / 10 CONDITIONAL / 1 DEFERRED_BY_SCOPE / 1 BLOCKED_EXTERNAL. `git diff --check` PASS. Visual evidence reviewed at output/playwright/aql-a-g05-factory-acknowledgement-mobile.png.
+VERDICT: conditional — the factory-acknowledgement local lifecycle and area 28 are accepted locally, and the A-G05 supplier-critical/denied-acknowledgement item is proven. Acknowledgement remains an unauthenticated browser-local record and never VESA approval; A-G05 and percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): prove one authenticated failure → rework/CAPA → linked reinspection chain with immutable parent findings and independent child observations; do not change SamplingEngine/Ac-Re rules.
+```
+
 ### A-G04 compliance evidence binding — conditional slice accepted locally
 
 ```text
@@ -115,7 +129,7 @@ NEXT ACTION (ONE PRECISE STEP): add the smallest fail-closed laboratory-report e
 - [ ] Final AQL defect/severity result matches approved plan and original engine.
 - [ ] Rework/CAPA/reinspection creates linked history and never deletes prior failure.
 - [ ] Loading/carton/barcode/seal/handover traceability complete where selected.
-- [ ] Supplier QMS critical audit failure and factory denied acknowledgement remain blocked.
+- [x] Supplier QMS critical audit failure and factory denied acknowledgement remain blocked; authenticated browser evidence proves later partial acknowledgement does not clear the Critical failure or imply VESA approval.
 
 ### A-G06 — Inspection evidence, measurements, CAPA, quality analytics
 - [ ] Measurement POM/tolerance/actual/units validated and reported.
@@ -270,7 +284,7 @@ Each feature ID A01–A60 is initially `not-started / unverified for this rework
 | 25 | Compliance / destination rules | CONDITIONAL | versioned reference fields plus visible original-byte attachment and exact generated-asset binding/reopen | buyer/legal jurisdiction and applicability review remain |
 | 26 | Packing & barcode | CONDITIONAL | packing reconciliation/duplicate/range source guards | approved carton randomization, barcode and browser evidence remain |
 | 27 | Sample custody | PROVEN_LOCAL | sealed sample, recipient/date/location/return/reference reopen exactly | none for audited local contract |
-| 28 | Factory acknowledgement | CONDITIONAL | denied/pending receipt guard exists in deterministic source contract | authenticated acknowledgement lifecycle remains |
+| 28 | Factory acknowledgement | PROVEN_LOCAL | authenticated denied-receipt pending guard, visible partial-response edit, explicit no-VESA-approval wording and exact save/reload/reopen | none for audited local contract |
 | 29 | Analytics dashboards | CONDITIONAL | numerator/source-basis and missing-denominator contracts pass | authenticated dashboard and large-record usability remain |
 | 30 | Counting-basis analytics | PROVEN_LOCAL | Q10 highest-severity versus each-defect basis and denominator guards | none for audited local contract |
 | 31 | Stage reports | CONDITIONAL | escaped stage report composition and rendered generic A4 evidence | complete stage/report catalogue, print and sandbox review remain |
