@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | The A-G04 cutting lifecycle now requires equipment, broken-needle and metal-detection registers; expired calibration and failed challenge remain failures, needle containment remains pending, and exact state reopens. The 17-command matrix passed. |
-| NEXT ACTION | Extend authenticated A-G04 traceability evidence through compliance and sample-custody supporting registers, proving missing evidence fails closed and exact state reopens. |
+| LAST COMPLETED ACTION | The A-G04 incoming lifecycle now requires compliance and sample-custody registers; a typed but unattached compliance report stays explicitly pending while exact custody metadata reopens. The 17-command matrix passed. |
+| NEXT ACTION | Prove a real linked-stage transition creates a new child event while preserving the parent event’s original observations, identity and durable reopen state. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -581,6 +581,21 @@ IMPLEMENTED: Added fixture-only VM checks for in-tolerance PASS, out-of-toleranc
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — deterministic measurement and source contracts are locally proven; full asset restore, CAPA history, analytics denominator fixtures, huge-record performance, accessibility and rendered report review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run browser restore/report evidence for one measurement, document, finding, CAPA and carton chain without changing frozen AQL tables.
+```
+
+### A-G04 compliance/custody browser lifecycle — conditional, browser slice accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 10:29 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — prove compliance-reference and sample-custody traceability through required supporting registers and exact reopen
+BRANCH / BASE COMMIT: feature/tna360-continuous / 27f9c9a (tested browser commit 32007b0)
+TEST COMMIT: 4e403bb
+FILE-LEVEL AUDIT: StageWorkspace support/require/record owns explicit compliance/custody activation and values; StageQualityControls requires compliance revision/market/product/report/reviewer and checks the report against documents/assets; AuditEngine checks evidence expiry; StageDecision keeps missing evidence pending; LocalRepository/Home Resume own persistence. In scope: additive browser fixture/assertions and both trackers. Frozen/out of scope: runtime source/workers, SamplingEngine/Ac-Re, schemas/formats, other rules, sibling apps, production records and release. Risks are confusing a typed report reference with attached evidence, mutating the earlier incoming snapshot, or claiming a clean custody row resolves missing compliance evidence. Verification: real 390px support dialogs, exact unattached-report reason, exact requiredModules/records, visible PENDING, reload/reopen, screenshot/no-overflow/network/page errors, full matrix. Rollback: revert test/docs; disposable browser state is destroyed.
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+IMPLEMENTED / EVIDENCE: Reopened the incoming event and used the real Add supporting register flow to require a Market evidence matrix and Sample custody. The compliance record includes buyer-manual revision, market, product, report identity, future expiry, artwork and reviewer, but deliberately attaches no matching document/asset; the exact `Required compliance evidence not attached` reason remains pending. The custody record includes Lab kind, sealed Yes, exact seal, recipient/date/location/return metadata and Pass review without claiming a photo. The test asserts exact requiredModules order, exact missing-evidence reason, exact custody seal, visible PENDING decision and byte-for-value three-record stageSuite reopen after Ctrl+S/reload. The reviewed workspace shows both passing register cards while nine open requirements—including the unattached report—remain visible, with no horizontal clipping.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/aql/tests/a-g04-stage-browser.cjs` PASS; focused browser lifecycle PASS; full 17-command AQL/shared matrix PASS in 90.3 seconds, including A-G00 Q01-Q24, A-G02 through A-G09, all A-G07 browser/storage/import/worker suites, release contract and shared shell contract; `git diff --check` PASS. Browser assertions report zero uncaught page errors and zero external requests. Visual evidence reviewed at output/playwright/aql-a-g04-compliance-custody-mobile.png.
+VERDICT: conditional — the compliance/custody browser slice is accepted locally. A-G04 remains conditional because the compliance evidence is intentionally absent, linked-stage transition/original-observation proof and remaining 35-area evidence are open, and physical-device/field acceptance is external; percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): use the visible New linked inspection workflow to create a child stage from an existing saved event, then prove parent lineage, fresh child observations, unchanged parent bytes and exact reload/reopen without altering frozen SamplingEngine/Ac-Re rules.
 ```
 
 ### A-G04 equipment/needle/metal browser lifecycle — conditional, browser slice accepted locally
