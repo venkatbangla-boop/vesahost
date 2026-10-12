@@ -228,11 +228,54 @@ async function run() {
     await addSupportingRecord(page, 'custody', { identity: 'SAMPLE-A-G04-001', kind: 'Lab', sealed: 'Yes', seal: 'SAMPLE-SEAL-FICTIONAL-01', recipient: 'Fictional Independent Lab', date: '2026-10-12', location: 'Fictional custody cabinet', return: 'Return after fictional review', photo: '', reference: 'CUSTODY-CRITERIA-REV-1', status: 'Pass', note: 'Fictional custody chain; no evidence attachment claimed' });
     await page.keyboard.press('Control+s');
     await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
-    const incomingFinal = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text) }; });
-    assert.equal(incomingFinal.stageDecision, 'PENDING', 'unattached compliance evidence must keep incoming inspection pending');
-    assert.ok(incomingFinal.pending.includes('Required compliance evidence not attached: COMPLIANCE-REPORT-FICTIONAL-01'), 'unattached compliance-report reason is missing');
-    assert.deepEqual(incomingFinal.project.stageSuite.requiredModules, ['compliance', 'custody'], 'traceability required-register order changed');
-    assert.equal(incomingFinal.project.stageSuite.records.find(row => row.module === 'custody').seal, 'SAMPLE-SEAL-FICTIONAL-01', 'custody seal was not retained');
+    const incomingPending = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text) }; });
+    assert.equal(incomingPending.stageDecision, 'PENDING', 'unattached compliance evidence must keep incoming inspection pending');
+    assert.ok(incomingPending.pending.includes('Required compliance evidence not attached: COMPLIANCE-REPORT-FICTIONAL-01'), 'unattached compliance-report reason is missing');
+    assert.deepEqual(incomingPending.project.stageSuite.requiredModules, ['compliance', 'custody'], 'traceability required-register order changed');
+    const incomingBeforeEvidence = incomingPending.project.stageSuite.records.find(row => row.module === 'incoming');
+    const custodyBeforeEvidence = incomingPending.project.stageSuite.records.find(row => row.module === 'custody');
+    const complianceId = incomingPending.project.stageSuite.records.find(row => row.module === 'compliance').id;
+    assert.equal(custodyBeforeEvidence.seal, 'SAMPLE-SEAL-FICTIONAL-01', 'custody seal was not retained');
+
+    await page.locator(`[data-action="evidence"][data-owner="${complianceId}"]:visible`).click();
+    await page.locator('#dialog [name="caption"]').fill('Synthetic compliance report evidence; fixture only');
+    await page.locator('#dialog [name="role"]').selectOption('test result');
+    await page.locator('#dialog input[type="file"][multiple]').setInputFiles({
+      name: 'synthetic-compliance-report.txt',
+      mimeType: 'text/plain',
+      buffer: Buffer.from('Synthetic A-G04 compliance evidence. No buyer or production data.\n', 'utf8'),
+    });
+    await page.waitForFunction(() => window.__vesaApp?.modalContext?.assets?.length === 1);
+    await saveDialog(page);
+    const attachedAsset = await page.evaluate(async owner => {
+      const meta = window.__vesaApp.p.assets.find(asset => asset.owner === owner && asset.name === 'synthetic-compliance-report.txt');
+      const record = meta ? await window.__vesaApp.assets.get(meta.id) : null;
+      return { meta: meta && JSON.parse(JSON.stringify(meta)), text: record?.blob ? await record.blob.text() : '' };
+    }, complianceId);
+    assert.ok(attachedAsset.meta?.id?.startsWith('ASSET-'), 'visible Evidence flow did not create a generated asset ID');
+    assert.equal(attachedAsset.meta.kind, 'document', 'synthetic compliance report must remain a document asset');
+    assert.equal(attachedAsset.meta.role, 'test result', 'selected compliance evidence role was not retained');
+    assert.equal(attachedAsset.text, 'Synthetic A-G04 compliance evidence. No buyer or production data.\n', 'attached compliance evidence bytes changed');
+
+    await page.locator(`[data-action="stage-record"][data-module="compliance"][data-id="${complianceId}"]:visible`).click();
+    await page.locator('#dialog [name="report"]').fill(attachedAsset.meta.id);
+    await saveDialog(page);
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const incomingFinal = await page.evaluate(async assetId => {
+      const evaluated = ResultEngine.evaluate(window.__vesaApp.p);
+      const asset = window.__vesaApp.p.assets.find(row => row.id === assetId);
+      const record = await window.__vesaApp.assets.get(assetId);
+      return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text), asset: JSON.parse(JSON.stringify(asset)), assetText: await record.blob.text() };
+    }, attachedAsset.meta.id);
+    assert.equal(incomingFinal.stageDecision, 'PENDING', 'original incoming quantity mismatch must remain pending after evidence attachment');
+    assert.ok(incomingFinal.pending.includes('INCOMING-A-G04-001: inspected quantity exceeds received'), 'original incoming quantity reason disappeared after evidence attachment');
+    assert.ok(!incomingFinal.pending.some(reason => reason.startsWith('Required compliance evidence not attached:')), 'exact asset binding did not clear the compliance evidence reason');
+    assert.deepEqual(incomingFinal.project.stageSuite.records.find(row => row.module === 'incoming'), incomingBeforeEvidence, 'evidence binding changed the incoming observation');
+    assert.deepEqual(incomingFinal.project.stageSuite.records.find(row => row.module === 'custody'), custodyBeforeEvidence, 'evidence binding changed the custody observation');
+    assert.equal(incomingFinal.project.stageSuite.records.find(row => row.module === 'compliance').report, attachedAsset.meta.id, 'compliance report field did not retain the generated asset ID');
+    assert.equal(incomingFinal.asset.owner, complianceId, 'attached evidence lost its compliance-record owner');
+    assert.equal(incomingFinal.assetText, attachedAsset.text, 'saved compliance evidence bytes changed');
     await page.getByText('PENDING', { exact: true }).first().waitFor({ state: 'visible' });
     await page.screenshot({ path: traceabilityOutput, fullPage: true });
     await page.locator('#app [data-action="home"]:visible').first().click();
