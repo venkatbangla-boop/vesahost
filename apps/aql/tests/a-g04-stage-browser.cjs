@@ -6,7 +6,7 @@ const path = require('path');
 const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '../../..');
-const output = path.join(root, 'output', 'playwright', 'aql-a-g04-production-readiness-mobile.png');
+const output = path.join(root, 'output', 'playwright', 'aql-a-g04-material-monitor-mobile.png');
 const readinessOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-prefinal-not-ready-mobile.png');
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
 const mime = file => ({ '.css': 'text/css', '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.webmanifest': 'application/manifest+json' })[path.extname(file)] || 'application/octet-stream';
@@ -55,10 +55,11 @@ async function createStage(page, fixture) {
   await saveDialog(page);
   await page.keyboard.press('Control+s');
   await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
-  const saved = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text) }; });
+  const saved = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text) }; });
   assert.equal(saved.stageDecision, fixture.expectedResult || 'PENDING', `${fixture.stage} returned an unexpected stage decision`);
   if (fixture.expectedEngineResult) assert.equal(saved.result, fixture.expectedEngineResult, `${fixture.stage} result diverged from its stage decision`);
   if (fixture.expectedFailure) assert.ok(saved.failures.includes(fixture.expectedFailure), `${fixture.stage} did not retain its expected failure reason`);
+  if (fixture.expectedPending) assert.ok(saved.pending.includes(fixture.expectedPending), `${fixture.stage} did not retain its expected pending reason`);
   await page.getByText(saved.stageDecision, { exact: true }).first().waitFor({ state: 'visible' });
   if (fixture.captureDecision) {
     fs.mkdirSync(path.dirname(readinessOutput), { recursive: true });
@@ -125,6 +126,14 @@ async function run() {
       stage: 'prefinal', module: 'readiness', expectedResult: 'NOT READY', expectedEngineResult: 'NOT CONFORMED', expectedFailure: 'PREFINAL-A-G04-001: production below approved readiness threshold', captureDecision: true, buyer: 'A-G04 Prefinal Buyer - Fictional', factory: 'A-G04 Prefinal Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-PREFINAL', reference: 'PREFINAL-CRITERIA-REV-1', reviewer: 'Fictional Prefinal Reviewer', coverage: 'Fictional readiness gate; fixture only',
       record: { identity: 'PREFINAL-A-G04-001', production: 80, packed: 70, minProduction: 90, minPacked: 80, reference: 'PREFINAL-THRESHOLD-REV-1', shipment: 1000, packingRevision: 'PACK-REV-1', openIssues: 'Fictional production and packing below approved thresholds', declaration: 'Fictional factory declaration pending completion', previous: 'PREFINAL-PRIOR-FICTIONAL', status: 'Pass', note: 'Deliberate readiness failure; fixture only' },
     });
+    const incoming = await createStage(page, {
+      stage: 'incoming', module: 'incoming', expectedPending: 'INCOMING-A-G04-001: inspected quantity exceeds received', buyer: 'A-G04 Incoming Buyer - Fictional', factory: 'A-G04 Incoming Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-INCOMING', reference: 'INCOMING-CRITERIA-REV-1', reviewer: 'Fictional Incoming Reviewer', coverage: 'Fictional incoming quantity reconciliation; fixture only',
+      record: { identity: 'INCOMING-A-G04-001', path: 'Fabric', supplier: 'Fictional Mill', po: 'PO-A-G04-INCOMING', batch: 'BATCH-FICTIONAL-01', grn: 'GRN-FICTIONAL-01', invoice: 100, received: 100, inspected: 101, unit: 'metres', totalRolls: 10, receivedRolls: 10, sampledRolls: 2, weight: 200, length: 1000, width: 150, gsm: 180, construction: 'Fictional knit construction', shade: 'SHADE-A', lab: 'Pass', warehouse: 'Fictional dry storage', quarantine: 'HOLD-ZONE-A', approver: 'Fictional Release Reviewer', reference: 'INCOMING-CRITERIA-REV-1', status: 'Pass', note: 'Deliberate inspected-over-received mismatch; must remain pending' },
+    });
+    const monitor = await createStage(page, {
+      stage: 'monitor', module: 'monitor', expectedPending: 'MONITOR-A-G04-001: Packed quantity exceeds order', buyer: 'A-G04 Monitor Buyer - Fictional', factory: 'A-G04 Monitor Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-MONITOR', reference: 'MONITOR-CRITERIA-REV-1', reviewer: 'Fictional Monitor Reviewer', coverage: 'Fictional daily production reconciliation; fixture only',
+      record: { identity: 'MONITOR-A-G04-001', date: '2026-10-12', style: 'STYLE-A-G04', order: 100, cut: 120, sew: 115, finish: 110, pack: 105, reject: 2, repair: 3, today: 25, planned: '2026-10-20', forecast: '2026-10-22', risk: 'Fictional output exceeds entered order and requires reconciliation', quality: 'Fictional stable trend', reference: 'MONITOR-CRITERIA-REV-1', status: 'Pass', note: 'Deliberate packed-over-order balance mismatch; must remain pending' },
+    });
 
     fs.mkdirSync(path.dirname(output), { recursive: true });
     await page.screenshot({ path: output, fullPage: true });
@@ -141,10 +150,12 @@ async function run() {
     await reopen(page, inline);
     await reopen(page, endline);
     await reopen(page, prefinal);
+    await reopen(page, incoming);
+    await reopen(page, monitor);
     assert.deepEqual(pageErrors, [], 'stage lifecycle must have no uncaught page errors');
     assert.deepEqual(external, [], 'stage lifecycle must make no external requests');
     await context.close();
-    console.log('AQL A-G04 stage browser passed: IPC + cutting + loading + supplier-audit + inline + endline + pre-final UI create/criteria/record/save/reload/reopen, exact values, honest pending/failure/readiness outcomes, 390px no overflow, zero external requests/page errors');
+    console.log('AQL A-G04 stage browser passed: IPC + cutting + loading + supplier-audit + inline + endline + pre-final + incoming + monitor UI create/criteria/record/save/reload/reopen, exact values, honest quantity/balance/failure/readiness outcomes, 390px no overflow, zero external requests/page errors');
   } finally { if (browser) await browser.close(); await host.stop().catch(() => {}); }
 }
 
