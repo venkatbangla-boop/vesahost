@@ -2,6 +2,8 @@
 
 Date: 2026-10-10
 
+> Historical implementation note. The current mandatory contract for existing and future pages is `docs/platform/VESA_UNIFIED_UI_CONTRACT.md`. Where this file permits a separate authenticated bar plus an app command/header row, the v2 contract supersedes it: only one visible top-level shell owner is allowed.
+
 ## Evidence-backed inventory
 
 Current implemented routes are `/`, `/login/`, `/apps/`, `/admin/`, `/apps/aql/` and `/apps/ppm/`. The public website uses the strongest VESA visual reference: cream/light surfaces, navy text, rounded navigation, large editorial hero, VESA logo and EGENVA attribution. Login, Apps and Admin already share `/css/style.css`, `/js/preferences.js` and `/js/auth.js`. AQL and PPM are self-contained browser workspaces with local storage, reports and offline service workers.

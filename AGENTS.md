@@ -6,6 +6,10 @@
 
 Read `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` before selecting work. It is the current user-approved platform contract and takes precedence over older documents **only** where they require a paid/external backend, cloud database, provider identity, remote synchronization, or external notification delivery. Those items are retained historically and marked `DEFERRED_BY_SCOPE`; frozen TNA/PPM/AQL rules, local data safety, tests, and accepted evidence remain unchanged.
 
+## Mandatory unified page contract
+
+Before creating or changing **any** page, screen, app, dialog, viewer or top-level navigation, read `docs/platform/VESA_UNIFIED_UI_CONTRACT.md`. It is the current user-approved interpretation of One VESA UX and applies to existing and future routes. Every authenticated workspace has exactly one visible VESA logo, one header/navigation owner, one app identity, one user/account area, one Settings entry, one save-state message and one ordered `Home / File / Edit / View / Tools / Help` command system. Never stack a global auth bar with an app header, repeat logo/user/logout/settings controls, or introduce an app-specific fixed/sticky menu/sidebar. New pages must register with and reuse the shared shell/tokens; app code owns only domain content and callbacks. Shared-shell acceptance requires cross-route desktop/tablet/mobile/zoom/keyboard screenshots and DOM checks, plus TNA/PPM/AQL regressions.
+
 ## One continuous project, seven durable documents
 
 Implement **all capabilities described for Phase 1 + Phase 2 + Phase 3** as one cohesive product, in tested, reversible patch groups. Do not interpret the phases as permission to omit advanced functionality. The documents are the source of truth:

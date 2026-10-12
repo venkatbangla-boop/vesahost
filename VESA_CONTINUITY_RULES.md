@@ -21,13 +21,13 @@ Build and verify all GitHub-Free/browser-local portions of the specified Phase 1
 | TNA | root `AGENTS.md` (preserve existing TNA rules) | `docs/tna/01_MASTER_BLUEPRINT.md` through `docs/tna/06_EXECUTION_TRACKER.md` |
 | PPM | `apps/ppm/AGENTS.md` | `docs/ppm/01_AUDIT_MASTER_BLUEPRINT.md` through `docs/ppm/06_EXECUTION_TRACKER.md` |
 | AQL | `apps/aql/AGENTS.md` | `docs/aql/01_AUDIT_MASTER_BLUEPRINT.md` through `docs/aql/06_EXECUTION_TRACKER.md` |
-| Unified UX | `VESA-UNIFORM-UI-v1` in PPM and AQL `04_UNIFORM_UX_LANGUAGE_REPORTS.md` | `VESA_PROGRESS.md` S01-S10 |
+| Unified UX | `docs/platform/VESA_UNIFIED_UI_CONTRACT.md` (mandatory v2 interpretation) plus the app UX specifications | `VESA_PROGRESS.md` U-G00–U-G09 |
 
 The local repository may have newer changes than the handover. **Actual source, Git state and proven tests always take precedence over an old snapshot.** Do not overwrite a changed `AGENTS.md`, any tracker, existing saved data or an in-progress user's files with a ZIP copy. Merge only missing instructions and reconcile conflicts explicitly. If a spec package is absent, report it; proceed with independently safe audited work, and request the missing package only when truly required.
 
 ## 3. Same visual system, separate business rules
 
-All pages `/login/`, `/apps/`, `/apps/tna/`, `/apps/ppm/`, `/apps/aql/` must feel like ONE VESA product. Use the authorized VESA Enterprise Inc. logo, shared theme tokens, responsive layout, the same ordered Home/File/Edit/View/Tools/Help menu, straightforward Save/Open/Report labels, and one coherent sticky header/navigation region at most. No duplicated floating menus, independently frozen filter bars, overlapped fields, or inconsistent placement on mobile. Put advanced options inside their relevant sections and give novice-friendly guidance without showing internal format/database/developer terms.
+All current and future pages must follow `docs/platform/VESA_UNIFIED_UI_CONTRACT.md`. Use the authorized VESA Enterprise Inc. logo, shared theme tokens, responsive layout, the same ordered Home/File/Edit/View/Tools/Help menu, straightforward Save/Open/Report labels, and exactly one top-level header/navigation owner. No stacked auth/app headers, repeated logo/user/Settings/Logout controls, duplicated floating menus, independently frozen filter bars, overlapped fields, or inconsistent placement on mobile. Put advanced options inside their relevant sections and give novice-friendly guidance without showing internal format/database/developer terms.
 
 **Never mix domain logic:** TNA owns planning and Critical Path; PPM owns pre-production meeting, 168 existing master checkpoint identities, GO/CONDITIONAL GO/HOLD, sign-off, and approval conditions; AQL owns sampling tables, lot formation, Ac/Re, defect calculations, inspections, CAPA and audit records. Redesign **navigation and presentation** without silently changing buyer-approved or source-defined acceptance rules. No fake approvals, invented sampling cells, fabricated lead times or automatic GO/PASS.
 
