@@ -14,7 +14,7 @@ class WorkerServer {
   constructor() { this.release = 'old'; }
   worker() {
     const cache = `vesa-aql-test-${this.release}`;
-    let source = originalWorker.replace(/vesa-aql-2026-10-12-6/g, cache);
+    let source = originalWorker.replace(/vesa-aql-2026-10-12-7/g, cache);
     if (this.release === 'broken') source = source.replace("  './service-worker.js',", "  './service-worker.js',\n  './missing-install-fixture.js',");
     return Buffer.from(source);
   }

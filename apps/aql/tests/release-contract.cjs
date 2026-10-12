@@ -20,9 +20,10 @@ assert(html.includes('Bengali') && html.includes('Hindi') && html.includes('Tami
 assert(html.includes('PRACTICE-') && html.includes('Practice Example - fictional data only'), 'Practice isolation markers are missing');
 assert(html.includes("String(row.stages||'')"), 'Competency import guard is missing');
 assert(html.includes('cleanId') && html.includes('this.masters.stage(raw.masters)') && html.includes('Duplicate master identity'), 'Master import hardening is missing');
+assert(html.includes('Required laboratory evidence not attached:'), 'Laboratory evidence-reference guard is missing');
 
 new vm.Script(sw, { filename: 'apps/aql/service-worker.js' });
-assert(sw.includes("vesa-aql-2026-10-12-6"), 'AQL cache version is missing');
+assert(sw.includes("vesa-aql-2026-10-12-7"), 'AQL cache version is missing');
 assert(sw.includes("url.pathname.startsWith('/apps/aql/')"), 'AQL service worker scope guard is missing');
 
 new vm.Script(rootSw, { filename: 'service-worker.js' });

@@ -161,12 +161,58 @@ async function run() {
     await addSupportingRecord(page, 'lab', { identity: 'LAB-A-G04-001', lot: 'DYELOT-FICTIONAL-01', method: 'Fictional test method', revision: 'REV-1', buyer: 'A-G04 Fabric Buyer - Fictional', equipment: 'LAB-EQ-FICTIONAL-01', due: '2026-10-12', validUntil: '2026-10-20', external: 'LAB-REPORT-FICTIONAL-01', criterion: 'Fictional approved criterion', actual: 'Deliberate fictional failing result', testStatus: 'Fail', reviewer: 'Fictional Lab Reviewer', reference: 'LAB-CRITERIA-REV-1', status: 'Pass', note: 'Deliberate laboratory failure; fixture only' });
     await page.keyboard.press('Control+s');
     await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
-    const fabricFinal = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text) }; });
-    assert.equal(fabricFinal.stageDecision, 'REJECT / HOLD', 'fabric supporting failures must visibly reject/hold the stage');
-    assert.equal(fabricFinal.result, 'NOT CONFORMED', 'fabric supporting failures must not conform');
-    assert.ok(fabricFinal.failures.includes('SHADE-A-G04-001: Delta E exceeds approved limit'), 'fabric shade failure reason is missing');
-    assert.ok(fabricFinal.failures.includes('LAB-A-G04-001: Laboratory test failed'), 'fabric laboratory failure reason is missing');
-    assert.deepEqual(fabricFinal.project.stageSuite.requiredModules, ['shade', 'lab'], 'fabric supporting-register requirements changed');
+    const fabricPending = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text) }; });
+    assert.equal(fabricPending.stageDecision, 'REJECT / HOLD', 'fabric supporting failures must visibly reject/hold the stage');
+    assert.equal(fabricPending.result, 'NOT CONFORMED', 'fabric supporting failures must not conform');
+    assert.ok(fabricPending.failures.includes('SHADE-A-G04-001: Delta E exceeds approved limit'), 'fabric shade failure reason is missing');
+    assert.ok(fabricPending.failures.includes('LAB-A-G04-001: Laboratory test failed'), 'fabric laboratory failure reason is missing');
+    assert.ok(fabricPending.pending.includes('Required laboratory evidence not attached: LAB-REPORT-FICTIONAL-01'), 'typed unattached laboratory report must remain pending');
+    assert.deepEqual(fabricPending.project.stageSuite.requiredModules, ['shade', 'lab'], 'fabric supporting-register requirements changed');
+    const rollBeforeLabEvidence = fabricPending.project.stageSuite.records.find(row => row.module === 'roll');
+    const shadeBeforeLabEvidence = fabricPending.project.stageSuite.records.find(row => row.module === 'shade');
+    const labBeforeEvidence = fabricPending.project.stageSuite.records.find(row => row.module === 'lab');
+
+    await page.locator(`[data-action="evidence"][data-owner="${labBeforeEvidence.id}"]:visible`).click();
+    await page.locator('#dialog [name="caption"]').fill('Synthetic laboratory report evidence; fixture only');
+    await page.locator('#dialog [name="role"]').selectOption('test result');
+    await page.locator('#dialog input[type="file"][multiple]').setInputFiles({
+      name: 'synthetic-laboratory-report.txt',
+      mimeType: 'text/plain',
+      buffer: Buffer.from('Synthetic A-G04 laboratory evidence. No buyer or production data.\n', 'utf8'),
+    });
+    await page.waitForFunction(() => window.__vesaApp?.modalContext?.assets?.length === 1);
+    await saveDialog(page);
+    const labAsset = await page.evaluate(async owner => {
+      const meta = window.__vesaApp.p.assets.find(asset => asset.owner === owner && asset.name === 'synthetic-laboratory-report.txt');
+      const record = meta ? await window.__vesaApp.assets.get(meta.id) : null;
+      return { meta: meta && JSON.parse(JSON.stringify(meta)), text: record?.blob ? await record.blob.text() : '' };
+    }, labBeforeEvidence.id);
+    assert.ok(labAsset.meta?.id?.startsWith('ASSET-'), 'visible Evidence flow did not create a laboratory asset ID');
+    assert.equal(labAsset.meta.kind, 'document', 'synthetic laboratory report must remain a document asset');
+    assert.equal(labAsset.text, 'Synthetic A-G04 laboratory evidence. No buyer or production data.\n', 'attached laboratory evidence bytes changed');
+    await page.locator(`[data-action="stage-record"][data-module="lab"][data-id="${labBeforeEvidence.id}"]:visible`).click();
+    await page.locator('#dialog [name="external"]').fill(labAsset.meta.id);
+    await saveDialog(page);
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const fabricFinal = await page.evaluate(async assetId => {
+      const evaluated = ResultEngine.evaluate(window.__vesaApp.p);
+      const optionalCopy = JSON.parse(JSON.stringify(window.__vesaApp.p));
+      optionalCopy.stageSuite.records.find(row => row.module === 'lab').external = '';
+      const optional = ResultEngine.evaluate(optionalCopy);
+      const record = await window.__vesaApp.assets.get(assetId);
+      return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text), optionalPending: optional.pending.map(item => item.text), assetText: await record.blob.text() };
+    }, labAsset.meta.id);
+    assert.ok(!fabricFinal.pending.some(reason => reason.startsWith('Required laboratory evidence not attached:')), 'exact laboratory asset binding did not clear its pending reason');
+    assert.ok(!fabricFinal.optionalPending.some(reason => reason.startsWith('Required laboratory evidence not attached:')), 'blank optional external reference must remain backward-compatible');
+    assert.ok(fabricFinal.failures.includes('SHADE-A-G04-001: Delta E exceeds approved limit'), 'shade failure disappeared after lab evidence attachment');
+    assert.ok(fabricFinal.failures.includes('LAB-A-G04-001: Laboratory test failed'), 'laboratory failure disappeared after evidence attachment');
+    assert.deepEqual(fabricFinal.project.stageSuite.records.find(row => row.module === 'roll'), rollBeforeLabEvidence, 'lab evidence binding changed the roll observation');
+    assert.deepEqual(fabricFinal.project.stageSuite.records.find(row => row.module === 'shade'), shadeBeforeLabEvidence, 'lab evidence binding changed the shade observation');
+    const labAfterEvidence = fabricFinal.project.stageSuite.records.find(row => row.module === 'lab');
+    assert.deepEqual({ ...labAfterEvidence, external: labBeforeEvidence.external, updated: labBeforeEvidence.updated }, labBeforeEvidence, 'lab evidence binding changed fields other than the external report ID and audit timestamp');
+    assert.equal(labAfterEvidence.external, labAsset.meta.id, 'laboratory external field did not retain the generated asset ID');
+    assert.equal(fabricFinal.assetText, labAsset.text, 'saved laboratory evidence bytes changed');
     await page.getByText('REJECT / HOLD', { exact: true }).first().waitFor({ state: 'visible' });
     await page.screenshot({ path: fabricOutput, fullPage: true });
     await page.locator('#app [data-action="home"]:visible').first().click();
