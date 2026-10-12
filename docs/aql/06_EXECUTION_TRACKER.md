@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | The visible linked-stage workflow now proves a fresh child identity/observations and exact parent pointer while the durable parent object remains byte-for-byte unchanged across child save and reload. The 17-command matrix passed. |
-| NEXT ACTION | Reconcile the original 35 AQL areas against actual source/tests/browser evidence and record each as proven, conditional, blocked or deferred without inflating the gate. |
+| LAST COMPLETED ACTION | All original 35 AQL areas now have an executable evidence-ledger row: 21 proven locally, 12 conditional, one deferred by scope and one external blocker. The expanded 18-command matrix passed. |
+| NEXT ACTION | Attach a real synthetic compliance evidence asset through the visible record workflow, bind its exact asset ID to the compliance register, and prove the pending reason clears without changing other observations. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -57,7 +57,7 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 ### A-G04 — Stage workflow A-Z: materials through production
 - [x] Incoming materials, fabric roll, shade, lab, cutting, IPC, inline, endline and monitor have deterministic contracts plus authenticated create/save/reload/reopen evidence.
 - [ ] Material quantity, roll/lot, buyer manual, traceability, equipment/needle controls when required.
-- [ ] 35 original areas audited with honest pass/partial/blocked evidence.
+- [x] All 35 original areas have an executable evidence-ledger row with honest `PROVEN_LOCAL`, `CONDITIONAL`, `DEFERRED_BY_SCOPE` or `BLOCKED_EXTERNAL` status; this audit does not convert conditional areas or A-G04 itself to accepted.
 - [x] Linked-stage transition creates a fresh child event with explicit parent identity; the parent repository snapshot and original observations remain byte-for-byte unchanged through child save and reload.
 
 ### A-G05 — Pre-final/final/rework/reinspection/load/supplier QA
@@ -185,6 +185,50 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 
 ## Coverage ledger — 60 requirements + 35 legacy areas
 Each feature ID A01–A60 is initially `not-started / unverified for this rework`, even if existing baseline implements part of it. Each must carry `CURRENT-SOURCE-EVIDENCE`, `VERDICT`, `GATE`, `TEST`, `SHA`, `NOTE`. 35 original areas numbered 01–35 in doc 01 must also have `existing | partial | absent | blocked`, supported by direct code/fixture evidence and required follow-up. Do not silently shrink these registers.
+
+### Original 35-area evidence matrix — audited 2026-10-12
+
+`PROVEN_LOCAL` means the stated local contract has direct deterministic and/or authenticated-browser evidence. It does not mean field acceptance, provider services or the whole AQL gate is complete. `CONDITIONAL` retains the named missing proof. The validator in `apps/aql/tests/a-g04-35-area-matrix.cjs` freezes IDs, status vocabulary and evidence/gap completeness.
+
+<!-- AQL_35_AREA_MATRIX_START -->
+| ID | Area | Verdict | Current evidence | Remaining work / boundary |
+|---|---|---|---|---|
+| 01 | Inspection-type routing and results | PROVEN_LOCAL | `a-g04-stage.cjs`, `a-g04-stage-browser.cjs`: 13 routes, decisions and reopen | none for audited local contract |
+| 02 | Fabric roll quality | PROVEN_LOCAL | roll density fixture plus authenticated roll record and defect map | none for audited local contract |
+| 03 | Laboratory test records | CONDITIONAL | lab fail/pending rules and browser record reopen | valid attached lab evidence and broader report review remain |
+| 04 | Shade/colour management | PROVEN_LOCAL | Delta E limit/reject fixture and browser supporting register | none for audited local contract |
+| 05 | Incoming material/accessory inspection | PROVEN_LOCAL | incoming identity, quantity guard, compliance/custody and reopen | none for audited local contract |
+| 06 | Cutting quality | PROVEN_LOCAL | cutting field contract, browser record and material-control registers | none for audited local contract |
+| 07 | Inline quality control | PROVEN_LOCAL | frequency/operation/count guards and explicit failing browser record | none for audited local contract |
+| 08 | Endline quality | PROVEN_LOCAL | separate first-pass/count reconciliation and browser records | none for audited local contract |
+| 09 | IPC/pilot/first production | PROVEN_LOCAL | first-output field contract and authenticated IPC parent record | none for audited local contract |
+| 10 | Pre-final readiness | PROVEN_LOCAL | approved-threshold failures and visible NOT READY workspace | none for audited local contract |
+| 11 | 100% screening/rework | CONDITIONAL | repair, recheck, one-piece and target guards in A-G04/A-G05 fixtures | authenticated rework-to-reinspection history remains |
+| 12 | Final readiness | CONDITIONAL | readiness source guards and frozen final AQL engine contracts | authenticated final-stage readiness and result lifecycle remains |
+| 13 | Loading supervision | CONDITIONAL | carton/piece mismatch, seal/photo requirements and browser reopen | real evidence assets, barcode checks and approved carton policy remain |
+| 14 | Production monitoring | PROVEN_LOCAL | output/balance guards and authenticated monitor reopen | none for audited local contract |
+| 15 | Supplier audit / QMS | PROVEN_LOCAL | critical finding cannot pass and coherent browser NOT CONFORMED decision | none for audited local contract |
+| 16 | Master data | PROVEN_LOCAL | `a-g07-atomic-import.cjs`: bounded sanitized atomic master import | none for audited local contract |
+| 17 | Buyer profiles / instructions | CONDITIONAL | plan provenance plus versioned compliance/manual reference fields | approved real buyer instruction/evidence fixture remains |
+| 18 | Order journey | PROVEN_LOCAL | linked parent/child browser proof and visible journey IDs/results | none for audited local contract |
+| 19 | CAPA | CONDITIONAL | ownership, closure and evidence guards in A-G05/A-G06 contracts | authenticated finding-to-CAPA-to-reinspection chain remains |
+| 20 | Sync packs | PROVEN_LOCAL | strict two-half validation, rollback and selected-file rejection | none for audited local contract |
+| 21 | Offline names/signatures vs roles | PROVEN_LOCAL | local-login limitation and non-authenticated signature language are explicit | secure provider identity is outside local scope |
+| 22 | Competency / training | CONDITIONAL | missing-stage/inspector warning and bounded register schema are source-tested | authenticated create/edit/reopen and expiry review remain |
+| 23 | Equipment/calibration | PROVEN_LOCAL | expired calibration produces a confirmed browser failure and reopens | none for audited local contract |
+| 24 | Needle/metal control | PROVEN_LOCAL | containment pending and challenge failure browser records reopen | none for audited local contract |
+| 25 | Compliance / destination rules | CONDITIONAL | versioned reference fields and unattached-evidence pending guard | valid attached evidence and jurisdiction review remain |
+| 26 | Packing & barcode | CONDITIONAL | packing reconciliation/duplicate/range source guards | approved carton randomization, barcode and browser evidence remain |
+| 27 | Sample custody | PROVEN_LOCAL | sealed sample, recipient/date/location/return/reference reopen exactly | none for audited local contract |
+| 28 | Factory acknowledgement | CONDITIONAL | denied/pending receipt guard exists in deterministic source contract | authenticated acknowledgement lifecycle remains |
+| 29 | Analytics dashboards | CONDITIONAL | numerator/source-basis and missing-denominator contracts pass | authenticated dashboard and large-record usability remain |
+| 30 | Counting-basis analytics | PROVEN_LOCAL | Q10 highest-severity versus each-defect basis and denominator guards | none for audited local contract |
+| 31 | Stage reports | CONDITIONAL | escaped stage report composition and rendered generic A4 evidence | complete stage/report catalogue, print and sandbox review remain |
+| 32 | Friendly menu/copy | PROVEN_LOCAL | A-G02 workflow plus four-language guidance and responsive shell evidence | none for audited local contract |
+| 33 | Native wrappers | DEFERRED_BY_SCOPE | Free-only contract keeps optional signed APK/Windows packages outside active scope | revisit only after explicit request and free local tooling proof |
+| 34 | Regression tests | PROVEN_LOCAL | Q01-Q24 plus A-G02–A-G09, browser, import, worker and shell suites | continue rerunning after affected patches |
+| 35 | Real factory pilot | BLOCKED_EXTERNAL | no synthetic test is represented as factory acceptance | requires user-arranged physical-device and real-factory review |
+<!-- AQL_35_AREA_MATRIX_END -->
 
 ### Suggested progress table format
 ```text
@@ -581,6 +625,21 @@ IMPLEMENTED: Added fixture-only VM checks for in-tolerance PASS, out-of-toleranc
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — deterministic measurement and source contracts are locally proven; full asset restore, CAPA history, analytics denominator fixtures, huge-record performance, accessibility and rendered report review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run browser restore/report evidence for one measurement, document, finding, CAPA and carton chain without changing frozen AQL tables.
+```
+
+### A-G04 35-area evidence reconciliation — conditional, audit accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 10:41 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — reconcile every original area in the master blueprint to current source/test/browser evidence with an executable honest-status ledger
+BRANCH / BASE COMMIT: feature/tna360-continuous / 60df064 (tested browser commit 30fd383)
+TEST COMMIT: f1541e1
+FILE-LEVEL AUDIT: `docs/aql/01_AUDIT_MASTER_BLUEPRINT.md` owns the immutable 01–35 area list; this tracker owns durable evidence/status; existing A-G00 and A-G02–A-G09 suites own specific contracts. In scope: one 35-row tracker matrix, one additive Node validator and VESA_PROGRESS evidence. Frozen/out of scope: all application/runtime source, service workers, SamplingEngine/Ac-Re, schemas/formats, existing test semantics, sibling apps, production records and release. Risks are missing/duplicating an area, treating conditional proof as acceptance, hiding the carton-policy/factory blockers or counting deferred wrappers as passed. Verification: exact IDs 01–35, approved verdict vocabulary/counts, nonempty evidence/gaps, fixed area 26/33/35 boundaries, focused validator, full matrix and diff check. Rollback: revert the additive test/docs group; no runtime/data/cache change exists.
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-35-area-matrix.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+IMPLEMENTED / EVIDENCE: Added a durable 35-row matrix mapped one-for-one to `01_AUDIT_MASTER_BLUEPRINT.md`. Every row records a constrained verdict, current committed evidence and an explicit remaining-work/scope boundary. The additive validator requires sequential unique IDs 01–35, nonempty evidence/boundary text, the exact honest count split (21 PROVEN_LOCAL, 12 CONDITIONAL, 1 DEFERRED_BY_SCOPE, 1 BLOCKED_EXTERNAL), and fixed policy-sensitive treatment: packing/carton stays conditional without approved randomization, native wrappers stay deferred under the Free-only contract, and factory pilot stays externally blocked. The audit marks the A-G04 35-area-review checklist item complete but does not accept A-G04 or increase any score.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/aql/tests/a-g04-35-area-matrix.cjs` PASS; focused matrix validator PASS; expanded 18-command AQL/shared matrix PASS in 88.1 seconds, including A-G00 Q01-Q24, A-G02–A-G09, linked-stage browser lifecycle, all A-G07 browser/storage/import/worker suites, release contract and shared shell contract; `git diff --check` PASS. Existing browser assertions remain zero uncaught page errors and zero external requests.
+VERDICT: conditional — the 35-area audit itself is accepted locally and executable. A-G04 remains conditional because 12 areas still name local evidence gaps, area 35 requires external field acceptance, and area 33 is deferred by scope; percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): use the visible compliance-record Evidence flow with a small synthetic local asset, bind the exact generated asset ID into the compliance report field, save/reload/reopen and prove only the unattached-evidence reason clears while all original incoming/custody observations remain unchanged.
 ```
 
 ### A-G04 linked-stage parent/child lifecycle — conditional, browser slice accepted locally
