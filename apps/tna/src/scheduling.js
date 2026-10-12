@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  const ENGINE_VERSION='TNA360-SCHEDULE-0.3.0';
+  const ENGINE_VERSION='TNA360-SCHEDULE-0.4.0';
   const MS_PER_DAY=86400000;
   const DEFAULT_CALENDAR={calendarId:'default',name:'Default Monday-Friday',workingWeek:[1,2,3,4,5],holidays:[],shutdowns:[],revision:0};
   const pad=n=>String(n).padStart(2,'0');
@@ -79,7 +79,7 @@
     }
     const graph=validateGraph(tasks,edges);
     errors.push(...graph.errors);
-    if(errors.length||missingInputs.length)return {engineVersion:ENGINE_VERSION,validity:errors.length?'invalid':'incomplete',missingInputs,errors,warnings,taskResults:{},project:{criticalPaths:[],scheduleConfidence:'unavailable'},generatedAt:new Date().toISOString(),calendarRevisions:calendars.revisions};
+    if(errors.length||missingInputs.length)return {engineVersion:ENGINE_VERSION,validity:errors.length?'invalid':'incomplete',missingInputs,errors,warnings,constraintViolations:[],taskResults:{},project:{criticalPaths:[],scheduleConfidence:'unavailable'},generatedAt:new Date().toISOString(),calendarRevisions:calendars.revisions};
     const byId=new Map(tasks.map(t=>[t.taskId,t]));
     const incoming=new Map(tasks.map(t=>[t.taskId,[]])),outgoing=new Map(tasks.map(t=>[t.taskId,[]]));
     edges.forEach(edge=>{incoming.get(edge.successorTaskId).push(edge);outgoing.get(edge.predecessorTaskId).push(edge);});
@@ -88,8 +88,9 @@
       const task=byId.get(id),taskCalendar=calendars.forTask(task),basis=task.durationBasis||'working',duration=Number(task.durationUnits||0),candidates=[];
       if(!incoming.get(id).length)candidates.push(nextWorkingDate(startDate,taskCalendar,true));
       for(const edge of incoming.get(id)){
-        const pred=result[edge.predecessorTaskId],lag=edge.lagUnits||0,relation=edge.relation||'FS';
-        if(relation==='FS')candidates.push(shiftDate(pred.earlyFinish,lag+1,taskCalendar,edge.lagBasis||basis));
+        const predecessorTask=byId.get(edge.predecessorTaskId),pred=result[edge.predecessorTaskId],lag=edge.lagUnits||0,relation=edge.relation||'FS';
+        const sameDayMilestone=Number(predecessorTask.durationUnits)===0&&predecessorTask.milestoneEvent==='start-of-day';
+        if(relation==='FS')candidates.push(shiftDate(pred.earlyFinish,lag+(sameDayMilestone?0:1),taskCalendar,edge.lagBasis||basis));
         if(relation==='SS')candidates.push(shiftDate(pred.earlyStart,lag,taskCalendar,edge.lagBasis||basis));
         if(relation==='FF')candidates.push(startFromFinish(shiftDate(pred.earlyFinish,lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
         if(relation==='SF')candidates.push(startFromFinish(shiftDate(pred.earlyStart,lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
@@ -105,7 +106,8 @@
       if(!outgoing.get(id).length)constraints.push(endDate);
       for(const edge of outgoing.get(id)){
         const succ=result[edge.successorTaskId],lag=edge.lagUnits||0,relation=edge.relation||'FS';
-        if(relation==='FS')constraints.push(shiftDate(succ.lateStart,(-lag)-1,taskCalendar,edge.lagBasis||basis));
+        const sameDayMilestone=Number(task.durationUnits)===0&&task.milestoneEvent==='start-of-day';
+        if(relation==='FS')constraints.push(shiftDate(succ.lateStart,-lag-(sameDayMilestone?0:1),taskCalendar,edge.lagBasis||basis));
         if(relation==='SS')constraints.push(startFromFinish(shiftDate(succ.lateStart,-lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
         if(relation==='FF')constraints.push(shiftDate(succ.lateFinish,-lag,taskCalendar,edge.lagBasis||basis));
         if(relation==='SF')constraints.push(startFromFinish(shiftDate(succ.lateFinish,-lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
@@ -122,7 +124,8 @@
     function trace(id,path=[]){const nextPath=[...path,id];const critSucc=(outgoing.get(id)||[]).filter(edge=>result[edge.successorTaskId].isCritical);if(!critSucc.length){criticalPaths.push(nextPath);return;}critSucc.forEach(edge=>trace(edge.successorTaskId,nextPath));}
     tasks.filter(t=>!incoming.get(t.taskId).length&&result[t.taskId].isCritical).forEach(t=>trace(t.taskId));
     const workingDaysEarlyOrLate=requiredDate?workdayDifference(requiredDate,forecastDate,calendar,'working'):0;
-    return {engineVersion:ENGINE_VERSION,validity:'valid',missingInputs,errors,warnings,taskResults:result,project:{selectedDeadlineType:requiredDate?'requiredDate':'forecastDate',requiredDate:requiredDate||null,forecastDate,workingDaysEarlyOrLate,criticalPaths,scheduleConfidence:'deterministic'},generatedAt:new Date().toISOString(),calendarRevisions:calendars.revisions};
+    const constraintViolations=requiredDate&&workingDaysEarlyOrLate>0?[{type:'required-date-miss',requiredDate,forecastDate,workingDaysLate:workingDaysEarlyOrLate,explanation:`Forecast is ${workingDaysEarlyOrLate} working day(s) later than the required project endpoint.`}]:[];
+    return {engineVersion:ENGINE_VERSION,validity:'valid',missingInputs,errors,warnings,constraintViolations,taskResults:result,project:{selectedDeadlineType:requiredDate?'requiredDate':'forecastDate',requiredDate:requiredDate||null,forecastDate,workingDaysEarlyOrLate,criticalPaths,scheduleConfidence:'deterministic'},generatedAt:new Date().toISOString(),calendarRevisions:calendars.revisions};
   }
   const api={ENGINE_VERSION,DEFAULT_CALENDAR,toDay,fromDay,isWorkingDate,nextWorkingDate,previousWorkingDate,shiftDate,finishFromStart,startFromFinish,workdayDifference,validateGraph,schedule};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
