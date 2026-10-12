@@ -18,7 +18,7 @@ This supplement is the current handoff authority. The older `48ec023` review rem
 | Branch | `feature/tna360-continuous`; committed locally, not pushed or merged by this handoff |
 | Local handoff SHA | `3cf9f5e` — current accepted local evidence baseline; includes G12 recovery proof and later scheduler, scenario and reachable-history evidence; not a deployed release |
 | Latest runtime SHA | `253672c` — risk/performance runtime; follows calendar SHA `f233a25`, graph SHA `910753e`, F44 SHA `3291786` and F06 SHA `a554282` |
-| Regression | `node tests/vesa-g11-regression.cjs`: PASS, 77 commands / 574.1s, no retry; 47 automated, 17 browser, 12 syntax, 1 repository (baseline at `3cf9f5e`; refresh rerun required below) |
+| Regression | `node tests/vesa-g11-regression.cjs`: PASS, 77 commands / 567.6s, no retry; 47 automated, 17 browser, 12 syntax, 1 repository (fresh handoff refresh run) |
 | Local TNA state | G00–G08 accepted; G10/G11 conditional local evidence; G12 local handoff proof complete but gate remains blocked from release |
 | Production state | Not staged, not deployed, not live-verified, not authorized |
 
