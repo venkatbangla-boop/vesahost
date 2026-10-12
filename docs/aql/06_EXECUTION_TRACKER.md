@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Commit `8d75797` made a populated laboratory report reference fail closed until it matches local evidence, then used the visible Evidence flow to retain and bind exact synthetic bytes without changing the existing shade/laboratory failures. The 18-command matrix passed in 122.4 seconds. |
-| NEXT ACTION | Prove the existing inspector-competency register through authenticated create/edit/save/reload/reopen with assigned-inspector, stage and expiry boundaries; do not claim accreditation or alter SamplingEngine/Ac-Re rules. |
+| LAST COMPLETED ACTION | Commit `f9907d5` proved the visible inspector-competency create/edit/save/reload/reopen lifecycle, fail-closed expiry, stage assignment warning and explicit local-only/not-accreditation boundary. The 18-command matrix passed in 89.0 seconds. |
+| NEXT ACTION | Prove the existing factory-acknowledgement register through authenticated create/edit/save/reload/reopen, retaining a denied receipt as pending and never treating acknowledgement as VESA approval. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -78,6 +78,20 @@ IMPLEMENTED / EVIDENCE: A populated lab `external` reference now remains pending
 TEST COMMANDS + OUTPUT/COUNTS: syntax, release contract and focused authenticated browser PASS; full AQL/shared regression PASS, 18 commands / 122.4s, including Q01-Q24, all 35-area/stage contracts, portable/current+legacy restore, atomic and 200/280 MiB boundary imports, quota rescue, worker replacement/offline reopen, reports/language, cross-app boundaries and shared shell. Zero external requests or uncaught page errors. `git diff --check` PASS. Visual evidence reviewed at output/playwright/aql-a-g04-fabric-reject-hold-mobile.png.
 VERDICT: conditional — the laboratory evidence-reference slice is accepted locally. Broader stage-report review and physical/factory acceptance remain open; A-G04 and percentages do not change.
 NEXT ACTION (ONE PRECISE STEP): prove the existing inspector-competency register through authenticated create/edit/save/reload/reopen with assigned-inspector, stage and expiry boundaries; retain the explicit local aid/not-accreditation limitation.
+```
+
+### A-G04 inspector competency lifecycle — conditional slice accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 15:43 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — prove the existing stage competency register through authenticated create/edit/save/reload/reopen with assignment and expiry boundaries
+BRANCH / BASE COMMIT / TEST COMMIT: feature/tna360-continuous / a78046a / f9907d5
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; apps/aql/tests/a-g04-35-area-matrix.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md evidence follows
+FROZEN / OUT OF SCOPE: apps/aql/index.html, service workers, schemas/saved formats, SamplingEngine/Ac-Re, all other stage decisions, PPM/TNA/shared runtime, production data and deployment
+IMPLEMENTED / EVIDENCE: The authenticated 390px IPC workflow adds a fictional competency record for the exact assigned inspector and stage. Its expired review date first produces the existing fail-closed expiry reason; a visible edit moves the review date to the future and clears only that failure. An immutable wrong-stage copy produces the existing assignment warning, while the valid saved record produces none. Exact identity, stage, future expiry and `Local assignment record only; not accreditation` authorization survive local save/reload/reopen without changing the linked-parent preservation proof.
+TEST COMMANDS + OUTPUT/COUNTS: syntax and focused authenticated browser PASS; full AQL/shared regression PASS, 18 commands / 89.0s, including Q01-Q24, all 35-area/stage contracts, portable/current+legacy restore, atomic and 200/280 MiB boundary imports, quota rescue, worker replacement/offline reopen, reports/language, cross-app boundaries and shared shell. Zero external requests or uncaught page errors. The post-ledger 35-area validator reports 22 PROVEN_LOCAL / 11 CONDITIONAL / 1 DEFERRED_BY_SCOPE / 1 BLOCKED_EXTERNAL. `git diff --check` PASS. Visual evidence reviewed at output/playwright/aql-a-g04-inspector-competency-mobile.png.
+VERDICT: conditional — the inspector-competency local lifecycle slice and area 22 are accepted locally. This remains a browser-local assignment/training aid, not accreditation or provider-authenticated authorization; A-G04 and percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): prove the existing factory-acknowledgement register through authenticated create/edit/save/reload/reopen, retaining a denied receipt as pending and never treating acknowledgement as VESA approval.
 ```
 
 ### A-G04 compliance evidence binding — conditional slice accepted locally
@@ -248,7 +262,7 @@ Each feature ID A01–A60 is initially `not-started / unverified for this rework
 | 19 | CAPA | CONDITIONAL | ownership, closure and evidence guards in A-G05/A-G06 contracts | authenticated finding-to-CAPA-to-reinspection chain remains |
 | 20 | Sync packs | PROVEN_LOCAL | strict two-half validation, rollback and selected-file rejection | none for audited local contract |
 | 21 | Offline names/signatures vs roles | PROVEN_LOCAL | local-login limitation and non-authenticated signature language are explicit | secure provider identity is outside local scope |
-| 22 | Competency / training | CONDITIONAL | missing-stage/inspector warning and bounded register schema are source-tested | authenticated create/edit/reopen and expiry review remain |
+| 22 | Competency / training | PROVEN_LOCAL | authenticated create/edit/save/reload/reopen, exact inspector/stage assignment warning and fail-closed expiry; copy remains explicit local aid/not accreditation | none for audited local contract |
 | 23 | Equipment/calibration | PROVEN_LOCAL | expired calibration produces a confirmed browser failure and reopens | none for audited local contract |
 | 24 | Needle/metal control | PROVEN_LOCAL | containment pending and challenge failure browser records reopen | none for audited local contract |
 | 25 | Compliance / destination rules | CONDITIONAL | versioned reference fields plus visible original-byte attachment and exact generated-asset binding/reopen | buyer/legal jurisdiction and applicability review remain |
