@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | All original 35 AQL areas now have an executable evidence-ledger row: 21 proven locally, 12 conditional, one deferred by scope and one external blocker. The expanded 18-command matrix passed. |
-| NEXT ACTION | Attach a real synthetic compliance evidence asset through the visible record workflow, bind its exact asset ID to the compliance register, and prove the pending reason clears without changing other observations. |
+| LAST COMPLETED ACTION | Commit `355f844` used the visible Evidence flow to attach original synthetic compliance-report bytes, bound the generated asset ID to the compliance register, cleared only the missing-evidence reason and preserved incoming/custody observations through save/reload/reopen. The 18-command matrix passed in 98.6 seconds. |
+| NEXT ACTION | Add the smallest fail-closed laboratory-report evidence-reference guard, then attach and bind a synthetic lab asset through the visible fabric-stage workflow without changing frozen SamplingEngine/Ac-Re rules. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -61,6 +61,20 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 - [x] Linked-stage transition creates a fresh child event with explicit parent identity; the parent repository snapshot and original observations remain byte-for-byte unchanged through child save and reload.
 
 **Compliance evidence-binding file audit — 2026-10-12:** `StageWorkspace.panel` exposes the existing Evidence command for each stage record; `InspectionApp.evidenceDialog` and `handleUpload` stage original local bytes through `AssetService`; `ProjectStore` and `LocalRepository` commit the referenced asset with the inspection; `StageDecision.evaluate` accepts compliance evidence only when the report field exactly matches a document name/ID or attached asset ID. In scope: extend only `apps/aql/tests/a-g04-stage-browser.cjs` plus tracker/dashboard evidence. Frozen: `apps/aql/index.html`, service workers, saved formats, SamplingEngine/Ac-Re, all stage decisions, PPM/TNA/shared runtime, remote services and production data. Risks are testing metadata without real bytes, binding the wrong generated ID, accidentally changing incoming/custody observations, or accepting the compliance record while the original quantity mismatch disappears. Verification: attach a small synthetic file through the visible Evidence dialog, read its generated ID, edit the visible compliance report field to that exact ID, prove only the missing-evidence reason clears, save/reload/reopen exact records and bytes, check 390px/no-network/no-page-error behavior, then run focused and full AQL/shared regression. Rollback reverts the additive test/docs group; the disposable browser context is destroyed.
+
+### A-G04 compliance evidence binding — conditional slice accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 12:29 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — use the visible Evidence workflow to attach original synthetic compliance bytes, bind the generated asset ID and clear only the missing-evidence reason
+BRANCH / BASE COMMIT / TEST COMMIT: feature/tna360-continuous / 1dd4e6e / 355f844
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md evidence follows
+FROZEN / OUT OF SCOPE: apps/aql/index.html, service workers, saved formats, SamplingEngine/Ac-Re, stage decisions, PPM/TNA/shared runtime, remote services, buyer/legal policy and production records
+IMPLEMENTED / EVIDENCE: The authenticated 390px test first proves the typed but unattached compliance report stays pending. It then opens the compliance record's real Evidence dialog, selects a small text file containing synthetic-only content, retains its original bytes and generated ASSET ID, chooses the test-result role, edits the visible compliance report field to that exact ID and saves locally. The compliance missing-evidence reason clears; the deliberate incoming inspected-over-received reason remains; incoming and custody records remain byte-for-value unchanged; asset owner, metadata and bytes survive reload/reopen. The refreshed screenshot visibly shows the generated asset ID/role and original pending quantity reason with no clipping.
+TEST COMMANDS + OUTPUT/COUNTS: syntax PASS; focused authenticated browser PASS; full AQL/shared regression PASS, 18 commands / 98.6s, including Q01-Q24, A-G02–A-G09, portable/import/quota/worker/release and shared-shell contracts. Zero external requests or uncaught page errors. The post-documentation browser recheck was first invoked without the documented cached `NODE_PATH` and stopped before execution; the corrected environment-backed command passed. `git diff --check` PASS. Visual evidence reviewed at output/playwright/aql-a-g04-compliance-custody-mobile.png.
+VERDICT: conditional — the compliance evidence-binding slice is accepted locally. Jurisdiction/applicability remains buyer/legal input, real factory acceptance remains external and A-G04 stays conditional; percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): add the smallest fail-closed laboratory-report evidence-reference guard, then attach and bind a synthetic lab asset through the visible fabric-stage workflow without changing SamplingEngine/Ac-Re, saved formats or other stage decisions.
+```
 
 ### A-G05 — Pre-final/final/rework/reinspection/load/supplier QA
 - [ ] Prefinal readiness prerequisites and pending evidence cannot be bypassed.
@@ -219,7 +233,7 @@ Each feature ID A01–A60 is initially `not-started / unverified for this rework
 | 22 | Competency / training | CONDITIONAL | missing-stage/inspector warning and bounded register schema are source-tested | authenticated create/edit/reopen and expiry review remain |
 | 23 | Equipment/calibration | PROVEN_LOCAL | expired calibration produces a confirmed browser failure and reopens | none for audited local contract |
 | 24 | Needle/metal control | PROVEN_LOCAL | containment pending and challenge failure browser records reopen | none for audited local contract |
-| 25 | Compliance / destination rules | CONDITIONAL | versioned reference fields and unattached-evidence pending guard | valid attached evidence and jurisdiction review remain |
+| 25 | Compliance / destination rules | CONDITIONAL | versioned reference fields plus visible original-byte attachment and exact generated-asset binding/reopen | buyer/legal jurisdiction and applicability review remain |
 | 26 | Packing & barcode | CONDITIONAL | packing reconciliation/duplicate/range source guards | approved carton randomization, barcode and browser evidence remain |
 | 27 | Sample custody | PROVEN_LOCAL | sealed sample, recipient/date/location/return/reference reopen exactly | none for audited local contract |
 | 28 | Factory acknowledgement | CONDITIONAL | denied/pending receipt guard exists in deterministic source contract | authenticated acknowledgement lifecycle remains |
