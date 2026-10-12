@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | The A-G04 fabric lifecycle now uses the real supporting-register UI for a valid roll plus deliberate shade Delta E and laboratory failures; the visible stage decision is REJECT / HOLD and exact state reopens. The 17-command matrix passed. |
-| NEXT ACTION | Extend authenticated A-G04 material-control evidence through required equipment, broken-needle and metal-detection registers, proving fail-closed decisions and exact reopen. |
+| LAST COMPLETED ACTION | The A-G04 cutting lifecycle now requires equipment, broken-needle and metal-detection registers; expired calibration and failed challenge remain failures, needle containment remains pending, and exact state reopens. The 17-command matrix passed. |
+| NEXT ACTION | Extend authenticated A-G04 traceability evidence through compliance and sample-custody supporting registers, proving missing evidence fails closed and exact state reopens. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -581,6 +581,21 @@ IMPLEMENTED: Added fixture-only VM checks for in-tolerance PASS, out-of-toleranc
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — deterministic measurement and source contracts are locally proven; full asset restore, CAPA history, analytics denominator fixtures, huge-record performance, accessibility and rendered report review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run browser restore/report evidence for one measurement, document, finding, CAPA and carton chain without changing frozen AQL tables.
+```
+
+### A-G04 equipment/needle/metal browser lifecycle — conditional, browser slice accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 10:25 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — prove required equipment, broken-needle and metal-detection supporting registers fail closed and persist exactly
+BRANCH / BASE COMMIT: feature/tna360-continuous / 809a264 (tested browser commit 39bd7f0)
+TEST COMMIT: 32007b0
+FILE-LEVEL AUDIT: StageWorkspace.support/require/record owns explicit register activation and values; AuditEngine checks record expiry against inspection date; StageDecision.record owns needle containment and ProductionInspectionEngine owns metal challenge guards; the installed wrapper additionally requires metal machine/operator/piece/setting; StageDecision preserves failure precedence; LocalRepository/Home Resume own persistence. In scope: extend the additive browser test and both trackers. Frozen/out of scope: application/runtime code, workers, SamplingEngine/Ac-Re, schemas/formats, other rules, sibling apps, production records and release. Risks are mutating the earlier cutting fixture without updating its expected reopen snapshot, missing exact late-wrapper requirements, and claiming a Pass review overrides confirmed failures. Verification: real support dialogs; expired equipment, unrecovered needle, failed metal challenge; exact reasons/requiredModules/visible decision; reload/reopen; screenshot/no-overflow/network/page errors; full matrix. Rollback: revert test/docs; disposable browser state is destroyed.
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+IMPLEMENTED / EVIDENCE: Reopened the previously saved cutting event and used the real Add supporting register flow to require Equipment control, Broken needle register and Metal detection log. The equipment record is explicitly one day expired; the needle record says fragments not recovered, metal detection not completed and has no supervisor release; the metal record has a failed start challenge while all late-wrapper identity/setting/operator fields are present. The test asserts requiredModules order `equipment, needle, metal`, exact expired-equipment and failed-challenge reasons, exact needle-containment pending reason, engine/visible NOT CONFORMED decision, and byte-for-value stageSuite reopen after Ctrl+S/reload. The reviewed workspace shows 13 open requirements, 2 confirmed failures, FAIL/PENDING/FAIL register cards and all reasons without horizontal clipping.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/aql/tests/a-g04-stage-browser.cjs` PASS; focused browser lifecycle PASS; full 17-command AQL/shared matrix PASS in 83.3 seconds, including A-G00 Q01-Q24, A-G02 through A-G09, all A-G07 browser/storage/import/worker suites, release contract and shared shell contract; `git diff --check` PASS. Browser assertions report zero uncaught page errors and zero external requests. Visual evidence reviewed at output/playwright/aql-a-g04-equipment-needle-metal-mobile.png.
+VERDICT: conditional — the equipment/needle/metal browser slice is accepted locally. A-G04 remains conditional for compliance/custody traceability, remaining 35-area evidence, physical-device review and field acceptance; percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): extend authenticated A-G04 evidence through compliance and sample-custody supporting registers, proving missing compliance evidence and custody identity fail closed and exact save/reload/reopen without altering frozen SamplingEngine/Ac-Re rules.
 ```
 
 ### A-G04 fabric shade/lab browser lifecycle — conditional, browser slice accepted locally
