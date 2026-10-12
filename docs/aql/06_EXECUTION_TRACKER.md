@@ -17,13 +17,25 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Commit `7c85269` proved authenticated Final-stage readiness remains PENDING and cannot lock while original buyer scope, sampling, order, checkpoint and sign-off requirements are unresolved. The 18-command matrix passed in 101.2 seconds. |
-| NEXT ACTION | Attach and bind synthetic before/after loading photos through the visible workflow, then prove seal/handover/quantity and exact reopen without inventing carton-randomization policy or changing SamplingEngine/Ac-Re. |
+| LAST COMPLETED ACTION | Commit `f9cf172` proved visible loading before/after photo binding with exact original bytes, reconciled quantities, retained seal/handover and explicit carton-randomization boundary. The 18-command matrix passed in 108.0 seconds. |
+| NEXT ACTION | Prove authenticated pre-final ready thresholds remain PENDING until selected checkpoints/evidence are explicitly reviewed; do not change readiness policy, SamplingEngine or Ac/Re. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
-### A-G05 loading evidence/reconciliation audit — in progress
+### A-G05 loading evidence/reconciliation audit — conditional slice accepted locally
 
 FILE-LEVEL AUDIT: the loading stage record owns container/truck/seal, carton and piece expected/loaded quantities, timing, random-ID note and handover. `InspectionApp.evidenceDialog` plus `AssetService` retains original local image bytes and explicit owner/role metadata. `StageReviewPolicy.withEvidence` derives hidden `before`/`after` links only from photo assets owned by that loading record with the exact roles; `LoadingInspectionEngine` owns quantity, seal, time, handover and photo requirements. In scope: extend `apps/aql/tests/a-g04-stage-browser.cjs` and, after proof, AQL/program trackers and area-13 evidence. Frozen/out of scope: `apps/aql/index.html`, service worker, SamplingEngine/Ac-Re, saved formats, carton-selection/randomization policy, barcode device APIs, other stages, sibling apps, production data and deployment. Risks: testing metadata without original bytes, attaching photos to the wrong owner/role, hiding quantity mismatches, changing seal/handover, or portraying typed carton IDs as randomized evidence. Verification: visible before/after image attachments, exact bytes/owner/roles, visible quantity correction, no photo/mismatch failure, retained PENDING checkpoints, exact save/reload/reopen bytes and fields, 390px screenshot, zero external requests/page errors, focused and full regression. Rollback: revert additive test/tracker changes; disposable browser data is destroyed.
+
+```text
+TIME / TIMEZONE: 2026-10-12 16:28 Asia/Dhaka
+GATE / OBJECTIVE: A-G05 — prove owned original before/after loading evidence, quantity reconciliation and retained seal/handover without claiming carton randomization
+BRANCH / BASE COMMIT / TEST COMMIT: feature/tna360-continuous / 3ec7ced / f9cf172
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md evidence follows
+FROZEN / OUT OF SCOPE: apps/aql/index.html/runtime, service worker, SamplingEngine/Ac-Re, schemas/saved formats, random-carton policy/algorithm, barcode device APIs, other stages, sibling apps, production records and deployment
+IMPLEMENTED / EVIDENCE: The authenticated 390px workflow reopened the deliberately mismatched loading event, attached two synthetic PNG originals through the visible Evidence dialog with exact `before` and `after` roles owned by the loading record, then visibly reconciled 99/100 cartons and 990/1000 pieces to the recorded expectations. Exact bytes, generated asset IDs, photo kind, owner and roles survived save/reload/reopen. Evaluation derived the hidden record links from owned evidence; quantity/photo failures cleared while all nine unreviewed checkpoints kept the stage PENDING. Seal and driver handover stayed unchanged. Typed carton IDs remained explicitly recorded input and were not represented as generated or policy-approved randomization.
+TEST COMMANDS + OUTPUT/COUNTS: syntax, focused authenticated browser and `git diff --check` PASS. Full AQL/shared regression PASS: 18 commands / 108.0s, including Q01-Q24, stage/35-area contracts, current+legacy restore, atomic and 200/280 MiB boundary imports, quota rescue/restart, worker replacement/offline reopen, reports/language, cross-app boundaries, release and shared shell. Zero external requests or uncaught page errors. Visual evidence reviewed at `output/playwright/aql-a-g05-loading-evidence-mobile.png`.
+VERDICT: conditional — loading evidence ownership, original bytes, quantity reconciliation and seal/handover durability are accepted locally. Area 13 remains conditional for barcode/device evidence and the missing approved carton-randomization policy; A-G05 and percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): prove authenticated pre-final ready thresholds remain PENDING until selected checkpoints/evidence are explicitly reviewed; do not change readiness policy, SamplingEngine or Ac/Re.
+```
 
 ### A-G05 final-stage readiness/result audit — conditional slice accepted locally
 
@@ -305,7 +317,7 @@ Each feature ID A01–A60 is initially `not-started / unverified for this rework
 | 10 | Pre-final readiness | PROVEN_LOCAL | approved-threshold failures and visible NOT READY workspace | none for audited local contract |
 | 11 | 100% screening/rework | PROVEN_LOCAL | authenticated one-piece target, repair/recheck/disposition and linked reinspection history | none for audited local contract |
 | 12 | Final readiness | PROVEN_LOCAL | authenticated Final stage records ready percentages but remains PENDING and unlocked while original engine approvals are unresolved | none for audited local blocking contract |
-| 13 | Loading supervision | CONDITIONAL | carton/piece mismatch, seal/photo requirements and browser reopen | real evidence assets, barcode checks and approved carton policy remain |
+| 13 | Loading supervision | CONDITIONAL | authenticated exact-byte before/after owned photos, reconciled carton/piece counts, retained seal/handover and exact reopen | barcode/device evidence and approved carton-randomization policy remain |
 | 14 | Production monitoring | PROVEN_LOCAL | output/balance guards and authenticated monitor reopen | none for audited local contract |
 | 15 | Supplier audit / QMS | PROVEN_LOCAL | critical finding cannot pass and coherent browser NOT CONFORMED decision | none for audited local contract |
 | 16 | Master data | PROVEN_LOCAL | `a-g07-atomic-import.cjs`: bounded sanitized atomic master import | none for audited local contract |
