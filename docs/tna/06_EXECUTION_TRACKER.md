@@ -485,6 +485,18 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 **A-G05 packing rollback:** revert the additive test/governance/evidence commits; application source, service workers, browser formats and user records are unchanged.
 
+### AQL A-G06 pre-code file-level audit — measurement specification/readings lifecycle
+
+| Exact path | Responsibility, state & dependencies observed | In/out of scope | Risk / compatibility contract | Verification / rollback |
+|---|---|---|---|---|
+| `apps/aql/index.html` | `ProjectSchema.measurement` defines the immutable row shape; `MeasurementEngine` parses readings and derives tolerance/OOT; `SampleRegistry` validates piece identity; `MeasurementPolicy` retains piece observations; `InspectionApp.measureDialog` owns visible specification/readings entry; `InsightReport.measurementTable` and `ReportComposer` render the report; repository/autosave owns durable reopen. | Read-only dependency. No runtime, formula, policy, schema, report engine, service worker or provider change. | The test specification, unit, tolerances, method and pieces must be labelled fictional and explicit. An OOT result must remain a failure in the UI and report; it must not imply buyer approval, shipment disposition, finalisation or physical inspection. | Assert three registered identities with `49, 50, 52 cm` against `50 -1/+1 cm` produce exactly one OOT and FAIL; inspect the visible measurement report; exact save/reload/reopen; 390px screenshot; zero external requests/page errors. |
+| `apps/aql/tests/a-g06-measurement-browser.cjs` (new) | Dedicated authenticated browser proof; existing engine fixtures do not prove the visible POM dialog, report iframe and local reopen as one lifecycle. | Additive synthetic test only; create the order and registered measurement pieces through the audited local state boundary, then enter the full measurement through the visible dialog. | Do not manufacture a buyer measurement rule, use unregistered IDs, erase the OOT reading, finalise, release, deploy or change production data. | Focused Playwright run, visual screenshot review, complete cross-app regression and `git diff --check`; rollback removes only the test, ignored screenshot and evidence documentation. |
+| `docs/aql/06_EXECUTION_TRACKER.md`, `VESA_PROGRESS.md` and this tracker | Durable evidence and exact next action. | Update only after objective commands pass. | Gate percentages and 35-area counts remain fixed unless a complete eligible gate is independently proven; preserve all historical entries. | Cross-check committed SHA, command totals, screenshot and clean worktree. |
+
+**A-G06 measurement call flow:** authenticated Final UI → audited fictional local fixture command → `SampleRegistry` piece identities → visible POM dialog → frozen `MeasurementEngine`/`MeasurementPolicy` result → measurement report iframe → local repository save/reopen.
+
+**A-G06 measurement rollback:** revert the additive test and evidence commits; application source, frozen calculations, browser formats and user records are unchanged.
+
 ### Accepted patch work log
 
 | Time | Group | Branch / SHA | Files changed | Tests / evidence | Verdict | Next action |
