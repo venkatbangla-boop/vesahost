@@ -10,6 +10,7 @@ const output = path.join(root, 'output', 'playwright', 'aql-a-g04-material-monit
 const readinessOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-prefinal-not-ready-mobile.png');
 const fabricOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-fabric-reject-hold-mobile.png');
 const controlOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-equipment-needle-metal-mobile.png');
+const competencyOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-inspector-competency-mobile.png');
 const traceabilityOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-compliance-custody-mobile.png');
 const journeyOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-linked-stage-journey-mobile.png');
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
@@ -218,10 +219,41 @@ async function run() {
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
 
+    await page.locator(`[data-action="resume"][data-id="${ipc.id}"]:visible`).first().click();
+    await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, ipc.id);
+    await addSupportingRecord(page, 'competency', { identity: 'A-G04 Inspector - Fictional', skills: 'Fictional IPC workmanship review', categories: 'Fictional knit top', stages: 'ipc', training: '2026-10-01', evaluator: 'Fictional Competency Reviewer', expiry: '2026-10-11', authorization: 'Local assignment record only; not accreditation', reference: 'COMPETENCY-REV-1', status: 'Pass', note: 'Deliberately expired before correction' });
+    const expiredCompetency = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { failures: evaluated.failures.map(item => item.text), warnings: evaluated.warnings.map(item => item.text) }; });
+    assert.ok(expiredCompetency.failures.includes('A-G04 Inspector - Fictional: Expired expiry on inspection date'), 'expired competency review did not fail closed');
+    assert.ok(!expiredCompetency.warnings.some(reason => reason.startsWith('Confirm assigned inspector competency')), 'matching inspector and stage produced an assignment warning');
+    const competencyId = await page.evaluate(() => window.__vesaApp.p.stageSuite.records.find(row => row.module === 'competency').id);
+    await page.locator(`[data-action="stage-record"][data-module="competency"][data-id="${competencyId}"]:visible`).click();
+    await page.locator('#dialog [name="expiry"]').fill('2026-10-20');
+    await page.locator('#dialog [name="note"]').fill('Fictional local assignment reviewed; not an accreditation claim');
+    await saveDialog(page);
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const ipcFinal = await page.evaluate(() => {
+      const evaluated = ResultEngine.evaluate(window.__vesaApp.p);
+      const wrongAssignment = JSON.parse(JSON.stringify(window.__vesaApp.p));
+      wrongAssignment.stageSuite.records.find(row => row.module === 'competency').stages = 'cutting';
+      const mismatched = ResultEngine.evaluate(wrongAssignment);
+      return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), failures: evaluated.failures.map(item => item.text), warnings: evaluated.warnings.map(item => item.text), mismatchWarnings: mismatched.warnings.map(item => item.text) };
+    });
+    assert.ok(!ipcFinal.failures.some(reason => reason.includes('Expired expiry on inspection date')), 'corrected competency expiry did not clear its failure');
+    assert.ok(!ipcFinal.warnings.some(reason => reason.startsWith('Confirm assigned inspector competency')), 'valid assigned competency produced a warning');
+    assert.ok(ipcFinal.mismatchWarnings.some(reason => reason.startsWith('Confirm assigned inspector competency')), 'wrong-stage competency did not produce an assignment warning');
+    const competencyRecord = ipcFinal.project.stageSuite.records.find(row => row.module === 'competency');
+    assert.equal(competencyRecord.identity, ipcFinal.project.info.inspector, 'competency identity does not match the assigned inspector');
+    assert.equal(competencyRecord.expiry, '2026-10-20', 'corrected competency expiry was not retained');
+    assert.equal(competencyRecord.authorization, 'Local assignment record only; not accreditation', 'competency limitation changed');
+    await page.screenshot({ path: competencyOutput, fullPage: true });
+    await page.locator('#app [data-action="home"]:visible').first().click();
+    await page.waitForFunction(() => window.__vesaApp?.step === 'home');
+
     const parentStoredBefore = await page.evaluate(async id => {
       const row = (await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id);
       return JSON.parse(JSON.stringify(row.project));
-    }, ipc.id);
+    }, ipcFinal.id);
     await page.locator(`[data-action="resume"][data-id="${ipc.id}"]:visible`).first().click();
     await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, ipc.id);
     await page.locator('[data-action="stage-linked"]:visible').first().click();
@@ -352,7 +384,7 @@ async function run() {
     await page.reload({ waitUntil: 'domcontentloaded' });
     const reenter = page.locator('#vesa-enter'); if (await reenter.count()) await reenter.click();
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db && window.__vesaApp.step === 'home');
-    await reopen(page, ipc);
+    await reopen(page, ipcFinal);
     await reopen(page, cuttingFinal);
     await reopen(page, loading);
     await reopen(page, audit);
