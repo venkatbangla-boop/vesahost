@@ -56,6 +56,7 @@ function main(){
   run('browser','TNA G11 language/accessibility/timezone matrix',node,['apps/tna/tests/g11-localization-accessibility.cjs']);
   run('browser','TNA G11 hostile-value/import rendering',node,['apps/tna/tests/g11-security-ui.cjs']);
   run('browser','TNA G11 login/App Centre/direct routes',node,['apps/tna/tests/g11-route-regression.cjs']);
+  run('browser','TNA unified one-shell ownership',node,['apps/tna/tests/g11-unified-shell-browser.cjs']);
 
   const ppm=files('apps/ppm/tests',/\.cjs$/);
   for(const file of ppm)run(/(?:ui|home|recovery|reports|regression|planning|update)/.test(path.basename(file))?'browser':'automated','PPM '+path.basename(file),node,[rel(file)]);
