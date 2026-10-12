@@ -55,7 +55,9 @@ for (const [stage, module] of Object.entries(expectedStages)) {
   expect(fresh.checks.length > 0 && fresh.checks.every(check => check.status === 'Pending'), `A-G04 ${stage} checklist is not pending by default`);
 }
 
-for (const module of ['incoming', 'roll', 'shade', 'lab', 'ipc', 'cutting', 'inline', 'endline', 'readiness', 'monitor', 'needle', 'metal', 'equipment']) {
+const expectedModules = ['incoming', 'roll', 'shade', 'lab', 'ipc', 'cutting', 'inline', 'endline', 'readiness', 'rework', 'loading', 'monitor', 'audit', 'needle', 'metal', 'custody', 'competency', 'equipment', 'compliance', 'acknowledgement', 'packing', 'capa'];
+assert.deepEqual(Object.keys(StageCatalog.modules), expectedModules, 'A-G04 register catalogue changed');
+for (const module of expectedModules) {
   const fields = StageCatalog.fields(module);
   expect(fields.some(field => field.required), `A-G04 ${module} has no required identity field`);
   expect(fields.every(field => field.key && field.label && field.type), `A-G04 ${module} has an incomplete field definition`);
@@ -152,6 +154,16 @@ expect(metal.failures.some(issue => issue.includes('start challenge failed')), '
 const needle = StageDecision.record(row('needle', { recovered: 'No', detected: 'Pending', release: '' }), '2026-10-10');
 expect(needle.pending.some(issue => issue.includes('Needle containment / supervisor release incomplete')), 'A-G04 needle containment guard is absent');
 
+const rework = StageDecision.record(row('rework', { defect: 'Original seam failure', repairRequired: 'Yes', repair: 'Pending', rechecker: '', recheck: 'Pending', disposition: 'Hold', quantity: 2 }), '2026-10-10');
+expect(rework.pending.some(issue => issue.includes('Repair incomplete')), 'A-G04 rework repair guard is absent');
+expect(rework.pending.some(issue => issue.includes('Recheck / disposition incomplete')), 'A-G04 rework independent recheck guard is absent');
+expect(rework.pending.some(issue => issue.includes('One identified piece per rework record required')), 'A-G04 one-piece rework traceability guard is absent');
+
+const loading = StageDecision.record(row('loading', { expected: 100, loaded: 99, piecesExpected: 1000, piecesLoaded: 990, seal: '', start: '', end: '', handover: '', before: '', after: '' }), '2026-10-10');
+expect(loading.failures.some(issue => issue.includes('expected / loaded mismatch')), 'A-G04 loading carton reconciliation guard is absent');
+expect(loading.failures.some(issue => issue.includes('piecesExpected / piecesLoaded mismatch')), 'A-G04 loading piece reconciliation guard is absent');
+expect(loading.pending.some(issue => issue.includes('seal is required')), 'A-G04 loading seal requirement is absent');
+
 function project(stage, record, overrides = {}) {
   const stageSuite = StageCatalog.fresh(stage);
   Object.assign(stageSuite, {
@@ -205,8 +217,25 @@ expect(acceptedFabric.stageDecision === 'ACCEPT', 'A-G04 clean fabric stage did 
 const missingIncoming = StageDecision.evaluate(project('incoming', null));
 expect(missingIncoming.pending.some(issue => issue.text.includes('Missing Incoming material')), 'A-G04 missing incoming register did not remain pending');
 
+const emptyFinalResult = () => ({ result: 'PENDING', failures: [], pending: [], warnings: [], groups: [], measurements: [], checked: 0, required: 0, counts: { Critical: 0, Major: 0, Minor: 0 } });
+for (const [stage, module] of Object.entries(expectedStages)) {
+  const missing = StageDecision.evaluate(project(stage, null), emptyFinalResult);
+  const label = StageCatalog.modules[module][0];
+  expect(missing.pending.some(issue => issue.text.includes(`Missing ${label}`)), `A-G04 ${stage} did not remain pending without its ${module} register`);
+}
+
 const cleanIncoming = StageDecision.evaluate(project('incoming', row('incoming')));
 expect(cleanIncoming.result === 'CONFORMED', 'A-G04 incoming material record did not reach a conforming decision');
+
+const completeRework = StageDecision.evaluate(project('rework', row('rework', { defect: 'Original seam failure', repairRequired: 'Yes', repair: 'Yes', rechecker: 'Independent Reviewer', recheck: 'Pass', disposition: 'Accept', quantity: 1 }), { expected: 1 }));
+expect(completeRework.result === 'CONFORMED', 'A-G04 complete one-piece rework did not reach a conforming decision');
+const mismatchedRework = StageDecision.evaluate(project('rework', row('rework', { defect: 'Original seam failure', repairRequired: 'Yes', repair: 'Yes', rechecker: 'Independent Reviewer', recheck: 'Pass', disposition: 'Accept', quantity: 1 }), { expected: 2 }));
+expect(mismatchedRework.pending.some(issue => issue.text.includes('100% screening piece count must match approved target quantity')), 'A-G04 rework target reconciliation guard is absent');
+
+const expiredEquipmentProject = project('ipc', row('ipc'));
+expiredEquipmentProject.equipment.push({ id: 'EQ-A-G04', name: 'Fictional measuring device', expiry: '2026-10-09' });
+const expiredEquipment = StageDecision.evaluate(expiredEquipmentProject);
+expect(expiredEquipment.failures.some(issue => issue.text.includes('Equipment calibration expired')), 'A-G04 expired-equipment failure guard is absent');
 
 expectThrow(() => StageCatalog.fresh('unsupported-stage'), 'Select an inspection stage');
 for (const requiredText of [

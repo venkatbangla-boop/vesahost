@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | A-G07 real-byte boundary probe passed at source HEAD `f542f95`: a 200 MiB+1 decoded attachment in a 266.68 MiB selected file and a 280 MiB+1 selected file both failed closed with exact local-state preservation; the full 16-command AQL/shared matrix passed. |
-| NEXT ACTION | Audit the A-G04 stage/35-area coverage matrix against the blueprint and current conditional fixtures, then add the smallest independently testable missing stage contract without changing SamplingEngine/Ac-Re or saved formats. |
+| LAST COMPLETED ACTION | Commit `3441219` accepted the A-G07 real-byte boundary slice locally; the follow-on A-G04 pure matrix now covers all 13 stages and 21 register definitions plus rework/loading/calibration guards, with the full 16-command AQL/shared matrix passing at source HEAD `3441219`. |
+| NEXT ACTION | Add authenticated disposable-browser A-G04 evidence for IPC and cutting stage create/save/reload/reopen at 390px, without changing SamplingEngine/Ac-Re, saved formats or production data. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -581,6 +581,20 @@ IMPLEMENTED: Added fixture-only VM checks for in-tolerance PASS, out-of-toleranc
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — deterministic measurement and source contracts are locally proven; full asset restore, CAPA history, analytics denominator fixtures, huge-record performance, accessibility and rendered report review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run browser restore/report evidence for one measurement, document, finding, CAPA and carton chain without changing frozen AQL tables.
+```
+
+### A-G04 complete stage/register contract — conditional, pure matrix accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 09:58 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — reconcile all 13 stage routes and all 21 shipped register definitions, then prove the smallest missing deterministic stage guards without changing runtime/domain source
+BRANCH / BASE COMMIT: feature/tna360-continuous / 3441219
+FILE-LEVEL AUDIT: StageCatalog owns 13 stage-to-main-register mappings and 21 register schemas; StageDecision plus its fabric, inline, readiness, loading, production and audit engines return pure pending/failure metrics. The existing A-G04 test covers all route names but only 13 register schemas and lacks all-stage missing-register, rework target/original-failure, loading reconciliation/evidence and expired-equipment assertions. In scope: apps/aql/tests/a-g04-stage.cjs plus tracker/dashboard evidence. Frozen/out of scope: apps/aql/index.html, SamplingEngine/Ac-Re, ProjectSchema/saved formats, A-G03 carton policy, service workers, PPM/TNA/shared runtime and browser records. Verification: pure A-G04 test, full AQL/shared regression, syntax and git diff checks. Rollback: revert the test/docs patch; no application or data migration is involved.
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+IMPLEMENTED / EVIDENCE: The existing pure fixture now freezes all 21 register keys/field definitions, not only the prior 13. Every one of the 13 stage routes is evaluated without its required main register and must remain pending with the exact missing-register reason. Deterministic guards now prove incomplete repair/independent recheck/one-piece traceability, approved 100% screening target reconciliation, carton and piece loading mismatch, missing seal, and expired equipment calibration. A complete one-piece rework record reaches CONFORMED; no buyer rule or observation is invented.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/aql/tests/a-g04-stage.cjs` PASS; focused `node apps/aql/tests/a-g04-stage.cjs` PASS; full 16-command AQL/shared matrix PASS in 68.8 seconds, including A-G00 Q01-Q24, A-G02 through A-G09, all A-G07 browser/storage/import suites, release contract and shared shell contract; `git diff --check` PASS. The repeated real-byte probe remained inside its guardrails (200 MiB+1 decoded rejection in 9.264 seconds; 280 MiB+1 selected-file rejection in 33 ms) with exact-state assertions passing.
+VERDICT: conditional — the complete pure stage/register matrix slice is accepted locally. A-G04 remains conditional for authenticated browser create/edit/save/reopen coverage across the stage families, physical-device review and full field acceptance.
+NEXT ACTION (ONE PRECISE STEP): add authenticated disposable-browser A-G04 evidence for IPC and cutting stage create/save/reload/reopen at 390px, without changing SamplingEngine/Ac-Re, saved formats or production data.
 ```
 
 ### A-G04 material-control extension — conditional, domain source unchanged
