@@ -14,6 +14,7 @@ const competencyOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-insp
 const acknowledgementOutput = path.join(root, 'output', 'playwright', 'aql-a-g05-factory-acknowledgement-mobile.png');
 const reinspectionOutput = path.join(root, 'output', 'playwright', 'aql-a-g05-rework-reinspection-mobile.png');
 const finalReadinessOutput = path.join(root, 'output', 'playwright', 'aql-a-g05-final-readiness-pending-mobile.png');
+const loadingEvidenceOutput = path.join(root, 'output', 'playwright', 'aql-a-g05-loading-evidence-mobile.png');
 const traceabilityOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-compliance-custody-mobile.png');
 const journeyOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-linked-stage-journey-mobile.png');
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
@@ -326,6 +327,49 @@ async function run() {
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
 
+    await openProject(page, loading.id);
+    const loadingId = await page.evaluate(() => window.__vesaApp.p.stageSuite.records.find(row => row.module === 'loading').id);
+    const syntheticPhoto = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64');
+    for (const evidence of [
+      { role: 'before', name: 'synthetic-empty-container.png', caption: 'Synthetic empty-container evidence; fixture only' },
+      { role: 'after', name: 'synthetic-final-seal.png', caption: 'Synthetic final-seal evidence; fixture only' },
+    ]) {
+      await page.locator(`[data-action="evidence"][data-owner="${loadingId}"]:visible`).click();
+      await page.locator('#dialog [name="caption"]').fill(evidence.caption);
+      await page.locator('#dialog [name="role"]').selectOption(evidence.role);
+      await page.locator('#dialog input[type="file"][multiple]').setInputFiles({ name: evidence.name, mimeType: 'image/png', buffer: syntheticPhoto });
+      await page.waitForFunction(() => window.__vesaApp?.modalContext?.assets?.length === 1);
+      await saveDialog(page);
+    }
+    await page.locator(`[data-action="stage-record"][data-module="loading"][data-id="${loadingId}"]:visible`).click();
+    await page.locator('#dialog [name="loaded"]').fill('100');
+    await page.locator('#dialog [name="piecesLoaded"]').fill('1000');
+    await page.locator('#dialog [name="note"]').fill('Fictional quantities reconciled; before/after originals linked; random IDs remain recorded, not certified random');
+    await saveDialog(page);
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const loadingFinal = await page.evaluate(async ({ owner, expectedBytes }) => {
+      const evaluated = ResultEngine.evaluate(window.__vesaApp.p);
+      const assets = window.__vesaApp.p.assets.filter(asset => asset.owner === owner).sort((a, b) => a.role.localeCompare(b.role));
+      const bytes = [];
+      for (const asset of assets) bytes.push(Array.from(new Uint8Array(await (await window.__vesaApp.assets.get(asset.id)).blob.arrayBuffer())));
+      return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text), assets: JSON.parse(JSON.stringify(assets)), bytes, expectedBytes };
+    }, { owner: loadingId, expectedBytes: [...syntheticPhoto] });
+    assert.equal(loadingFinal.stageDecision, 'PENDING', 'unreviewed loading checkpoints must remain pending after evidence and quantity reconciliation');
+    assert.deepEqual(loadingFinal.failures, [], 'reconciled loading quantities retained a confirmed mismatch');
+    assert.ok(!loadingFinal.pending.some(reason => reason.includes('photo not linked') || reason.includes('photo must belong')), 'owned before/after photo evidence did not clear loading photo requirements');
+    assert.deepEqual(loadingFinal.assets.map(asset => asset.role), ['after', 'before'], 'loading evidence roles changed');
+    assert.ok(loadingFinal.assets.every(asset => asset.kind === 'photo' && asset.owner === loadingId), 'loading evidence lost photo kind or record ownership');
+    for (const bytes of loadingFinal.bytes) assert.deepEqual(bytes, loadingFinal.expectedBytes, 'original loading evidence bytes changed');
+    const evaluatedLoadingRecord = await page.evaluate(id => StageReviewPolicy.withEvidence(window.__vesaApp.p, window.__vesaApp.p.stageSuite.records.find(row => row.id === id)), loadingId);
+    assert.ok(evaluatedLoadingRecord.before.startsWith('ASSET-') && evaluatedLoadingRecord.after.startsWith('ASSET-'), 'loading record did not resolve owned before/after asset IDs');
+    assert.equal(evaluatedLoadingRecord.seal, 'SEAL-FICTIONAL-01', 'final seal changed during evidence binding');
+    assert.equal(evaluatedLoadingRecord.handover, 'Fictional driver handover', 'handover changed during evidence binding');
+    assert.equal(evaluatedLoadingRecord.random, 'CTN-001, CTN-050', 'recorded carton IDs changed or were represented as generated randomization');
+    await page.screenshot({ path: loadingEvidenceOutput, fullPage: true });
+    await page.locator('#app [data-action="home"]:visible').first().click();
+    await page.waitForFunction(() => window.__vesaApp?.step === 'home');
+
     await openProject(page, inline.id);
     await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, inline.id);
     const originalInlineFinding = inline.project.stageSuite.records.find(row => row.module === 'inline');
@@ -571,7 +615,7 @@ async function run() {
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db && window.__vesaApp.step === 'home');
     await reopen(page, ipcFinal);
     await reopen(page, cuttingFinal);
-    await reopen(page, loading);
+    await reopen(page, loadingFinal);
     await reopen(page, auditFinal);
     await reopen(page, inlineWithCapa);
     await reopen(page, reworkChild);
@@ -593,10 +637,19 @@ async function run() {
       return JSON.parse(JSON.stringify(row.project));
     }, inline.id);
     assert.deepEqual(failedParentAfterReload, failedParentStored, 'reload/reopen changed the failed source finding or CAPA');
+    const loadingAssetsAfterReload = await page.evaluate(async id => {
+      const row = (await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id).project;
+      const assets = row.assets.filter(asset => asset.owner === row.stageSuite.records.find(record => record.module === 'loading').id).sort((a, b) => a.role.localeCompare(b.role));
+      const bytes = [];
+      for (const asset of assets) bytes.push(Array.from(new Uint8Array(await (await window.__vesaApp.assets.get(asset.id)).blob.arrayBuffer())));
+      return { assets, bytes };
+    }, loadingFinal.id);
+    assert.deepEqual(loadingAssetsAfterReload.assets, loadingFinal.assets, 'reload changed loading evidence metadata');
+    assert.deepEqual(loadingAssetsAfterReload.bytes, loadingFinal.bytes, 'reload changed original loading evidence bytes');
     assert.deepEqual(pageErrors, [], 'stage lifecycle must have no uncaught page errors');
     assert.deepEqual(external, [], 'stage lifecycle must make no external requests');
     await context.close();
-    console.log('AQL A-G04/A-G05 stage browser passed: final readiness stays pending and cannot lock without frozen-engine approvals; immutable failure plus verified CAPA, one-piece rework and fresh linked reinspection; independent linked parent/child plus stage lifecycles and supporting registers, exact reopen, honest fail-closed outcomes, 390px no overflow, zero external requests/page errors');
+    console.log('AQL A-G04/A-G05 stage browser passed: owned loading before/after originals, reconciled quantities, retained seal/handover and explicit randomization boundary; final readiness stays pending and cannot lock without frozen-engine approvals; immutable failure/CAPA/rework/reinspection; exact reopen, 390px no overflow, zero external requests/page errors');
   } finally { if (browser) await browser.close(); await host.stop().catch(() => {}); }
 }
 
