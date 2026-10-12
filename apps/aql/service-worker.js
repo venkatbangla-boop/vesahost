@@ -1,10 +1,12 @@
-const CACHE = 'vesa-aql-2026-10-12-7';
+const CACHE = 'vesa-aql-2026-10-12-8';
 const ASSETS = [
   './',
   './index.html',
   './service-worker.js',
   '../../js/auth.js?v=20261010-uniform',
-  '../../js/preferences.js?v=20261010-uniform'
+  '../../js/preferences.js?v=20261010-uniform',
+  '../../js/vesa-workspace-shell.js?v=20261010-platform-g01',
+  '../../css/vesa-workspace.css?v=20261010-platform-g01'
 ];
 
 self.addEventListener('install', event => {
@@ -26,7 +28,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
-  const shared = ['/js/auth.js','/js/preferences.js'].includes(url.pathname);
+  const shared = ['/js/auth.js','/js/preferences.js','/js/vesa-workspace-shell.js','/css/vesa-workspace.css'].includes(url.pathname);
   if (!url.pathname.startsWith('/apps/aql/') && !shared) return;
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
