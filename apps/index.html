@@ -6,20 +6,21 @@
   <title>App Centre | VESA Enterprise Inc</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/vesa-workspace.css?v=20261010-platform-g01">
   <script src="/js/preferences.js"></script>
   <script src="/js/auth.js"></script>
+  <script src="/js/vesa-workspace-shell.js?v=20261010-platform-g01"></script>
   <script src="/js/app-catalogue.js"></script>
 </head>
 <body class="app-centre-page">
   <script>VesaAuth.requireAuth();</script>
   <main class="app-centre-shell">
-    <section class="app-centre-hero">
-      <a class="auth-logo" href="/"><img src="/assets/vesa-logo-black.png" alt="VESA Enterprise Inc"></a>
+    <section class="app-centre-hero" tabindex="-1">
       <span class="kicker" data-i18n="appCentre">VESA App Centre</span>
       <h1 data-i18n="choose">Choose Your Workspace</h1>
       <p class="lead" data-i18n="chooseText">Open the approved VESA tools for local forms, calculations, saved copies and reports.</p>
     </section>
-    <section class="app-catalogue" aria-label="Applications" id="appCatalogue">
+    <section class="app-catalogue" aria-label="Applications" id="appCatalogue" tabindex="-1">
       <article class="app-tile panel">
         <span>AQL</span>
         <h2>Inspection Quality Suite</h2>
@@ -35,7 +36,20 @@
     </section>
   </main>
   <script>
-    VesaAuth.renderUserBar();
+    const pageSession=VesaAuth.session();
+    const pageShell=new VesaWorkspaceShell.VesaWorkspaceShell({
+      root:document.body,
+      descriptor:{id:'app-centre',name:'Workspaces',route:'/apps/',savedState:'Local browser only',userLabel:pageSession?.name||pageSession?.email||'',userRole:pageSession?.role||''},
+      callbacks:{
+        menu(name){
+          if(name==='Edit')return pageShell.openSettings();
+          if(name==='Tools'&&pageSession?.role==='admin'){location.href='/admin/';return;}
+          const target=name==='Home'||name==='Help'?document.querySelector('.app-centre-hero'):document.getElementById('appCatalogue');
+          target?.scrollIntoView({behavior:'smooth',block:'start'});target?.focus?.({preventScroll:true});
+        }
+      }
+    });
+    pageShell.mount();
     const catalogue=document.getElementById('appCatalogue');
     if(window.VesaAppCatalogue?.enabled){
       catalogue.innerHTML=window.VesaAppCatalogue.enabled().map(app=>`<article class="app-tile panel"><span>${VesaAuth.safeText(app.shortName)}</span><h2>${VesaAuth.safeText(app.name)}</h2><p>${VesaAuth.safeText(app.description)}</p><a class="btn primary" href="${VesaAuth.safeText(app.route)}" data-i18n="${VesaAuth.safeText(app.openLabelKey)}">${VesaAuth.safeText(VesaPrefs?.label?.(app.openLabelKey)||'Open '+app.shortName)}</a></article>`).join('');

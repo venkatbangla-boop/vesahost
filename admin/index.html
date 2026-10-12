@@ -6,14 +6,15 @@
   <title>Admin | VESA App Centre</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/vesa-workspace.css?v=20261010-platform-g01">
   <script src="/js/preferences.js"></script>
   <script src="/js/auth.js"></script>
+  <script src="/js/vesa-workspace-shell.js?v=20261010-platform-g01"></script>
 </head>
 <body class="app-centre-page">
   <script>VesaAuth.requireAdmin();</script>
   <main class="admin-shell">
-    <section class="app-centre-hero">
-      <a class="auth-logo" href="/"><img src="/assets/vesa-logo-black.png" alt="VESA Enterprise Inc"></a>
+    <section class="app-centre-hero" tabindex="-1">
       <span class="kicker">Admin</span>
       <h1>User Access</h1>
       <p class="lead">Create users and review local login history for this browser.</p>
@@ -28,11 +29,11 @@
         <button class="btn primary" type="submit">Create User</button>
         <p id="adminMessage" class="auth-message" role="status"></p>
       </form>
-      <section class="panel admin-panel">
+      <section class="panel admin-panel" id="usersPanel" tabindex="-1">
         <h2>Users</h2>
         <div id="userList"></div>
       </section>
-      <section class="panel admin-panel wide">
+      <section class="panel admin-panel wide" id="eventsPanel" tabindex="-1">
         <h2>Login History</h2>
         <div class="btn-row compact"><button class="btn secondary" id="downloadEvents" type="button">Download CSV</button></div>
         <div id="eventList"></div>
@@ -40,7 +41,22 @@
     </section>
   </main>
   <script>
-    VesaAuth.renderUserBar();
+    const pageSession=VesaAuth.session();
+    const pageShell=new VesaWorkspaceShell.VesaWorkspaceShell({
+      root:document.body,
+      descriptor:{id:'admin',name:'Admin',route:'/admin/',savedState:'Local browser only',userLabel:pageSession?.name||pageSession?.email||'',userRole:pageSession?.role||''},
+      callbacks:{
+        menu(name){
+          if(name==='Home'){location.href='/apps/';return;}
+          if(name==='File'){document.getElementById('downloadEvents')?.focus();return;}
+          if(name==='Edit'){document.getElementById('newName')?.focus();return;}
+          if(name==='View'){document.getElementById('usersPanel')?.focus({preventScroll:false});return;}
+          if(name==='Tools'){document.getElementById('eventsPanel')?.focus({preventScroll:false});return;}
+          document.querySelector('.app-centre-hero')?.scrollIntoView({behavior:'smooth',block:'start'});
+        }
+      }
+    });
+    pageShell.mount();
     const esc=VesaAuth.safeText;
     function render(){
       const store=VesaAuth.readStore();

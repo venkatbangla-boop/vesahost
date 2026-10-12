@@ -65,6 +65,7 @@ function main(){
   for(const file of aql)run('automated','AQL '+path.basename(file),node,[rel(file)]);
 
   run('automated','shared workspace shell contract',node,['tests/vesa-workspace-shell-contract.cjs']);
+  run('browser','shared Login/App Centre/Admin page matrix',node,['tests/vesa-platform-pages.cjs']);
   run('browser','shared 390/1280 shell matrix',node,['tests/vesa-shared-shell-matrix.cjs']);
   for(const file of [...files('apps/tna/src',/\.js$/),path.join(root,'service-worker.js')])run('syntax',rel(file),node,['--check',rel(file)]);
   run('repository','git diff --check','git',['diff','--check']);
