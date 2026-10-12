@@ -461,6 +461,18 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 **G09 provider boundary rollback:** revert cloud-contract, adapter, test and tracker changes; prior order/queue contracts remain available.
 
+### AQL A-G05 pre-code file-level audit — Final Ac/Re boundary evidence
+
+| Exact path | Responsibility, state & dependencies observed | In/out of scope | Risk / compatibility contract | Verification / rollback |
+|---|---|---|---|---|
+| `apps/aql/index.html` | `SamplingEngine` owns the frozen direct-cell lookup; `PlanApproval` signs its source; `SampleRegistry` owns inspected-piece identities; `ResultEngine` applies Critical/Major/Minor limits; `StageDecision` delegates Final and reinspection stages to that original result. | Read-only dependency. No application source, frozen table, formula, schema or stage policy change. | A synthetic fixture must use the engine-derived plan, explicit unit IDs and Major severity; it must not manufacture buyer approval or turn pending closing controls into a release. | Assert level III / lot 90 / Major 1.5 yields `n=20`, `Ac=1`, `Re=2`; prove one Major does not fail and two do; exact save/reload/reopen; rollback removes only the test/evidence/docs slice. |
+| `apps/aql/tests/a-g05-final-boundary-browser.cjs` (new) | Dedicated authenticated browser proof; no existing test isolates the approved Final workmanship Ac/Re transition through visible finding entry. | In scope: create Final via UI, prepare explicitly fictional approved scope/plan through `ProjectStore.change`, register the complete sample, add two findings through the dialog, and inspect/reopen the result. | Keep all unresolved stage/check/sign-off controls visible and unlocked; require zero external requests/page errors; do not finalise, release, deploy or claim external approval. | Focused Playwright run, screenshot, then full AQL/shared command matrix and `git diff --check`. |
+| `VESA_PROGRESS.md` and this tracker | Durable evidence and exact next action. | Update only after objective commands pass. | Gate percentages and 35-area counts stay fixed unless the evidence proves a listed area; historical entries remain append-only. | Cross-check committed SHA, commands, screenshot and clean worktree. |
+
+**A-G05 call flow:** authenticated Final UI → audited synthetic fixture command → frozen `SamplingEngine.plan` → approved plan signature → `SampleRegistry` piece identities → visible finding dialog → original `ResultEngine` Ac/Re decision → local repository save/reopen.
+
+**A-G05 rollback:** remove the new browser test and generated screenshot, then revert the documentation evidence; no production data or application code is touched.
+
 ### Accepted patch work log
 
 | Time | Group | Branch / SHA | Files changed | Tests / evidence | Verdict | Next action |
