@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | The A-G04 browser lifecycle now also covers incoming-material and production-monitoring events; deliberate inspected-over-received and packed-over-order inconsistencies remain visibly PENDING with their exact reasons. The 17-command matrix passed. |
-| NEXT ACTION | Extend authenticated A-G04 fabric-stage evidence through shade and laboratory supporting registers, proving fail-closed record decisions and exact reopen. |
+| LAST COMPLETED ACTION | The A-G04 fabric lifecycle now uses the real supporting-register UI for a valid roll plus deliberate shade Delta E and laboratory failures; the visible stage decision is REJECT / HOLD and exact state reopens. The 17-command matrix passed. |
+| NEXT ACTION | Extend authenticated A-G04 material-control evidence through required equipment, broken-needle and metal-detection registers, proving fail-closed decisions and exact reopen. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -55,7 +55,7 @@ At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git
 - [x] Plan reviewer, reference edition, approved source, revision and timing are visible and provenance approval is deterministic.
 
 ### A-G04 — Stage workflow A-Z: materials through production
-- [ ] Incoming materials, fabric roll, shade, lab, cutting, IPC, inline, endline, monitor all tested.
+- [x] Incoming materials, fabric roll, shade, lab, cutting, IPC, inline, endline and monitor have deterministic contracts plus authenticated create/save/reload/reopen evidence.
 - [ ] Material quantity, roll/lot, buyer manual, traceability, equipment/needle controls when required.
 - [ ] 35 original areas audited with honest pass/partial/blocked evidence.
 - [ ] Stage transitions and original observations preserved.
@@ -581,6 +581,21 @@ IMPLEMENTED: Added fixture-only VM checks for in-tolerance PASS, out-of-toleranc
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — deterministic measurement and source contracts are locally proven; full asset restore, CAPA history, analytics denominator fixtures, huge-record performance, accessibility and rendered report review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run browser restore/report evidence for one measurement, document, finding, CAPA and carton chain without changing frozen AQL tables.
+```
+
+### A-G04 fabric shade/lab browser lifecycle — conditional, browser slice accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 10:22 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — prove the fabric main record plus required shade and laboratory supporting registers through authenticated create/save/reload/reopen
+BRANCH / BASE COMMIT: feature/tna360-continuous / d0143b1 (tested browser commit 060d646)
+TEST COMMIT: 39bd7f0
+FILE-LEVEL AUDIT: StageCatalog defines fabric→roll and shade/lab fields; StageWorkspace.support/require explicitly makes a supporting register mandatory before StageWorkspace.record saves values; FabricInspectionEngine owns roll density and laboratory guards while StageDecision.record owns Delta E; StageDecision maps confirmed fabric failures to REJECT / HOLD; LocalRepository/Home Resume own exact persistence. In scope: additive browser-test helpers/fixtures and both trackers. Frozen/out of scope: apps/aql/index.html, service workers, SamplingEngine/Ac-Re, schemas/formats, runtime rules, sibling apps, production records and release. Risks are accidentally bypassing the real support dialog, saving an invalid roll fixture, or testing computed state without proving visible REJECT / HOLD and exact reopen. Verification: real 390px support dialogs; valid roll plus deliberate shade Delta E and lab failures; exact requiredModules/records/reasons/visible decision; reload/reopen; screenshots; no overflow/network/page errors; full matrix. Rollback: revert test/docs; disposable browser state is destroyed.
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+IMPLEMENTED / EVIDENCE: Added an authenticated 390px fabric event with a valid roll saved through the real record dialog, then used Add supporting register → Shade management and Laboratory matrix so both modules are explicitly required. The shade record deliberately records Delta E 2.5 against approved maximum 1.5 and a Reject disposition; the lab record deliberately records a Fail result with method/revision/criterion/actual/reviewer. The test asserts requiredModules remains exactly `shade, lab`, exact Delta E and laboratory failure reasons remain present, engine result is NOT CONFORMED, specialized visible decision is REJECT / HOLD, and the complete three-record stageSuite plus identity values survive Ctrl+S, reload and Home reopen. The reviewed workspace visibly shows a passing roll, failing shade/lab cards, three confirmed failures, open checklist requirements and no horizontal clipping.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/aql/tests/a-g04-stage-browser.cjs` PASS; focused browser lifecycle PASS; full 17-command AQL/shared matrix PASS in 72.8 seconds, including A-G00 Q01-Q24, A-G02 through A-G09, all A-G07 browser/storage/import/worker suites, release contract and shared shell contract; `git diff --check` PASS. Browser assertions report zero uncaught page errors and zero external requests. Visual evidence reviewed at output/playwright/aql-a-g04-fabric-reject-hold-mobile.png.
+VERDICT: conditional — the fabric roll/shade/lab browser slice is accepted locally and the first A-G04 checklist item is now proven. A-G04 remains conditional for material-control/traceability and remaining 35-area evidence, physical-device review and field acceptance; percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): extend authenticated A-G04 evidence through required equipment, broken-needle and metal-detection supporting registers, proving fail-closed decisions and exact save/reload/reopen without altering frozen SamplingEngine/Ac-Re rules.
 ```
 
 ### A-G04 incoming/monitor browser lifecycle — conditional, browser slice accepted locally
