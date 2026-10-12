@@ -11,6 +11,7 @@ const readinessOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-prefi
 const fabricOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-fabric-reject-hold-mobile.png');
 const controlOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-equipment-needle-metal-mobile.png');
 const competencyOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-inspector-competency-mobile.png');
+const acknowledgementOutput = path.join(root, 'output', 'playwright', 'aql-a-g05-factory-acknowledgement-mobile.png');
 const traceabilityOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-compliance-custody-mobile.png');
 const journeyOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-linked-stage-journey-mobile.png');
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
@@ -250,6 +251,35 @@ async function run() {
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
 
+    await page.locator(`[data-action="resume"][data-id="${audit.id}"]:visible`).first().click();
+    await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, audit.id);
+    await addSupportingRecord(page, 'acknowledgement', { identity: 'Fictional Factory Representative', designation: 'Fictional Quality Manager', received: 'No', agreement: 'Disagree', comments: 'Fictional findings not received; fixture only', statement: 'No VESA approval or shipment release is represented', signature: 'Fictional typed acknowledgement', timestamp: '2026-10-12 12:00', reference: 'ACKNOWLEDGEMENT-REV-1', status: 'Pass', note: 'A Pass review cannot override denied receipt' });
+    const deniedAcknowledgement = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text) }; });
+    assert.ok(deniedAcknowledgement.pending.includes('Fictional Factory Representative: findings were not received'), 'denied factory receipt did not remain pending');
+    assert.ok(deniedAcknowledgement.failures.includes('AUDIT-A-G04-001: critical finding cannot pass without closure evidence'), 'factory acknowledgement changed the original critical audit failure');
+    const acknowledgementId = await page.evaluate(() => window.__vesaApp.p.stageSuite.records.find(row => row.module === 'acknowledgement').id);
+    await page.locator(`[data-action="stage-record"][data-module="acknowledgement"][data-id="${acknowledgementId}"]:visible`).click();
+    await page.locator('#dialog [name="received"]').selectOption('Yes');
+    await page.locator('#dialog [name="agreement"]').selectOption('Partial');
+    await page.locator('#dialog [name="comments"]').fill('Fictional findings received; response remains partial and is not VESA approval');
+    await saveDialog(page);
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const auditFinal = await page.evaluate(() => {
+      const evaluated = ResultEngine.evaluate(window.__vesaApp.p);
+      return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text) };
+    });
+    assert.ok(!auditFinal.pending.some(reason => reason.includes('findings were not received')), 'received acknowledgement did not clear only its denied-receipt reason');
+    assert.ok(auditFinal.failures.includes('AUDIT-A-G04-001: critical finding cannot pass without closure evidence'), 'critical audit failure disappeared after acknowledgement edit');
+    assert.equal(auditFinal.stageDecision, 'NOT CONFORMED', 'acknowledgement must not approve a critical supplier audit failure');
+    const acknowledgementRecord = auditFinal.project.stageSuite.records.find(row => row.module === 'acknowledgement');
+    assert.equal(acknowledgementRecord.received, 'Yes', 'factory receipt edit was not retained');
+    assert.equal(acknowledgementRecord.agreement, 'Partial', 'partial factory response was not retained');
+    assert.ok(acknowledgementRecord.statement.includes('No VESA approval'), 'acknowledgement limitation was not retained');
+    await page.screenshot({ path: acknowledgementOutput, fullPage: true });
+    await page.locator('#app [data-action="home"]:visible').first().click();
+    await page.waitForFunction(() => window.__vesaApp?.step === 'home');
+
     const parentStoredBefore = await page.evaluate(async id => {
       const row = (await window.__vesaApp.repository.list()).find(item => item.project?.meta?.id === id);
       return JSON.parse(JSON.stringify(row.project));
@@ -387,7 +417,7 @@ async function run() {
     await reopen(page, ipcFinal);
     await reopen(page, cuttingFinal);
     await reopen(page, loading);
-    await reopen(page, audit);
+    await reopen(page, auditFinal);
     await reopen(page, inline);
     await reopen(page, endline);
     await reopen(page, prefinal);
