@@ -1,13 +1,13 @@
 # VESA 360 Release-Readiness Review
 
-**Review date:** 2026-10-11
+**Review date:** 2026-10-12
 **Branch:** `feature/tna360-continuous`
-**Local handoff candidate:** `ffa0b1c` (latest runtime implementation: `3291786`)
+**Local handoff candidate:** `3cf9f5e` (latest runtime implementation: `253672c`)
 **Decision:** **HOLD — not ready for production deployment**
 
 This review reconciles the application execution trackers and the master dashboard. It authorizes no push, merge, deployment, DNS change, live App Centre route change, provider activation or production-data use.
 
-## Current local handoff supplement — 2026-10-11
+## Current local handoff supplement — 2026-10-12
 
 This supplement is the current handoff authority. The older `48ec023` review remains below as immutable historical context and must not be used as the current next-action list.
 
@@ -16,9 +16,9 @@ This supplement is the current handoff authority. The older `48ec023` review rem
 | Item | Current evidence |
 |---|---|
 | Branch | `feature/tna360-continuous`; committed locally, not pushed or merged by this handoff |
-| Local handoff SHA | `ffa0b1c` — adds the G12 migration/restore/offline inventory proof; no runtime behavior change |
-| Latest runtime SHA | `3291786` — localized F44 Help/recovery; follows F06 runtime SHA `a554282` |
-| Regression | `node tests/vesa-g11-regression.cjs`: PASS, 65 commands / 449.9s, no retry; 35 automated, 17 browser, 12 syntax, 1 repository |
+| Local handoff SHA | `3cf9f5e` — current accepted local evidence baseline; includes G12 recovery proof and later scheduler, scenario and reachable-history evidence; not a deployed release |
+| Latest runtime SHA | `253672c` — risk/performance runtime; follows calendar SHA `f233a25`, graph SHA `910753e`, F44 SHA `3291786` and F06 SHA `a554282` |
+| Regression | `node tests/vesa-g11-regression.cjs`: PASS, 77 commands / 574.1s, no retry; 47 automated, 17 browser, 12 syntax, 1 repository (baseline at `3cf9f5e`; refresh rerun required below) |
 | Local TNA state | G00–G08 accepted; G10/G11 conditional local evidence; G12 local handoff proof complete but gate remains blocked from release |
 | Production state | Not staged, not deployed, not live-verified, not authorized |
 
@@ -37,7 +37,7 @@ node tests/vesa-g11-regression.cjs
 git diff --check
 ```
 
-Expected candidate facts: branch `feature/tna360-continuous`; handoff SHA `ffa0b1c` or a later documentation-only evidence commit; the G12 test reports lossless current restore, `1.0.0` migration, corrupt-restore preservation and 13 offline assets. The full matrix must pass without hiding any retry. A later SHA requires a fresh recorded run.
+Expected candidate facts: branch `feature/tna360-continuous`; accepted baseline SHA `3cf9f5e` or a later documentation/test-only handoff commit; latest runtime SHA `253672c`; the G12 test reports lossless current restore, `1.0.0` migration, corrupt-restore preservation and 13 offline assets. The full matrix must pass without hiding any retry. A later runtime SHA requires a fresh recorded run and another runbook refresh.
 
 ### Migration and backup/restore rehearsal
 
@@ -53,7 +53,7 @@ Expected candidate facts: branch `feature/tna360-continuous`; handoff SHA `ffa0b
 1. Before any future staging update, use **Save TNA** and **Download Saved Copy** for every important local order. Store those files outside the browser profile.
 2. Never clear browser storage, delete the service-worker data, or overwrite the only surviving order as a rollback technique.
 3. If a future code candidate fails, keep saved copies untouched and use a normal `git revert <sha>` on the exact offending commit. Do not use `git reset --hard` against the shared workspace.
-4. F44 runtime rollback target is commit `3291786`; F06 runtime rollback target is `a554282`. Reverting either must be followed by the full regression and an offline-cache version review.
+4. The current runtime lineage is F06 `a554282`, F44 `3291786`, calendar `f233a25`, graph `910753e`, then risk/performance `253672c`. Revert only the exact offending commit; any runtime revert must be followed by the full regression and, when a cached asset changes, an offline-cache version review.
 5. If a saved copy is rejected, leave the current good order open and retry with the original unedited VESA saved copy. A failed import must not replace the current record.
 6. No rollback is presently required because nothing in this handoff was staged or deployed.
 

@@ -54,9 +54,16 @@ assert.equal(localStorage.getItem('vesa.tna360.records.handoff-user'),storedBefo
 
 const index=fs.readFileSync(path.join(root,'apps/tna/index.html'),'utf8');
 const worker=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
+const readiness=fs.readFileSync(path.join(root,'docs/VESA_360_RELEASE_READINESS.md'),'utf8');
 const localAssets=[...index.matchAll(/(?:src|href)="(\.\/[^"?]+)(?:\?[^" ]*)?"/g)].map(match=>match[1]);
 assert.ok(localAssets.length>=10,'Release inventory must find the local TNA bundle assets.');
 for(const asset of localAssets)assert.ok(worker.includes(`'./apps/tna/${asset.slice(2)}'`),`Offline inventory is missing ${asset}.`);
 assert.match(worker,/vesa-v67-tna-f44-help/,'Release inventory must pin the tested service-worker cache.');
+assert.match(readiness,/\*\*Local handoff candidate:\*\* `3cf9f5e` \(latest runtime implementation: `253672c`\)/,'Runbook must pin the accepted local baseline and latest runtime SHA.');
+assert.match(readiness,/\*\*Decision:\*\* \*\*HOLD — not ready for production deployment\*\*/,'Runbook must retain the release HOLD.');
+assert.match(readiness,/Not staged, not deployed, not live-verified, not authorized/,'Runbook must distinguish local evidence from production state.');
+assert.match(readiness,/Microsoft Excel desktop-reader inspection remains unproven/,'Runbook must retain the genuine Excel-reader gap.');
+assert.match(readiness,/Real phones\/tablets, independent screen-reader review, physical factory acceptance/,'Runbook must retain physical and independent accessibility gaps.');
+assert.match(readiness,/DEFERRED_BY_SCOPE/,'Runbook must retain provider-dependent scope boundaries.');
 
 console.log(`TNA G12 local handoff passed: current backup restore, 1.0.0 migration dry run, corrupt-restore preservation and ${localAssets.length} offline assets`);
