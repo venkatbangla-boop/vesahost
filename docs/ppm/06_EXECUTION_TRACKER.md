@@ -790,3 +790,19 @@ ROLLBACK: revert this documentation patch; no application, record, cache or depl
 REVIEWER / VERDICT: CONDITIONAL — feature omission risk is now explicit, but P-G10 cannot pass until its remaining test/review/release prerequisites and blocked P-G09 dependency are resolved.
 NEXT ACTION (ONE PRECISE STEP): create `docs/VESA_360_RELEASE_READINESS.md` from current trackers with verified vs incomplete/blocked scope, missing tests, saved-record upgrade posture, a non-public internal staging checklist and exact production-authorization prerequisites.
 ```
+
+### One VESA PPM home/editor adapter — accepted local slice
+
+```text
+TIME / TIMEZONE: 2026-10-12 16:15:43 UTC / 2026-10-12 22:15:43 Asia/Dhaka
+GATE / OBJECTIVE: shared U-G01 adapter evidence — make the accepted PPM domain workspace use exactly one visible platform header/navigation/account/save owner on both Home and Editor
+BRANCH / BEFORE SHA / RESULT SHA: feature/tna360-continuous / 29ad2ec / 800d074
+FILES CHANGED (EXACT): apps/ppm/index.html; apps/ppm/workspace.js; apps/ppm/workspace.css; apps/ppm/service-worker.js; apps/ppm/tests/p-g01-unified-ui.cjs
+FILES WATCHED/FROZEN: all 168 checkpoint identities/statuses; core/planning/record/report engines; GO/CONDITIONAL GO/HOLD; schemas and existing saves; TNA/AQL domain source; shared shell runtime; provider and deployment state
+IMPLEMENTED / PROVEN: the duplicate PPM home brand header and editor brand block are removed. The editor topbar is a non-header meeting-context section; its identity fields/actions, section navigation, rail, update notice and footer flow below the one shared sticky shell. The legacy `#saveState` remains hidden as a compatibility output while the shared shell is the only visible save owner. Visual QA found Home was inserted before the shell; insertion now preserves shell-first order. Cache identity advances from shell-3 to shell-4 while frozen app/schema version 5.1.5 remains unchanged.
+TEST / VISUAL EVIDENCE: `p-g01-unified-ui.cjs` proves Home and Editor exact ownership at 320/360/390/768/1024/1280/1440, Chromium 200% scale, mobile Menu/Escape/focus, File callback, Settings return, byte-exact record preservation through Bengali/Pure Mono, no overflow and zero external requests/page errors. Reviewed `output/playwright/vesa-unified-ppm-home-{390,1280}.png` and `vesa-unified-ppm-editor-{390,1280}.png` are clean. Full matrix PASS without retry: 82 commands / 654.2s (50 automated, 19 browser, 12 syntax, 1 repository), including PPM 168 baseline/planning/reports/recovery/update, TNA and AQL suites and shared shell matrix.
+DOMAIN / DATA / DEPLOYMENT IMPACT: none. No checkpoint, formula, decision, report selection, stored record or provider configuration changed; nothing was pushed or deployed.
+ROLLBACK: revert 800d074; no record migration or browser-data cleanup is required. The cache suffix rollback is self-contained.
+REVIEWER / VERDICT: ACCEPTED LOCAL SLICE — PPM's shared-shell adapter is proven. Shared U-G01 remains CONDITIONAL until AQL entrance/internal chrome is adapted and the cross-app visual gate is reconciled. Program percentages remain fixed.
+NEXT ACTION (ONE PRECISE STEP): audit AQL entrance/internal chrome against the unified contract and adapt only duplicate top-level owners while preserving frozen sampling, Ac/Re, inspection evidence and saved records.
+```
