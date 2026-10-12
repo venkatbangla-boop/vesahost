@@ -1,4 +1,4 @@
-/** A-G04 browser proof: IPC, cutting, loading and audit stages persist losslessly. */
+/** A-G04 browser proof: representative production/readiness stages persist losslessly. */
 const assert = require('assert/strict');
 const fs = require('fs');
 const http = require('http');
@@ -6,7 +6,8 @@ const path = require('path');
 const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '../../..');
-const output = path.join(root, 'output', 'playwright', 'aql-a-g04-stage-lifecycle-mobile.png');
+const output = path.join(root, 'output', 'playwright', 'aql-a-g04-production-readiness-mobile.png');
+const readinessOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-prefinal-not-ready-mobile.png');
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
 const mime = file => ({ '.css': 'text/css', '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.webmanifest': 'application/manifest+json' })[path.extname(file)] || 'application/octet-stream';
 
@@ -58,6 +59,11 @@ async function createStage(page, fixture) {
   assert.equal(saved.stageDecision, fixture.expectedResult || 'PENDING', `${fixture.stage} returned an unexpected stage decision`);
   if (fixture.expectedEngineResult) assert.equal(saved.result, fixture.expectedEngineResult, `${fixture.stage} result diverged from its stage decision`);
   if (fixture.expectedFailure) assert.ok(saved.failures.includes(fixture.expectedFailure), `${fixture.stage} did not retain its expected failure reason`);
+  await page.getByText(saved.stageDecision, { exact: true }).first().waitFor({ state: 'visible' });
+  if (fixture.captureDecision) {
+    fs.mkdirSync(path.dirname(readinessOutput), { recursive: true });
+    await page.screenshot({ path: readinessOutput, fullPage: true });
+  }
   assert.equal(saved.project.stageSuite.records.length, 1, `${fixture.stage} must save one stage record`);
   await page.locator('#app [data-action="home"]:visible').first().click();
   await page.waitForFunction(() => window.__vesaApp?.step === 'home');
@@ -107,6 +113,18 @@ async function run() {
       stage: 'audit', module: 'audit', expectedResult: 'NOT CONFORMED', expectedEngineResult: 'NOT CONFORMED', expectedFailure: 'AUDIT-A-G04-001: critical finding cannot pass without closure evidence', buyer: 'A-G04 Audit Buyer - Fictional', factory: 'A-G04 Audit Factory - Fictional', inspector: 'A-G04 Auditor - Fictional', orderKey: 'SUPPLIER-A-G04', reference: 'AUDIT-CRITERIA-REV-1', reviewer: 'Fictional Audit Reviewer', coverage: 'Fictional supplier QMS review; fixture only',
       record: { identity: 'AUDIT-A-G04-001', area: 'Traceability', criterion: 'AUDIT-CRITERIA-REV-1', observation: 'Deliberate fictional critical finding for guard evidence', severity: 'Critical', owner: 'Fictional Supplier Owner', due: '2026-10-20', capa: 'CAPA-A-G04-001', verification: 'Pending independent verification', reference: 'AUDIT-CRITERIA-REV-1', status: 'Pass', note: 'Critical finding cannot pass merely because the record review says Pass' },
     });
+    const inline = await createStage(page, {
+      stage: 'inline', module: 'inline', expectedResult: 'NOT CONFORMED', expectedEngineResult: 'NOT CONFORMED', expectedFailure: 'INLINE-A-G04-001: Recorded failure', buyer: 'A-G04 Inline Buyer - Fictional', factory: 'A-G04 Inline Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-INLINE', reference: 'INLINE-CRITERIA-REV-1', reviewer: 'Fictional Inline Reviewer', coverage: 'Fictional hourly line check; fixture only',
+      record: { identity: 'INLINE-A-G04-001', date: '2026-10-12', shift: 'A', line: 'LINE-A', operation: 'OP-SEAM-01', operator: 'Fictional Operator', machine: 'MACHINE-FICTIONAL-01', style: 'STYLE-A-G04', color: 'BLUE', size: 'M', wip: 120, inspected: 50, defective: 3, occurrences: 4, defects: 'Fictional seam defect, 4 occurrences', repair: 3, recheck: 3, passRepair: 2, containment: 'Fictional containment recorded', stop: 'Yes', supervisor: 'Fictional Supervisor', capa: 'CAPA-INLINE-A-G04', reference: 'INLINE-CRITERIA-REV-1', status: 'Fail', note: 'Deliberate production failure; fixture only' },
+    });
+    const endline = await createStage(page, {
+      stage: 'endline', module: 'endline', buyer: 'A-G04 Endline Buyer - Fictional', factory: 'A-G04 Endline Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-ENDLINE', reference: 'ENDLINE-CRITERIA-REV-1', reviewer: 'Fictional Endline Reviewer', coverage: 'Fictional endline sample; fixture only',
+      record: { identity: 'ENDLINE-A-G04-001', date: '2026-10-12', shift: 'A', line: 'LINE-B', style: 'STYLE-A-G04', color: 'NAVY', size: 'L', inspected: 40, defective: 2, occurrences: 2, firstPass: 38, repair: 2, recheck: 2, passRepair: 2, defects: 'Two fictional first-pass defects', supervisor: 'Fictional Supervisor', capa: 'CAPA-ENDLINE-A-G04', reference: 'ENDLINE-CRITERIA-REV-1', status: 'Pass', note: 'Coherent fictional quantities; checklist deliberately unresolved' },
+    });
+    const prefinal = await createStage(page, {
+      stage: 'prefinal', module: 'readiness', expectedResult: 'NOT READY', expectedEngineResult: 'NOT CONFORMED', expectedFailure: 'PREFINAL-A-G04-001: production below approved readiness threshold', captureDecision: true, buyer: 'A-G04 Prefinal Buyer - Fictional', factory: 'A-G04 Prefinal Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-PREFINAL', reference: 'PREFINAL-CRITERIA-REV-1', reviewer: 'Fictional Prefinal Reviewer', coverage: 'Fictional readiness gate; fixture only',
+      record: { identity: 'PREFINAL-A-G04-001', production: 80, packed: 70, minProduction: 90, minPacked: 80, reference: 'PREFINAL-THRESHOLD-REV-1', shipment: 1000, packingRevision: 'PACK-REV-1', openIssues: 'Fictional production and packing below approved thresholds', declaration: 'Fictional factory declaration pending completion', previous: 'PREFINAL-PRIOR-FICTIONAL', status: 'Pass', note: 'Deliberate readiness failure; fixture only' },
+    });
 
     fs.mkdirSync(path.dirname(output), { recursive: true });
     await page.screenshot({ path: output, fullPage: true });
@@ -120,10 +138,13 @@ async function run() {
     await reopen(page, cutting);
     await reopen(page, loading);
     await reopen(page, audit);
+    await reopen(page, inline);
+    await reopen(page, endline);
+    await reopen(page, prefinal);
     assert.deepEqual(pageErrors, [], 'stage lifecycle must have no uncaught page errors');
     assert.deepEqual(external, [], 'stage lifecycle must make no external requests');
     await context.close();
-    console.log('AQL A-G04 stage browser passed: IPC + cutting + loading + supplier-audit UI create/criteria/record/save/reload/reopen, exact values, honest pending/failure outcomes, 390px no overflow, zero external requests/page errors');
+    console.log('AQL A-G04 stage browser passed: IPC + cutting + loading + supplier-audit + inline + endline + pre-final UI create/criteria/record/save/reload/reopen, exact values, honest pending/failure/readiness outcomes, 390px no overflow, zero external requests/page errors');
   } finally { if (browser) await browser.close(); await host.stop().catch(() => {}); }
 }
 
