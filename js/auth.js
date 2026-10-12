@@ -108,6 +108,8 @@
     try{new ResizeObserver(set).observe(bar);}catch{window.addEventListener('resize',set,{passive:true});}
   }
   function renderUserBar(target=document.body){
+    const shared=target.querySelector(':scope > .vesa-workspace');
+    if(shared)return shared;
     ensureBarStyle();
     const s=session();
     if(!s)return;
@@ -137,6 +139,6 @@
   const script=document.currentScript;
   if(script?.dataset.authGuard==='app'){
     requireAuth();
-    if(script.dataset.authBar==='true')window.addEventListener('DOMContentLoaded',()=>renderUserBar());
+    if(script.dataset.authBar==='true')window.addEventListener('DOMContentLoaded',()=>setTimeout(()=>renderUserBar(),0));
   }
 })();

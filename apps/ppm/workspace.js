@@ -13,7 +13,7 @@ class V5Workspace extends AppController {
     if(window.VesaWorkspaceShell){
       const shell=new VesaWorkspaceShell.VesaWorkspaceShell({
         root:document.body,
-        descriptor:{id:'ppm-pre-production',name:'Pre-Production Meeting',route:'/apps/ppm/',userLabel:VesaAuth.session()?.name||''},
+        descriptor:{id:'ppm-pre-production',name:'Pre-Production Meeting',route:'/apps/ppm/',userLabel:VesaAuth.session()?.name||'',userRole:VesaAuth.session()?.role||''},
         callbacks:{menu:name=>name==='Home'?this.command('home'):this.menu(name),settings:()=>this.menu('Help')}
       });
       bar=shell.mount();

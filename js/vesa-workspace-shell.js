@@ -1,4 +1,4 @@
-/* VESA-UNIFORM-UI-v1: one app-neutral workspace shell. */
+/* VESA-UNIFIED-PAGE-SHELL-v2: one app-neutral authenticated workspace shell. */
 (function (global) {
   'use strict';
 
@@ -10,7 +10,7 @@
   function descriptor(input) {
     const value = input || {};
     if (!text(value.id).trim() || !text(value.name).trim()) throw new TypeError('A workspace descriptor needs an id and name.');
-    return Object.freeze({ id: text(value.id).trim(), name: text(value.name).trim(), route: text(value.route || '/apps/'), logo: text(value.logo || '/assets/vesa-logo-black.png'), savedState: text(value.savedState || SAVE_STATES.saved), userLabel: text(value.userLabel || ''), menuLabels: Object.freeze({ ...(value.menuLabels || {}) }) });
+    return Object.freeze({ id: text(value.id).trim(), name: text(value.name).trim(), route: text(value.route || '/apps/'), appCentreRoute: text(value.appCentreRoute || '/apps/'), logo: text(value.logo || '/assets/vesa-logo-black.png'), savedState: text(value.savedState || SAVE_STATES.saved), userLabel: text(value.userLabel || ''), userRole: text(value.userRole || ''), menuLabels: Object.freeze({ ...(value.menuLabels || {}) }) });
   }
 
   class VesaWorkspaceShell {
@@ -26,6 +26,7 @@
       this._settingsReturnFocus = null;
       this._onClick = event => this._handleClick(event);
       this._onKeydown = event => this._handleKeydown(event);
+      this._onDocumentClick = event => this._handleDocumentClick(event);
       this._onResize = () => this.measure();
     }
 
@@ -37,12 +38,16 @@
       element.className = 'vesa-workspace';
       element.setAttribute('data-vesa-workspace', this.descriptor.id);
       element.setAttribute('data-menu-open', 'false');
-      element.innerHTML = `<a class="vesa-workspace__brand" href="/" aria-label="VESA home"><img src="${escape(this.descriptor.logo)}" alt="VESA"></a><a class="vesa-workspace__app" href="${escape(this.descriptor.route)}"><small>App Centre ›</small><span>${escape(this.descriptor.name)}</span></a><button type="button" class="vesa-workspace__mobile-menu" data-vesa-mobile-menu aria-expanded="false">Menu</button><nav class="vesa-workspace__nav" aria-label="VESA workspace menu">${nav}</nav><div class="vesa-workspace__user"><span class="vesa-workspace__saved" data-vesa-saved>${escape(this.descriptor.savedState)}</span>${this.descriptor.userLabel ? `<span>${escape(this.descriptor.userLabel)}</span>` : ''}<button type="button" data-vesa-user>Settings</button></div>`;
+      element.innerHTML = `<a class="vesa-workspace__brand" href="/" aria-label="VESA home"><img src="${escape(this.descriptor.logo)}" alt="VESA"></a><div class="vesa-workspace__breadcrumb" aria-label="Current VESA workspace"><a class="vesa-workspace__app-centre" href="${escape(this.descriptor.appCentreRoute)}">App Centre</a><span aria-hidden="true">›</span><a class="vesa-workspace__app vesa-workspace__app-current" href="${escape(this.descriptor.route)}">${escape(this.descriptor.name)}</a></div><button type="button" class="vesa-workspace__mobile-menu" data-vesa-mobile-menu aria-expanded="false" aria-controls="vesaWorkspaceDrawer">Menu</button><div class="vesa-workspace__drawer" id="vesaWorkspaceDrawer"><nav class="vesa-workspace__nav" aria-label="VESA workspace menu">${nav}</nav><div class="vesa-workspace__user"><span class="vesa-workspace__saved" data-vesa-saved>${escape(this.descriptor.savedState)}</span>${this.descriptor.userLabel ? `<span class="vesa-workspace__user-label">${escape(this.descriptor.userLabel)}</span>` : ''}<button type="button" data-vesa-user>Settings</button>${this.descriptor.userRole === 'admin' ? '<a href="/admin/" data-vesa-admin>Admin</a>' : ''}<button type="button" data-vesa-logout>Logout</button></div></div>`;
+      const legacyAuthBar = this.root.querySelector(':scope > .app-user-bar');
+      legacyAuthBar?.remove();
+      this.document.documentElement?.style.removeProperty('--vesa-auth-bar-height');
       this.root.prepend(element);
       this.element = element;
       this._mounted = true;
       this.element.addEventListener('click', this._onClick);
       this.element.addEventListener('keydown', this._onKeydown);
+      this.document.addEventListener('click', this._onDocumentClick);
       global.addEventListener?.('resize', this._onResize, { passive: true });
       this.measure();
       return element;
@@ -90,6 +95,12 @@
       const menu = event.target.closest?.('[data-vesa-menu]');
       if (menu) return this.callbacks.menu?.(menu.dataset.vesaMenu, this.descriptor);
       if (event.target.closest?.('[data-vesa-user]')) return this.openSettings();
+      if (event.target.closest?.('[data-vesa-logout]')) {
+        if (this.callbacks.logout) return this.callbacks.logout(this.descriptor);
+        global.VesaAuth?.logout?.();
+        if (global.location) global.location.href = '/login/';
+        return;
+      }
       const mobile = event.target.closest?.('[data-vesa-mobile-menu]');
       if (mobile) {
         const open = this.element.dataset.menuOpen !== 'true';
@@ -99,19 +110,31 @@
       }
     }
 
-    _handleKeydown(event) {
-      if (event.key !== 'Escape' || this.element.dataset.menuOpen !== 'true') return;
-      event.preventDefault();
+    _handleDocumentClick(event) {
+      const fromDialog = event.composedPath?.().some(node => node?.matches?.('dialog,[role="dialog"]'));
+      if (!this.element || this.element.dataset.menuOpen !== 'true' || this.element.contains(event.target) || fromDialog) return;
+      this._closeMobileMenu(false);
+    }
+
+    _closeMobileMenu(returnFocus) {
+      if (!this.element) return;
       this.element.dataset.menuOpen = 'false';
       const mobile = this.element.querySelector('[data-vesa-mobile-menu]');
       mobile?.setAttribute('aria-expanded', 'false');
-      mobile?.focus();
+      if (returnFocus) mobile?.focus();
+    }
+
+    _handleKeydown(event) {
+      if (event.key !== 'Escape' || this.element.dataset.menuOpen !== 'true') return;
+      event.preventDefault();
+      this._closeMobileMenu(true);
     }
 
     destroy() {
       if (!this._mounted) return;
       this.element.removeEventListener('click', this._onClick);
       this.element.removeEventListener('keydown', this._onKeydown);
+      this.document.removeEventListener('click', this._onDocumentClick);
       global.removeEventListener?.('resize', this._onResize);
       this._settingsDialog?.remove();
       this._settingsDialog = null;

@@ -45,9 +45,10 @@ async function run(){
       await page.locator('.vesa-workspace').waitFor({state:'visible',timeout:120000});
       assert.equal(await page.locator('.vesa-workspace__brand').getAttribute('href'),'/',`${route} must retain the VESA Home link.`);
       assert.equal(await page.locator('.vesa-workspace__app').getAttribute('href'),route,`${route} must retain its app breadcrumb link.`);
-      assert.equal(await page.locator('.app-user-bar a[href="/apps/"]').getAttribute('href'),'/apps/',`${route} must retain the App Centre return link.`);
+      assert.equal(await page.locator('.vesa-workspace__app-centre').getAttribute('href'),'/apps/',`${route} must retain the App Centre return link in the one shared shell.`);
+      assert.equal(await page.locator('.app-user-bar').count(),0,`${route} must not retain a second legacy authenticated bar.`);
     }
-    await page.locator('.app-user-bar a[href="/apps/"]').click();
+    await page.locator('.vesa-workspace__app-centre').click();
     await page.waitForURL(url=>url.pathname==='/apps/');
     assert.equal(await page.locator('#appCatalogue .app-tile').count(),3,'the in-app App Centre link must return to all three registered apps.');
     assert.deepEqual(errors,[],'route regression must have no uncaught page errors');

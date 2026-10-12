@@ -49,12 +49,13 @@ async function inspectPage(page, app, width) {
       const el = document.querySelector(selector);
       return { selector, present: !!el, position: el ? getComputedStyle(el).position : '' };
     });
-    return { width: innerWidth, documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth, positions, lang: document.documentElement.lang, links: { home: document.querySelector('.vesa-workspace__brand')?.getAttribute('href'), app: document.querySelector('.vesa-workspace__app')?.getAttribute('href'), apps: document.querySelector('.app-user-bar a[href="/apps/"]')?.getAttribute('href') } };
+    return { width: innerWidth, documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth, positions, lang: document.documentElement.lang, links: { home: document.querySelector('.vesa-workspace__brand')?.getAttribute('href'), app: document.querySelector('.vesa-workspace__app-current')?.getAttribute('href'), apps: document.querySelector('.vesa-workspace__app-centre')?.getAttribute('href') }, legacyAuthBars: document.querySelectorAll('.app-user-bar').length };
   });
   assertPage(result.documentWidth <= width + 1 && result.bodyWidth <= width + 1, `${app.id}@${width}: no horizontal page overflow (${result.documentWidth}/${result.bodyWidth})`);
   assert.equal(result.links.home, '/', `${app.id}@${width}: shared logo returns home`);
   assert.equal(result.links.app, app.route, `${app.id}@${width}: app breadcrumb returns to app route`);
   assert.equal(result.links.apps, '/apps/', `${app.id}@${width}: auth bar returns to App Centre`);
+  assert.equal(result.legacyAuthBars, 0, `${app.id}@${width}: legacy authenticated bar is not mounted beside the shared shell`);
   const activeSticky = result.positions.filter(item => item.present && (item.position === 'sticky' || item.position === 'fixed'));
   assert.deepEqual(activeSticky.map(item => item.selector), ['.vesa-workspace'], `${app.id}@${width}: one sticky navigation region`);
 
@@ -65,6 +66,9 @@ async function inspectPage(page, app, width) {
     await mobile.click();
     assert.equal(await shell.getAttribute('data-menu-open'), 'true', `${app.id}@${width}: Menu opens`);
     assert.equal(await page.evaluate(() => document.activeElement?.matches('[data-vesa-menu]')), true, `${app.id}@${width}: Menu focuses first item`);
+    assertPage(await shell.locator('[data-vesa-user]').count() === 1, `${app.id}@${width}: mobile drawer includes Settings`);
+    assertPage(await shell.locator('[data-vesa-logout]').count() === 1, `${app.id}@${width}: mobile drawer includes Logout`);
+    assertPage(await shell.locator('[data-vesa-admin]').count() === 1, `${app.id}@${width}: authorized mobile drawer includes Admin`);
     await page.keyboard.press('Escape');
     assert.equal(await shell.getAttribute('data-menu-open'), 'false', `${app.id}@${width}: Escape closes Menu`);
     assert.equal(await page.evaluate(() => document.activeElement?.matches('[data-vesa-mobile-menu]')), true, `${app.id}@${width}: focus returns to Menu`);

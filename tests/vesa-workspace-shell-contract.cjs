@@ -12,6 +12,10 @@ assert(shell.includes("['Home', 'File', 'Edit', 'View', 'Tools', 'Help']"), 'uni
 assert(shell.includes('Saved on this device') && shell.includes('Could not save'), 'save state vocabulary missing');
 assert(shell.includes('descriptor') && shell.includes('callbacks'), 'descriptor/callback boundary missing');
 assert(shell.includes('openSettings') && shell.includes('data-vesa-settings'), 'platform settings surface missing');
+assert(shell.includes('data-vesa-logout') && shell.includes('data-vesa-admin'), 'platform account actions missing');
+assert(shell.includes('vesa-workspace__app-centre') && shell.includes('vesa-workspace__app-current'), 'platform breadcrumb ownership missing');
+assert(shell.includes('_handleDocumentClick') && shell.includes('_closeMobileMenu'), 'outside-click/mobile close ownership missing');
+assert(shell.includes("querySelector(':scope > .app-user-bar')") && shell.includes("removeProperty('--vesa-auth-bar-height')"), 'legacy auth-bar handoff missing');
 assert(shell.includes("event.key !== 'Escape'") && shell.includes('data-vesa-mobile-menu'), 'mobile Menu Escape/focus contract missing');
 assert(shell.includes("setAttribute('aria-expanded', 'false')"), 'mobile Menu Escape must expose its closed state');
 assert(!/\b(?:tna|ppm|aql)\b/i.test(shell), 'platform shell must not hard-code an app id');
@@ -21,6 +25,7 @@ const runtime = { window: {} };
 vm.runInNewContext(shell, runtime, { filename: 'js/vesa-workspace-shell.js' });
 assert(runtime.window.VesaWorkspaceShell.MENU_ORDER.join('|') === 'Home|File|Edit|View|Tools|Help', 'runtime menu order changed');
 assert(runtime.window.VesaWorkspaceShell.descriptor({ id: 'future-app', name: 'Future App' }).route === '/apps/', 'descriptor default route changed');
+assert(runtime.window.VesaWorkspaceShell.descriptor({ id: 'future-app', name: 'Future App' }).appCentreRoute === '/apps/', 'App Centre breadcrumb default changed');
 assert(runtime.window.VesaWorkspaceShell.SAVE_STATES.failed.includes('download a saved copy'), 'runtime save state vocabulary changed');
 for (const file of ['apps/tna/index.html', 'apps/ppm/index.html', 'apps/aql/index.html']) {
   const source = fs.readFileSync(path.join(root, file), 'utf8');

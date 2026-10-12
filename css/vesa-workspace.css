@@ -1,5 +1,5 @@
 /*
- * VESA-UNIFORM-UI-v1 platform tokens and workspace shell.
+ * VESA-UNIFIED-PAGE-SHELL-v2 platform tokens and workspace shell.
  * Ownership: the VESA platform, not an individual application.
  * The shell receives an app descriptor and callbacks; it owns no domain data.
  */
@@ -39,23 +39,28 @@
 }
 
 .vesa-workspace__brand,
-.vesa-workspace__app,
+.vesa-workspace__app-current,
 .vesa-workspace__user,
 .vesa-workspace__menu,
 .vesa-workspace__mobile-menu { min-height: 44px; }
 
 .vesa-workspace__brand { display: inline-flex; align-items: center; flex: 0 0 auto; }
 .vesa-workspace__brand img { display: block; width: 132px; max-height: 46px; object-fit: contain; }
-.vesa-workspace__app { display: inline-flex; align-items: center; min-width: 0; color: var(--vesa-text); text-decoration: none; white-space: nowrap; }
-.vesa-workspace__app small { margin-right: 6px; color: var(--vesa-muted); font-weight: 600; }
+.vesa-workspace__breadcrumb { display: inline-flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; }
+.vesa-workspace__breadcrumb a { color: var(--vesa-text); text-decoration: none; }
+.vesa-workspace__app-centre { color: var(--vesa-muted) !important; font-weight: 600; }
+.vesa-workspace__app-current { display: inline-flex; align-items: center; min-height: 44px; font-weight: 800; }
+.vesa-workspace__drawer { display: flex; align-items: center; min-width: 0; margin-left: auto; }
 .vesa-workspace__nav { display: flex; align-items: center; gap: 4px; min-width: 0; margin-left: auto; }
 .vesa-workspace__menu,
 .vesa-workspace__mobile-menu,
-.vesa-workspace__user button { border: 1px solid var(--vesa-border); border-radius: 999px; padding: 0 13px; color: var(--vesa-text); background: color-mix(in srgb, var(--vesa-surface) 82%, transparent); font: inherit; cursor: pointer; }
+.vesa-workspace__user button,
+.vesa-workspace__user a { display: inline-flex; align-items: center; min-height: 44px; border: 1px solid var(--vesa-border); border-radius: 999px; padding: 0 13px; color: var(--vesa-text); background: color-mix(in srgb, var(--vesa-surface) 82%, transparent); font: inherit; text-decoration: none; cursor: pointer; }
 .vesa-workspace__menu:hover,
 .vesa-workspace__menu[aria-current="page"],
 .vesa-workspace__mobile-menu:hover,
-.vesa-workspace__user button:hover { background: var(--vesa-surface); }
+.vesa-workspace__user button:hover,
+.vesa-workspace__user a:hover { background: var(--vesa-surface); }
 .vesa-workspace__user { display: inline-flex; align-items: center; gap: 8px; margin-left: 4px; white-space: nowrap; }
 .vesa-workspace__saved { color: var(--vesa-muted); font-size: 12px; font-weight: 600; }
 .vesa-workspace__mobile-menu { display: none; margin-left: auto; }
@@ -64,11 +69,16 @@
 @media (max-width: 900px) {
   .vesa-workspace { flex-wrap: wrap; min-height: 60px; padding-inline: max(12px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-right)); }
   .vesa-workspace__brand img { width: 104px; }
-  .vesa-workspace__app { max-width: 38vw; overflow: hidden; text-overflow: ellipsis; }
-  .vesa-workspace__app small, .vesa-workspace__user, .vesa-workspace__nav { display: none; }
+  .vesa-workspace__breadcrumb { max-width: 38vw; overflow: hidden; text-overflow: ellipsis; }
+  .vesa-workspace__app-centre, .vesa-workspace__breadcrumb > span, .vesa-workspace__drawer { display: none; }
   .vesa-workspace__mobile-menu { display: inline-flex; align-items: center; justify-content: center; }
-  .vesa-workspace[data-menu-open="true"] .vesa-workspace__nav { display: grid; flex: 1 0 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-top: 8px; }
+  .vesa-workspace[data-menu-open="true"] .vesa-workspace__drawer { display: grid; flex: 1 0 100%; grid-template-columns: 1fr; gap: 8px; padding-top: 8px; }
+  .vesa-workspace[data-menu-open="true"] .vesa-workspace__nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .vesa-workspace[data-menu-open="true"] .vesa-workspace__menu { width: 100%; }
+  .vesa-workspace[data-menu-open="true"] .vesa-workspace__user { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; }
+  .vesa-workspace[data-menu-open="true"] .vesa-workspace__saved,
+  .vesa-workspace[data-menu-open="true"] .vesa-workspace__user-label { grid-column: 1 / -1; }
+  .vesa-workspace[data-menu-open="true"] .vesa-workspace__user :is(a,button) { justify-content: center; width: 100%; }
 }
 
 @media print { .vesa-workspace { display: none !important; } }

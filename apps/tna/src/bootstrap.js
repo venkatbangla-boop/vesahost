@@ -131,7 +131,7 @@
     if(window.__tnaWorkspaceShell||!window.VesaWorkspaceShell)return;
     const shell=new VesaWorkspaceShell.VesaWorkspaceShell({
       root:document.body,
-      descriptor:{id:'tna-time-action',name:text('app'),route:'/apps/tna/',userLabel:globalThis.VesaAuth?.session?.()?.name||''},
+      descriptor:{id:'tna-time-action',name:text('app'),route:'/apps/tna/',userLabel:globalThis.VesaAuth?.session?.()?.name||'',userRole:globalThis.VesaAuth?.session?.()?.role||''},
       callbacks:{menu:name=>openMenu(name.toLowerCase()),settings:()=>openMenu('view')}
     });
     shell.mount();

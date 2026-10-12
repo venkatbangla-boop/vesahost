@@ -3819,7 +3819,7 @@ globalThis.VESA_WELCOME.bind();
     }
     const shell=new VesaWorkspaceShell.VesaWorkspaceShell({
       root:document.body,
-      descriptor:{id:'aql-quality-centre',name:'Inspection Quality Suite',route:'/apps/aql/',userLabel:VesaAuth.session()?.name||''},
+      descriptor:{id:'aql-quality-centre',name:'Inspection Quality Suite',route:'/apps/aql/',userLabel:VesaAuth.session()?.name||'',userRole:VesaAuth.session()?.role||''},
       callbacks:{menu:name=>menu(name),settings:()=>releaseAction('settings')}
     });
     shell.mount();
