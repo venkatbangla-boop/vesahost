@@ -17,13 +17,25 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Commit `1abeae7` proved the authenticated failure → verified CAPA → one-piece rework → linked reinspection chain with immutable parent/rework rows, independent child observations and exact reload/reopen. The final 18-command matrix passed in 95.4 seconds. |
-| NEXT ACTION | Prove one authenticated final-stage readiness/result lifecycle while retaining the frozen final AQL engine and all unresolved approvals; do not change SamplingEngine/Ac-Re rules. |
+| LAST COMPLETED ACTION | Commit `7c85269` proved authenticated Final-stage readiness remains PENDING and cannot lock while original buyer scope, sampling, order, checkpoint and sign-off requirements are unresolved. The 18-command matrix passed in 101.2 seconds. |
+| NEXT ACTION | Attach and bind synthetic before/after loading photos through the visible workflow, then prove seal/handover/quantity and exact reopen without inventing carton-randomization policy or changing SamplingEngine/Ac-Re. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
-### A-G05 final-stage readiness/result audit — in progress
+### A-G05 final-stage readiness/result audit — conditional slice accepted locally
 
 FILE-LEVEL AUDIT: `StageCatalog.final` designates `final` and `reinspection`; `StageDecision.evaluate` delegates those projects to `FinalAQLInspectionEngine`, which calls the captured original `ResultEngine` before adding stage evidence. `ResultEngine.evaluate` independently owns order identity, buyer criteria, sample allocation/counting, findings, checks, measurements and packing blockers; `ResultEngine.finaliseIssues` additionally owns closing review and sign-off blockers. `InspectionApp.finalise` verifies evidence, rejects any remaining issues and locks only after a separate confirmation. In scope: extend `apps/aql/tests/a-g04-stage-browser.cjs` and, after proof, the AQL/program trackers and area-12 ledger status. Frozen/out of scope: `apps/aql/index.html`, service worker, SamplingEngine/Ac-Re/ResultEngine/FinalAQLInspectionEngine, schemas/saved formats, other stages, sibling apps, production records and deployment. Risks: mistaking readiness percentages for AQL conformance, hiding unresolved scope/sample/check approvals, or allowing a blocked finalisation to mutate/lock the draft. Verification: visible authenticated Final stage creation and readiness record, exact PENDING reasons, visible Review route and finalise attempt, unlocked unchanged stage snapshot, save/reload/reopen, 390px screenshot, zero external requests/page errors, focused test and full AQL/shared regression. Rollback: revert the additive test/tracker patch; disposable browser state is destroyed.
+
+```text
+TIME / TIMEZONE: 2026-10-12 16:21 Asia/Dhaka
+GATE / OBJECTIVE: A-G05 — prove Final-stage readiness evidence cannot bypass the frozen final AQL engine or lock an unresolved inspection
+BRANCH / BASE COMMIT / TEST COMMIT: feature/tna360-continuous / db89c20 / 7c85269
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md evidence follows
+FROZEN / OUT OF SCOPE: apps/aql/index.html/runtime, service worker, SamplingEngine/Ac-Re, ResultEngine/FinalAQLInspectionEngine, schemas/saved formats, other stages, sibling apps, production records and deployment
+IMPLEMENTED / EVIDENCE: The authenticated 390px workflow created Final Random Inspection through the visible stage dialog and recorded a readiness row with 100% production/packing against explicit 90%/80% fictional thresholds. Readiness passed its own threshold, but the original engine retained PENDING because no order line, approved buyer sampling criteria, completed checks or sign-off existed. The visible Review route showed the unresolved requirements; pressing Finalise did not lock the project, alter the PENDING result, change the stage snapshot or remove any finalisation issue. Exact stage data survived local save, page reload and reopen. No final pass, approval, release or buyer rule was inferred.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/aql/tests/a-g04-stage-browser.cjs`, focused authenticated browser and `git diff --check` PASS. Full AQL/shared regression PASS: 18 commands / 101.2s, including Q01-Q24, stage/35-area contracts, current+legacy restore, atomic and 200/280 MiB boundary imports, quota rescue/restart, worker replacement/offline reopen, reports/language, cross-app boundaries, release and shared shell. Zero external requests or uncaught page errors. Visual evidence reviewed at `output/playwright/aql-a-g05-final-readiness-pending-mobile.png`.
+VERDICT: conditional — audited local Final readiness/result blocking and area 12 are accepted locally. A completed approved final AQL inspection, loading evidence/barcode, carton-randomization policy and physical/factory acceptance remain open; A-G05 and percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): attach and bind synthetic before/after loading photos through the visible workflow, then prove seal/handover/quantity and exact reopen without inventing carton-randomization policy or changing SamplingEngine/Ac-Re.
+```
 
 ### A-G05 failure → CAPA → rework → linked reinspection audit — conditional slice accepted locally
 
@@ -288,7 +300,7 @@ Each feature ID A01–A60 is initially `not-started / unverified for this rework
 | 09 | IPC/pilot/first production | PROVEN_LOCAL | first-output field contract and authenticated IPC parent record | none for audited local contract |
 | 10 | Pre-final readiness | PROVEN_LOCAL | approved-threshold failures and visible NOT READY workspace | none for audited local contract |
 | 11 | 100% screening/rework | PROVEN_LOCAL | authenticated one-piece target, repair/recheck/disposition and linked reinspection history | none for audited local contract |
-| 12 | Final readiness | CONDITIONAL | readiness source guards and frozen final AQL engine contracts | authenticated final-stage readiness and result lifecycle remains |
+| 12 | Final readiness | PROVEN_LOCAL | authenticated Final stage records ready percentages but remains PENDING and unlocked while original engine approvals are unresolved | none for audited local blocking contract |
 | 13 | Loading supervision | CONDITIONAL | carton/piece mismatch, seal/photo requirements and browser reopen | real evidence assets, barcode checks and approved carton policy remain |
 | 14 | Production monitoring | PROVEN_LOCAL | output/balance guards and authenticated monitor reopen | none for audited local contract |
 | 15 | Supplier audit / QMS | PROVEN_LOCAL | critical finding cannot pass and coherent browser NOT CONFORMED decision | none for audited local contract |
