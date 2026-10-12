@@ -16,10 +16,26 @@
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
-| Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Commit `0c8c5e4` proved visible packing-register duplicate/range guards, a typed barcode comparison, rejected duplicate state preservation and exact reopen; the 79-command cross-app regression passed without retry. |
-| NEXT ACTION | Prove one authenticated measurement matrix/readings lifecycle with explicit synthetic specification, unit, tolerance, piece identity and OOT result through report/reopen; do not invent a buyer measurement policy. |
+| Current gate | **A-G03** remains policy-blocked; active independent slice is **A-G06** inspection evidence/measurements |
+| LAST COMPLETED ACTION | Commit `14aeb66` proved visible POM entry and measurement-matrix approval, registered-piece readings, exact OOT report output and durable reopen; the 80-command cross-app regression passed without retry. |
+| NEXT ACTION | Prove one authenticated evidence-link lifecycle: attach synthetic photo/document bytes to explicit registered piece/carton context, then save, portable-restore and reopen with exact owner/reference/bytes; do not infer physical inspection or external approval. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
+
+### A-G06 measurement specification/readings lifecycle — conditional slice accepted locally
+
+FILE-LEVEL AUDIT: `ProjectSchema.measurement` defines the row; `MeasurementEngine` parses values and derives tolerance/OOT; `SampleRegistry` validates physical identities; `MeasurementPolicy` retains piece observations; `InspectionApp.measureDialog` owns visible specification/readings entry; `InsightReport.measurementTable` and `ReportComposer` render the report; repository/autosave owns durable reopen. In scope: one authenticated synthetic browser test and tracker evidence. Frozen/out of scope: `apps/aql/index.html`, all formulas and measurement policy, schemas/saved formats, service workers, sibling source, production data and deployment. Risks: inventing buyer acceptance, using unregistered identities, hiding the OOT, or presenting browser input as physical inspection. Verification: three registered measurement-only identities; visible 50 -1/+1 cm POM and 49/50/52 readings; visible matrix approval; exact one-OOT/FAIL engine and report rows; save/reload/reopen; reviewed 390px horizontal report viewport; zero external requests/page errors; complete cross-app regression. Rollback: revert `14aeb66` and the evidence-only commit; no runtime/data migration is involved.
+
+```text
+TIME / TIMEZONE: 2026-10-12 17:41 Asia/Dhaka
+GATE / OBJECTIVE: A-G06 — prove explicit measurement specification, tolerance, unit, registered-piece readings and OOT report/reopen without changing policy
+BRANCH / BASE COMMIT / TEST COMMIT: feature/tna360-continuous / 7b63ed3 / 14aeb66
+FILES CHANGED (EXACT): apps/aql/tests/a-g06-measurement-browser.cjs; docs/tna/06_EXECUTION_TRACKER.md pre-code audit; this tracker and VESA_PROGRESS.md evidence follow
+FROZEN / OUT OF SCOPE: apps/aql/index.html/runtime, MeasurementEngine/MeasurementPolicy/MeasurementMatrix formulas, SamplingEngine/Ac-Re/ResultEngine, schemas/saved formats, workers, sibling source, production records, physical inspection, release/deployment
+IMPLEMENTED / EVIDENCE: The authenticated 390px Final workflow creates an explicitly fictional order and three registered measurement-only pieces through the audited state boundary, then uses the visible POM dialog to enter Chest width, specification 50 cm, -1/+1 cm tolerance, three required readings, exact piece IDs, actual values 49/50/52 and a fictional method/reference. The unchanged engine returns bounds 49–51, FAIL and exactly one OOT. The visible Measurement matrix dialog records required Chest width coverage for three pieces and a signed synthetic reviewer record without changing readings. The generated measurement report retains each piece, actual, deviation, unit and observation; AG06M-0003 stays 52 / +2 / OOT. Exact project state, engine result and observations survive Ctrl+S, reload and Home reopen. The draft remains unfinalised and Not released; no physical inspection, buyer policy or external approval is claimed.
+TEST COMMANDS + OUTPUT/COUNTS: focused browser PASS repeatedly while tightening selectors/evidence capture. Complete cross-app regression PASS without retry: 80 commands / 679.4s (50 automated, 17 browser, 12 syntax, 1 repository), including current TNA/PPM/AQL, 40-PDF PPM report suite, AQL restore/import/quota/worker/report/reference/release, shared 390/1280 shell, syntax and `git diff --check`. Browser assertions report zero external requests and zero uncaught page errors. Visual evidence reviewed at `output/playwright/aql-a-g06-measurement-report-mobile.png`; its mobile horizontal report viewport visibly shows actuals 49/50/52, deviations -1/0/2, unit cm and the retained OOT row without document overflow.
+VERDICT: conditional — the A-G06 measurement POM/tolerance/actual/unit/report checklist item is accepted locally. A-G06 remains conditional for its evidence-link, CAPA/analytics, long-record/accessibility and physical-device/factory boundaries; gate scores and 35-area counts remain fixed.
+NEXT ACTION (ONE PRECISE STEP): prove one authenticated evidence-link lifecycle: attach synthetic photo/document bytes to explicit registered piece/carton context, then save, portable-restore and reopen with exact owner/reference/bytes; do not infer physical inspection or external approval.
+```
 
 ### A-G05 packing/barcode lifecycle audit — conditional slice accepted locally
 
@@ -228,7 +244,7 @@ NEXT ACTION (ONE PRECISE STEP): add the smallest fail-closed laboratory-report e
 - [x] Supplier QMS critical audit failure and factory denied acknowledgement remain blocked; authenticated browser evidence proves later partial acknowledgement does not clear the Critical failure or imply VESA approval.
 
 ### A-G06 — Inspection evidence, measurements, CAPA, quality analytics
-- [ ] Measurement POM/tolerance/actual/units validated and reported.
+- [x] Measurement POM/tolerance/actual/units validated and reported — authenticated explicit spec/matrix/piece-reading/OOT report and exact reopen proof in `14aeb66`.
 - [ ] Photos/documents and sample/lot/carton references link correctly and survive restore.
 - [ ] CAPA ownership and closure verification with original finding chain.
 - [ ] Quality analytics state numerator/denominator; missing data -> needs information, not fabricated result.
