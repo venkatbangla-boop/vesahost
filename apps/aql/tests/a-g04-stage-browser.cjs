@@ -1,4 +1,4 @@
-/** A-G04 browser proof: IPC and cutting stages create, save, reload and reopen losslessly. */
+/** A-G04 browser proof: IPC, cutting, loading and audit stages persist losslessly. */
 const assert = require('assert/strict');
 const fs = require('fs');
 const http = require('http');
@@ -6,7 +6,7 @@ const path = require('path');
 const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '../../..');
-const output = path.join(root, 'output', 'playwright', 'aql-a-g04-ipc-cutting-mobile.png');
+const output = path.join(root, 'output', 'playwright', 'aql-a-g04-stage-lifecycle-mobile.png');
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
 const mime = file => ({ '.css': 'text/css', '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.webmanifest': 'application/manifest+json' })[path.extname(file)] || 'application/octet-stream';
 
@@ -48,14 +48,16 @@ async function createStage(page, fixture) {
   await page.locator(`[data-action="stage-record"][data-module="${fixture.module}"]:visible`).first().click();
   for (const [name, value] of Object.entries(fixture.record)) {
     const field = page.locator(`#dialog [name="${name}"]`);
-    if (name === 'status') await field.selectOption(value);
+    if (await field.evaluate(element => element.tagName === 'SELECT')) await field.selectOption(value);
     else await field.fill(String(value));
   }
   await saveDialog(page);
   await page.keyboard.press('Control+s');
   await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
-  const saved = await page.evaluate(() => ({ id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: ResultEngine.evaluate(window.__vesaApp.p).stageDecision }));
-  assert.equal(saved.result, 'PENDING', `${fixture.stage} must remain pending while its explicit checklist is unresolved`);
+  const saved = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text) }; });
+  assert.equal(saved.stageDecision, fixture.expectedResult || 'PENDING', `${fixture.stage} returned an unexpected stage decision`);
+  if (fixture.expectedEngineResult) assert.equal(saved.result, fixture.expectedEngineResult, `${fixture.stage} result diverged from its stage decision`);
+  if (fixture.expectedFailure) assert.ok(saved.failures.includes(fixture.expectedFailure), `${fixture.stage} did not retain its expected failure reason`);
   assert.equal(saved.project.stageSuite.records.length, 1, `${fixture.stage} must save one stage record`);
   await page.locator('#app [data-action="home"]:visible').first().click();
   await page.waitForFunction(() => window.__vesaApp?.step === 'home');
@@ -97,6 +99,14 @@ async function run() {
       stage: 'cutting', module: 'cutting', buyer: 'A-G04 Cutting Buyer - Fictional', factory: 'A-G04 Cutting Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-CUT', reference: 'CUT-CRITERIA-REV-1', reviewer: 'Fictional Cutting Reviewer', coverage: 'One fictional lay; fixture only',
       record: { identity: 'LAY-A-G04-001', relaxStart: '2026-10-12 08:00', relaxEnd: '2026-10-12 10:00', ply: 20, shade: 'SHADE-A', marker: 'MARKER-REV-1', ratio: '1:2:2:1', tension: 'Fictional check', endLoss: 0.5, panel: 'Fictional panel review', notches: 'Reviewed', pairing: 'Reviewed', numbering: 'Reviewed', quantity: 120, checked: 20, temperature: 150, pressure: 3, time: 12, defects: 'No fictional defect claimed', release: 'Pending checklist completion', reference: 'CUT-CRITERIA-REV-1', status: 'Pass', note: 'Fictional browser fixture only' },
     });
+    const loading = await createStage(page, {
+      stage: 'loading', module: 'loading', expectedResult: 'LOADING NOT CONFORMED', expectedEngineResult: 'NOT CONFORMED', buyer: 'A-G04 Loading Buyer - Fictional', factory: 'A-G04 Loading Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-LOAD', reference: 'LOAD-CRITERIA-REV-1', reviewer: 'Fictional Loading Reviewer', coverage: 'Fictional container count reconciliation; fixture only',
+      record: { identity: 'CONT-A-G04-001', truck: 'TRUCK-FICTIONAL-01', seal: 'SEAL-FICTIONAL-01', condition: 'Fictional dry container check', cleanliness: 'Fictional clean observation', damage: 'No fictional damage claimed', expected: 100, loaded: 99, piecesExpected: 1000, piecesLoaded: 990, pallets: 10, sequence: 'Fictional sequence', random: 'CTN-001, CTN-050', start: '2026-10-12 08:00', end: '2026-10-12 09:00', environment: 'Fictional ambient condition', handover: 'Fictional driver handover', reference: 'LOAD-CRITERIA-REV-1', status: 'Pass', note: 'Deliberate quantity mismatch and missing photos; must not conform' },
+    });
+    const audit = await createStage(page, {
+      stage: 'audit', module: 'audit', expectedResult: 'NOT CONFORMED', expectedEngineResult: 'NOT CONFORMED', expectedFailure: 'AUDIT-A-G04-001: critical finding cannot pass without closure evidence', buyer: 'A-G04 Audit Buyer - Fictional', factory: 'A-G04 Audit Factory - Fictional', inspector: 'A-G04 Auditor - Fictional', orderKey: 'SUPPLIER-A-G04', reference: 'AUDIT-CRITERIA-REV-1', reviewer: 'Fictional Audit Reviewer', coverage: 'Fictional supplier QMS review; fixture only',
+      record: { identity: 'AUDIT-A-G04-001', area: 'Traceability', criterion: 'AUDIT-CRITERIA-REV-1', observation: 'Deliberate fictional critical finding for guard evidence', severity: 'Critical', owner: 'Fictional Supplier Owner', due: '2026-10-20', capa: 'CAPA-A-G04-001', verification: 'Pending independent verification', reference: 'AUDIT-CRITERIA-REV-1', status: 'Pass', note: 'Critical finding cannot pass merely because the record review says Pass' },
+    });
 
     fs.mkdirSync(path.dirname(output), { recursive: true });
     await page.screenshot({ path: output, fullPage: true });
@@ -108,10 +118,12 @@ async function run() {
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db && window.__vesaApp.step === 'home');
     await reopen(page, ipc);
     await reopen(page, cutting);
-    assert.deepEqual(pageErrors, [], 'IPC/cutting lifecycle must have no uncaught page errors');
-    assert.deepEqual(external, [], 'IPC/cutting lifecycle must make no external requests');
+    await reopen(page, loading);
+    await reopen(page, audit);
+    assert.deepEqual(pageErrors, [], 'stage lifecycle must have no uncaught page errors');
+    assert.deepEqual(external, [], 'stage lifecycle must make no external requests');
     await context.close();
-    console.log('AQL A-G04 stage browser passed: IPC + cutting UI create/criteria/record/save/reload/reopen, exact stage values, pending honesty, 390px no overflow, zero external requests/page errors');
+    console.log('AQL A-G04 stage browser passed: IPC + cutting + loading + supplier-audit UI create/criteria/record/save/reload/reopen, exact values, honest pending/failure outcomes, 390px no overflow, zero external requests/page errors');
   } finally { if (browser) await browser.close(); await host.stop().catch(() => {}); }
 }
 

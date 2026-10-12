@@ -22,7 +22,7 @@ assert(html.includes("String(row.stages||'')"), 'Competency import guard is miss
 assert(html.includes('cleanId') && html.includes('this.masters.stage(raw.masters)') && html.includes('Duplicate master identity'), 'Master import hardening is missing');
 
 new vm.Script(sw, { filename: 'apps/aql/service-worker.js' });
-assert(sw.includes("vesa-aql-2026-10-11-5"), 'AQL cache version is missing');
+assert(sw.includes("vesa-aql-2026-10-12-6"), 'AQL cache version is missing');
 assert(sw.includes("url.pathname.startsWith('/apps/aql/')"), 'AQL service worker scope guard is missing');
 
 new vm.Script(rootSw, { filename: 'service-worker.js' });
