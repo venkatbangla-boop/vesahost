@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | The A-G04 browser lifecycle now also covers inline, endline and pre-final, including a visible deliberate production failure, coherent endline quantities and a visible NOT READY decision with both approved-threshold failures. The 17-command matrix passed. |
-| NEXT ACTION | Extend authenticated disposable-browser A-G04 lifecycle evidence to incoming-material and production-monitoring stages, proving quantity/balance guards and exact reopen. |
+| LAST COMPLETED ACTION | The A-G04 browser lifecycle now also covers incoming-material and production-monitoring events; deliberate inspected-over-received and packed-over-order inconsistencies remain visibly PENDING with their exact reasons. The 17-command matrix passed. |
+| NEXT ACTION | Extend authenticated A-G04 fabric-stage evidence through shade and laboratory supporting registers, proving fail-closed record decisions and exact reopen. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ## Daily/new-session rule
@@ -581,6 +581,21 @@ IMPLEMENTED: Added fixture-only VM checks for in-tolerance PASS, out-of-toleranc
 TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g06-evidence-analytics.cjs` PASS; `node apps/aql/tests/a-g05-readiness-rework.cjs` PASS; `node apps/aql/tests/a-g04-stage.cjs` PASS; `node apps/aql/tests/a-g03-sampling.cjs` PASS; `node apps/aql/tests/a-g02-workflow.cjs` PASS; `node apps/aql/tests/a-g00-baseline.cjs` PASS (Q01-Q24 plus portable invariants); `node apps/aql/tests/release-contract.cjs` PASS; `node tests/vesa-workspace-shell-contract.cjs` PASS; `git diff --check` PASS.
 VERDICT: conditional — deterministic measurement and source contracts are locally proven; full asset restore, CAPA history, analytics denominator fixtures, huge-record performance, accessibility and rendered report review remain open.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run browser restore/report evidence for one measurement, document, finding, CAPA and carton chain without changing frozen AQL tables.
+```
+
+### A-G04 incoming/monitor browser lifecycle — conditional, browser slice accepted locally
+
+```text
+TIME / TIMEZONE: 2026-10-12 10:19 Asia/Dhaka
+GATE / OBJECTIVE: A-G04 — extend the authenticated 390px create/save/reload/reopen lifecycle to incoming-material and production-monitoring stages with explicit quantity/balance guards
+BRANCH / BASE COMMIT: feature/tna360-continuous / 7c533d0 (tested browser commit 52cede7)
+TEST COMMIT: 060d646
+FILE-LEVEL AUDIT: StageCatalog owns incoming/monitor form definitions; StageWorkspace owns visible create/criteria/record commands; StageQualityControls owns incoming quantity/lab guards; ProductionInspectionEngine owns monitor flow/balance guards; StageDecision owns failure-over-pending precedence; LocalRepository/Home Resume own durable reopen. In scope: extend apps/aql/tests/a-g04-stage-browser.cjs and update both trackers. Frozen/out of scope: apps/aql/index.html, service workers, SamplingEngine/Ac-Re, ProjectSchema/saved formats, other stage rules, sibling apps, production records and release actions. Risks are numeric fixture coercion, losing the exact pending reason, treating incomplete quantity reconciliation as conforming, selector drift and record mutation. Verification: real 390px forms, exact incoming inspected>received and monitor packed>order reasons, visible PENDING decisions, exact reopen, no overflow/network/page errors, screenshots, full regression and diff checks. Rollback: revert the additive test/docs group; disposable browser data is destroyed.
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md
+IMPLEMENTED / EVIDENCE: Extended the real 390px create/criteria/record/Ctrl+S/reload/Home-reopen sequence with two fictional records and added exact pending-reason assertions. Incoming material records 101 inspected against 100 received with explicit supplier/PO/batch/GRN/lab/warehouse/approver fields; it remains visibly PENDING with `INCOMING-A-G04-001: inspected quantity exceeds received`. Production monitoring records 105 packed against an order of 100 with cumulative flow values and dates; it remains visibly PENDING with `MONITOR-A-G04-001: Packed quantity exceeds order`. All nine accumulated stage events render their calculated decisions before leaving the workspace and reopen with exact stageSuite plus buyer/factory values. The reviewed Home screenshot shows nine separate saved drafts and no horizontal clipping.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/aql/tests/a-g04-stage-browser.cjs` PASS; focused browser lifecycle PASS; full 17-command AQL/shared matrix PASS in 76.2 seconds, including A-G00 Q01-Q24, A-G02 through A-G09, all A-G07 browser/storage/import/worker suites, release contract and shared shell contract; `git diff --check` PASS. Browser assertions report zero uncaught page errors and zero external requests. Visual evidence reviewed at output/playwright/aql-a-g04-material-monitor-mobile.png.
+VERDICT: conditional — the incoming/monitor browser lifecycle slice is accepted locally. A-G04 remains conditional for fabric shade/lab supporting-register browser evidence, remaining 35-area evidence, physical-device review and field acceptance; percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): extend authenticated A-G04 fabric-stage evidence through shade and laboratory supporting registers, proving their fail-closed record decisions and exact save/reload/reopen without altering frozen SamplingEngine/Ac-Re rules.
 ```
 
 ### A-G04 inline/endline/pre-final browser lifecycle — conditional, browser slice accepted locally
