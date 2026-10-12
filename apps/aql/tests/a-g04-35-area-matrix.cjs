@@ -28,9 +28,9 @@ for (const row of rows) {
 }
 
 const counts = rows.reduce((out, row) => ({ ...out, [row.verdict]: (out[row.verdict] || 0) + 1 }), {});
-assert.deepEqual(counts, { PROVEN_LOCAL: 23, CONDITIONAL: 10, DEFERRED_BY_SCOPE: 1, BLOCKED_EXTERNAL: 1 }, 'A-G04 honest-status counts changed without tracker review');
+assert.deepEqual(counts, { PROVEN_LOCAL: 25, CONDITIONAL: 8, DEFERRED_BY_SCOPE: 1, BLOCKED_EXTERNAL: 1 }, 'A-G04 honest-status counts changed without tracker review');
 assert.equal(rows.find(row => row.id === '26').verdict, 'CONDITIONAL', 'packing/carton area must remain conditional without approved randomization policy');
 assert.equal(rows.find(row => row.id === '33').verdict, 'DEFERRED_BY_SCOPE', 'native wrappers must remain deferred under the Free-only contract');
 assert.equal(rows.find(row => row.id === '35').verdict, 'BLOCKED_EXTERNAL', 'real factory pilot must not be represented as local proof');
 
-console.log('AQL A-G04 35-area evidence matrix passed: 35/35 unique rows, 23 proven local, 10 conditional, 1 deferred by scope, 1 external blocker');
+console.log('AQL A-G04 35-area evidence matrix passed: 35/35 unique rows, 25 proven local, 8 conditional, 1 deferred by scope, 1 external blocker');

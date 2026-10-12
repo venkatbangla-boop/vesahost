@@ -17,13 +17,25 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01 and A-G02; A-G03 sampling/provenance and visible authorisation-entry slice are conditional pending approved carton-randomization fixtures; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 have conditional fixture/source slices; PPM baseline dependency and provider services remain separate blockers |
 | Current gate | **A-G03** — AQL sampling/counting/lot-plan comprehensive audit |
-| LAST COMPLETED ACTION | Commit `4ebe87a` proved the visible factory-acknowledgement create/edit/save/reload/reopen lifecycle: denied receipt stayed pending, partial receipt cleared only that reason, and the original Critical supplier failure remained NOT CONFORMED. The 18-command matrix passed in 90.6 seconds. |
-| NEXT ACTION | Prove one authenticated failure → rework/CAPA → linked reinspection chain with immutable parent findings and independent child observations; do not change SamplingEngine/Ac-Re rules. |
+| LAST COMPLETED ACTION | Commit `1abeae7` proved the authenticated failure → verified CAPA → one-piece rework → linked reinspection chain with immutable parent/rework rows, independent child observations and exact reload/reopen. The final 18-command matrix passed in 95.4 seconds. |
+| NEXT ACTION | Prove one authenticated final-stage readiness/result lifecycle while retaining the frozen final AQL engine and all unresolved approvals; do not change SamplingEngine/Ac-Re rules. |
+| Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
-### A-G05 failure → CAPA → rework → linked reinspection audit — in progress
+### A-G05 failure → CAPA → rework → linked reinspection audit — conditional slice accepted locally
 
 FILE-LEVEL AUDIT: `StageWorkspace.capaAdd` owns explicit CAPA entry and requires verification plus effectiveness evidence for a Verified record. `StageWorkspace.create(category,true)` creates a distinct child project, copies only order context, stores the active event ID in `stageSuite.parent`, and initializes fresh checks/records/CAPA state. `StageDecision` owns the rework target-count, one-piece, repair, recheck and disposition guards. `InspectionApp.saveNow` → `AutosaveService` → `LocalRepository` owns independent durable rows, while `StageWorkspace.journey` renders saved same-order lineage. In scope: extend `apps/aql/tests/a-g04-stage-browser.cjs` and, after objective proof, the AQL/program trackers and 35-area evidence counts. Frozen/out of scope: `apps/aql/index.html`, service worker, `SamplingEngine`/Ac-Re tables, schemas and saved formats, other stage decisions, sibling apps, production records, release/deployment. Compatibility risks: accidentally mutating the source finding while recording CAPA, copying observations/CAPA into a child, losing the direct parent chain, or treating readiness as a final approval. Verification: authenticated visible UI entry, repository deep equality before/after each child, exact parent pointers and independent records, visible three-event journey, reload/reopen, 390px screenshot, no external requests/page errors, focused test plus full AQL/shared matrix. Rollback: revert the additive test/tracker patch; disposable browser state is destroyed.
-| Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
+
+```text
+TIME / TIMEZONE: 2026-10-12 16:08 Asia/Dhaka
+GATE / OBJECTIVE: A-G05 — prove a retained production failure, explicit verified CAPA, 100% one-piece rework and fresh linked reinspection as separate durable events
+BRANCH / BASE COMMIT / TEST COMMIT: feature/tna360-continuous / 2e3a49c / 1abeae7
+FILES CHANGED (EXACT): apps/aql/tests/a-g04-stage-browser.cjs; docs/aql/06_EXECUTION_TRACKER.md; VESA_PROGRESS.md evidence follows
+FROZEN / OUT OF SCOPE: apps/aql/index.html/runtime, service worker, SamplingEngine/Ac-Re, schemas/saved formats, unrelated stages, sibling apps, production records, release/deployment
+IMPLEMENTED / EVIDENCE: The authenticated 390px workflow reopened the deliberate inline failure, added a Verified CAPA with explicit containment/root cause/action/owner/verification/effectiveness, and proved the original NOT CONFORMED finding record did not change. New linked inspection then created a distinct rework child with the failed event as parent, exactly one independently identified repaired/rechecked/accepted piece matching the approved target, and no copied parent observation or CAPA. A second New linked inspection created a distinct reinspection child with the rework event as parent and one fresh readiness observation. Repository snapshots proved source and rework rows unchanged after each child save and after page reload; Order quality journey visibly listed all three report IDs/stages/results. Reinspection remained PENDING with unresolved final approvals, so no release or final pass was inferred.
+TEST COMMANDS + OUTPUT/COUNTS: `node --check apps/aql/tests/a-g04-stage-browser.cjs`, focused authenticated browser and `git diff --check` PASS. Final full AQL/shared regression PASS: 18 commands / 95.4s, including Q01-Q24, all stage/35-area contracts, current+legacy restore, strict atomic imports, 200/280 MiB boundary, quota rescue/restart, worker replacement/offline reopen, reports/language, cross-app boundaries, release and shared shell. Zero external requests or uncaught page errors. Visual evidence reviewed at `output/playwright/aql-a-g05-rework-reinspection-mobile.png`.
+VERDICT: conditional — the local failure/CAPA/rework/reinspection chain and areas 11/19 are accepted locally. Final-stage lifecycle, loading evidence/barcode, approved carton-randomization policy and physical/factory acceptance remain open; A-G05 and percentages do not change.
+NEXT ACTION (ONE PRECISE STEP): prove one authenticated final-stage readiness/result lifecycle while retaining the frozen final AQL engine and all unresolved approvals; do not change SamplingEngine/Ac-Re rules.
+```
 
 ## Daily/new-session rule
 At every Codex session: read `apps/aql/AGENTS.md` and this tracker; inspect `git status --short`, current branch/HEAD, last accepted commit and real test output. Reconcile the log before any new code. Read topic-specific document as required, then pick earliest incomplete unblocked gate, name exact change files/frozen files, test and record acceptance. Do not claim a feature finished while actual code/output differs. A current domain fixture change requires explicit review; don't turn a cosmetic issue into inspection-policy rewrite.
@@ -131,7 +143,7 @@ NEXT ACTION (ONE PRECISE STEP): add the smallest fail-closed laboratory-report e
 ### A-G05 — Pre-final/final/rework/reinspection/load/supplier QA
 - [ ] Prefinal readiness prerequisites and pending evidence cannot be bypassed.
 - [ ] Final AQL defect/severity result matches approved plan and original engine.
-- [ ] Rework/CAPA/reinspection creates linked history and never deletes prior failure.
+- [x] Rework/CAPA/reinspection creates linked history and never deletes prior failure — authenticated three-event browser chain, repository deep-equality checks, visible journey and exact reload/reopen.
 - [ ] Loading/carton/barcode/seal/handover traceability complete where selected.
 - [x] Supplier QMS critical audit failure and factory denied acknowledgement remain blocked; authenticated browser evidence proves later partial acknowledgement does not clear the Critical failure or imply VESA approval.
 
@@ -271,7 +283,7 @@ Each feature ID A01–A60 is initially `not-started / unverified for this rework
 | 08 | Endline quality | PROVEN_LOCAL | separate first-pass/count reconciliation and browser records | none for audited local contract |
 | 09 | IPC/pilot/first production | PROVEN_LOCAL | first-output field contract and authenticated IPC parent record | none for audited local contract |
 | 10 | Pre-final readiness | PROVEN_LOCAL | approved-threshold failures and visible NOT READY workspace | none for audited local contract |
-| 11 | 100% screening/rework | CONDITIONAL | repair, recheck, one-piece and target guards in A-G04/A-G05 fixtures | authenticated rework-to-reinspection history remains |
+| 11 | 100% screening/rework | PROVEN_LOCAL | authenticated one-piece target, repair/recheck/disposition and linked reinspection history | none for audited local contract |
 | 12 | Final readiness | CONDITIONAL | readiness source guards and frozen final AQL engine contracts | authenticated final-stage readiness and result lifecycle remains |
 | 13 | Loading supervision | CONDITIONAL | carton/piece mismatch, seal/photo requirements and browser reopen | real evidence assets, barcode checks and approved carton policy remain |
 | 14 | Production monitoring | PROVEN_LOCAL | output/balance guards and authenticated monitor reopen | none for audited local contract |
@@ -279,7 +291,7 @@ Each feature ID A01–A60 is initially `not-started / unverified for this rework
 | 16 | Master data | PROVEN_LOCAL | `a-g07-atomic-import.cjs`: bounded sanitized atomic master import | none for audited local contract |
 | 17 | Buyer profiles / instructions | CONDITIONAL | plan provenance plus versioned compliance/manual reference fields | approved real buyer instruction/evidence fixture remains |
 | 18 | Order journey | PROVEN_LOCAL | linked parent/child browser proof and visible journey IDs/results | none for audited local contract |
-| 19 | CAPA | CONDITIONAL | ownership, closure and evidence guards in A-G05/A-G06 contracts | authenticated finding-to-CAPA-to-reinspection chain remains |
+| 19 | CAPA | PROVEN_LOCAL | authenticated retained finding → verified CAPA → rework → reinspection chain with exact reopen | none for audited local contract |
 | 20 | Sync packs | PROVEN_LOCAL | strict two-half validation, rollback and selected-file rejection | none for audited local contract |
 | 21 | Offline names/signatures vs roles | PROVEN_LOCAL | local-login limitation and non-authenticated signature language are explicit | secure provider identity is outside local scope |
 | 22 | Competency / training | PROVEN_LOCAL | authenticated create/edit/save/reload/reopen, exact inspector/stage assignment warning and fail-closed expiry; copy remains explicit local aid/not accreditation | none for audited local contract |
