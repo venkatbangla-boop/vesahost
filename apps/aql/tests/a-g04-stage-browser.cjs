@@ -9,6 +9,7 @@ const root = path.resolve(__dirname, '../../..');
 const output = path.join(root, 'output', 'playwright', 'aql-a-g04-material-monitor-mobile.png');
 const readinessOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-prefinal-not-ready-mobile.png');
 const fabricOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-fabric-reject-hold-mobile.png');
+const controlOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-equipment-needle-metal-mobile.png');
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
 const mime = file => ({ '.css': 'text/css', '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.webmanifest': 'application/manifest+json' })[path.extname(file)] || 'application/octet-stream';
 
@@ -168,6 +169,23 @@ async function run() {
     await page.screenshot({ path: fabricOutput, fullPage: true });
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
+    await page.locator(`[data-action="resume"][data-id="${cutting.id}"]:visible`).first().click();
+    await page.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, cutting.id);
+    await addSupportingRecord(page, 'equipment', { identity: 'EQUIPMENT-A-G04-001', name: 'Fictional metal detector', location: 'Fictional finishing area', expiry: '2026-10-11', verification: 'Fictional pre-use check recorded', investigation: 'Deliberately expired one day before inspection', affected: 'CUTTING-A-G04-001', history: 'Fictional calibration history', reference: 'EQUIPMENT-CRITERIA-REV-1', status: 'Pass', note: 'Pass review cannot override expired calibration' });
+    await addSupportingRecord(page, 'needle', { identity: 'NEEDLE-A-G04-001', issued: 'Needle type DBX1', broken: 'Broken tip', recovered: 'No', machine: 'MACHINE-FICTIONAL-01', operator: 'Fictional Operator', isolated: 50, detected: 'No', release: '', fragments: '', reference: 'NEEDLE-CRITERIA-REV-1', status: 'Pass', note: 'Deliberately incomplete containment; fixture only' });
+    await addSupportingRecord(page, 'metal', { identity: 'METAL-A-G04-001', machine: 'METAL-FICTIONAL-01', challenge: 'Fe 1.0 / Non-Fe 1.2 / SS 1.5', setting: 'SETTING-REV-1', start: 'Fail', middle: 'Pass', end: 'Pass', reject: 'PIECE-FICTIONAL-01', recheck: 'Pending independent recheck', operator: 'Fictional Metal Operator', reference: 'METAL-CRITERIA-REV-1', status: 'Pass', note: 'Deliberate start challenge failure; fixture only' });
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const cuttingFinal = await page.evaluate(() => { const evaluated = ResultEngine.evaluate(window.__vesaApp.p); return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text) }; });
+    assert.equal(cuttingFinal.stageDecision, 'NOT CONFORMED', 'material-control failures must not conform');
+    assert.ok(cuttingFinal.failures.includes('EQUIPMENT-A-G04-001: Expired expiry on inspection date'), 'expired equipment failure reason is missing');
+    assert.ok(cuttingFinal.failures.includes('METAL-A-G04-001: start challenge failed'), 'metal start-challenge failure reason is missing');
+    assert.ok(cuttingFinal.pending.includes('NEEDLE-A-G04-001: Needle containment / supervisor release incomplete'), 'needle containment pending reason is missing');
+    assert.deepEqual(cuttingFinal.project.stageSuite.requiredModules, ['equipment', 'needle', 'metal'], 'material-control required-register order changed');
+    await page.getByText('NOT CONFORMED', { exact: true }).first().waitFor({ state: 'visible' });
+    await page.screenshot({ path: controlOutput, fullPage: true });
+    await page.locator('#app [data-action="home"]:visible').first().click();
+    await page.waitForFunction(() => window.__vesaApp?.step === 'home');
 
     fs.mkdirSync(path.dirname(output), { recursive: true });
     await page.screenshot({ path: output, fullPage: true });
@@ -178,7 +196,7 @@ async function run() {
     const reenter = page.locator('#vesa-enter'); if (await reenter.count()) await reenter.click();
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db && window.__vesaApp.step === 'home');
     await reopen(page, ipc);
-    await reopen(page, cutting);
+    await reopen(page, cuttingFinal);
     await reopen(page, loading);
     await reopen(page, audit);
     await reopen(page, inline);
@@ -190,7 +208,7 @@ async function run() {
     assert.deepEqual(pageErrors, [], 'stage lifecycle must have no uncaught page errors');
     assert.deepEqual(external, [], 'stage lifecycle must make no external requests');
     await context.close();
-    console.log('AQL A-G04 stage browser passed: nine stage lifecycles plus fabric roll/shade/lab supporting registers, exact reopen, honest quantity/balance/failure/readiness outcomes, 390px no overflow, zero external requests/page errors');
+    console.log('AQL A-G04 stage browser passed: nine stage lifecycles plus fabric and equipment/needle/metal supporting registers, exact reopen, honest quantity/balance/control/failure/readiness outcomes, 390px no overflow, zero external requests/page errors');
   } finally { if (browser) await browser.close(); await host.stop().catch(() => {}); }
 }
 
