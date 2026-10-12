@@ -8,6 +8,7 @@ const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '../../..');
 const output = path.join(root, 'output', 'playwright', 'aql-a-g04-material-monitor-mobile.png');
 const readinessOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-prefinal-not-ready-mobile.png');
+const readyForFinalOutput = path.join(root, 'output', 'playwright', 'aql-a-g05-prefinal-ready-mobile.png');
 const fabricOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-fabric-reject-hold-mobile.png');
 const controlOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-equipment-needle-metal-mobile.png');
 const competencyOutput = path.join(root, 'output', 'playwright', 'aql-a-g04-inspector-competency-mobile.png');
@@ -155,6 +156,10 @@ async function run() {
     const prefinal = await createStage(page, {
       stage: 'prefinal', module: 'readiness', expectedResult: 'NOT READY', expectedEngineResult: 'NOT CONFORMED', expectedFailure: 'PREFINAL-A-G04-001: production below approved readiness threshold', captureDecision: true, buyer: 'A-G04 Prefinal Buyer - Fictional', factory: 'A-G04 Prefinal Factory - Fictional', inspector: 'A-G04 Inspector - Fictional', orderKey: 'PO-A-G04-PREFINAL', reference: 'PREFINAL-CRITERIA-REV-1', reviewer: 'Fictional Prefinal Reviewer', coverage: 'Fictional readiness gate; fixture only',
       record: { identity: 'PREFINAL-A-G04-001', production: 80, packed: 70, minProduction: 90, minPacked: 80, reference: 'PREFINAL-THRESHOLD-REV-1', shipment: 1000, packingRevision: 'PACK-REV-1', openIssues: 'Fictional production and packing below approved thresholds', declaration: 'Fictional factory declaration pending completion', previous: 'PREFINAL-PRIOR-FICTIONAL', status: 'Pass', note: 'Deliberate readiness failure; fixture only' },
+    });
+    const prefinalReady = await createStage(page, {
+      stage: 'prefinal', module: 'readiness', buyer: 'A-G05 Prefinal Buyer - Fictional', factory: 'A-G05 Prefinal Factory - Fictional', inspector: 'A-G05 Prefinal Inspector - Fictional', orderKey: 'PO-A-G05-PREFINAL-READY', reference: 'PREFINAL-READY-CRITERIA-REV-1', reviewer: 'Fictional Prefinal Ready Reviewer', coverage: 'Fictional complete readiness review; fixture only',
+      record: { identity: 'PREFINAL-READY-A-G05-001', production: 100, packed: 100, minProduction: 90, minPacked: 80, reference: 'PREFINAL-READY-THRESHOLD-REV-1', shipment: 1000, packingRevision: 'PACK-READY-REV-A-G05', openIssues: 'No fictional open issue claimed; checkpoints still require explicit review', declaration: 'Fictional factory readiness declaration only', previous: '', status: 'Pass', note: 'Passing percentages alone must remain pending until checkpoint review' },
     });
     const finalReadiness = await createStage(page, {
       stage: 'final', module: 'readiness', buyer: 'A-G05 Final Buyer - Fictional', factory: 'A-G05 Final Factory - Fictional', inspector: 'A-G05 Final Inspector - Fictional', orderKey: 'PO-A-G05-FINAL', reference: 'FINAL-CRITERIA-REV-1', reviewer: 'Fictional Final Reviewer', coverage: 'Fictional readiness evidence only; final AQL sampling remains unresolved',
@@ -324,6 +329,39 @@ async function run() {
     const finalReadinessSaved = await page.evaluate(() => ({ id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)) }));
     await page.locator('[data-action="navigate"][data-step="0"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 0);
+    await page.locator('#app [data-action="home"]:visible').first().click();
+    await page.waitForFunction(() => window.__vesaApp?.step === 'home');
+
+    await openProject(page, prefinalReady.id);
+    const readyBeforeChecks = await page.evaluate(() => {
+      const evaluated = ResultEngine.evaluate(window.__vesaApp.p);
+      return { result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text), checks: JSON.parse(JSON.stringify(window.__vesaApp.p.stageSuite.checks)) };
+    });
+    assert.equal(readyBeforeChecks.stageDecision, 'PENDING', 'passing readiness percentages bypassed explicit pre-final checkpoint review');
+    assert.deepEqual(readyBeforeChecks.failures, [], 'ready pre-final record created an unsupported failure');
+    assert.ok(readyBeforeChecks.pending.includes('Production completion requires review / approved N/A reason'), 'unreviewed pre-final checkpoint did not remain pending');
+    assert.ok(readyBeforeChecks.checks.every(check => check.status === 'Pending' && check.note === ''), 'fresh pre-final checkpoints were not pending');
+    for (let index = 0; index < readyBeforeChecks.checks.length; index++) {
+      await page.locator(`[data-action="stage-check"][data-index="${index}"]:visible`).last().click();
+      await page.locator('#dialog [name="status"]').selectOption('Pass');
+      await page.locator('#dialog [name="note"]').fill(`Fictional explicit review completed for ${readyBeforeChecks.checks[index].name}; fixture only`);
+      await saveDialog(page);
+    }
+    await page.keyboard.press('Control+s');
+    await page.waitForFunction(() => document.getElementById('saveState')?.textContent === 'Saved locally');
+    const prefinalReadyFinal = await page.evaluate(() => {
+      const evaluated = ResultEngine.evaluate(window.__vesaApp.p);
+      return { id: window.__vesaApp.p.meta.id, project: JSON.parse(JSON.stringify(window.__vesaApp.p)), result: evaluated.result, stageDecision: evaluated.stageDecision, failures: evaluated.failures.map(item => item.text), pending: evaluated.pending.map(item => item.text) };
+    });
+    assert.equal(prefinalReadyFinal.stageDecision, 'READY FOR FINAL INSPECTION', 'explicitly reviewed ready pre-final stage did not reach its readiness-only decision');
+    assert.equal(prefinalReadyFinal.result, 'CONFORMED', 'completed pre-final requirements retained an unexplained blocker');
+    assert.deepEqual(prefinalReadyFinal.failures, [], 'completed pre-final review retained a failure');
+    assert.deepEqual(prefinalReadyFinal.pending, [], 'completed pre-final review retained a pending requirement');
+    assert.ok(prefinalReadyFinal.project.stageSuite.checks.every(check => check.status === 'Pass' && check.note.includes('Fictional explicit review completed')), 'pre-final checkpoint observations were not retained');
+    assert.equal(prefinalReadyFinal.project.meta.locked, false, 'readiness-only decision locked or finalised the inspection');
+    assert.equal(prefinalReadyFinal.project.disposition.status, 'Not released', 'readiness-only decision created a shipment release');
+    await page.getByText('READY FOR FINAL INSPECTION', { exact: true }).first().waitFor({ state: 'visible' });
+    await page.screenshot({ path: readyForFinalOutput, fullPage: true });
     await page.locator('#app [data-action="home"]:visible').first().click();
     await page.waitForFunction(() => window.__vesaApp?.step === 'home');
 
@@ -622,6 +660,7 @@ async function run() {
     await reopen(page, reinspectionChild);
     await reopen(page, endline);
     await reopen(page, prefinal);
+    await reopen(page, prefinalReadyFinal);
     await reopen(page, finalReadinessSaved);
     await reopen(page, incomingFinal);
     await reopen(page, monitor);
@@ -649,7 +688,7 @@ async function run() {
     assert.deepEqual(pageErrors, [], 'stage lifecycle must have no uncaught page errors');
     assert.deepEqual(external, [], 'stage lifecycle must make no external requests');
     await context.close();
-    console.log('AQL A-G04/A-G05 stage browser passed: owned loading before/after originals, reconciled quantities, retained seal/handover and explicit randomization boundary; final readiness stays pending and cannot lock without frozen-engine approvals; immutable failure/CAPA/rework/reinspection; exact reopen, 390px no overflow, zero external requests/page errors');
+    console.log('AQL A-G04/A-G05 stage browser passed: pre-final percentages stay pending until all checkpoints are explicitly reviewed, then yield readiness only without lock/release; owned loading evidence; final fail-closed readiness; immutable failure/CAPA/rework/reinspection; exact reopen, 390px no overflow, zero external requests/page errors');
   } finally { if (browser) await browser.close(); await host.stop().catch(() => {}); }
 }
 
