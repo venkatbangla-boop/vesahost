@@ -57,6 +57,8 @@ for (const requiredText of [
   "['audit','Supplier quality audit']",
   "['fabric-roll','Fabric roll inspection']",
   "['materials','Incoming materials / shade']",
+  "['production-control','Cutting / IPC / Inline']",
+  "['readiness-control','Endline & Pre-Final Readiness']",
   "['measurements','Measurement report']",
   "['packing','Packing / barcode report']",
   "['capa','CAPA tracker']",
@@ -89,6 +91,8 @@ for (const requiredText of [
   "['Roll record','Roll ID','Mill','Batch / dye lot','Ticket','Invoice quantity','Received quantity','Ticket length m'",
   "['Incoming record','Material / lot','Material path','Supplier / mill','PO / material code','Batch','GRN / invoice reference'",
   "['Shade record','Record identity','Approved standard','Lab dip / strike-off','Light source','Roll / dye lot'",
+  "['Source record',...fields.map(field=>field.label),'Calculated DHU','Calculated defective %'",
+  "module==='endline'?['Calculated DHU','Calculated defective %','Calculated RFT %']:['Production margin vs approved minimum','Packing margin vs approved minimum','RFT not applicable']",
   "['buyer','technical','exceptions','packing','sampling','defects']",
 ]) {
   expect(html.includes(requiredText) || preferences.includes(requiredText), `A-G08 report/language/accessibility guard is missing: ${requiredText}`);

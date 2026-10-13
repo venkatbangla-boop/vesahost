@@ -822,10 +822,86 @@ async function run() {
     assert.equal(await materialsPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR07 report causes page-level overflow');
     await materialsPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar07-incoming-shade-1280.png'), fullPage: true });
     await materialsPage.close();
+
+    const controlFixtures = [
+      {
+        stage: 'cutting', preset: 'production-control', label: 'Cutting / IPC / Inline', title: 'Cutting / IPC / Inline', section: 'production-control', reportId: 'A-G08-AR08-CUTTING', decision: 'CONFORMED', review: 'RECORDED REVIEW — NOT BULK OR SEWING RELEASE', metrics: ['Not applicable', 'Not applicable'],
+        keys: ['identity','relaxStart','relaxEnd','ply','shade','marker','ratio','tension','endLoss','panel','notches','pairing','numbering','quantity','checked','temperature','pressure','time','defects','release'],
+        record: { id:'AR08-CUT-ROW', module:'cutting', identity:'LAY-AR08-001', relaxStart:'08:00', relaxEnd:'10:00', ply:40, shade:'DYELOT-AR08-A', marker:'MARKER-AR08-R2', ratio:'2:2:1', tension:'Recorded aligned', endLoss:1.5, panel:'Chest +1 mm', notches:'Recorded complete', pairing:'Recorded paired', numbering:'SEQ-001-400', quantity:400, checked:40, temperature:'155 C', pressure:'3.2 bar', time:'12 seconds', defects:'Notch <review> & panel mark', release:'Recorded release entry only', reference:'CUT-AR08-SOURCE', status:'Pass', note:'Synthetic cutting row; no sewing release claim.' }
+      },
+      {
+        stage: 'ipc', preset: 'production-control', label: 'Cutting / IPC / Inline', title: 'Cutting / IPC / Inline', section: 'production-control', reportId: 'A-G08-AR08-IPC', decision: 'CONFORMED', review: 'RECORDED REVIEW — NOT BULK OR SEWING RELEASE', metrics: ['Not applicable', 'Not applicable'],
+        keys: ['identity','style','line','quantity','sample','pattern','construction','attachments','risk','actions'],
+        record: { id:'AR08-IPC-ROW', module:'ipc', identity:'PILOT-AR08-001', style:'STYLE-AR08', line:'LINE-03', quantity:8, sample:'PP-AR08-R1', pattern:'PATTERN-AR08-R2', construction:'Recorded seam construction', attachments:'Folder A / guide B', risk:'Collar alignment', actions:'Adjust guide; verify first 8 pieces', reference:'IPC-AR08-SOURCE', status:'Pass', note:'Synthetic IPC row; no bulk approval claim.' }
+      },
+      {
+        stage: 'inline', preset: 'production-control', label: 'Cutting / IPC / Inline', title: 'Cutting / IPC / Inline', section: 'production-control', reportId: 'A-G08-AR08-INLINE', decision: 'PENDING', review: 'UNRESOLVED — Occurrences cannot be less than defective units; repair exceeds defective', metrics: ['10.000', '12.000'],
+        keys: ['identity','date','shift','line','operation','operator','machine','style','color','size','wip','inspected','defective','occurrences','defects','repair','recheck','passRepair','containment','stop','supervisor','capa'],
+        record: { id:'AR08-INLINE-ROW', module:'inline', identity:'SLOT-AR08-10AM', date:'2026-10-13', shift:'A', line:'LINE-05', operation:'OP-210', operator:'Fictional operator', machine:'MC-AR08-05', style:'STYLE-AR08', color:'Navy', size:'M', wip:250, inspected:100, defective:12, occurrences:10, defects:'Seam <open> & skip stitch', repair:13, recheck:10, passRepair:9, containment:'Recorded bundle isolation', stop:'Yes', supervisor:'Fictional supervisor', capa:'CAPA-AR08-01', reference:'INLINE-AR08-SOURCE', status:'Pass', note:'Deliberate quantity inconsistency remains pending.' }
+      },
+      {
+        stage: 'endline', preset: 'readiness-control', label: 'Endline & Pre-Final Readiness', title: 'Endline & Pre-Final Readiness', section: 'readiness-control', reportId: 'A-G08-AR09-ENDLINE', decision: 'PENDING', review: 'UNRESOLVED — First-pass accepted + defective must equal inspected; repair exceeds defective', metrics: ['12.000', '10.000', '89.000'],
+        keys: ['identity','date','shift','line','style','color','size','inspected','defective','occurrences','firstPass','repair','recheck','passRepair','defects','supervisor','capa'],
+        record: { id:'AR09-ENDLINE-ROW', module:'endline', identity:'END-AR09-1400', date:'2026-10-13', shift:'B', line:'LINE-07', style:'STYLE-AR09', color:'Black', size:'L', inspected:100, defective:10, occurrences:12, firstPass:89, repair:11, recheck:10, passRepair:9, defects:'Hem <open> & label issue', supervisor:'Fictional endline supervisor', capa:'CAPA-AR09-01', reference:'ENDLINE-AR09-SOURCE', status:'Pass', note:'Deliberate first-pass reconciliation issue.' }
+      },
+      {
+        stage: 'prefinal', preset: 'readiness-control', label: 'Endline & Pre-Final Readiness', title: 'Endline & Pre-Final Readiness', section: 'readiness-control', reportId: 'A-G08-AR09-PREFINAL', decision: 'NOT READY', review: 'UNRESOLVED — production below approved readiness threshold', metrics: ['-10', '10', 'Not applicable'],
+        keys: ['identity','production','packed','minProduction','minPacked','reference','shipment','packingRevision','openIssues','declaration','previous'],
+        record: { id:'AR09-PREFINAL-ROW', module:'readiness', identity:'READY-AR09-001', production:80, packed:90, minProduction:90, minPacked:80, reference:'PREFINAL-THRESHOLD-AR09-R1', shipment:1000, packingRevision:'PL-AR09-R3', openIssues:'Open repair <25 pieces> & review', declaration:'Recorded factory declaration only', previous:'PREVIOUS-AR09-REPORT', status:'Pass', note:'Deliberate production threshold failure.', criterion:'unused' }
+      }
+    ];
+    const controlHtml = {};
+    for (const fixture of controlFixtures) {
+      const observed = await page.evaluate(async fixture => {
+        const app = window.__vesaApp, p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+        app.closeDialog();
+        Object.assign(p.meta, { id:`EVENT-${fixture.reportId}`, reportId:fixture.reportId, revision:2 });
+        Object.assign(p.info, { buyer:`${fixture.reportId} Buyer - Fictional`, factory:`${fixture.reportId} Factory - Fictional`, inspector:`${fixture.reportId} Inspector - Fictional`, date:'2026-10-13', kind:StageCatalog.stages[fixture.stage][0] });
+        p.stageSuite = StageCatalog.fresh(fixture.stage);
+        Object.assign(p.stageSuite, { orderKey:`ORDER-${fixture.reportId}`, reference:`CRITERIA-${fixture.reportId}`, approvedBy:'Fictional criteria reviewer', sampling:'Explicit fictional current-event coverage only.' });
+        p.stageSuite.checks = p.stageSuite.checks.map(check=>({...check,status:'Pass',note:'Explicit fictional checkpoint review.'}));
+        p.stageSuite.records=[fixture.record];
+        await app.setProject(p); app.step=0; app.render(); app.reportDialog(fixture.preset);
+        const option=[...app.dialog.querySelectorAll('[name="preset"] option')].find(node=>node.value===fixture.preset),before=JSON.stringify(app.p),html=await ReportComposer.html(app.p,app.assets,{...app.p.report,preset:fixture.preset}),doc=new DOMParser().parseFromString(html,'text/html'),section=doc.getElementById(fixture.section),row=[...section.querySelectorAll('tbody tr')[0].cells].map(cell=>cell.textContent.trim()),headers=[...section.querySelectorAll('thead th')].map(cell=>cell.textContent.trim());
+        return { option:option?.textContent, html, row, headers, decision:ResultEngine.evaluate(app.p).stageDecision, unchanged:before===JSON.stringify(app.p), title:doc.querySelector('h1')?.textContent, scripts:doc.querySelectorAll('script').length };
+      }, fixture);
+      assert.equal(observed.option, fixture.label, `${fixture.stage} Report Studio preset is missing or renamed`);
+      assert.equal(observed.title, fixture.title, `${fixture.stage} dedicated report title changed`);
+      assert.equal(observed.decision, fixture.decision, `${fixture.stage} frozen stage decision changed`);
+      assert.equal(observed.unchanged, true, `${fixture.stage} report generation mutated its source project`);
+      assert.equal(observed.scripts, 0, `${fixture.stage} report contains a script node`);
+      assert.deepEqual(observed.row.slice(1,1+fixture.keys.length), fixture.keys.map(key=>String(fixture.record[key])), `${fixture.stage} exact recorded field sequence changed`);
+      assert.deepEqual(observed.row.slice(1+fixture.keys.length,1+fixture.keys.length+fixture.metrics.length), fixture.metrics, `${fixture.stage} existing calculated metrics changed`);
+      assert.deepEqual(observed.row.slice(-4), [fixture.record.reference,fixture.record.status,fixture.record.note,fixture.review], `${fixture.stage} source/review reconciliation changed`);
+      const hostile=Object.values(fixture.record).find(value=>typeof value==='string'&&/[<&>]/.test(value));
+      if(hostile)assert.ok(observed.html.includes(hostile.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')), `${fixture.stage} hostile recorded text was not escaped`);
+      assert.ok((observed.html.includes('only the copied current')&&observed.html.includes('never merged'))||observed.html.includes('does not read, combine or infer'), `${fixture.stage} report lost its independent-event boundary`);
+      controlHtml[fixture.stage]=observed.html;
+    }
+    for (const [stage,id] of [['inline','production-control'],['prefinal','readiness-control']]) {
+      const reportPage=await context.newPage();
+      await reportPage.setViewportSize({width:390,height:844});
+      await reportPage.setContent(controlHtml[stage],{waitUntil:'domcontentloaded'});
+      assert.equal(await reportPage.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth),false,`${stage} 390px report causes page-level overflow`);
+      assert.equal(await reportPage.locator(`#${id}`).evaluate(element=>element.scrollWidth>element.clientWidth),true,`${stage} wide report is not contained in its review region`);
+      await reportPage.screenshot({path:path.join(outputDir,`aql-a-g08-${stage}-390.png`),fullPage:true});
+      await reportPage.locator(`#${id}`).evaluate(element=>{element.scrollLeft=element.scrollWidth;});
+      await reportPage.screenshot({path:path.join(outputDir,`aql-a-g08-${stage}-390-right.png`),fullPage:true});
+      await reportPage.setViewportSize({width:1280,height:900});
+      await reportPage.locator(`#${id}`).evaluate(element=>{element.scrollLeft=0;});
+      assert.equal(await reportPage.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth),false,`${stage} 1280px report causes page-level overflow`);
+      await reportPage.screenshot({path:path.join(outputDir,`aql-a-g08-${stage}-1280.png`),fullPage:true});
+      await reportPage.close();
+    }
+    const emptyControls = await page.evaluate(async () => {
+      const app=window.__vesaApp, output=[];
+      for(const [stage,preset,text] of [['inline','production-control','No inline records are recorded. This does not prove that the stage was inspected, completed or released.'],['prefinal','readiness-control','No readiness records are recorded. This does not prove endline completion, pre-final readiness or approval.']]){const p=ProjectSchema.fresh('Knit Top / T-Shirt / Polo');p.stageSuite=StageCatalog.fresh(stage);const before=JSON.stringify(p),html=await ReportComposer.html(p,app.assets,{...p.report,preset});output.push({text,html,unchanged:before===JSON.stringify(p)});}return output;
+    });
+    for(const row of emptyControls){assert.equal(row.unchanged,true,'empty AR08/AR09 report mutated source');assert.ok(row.html.includes(row.text),'empty AR08/AR09 report inferred inspection, readiness or approval');}
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join(' | ')}`);
     assert.deepEqual(consoleErrors, [], `console errors: ${consoleErrors.join(' | ')}`);
     assert.deepEqual(external, [], `unexpected external requests: ${external.join(' | ')}`);
-    console.log(`A-G08 STAGE/AR02/AR03/AR04/AR06/AR07/AR10/AR12/AR13/AR14 REPORTS PASS: 13 stage routes plus factory follow-up, sampling, Pareto, material-control, reinspection, loading, CAPA and supplier-audit reconciliation at 390/1280; ${path.relative(root, outputDir)}`);
+    console.log(`A-G08 STAGE/AR02/AR03/AR04/AR06/AR07/AR08/AR09/AR10/AR12/AR13/AR14 REPORTS PASS: 13 stage routes plus factory follow-up, sampling, Pareto, material-control, production/readiness, reinspection, loading, CAPA and supplier-audit reconciliation at 390/1280; ${path.relative(root, outputDir)}`);
   } finally {
     if (browser) await browser.close();
     await host.stop();
