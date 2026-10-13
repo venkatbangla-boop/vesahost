@@ -7,6 +7,7 @@ const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '../../..');
 const output = path.join(root, 'output', 'playwright', 'aql-a-g05-final-ac-re-boundary-mobile.png');
+const buyerOutput = width => path.join(root, 'output', 'playwright', `aql-a-g08-ar01-buyer-final-${width}.png`);
 const session = { email: 'qa@vesaent.com', name: 'QA User', role: 'admin', userKey: 'qa-vesaent-com', loginAt: '2026-10-12T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' };
 const mime = file => ({ '.css': 'text/css', '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.webmanifest': 'application/manifest+json' })[path.extname(file)] || 'application/octet-stream';
 
@@ -79,7 +80,7 @@ async function run() {
       app.store.change('Synthetic approved Final Ac/Re boundary fixture prepared', p => {
         const line = { ...ProjectSchema.order(), po: 'PO-A-G05-FINAL-BOUNDARY', item: 'STYLE-A-G05-BOUNDARY', description: 'Fictional Final AQL fixture only', color: 'NAVY', size: 'M', orderQty: 90, qty: 90, available: 90, allocated: 0, checked: 0, group: '', source: 'Synthetic browser fixture' };
         p.orders = [line];
-        Object.assign(p.info, { kind: 'Final random inspection', production: 100, packed: 100, publicNote: 'Synthetic A-G05 boundary fixture only; not buyer approval or shipment release.' });
+        Object.assign(p.info, { kind: 'Final random inspection', production: 100, packed: 100, publicNote: 'Synthetic A-G05 <boundary> & fixture only; not buyer approval or shipment release.' });
         Object.assign(p.rules, { groupBy: 'combined', basis: 'units', unitClass: 'highest', level: 'III', plan: 'reference', major: '1.5', minor: '6.5', critical: 0, confirmed: false, reference: 'FICTIONAL-A-G05-APPROVED-PLAN-REV-1', requirePhotos: false });
         p.stageSuite.reference = 'FICTIONAL-FINAL-CRITERIA-REV-1';
         p.stageSuite.approvedBy = 'Fictional Final Criteria Reviewer';
@@ -166,9 +167,30 @@ async function run() {
     assert.equal(reopened.groupResult, 'FAIL', 'reopened workmanship boundary changed');
     assert.equal(reopened.result, 'NOT CONFORMED', 'reopened overall result changed');
     assert.ok(reopened.failure.includes('Combined lot: workmanship acceptance limit exceeded.'), 'reopened failure reason changed');
+    const buyerReport = await page.evaluate(async () => {
+      const app=window.__vesaApp,before=JSON.stringify(app.p),html=await ReportComposer.html(app.p,app.assets,{...app.p.report,preset:'buyer',clientSafe:true}),doc=new DOMParser().parseFromString(html,'text/html'),rows=id=>[...doc.querySelectorAll(`#${id} tbody tr`)].map(row=>[...row.cells].map(cell=>cell.textContent.trim()));
+      return {html,text:doc.body.textContent,order:rows('orders'),sampling:rows('sampling'),unchanged:before===JSON.stringify(app.p),scripts:doc.querySelectorAll('script').length};
+    });
+    assert.equal(buyerReport.unchanged,true,'AR01 buyer report mutated the reopened final event');
+    assert.equal(buyerReport.scripts,0,'AR01 buyer report contains a script node');
+    assert.deepEqual(buyerReport.order,[['PO-A-G05-FINAL-BOUNDARY','STYLE-A-G05-BOUNDARY','NAVY','M','90','90']],'AR01 order/lot identity changed');
+    assert.deepEqual(buyerReport.sampling[0].slice(0,10),['Combined lot','90','F','20','20','20','0','1/2','3/4','0/2/0'],'AR01 sampling source/code/sample/Ac-Re/count fields changed');
+    assert.equal(buyerReport.sampling[0][10],'FAIL','AR01 failed lot result changed');
+    assert.equal(buyerReport.sampling[0][11],'Legacy normal reference / FICTIONAL-A-G05-APPROVED-PLAN-REV-1','AR01 plan-source disclosure changed');
+    for(const expected of ['A-G05 Final Boundary Buyer - Fictional','Final random inspection','NOT CONFORMED','Shipment disposition: Not released','Fictional major seam defect A','Fictional major seam defect B','Combined lot: workmanship acceptance limit exceeded.','FICTIONAL-A-G05-APPROVED-PLAN-REV-1','Not a laboratory certification, shipment release or guarantee for every unit.'])assert.ok(buyerReport.text.includes(expected),`AR01 buyer report is missing ${expected}`);
+    assert.ok(buyerReport.html.includes('Synthetic A-G05 &lt;boundary&gt; &amp; fixture only')&&!buyerReport.html.includes('Synthetic A-G05 <boundary>'),'AR01 buyer report did not escape hostile public text');
+    const reportPage=await context.newPage();
+    await reportPage.setViewportSize({width:390,height:844});
+    await reportPage.setContent(buyerReport.html,{waitUntil:'domcontentloaded'});
+    assert.equal(await reportPage.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth),false,'AR01 390px report causes page-level overflow');
+    await reportPage.screenshot({path:buyerOutput('390'),fullPage:true});
+    await reportPage.setViewportSize({width:1280,height:900});
+    assert.equal(await reportPage.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth),false,'AR01 1280px report causes page-level overflow');
+    await reportPage.screenshot({path:buyerOutput('1280'),fullPage:true});
+    await reportPage.close();
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join(' | ')}`);
     assert.deepEqual(external, [], `unexpected external requests: ${external.join(' | ')}`);
-    console.log(`A-G05 FINAL BOUNDARY PASS: code F / n20 / Major Ac1-Re2; visible findings 1=PASS, 2=FAIL; ${path.relative(root, output)}`);
+    console.log(`A-G05/AR01 FINAL BUYER REPORT PASS: code F / n20 / Major Ac1-Re2; visible findings 1=PASS, 2=FAIL; exact immutable buyer report at 390/1280; ${path.relative(root, output)}`);
   } finally {
     if (browser) await browser.close();
     await host.stop();
