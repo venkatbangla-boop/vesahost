@@ -5,6 +5,7 @@ const vm = require('vm');
 const htmlPath = 'apps/aql/index.html';
 const html = fs.readFileSync(htmlPath, 'utf8');
 const preferences = fs.readFileSync('js/preferences.js', 'utf8');
+const tracker = fs.readFileSync('docs/aql/06_EXECUTION_TRACKER.md', 'utf8');
 
 function expect(condition, message) {
   assert.ok(condition, message);
@@ -48,6 +49,8 @@ for (const requiredText of [
   "['exceptions','Exception-focused report']",
   "['snapshot','Executive snapshot']",
   "['photos','Photo evidence']",
+  "option.value='sampling'",
+  "option.textContent='Sampling plan & allocation'",
   "['measurements','Measurement report']",
   "['packing','Packing / barcode report']",
   "['capa','CAPA / reinspection report']",
@@ -64,6 +67,10 @@ for (const requiredText of [
   "['en','ta','bn','hi'].includes(lang)",
   'vesa-preferences-change',
   'root.lang=s.language',
+  "sampling:['orders','sampling']",
+  "if(config.preset==='sampling')p.info.kind='Sampling Plan & Allocation'",
+  "['Lot','Qty','Code','Required sample','Allocated','Checked'",
+  "['buyer','technical','exceptions','packing','sampling']",
 ]) {
   expect(html.includes(requiredText) || preferences.includes(requiredText), `A-G08 report/language/accessibility guard is missing: ${requiredText}`);
 }
@@ -71,5 +78,9 @@ for (const requiredText of [
 expect(html.includes('id="m45-report-verification"'), 'A-G08 visible report verification token is missing.');
 expect(!html.includes('window.VESA_REPORT_TOKEN='), 'A-G08 report decorator must not append executable token script.');
 expect(html.includes('role="region" aria-label="${this.e(title)} table" tabindex="0"'), 'A-G08 report table sections must remain named keyboard-focusable regions.');
+const reportRows = [...tracker.matchAll(/^\| (AR\d{2}) \| ([^|]+) \| (PROVEN_LOCAL|CONDITIONAL) \|/gm)];
+expect(reportRows.length === 15, 'A-G08 AR01-AR15 reconciliation must retain exactly 15 auditable rows.');
+expect(new Set(reportRows.map(row => row[1])).size === 15, 'A-G08 AR01-AR15 reconciliation contains duplicate report IDs.');
+for (const id of ['AR03', 'AR05', 'AR15']) expect(reportRows.some(row => row[1] === id && row[3] === 'PROVEN_LOCAL'), `${id} local report evidence status changed.`);
 
 console.log('AQL A-G08 report, language and accessibility contract checks passed');

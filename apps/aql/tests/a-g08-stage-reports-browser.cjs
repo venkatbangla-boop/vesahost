@@ -163,10 +163,76 @@ async function run() {
     await page.setViewportSize({ width: 1280, height: 900 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '1280px preview causes page-level overflow');
     await page.screenshot({ path: path.join(outputDir, 'aql-a-g08-stage-report-1280.png'), fullPage: true });
+
+    const samplingExpected = await page.evaluate(async () => {
+      const app = window.__vesaApp;
+      app.closeDialog();
+      const p = app.controls.demo('apparel');
+      p.meta.reportId = 'A-G08-AR03-SAMPLING';
+      p.info.buyer = 'Buyer <North> & Fictional';
+      p.info.date = '2026-10-13';
+      await app.setProject(p);
+      app.step = 5;
+      app.render();
+      const r = ResultEngine.evaluate(p);
+      return {
+        unchanged: JSON.stringify(app.p),
+        groups: r.groups.map(g => ({ label: g.label, lot: g.lot, code: g.plan.code, required: g.plan.n, allocated: g.allocated, checked: g.checked, major: g.plan.major, minor: g.plan.minor, result: g.result })),
+        plan: { standard: p.planApproval.standard, edition: p.planApproval.edition, reference: p.planApproval.reference }
+      };
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#app [data-action="report"]:visible').first().click();
+    const samplingOption = page.locator('#dialog [name="preset"] option[value="sampling"]');
+    assert.equal(await samplingOption.count(), 1, 'Report Studio is missing the AR03 sampling preset');
+    assert.equal(await samplingOption.textContent(), 'Sampling plan & allocation', 'AR03 sampling preset label changed');
+    await page.locator('#dialog [name="preset"]').selectOption('sampling');
+    await page.locator('#dialog [name="remember"]').uncheck();
+    await page.locator('#dialog [data-action="report-preview"]').click();
+    const samplingFrame = page.frameLocator('#reportFrame');
+    await samplingFrame.locator('h1').filter({ hasText: 'Sampling Plan & Allocation' }).waitFor({ state: 'visible' });
+    const samplingText = await samplingFrame.locator('body').innerText();
+    for (const expected of ['A-G08-AR03-SAMPLING', 'Buyer <North> & Fictional', 'Sampling standard / edition', samplingExpected.plan.edition, samplingExpected.plan.reference, 'Required sample', 'Allocated', 'Checked', 'Issues / support', 'Sample allocation and quantity differences', 'Operational legacy reference only']) assert.ok(samplingText.includes(String(expected)), `AR03 preview is missing ${expected}`);
+    for (const group of samplingExpected.groups) {
+      for (const expected of [group.label, group.lot, group.code, group.required, group.allocated, group.checked, group.result]) assert.ok(samplingText.includes(String(expected)), `AR03 preview is missing group value ${expected}`);
+    }
+    assert.equal(await samplingFrame.locator('#sampling[role="region"][aria-label="Sampling & acceptance table"][tabindex="0"]').count(), 1, 'AR03 plan table is not a named keyboard-focusable region');
+    assert.equal(await samplingFrame.locator('script').count(), 0, 'AR03 preview contains a script node');
+    assert.equal(await page.evaluate(expected => JSON.stringify(window.__vesaApp.p) === expected, samplingExpected.unchanged), true, 'AR03 report generation mutated its source project');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '390px AR03 preview causes page-level overflow');
+    const samplingHtml = await page.evaluate(() => window.__vesaApp.reportHtml);
+    const samplingPage = await context.newPage();
+    await samplingPage.setViewportSize({ width: 390, height: 844 });
+    await samplingPage.setContent(samplingHtml, { waitUntil: 'domcontentloaded' });
+    assert.equal(await samplingPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 390px AR03 report causes page-level overflow');
+    await samplingPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar03-sampling-390.png'), fullPage: true });
+
+    const unsupported = await page.evaluate(async () => {
+      const app = window.__vesaApp, p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      Object.assign(p.info, { buyer: 'Unsupported Plan Fixture - Fictional', factory: 'Fictional Factory', inspector: 'Fictional Inspector', date: '2026-10-13' });
+      p.meta.reportId = 'A-G08-AR03-UNSUPPORTED';
+      p.rules.reference = 'Fictional unsupported reference-cell probe';
+      p.orders = [{ ...ProjectSchema.order(), po: 'PO-AR03-UNSUPPORTED', item: 'TS-UNSUPPORTED', color: 'Blue', size: 'M', qty: 8, orderQty: 8, allocated: 0, checked: 0 }];
+      const before = JSON.stringify(p);
+      const html = await ReportComposer.html(p, app.assets, { ...p.report, preset: 'sampling' });
+      return { html, unchanged: before === JSON.stringify(p) };
+    });
+    assert.equal(unsupported.unchanged, true, 'unsupported AR03 report mutated its source project');
+    assert.ok(unsupported.html.includes('This reference cell needs an arrow / unsupported plan. Enter a buyer-approved custom sample and all limits; no denominator is guessed.'), 'unsupported AR03 report lost the exact no-guess explanation');
+    assert.ok(unsupported.html.includes('Unresolved'), 'unsupported AR03 report did not expose unresolved Ac/Re');
+    assert.ok(unsupported.html.includes('PENDING'), 'unsupported AR03 report falsely passed');
+    assert.ok(!/<script\b/i.test(unsupported.html), 'unsupported AR03 report contains executable script');
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '1280px AR03 preview causes page-level overflow');
+    await samplingPage.setViewportSize({ width: 1280, height: 900 });
+    assert.equal(await samplingPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR03 report causes page-level overflow');
+    await samplingPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar03-sampling-1280.png'), fullPage: true });
+    await samplingPage.close();
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join(' | ')}`);
     assert.deepEqual(consoleErrors, [], `console errors: ${consoleErrors.join(' | ')}`);
     assert.deepEqual(external, [], `unexpected external requests: ${external.join(' | ')}`);
-    console.log(`A-G08 STAGE REPORTS PASS: 13 stage routes, clean strict sandbox at 390/1280, standalone print() window; ${path.relative(root, outputDir)}`);
+    console.log(`A-G08 STAGE/AR03 REPORTS PASS: 13 stage routes plus visible sampling allocation and unsupported-plan proof at 390/1280; ${path.relative(root, outputDir)}`);
   } finally {
     if (browser) await browser.close();
     await host.stop();
