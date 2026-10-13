@@ -6,10 +6,10 @@
   <title>Admin | VESA App Centre</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/vesa-workspace.css?v=20261012-platform-g03">
+  <link rel="stylesheet" href="/css/vesa-workspace.css?v=20261013-platform-g06">
   <script src="/js/preferences.js"></script>
   <script src="/js/auth.js"></script>
-  <script src="/js/vesa-workspace-shell.js?v=20261010-platform-g01"></script>
+  <script src="/js/vesa-workspace-shell.js?v=20261013-platform-g06"></script>
 </head>
 <body class="app-centre-page">
   <script>VesaAuth.requireAdmin();</script>
@@ -52,7 +52,7 @@
           if(name==='Edit'){document.getElementById('newName')?.focus();return;}
           if(name==='View'){document.getElementById('usersPanel')?.focus({preventScroll:false});return;}
           if(name==='Tools'){document.getElementById('eventsPanel')?.focus({preventScroll:false});return;}
-          document.querySelector('.app-centre-hero')?.scrollIntoView({behavior:'smooth',block:'start'});
+          document.querySelector('.app-centre-hero')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
         }
       }
     });

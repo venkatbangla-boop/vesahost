@@ -14,7 +14,7 @@ class WorkerServer {
   constructor() { this.release = 'old'; }
   worker() {
     const cache = `vesa-aql-test-${this.release}`;
-    let source = originalWorker.replace(/vesa-aql-2026-10-12-8/g, cache);
+    let source = originalWorker.replace(/vesa-aql-2026-10-13-9/g, cache);
     if (this.release === 'broken') source = source.replace("  './service-worker.js',", "  './service-worker.js',\n  './missing-install-fixture.js',");
     return Buffer.from(source);
   }
@@ -144,7 +144,7 @@ async function run() {
     if (await reenter.count()) await reenter.click();
     await first.waitForFunction(() => !!window.__vesaApp?.repository?.db);
     await first.locator('[data-action="saved"]').click();
-    const saved = first.locator(`[data-action="resume"][data-id="${firstDraft.id}"]`);
+    const saved = first.locator(`#dialog[open] [data-action="resume"][data-id="${firstDraft.id}"]`);
     await saved.evaluate(button => button.click());
     await first.waitForFunction(id => window.__vesaApp?.p?.meta?.id === id, firstDraft.id, { timeout: 10000 }).catch(async error => {
       const state = await first.evaluate(() => ({ id: window.__vesaApp?.p?.meta?.id, toast: document.getElementById('toast')?.textContent, dialogError: document.getElementById('dialogError')?.textContent }));

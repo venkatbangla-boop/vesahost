@@ -96,6 +96,19 @@ VERDICT / SCORE: U-G03 ACCEPTED LOCALLY. Shared becomes 8/10; historical overall
 NEXT ACTION (ONE PRECISE STEP): audit and prove shared U-G06 accessibility across Login, App Centre, Admin and representative TNA/PPM/AQL workspaces, including landmarks/names, keyboard order/focus, contrast, reduced motion and screen-reader-oriented DOM checks without changing domain behavior.
 ```
 
+### One VESA U-G06 accessibility audit — active
+
+```text
+TIME / TIMEZONE: 2026-10-13 08:55 Asia/Dhaka
+GATE / OBJECTIVE: shared U-G06 — prove a consistent keyboard/screen-reader entry path, landmark ownership, live save-state semantics, reduced motion and accessible control naming across Login, App Centre, Admin and representative TNA/PPM/AQL states
+BRANCH / BASE COMMIT: feature/tna360-continuous / 6138d6d
+FILE-LEVEL AUDIT / OWNERSHIP: js/vesa-workspace-shell.js owns the first authenticated focusable controls, navigation labels, shared Settings dialog and save-state output. All six routes have one main content owner, but authenticated routes have no skip-to-content control; Login also has none. The shared save state is visible text without status/live semantics, and the current-app breadcrumb lacks aria-current. Root CSS already disables animation/transition/smooth scrolling for reduced-motion users; AQL has equivalent rules, while PPM's smooth scrolling requires computed reduced-motion verification. The audit also found that route HTML requests versioned shared shell assets while the root/AQL/PPM offline inventories do not all pre-cache those exact URLs; focused online proof therefore did not establish a fresh offline shell. In scope: shared shell JS/CSS, six route asset pins, Login's standalone skip target, the AQL descriptor's dynamic entrance/workspace target, exact root/AQL/PPM cache inventories and their existing worker contracts, one additive cross-route accessibility browser test, runner registration and tracker/dashboard evidence. Frozen: auth/catalogue/preferences persistence, user/business records, TNA/PPM/AQL calculations and decision rules, schemas/backups/reports, providers and deployment.
+CALL FLOW / STATE: keyboard user -> first-focus skip link -> currently visible page/app content target; shell save-state changes -> one polite atomic status owner; existing menu/Settings callbacks remain unchanged. No record or storage state enters the shared shell.
+RISKS / VERIFICATION: avoid duplicate IDs, focusing hidden AQL entrance/workspace content, changing normal tab order, regressions at mobile widths, noisy live announcements or reduced-motion violations. Prove focus movement from a fresh page, one visible main target, labelled landmarks/controls, valid aria-controls/current/status semantics, Settings focus/return, reduced-motion computed styles, no overflow/external requests/page errors and unchanged app records; run the complete matrix. Rollback is a normal revert; no migration or browser-storage clearing.
+VERDICT: active — no U-G06 credit until cross-route and complete regression evidence passes.
+NEXT ACTION (ONE PRECISE STEP): implement the shared skip/status/current semantics and executable cross-route accessibility matrix.
+```
+
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
 ## C. Gate definitions and approval authority

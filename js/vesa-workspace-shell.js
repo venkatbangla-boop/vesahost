@@ -10,7 +10,7 @@
   function descriptor(input) {
     const value = input || {};
     if (!text(value.id).trim() || !text(value.name).trim()) throw new TypeError('A workspace descriptor needs an id and name.');
-    return Object.freeze({ id: text(value.id).trim(), name: text(value.name).trim(), route: text(value.route || '/apps/'), appCentreRoute: text(value.appCentreRoute || '/apps/'), logo: text(value.logo || '/assets/vesa-logo-black.png'), savedState: text(value.savedState || SAVE_STATES.saved), userLabel: text(value.userLabel || ''), userRole: text(value.userRole || ''), menuLabels: Object.freeze({ ...(value.menuLabels || {}) }) });
+    return Object.freeze({ id: text(value.id).trim(), name: text(value.name).trim(), route: text(value.route || '/apps/'), appCentreRoute: text(value.appCentreRoute || '/apps/'), logo: text(value.logo || '/assets/vesa-logo-black.png'), savedState: text(value.savedState || SAVE_STATES.saved), userLabel: text(value.userLabel || ''), userRole: text(value.userRole || ''), contentTarget: text(value.contentTarget || 'main').trim() || 'main', menuLabels: Object.freeze({ ...(value.menuLabels || {}) }) });
   }
 
   class VesaWorkspaceShell {
@@ -24,6 +24,7 @@
       this._mounted = false;
       this._settingsDialog = null;
       this._settingsReturnFocus = null;
+      this._mainContent = null;
       this._onClick = event => this._handleClick(event);
       this._onKeydown = event => this._handleKeydown(event);
       this._onDocumentClick = event => this._handleDocumentClick(event);
@@ -33,12 +34,13 @@
     mount() {
       if (this._mounted) return this.element;
       if (this.root.querySelector('.vesa-workspace')) throw new Error('A VESA workspace shell is already mounted in this root.');
+      const target = this._prepareMainContent();
       const nav = MENU_ORDER.map(name => `<button type="button" class="vesa-workspace__menu" data-vesa-menu="${name}" aria-label="${escape(this.descriptor.menuLabels[name] || name)}">${escape(this.descriptor.menuLabels[name] || name)}</button>`).join('');
       const element = this.document.createElement('header');
       element.className = 'vesa-workspace';
       element.setAttribute('data-vesa-workspace', this.descriptor.id);
       element.setAttribute('data-menu-open', 'false');
-      element.innerHTML = `<a class="vesa-workspace__brand" href="/" aria-label="VESA home"><img src="${escape(this.descriptor.logo)}" alt="VESA"></a><div class="vesa-workspace__breadcrumb" aria-label="Current VESA workspace"><a class="vesa-workspace__app-centre" href="${escape(this.descriptor.appCentreRoute)}">App Centre</a><span aria-hidden="true">›</span><a class="vesa-workspace__app vesa-workspace__app-current" href="${escape(this.descriptor.route)}">${escape(this.descriptor.name)}</a></div><button type="button" class="vesa-workspace__mobile-menu" data-vesa-mobile-menu aria-expanded="false" aria-controls="vesaWorkspaceDrawer">Menu</button><div class="vesa-workspace__drawer" id="vesaWorkspaceDrawer"><nav class="vesa-workspace__nav" aria-label="VESA workspace menu">${nav}</nav><div class="vesa-workspace__user"><span class="vesa-workspace__saved" data-vesa-saved>${escape(this.descriptor.savedState)}</span>${this.descriptor.userLabel ? `<span class="vesa-workspace__user-label">${escape(this.descriptor.userLabel)}</span>` : ''}<button type="button" data-vesa-user>Settings</button>${this.descriptor.userRole === 'admin' ? '<a href="/admin/" data-vesa-admin>Admin</a>' : ''}<button type="button" data-vesa-logout>Logout</button></div></div>`;
+      element.innerHTML = `<a class="vesa-skip-link" data-vesa-skip href="#${escape(target?.id || 'vesaMainContent')}">Skip to main content</a><a class="vesa-workspace__brand" href="/" aria-label="VESA home"><img src="${escape(this.descriptor.logo)}" alt="VESA"></a><div class="vesa-workspace__breadcrumb" aria-label="Current VESA workspace"><a class="vesa-workspace__app-centre" href="${escape(this.descriptor.appCentreRoute)}">App Centre</a><span aria-hidden="true">›</span><a class="vesa-workspace__app vesa-workspace__app-current" href="${escape(this.descriptor.route)}" aria-current="page">${escape(this.descriptor.name)}</a></div><button type="button" class="vesa-workspace__mobile-menu" data-vesa-mobile-menu aria-expanded="false" aria-controls="vesaWorkspaceDrawer">Menu</button><div class="vesa-workspace__drawer" id="vesaWorkspaceDrawer"><nav class="vesa-workspace__nav" aria-label="VESA workspace menu">${nav}</nav><div class="vesa-workspace__user"><span class="vesa-workspace__saved" data-vesa-saved role="status" aria-live="polite" aria-atomic="true">${escape(this.descriptor.savedState)}</span>${this.descriptor.userLabel ? `<span class="vesa-workspace__user-label">${escape(this.descriptor.userLabel)}</span>` : ''}<button type="button" data-vesa-user>Settings</button>${this.descriptor.userRole === 'admin' ? '<a href="/admin/" data-vesa-admin>Admin</a>' : ''}<button type="button" data-vesa-logout>Logout</button></div></div>`;
       const legacyAuthBar = this.root.querySelector(':scope > .app-user-bar');
       legacyAuthBar?.remove();
       this.document.documentElement?.style.removeProperty('--vesa-auth-bar-height');
@@ -58,6 +60,34 @@
       const height = Math.ceil(this.element.getBoundingClientRect().height || this.element.offsetHeight || 0);
       this.root.style.setProperty('--vesa-workspace-height', `${height}px`);
       return height;
+    }
+
+    _prepareMainContent() {
+      let target = null;
+      try { target = this.document.querySelector(this.descriptor.contentTarget); } catch { target = null; }
+      if (!target) return null;
+      if (this._mainContent !== target && this._mainContent?.dataset.vesaGeneratedMainId === 'true') {
+        this._mainContent.removeAttribute('id');
+        delete this._mainContent.dataset.vesaGeneratedMainId;
+      }
+      this._mainContent = target;
+      if (!target.id) {
+        target.id = 'vesaMainContent';
+        target.dataset.vesaGeneratedMainId = 'true';
+      }
+      if (!target.hasAttribute('tabindex')) {
+        target.tabIndex = -1;
+        target.dataset.vesaGeneratedMainTabindex = 'true';
+      }
+      this.element?.querySelector('[data-vesa-skip]')?.setAttribute('href', `#${target.id}`);
+      return target;
+    }
+
+    _focusMainContent(event) {
+      event?.preventDefault?.();
+      const target = this._prepareMainContent();
+      target?.focus({ preventScroll: true });
+      target?.scrollIntoView?.({ behavior: global.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
     }
 
     setSavedState(state) {
@@ -92,6 +122,7 @@
     }
 
     _handleClick(event) {
+      if (event.target.closest?.('[data-vesa-skip]')) return this._focusMainContent(event);
       const menu = event.target.closest?.('[data-vesa-menu]');
       if (menu) return this.callbacks.menu?.(menu.dataset.vesaMenu, this.descriptor);
       if (event.target.closest?.('[data-vesa-user]')) return this.openSettings();
@@ -138,6 +169,9 @@
       global.removeEventListener?.('resize', this._onResize);
       this._settingsDialog?.remove();
       this._settingsDialog = null;
+      if (this._mainContent?.dataset.vesaGeneratedMainId === 'true') { this._mainContent.removeAttribute('id'); delete this._mainContent.dataset.vesaGeneratedMainId; }
+      if (this._mainContent?.dataset.vesaGeneratedMainTabindex === 'true') { this._mainContent.removeAttribute('tabindex'); delete this._mainContent.dataset.vesaGeneratedMainTabindex; }
+      this._mainContent = null;
       this.element.remove();
       this._mounted = false;
       this.element = null;

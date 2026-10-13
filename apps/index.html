@@ -6,10 +6,10 @@
   <title>App Centre | VESA Enterprise Inc</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/vesa-workspace.css?v=20261012-platform-g03">
+  <link rel="stylesheet" href="/css/vesa-workspace.css?v=20261013-platform-g06">
   <script src="/js/preferences.js"></script>
   <script src="/js/auth.js"></script>
-  <script src="/js/vesa-workspace-shell.js?v=20261010-platform-g01"></script>
+  <script src="/js/vesa-workspace-shell.js?v=20261013-platform-g06"></script>
   <script src="/js/app-catalogue.js"></script>
 </head>
 <body class="app-centre-page">
@@ -45,7 +45,7 @@
           if(name==='Edit')return pageShell.openSettings();
           if(name==='Tools'&&pageSession?.role==='admin'){location.href='/admin/';return;}
           const target=name==='Home'||name==='Help'?document.querySelector('.app-centre-hero'):document.getElementById('appCatalogue');
-          target?.scrollIntoView({behavior:'smooth',block:'start'});target?.focus?.({preventScroll:true});
+          target?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});target?.focus?.({preventScroll:true});
         }
       }
     });
