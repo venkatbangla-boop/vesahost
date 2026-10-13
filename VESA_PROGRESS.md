@@ -6,30 +6,30 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current audited value |
 |---|---|
-| **FREE-ONLY VERIFIED** | **65%** — 30/30/30/10 weighted score from the frozen eligibility map |
-| **FREE-ONLY REMAINING** | **35%** |
-| **TNA / PPM / AQL / SHARED** | **75% / 90% / 25% / 80%** |
+| **FREE-ONLY VERIFIED** | **66%** — 30/30/30/10 weighted score from the frozen eligibility map |
+| **FREE-ONLY REMAINING** | **34%** |
+| **TNA / PPM / AQL / SHARED** | **75% / 90% / 25% / 90%** |
 | Architecture | GitHub source/version control plus local browser calculation/storage and manual saved-copy transfer only |
 | Canonical contract | `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` |
 | Deferred by scope | Hosted backend/identity/database/object storage, remote multiuser sync, external notification delivery, paid services and commercial SaaS hosting on GitHub Pages |
-| Eligibility map | `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`: TNA 9/12, PPM 9/10, AQL 3/12, Shared 7/10 |
+| Eligibility map | `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`: TNA 9/12, PPM 9/10, AQL 3/12, Shared 9/10 |
 
 ## A. Historical full-scope program at a glance
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **60%** |
-| **REMAINING** | **40%** |
+| **OVERALL VERIFIED** | **61%** |
+| **REMAINING** | **39%** |
 | **TNA 360** | **69%** - accepted gates 9 / 13 |
 | **PPM 360** | **82%** - accepted gates 9 / 11 |
 | **AQL 360** | **23%** - accepted gates 3 / 13 |
-| **ONE VESA SHARED UX** | **80%** - accepted gates 8 / 10 |
-| Program stage | Shared U-G01/U-G03/U-G04/U-G05/U-G07 are accepted locally. Runtime/adapters give TNA, PPM, AQL, App Centre and Admin one visible platform shell; Login retains one standalone logged-out brand panel. One semantic five-theme typography/colour/spacing/card/control system now spans the shell and platform pages. No domain formula, saved format, production record, provider or deployment changed. |
-| Active gate | **ONE VESA SHARED UX U-G06/U-G09 — deeper accessibility and final uniform review** |
-| Current subtask / subchecks | Prove shared landmarks/names, keyboard order/focus, contrast, reduced motion and screen-reader-oriented DOM behavior across Login/App Centre/Admin and representative TNA/PPM/AQL states; then run final uniform-experience review. |
-| Last ACCEPTED gate | **ONE VESA SHARED UX U-G03 — shared visual token system** (`c3da3b0`; accepted locally, no deployment claim) |
-| Last tested commit SHA | `c3da3b0`: shared semantic tokens, platform component consumption, dark-theme logo/action corrections and all-theme browser proof. Complete matrix PASS without retry: 84 commands / 1031.2s (51 automated, 20 browser, 12 syntax, 1 repository). |
-| Last update (UTC) | 2026-10-13 02:45:39 UTC |
+| **ONE VESA SHARED UX** | **90%** - accepted gates 9 / 10 |
+| Program stage | Shared U-G01/U-G03/U-G04/U-G05/U-G06/U-G07 are accepted locally. Runtime/adapters give TNA, PPM, AQL, App Centre and Admin one visible platform shell; Login retains one standalone logged-out brand panel. The shared token and accessibility contracts now cover first-focus skip navigation, landmarks, current/save semantics, reduced motion and exact offline shell assets. No domain formula, saved format, production record, provider or deployment changed. |
+| Active gate | **ONE VESA SHARED UX U-G09 — final uniform experience review** |
+| Current subtask / subchecks | Review Login, App Centre, Admin and representative TNA/PPM/AQL states together for final visual, responsive, keyboard and interaction consistency; reconcile only evidence-backed gaps. |
+| Last ACCEPTED gate | **ONE VESA SHARED UX U-G06 — shared accessibility contract** (`94414c2`; accepted locally, no deployment claim) |
+| Last tested commit SHA | `94414c2`: shared skip/current/status/reduced-motion semantics, exact offline assets and six-route accessibility proof. Complete matrix PASS without retry: 85 commands / 769.4s (51 automated, 21 browser, 12 syntax, 1 repository). |
+| Last update (UTC) | 2026-10-13 03:16:39 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -45,7 +45,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=9, a=3, s=8.
+Current counted gates: t=9, p=9, a=3, s=9.
 ```
 
 ## C. Application gate checklist
@@ -112,7 +112,7 @@ Current counted gates: t=9, p=9, a=3, s=8.
 | U-G03 | Shared typography/color/background tokens | ACCEPTED | `c3da3b0`: one semantic five-theme palette/font/spacing/gutter/card/control system drives the shell, settings and platform pages; real Chromium proves all five themes, seven widths, 200% scale, contrast/44px controls, dark-logo/action visibility, no overflow/errors/requests and unchanged user store. Reviewed Clear Blue and Midnight Mono screenshots are clean. |
 | U-G04 | Shared App Centre card pattern | ACCEPTED | `082493d`: App Centre renders exactly the three registered catalogue entries through one card pattern; authenticated shell/card screenshots pass at 390/1280 and all seven widths have no overflow or duplicate branding. |
 | U-G05 | Shared mobile/tablet behavior | ACCEPTED | `082493d` plus exact TNA/PPM/AQL adapter tests: Login/App Centre/Admin and every app pass at 320/360/390/768/1024/1280/1440 plus 200% scale, one mobile Menu owner, Escape/focus return and no horizontal overflow. |
-| U-G06 | Shared accessibility checks | NOT STARTED | - |
+| U-G06 | Shared accessibility checks | ACCEPTED | `94414c2`: Login plus all authenticated routes expose a first-focus 44px skip path; AQL dynamically follows entrance/workspace content; landmarks, named platform controls/navigation, `aria-current`, polite atomic save status, reduced motion and exact offline shell assets pass across six routes at 390/1280. Full 85-command matrix passed without retry. Physical screen-reader/device acceptance remains external and is not claimed. |
 | U-G07 | Shared regression protection for Login/App Centre/AQL/PPM/TNA | ACCEPTED | `082493d`: `tests/vesa-platform-pages.cjs` is wired into the full runner beside route and TNA/PPM/AQL shell matrices; 84 commands pass without retry in 698.4s with zero external requests/page errors in the platform-page proof. |
 | U-G08 | Shared documentation and rollback plan | ACCEPTED | `38a7eea`: `VESA-UNIFIED-PAGE-SHELL-v2` defines exact one-logo/one-header ownership, future-page checklist, central files, forbidden duplication, responsive/accessibility matrix, migration order and reversible platform/app-adapter groups; root/nested AGENTS, continuity and resume prompts require it. |
 | U-G09 | Accepted uniform experience review | NOT STARTED | - |
@@ -254,10 +254,11 @@ Current counted gates: t=9, p=9, a=3, s=8.
 | 2026-10-12 16:51:46 UTC | AQL unified-shell adapter and U-G01 acceptance | ACCEPTED | Commit `a907fc7` removes the entrance brand owner, sidebar brand/Settings duplication, visible legacy save control and fixed secondary navigation/launchers while retaining the domain start choices, inspection workflow and compatibility state. Exact entrance/home/inspection ownership passes at 320/360/390/768/1024/1280/1440 plus Chromium 200% scale, mobile keyboard/focus, File callback, byte-exact inspection preservation through Bengali/Pure Mono, no overflow and zero external requests/page errors. Reviewed 390/1280 screenshots are clean. Full matrix PASS: 83 commands / 1081.9s; the initial full run and one isolated performance retry exceeded the timing guard, then isolated 5.21s and final full-run 6.85s timings passed. TNA/PPM/AQL now all satisfy the one-shell owner contract, so U-G01 is accepted; shared becomes 4/10, historical overall 56%, free-only 61%. No sampling/Ac-Re/domain/schema/provider/deployment change. |
 | 2026-10-12 17:12:36 UTC | Login/App Centre/Admin platform pages and shared regression | ACCEPTED U-G04/U-G05/U-G07 | Commit `082493d` keeps Login as the single standalone logged-out brand panel and moves authenticated App Centre/Admin from the legacy auth bar to the authoritative shared shell. Their duplicate content logos are removed; registered catalogue cards and Admin forms/history flow below one header. `vesa-platform-pages.cjs` proves Login/App Centre/Admin at 320/360/390/768/1024/1280/1440 plus 200% scale, mobile Menu/Escape/focus, Settings user-store immutability, exact one-brand/header/account/save/menu ownership, no overflow and zero external requests/page errors. Reviewed 390/1280 screenshots are clean. Full matrix PASS without retry: 84 commands / 698.4s (51 automated, 20 browser, 12 syntax, 1 repository). Shared becomes 7/10, historical overall 59%, free-only 64%; user/auth data, app domains, providers and deployment are unchanged. |
 | 2026-10-13 02:45:39 UTC | Shared visual token system | ACCEPTED U-G03 | Commit `c3da3b0` connects the five existing appearance palettes to one semantic shared shell/platform token system for typography, colour, background, spacing, gutters, cards and controls. All five themes pass platform contrast/surface/font/radius/44px checks; visual review exposed and fixed invisible dark-theme shell logos and light-on-light primary actions. Six app entry pages share one stylesheet revision and the root offline inventory includes the shared CSS/runtime. Full matrix PASS without retry: 84 commands / 1031.2s (51 automated, 20 browser, 12 syntax, 1 repository). Shared becomes 8/10, historical overall 60%, free-only 65%; no domain/schema/record/provider/deployment change. |
+| 2026-10-13 03:16:39 UTC | Shared accessibility contract | ACCEPTED U-G06 | Commit `94414c2` adds a consistent first-focus skip path, dynamic visible-main targeting, current-page and live save semantics, reduced-motion scrolling and exact root/PPM/AQL offline shell assets. Six routes pass at 390/1280 with one main, named controls/navigation, no overflow/external requests/page errors; focused mobile and AQL screenshots were reviewed. Full matrix PASS without retry: 85 commands / 769.4s (51 automated, 21 browser, 12 syntax, 1 repository). Shared becomes 9/10, historical overall 61%, free-only 66%; physical screen-reader/device, provider and deployment acceptance are not claimed. |
 
 ## F. NEXT ACTION
 
-Audit and prove shared U-G06 accessibility across Login, App Centre, Admin and representative TNA/PPM/AQL workspaces, including landmarks/names, keyboard order/focus, contrast, reduced motion and screen-reader-oriented DOM checks without changing domain behavior, records or deployment state.
+Run U-G09 final uniform-experience review across Login, App Centre, Admin and representative TNA/PPM/AQL states; reconcile any evidence-backed visual, responsive, keyboard or interaction inconsistency without changing domain behavior, records or deployment state.
 
 ## G. GitHub-Free-only migration audit
 
