@@ -128,9 +128,19 @@ NEXT ACTION (ONE PRECISE STEP): reconcile the remaining non-shared active AQL/TN
 
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
-### AQL A-G06 analytics dashboard / large local-history audit — active
+### AQL A-G06 analytics dashboard / large local-history audit — accepted local slice
 
 FILE-LEVEL AUDIT / PATCH BOUNDARY: AQL's final `Master50QualityOS.analytics` override is the active visible portfolio analytics owner and groups locally saved inspections by stage, buyer, factory and counting basis; `ResultEngine`, `ReportComposer.table` and `LocalRepository` remain the calculation, escaped-output and persistence owners. The existing A-G06 fixture proves source guards only, so area 29 still lacks an authenticated rendered dashboard and large-history usability proof. The first focused 600-record run passed exact data and immutability assertions in about 0.4 seconds, but screenshot review rejected its compressed/colliding headers and excessively wrapped mobile group labels. In scope: the active analytics method's presentation wrapper/minimum-width style, AQL worker cache revision, one additive browser test, automatically discovered regression command, screenshots and evidence ledgers. Frozen: analytics/domain formulas, schemas/saved formats, TNA/PPM/shared source, production data, buyer policy, providers and deployment. The test seeds 600 fictional local records, traverses visible Tools -> Quality Workspace -> Cross-inspection analytics at 390/1280, verifies exact numerator/denominator/rate rows plus honest `Not combined` cases, bounds render time, proves deliberate contained table scrolling and all saved rows remain byte-identical with no external requests/page errors. Rollback reverts the presentation/cache patch and removes the test/screenshots/documentation; no record migration is involved.
+
+```text
+TIME / TIMEZONE: 2026-10-13 10:05 Asia/Dhaka
+GATE / OBJECTIVE: AQL A-G06 / area 29 — close the authenticated local analytics dashboard and large-history usability gap
+BRANCH / BASE COMMIT / RESULT COMMIT: feature/tna360-continuous / 22832df / 4a79280
+IMPLEMENTED / EVIDENCE: Visible signed-in Tools -> Quality Workspace -> Cross-inspection analytics aggregates 600 fictional saved inspections into four source-basis groups. Exact 6000 checked / 600 occurrences / 10.00 per 100 is shown only for occurrence basis with a denominator; unit basis, stage records and zero-checked occurrence history remain explicitly `Not combined`. A reviewed-render defect led to a presentation-only 760px table inside a named keyboard-focusable contained scroll region. Left/right mobile and full desktop captures are readable; 600 saved rows remain byte-identical, with zero external requests/page errors and 409/479ms full-run render timings. AQL cache `vesa-aql-2026-10-13-11` is covered by worker replacement/offline reopen evidence.
+TESTS / RESULTS: focused analytics/source/release/35-area/worker suites PASS. Complete cross-app regression PASS without retry: 87 commands / 791.7s (52 automated, 22 browser, 12 syntax, 1 repository), including `git diff --check`.
+VERDICT / BOUNDARY: accepted local slice; AQL area 29 becomes `PROVEN_LOCAL` (27 proven / 6 conditional / 1 deferred / 1 external). A-G06 and program scores remain unchanged; no analytics formula/schema, production data, provider, physical-device/factory acceptance or deployment is claimed.
+NEXT ACTION (ONE PRECISE STEP): audit area 31's complete stage/report catalogue, print and sandbox-review gap and select the smallest locally provable report slice.
+```
 
 ## C. Gate definitions and approval authority
 
