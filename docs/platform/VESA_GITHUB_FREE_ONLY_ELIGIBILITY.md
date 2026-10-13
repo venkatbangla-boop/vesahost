@@ -70,11 +70,11 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 
 `AQL free-only = ROUND(100 × 3 / 12) = 25%`.
 
-## Shared UX eligibility — 10 active gates, 7 accepted
+## Shared UX eligibility — 10 active gates, 8 accepted
 
-All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-10-12 rendered audit reopened U-G01 as `CONDITIONAL`; the subsequent shared runtime and TNA/PPM/AQL adapter sequence (`d64b32a`, `74657a8`, `800d074`, `a907fc7`) removed the stacked authenticated/app chrome and proved exact one-shell ownership across all three applications. Commit `082493d` then moved App Centre/Admin onto the same shell, retained Login's single logged-out brand treatment, proved catalogue cards and responsive behavior at seven widths plus 200% scale, and made that platform-page matrix a mandatory full-regression command. The seven accepted units are U-G00, U-G01, U-G02, U-G04, U-G05, U-G07 and U-G08; U-G03, U-G06 and U-G09 remain incomplete.
+All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-10-12 rendered audit reopened U-G01 as `CONDITIONAL`; the subsequent shared runtime and TNA/PPM/AQL adapter sequence (`d64b32a`, `74657a8`, `800d074`, `a907fc7`) removed the stacked authenticated/app chrome and proved exact one-shell ownership across all three applications. Commit `082493d` then moved App Centre/Admin onto the same shell, retained Login's single logged-out brand treatment, proved catalogue cards and responsive behavior at seven widths plus 200% scale, and made that platform-page matrix a mandatory full-regression command. Commit `c3da3b0` connects all five approved appearance palettes to one semantic typography/colour/background/spacing/gutter/card/control system, with all-theme contrast and rendered light/dark proof. The eight accepted units are U-G00, U-G01, U-G02, U-G03, U-G04, U-G05, U-G07 and U-G08; U-G06 and U-G09 remain incomplete.
 
-`Shared free-only = ROUND(100 × 7 / 10) = 70%`.
+`Shared free-only = ROUND(100 × 8 / 10) = 80%`.
 
 ## Weighted result
 
@@ -83,12 +83,12 @@ ROUND(
   30 × 9/12 +
   30 × 9/10 +
   30 × 3/12 +
-  10 × 7/10
-) = ROUND(64.0) = 64%
+  10 × 8/10
+) = ROUND(65.0) = 65%
 ```
 
-**FREE-ONLY VERIFIED: 64%**
+**FREE-ONLY VERIFIED: 65%**
 
-**FREE-ONLY REMAINING: 36%**
+**FREE-ONLY REMAINING: 35%**
 
-This 64% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; the dated 2026-10-12 reassessments add U-G01 and then U-G04/U-G05/U-G07 only after their executable evidence passed. Any later eligibility change requires a dated audit entry and must not rewrite this history silently.
+This 65% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; the dated 2026-10-12 reassessments add U-G01 and then U-G04/U-G05/U-G07, and the 2026-10-13 reassessment adds U-G03 only after its executable all-theme evidence passed. Any later eligibility change requires a dated audit entry and must not rewrite this history silently.
