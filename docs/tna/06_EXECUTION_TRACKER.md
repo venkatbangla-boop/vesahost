@@ -128,6 +128,10 @@ NEXT ACTION (ONE PRECISE STEP): reconcile the remaining non-shared active AQL/TN
 
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
+### AQL A-G06 analytics dashboard / large local-history audit — active
+
+FILE-LEVEL AUDIT / PATCH BOUNDARY: AQL's final `Master50QualityOS.analytics` override is the active visible portfolio analytics owner and groups locally saved inspections by stage, buyer, factory and counting basis; `ResultEngine`, `ReportComposer.table` and `LocalRepository` remain the calculation, escaped-output and persistence owners. The existing A-G06 fixture proves source guards only, so area 29 still lacks an authenticated rendered dashboard and large-history usability proof. The first focused 600-record run passed exact data and immutability assertions in about 0.4 seconds, but screenshot review rejected its compressed/colliding headers and excessively wrapped mobile group labels. In scope: the active analytics method's presentation wrapper/minimum-width style, AQL worker cache revision, one additive browser test, automatically discovered regression command, screenshots and evidence ledgers. Frozen: analytics/domain formulas, schemas/saved formats, TNA/PPM/shared source, production data, buyer policy, providers and deployment. The test seeds 600 fictional local records, traverses visible Tools -> Quality Workspace -> Cross-inspection analytics at 390/1280, verifies exact numerator/denominator/rate rows plus honest `Not combined` cases, bounds render time, proves deliberate contained table scrolling and all saved rows remain byte-identical with no external requests/page errors. Rollback reverts the presentation/cache patch and removes the test/screenshots/documentation; no record migration is involved.
+
 ## C. Gate definitions and approval authority
 
 - `draft-only`: plan/spec exists; code/acceptance not proven.
