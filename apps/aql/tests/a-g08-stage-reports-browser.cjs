@@ -304,10 +304,79 @@ async function run() {
     assert.equal(await defectPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR04 report causes page-level overflow');
     await defectPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar04-defect-pareto-1280.png'), fullPage: true });
     await defectPage.close();
+
+    const capaExpected = await page.evaluate(async () => {
+      const app = window.__vesaApp;
+      app.closeDialog();
+      const p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      Object.assign(p.info, { buyer: 'A-G08 AR13 Buyer - Fictional', factory: 'A-G08 AR13 Factory - Fictional', inspector: 'A-G08 AR13 Inspector - Fictional', date: '2026-10-13' });
+      p.meta.reportId = 'A-G08-AR13-CAPA-TRACKER';
+      p.capa = [
+        { id: 'CA-AR13-OPEN', issue: 'Open <needle> & control issue', containment: 'Hold the fictional line', cause: '', action: 'Inspect the fictional affected batch', owner: 'Fictional QA owner', due: '2026-10-20', status: 'Open', verification: '', effectiveness: '', closure: '', reply: '' },
+        { id: 'CA-AR13-VERIFIED', issue: 'Fictional seam recurrence', containment: 'Segregate fictional output', cause: 'Fictional guide wear', action: 'Replace guide and retrain operator', owner: 'Fictional line owner', due: '2026-10-19', status: 'Verified', verification: 'Fictional follow-up sample reviewed', effectiveness: 'No recurrence in the recorded fictional follow-up', closure: '', reply: 'Fictional follow-up sample reviewed' },
+        { id: 'CA-AR13-CLOSED', issue: 'Fictional label mismatch', containment: 'Hold fictional labels', cause: 'Fictional artwork revision mismatch', action: 'Replace labels against recorded revision', owner: 'Fictional packing owner', due: '2026-10-18', status: 'Closed', verification: 'Fictional label comparison recorded', effectiveness: 'Recorded follow-up matched the fictional revision', closure: 'Fictional closure evidence reference CE-AR13-1', reply: 'Fictional label comparison recorded' },
+        { id: 'CA-AR13-INCOMPLETE', issue: 'Legacy closed claim - fictional', containment: 'Legacy hold note', cause: 'Legacy cause note', action: 'Legacy action note', owner: 'Legacy fictional owner', due: '2026-10-17', status: 'Closed', verification: '', effectiveness: '', closure: '', reply: '' }
+      ];
+      await app.setProject(p);
+      app.step = 5;
+      app.render();
+      return { unchanged: JSON.stringify(app.p) };
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#app [data-action="report"]:visible').first().click();
+    const capaOption = page.locator('#dialog [name="preset"] option[value="capa"]');
+    assert.equal(await capaOption.count(), 1, 'Report Studio is missing the AR13 CAPA preset');
+    assert.equal(await capaOption.textContent(), 'CAPA tracker', 'AR13 CAPA preset label changed');
+    await page.locator('#dialog [name="preset"]').selectOption('capa');
+    await page.locator('#dialog [name="remember"]').uncheck();
+    await page.locator('#dialog [data-action="report-preview"]').click();
+    const capaFrame = page.frameLocator('#reportFrame');
+    await capaFrame.locator('h1').filter({ hasText: 'CAPA Tracker' }).waitFor({ state: 'visible' });
+    const capaText = await capaFrame.locator('body').innerText();
+    for (const expected of ['A-G08-AR13-CAPA-TRACKER', 'CAPA records: 4', 'Unresolved: 2', 'Recorded verified (not closed): 1', 'Recorded closed: 1', 'RECORDED VERIFIED — NOT CLOSED', 'RECORDED CLOSED — NOT EXTERNAL APPROVAL', 'UNRESOLVED — recorded Closed; missing verification, effectiveness, closure evidence', 'does not constitute VESA, buyer, factory or external approval', 'Reinspection remains a separate recorded event']) assert.ok(capaText.includes(expected), `AR13 preview is missing ${expected}`);
+    const capaRows = await capaFrame.locator('#capa tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim())));
+    assert.deepEqual(capaRows, [
+      ['Open <needle> & control issue', 'Hold the fictional line', '', 'Inspect the fictional affected batch', 'Fictional QA owner', '2026-10-20', 'Open', '', '', '', 'No selected evidence linked', 'UNRESOLVED — recorded Open; missing root cause'],
+      ['Fictional seam recurrence', 'Segregate fictional output', 'Fictional guide wear', 'Replace guide and retrain operator', 'Fictional line owner', '2026-10-19', 'Verified', 'Fictional follow-up sample reviewed', 'No recurrence in the recorded fictional follow-up', '', 'No selected evidence linked', 'RECORDED VERIFIED — NOT CLOSED'],
+      ['Fictional label mismatch', 'Hold fictional labels', 'Fictional artwork revision mismatch', 'Replace labels against recorded revision', 'Fictional packing owner', '2026-10-18', 'Closed', 'Fictional label comparison recorded', 'Recorded follow-up matched the fictional revision', 'Fictional closure evidence reference CE-AR13-1', 'No selected evidence linked', 'RECORDED CLOSED — NOT EXTERNAL APPROVAL'],
+      ['Legacy closed claim - fictional', 'Legacy hold note', 'Legacy cause note', 'Legacy action note', 'Legacy fictional owner', '2026-10-17', 'Closed', '', '', '', 'No selected evidence linked', 'UNRESOLVED — recorded Closed; missing verification, effectiveness, closure evidence']
+    ], 'AR13 exact lifecycle rows or non-inference review changed');
+    assert.equal(await capaFrame.locator('#capa[role="region"][aria-label="CAPA tracker table"][tabindex="0"]').count(), 1, 'AR13 table is not a named keyboard-focusable region');
+    assert.equal(await capaFrame.locator('#capa').evaluate(element => element.scrollWidth > element.clientWidth), true, 'AR13 wide table is not contained in its horizontal review region');
+    assert.equal(await capaFrame.locator('script').count(), 0, 'AR13 preview contains a script node');
+    assert.equal(await page.evaluate(expected => JSON.stringify(window.__vesaApp.p) === expected, capaExpected.unchanged), true, 'AR13 report generation mutated its source project');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '390px AR13 preview causes page-level overflow');
+    const capaHtml = await page.evaluate(() => window.__vesaApp.reportHtml);
+    assert.ok(capaHtml.includes('Open &lt;needle&gt; &amp; control issue'), 'AR13 report did not escape hostile issue text');
+    assert.ok(!capaHtml.includes('Open <needle> & control issue'), 'AR13 report emitted hostile issue markup');
+    const capaPage = await context.newPage();
+    await capaPage.setViewportSize({ width: 390, height: 844 });
+    await capaPage.setContent(capaHtml, { waitUntil: 'domcontentloaded' });
+    assert.equal(await capaPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 390px AR13 report causes page-level overflow');
+    await capaPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar13-capa-tracker-390.png'), fullPage: true });
+    await capaPage.locator('#capa').evaluate(element => { element.scrollLeft = element.scrollWidth; });
+    await capaPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar13-capa-tracker-390-right.png'), fullPage: true });
+
+    const emptyCapa = await page.evaluate(async () => {
+      const app = window.__vesaApp, p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo'), before = JSON.stringify(p);
+      const html = await ReportComposer.html(p, app.assets, { ...p.report, preset: 'capa' });
+      return { html, unchanged: before === JSON.stringify(p) };
+    });
+    assert.equal(emptyCapa.unchanged, true, 'empty AR13 report mutated its source project');
+    assert.ok(emptyCapa.html.includes('CAPA records:</b> 0') && emptyCapa.html.includes('This does not prove that no corrective action is required.'), 'empty AR13 report inferred a clean corrective-action state');
+    assert.ok(!/<script\b/i.test(emptyCapa.html), 'empty AR13 report contains executable script');
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '1280px AR13 preview causes page-level overflow');
+    await capaPage.setViewportSize({ width: 1280, height: 900 });
+    await capaPage.locator('#capa').evaluate(element => { element.scrollLeft = 0; });
+    assert.equal(await capaPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR13 report causes page-level overflow');
+    await capaPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar13-capa-tracker-1280.png'), fullPage: true });
+    await capaPage.close();
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join(' | ')}`);
     assert.deepEqual(consoleErrors, [], `console errors: ${consoleErrors.join(' | ')}`);
     assert.deepEqual(external, [], `unexpected external requests: ${external.join(' | ')}`);
-    console.log(`A-G08 STAGE/AR03/AR04 REPORTS PASS: 13 stage routes plus sampling and denominator-safe defect Pareto proof at 390/1280; ${path.relative(root, outputDir)}`);
+    console.log(`A-G08 STAGE/AR03/AR04/AR13 REPORTS PASS: 13 stage routes plus sampling, denominator-safe defect Pareto and CAPA lifecycle proof at 390/1280; ${path.relative(root, outputDir)}`);
   } finally {
     if (browser) await browser.close();
     await host.stop();
