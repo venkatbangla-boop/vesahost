@@ -2,7 +2,7 @@
 
 **Review date:** 2026-10-13
 **Branch:** `feature/tna360-continuous`
-**Local handoff candidate:** `4a79280` (latest runtime implementation: `4a79280`)
+**Local handoff candidate:** `1728ee9` (latest runtime implementation: `1728ee9`)
 **Decision:** **HOLD — not ready for production deployment**
 
 This review reconciles the application execution trackers and the master dashboard. It authorizes no push, merge, deployment, DNS change, live App Centre route change, provider activation or production-data use.
@@ -16,9 +16,9 @@ This supplement is the current handoff authority. The older `48ec023` review rem
 | Item | Current evidence |
 |---|---|
 | Branch | `feature/tna360-continuous`; committed locally, not pushed or merged by this handoff |
-| Local handoff SHA | `4a79280` — current accepted local implementation/evidence baseline; includes G12 recovery, final shared UX and AQL local analytics evidence; not a deployed release |
-| Latest runtime SHA | `4a79280` — AQL analytics table presentation/offline-cache revision; preserves shared U-G09 runtime `87f1e2a` and TNA risk/performance lineage `253672c` |
-| Regression | `node tests/vesa-g11-regression.cjs`: PASS, 87 commands / 791.7s, no retry; 52 automated, 22 browser, 12 syntax, 1 repository |
+| Local handoff SHA | `1728ee9` — current accepted local implementation/evidence baseline; includes G12 recovery, final shared UX, AQL local analytics and 13-stage report evidence; not a deployed release |
+| Latest runtime SHA | `1728ee9` — AQL script-free stage reports, contained mobile tables and offline-cache revision; preserves analytics runtime `4a79280`, shared U-G09 runtime `87f1e2a` and TNA risk/performance lineage `253672c` |
+| Regression | `node tests/vesa-g11-regression.cjs`: PASS, 88 commands / 769.8s, no retry; 53 automated, 22 browser, 12 syntax, 1 repository |
 | Local TNA state | G00–G08 accepted; G10/G11 conditional local evidence; G12 local handoff proof complete but gate remains blocked from release |
 | Shared UX state | U-G00–U-G09 accepted locally; physical screen-reader/device/factory acceptance remains external |
 | Production state | Not staged, not deployed, not live-verified, not authorized |
@@ -38,7 +38,7 @@ node tests/vesa-g11-regression.cjs
 git diff --check
 ```
 
-Expected candidate facts: branch `feature/tna360-continuous`; accepted runtime SHA `4a79280` or a later documentation-only evidence commit; the G12 test reports lossless current restore, `1.0.0` migration, corrupt-restore preservation and 13 offline assets; the final shared transition matrix covers six states at 390/768/1280; AQL analytics proves 600 local saved records at 390/1280. The full matrix must pass without hiding any retry. A later runtime SHA requires a fresh recorded run and another runbook refresh.
+Expected candidate facts: branch `feature/tna360-continuous`; accepted runtime SHA `1728ee9` or a later documentation-only evidence commit; the G12 test reports lossless current restore, `1.0.0` migration, corrupt-restore preservation and 13 offline assets; the final shared transition matrix covers six states at 390/768/1280; AQL analytics proves 600 local saved records at 390/1280; AQL stage reports prove all 13 routes plus a clean strict sandbox and standalone print-window composition. The full matrix must pass without hiding any retry. A later runtime SHA requires a fresh recorded run and another runbook refresh.
 
 ### Migration and backup/restore rehearsal
 
@@ -54,7 +54,7 @@ Expected candidate facts: branch `feature/tna360-continuous`; accepted runtime S
 1. Before any future staging update, use **Save TNA** and **Download Saved Copy** for every important local order. Store those files outside the browser profile.
 2. Never clear browser storage, delete the service-worker data, or overwrite the only surviving order as a rollback technique.
 3. If a future code candidate fails, keep saved copies untouched and use a normal `git revert <sha>` on the exact offending commit. Do not use `git reset --hard` against the shared workspace.
-4. The TNA runtime lineage is F06 `a554282`, F44 `3291786`, calendar `f233a25`, graph `910753e`, then risk/performance `253672c`; shared runtime acceptance continues through U-G06 `94414c2` and U-G09 `87f1e2a`; AQL analytics presentation/offline evidence continues at `4a79280`. Revert only the exact offending commit; any runtime revert must be followed by the full regression and, when a cached asset changes, an offline-cache version review.
+4. The TNA runtime lineage is F06 `a554282`, F44 `3291786`, calendar `f233a25`, graph `910753e`, then risk/performance `253672c`; shared runtime acceptance continues through U-G06 `94414c2` and U-G09 `87f1e2a`; AQL analytics presentation/offline evidence continues at `4a79280` and stage-report/sandbox/print-window evidence at `1728ee9`. Revert only the exact offending commit; any runtime revert must be followed by the full regression and, when a cached asset changes, an offline-cache version review.
 5. If a saved copy is rejected, leave the current good order open and retry with the original unedited VESA saved copy. A failed import must not replace the current record.
 6. No rollback is presently required because nothing in this handoff was staged or deployed.
 
