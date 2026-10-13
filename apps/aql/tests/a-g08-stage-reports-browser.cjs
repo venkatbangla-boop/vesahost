@@ -373,10 +373,83 @@ async function run() {
     assert.equal(await capaPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR13 report causes page-level overflow');
     await capaPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar13-capa-tracker-1280.png'), fullPage: true });
     await capaPage.close();
+
+    const followupExpected = await page.evaluate(async () => {
+      const app = window.__vesaApp;
+      app.closeDialog();
+      const p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo'), line = { ...ProjectSchema.order(), po: 'PO-A-G08-AR02', item: 'TS-AR02', color: 'Black', size: 'L', orderQty: 100, qty: 100 };
+      Object.assign(p.info, { buyer: 'A-G08 AR02 Buyer - Fictional', factory: 'A-G08 AR02 Factory - Fictional', inspector: 'A-G08 AR02 Inspector - Fictional', date: '2026-10-13' });
+      p.meta.reportId = 'A-G08-AR02-FACTORY-FOLLOW-UP';
+      p.orders = [line];
+      p.defects = [
+        { id: 'D-AR02-1', lineId: line.id, name: 'Open <seam> & edge', severity: 'Major', qty: 2, sampleId: 'PIECE-AR02-1', location: 'Side seam', note: 'Fictional source finding one', internal: false, created: '2026-10-13T00:00:00.000Z' },
+        { id: 'D-AR02-2', lineId: line.id, name: 'Loose thread', severity: 'Minor', qty: 3, sampleId: 'PIECE-AR02-2', location: 'Hem', note: 'Fictional source finding two', internal: false, created: '2026-10-13T00:00:00.000Z' }
+      ];
+      p.capa = [
+        { id: 'CA-AR02-OPEN', issue: 'Fictional seam follow-up', containment: 'Hold fictional output', cause: 'Fictional guide issue', action: 'Inspect guide and segregated output', owner: 'Fictional QA owner', due: '2026-10-20', status: 'Open', verification: '', effectiveness: '', closure: '', reply: '' },
+        { id: 'CA-AR02-VERIFIED', issue: 'Fictional thread follow-up', containment: 'Trim and segregate fictional output', cause: 'Fictional trimming gap', action: 'Retrain fictional operator', owner: 'Fictional line owner', due: '2026-10-19', status: 'Verified', verification: 'Fictional follow-up sample reviewed', effectiveness: 'No recurrence in recorded fictional sample', closure: '', reply: 'Fictional follow-up sample reviewed' },
+        { id: 'CA-AR02-CLAIM', issue: 'Legacy closed follow-up claim', containment: 'Legacy containment note', cause: 'Legacy cause note', action: 'Legacy action note', owner: 'Legacy fictional owner', due: '2026-10-18', status: 'Closed', verification: '', effectiveness: '', closure: '', reply: '' }
+      ];
+      await app.setProject(p);
+      app.step = 5;
+      app.render();
+      return { unchanged: JSON.stringify(app.p) };
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#app [data-action="report"]:visible').first().click();
+    const followupOption = page.locator('#dialog [name="preset"] option[value="followup"]');
+    assert.equal(await followupOption.count(), 1, 'Report Studio is missing the AR02 follow-up preset');
+    assert.equal(await followupOption.textContent(), 'Factory quality follow-up', 'AR02 follow-up preset label changed');
+    await page.locator('#dialog [name="preset"]').selectOption('followup');
+    await page.locator('#dialog [name="remember"]').uncheck();
+    await page.locator('#dialog [data-action="report-preview"]').click();
+    const followupFrame = page.frameLocator('#reportFrame');
+    await followupFrame.locator('h1').filter({ hasText: 'Factory Quality Follow-Up' }).waitFor({ state: 'visible' });
+    const followupText = await followupFrame.locator('body').innerText();
+    for (const expected of ['A-G08-AR02-FACTORY-FOLLOW-UP', 'Source findings: 2', 'Corrective-action rows: 3', 'Unresolved action rows: 2', 'SOURCE FINDING — NOT CLOSED BY THIS REPORT', 'RECORDED VERIFIED — NOT CLOSED', 'UNRESOLVED — recorded Closed; missing verification, effectiveness, closure evidence', 'Similar wording does not create a link', 'do not prove factory acceptance, external approval or closure']) assert.ok(followupText.includes(expected), `AR02 preview is missing ${expected}`);
+    const followupRows = await followupFrame.locator('#capa tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim())));
+    assert.deepEqual(followupRows, [
+      ['SOURCE FINDING', 'D-AR02-1', 'Open <seam> & edge', 'Major / quantity 2', 'Not recorded on finding row', 'Not recorded on finding row', 'Not recorded on finding row', 'Observed', 'No selected evidence linked', 'SOURCE FINDING — NOT CLOSED BY THIS REPORT'],
+      ['SOURCE FINDING', 'D-AR02-2', 'Loose thread', 'Minor / quantity 3', 'Not recorded on finding row', 'Not recorded on finding row', 'Not recorded on finding row', 'Observed', 'No selected evidence linked', 'SOURCE FINDING — NOT CLOSED BY THIS REPORT'],
+      ['CORRECTIVE ACTION', 'CA-AR02-OPEN', 'Fictional seam follow-up', 'Not applicable', 'Inspect guide and segregated output', 'Fictional QA owner', '2026-10-20', 'Open', 'No selected evidence linked', 'UNRESOLVED — recorded Open'],
+      ['CORRECTIVE ACTION', 'CA-AR02-VERIFIED', 'Fictional thread follow-up', 'Not applicable', 'Retrain fictional operator', 'Fictional line owner', '2026-10-19', 'Verified', 'No selected evidence linked', 'RECORDED VERIFIED — NOT CLOSED'],
+      ['CORRECTIVE ACTION', 'CA-AR02-CLAIM', 'Legacy closed follow-up claim', 'Not applicable', 'Legacy action note', 'Legacy fictional owner', '2026-10-18', 'Closed', 'No selected evidence linked', 'UNRESOLVED — recorded Closed; missing verification, effectiveness, closure evidence']
+    ], 'AR02 exact source finding/action rows or lifecycle review changed');
+    assert.equal(await followupFrame.locator('#capa[role="region"][aria-label="Factory quality follow-up table"][tabindex="0"]').count(), 1, 'AR02 table is not a named keyboard-focusable region');
+    assert.equal(await followupFrame.locator('#capa').evaluate(element => element.scrollWidth > element.clientWidth), true, 'AR02 wide table is not contained in its horizontal review region');
+    assert.equal(await followupFrame.locator('script').count(), 0, 'AR02 preview contains a script node');
+    assert.equal(await page.evaluate(expected => JSON.stringify(window.__vesaApp.p) === expected, followupExpected.unchanged), true, 'AR02 report generation mutated its source project');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '390px AR02 preview causes page-level overflow');
+    const followupHtml = await page.evaluate(() => window.__vesaApp.reportHtml);
+    assert.ok(followupHtml.includes('Open &lt;seam&gt; &amp; edge') && !followupHtml.includes('Open <seam> & edge'), 'AR02 report did not safely escape hostile finding text');
+    const followupPage = await context.newPage();
+    await followupPage.setViewportSize({ width: 390, height: 844 });
+    await followupPage.setContent(followupHtml, { waitUntil: 'domcontentloaded' });
+    assert.equal(await followupPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 390px AR02 report causes page-level overflow');
+    await followupPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar02-factory-follow-up-390.png'), fullPage: true });
+    await followupPage.locator('#capa').evaluate(element => { element.scrollLeft = element.scrollWidth; });
+    await followupPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar02-factory-follow-up-390-right.png'), fullPage: true });
+
+    const emptyFollowup = await page.evaluate(async () => {
+      const app = window.__vesaApp, p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo'), before = JSON.stringify(p);
+      const html = await ReportComposer.html(p, app.assets, { ...p.report, preset: 'followup' });
+      return { html, unchanged: before === JSON.stringify(p) };
+    });
+    assert.equal(emptyFollowup.unchanged, true, 'empty AR02 report mutated its source project');
+    assert.ok(emptyFollowup.html.includes('Source findings:</b> 0') && emptyFollowup.html.includes('This does not prove that no follow-up is required.'), 'empty AR02 report inferred that no follow-up is required');
+    assert.ok(!/<script\b/i.test(emptyFollowup.html), 'empty AR02 report contains executable script');
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '1280px AR02 preview causes page-level overflow');
+    await followupPage.setViewportSize({ width: 1280, height: 900 });
+    await followupPage.locator('#capa').evaluate(element => { element.scrollLeft = 0; });
+    assert.equal(await followupPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR02 report causes page-level overflow');
+    await followupPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar02-factory-follow-up-1280.png'), fullPage: true });
+    await followupPage.close();
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join(' | ')}`);
     assert.deepEqual(consoleErrors, [], `console errors: ${consoleErrors.join(' | ')}`);
     assert.deepEqual(external, [], `unexpected external requests: ${external.join(' | ')}`);
-    console.log(`A-G08 STAGE/AR03/AR04/AR13 REPORTS PASS: 13 stage routes plus sampling, denominator-safe defect Pareto and CAPA lifecycle proof at 390/1280; ${path.relative(root, outputDir)}`);
+    console.log(`A-G08 STAGE/AR02/AR03/AR04/AR13 REPORTS PASS: 13 stage routes plus factory follow-up, sampling, denominator-safe defect Pareto and CAPA lifecycle proof at 390/1280; ${path.relative(root, outputDir)}`);
   } finally {
     if (browser) await browser.close();
     await host.stop();

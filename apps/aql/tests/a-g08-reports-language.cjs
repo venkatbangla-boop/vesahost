@@ -51,6 +51,7 @@ for (const requiredText of [
   "['photos','Photo evidence']",
   "['sampling','Sampling plan & allocation']",
   "['defects','Defect breakdown / Pareto']",
+  "['followup','Factory quality follow-up']",
   "['measurements','Measurement report']",
   "['packing','Packing / barcode report']",
   "['capa','CAPA tracker']",
@@ -69,10 +70,12 @@ for (const requiredText of [
   'root.lang=s.language',
   "sampling:['orders','sampling']",
   "defects:['orders','sampling','defects']",
-  "presetTitles={sampling:'Sampling Plan & Allocation',defects:'Defect Breakdown / Pareto',capa:'CAPA Tracker'}",
+  "followup:['defects','capa']",
+  "presetTitles={sampling:'Sampling Plan & Allocation',defects:'Defect Breakdown / Pareto',followup:'Factory Quality Follow-Up',capa:'CAPA Tracker'}",
   "['Lot','Qty','Code','Required sample','Allocated','Checked'",
   "['Rank','Category','Observed finding','Severity','Recorded row quantity'",
   "['Issue','Containment','Root cause','Corrective action','Owner','Due','Recorded status','Verification','Effectiveness','Closure evidence','Selected evidence references','Lifecycle review']",
+  "['Record type','Source record','Finding / issue','Severity / quantity','Corrective action','Owner','Due','Recorded status','Selected evidence references','Lifecycle review']",
   "['buyer','technical','exceptions','packing','sampling','defects']",
 ]) {
   expect(html.includes(requiredText) || preferences.includes(requiredText), `A-G08 report/language/accessibility guard is missing: ${requiredText}`);
