@@ -70,11 +70,11 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 
 `AQL free-only = ROUND(100 × 3 / 12) = 25%`.
 
-## Shared UX eligibility — 10 active gates, 9 accepted
+## Shared UX eligibility — 10 active gates, 10 accepted
 
-All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-10-12 rendered audit reopened U-G01 as `CONDITIONAL`; the subsequent shared runtime and TNA/PPM/AQL adapter sequence (`d64b32a`, `74657a8`, `800d074`, `a907fc7`) removed the stacked authenticated/app chrome and proved exact one-shell ownership across all three applications. Commit `082493d` then moved App Centre/Admin onto the same shell, retained Login's single logged-out brand treatment, proved catalogue cards and responsive behavior at seven widths plus 200% scale, and made that platform-page matrix a mandatory full-regression command. Commit `c3da3b0` connects all five approved appearance palettes to one semantic typography/colour/background/spacing/gutter/card/control system, with all-theme contrast and rendered light/dark proof. Commit `94414c2` adds and proves the shared first-focus skip path, dynamic visible-main targeting, current/save semantics, reduced-motion behavior and exact root/PPM/AQL offline shell assets across six routes at 390/1280. The nine accepted units are U-G00, U-G01, U-G02, U-G03, U-G04, U-G05, U-G06, U-G07 and U-G08; U-G09 remains incomplete. Physical screen-reader/device acceptance is not inferred from the browser/DOM proof.
+All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-10-12 rendered audit reopened U-G01 as `CONDITIONAL`; the subsequent shared runtime and TNA/PPM/AQL adapter sequence (`d64b32a`, `74657a8`, `800d074`, `a907fc7`) removed the stacked authenticated/app chrome and proved exact one-shell ownership across all three applications. Commit `082493d` then moved App Centre/Admin onto the same shell, retained Login's single logged-out brand treatment, proved catalogue cards and responsive behavior at seven widths plus 200% scale, and made that platform-page matrix a mandatory full-regression command. Commit `c3da3b0` connects all five approved appearance palettes to one semantic typography/colour/background/spacing/gutter/card/control system, with all-theme contrast and rendered light/dark proof. Commit `94414c2` adds and proves the shared first-focus skip path, dynamic visible-main targeting, current/save semantics, reduced-motion behavior and exact root/PPM/AQL offline shell assets across six routes at 390/1280. Commit `87f1e2a` completes the final uniform transition review across Login/App Centre/Admin/TNA/PPM Editor/AQL Inspection at 390/768/1280 and repairs hard-clipped long mobile identities. All ten U-G00–U-G09 units are accepted locally. Physical screen-reader/device/factory and production acceptance are not inferred from the browser/DOM proof.
 
-`Shared free-only = ROUND(100 × 9 / 10) = 90%`.
+`Shared free-only = ROUND(100 × 10 / 10) = 100%`.
 
 ## Weighted result
 
@@ -83,12 +83,12 @@ ROUND(
   30 × 9/12 +
   30 × 9/10 +
   30 × 3/12 +
-  10 × 9/10
-) = ROUND(66.0) = 66%
+  10 × 10/10
+) = ROUND(67.0) = 67%
 ```
 
-**FREE-ONLY VERIFIED: 66%**
+**FREE-ONLY VERIFIED: 67%**
 
-**FREE-ONLY REMAINING: 34%**
+**FREE-ONLY REMAINING: 33%**
 
-This 66% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; the dated 2026-10-12 reassessments add U-G01 and then U-G04/U-G05/U-G07, while the 2026-10-13 reassessments add U-G03 and U-G06 only after their executable theme and accessibility evidence passed. Any later eligibility change requires a dated audit entry and must not rewrite this history silently.
+This 67% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; the dated 2026-10-12 reassessments add U-G01 and then U-G04/U-G05/U-G07, while the 2026-10-13 reassessments add U-G03, U-G06 and U-G09 only after their executable theme, accessibility and final-transition evidence passed. Any later eligibility change requires a dated audit entry and must not rewrite this history silently.
