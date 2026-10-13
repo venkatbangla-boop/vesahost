@@ -609,10 +609,86 @@ async function run() {
     assert.equal(await loadingPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR12 report causes page-level overflow');
     await loadingPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar12-container-loading-1280.png'), fullPage: true });
     await loadingPage.close();
+
+    const auditExpected = await page.evaluate(async () => {
+      const app = window.__vesaApp;
+      app.closeDialog();
+      const p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      Object.assign(p.meta, { id: 'EVENT-AR14-AUDIT', reportId: 'A-G08-AR14-SUPPLIER-AUDIT', revision: 3 });
+      Object.assign(p.info, { buyer: 'A-G08 AR14 Buyer - Fictional', factory: 'A-G08 AR14 Supplier Site - Fictional', supplier: 'A-G08 AR14 Supplier - Fictional', inspector: 'A-G08 AR14 Auditor - Fictional', date: '2026-10-13', kind: 'Supplier Quality Audit' });
+      p.stageSuite = StageCatalog.fresh('audit');
+      Object.assign(p.stageSuite, { orderKey: 'SUPPLIER-A-G08-AR14', reference: 'FICTIONAL-AUDIT-SCOPE-AR14-REV-1', approvedBy: 'Fictional audit scope reviewer', sampling: 'Recorded local QMS observations only; no certification represented.' });
+      p.stageSuite.checks = p.stageSuite.checks.map(check => ({ ...check, status: 'Pass', note: 'Fictional explicit system-area review.' }));
+      p.stageSuite.records = [
+        { id: 'AUDIT-AR14-MINOR', module: 'audit', identity: 'QMS-AR14-01', area: 'Document control', criterion: 'Fictional approved criterion revision A', observation: 'Controlled copy <revision> mismatch & recorded evidence', severity: 'Minor', owner: 'Fictional document owner', due: '2026-10-20', capa: 'CAPA-AR14-01', verification: 'Fictional local follow-up recorded', reference: 'AUDIT-SOURCE-AR14-01', status: 'Pass', note: 'Recorded review only; no certification.' },
+        { id: 'AUDIT-AR14-CRITICAL', module: 'audit', identity: 'QMS-AR14-02', area: 'Needle control', criterion: 'Fictional approved critical-control criterion', observation: 'Critical control gap remains recorded', severity: 'Critical', owner: 'Fictional compliance owner', due: '2026-10-14', capa: 'CAPA-AR14-02', verification: 'Typed supplier statement only', reference: 'AUDIT-SOURCE-AR14-02', status: 'Pass', note: 'Deliberate Critical plus Pass conflict.' },
+        { id: 'ACK-AR14-PARTIAL', module: 'acknowledgement', identity: 'Fictional Supplier Representative A', designation: 'Fictional Quality Manager', received: 'Yes', agreement: 'Partial', comments: 'Receipt recorded; one finding disputed', statement: 'Fictional corrective response pending evidence', signature: 'Fictional typed acknowledgement A', timestamp: '2026-10-13 12:00', reference: 'ACK-SOURCE-AR14-01', status: 'Pass', note: 'Receipt is not acceptance or approval.' },
+        { id: 'ACK-AR14-DENIED', module: 'acknowledgement', identity: 'Fictional Supplier Representative B', designation: 'Fictional Operations Manager', received: 'No', agreement: 'Disagree', comments: 'Findings not received', statement: 'No accepted corrective response', signature: 'Fictional typed acknowledgement B', timestamp: '2026-10-13 12:30', reference: 'ACK-SOURCE-AR14-02', status: 'Pass', note: 'Deliberate denied receipt must remain unresolved.' }
+      ];
+      await app.setProject(p);
+      app.step = 0;
+      app.render();
+      return { unchanged: JSON.stringify(app.p), decision: ResultEngine.evaluate(app.p).stageDecision };
+    });
+    assert.equal(auditExpected.decision, 'NOT CONFORMED', 'AR14 fixture must retain the supplier Critical failure');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#app [data-action="stage-report"]:visible').first().click();
+    const auditOption = page.locator('#dialog [name="preset"] option[value="audit"]');
+    assert.equal(await auditOption.count(), 1, 'audit-stage Report Studio is missing the AR14 preset');
+    assert.equal(await auditOption.textContent(), 'Supplier quality audit', 'AR14 preset label changed');
+    await page.locator('#dialog [name="preset"]').selectOption('audit');
+    await page.locator('#dialog [name="remember"]').uncheck();
+    await page.locator('#dialog [data-action="report-preview"]').click();
+    const auditFrame = page.frameLocator('#reportFrame');
+    await auditFrame.locator('h1').filter({ hasText: 'Supplier Quality Audit' }).waitFor({ state: 'visible' });
+    const auditText = await auditFrame.locator('body').innerText();
+    for (const expected of ['A-G08-AR14-SUPPLIER-AUDIT', 'Audit findings: 2', 'Critical findings: 1', 'Acknowledgements: 2', 'Denied receipt: 1', 'Unresolved records: 2', 'Stage decision: NOT CONFORMED', 'RECORDED REVIEW — NOT CERTIFICATION OR CLOSURE', 'UNRESOLVED — critical finding cannot pass without closure evidence', 'RECORDED RESPONSE PARTIAL — NOT ACCEPTANCE OR APPROVAL', 'UNRESOLVED — findings were not received', 'similar wording does not create a link', 'does not prove finding closure, certification, supplier acceptance']) assert.ok(auditText.includes(expected), `AR14 preview is missing ${expected}`);
+    const auditTables = auditFrame.locator('#supplier-audit table');
+    assert.equal(await auditTables.count(), 2, 'AR14 report must keep audit findings and acknowledgements in separate tables');
+    assert.deepEqual(await auditTables.nth(0).locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim()))), [
+      ['AUDIT-AR14-MINOR', 'QMS-AR14-01', 'Document control', 'Fictional approved criterion revision A', 'Controlled copy <revision> mismatch & recorded evidence', 'Minor', 'Fictional document owner', '2026-10-20', 'CAPA-AR14-01', 'Fictional local follow-up recorded', 'AUDIT-SOURCE-AR14-01', 'Pass', 'Recorded review only; no certification.', 'RECORDED REVIEW — NOT CERTIFICATION OR CLOSURE'],
+      ['AUDIT-AR14-CRITICAL', 'QMS-AR14-02', 'Needle control', 'Fictional approved critical-control criterion', 'Critical control gap remains recorded', 'Critical', 'Fictional compliance owner', '2026-10-14', 'CAPA-AR14-02', 'Typed supplier statement only', 'AUDIT-SOURCE-AR14-02', 'Pass', 'Deliberate Critical plus Pass conflict.', 'UNRESOLVED — critical finding cannot pass without closure evidence']
+    ], 'AR14 exact supplier-audit finding rows changed');
+    assert.deepEqual(await auditTables.nth(1).locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim()))), [
+      ['ACK-AR14-PARTIAL', 'Fictional Supplier Representative A', 'Fictional Quality Manager', 'Yes', 'Partial', 'Receipt recorded; one finding disputed', 'Fictional corrective response pending evidence', 'Fictional typed acknowledgement A', '2026-10-13 12:00', 'ACK-SOURCE-AR14-01', 'Pass', 'Receipt is not acceptance or approval.', 'RECORDED RESPONSE PARTIAL — NOT ACCEPTANCE OR APPROVAL'],
+      ['ACK-AR14-DENIED', 'Fictional Supplier Representative B', 'Fictional Operations Manager', 'No', 'Disagree', 'Findings not received', 'No accepted corrective response', 'Fictional typed acknowledgement B', '2026-10-13 12:30', 'ACK-SOURCE-AR14-02', 'Pass', 'Deliberate denied receipt must remain unresolved.', 'UNRESOLVED — findings were not received']
+    ], 'AR14 exact factory-acknowledgement rows changed');
+    assert.equal(await auditFrame.locator('#supplier-audit[role="region"][aria-label="Supplier audit and acknowledgement reconciliation table"][tabindex="0"]').count(), 1, 'AR14 tables are not in a named keyboard-focusable region');
+    assert.equal(await auditFrame.locator('#supplier-audit').evaluate(element => element.scrollWidth > element.clientWidth), true, 'AR14 wide tables are not contained in their horizontal review region');
+    assert.equal(await auditFrame.locator('script').count(), 0, 'AR14 preview contains a script node');
+    assert.equal(await page.evaluate(expected => JSON.stringify(window.__vesaApp.p) === expected, auditExpected.unchanged), true, 'AR14 report generation mutated its source project');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '390px AR14 preview causes page-level overflow');
+    const auditHtml = await page.evaluate(() => window.__vesaApp.reportHtml);
+    assert.ok(auditHtml.includes('Controlled copy &lt;revision&gt; mismatch &amp; recorded evidence') && !auditHtml.includes('Controlled copy <revision> mismatch & recorded evidence'), 'AR14 report did not safely escape hostile audit text');
+    const auditPage = await context.newPage();
+    await auditPage.setViewportSize({ width: 390, height: 844 });
+    await auditPage.setContent(auditHtml, { waitUntil: 'domcontentloaded' });
+    assert.equal(await auditPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 390px AR14 report causes page-level overflow');
+    await auditPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar14-supplier-audit-390.png'), fullPage: true });
+    await auditPage.locator('#supplier-audit').evaluate(element => { element.scrollLeft = element.scrollWidth; });
+    await auditPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar14-supplier-audit-390-right.png'), fullPage: true });
+
+    const emptyAudit = await page.evaluate(async () => {
+      const app = window.__vesaApp, p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      p.stageSuite = StageCatalog.fresh('audit');
+      const before = JSON.stringify(p), html = await ReportComposer.html(p, app.assets, { ...p.report, preset: 'audit' });
+      return { html, unchanged: before === JSON.stringify(p) };
+    });
+    assert.equal(emptyAudit.unchanged, true, 'empty AR14 report mutated its source project');
+    assert.ok(emptyAudit.html.includes('No supplier-audit findings are recorded. This does not prove that the supplier system was audited or found conforming.') && emptyAudit.html.includes('No factory acknowledgement is recorded. This does not prove receipt, agreement or supplier acceptance.'), 'empty AR14 report inferred audit completion or supplier acceptance');
+    assert.ok(!/<script\b/i.test(emptyAudit.html), 'empty AR14 report contains executable script');
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '1280px AR14 preview causes page-level overflow');
+    await auditPage.setViewportSize({ width: 1280, height: 900 });
+    await auditPage.locator('#supplier-audit').evaluate(element => { element.scrollLeft = 0; });
+    assert.equal(await auditPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR14 report causes page-level overflow');
+    await auditPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar14-supplier-audit-1280.png'), fullPage: true });
+    await auditPage.close();
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join(' | ')}`);
     assert.deepEqual(consoleErrors, [], `console errors: ${consoleErrors.join(' | ')}`);
     assert.deepEqual(external, [], `unexpected external requests: ${external.join(' | ')}`);
-    console.log(`A-G08 STAGE/AR02/AR03/AR04/AR10/AR12/AR13 REPORTS PASS: 13 stage routes plus factory follow-up, sampling, denominator-safe defect Pareto, immutable rework/reinspection chain, container loading reconciliation and CAPA lifecycle proof at 390/1280; ${path.relative(root, outputDir)}`);
+    console.log(`A-G08 STAGE/AR02/AR03/AR04/AR10/AR12/AR13/AR14 REPORTS PASS: 13 stage routes plus factory follow-up, sampling, denominator-safe defect Pareto, immutable rework/reinspection chain, container loading, CAPA and supplier-audit reconciliation at 390/1280; ${path.relative(root, outputDir)}`);
   } finally {
     if (browser) await browser.close();
     await host.stop();

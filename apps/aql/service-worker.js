@@ -1,4 +1,4 @@
-const CACHE = 'vesa-aql-2026-10-13-18';
+const CACHE = 'vesa-aql-2026-10-13-19';
 const ASSETS = [
   './',
   './index.html',

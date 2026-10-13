@@ -54,6 +54,7 @@ for (const requiredText of [
   "['followup','Factory quality follow-up']",
   "['chain','Rework / reinspection chain']",
   "['loading','Container loading']",
+  "['audit','Supplier quality audit']",
   "['measurements','Measurement report']",
   "['packing','Packing / barcode report']",
   "['capa','CAPA tracker']",
@@ -81,6 +82,8 @@ for (const requiredText of [
   "['Record type','Source record','Finding / issue','Severity / quantity','Corrective action','Owner','Due','Recorded status','Selected evidence references','Lifecycle review']",
   "['Reinspection row','Source collection','Source record','Source project','Source report','Source revision','Carried-forward issue','Recorded status'",
   "['Container','Truck','Condition','Cleanliness','Damage / water / odour','Expected cartons','Loaded cartons'",
+  "['Finding record','Clause / finding','System area','Criterion / revision','Objective evidence','Category','Owner','Due','CAPA reference','Verification'",
+  "['Acknowledgement record','Representative','Designation','Findings received','Recorded response','Comments','Corrective-action statement'",
   "['buyer','technical','exceptions','packing','sampling','defects']",
 ]) {
   expect(html.includes(requiredText) || preferences.includes(requiredText), `A-G08 report/language/accessibility guard is missing: ${requiredText}`);
