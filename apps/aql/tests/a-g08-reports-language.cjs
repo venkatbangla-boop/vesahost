@@ -68,4 +68,8 @@ for (const requiredText of [
   expect(html.includes(requiredText) || preferences.includes(requiredText), `A-G08 report/language/accessibility guard is missing: ${requiredText}`);
 }
 
+expect(html.includes('id="m45-report-verification"'), 'A-G08 visible report verification token is missing.');
+expect(!html.includes('window.VESA_REPORT_TOKEN='), 'A-G08 report decorator must not append executable token script.');
+expect(html.includes('role="region" aria-label="${this.e(title)} table" tabindex="0"'), 'A-G08 report table sections must remain named keyboard-focusable regions.');
+
 console.log('AQL A-G08 report, language and accessibility contract checks passed');
