@@ -55,6 +55,8 @@ for (const requiredText of [
   "['chain','Rework / reinspection chain']",
   "['loading','Container loading']",
   "['audit','Supplier quality audit']",
+  "['fabric-roll','Fabric roll inspection']",
+  "['materials','Incoming materials / shade']",
   "['measurements','Measurement report']",
   "['packing','Packing / barcode report']",
   "['capa','CAPA tracker']",
@@ -84,6 +86,9 @@ for (const requiredText of [
   "['Container','Truck','Condition','Cleanliness','Damage / water / odour','Expected cartons','Loaded cartons'",
   "['Finding record','Clause / finding','System area','Criterion / revision','Objective evidence','Category','Owner','Due','CAPA reference','Verification'",
   "['Acknowledgement record','Representative','Designation','Findings received','Recorded response','Comments','Corrective-action statement'",
+  "['Roll record','Roll ID','Mill','Batch / dye lot','Ticket','Invoice quantity','Received quantity','Ticket length m'",
+  "['Incoming record','Material / lot','Material path','Supplier / mill','PO / material code','Batch','GRN / invoice reference'",
+  "['Shade record','Record identity','Approved standard','Lab dip / strike-off','Light source','Roll / dye lot'",
   "['buyer','technical','exceptions','packing','sampling','defects']",
 ]) {
   expect(html.includes(requiredText) || preferences.includes(requiredText), `A-G08 report/language/accessibility guard is missing: ${requiredText}`);

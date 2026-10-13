@@ -685,10 +685,147 @@ async function run() {
     assert.equal(await auditPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR14 report causes page-level overflow');
     await auditPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar14-supplier-audit-1280.png'), fullPage: true });
     await auditPage.close();
+
+    const fabricExpected = await page.evaluate(async () => {
+      const app = window.__vesaApp;
+      app.closeDialog();
+      const p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      Object.assign(p.meta, { id: 'EVENT-AR06-FABRIC', reportId: 'A-G08-AR06-FABRIC-ROLL', revision: 2 });
+      Object.assign(p.info, { buyer: 'A-G08 AR06 Buyer - Fictional', factory: 'A-G08 AR06 Mill - Fictional', inspector: 'A-G08 AR06 Inspector - Fictional', date: '2026-10-13', kind: 'Fabric Roll Inspection' });
+      p.stageSuite = StageCatalog.fresh('fabric');
+      Object.assign(p.stageSuite, { orderKey: 'FABRIC-A-G08-AR06', reference: 'FICTIONAL-FABRIC-METHOD-AR06-REV-1', approvedBy: 'Fictional fabric-method reviewer', sampling: 'Two explicitly selected fictional rolls; no population acceptance represented.' });
+      p.stageSuite.checks = p.stageSuite.checks.map(check => ({ ...check, status: 'Pass', note: 'Fictional explicit fabric-stage review.' }));
+      p.stageSuite.records = [
+        { id: 'ROLL-AR06-WITHIN', module: 'roll', identity: 'ROLL-AR06-001', mill: 'Fictional Mill A', batch: 'DYELOT-AR06-A', ticket: 'TICKET-AR06-001', invoice: 100, received: 100, ticketLength: 100, length: 100, widthStart: 150, widthMiddle: 149, widthEnd: 151, basis: '100 m²', limit: 5, method: 'Fictional approved four-point method revision A', sampling: 'Explicit roll one selection', shade: 'SHADE-A', endShade: 'Matched', edgeShade: 'Matched', splices: 0, spliceLocations: 'None recorded', selvedge: 'Recorded even', handle: 'Matched fictional reference', odour: 'None recorded', construction: 'Fictional knit construction', disposition: 'Accept', defects: '10, Hole <small>, 2, 4\n50, Stain & mark, 1, 2', defectReview: 'Complete', reference: 'ROLL-SOURCE-AR06-001', status: 'Pass', note: 'Recorded within the selected limit; not buyer acceptance.' },
+        { id: 'ROLL-AR06-OVER', module: 'roll', identity: 'ROLL-AR06-002', mill: 'Fictional Mill A', batch: 'DYELOT-AR06-B', ticket: 'TICKET-AR06-002', invoice: 80, received: 80, ticketLength: 80, length: 80, widthStart: 140, widthMiddle: 140, widthEnd: 141, basis: '100 m²', limit: 3, method: 'Fictional approved four-point method revision A', sampling: 'Explicit roll two selection', shade: 'SHADE-B', endShade: 'Recorded variation', edgeShade: 'Recorded variation', splices: 1, spliceLocations: '42 m', selvedge: 'Recorded uneven section', handle: 'Review pending', odour: 'None recorded', construction: 'Fictional knit construction', disposition: 'Hold', defects: '20, Tear, 2, 4', defectReview: 'Complete', reference: 'ROLL-SOURCE-AR06-002', status: 'Pass', note: 'Deliberate density failure and Hold disposition.' }
+      ];
+      await app.setProject(p);
+      app.step = 0;
+      app.render();
+      return { unchanged: JSON.stringify(app.p), decision: ResultEngine.evaluate(app.p).stageDecision };
+    });
+    assert.equal(fabricExpected.decision, 'REJECT / HOLD', 'AR06 fixture must retain the failed fabric-stage decision');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#app [data-action="stage-report"]:visible').first().click();
+    const fabricOption = page.locator('#dialog [name="preset"] option[value="fabric-roll"]');
+    assert.equal(await fabricOption.count(), 1, 'fabric-stage Report Studio is missing the AR06 preset');
+    assert.equal(await fabricOption.textContent(), 'Fabric roll inspection', 'AR06 preset label changed');
+    await page.locator('#dialog [name="preset"]').selectOption('fabric-roll');
+    await page.locator('#dialog [name="remember"]').uncheck();
+    await page.locator('#dialog [data-action="report-preview"]').click();
+    const fabricFrame = page.frameLocator('#reportFrame');
+    await fabricFrame.locator('h1').filter({ hasText: 'Fabric Roll Inspection' }).waitFor({ state: 'visible' });
+    const fabricText = await fabricFrame.locator('body').innerText();
+    for (const expected of ['A-G08-AR06-FABRIC-ROLL', 'Roll records: 2', 'Recorded inspected length: 180 m', 'Assigned points: 10', 'Unresolved rolls: 1', 'Stage decision: REJECT / HOLD', 'RECORDED WITHIN SELECTED LIMIT — NOT BUYER ACCEPTANCE', 'UNRESOLVED — Fabric point density exceeds approved limit; Disposition requires release review', 'not garment AQL', 'does not choose the roll sample or grading method']) assert.ok(fabricText.includes(expected), `AR06 preview is missing ${expected}`);
+    const fabricRows = await fabricFrame.locator('#fabric-roll tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim())));
+    assert.deepEqual(fabricRows, [
+      ['ROLL-AR06-WITHIN', 'ROLL-AR06-001', 'Fictional Mill A', 'DYELOT-AR06-A', 'TICKET-AR06-001', '100', '100', '100', '100', '150', '149', '151', '100 m²', '5', 'Fictional approved four-point method revision A', 'Explicit roll one selection', 'SHADE-A', 'Matched', 'Matched', '0', 'None recorded', 'Recorded even', 'Matched fictional reference', 'None recorded', 'Fictional knit construction', '10, Hole <small>, 2, 4 50, Stain & mark, 1, 2', '6', '4.027', 'Accept', 'ROLL-SOURCE-AR06-001', 'Pass', 'Recorded within the selected limit; not buyer acceptance.', 'RECORDED WITHIN SELECTED LIMIT — NOT BUYER ACCEPTANCE'],
+      ['ROLL-AR06-OVER', 'ROLL-AR06-002', 'Fictional Mill A', 'DYELOT-AR06-B', 'TICKET-AR06-002', '80', '80', '80', '80', '140', '140', '141', '100 m²', '3', 'Fictional approved four-point method revision A', 'Explicit roll two selection', 'SHADE-B', 'Recorded variation', 'Recorded variation', '1', '42 m', 'Recorded uneven section', 'Review pending', 'None recorded', 'Fictional knit construction', '20, Tear, 2, 4', '4', '3.571', 'Hold', 'ROLL-SOURCE-AR06-002', 'Pass', 'Deliberate density failure and Hold disposition.', 'UNRESOLVED — Fabric point density exceeds approved limit; Disposition requires release review']
+    ], 'AR06 exact fabric-roll reconciliation rows changed');
+    assert.equal(await fabricFrame.locator('#fabric-roll[role="region"][aria-label="Fabric roll reconciliation table"][tabindex="0"]').count(), 1, 'AR06 table is not a named keyboard-focusable region');
+    assert.equal(await fabricFrame.locator('#fabric-roll').evaluate(element => element.scrollWidth > element.clientWidth), true, 'AR06 wide table is not contained in its horizontal review region');
+    assert.equal(await fabricFrame.locator('script').count(), 0, 'AR06 preview contains a script node');
+    assert.equal(await page.evaluate(expected => JSON.stringify(window.__vesaApp.p) === expected, fabricExpected.unchanged), true, 'AR06 report generation mutated its source project');
+    const fabricHtml = await page.evaluate(() => window.__vesaApp.reportHtml);
+    assert.ok(fabricHtml.includes('Hole &lt;small&gt;') && fabricHtml.includes('Stain &amp; mark') && !fabricHtml.includes('Hole <small>'), 'AR06 report did not safely escape hostile roll text');
+    const fabricPage = await context.newPage();
+    await fabricPage.setViewportSize({ width: 390, height: 844 });
+    await fabricPage.setContent(fabricHtml, { waitUntil: 'domcontentloaded' });
+    assert.equal(await fabricPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 390px AR06 report causes page-level overflow');
+    await fabricPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar06-fabric-roll-390.png'), fullPage: true });
+    await fabricPage.locator('#fabric-roll').evaluate(element => { element.scrollLeft = element.scrollWidth; });
+    await fabricPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar06-fabric-roll-390-right.png'), fullPage: true });
+
+    const emptyFabric = await page.evaluate(async () => {
+      const app = window.__vesaApp, p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      p.stageSuite = StageCatalog.fresh('fabric');
+      const before = JSON.stringify(p), html = await ReportComposer.html(p, app.assets, { ...p.report, preset: 'fabric-roll' });
+      return { html, unchanged: before === JSON.stringify(p) };
+    });
+    assert.equal(emptyFabric.unchanged, true, 'empty AR06 report mutated its source project');
+    assert.ok(emptyFabric.html.includes('No fabric-roll records are recorded. This does not prove that rolls were selected, inspected, graded or accepted.'), 'empty AR06 report inferred fabric inspection or acceptance');
+
+    await fabricPage.setViewportSize({ width: 1280, height: 900 });
+    await fabricPage.locator('#fabric-roll').evaluate(element => { element.scrollLeft = 0; });
+    assert.equal(await fabricPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR06 report causes page-level overflow');
+    await fabricPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar06-fabric-roll-1280.png'), fullPage: true });
+    await fabricPage.close();
+
+    const materialsExpected = await page.evaluate(async () => {
+      const app = window.__vesaApp;
+      app.closeDialog();
+      const p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      Object.assign(p.meta, { id: 'EVENT-AR07-MATERIALS', reportId: 'A-G08-AR07-INCOMING-SHADE', revision: 2 });
+      Object.assign(p.info, { buyer: 'A-G08 AR07 Buyer - Fictional', factory: 'A-G08 AR07 Factory - Fictional', inspector: 'A-G08 AR07 Inspector - Fictional', date: '2026-10-13', kind: 'Fabric / Accessories Incoming Inspection' });
+      p.stageSuite = StageCatalog.fresh('incoming');
+      Object.assign(p.stageSuite, { orderKey: 'MATERIAL-A-G08-AR07', reference: 'FICTIONAL-INCOMING-SCOPE-AR07-REV-1', approvedBy: 'Fictional incoming-scope reviewer', sampling: 'Explicit recorded incoming checks; no lot release represented.' });
+      p.stageSuite.checks = p.stageSuite.checks.map(check => ({ ...check, status: 'Pass', note: 'Fictional explicit incoming-stage review.' }));
+      p.stageSuite.records = [
+        { id: 'INCOMING-AR07-COMPLETE', module: 'incoming', identity: 'LOT-AR07-001', path: 'Fabric', supplier: 'Fictional Mill A', po: 'PO-AR07-001', batch: 'BATCH-AR07-A', grn: 'GRN-AR07-001', invoice: 1000, received: 1000, inspected: 100, unit: 'metres', totalRolls: 10, receivedRolls: 10, sampledRolls: 2, weight: 200, length: 1000, width: 150, gsm: 180, construction: 'Fictional knit <construction>', shade: 'SHADE-A', lab: 'Pass', warehouse: 'Fictional dry storage', quarantine: 'Released area pending authority', approver: 'Fictional material reviewer', reference: 'INCOMING-SOURCE-AR07-001', status: 'Pass', note: 'Recorded check only; not material release.' },
+        { id: 'INCOMING-AR07-FAILED', module: 'incoming', identity: 'LOT-AR07-002', path: 'Buttons', supplier: 'Fictional Trim Supplier', po: 'PO-AR07-002', batch: 'BATCH-AR07-B', grn: 'GRN-AR07-002', invoice: 500, received: 480, inspected: 490, unit: 'pieces', totalRolls: 0, receivedRolls: 0, sampledRolls: 0, weight: 20, length: 0, width: 0, gsm: 0, construction: 'Fictional trim specification', shade: 'BLACK', lab: 'Fail', warehouse: 'Fictional segregated storage', quarantine: 'HOLD-AR07', approver: 'Fictional material reviewer', reference: 'INCOMING-SOURCE-AR07-002', status: 'Pass', note: 'Deliberate inspected-over-received and laboratory failure.' },
+        { id: 'SHADE-AR07-WITHIN', module: 'shade', identity: 'SHADE-AR07-001', standard: 'Fictional approved shade standard A', labdip: 'LABDIP-AR07-A', light: 'Fictional approved light source', lot: 'DYELOT-AR07-A', shade: 'SHADE-A', component: 'Body', endShade: 'Matched', edgeShade: 'Matched', grade: 'Recorded acceptable', method: 'Fictional approved method revision A', delta: 0.8, limit: 1, evaluator: 'Fictional shade evaluator', disposition: 'Accept', reference: 'SHADE-SOURCE-AR07-001', status: 'Pass', note: 'Recorded within selected limit; not buyer approval.' },
+        { id: 'SHADE-AR07-OVER', module: 'shade', identity: 'SHADE-AR07-002', standard: 'Fictional approved shade standard A', labdip: 'LABDIP-AR07-B', light: 'Fictional approved light source', lot: 'DYELOT-AR07-B', shade: 'SHADE-B', component: 'Sleeve', endShade: 'Recorded variation', edgeShade: 'Recorded variation', grade: 'Review required', method: 'Fictional approved method revision A', delta: 1.5, limit: 1, evaluator: 'Fictional shade evaluator', disposition: 'Hold', reference: 'SHADE-SOURCE-AR07-002', status: 'Pass', note: 'Deliberate Delta E failure and Hold disposition.' }
+      ];
+      await app.setProject(p);
+      app.step = 0;
+      app.render();
+      return { unchanged: JSON.stringify(app.p), decision: ResultEngine.evaluate(app.p).stageDecision };
+    });
+    assert.equal(materialsExpected.decision, 'NOT CONFORMED', 'AR07 fixture must retain incoming and shade failures');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#app [data-action="stage-report"]:visible').first().click();
+    const materialsOption = page.locator('#dialog [name="preset"] option[value="materials"]');
+    assert.equal(await materialsOption.count(), 1, 'incoming-stage Report Studio is missing the AR07 preset');
+    assert.equal(await materialsOption.textContent(), 'Incoming materials / shade', 'AR07 preset label changed');
+    await page.locator('#dialog [name="preset"]').selectOption('materials');
+    await page.locator('#dialog [name="remember"]').uncheck();
+    await page.locator('#dialog [data-action="report-preview"]').click();
+    const materialsFrame = page.frameLocator('#reportFrame');
+    await materialsFrame.locator('h1').filter({ hasText: 'Incoming Materials / Shade' }).waitFor({ state: 'visible' });
+    const materialsText = await materialsFrame.locator('body').innerText();
+    for (const expected of ['A-G08-AR07-INCOMING-SHADE', 'Incoming records: 2', 'Shade records: 2', 'Unresolved records: 2', 'Stage decision: NOT CONFORMED', 'RECORDED REVIEW — NOT MATERIAL RELEASE', 'UNRESOLVED — incoming laboratory failure; inspected quantity exceeds received', 'RECORDED REVIEW — NOT SHADE APPROVAL', 'UNRESOLVED — Delta E exceeds approved limit; Disposition requires release review', 'missing values remain undefined', 'does not prove buyer acceptance']) assert.ok(materialsText.includes(expected), `AR07 preview is missing ${expected}`);
+    const materialTables = materialsFrame.locator('#incoming-materials table');
+    assert.equal(await materialTables.count(), 2, 'AR07 report must keep incoming and shade records in separate tables');
+    assert.deepEqual(await materialTables.nth(0).locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim()))), [
+      ['INCOMING-AR07-COMPLETE', 'LOT-AR07-001', 'Fabric', 'Fictional Mill A', 'PO-AR07-001', 'BATCH-AR07-A', 'GRN-AR07-001', '1000', '1000', '0', '100', '-900', 'metres', '10', '10', '2', '200', '1000', '150', '180', 'Fictional knit <construction>', 'SHADE-A', 'Pass', 'Fictional dry storage', 'Released area pending authority', 'Fictional material reviewer', 'INCOMING-SOURCE-AR07-001', 'Pass', 'Recorded check only; not material release.', 'RECORDED REVIEW — NOT MATERIAL RELEASE'],
+      ['INCOMING-AR07-FAILED', 'LOT-AR07-002', 'Buttons', 'Fictional Trim Supplier', 'PO-AR07-002', 'BATCH-AR07-B', 'GRN-AR07-002', '500', '480', '-20', '490', '10', 'pieces', '0', '0', '0', '20', '0', '0', '0', 'Fictional trim specification', 'BLACK', 'Fail', 'Fictional segregated storage', 'HOLD-AR07', 'Fictional material reviewer', 'INCOMING-SOURCE-AR07-002', 'Pass', 'Deliberate inspected-over-received and laboratory failure.', 'UNRESOLVED — incoming laboratory failure; inspected quantity exceeds received']
+    ], 'AR07 exact incoming-material rows changed');
+    assert.deepEqual(await materialTables.nth(1).locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim()))), [
+      ['SHADE-AR07-WITHIN', 'SHADE-AR07-001', 'Fictional approved shade standard A', 'LABDIP-AR07-A', 'Fictional approved light source', 'DYELOT-AR07-A', 'SHADE-A', 'Body', 'Matched', 'Matched', 'Recorded acceptable', 'Fictional approved method revision A', '0.8', '1', 'Fictional shade evaluator', 'Accept', 'SHADE-SOURCE-AR07-001', 'Pass', 'Recorded within selected limit; not buyer approval.', 'RECORDED REVIEW — NOT SHADE APPROVAL'],
+      ['SHADE-AR07-OVER', 'SHADE-AR07-002', 'Fictional approved shade standard A', 'LABDIP-AR07-B', 'Fictional approved light source', 'DYELOT-AR07-B', 'SHADE-B', 'Sleeve', 'Recorded variation', 'Recorded variation', 'Review required', 'Fictional approved method revision A', '1.5', '1', 'Fictional shade evaluator', 'Hold', 'SHADE-SOURCE-AR07-002', 'Pass', 'Deliberate Delta E failure and Hold disposition.', 'UNRESOLVED — Delta E exceeds approved limit; Disposition requires release review']
+    ], 'AR07 exact shade-management rows changed');
+    assert.equal(await materialsFrame.locator('#incoming-materials[role="region"][aria-label="Incoming materials and shade reconciliation table"][tabindex="0"]').count(), 1, 'AR07 tables are not in a named keyboard-focusable region');
+    assert.equal(await materialsFrame.locator('#incoming-materials').evaluate(element => element.scrollWidth > element.clientWidth), true, 'AR07 wide tables are not contained in their horizontal review region');
+    assert.equal(await materialsFrame.locator('script').count(), 0, 'AR07 preview contains a script node');
+    assert.equal(await page.evaluate(expected => JSON.stringify(window.__vesaApp.p) === expected, materialsExpected.unchanged), true, 'AR07 report generation mutated its source project');
+    const materialsHtml = await page.evaluate(() => window.__vesaApp.reportHtml);
+    assert.ok(materialsHtml.includes('Fictional knit &lt;construction&gt;') && !materialsHtml.includes('Fictional knit <construction>'), 'AR07 report did not safely escape hostile material text');
+    const materialsPage = await context.newPage();
+    await materialsPage.setViewportSize({ width: 390, height: 844 });
+    await materialsPage.setContent(materialsHtml, { waitUntil: 'domcontentloaded' });
+    assert.equal(await materialsPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 390px AR07 report causes page-level overflow');
+    await materialsPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar07-incoming-shade-390.png'), fullPage: true });
+    await materialsPage.locator('#incoming-materials').evaluate(element => { element.scrollLeft = element.scrollWidth; });
+    await materialsPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar07-incoming-shade-390-right.png'), fullPage: true });
+
+    const emptyMaterials = await page.evaluate(async () => {
+      const app = window.__vesaApp, p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      p.stageSuite = StageCatalog.fresh('incoming');
+      const before = JSON.stringify(p), html = await ReportComposer.html(p, app.assets, { ...p.report, preset: 'materials' });
+      return { html, unchanged: before === JSON.stringify(p) };
+    });
+    assert.equal(emptyMaterials.unchanged, true, 'empty AR07 report mutated its source project');
+    assert.ok(emptyMaterials.html.includes('No incoming-material records are recorded. This does not prove receipt, inspection, laboratory review or release.') && emptyMaterials.html.includes('No shade-management records are recorded. This does not prove shade consistency or approval.'), 'empty AR07 report inferred material inspection or shade approval');
+
+    await materialsPage.setViewportSize({ width: 1280, height: 900 });
+    await materialsPage.locator('#incoming-materials').evaluate(element => { element.scrollLeft = 0; });
+    assert.equal(await materialsPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR07 report causes page-level overflow');
+    await materialsPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar07-incoming-shade-1280.png'), fullPage: true });
+    await materialsPage.close();
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join(' | ')}`);
     assert.deepEqual(consoleErrors, [], `console errors: ${consoleErrors.join(' | ')}`);
     assert.deepEqual(external, [], `unexpected external requests: ${external.join(' | ')}`);
-    console.log(`A-G08 STAGE/AR02/AR03/AR04/AR10/AR12/AR13/AR14 REPORTS PASS: 13 stage routes plus factory follow-up, sampling, denominator-safe defect Pareto, immutable rework/reinspection chain, container loading, CAPA and supplier-audit reconciliation at 390/1280; ${path.relative(root, outputDir)}`);
+    console.log(`A-G08 STAGE/AR02/AR03/AR04/AR06/AR07/AR10/AR12/AR13/AR14 REPORTS PASS: 13 stage routes plus factory follow-up, sampling, Pareto, material-control, reinspection, loading, CAPA and supplier-audit reconciliation at 390/1280; ${path.relative(root, outputDir)}`);
   } finally {
     if (browser) await browser.close();
     await host.stop();
