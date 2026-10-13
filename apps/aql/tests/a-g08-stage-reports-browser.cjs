@@ -446,10 +446,97 @@ async function run() {
     assert.equal(await followupPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR02 report causes page-level overflow');
     await followupPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar02-factory-follow-up-1280.png'), fullPage: true });
     await followupPage.close();
+
+    const chainExpected = await page.evaluate(async () => {
+      const app = window.__vesaApp;
+      app.closeDialog();
+      const source = ProjectSchema.fresh('Knit Top / T-Shirt / Polo'), line = { ...ProjectSchema.order(), id: 'LINE-AR10', po: 'PO-A-G08-AR10', item: 'TS-AR10', color: 'Navy', size: 'M', orderQty: 100, qty: 100, allocated: 0, checked: 0 };
+      Object.assign(source.meta, { id: 'SOURCE-EVENT-AR10', reportId: 'FAILED-REPORT-AR10', revision: 4 });
+      Object.assign(source.info, { buyer: 'A-G08 AR10 Buyer - Fictional', factory: 'A-G08 AR10 Factory - Fictional', inspector: 'A-G08 AR10 Source Inspector - Fictional', date: '2026-10-12', kind: 'Failed source inspection' });
+      source.orders = [line];
+      source.defects = [{ id: 'D-AR10-SOURCE', lineId: line.id, name: 'Open <seam> & unsafe edge', severity: 'Critical', qty: 1, sampleId: 'PIECE-AR10-1', location: 'Side seam', note: 'Fictional failed source observation', internal: false, created: '2026-10-12T00:00:00.000Z' }];
+      source.capa = [
+        { id: 'CA-AR10-OPEN', issue: 'Fictional source containment', containment: 'Hold fictional source lot', cause: 'Fictional guide damage', action: 'Repair guide and segregate lot', owner: 'Fictional factory QA', due: '2026-10-13', status: 'Open', verification: '', effectiveness: '', closure: '', reply: '' },
+        { id: 'CA-AR10-VERIFIED', issue: 'Fictional repair verification', containment: 'Retain fictional lot hold', cause: 'Fictional guide damage', action: 'Replace guide and sort lot', owner: 'Fictional factory owner', due: '2026-10-13', status: 'Verified', verification: 'Recorded fictional follow-up check', effectiveness: 'No recurrence in recorded fictional correction sample', closure: '', reply: 'Recorded fictional follow-up check' }
+      ];
+      const p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      Object.assign(p.meta, { id: 'CURRENT-EVENT-AR10', reportId: 'REINSPECTION-REPORT-AR10', revision: 1 });
+      Object.assign(p.info, { buyer: source.info.buyer, factory: source.info.factory, inspector: 'A-G08 AR10 Reinspection Inspector - Fictional', date: '2026-10-13', kind: 'Reinspection after rework' });
+      p.orders = [{ ...line, id: 'LINE-AR10-CURRENT', allocated: 0, checked: 0 }];
+      p.resubmission = { sourceProject: source.meta.id, sourceReport: source.meta.reportId, sourceRevision: source.meta.revision, sourceQty: 100, sourceFindings: 2, sourceSnapshot: source, lotReference: 'LOT-AR10-RESUBMITTED-REV-2', reason: '', owner: 'Fictional factory correction owner', completed: '2026-10-13', handled: 100, remaining: 95, replaced: 5, scrapped: 5, quantityReason: 'Five fictional pieces replaced after removal', verifiedBy: 'Fictional resubmission verifier', reference: 'CORRECTION-EVIDENCE-AR10', correctionScope: '100% fictional sorting and recorded guide repair' };
+      p.reinspection = [
+        { id: 'RE-AR10-CORRECTED', sourceId: 'D-AR10-SOURCE', sourceProject: source.meta.id, sourceReport: source.meta.reportId, sourceRevision: source.meta.revision, collection: 'defects', issue: 'Open <seam> & unsafe edge', original: source.defects[0], status: 'Corrected', note: 'No open seam observed in the current fictional verification', quantity: 100, method: 'Fresh independent visual reinspection', verifiedBy: 'Fictional reinspection verifier', verifiedAt: '2026-10-13', evidenceReference: 'REINSPECTION-EVIDENCE-AR10-1' },
+        { id: 'RE-AR10-OPEN', sourceId: 'CA-AR10-OPEN', sourceProject: source.meta.id, sourceReport: source.meta.reportId, sourceRevision: source.meta.revision, collection: 'capa', issue: 'Fictional source containment remains open', original: source.capa[0], status: 'Not corrected', note: 'Recorded fictional obligation remains open', quantity: '', method: '', verifiedBy: '', verifiedAt: '', evidenceReference: '' }
+      ];
+      await app.setProject(p);
+      app.step = 5;
+      app.render();
+      return { unchanged: JSON.stringify(app.p), sourceResult: ResultEngine.evaluate(source).result };
+    });
+    assert.equal(chainExpected.sourceResult, 'NOT CONFORMED', 'AR10 source fixture must retain a failed original result');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#app [data-action="report"]:visible').first().click();
+    const chainOption = page.locator('#dialog [name="preset"] option[value="chain"]');
+    assert.equal(await chainOption.count(), 1, 'Report Studio is missing the AR10 chain preset');
+    assert.equal(await chainOption.textContent(), 'Rework / reinspection chain', 'AR10 chain preset label changed');
+    await page.locator('#dialog [name="preset"]').selectOption('chain');
+    await page.locator('#dialog [name="remember"]').uncheck();
+    await page.locator('#dialog [data-action="report-preview"]').click();
+    const chainFrame = page.frameLocator('#reportFrame');
+    await chainFrame.locator('h1').filter({ hasText: 'Rework / Reinspection Chain' }).waitFor({ state: 'visible' });
+    const chainText = await chainFrame.locator('body').innerText();
+    for (const expected of ['FAILED-REPORT-AR10', 'REINSPECTION-REPORT-AR10', 'NOT CONFORMED', 'Frozen source result — never rewritten by this report', 'LOT-AR10-RESUBMITTED-REV-2', '100% fictional sorting and recorded guide repair', 'CA-AR10-VERIFIED', 'RECORDED VERIFIED — NOT CLOSED', 'RE-AR10-CORRECTED', 'RECORDED CORRECTED — SOURCE RESULT UNCHANGED', 'RE-AR10-OPEN', 'NOT CORRECTED — REMAINS OPEN', 'Similar wording never creates a link', 'does not erase or change the original failed result']) assert.ok(chainText.includes(expected), `AR10 preview is missing ${expected}`);
+    const chainTables = chainFrame.locator('#chain table');
+    assert.equal(await chainTables.count(), 4, 'AR10 chain must expose event, correction, CAPA and reconciliation tables');
+    assert.deepEqual(await chainTables.nth(0).locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim()))), [
+      ['SOURCE EVENT', 'SOURCE-EVENT-AR10', 'FAILED-REPORT-AR10', 'R4', 'NOT CONFORMED', 'Frozen source result — never rewritten by this report'],
+      ['CURRENT EVENT', 'CURRENT-EVENT-AR10', 'REINSPECTION-REPORT-AR10', 'R1', 'NOT CONFORMED', 'Independent current inspection result; not shipment release']
+    ], 'AR10 event identity/result rows changed');
+    assert.deepEqual(await chainTables.nth(1).locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim()))), [[
+      'LOT-AR10-RESUBMITTED-REV-2', '100% fictional sorting and recorded guide repair', 'Fictional factory correction owner', '2026-10-13', '100', '95', '5', '5', 'Five fictional pieces replaced after removal', 'Fictional resubmission verifier', 'CORRECTION-EVIDENCE-AR10'
+    ]], 'AR10 correction/resubmission row changed');
+    const reconciliationRows = await chainTables.nth(3).locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim())));
+    assert.deepEqual(reconciliationRows, [
+      ['RE-AR10-CORRECTED', 'defects', 'D-AR10-SOURCE', 'SOURCE-EVENT-AR10', 'FAILED-REPORT-AR10', 'R4', 'Open <seam> & unsafe edge', 'Corrected', 'No open seam observed in the current fictional verification', 'Fresh independent visual reinspection', '100', 'Fictional reinspection verifier', '2026-10-13', 'REINSPECTION-EVIDENCE-AR10-1', 'RECORDED CORRECTED — SOURCE RESULT UNCHANGED'],
+      ['RE-AR10-OPEN', 'capa', 'CA-AR10-OPEN', 'SOURCE-EVENT-AR10', 'FAILED-REPORT-AR10', 'R4', 'Fictional source containment remains open', 'Not corrected', 'Recorded fictional obligation remains open', '', 'Not recorded', '', '', '', 'NOT CORRECTED — REMAINS OPEN']
+    ], 'AR10 exact reconciliation rows changed');
+    assert.equal(await chainFrame.locator('#chain[role="region"][aria-label="Rework / reinspection chain table"][tabindex="0"]').count(), 1, 'AR10 tables are not in a named keyboard-focusable region');
+    assert.equal(await chainFrame.locator('#chain').evaluate(element => element.scrollWidth > element.clientWidth), true, 'AR10 wide tables are not contained in their horizontal review region');
+    assert.equal(await chainFrame.locator('script').count(), 0, 'AR10 preview contains a script node');
+    assert.equal(await page.evaluate(expected => JSON.stringify(window.__vesaApp.p) === expected, chainExpected.unchanged), true, 'AR10 report generation mutated its source project');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '390px AR10 preview causes page-level overflow');
+    const chainHtml = await page.evaluate(() => window.__vesaApp.reportHtml);
+    assert.ok(chainHtml.includes('Open &lt;seam&gt; &amp; unsafe edge') && !chainHtml.includes('Open <seam> & unsafe edge'), 'AR10 report did not safely escape hostile source text');
+    const chainPage = await context.newPage();
+    await chainPage.setViewportSize({ width: 390, height: 844 });
+    await chainPage.setContent(chainHtml, { waitUntil: 'domcontentloaded' });
+    assert.equal(await chainPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 390px AR10 report causes page-level overflow');
+    await chainPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar10-rework-reinspection-390.png'), fullPage: true });
+    await chainPage.locator('#chain').evaluate(element => { element.scrollLeft = element.scrollWidth; });
+    await chainPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar10-rework-reinspection-390-right.png'), fullPage: true });
+
+    const brokenChain = await page.evaluate(async () => {
+      const app = window.__vesaApp, p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      p.resubmission.sourceProject = 'MISSING-SOURCE-AR10'; p.resubmission.sourceReport = 'MISSING-REPORT-AR10'; p.resubmission.sourceRevision = 2; p.resubmission.sourceFindings = 1;
+      const before = JSON.stringify(p);
+      const html = await ReportComposer.html(p, app.assets, { ...p.report, preset: 'chain' });
+      return { html, unchanged: before === JSON.stringify(p) };
+    });
+    assert.equal(brokenChain.unchanged, true, 'AR10 broken-link report mutated its source project');
+    assert.ok(!/<script\b/i.test(brokenChain.html), 'AR10 broken-link report contains executable script');
+    assert.ok(brokenChain.html.includes('Frozen source snapshot is missing') && brokenChain.html.includes('Reconciliation count mismatch: 1 expected / 0 recorded') && brokenChain.html.includes('No linked reinspection rows are recorded. This does not prove that prior obligations were resolved.'), 'AR10 missing-link/count safeguards changed');
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '1280px AR10 preview causes page-level overflow');
+    await chainPage.setViewportSize({ width: 1280, height: 900 });
+    await chainPage.locator('#chain').evaluate(element => { element.scrollLeft = 0; });
+    assert.equal(await chainPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR10 report causes page-level overflow');
+    await chainPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar10-rework-reinspection-1280.png'), fullPage: true });
+    await chainPage.close();
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join(' | ')}`);
     assert.deepEqual(consoleErrors, [], `console errors: ${consoleErrors.join(' | ')}`);
     assert.deepEqual(external, [], `unexpected external requests: ${external.join(' | ')}`);
-    console.log(`A-G08 STAGE/AR02/AR03/AR04/AR13 REPORTS PASS: 13 stage routes plus factory follow-up, sampling, denominator-safe defect Pareto and CAPA lifecycle proof at 390/1280; ${path.relative(root, outputDir)}`);
+    console.log(`A-G08 STAGE/AR02/AR03/AR04/AR10/AR13 REPORTS PASS: 13 stage routes plus factory follow-up, sampling, denominator-safe defect Pareto, immutable rework/reinspection chain and CAPA lifecycle proof at 390/1280; ${path.relative(root, outputDir)}`);
   } finally {
     if (browser) await browser.close();
     await host.stop();
