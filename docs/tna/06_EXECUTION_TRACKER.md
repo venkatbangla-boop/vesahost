@@ -128,6 +128,17 @@ NEXT ACTION (ONE PRECISE STEP): reconcile the remaining non-shared active AQL/TN
 
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
+### AQL A-G08 AR04 defect breakdown / Pareto — accepted local slice
+
+```text
+TIME / TIMEZONE: 2026-10-13 17:37 Asia/Dhaka
+BRANCH / BASE COMMIT / RESULT COMMIT: feature/tna360-continuous / ec3de96 / 31c3dee
+IMPLEMENTED / EVIDENCE: The dedicated visible AR04 preset groups only observed finding rows by resolved category/name/severity, orders them deterministically and shows exact recorded-row share and cumulative share with its denominator named. The occurrence fixture proves 6/3/1 quantities, 60/30/10 shares, 60/90/100 cumulative shares and 50.00 occurrences per 100 actually checked. The report explicitly prevents interpreting finding-row totals as unique defective-unit percentages, treats invalid quantities as zero while retaining their validation issue, infers no target/control limit/buyer KPI, suppresses the occurrence rate for nonconforming-unit basis and marks a zero-checked denominator undefined. Hostile user-entered text is escaped, copied source projects remain byte-identical, and reviewed script-free 390/1280 previews are readable and contained with no external requests/page errors/overflow. AQL cache revision 14 is guarded by worker replacement/offline reopen.
+TESTS / RESULTS: focused A-G00/A-G03/A-G04/A-G05/A-G06/A-G07/A-G08/release/syntax checks PASS. Complete cross-app regression PASS without retry: 88 commands / 780.3s (53 automated, 22 browser, 12 syntax, 1 repository), including `git diff --check`.
+VERDICT / BOUNDARY: accepted local A-G08 slice; AR04 becomes `PROVEN_LOCAL`, so four report variants are proven and eleven remain conditional. Gate scores and all program percentages remain unchanged. Four-language rendered reports, share fallback, physical PDF/printer/device, buyer/factory acceptance, provider services and release remain unproven or deferred. No TNA/PPM/shared runtime, AQL defect classification, SamplingEngine/Ac-Re/ResultEngine/QualityIntelligence formula, schema, saved record, production data or deployment changed.
+NEXT ACTION (ONE PRECISE STEP): audit AR13 CAPA Tracker against the existing CAPA/reinspection preset and committed lifecycle evidence, then prove exact issue/containment/cause/action/owner/due/status/verification rows without inferring closure or external approval.
+```
+
 ### AQL A-G08 AR01-AR15 reconciliation / AR03 sampling report — accepted local slice
 
 ```text
