@@ -59,7 +59,7 @@ const localAssets=[...index.matchAll(/(?:src|href)="(\.\/[^"?]+)(?:\?[^" ]*)?"/g
 assert.ok(localAssets.length>=10,'Release inventory must find the local TNA bundle assets.');
 for(const asset of localAssets)assert.ok(worker.includes(`'./apps/tna/${asset.slice(2)}'`),`Offline inventory is missing ${asset}.`);
 assert.match(worker,/vesa-v68-platform-g09/,'Release inventory must pin the tested service-worker cache.');
-assert.match(readiness,/\*\*Local handoff candidate:\*\* `c5920f0` \(latest runtime implementation: `c5920f0`\)/,'Runbook must pin the accepted local baseline and latest runtime SHA.');
+assert.match(readiness,/\*\*Local handoff candidate:\*\* `ac24f1c` \(latest runtime implementation: `ac24f1c`\)/,'Runbook must pin the accepted local baseline and latest runtime SHA.');
 assert.match(readiness,/\*\*Decision:\*\* \*\*HOLD — not ready for production deployment\*\*/,'Runbook must retain the release HOLD.');
 assert.match(readiness,/Not staged, not deployed, not live-verified, not authorized/,'Runbook must distinguish local evidence from production state.');
 assert.match(readiness,/Microsoft Excel desktop-reader inspection remains unproven/,'Runbook must retain the genuine Excel-reader gap.');

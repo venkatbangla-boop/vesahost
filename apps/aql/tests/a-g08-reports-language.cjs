@@ -87,6 +87,6 @@ expect(html.includes('role="region" aria-label="${this.e(title)} table" tabindex
 const reportRows = [...tracker.matchAll(/^\| (AR\d{2}) \| ([^|]+) \| (PROVEN_LOCAL|CONDITIONAL) \|/gm)];
 expect(reportRows.length === 15, 'A-G08 AR01-AR15 reconciliation must retain exactly 15 auditable rows.');
 expect(new Set(reportRows.map(row => row[1])).size === 15, 'A-G08 AR01-AR15 reconciliation contains duplicate report IDs.');
-for (const id of ['AR03', 'AR04', 'AR05', 'AR13', 'AR15']) expect(reportRows.some(row => row[1] === id && row[3] === 'PROVEN_LOCAL'), `${id} local report evidence status changed.`);
+for (const id of ['AR02', 'AR03', 'AR04', 'AR05', 'AR13', 'AR15']) expect(reportRows.some(row => row[1] === id && row[3] === 'PROVEN_LOCAL'), `${id} local report evidence status changed.`);
 
 console.log('AQL A-G08 report, language and accessibility contract checks passed');

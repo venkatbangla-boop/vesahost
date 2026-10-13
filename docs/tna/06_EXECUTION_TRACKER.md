@@ -128,6 +128,17 @@ NEXT ACTION (ONE PRECISE STEP): reconcile the remaining non-shared active AQL/TN
 
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
+### AQL A-G08 AR02 Factory Quality Follow-Up — accepted local slice
+
+```text
+TIME / TIMEZONE: 2026-10-13 19:26 Asia/Dhaka
+BRANCH / BASE COMMIT / RESULT COMMIT: feature/tna360-continuous / 82ab25c / ac24f1c
+IMPLEMENTED / EVIDENCE: The dedicated visible Factory Quality Follow-Up preset renders separate source-finding and corrective-action rows with exact record IDs, finding/issue, severity/quantity, action, owner, due, recorded status, privacy-filtered selected evidence references and CAPA lifecycle review. Two findings and three actions retain source order; two actions remain unresolved, one stays recorded Verified but not Closed, and an incomplete legacy Closed claim remains unresolved. Similar wording creates no link, recorded status/evidence proves no factory acceptance/external approval/closure, and the report cannot change the original finding/result. Empty state makes no clean follow-up inference. Hostile text is escaped and copied source projects remain byte-identical. Reviewed script-free 390 left/right and 1280 previews are readable and contained with no external requests/page errors/page overflow. AQL cache revision 16 is guarded by worker replacement/offline reopen.
+TESTS / RESULTS: focused CAPA/analytics, worker-update, report/browser, release and repository checks PASS. Complete cross-app regression PASS without retry: 88 commands / 812.1s (53 automated, 22 browser, 12 syntax, 1 repository), including `git diff --check`.
+VERDICT / BOUNDARY: accepted local A-G08 slice; AR02 becomes `PROVEN_LOCAL`, so six report variants are proven and nine remain conditional. Gate scores and all program percentages remain unchanged. Four-language rendered reports, share fallback, physical PDF/printer/device, buyer/factory acceptance, provider services and release remain unproven or deferred. No TNA/PPM/shared runtime, AQL defect/CAPA schema/rule/status/result, saved record, production data or deployment changed.
+NEXT ACTION (ONE PRECISE STEP): audit AR10 Rework / Reinspection Chain against the existing immutable failure, corrective-event and independent reinspection evidence, then add the smallest dedicated chain report without implying that rework erased or passed the original event.
+```
+
 ### AQL A-G08 AR13 CAPA Tracker — accepted local slice
 
 ```text
