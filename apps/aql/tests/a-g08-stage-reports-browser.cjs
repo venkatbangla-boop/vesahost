@@ -229,10 +229,85 @@ async function run() {
     assert.equal(await samplingPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR03 report causes page-level overflow');
     await samplingPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar03-sampling-1280.png'), fullPage: true });
     await samplingPage.close();
+
+    const defectExpected = await page.evaluate(async () => {
+      const app = window.__vesaApp;
+      app.closeDialog();
+      const p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo'), line = { ...ProjectSchema.order(), po: 'PO-A-G08-AR04', item: 'TS-AR04', color: 'Navy', size: 'M', orderQty: 90, qty: 90, available: 90 };
+      Object.assign(p.info, { buyer: 'A-G08 AR04 Buyer - Fictional', factory: 'A-G08 AR04 Factory - Fictional', inspector: 'A-G08 AR04 Inspector - Fictional', date: '2026-10-13' });
+      Object.assign(p.rules, { level: 'III', basis: 'occurrences', reference: 'FICTIONAL-AR04-COUNTING-BASIS-REV-1' });
+      p.meta.reportId = 'A-G08-AR04-DEFECT-PARETO';
+      p.orders = [line];
+      const plan = SamplingEngine.plan(SamplingEngine.groups(p)[0], p.rules);
+      line.allocated = plan.n;
+      line.checked = plan.n;
+      p.defects = [
+        { id: 'D-AR04-1', lineId: line.id, name: 'Open seam', severity: 'Major', qty: 4, sampleId: '', location: 'Side seam', note: 'Fictional occurrence row A', internal: false, created: '2026-10-13T00:00:00.000Z' },
+        { id: 'D-AR04-2', lineId: line.id, name: 'Open seam', severity: 'Major', qty: 2, sampleId: '', location: 'Armhole seam', note: 'Fictional occurrence row B', internal: false, created: '2026-10-13T00:00:00.000Z' },
+        { id: 'D-AR04-3', lineId: line.id, name: 'Uncut / loose thread', severity: 'Minor', qty: 3, sampleId: '', location: 'Hem', note: 'Fictional occurrence row C', internal: false, created: '2026-10-13T00:00:00.000Z' },
+        { id: 'D-AR04-4', lineId: line.id, name: 'Other <mark> & scratch', severity: 'Minor', qty: 1, sampleId: '', location: 'Front', note: 'Fictional user-entered category', internal: false, created: '2026-10-13T00:00:00.000Z' }
+      ];
+      await app.setProject(p);
+      app.step = 5;
+      app.render();
+      return { unchanged: JSON.stringify(app.p), checked: plan.n };
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#app [data-action="report"]:visible').first().click();
+    const defectOption = page.locator('#dialog [name="preset"] option[value="defects"]');
+    assert.equal(await defectOption.count(), 1, 'Report Studio is missing the AR04 defect preset');
+    assert.equal(await defectOption.textContent(), 'Defect breakdown / Pareto', 'AR04 defect preset label changed');
+    await page.locator('#dialog [name="preset"]').selectOption('defects');
+    await page.locator('#dialog [name="remember"]').uncheck();
+    await page.locator('#dialog [data-action="report-preview"]').click();
+    const defectFrame = page.frameLocator('#reportFrame');
+    await defectFrame.locator('h1').filter({ hasText: 'Defect Breakdown / Pareto' }).waitFor({ state: 'visible' });
+    const defectText = await defectFrame.locator('body').innerText();
+    for (const expected of ['A-G08-AR04-DEFECT-PARETO', 'Counting basis: Defect occurrences', `Actual workmanship checked: ${defectExpected.checked}`, 'Recorded row quantity denominator: 10', '50.00 occurrences per 100 checked', 'Share of recorded row quantity', 'Cumulative share', 'no target, control limit or buyer KPI is inferred']) assert.ok(defectText.includes(String(expected)), `AR04 preview is missing ${expected}`);
+    const defectRows = await defectFrame.locator('#defect-breakdown tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim())));
+    assert.deepEqual(defectRows, [
+      ['1', 'Sewing', 'Open seam', 'Major', '6', '2', '0', '60.00%', '60.00%'],
+      ['2', 'Sewing', 'Uncut / loose thread', 'Minor', '3', '1', '0', '30.00%', '90.00%'],
+      ['3', 'Other / user-entered', 'Other <mark> & scratch', 'Minor', '1', '1', '0', '10.00%', '100.00%']
+    ], 'AR04 deterministic observed-category ordering or shares changed');
+    assert.equal(await defectFrame.locator('#defect-breakdown[role="region"][aria-label="Defect breakdown / Pareto table"][tabindex="0"]').count(), 1, 'AR04 table is not a named keyboard-focusable region');
+    assert.equal(await defectFrame.locator('script').count(), 0, 'AR04 preview contains a script node');
+    assert.equal(await page.evaluate(expected => JSON.stringify(window.__vesaApp.p) === expected, defectExpected.unchanged), true, 'AR04 report generation mutated its source project');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '390px AR04 preview causes page-level overflow');
+    const defectHtml = await page.evaluate(() => window.__vesaApp.reportHtml);
+    const defectPage = await context.newPage();
+    await defectPage.setViewportSize({ width: 390, height: 844 });
+    await defectPage.setContent(defectHtml, { waitUntil: 'domcontentloaded' });
+    assert.equal(await defectPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 390px AR04 report causes page-level overflow');
+    await defectPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar04-defect-pareto-390.png'), fullPage: true });
+
+    const boundaryCopy = await page.evaluate(async () => {
+      const app = window.__vesaApp, unit = DomainValue.copy(app.p), zero = DomainValue.copy(app.p);
+      unit.rules.basis = 'units';
+      unit.rules.unitClass = 'highest';
+      unit.defects = unit.defects.map((row, index) => ({ ...row, qty: 1, sampleId: `UNIT-AR04-${index + 1}` }));
+      zero.orders[0].checked = 0;
+      const beforeUnit = JSON.stringify(unit), beforeZero = JSON.stringify(zero);
+      const unitHtml = await ReportComposer.html(unit, app.assets, { ...unit.report, preset: 'defects' });
+      const zeroHtml = await ReportComposer.html(zero, app.assets, { ...zero.report, preset: 'defects' });
+      return { unitHtml, zeroHtml, unchanged: beforeUnit === JSON.stringify(unit) && beforeZero === JSON.stringify(zero) };
+    });
+    assert.equal(boundaryCopy.unchanged, true, 'AR04 boundary reports mutated source projects');
+    assert.ok(boundaryCopy.unitHtml.includes('Not calculated for nonconforming-unit basis'), 'AR04 unit-basis report emitted or omitted the wrong rate boundary');
+    assert.ok(boundaryCopy.unitHtml.includes('name totals are not presented as a unique defective-unit percentage'), 'AR04 unit-basis caveat is missing');
+    assert.ok(boundaryCopy.zeroHtml.includes('Undefined (no checked denominator)'), 'AR04 zero-denominator report invented an occurrence rate');
+    assert.ok(!/<script\b/i.test(boundaryCopy.unitHtml + boundaryCopy.zeroHtml), 'AR04 boundary report contains executable script');
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '1280px AR04 preview causes page-level overflow');
+    await defectPage.setViewportSize({ width: 1280, height: 900 });
+    assert.equal(await defectPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR04 report causes page-level overflow');
+    await defectPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar04-defect-pareto-1280.png'), fullPage: true });
+    await defectPage.close();
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join(' | ')}`);
     assert.deepEqual(consoleErrors, [], `console errors: ${consoleErrors.join(' | ')}`);
     assert.deepEqual(external, [], `unexpected external requests: ${external.join(' | ')}`);
-    console.log(`A-G08 STAGE/AR03 REPORTS PASS: 13 stage routes plus visible sampling allocation and unsupported-plan proof at 390/1280; ${path.relative(root, outputDir)}`);
+    console.log(`A-G08 STAGE/AR03/AR04 REPORTS PASS: 13 stage routes plus sampling and denominator-safe defect Pareto proof at 390/1280; ${path.relative(root, outputDir)}`);
   } finally {
     if (browser) await browser.close();
     await host.stop();

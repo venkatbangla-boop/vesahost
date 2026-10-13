@@ -49,8 +49,8 @@ for (const requiredText of [
   "['exceptions','Exception-focused report']",
   "['snapshot','Executive snapshot']",
   "['photos','Photo evidence']",
-  "option.value='sampling'",
-  "option.textContent='Sampling plan & allocation'",
+  "['sampling','Sampling plan & allocation']",
+  "['defects','Defect breakdown / Pareto']",
   "['measurements','Measurement report']",
   "['packing','Packing / barcode report']",
   "['capa','CAPA / reinspection report']",
@@ -68,9 +68,11 @@ for (const requiredText of [
   'vesa-preferences-change',
   'root.lang=s.language',
   "sampling:['orders','sampling']",
-  "if(config.preset==='sampling')p.info.kind='Sampling Plan & Allocation'",
+  "defects:['orders','sampling','defects']",
+  "presetTitles={sampling:'Sampling Plan & Allocation',defects:'Defect Breakdown / Pareto'}",
   "['Lot','Qty','Code','Required sample','Allocated','Checked'",
-  "['buyer','technical','exceptions','packing','sampling']",
+  "['Rank','Category','Observed finding','Severity','Recorded row quantity'",
+  "['buyer','technical','exceptions','packing','sampling','defects']",
 ]) {
   expect(html.includes(requiredText) || preferences.includes(requiredText), `A-G08 report/language/accessibility guard is missing: ${requiredText}`);
 }
