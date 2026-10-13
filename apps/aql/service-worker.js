@@ -1,12 +1,12 @@
-const CACHE = 'vesa-aql-2026-10-13-9';
+const CACHE = 'vesa-aql-2026-10-13-10';
 const ASSETS = [
   './',
   './index.html',
   './service-worker.js',
   '../../js/auth.js?v=20261010-uniform',
   '../../js/preferences.js?v=20261010-uniform',
-  '../../js/vesa-workspace-shell.js?v=20261013-platform-g06',
-  '../../css/vesa-workspace.css?v=20261013-platform-g06'
+  '../../js/vesa-workspace-shell.js?v=20261013-platform-g09',
+  '../../css/vesa-workspace.css?v=20261013-platform-g09'
 ];
 
 self.addEventListener('install', event => {

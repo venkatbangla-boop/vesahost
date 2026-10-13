@@ -1,4 +1,4 @@
-const CACHE='vesa-v67-tna-f44-help';
+const CACHE='vesa-v68-platform-g09';
 const ASSETS=[
   './',
   './index.html',
@@ -28,11 +28,11 @@ const ASSETS=[
   './admin/index.html',
   './llms.txt',
   './css/style.css',
-  './css/vesa-workspace.css?v=20261013-platform-g06',
+  './css/vesa-workspace.css?v=20261013-platform-g09',
   './js/main.js',
   './js/auth.js',
   './js/preferences.js',
-  './js/vesa-workspace-shell.js?v=20261013-platform-g06',
+  './js/vesa-workspace-shell.js?v=20261013-platform-g09',
   './js/app-catalogue.js',
   './manifest.webmanifest',
   './favicon.ico',

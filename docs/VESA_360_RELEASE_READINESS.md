@@ -45,7 +45,7 @@ Expected candidate facts: branch `feature/tna360-continuous`; accepted baseline 
 - A current `1.1.0` portable copy restores byte-for-byte to the same plan.
 - A synthetic `1.0.0` copy migrates to `1.1.0` without changing identity, dates, baseline, revision/audit history or evidence, and without inventing ports or color/size quantities.
 - A corrupt restore is rejected while the previously saved good record remains exactly unchanged.
-- The tested `/apps/tna/` entry references 13 route-local assets, all present in the `vesa-v67-tna-f44-help` offline bundle.
+- The tested `/apps/tna/` entry references 13 route-local assets, all present in the `vesa-v68-platform-g09` offline bundle.
 - This is synthetic local proof. Representative anonymized business copies still require owner-controlled staging rehearsal before any release authorization.
 
 ### Safe rollback and recovery

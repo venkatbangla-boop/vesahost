@@ -111,6 +111,19 @@ VERDICT / SCORE: U-G06 ACCEPTED LOCALLY. Shared becomes 9/10; historical overall
 NEXT ACTION (ONE PRECISE STEP): run U-G09 final uniform-experience review across Login, App Centre, Admin and representative TNA/PPM/AQL states, reconcile any cross-route visual/interaction inconsistencies, and retain physical/device/provider/release boundaries.
 ```
 
+### One VESA U-G09 final uniform-experience audit — active
+
+```text
+TIME / TIMEZONE: 2026-10-13 09:20 Asia/Dhaka
+GATE / OBJECTIVE: shared U-G09 — review the complete logged-out/platform/app route family together and accept the uniform experience only after fresh screenshot and DOM evidence
+BRANCH / BASE COMMIT: feature/tna360-continuous / 3cf3219
+FILE-LEVEL AUDIT / OWNERSHIP: the accepted platform/app matrices already cover one shell owner, seven widths, 200% scale, all five themes, keyboard focus and saved-data immutability, but their screenshots were assessed per prior gate rather than as one final transition set. Side-by-side 390px review of Admin, TNA, PPM Editor and AQL Inspection found the shared shell consistent except long PPM/AQL application identities are hard-clipped at the mobile breadcrumb boundary; the full name is neither visually indicated with an ellipsis nor exposed as a hover title. `js/vesa-workspace-shell.js` owns this label markup and `css/vesa-workspace.css` owns its mobile overflow. In scope: central app-label markup/style, exact shell/offline asset revisions, one additive final uniform-experience browser matrix, runner registration and acceptance ledgers. Frozen: app-domain layout and navigation, calculations, rules, schemas, saved records, reports, auth/preferences data, providers and deployment.
+CALL FLOW / STATE: route descriptor name -> shared breadcrumb label/title -> responsive truncation only when space is constrained. No application record or storage state enters this path.
+RISKS / VERIFICATION: avoid expanding the mobile header, hiding the current identity from accessibility APIs, changing desktop ordering or invalidating offline shell installs. Prove meaningful ellipsis plus full accessible/title text for long names, one owner/order/state across Login/App Centre/Admin and representative TNA/PPM/AQL states at 390/768/1280, reviewed transition screenshots, exact versioned offline assets, no overflow/external requests/page errors and the complete cross-app regression. Rollback is a normal revert with no data migration.
+VERDICT: active — no U-G09 credit until the dedicated review and complete regression pass.
+NEXT ACTION (ONE PRECISE STEP): centralize the truncating app-label element, add the final transition matrix and review its rendered evidence.
+```
+
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
 ## C. Gate definitions and approval authority

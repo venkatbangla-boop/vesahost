@@ -58,7 +58,7 @@ const readiness=fs.readFileSync(path.join(root,'docs/VESA_360_RELEASE_READINESS.
 const localAssets=[...index.matchAll(/(?:src|href)="(\.\/[^"?]+)(?:\?[^" ]*)?"/g)].map(match=>match[1]);
 assert.ok(localAssets.length>=10,'Release inventory must find the local TNA bundle assets.');
 for(const asset of localAssets)assert.ok(worker.includes(`'./apps/tna/${asset.slice(2)}'`),`Offline inventory is missing ${asset}.`);
-assert.match(worker,/vesa-v67-tna-f44-help/,'Release inventory must pin the tested service-worker cache.');
+assert.match(worker,/vesa-v68-platform-g09/,'Release inventory must pin the tested service-worker cache.');
 assert.match(readiness,/\*\*Local handoff candidate:\*\* `3cf9f5e` \(latest runtime implementation: `253672c`\)/,'Runbook must pin the accepted local baseline and latest runtime SHA.');
 assert.match(readiness,/\*\*Decision:\*\* \*\*HOLD — not ready for production deployment\*\*/,'Runbook must retain the release HOLD.');
 assert.match(readiness,/Not staged, not deployed, not live-verified, not authorized/,'Runbook must distinguish local evidence from production state.');

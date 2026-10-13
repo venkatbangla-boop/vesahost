@@ -23,7 +23,7 @@ assert(html.includes('cleanId') && html.includes('this.masters.stage(raw.masters
 assert(html.includes('Required laboratory evidence not attached:'), 'Laboratory evidence-reference guard is missing');
 
 new vm.Script(sw, { filename: 'apps/aql/service-worker.js' });
-assert(sw.includes("vesa-aql-2026-10-13-9"), 'AQL cache version is missing');
+assert(sw.includes("vesa-aql-2026-10-13-10"), 'AQL cache version is missing');
 assert(sw.includes("url.pathname.startsWith('/apps/aql/')"), 'AQL service worker scope guard is missing');
 
 new vm.Script(rootSw, { filename: 'service-worker.js' });
