@@ -128,6 +128,17 @@ NEXT ACTION (ONE PRECISE STEP): reconcile the remaining non-shared active AQL/TN
 
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
+### AQL A-G08 AR10 Rework / Reinspection Chain — accepted local slice
+
+```text
+TIME / TIMEZONE: 2026-10-13 20:32 Asia/Dhaka
+BRANCH / BASE COMMIT / RESULT COMMITS: feature/tna360-continuous / 476360a / e393b6a runtime + 5e3c99b bounded history-test guard
+IMPLEMENTED / EVIDENCE: The dedicated visible Rework / Reinspection Chain preset separates the frozen source event, recorded factory correction/resubmission and independent current event. It exposes exact project/report/revision/result identity, correction scope and reconciled quantities/evidence, source-snapshot CAPA lifecycle rows, and every linked reinspection row with source record provenance and a non-authoritative review. The fictional failed source stays NOT CONFORMED; Corrected is explicitly labelled source-result unchanged; one uncorrected obligation keeps the current event NOT CONFORMED. Missing snapshots and count mismatches remain unresolved, a parent pointer alone is incomplete, similar wording creates no link and no status implies approval or shipment release. Hostile text is escaped, copied source bytes remain identical, and reviewed script-free 390 left/right and 1280 previews are contained with zero external requests/page errors/page overflow. AQL cache revision 17 is guarded by worker replacement/offline reopen. The full-history safety guard now batches the same all-history scan after its one-shot output grew past 300 MiB; it passes over 332 commits, 2,898 reachable objects and 1,098 unique text blobs.
+TESTS / RESULTS: focused stage/rework, worker-update, report/browser, release, syntax and repository checks PASS. Complete cross-app regression PASS without retry: 88 commands / 795.2s (53 automated, 22 browser, 12 syntax, 1 repository), including `git diff --check`.
+VERDICT / BOUNDARY: accepted local A-G08 slice; AR10 becomes `PROVEN_LOCAL`, so seven report variants are proven and eight remain conditional. Gate scores and all program percentages remain unchanged. Four-language rendered reports, share fallback, physical PDF/printer/device, buyer/factory acceptance, provider services and release remain unproven or deferred. No TNA/PPM/shared runtime, AQL source/CAPA/reinspection/stage schema or validator, sampling/Ac-Re/result engine, original finding/result, saved record, production data or deployment changed.
+NEXT ACTION (ONE PRECISE STEP): audit AR12 Container Loading against the existing quantity/seal/evidence guards and immutable loading-stage route, then add the smallest exact dedicated report proof without inferring handover, shipment release or physical acceptance.
+```
+
 ### AQL A-G08 AR02 Factory Quality Follow-Up — accepted local slice
 
 ```text
