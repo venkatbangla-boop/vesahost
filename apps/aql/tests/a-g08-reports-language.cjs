@@ -53,6 +53,7 @@ for (const requiredText of [
   "['defects','Defect breakdown / Pareto']",
   "['followup','Factory quality follow-up']",
   "['chain','Rework / reinspection chain']",
+  "['loading','Container loading']",
   "['measurements','Measurement report']",
   "['packing','Packing / barcode report']",
   "['capa','CAPA tracker']",
@@ -79,6 +80,7 @@ for (const requiredText of [
   "['Issue','Containment','Root cause','Corrective action','Owner','Due','Recorded status','Verification','Effectiveness','Closure evidence','Selected evidence references','Lifecycle review']",
   "['Record type','Source record','Finding / issue','Severity / quantity','Corrective action','Owner','Due','Recorded status','Selected evidence references','Lifecycle review']",
   "['Reinspection row','Source collection','Source record','Source project','Source report','Source revision','Carried-forward issue','Recorded status'",
+  "['Container','Truck','Condition','Cleanliness','Damage / water / odour','Expected cartons','Loaded cartons'",
   "['buyer','technical','exceptions','packing','sampling','defects']",
 ]) {
   expect(html.includes(requiredText) || preferences.includes(requiredText), `A-G08 report/language/accessibility guard is missing: ${requiredText}`);

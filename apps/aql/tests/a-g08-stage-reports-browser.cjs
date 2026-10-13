@@ -533,10 +533,86 @@ async function run() {
     assert.equal(await chainPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR10 report causes page-level overflow');
     await chainPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar10-rework-reinspection-1280.png'), fullPage: true });
     await chainPage.close();
+
+    const loadingExpected = await page.evaluate(async () => {
+      const app = window.__vesaApp;
+      app.closeDialog();
+      const p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      Object.assign(p.meta, { id: 'EVENT-AR12-LOADING', reportId: 'A-G08-AR12-CONTAINER-LOADING', revision: 2 });
+      Object.assign(p.info, { buyer: 'A-G08 AR12 Buyer - Fictional', factory: 'A-G08 AR12 Factory - Fictional', inspector: 'A-G08 AR12 Inspector - Fictional', date: '2026-10-13', kind: 'Container Loading Inspection' });
+      p.stageSuite = StageCatalog.fresh('loading');
+      Object.assign(p.stageSuite, { orderKey: 'PO-A-G08-AR12', reference: 'LOADING-CRITERIA-AR12-REV-1', approvedBy: 'Fictional loading reviewer', sampling: 'Recorded container coverage only; no randomization method certified.' });
+      p.stageSuite.checks = p.stageSuite.checks.map(check => ({ ...check, status: 'Pass', note: 'Fictional explicit checkpoint review.' }));
+      p.stageSuite.records = [
+        { id: 'LOAD-AR12-COMPLETE', module: 'loading', identity: 'CONT-AR12-001', truck: 'TRUCK-AR12-001', seal: 'SEAL-AR12-001', condition: 'Dry <container> & intact - fictional', cleanliness: 'Recorded clean observation', damage: 'No recorded water, odour or damage', expected: 60, loaded: 60, piecesExpected: 600, piecesLoaded: 600, pallets: 6, sequence: 'Front-to-rear fictional sequence', random: 'CTN-AR12-003, CTN-AR12-041', start: '2026-10-13 08:00', end: '2026-10-13 09:00', environment: 'Recorded ambient condition', handover: 'Typed fictional driver / forwarder handover', before: '', after: '', reference: 'LOADING-SOURCE-AR12-1', status: 'Pass', note: 'Recorded fields only; not physical acceptance.' },
+        { id: 'LOAD-AR12-UNRESOLVED', module: 'loading', identity: 'CONT-AR12-002', truck: 'TRUCK-AR12-002', seal: 'SEAL-AR12-002', condition: 'Recorded dry condition', cleanliness: 'Recorded clean observation', damage: 'No recorded damage', expected: 40, loaded: 39, piecesExpected: 500, piecesLoaded: 490, pallets: 4, sequence: 'Fictional second-container sequence', random: 'CTN-AR12-072', start: '2026-10-13 10:00', end: '2026-10-13 11:00', environment: 'Recorded ambient condition', handover: 'Typed fictional handover pending reconciliation', before: '', after: '', reference: 'LOADING-SOURCE-AR12-2', status: 'Pass', note: 'Deliberate count and final-evidence gap; row status must not override it.' }
+      ];
+      const png = Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='), char => char.charCodeAt(0));
+      const descriptors = [];
+      for (const evidence of [
+        { owner: 'LOAD-AR12-COMPLETE', role: 'before', name: 'ar12-empty-1.png', caption: 'Fictional empty container one' },
+        { owner: 'LOAD-AR12-COMPLETE', role: 'after', name: 'ar12-seal-1.png', caption: 'Fictional final seal one' },
+        { owner: 'LOAD-AR12-UNRESOLVED', role: 'before', name: 'ar12-empty-2.png', caption: 'Fictional empty container two' }
+      ]) descriptors.push(await app.assets.add(new File([png], evidence.name, { type: 'image/png' }), { ...evidence, key: true, internal: false }));
+      p.assets.push(...descriptors);
+      await app.setProject(p);
+      app.step = 0;
+      app.render();
+      return { unchanged: JSON.stringify(app.p), ids: Object.fromEntries(descriptors.map(asset => [asset.owner + '-' + asset.role, asset.id])) };
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#app [data-action="stage-report"]:visible').first().click();
+    const loadingOption = page.locator('#dialog [name="preset"] option[value="loading"]');
+    assert.equal(await loadingOption.count(), 1, 'loading-stage Report Studio is missing the AR12 preset');
+    assert.equal(await loadingOption.textContent(), 'Container loading', 'AR12 preset label changed');
+    await page.locator('#dialog [name="preset"]').selectOption('loading');
+    await page.locator('#dialog [name="remember"]').uncheck();
+    await page.locator('#dialog [data-action="report-preview"]').click();
+    const loadingFrame = page.frameLocator('#reportFrame');
+    await loadingFrame.locator('h1').filter({ hasText: 'Container Loading' }).waitFor({ state: 'visible' });
+    const loadingText = await loadingFrame.locator('body').innerText();
+    for (const expected of ['A-G08-AR12-CONTAINER-LOADING', 'Loading records: 2', 'Stage decision: LOADING NOT CONFORMED', 'Expected / loaded cartons: 100 / 99', 'Expected / loaded pieces: 1100 / 1090', 'Unresolved rows: 1', 'RECORDED COMPLETE — NOT HANDOVER OR RELEASE APPROVAL', 'UNRESOLVED — expected / loaded mismatch; piecesExpected / piecesLoaded mismatch; after is required; final seal evidence missing from report', 'Carton IDs are displayed exactly as entered', 'does not generate or certify random selection', 'do not prove physical custody transfer']) assert.ok(loadingText.includes(expected), `AR12 preview is missing ${expected}`);
+    const loadingRows = await loadingFrame.locator('#container-loading tbody tr').evaluateAll(rows => rows.map(row => [...row.cells].map(cell => cell.innerText.trim())));
+    assert.deepEqual(loadingRows, [
+      ['CONT-AR12-001', 'TRUCK-AR12-001', 'Dry <container> & intact - fictional', 'Recorded clean observation', 'No recorded water, odour or damage', '60', '60', '0', '600', '600', '0', '6', 'Front-to-rear fictional sequence', 'CTN-AR12-003, CTN-AR12-041', '2026-10-13 08:00', '2026-10-13 09:00', 'Recorded ambient condition', 'SEAL-AR12-001', 'Typed fictional driver / forwarder handover', 'LOADING-SOURCE-AR12-1', 'Pass', 'Recorded fields only; not physical acceptance.', `${loadingExpected.ids['LOAD-AR12-COMPLETE-before']} · Fictional empty container one`, `${loadingExpected.ids['LOAD-AR12-COMPLETE-after']} · Fictional final seal one`, 'RECORDED COMPLETE — NOT HANDOVER OR RELEASE APPROVAL'],
+      ['CONT-AR12-002', 'TRUCK-AR12-002', 'Recorded dry condition', 'Recorded clean observation', 'No recorded damage', '40', '39', '-1', '500', '490', '-10', '4', 'Fictional second-container sequence', 'CTN-AR12-072', '2026-10-13 10:00', '2026-10-13 11:00', 'Recorded ambient condition', 'SEAL-AR12-002', 'Typed fictional handover pending reconciliation', 'LOADING-SOURCE-AR12-2', 'Pass', 'Deliberate count and final-evidence gap; row status must not override it.', `${loadingExpected.ids['LOAD-AR12-UNRESOLVED-before']} · Fictional empty container two`, 'Missing from this report', 'UNRESOLVED — expected / loaded mismatch; piecesExpected / piecesLoaded mismatch; after is required; final seal evidence missing from report']
+    ], 'AR12 exact loading reconciliation rows changed');
+    assert.equal(await loadingFrame.locator('#container-loading[role="region"][aria-label="Container loading reconciliation table"][tabindex="0"]').count(), 1, 'AR12 table is not a named keyboard-focusable region');
+    assert.equal(await loadingFrame.locator('#container-loading').evaluate(element => element.scrollWidth > element.clientWidth), true, 'AR12 wide table is not contained in its horizontal review region');
+    assert.equal(await loadingFrame.locator('script').count(), 0, 'AR12 preview contains a script node');
+    assert.equal(await page.evaluate(expected => JSON.stringify(window.__vesaApp.p) === expected, loadingExpected.unchanged), true, 'AR12 report generation mutated its source project');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '390px AR12 preview causes page-level overflow');
+    const loadingHtml = await page.evaluate(() => window.__vesaApp.reportHtml);
+    assert.ok(loadingHtml.includes('Dry &lt;container&gt; &amp; intact - fictional') && !loadingHtml.includes('Dry <container> & intact - fictional'), 'AR12 report did not safely escape hostile condition text');
+    const loadingPage = await context.newPage();
+    await loadingPage.setViewportSize({ width: 390, height: 844 });
+    await loadingPage.setContent(loadingHtml, { waitUntil: 'domcontentloaded' });
+    assert.equal(await loadingPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 390px AR12 report causes page-level overflow');
+    await loadingPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar12-container-loading-390.png'), fullPage: true });
+    await loadingPage.locator('#container-loading').evaluate(element => { element.scrollLeft = element.scrollWidth; });
+    await loadingPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar12-container-loading-390-right.png'), fullPage: true });
+
+    const emptyLoading = await page.evaluate(async () => {
+      const app = window.__vesaApp, p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
+      p.stageSuite = StageCatalog.fresh('loading');
+      const before = JSON.stringify(p), html = await ReportComposer.html(p, app.assets, { ...p.report, preset: 'loading' });
+      return { html, unchanged: before === JSON.stringify(p) };
+    });
+    assert.equal(emptyLoading.unchanged, true, 'empty AR12 report mutated its source project');
+    assert.ok(emptyLoading.html.includes('No loading records are recorded. This does not prove that loading, seal control or handover occurred.'), 'empty AR12 report inferred that loading or handover occurred');
+    assert.ok(!/<script\b/i.test(emptyLoading.html), 'empty AR12 report contains executable script');
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, '1280px AR12 preview causes page-level overflow');
+    await loadingPage.setViewportSize({ width: 1280, height: 900 });
+    await loadingPage.locator('#container-loading').evaluate(element => { element.scrollLeft = 0; });
+    assert.equal(await loadingPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false, 'standalone 1280px AR12 report causes page-level overflow');
+    await loadingPage.screenshot({ path: path.join(outputDir, 'aql-a-g08-ar12-container-loading-1280.png'), fullPage: true });
+    await loadingPage.close();
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join(' | ')}`);
     assert.deepEqual(consoleErrors, [], `console errors: ${consoleErrors.join(' | ')}`);
     assert.deepEqual(external, [], `unexpected external requests: ${external.join(' | ')}`);
-    console.log(`A-G08 STAGE/AR02/AR03/AR04/AR10/AR13 REPORTS PASS: 13 stage routes plus factory follow-up, sampling, denominator-safe defect Pareto, immutable rework/reinspection chain and CAPA lifecycle proof at 390/1280; ${path.relative(root, outputDir)}`);
+    console.log(`A-G08 STAGE/AR02/AR03/AR04/AR10/AR12/AR13 REPORTS PASS: 13 stage routes plus factory follow-up, sampling, denominator-safe defect Pareto, immutable rework/reinspection chain, container loading reconciliation and CAPA lifecycle proof at 390/1280; ${path.relative(root, outputDir)}`);
   } finally {
     if (browser) await browser.close();
     await host.stop();
