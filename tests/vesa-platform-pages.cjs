@@ -9,6 +9,7 @@ const root=path.resolve(__dirname,'..');
 const output=path.join(root,'output','playwright');
 const widths=[320,360,390,768,1024,1280,1440];
 const menuOrder=['Home','File','Edit','View','Tools','Help'];
+const themes=['clear-blue','pure-mono','midnight-mono','forest-yellow','warm-ivory'];
 const session={email:'qa@vesaent.com',name:'QA User',role:'admin',userKey:'qa-vesaent-com',loginAt:'2026-10-12T00:00:00.000Z',expiresAt:'2099-01-01T00:00:00.000Z'};
 const store={version:1,users:[{email:'qa@vesaent.com',name:'QA User',role:'admin',salt:'fixture',passwordHash:'fixture',blocked:false,demo:true,createdAt:'2026-10-12T00:00:00.000Z'}],events:[]};
 const mime=file=>({'.css':'text/css','.html':'text/html','.js':'application/javascript','.json':'application/json','.png':'image/png','.svg':'image/svg+xml','.ttf':'font/ttf','.webmanifest':'application/manifest+json','.ico':'image/x-icon','.jpg':'image/jpeg'})[path.extname(file)]||'application/octet-stream';
@@ -91,11 +92,89 @@ async function zoomProbe(browser,base){
   await page.screenshot({path:path.join(output,'vesa-platform-apps-200-percent.png'),fullPage:true});await context.close();
 }
 
+function luminance(hex){
+  const channels=[1,3,5].map(index=>parseInt(hex.slice(index,index+2),16)/255).map(value=>value<=.03928?value/12.92:((value+.055)/1.055)**2.4);
+  return .2126*channels[0]+.7152*channels[1]+.0722*channels[2];
+}
+
+function contrast(a,b){
+  const first=luminance(a),second=luminance(b);
+  return (Math.max(first,second)+.05)/(Math.min(first,second)+.05);
+}
+
+function contrastCss(a,b){
+  const light=value=>{
+    const channels=(value.match(/[\d.]+/g)||[]).slice(0,3).map(Number).map(channel=>channel/255).map(channel=>channel<=.03928?channel/12.92:((channel+.055)/1.055)**2.4);
+    assert.equal(channels.length,3,`unsupported computed color: ${value}`);
+    return .2126*channels[0]+.7152*channels[1]+.0722*channels[2];
+  };
+  const first=light(a),second=light(b);
+  return (Math.max(first,second)+.05)/(Math.min(first,second)+.05);
+}
+
+function rgb(hex){
+  return `rgb(${[1,3,5].map(index=>parseInt(hex.slice(index,index+2),16)).join(', ')})`;
+}
+
+async function themeProbe(browser,base,theme,route,id,authenticated){
+  const context=await browser.newContext({viewport:{width:1280,height:900}});
+  await context.addInitScript(({theme,session,store,authenticated})=>{
+    localStorage.setItem('vesa.app.preferences.v1',JSON.stringify({version:1,settings:{theme,language:'en',density:'comfortable',font:'modern'},updatedAt:'2026-10-12T00:00:00.000Z'}));
+    localStorage.setItem('vesa360-personal-appearance-v1',JSON.stringify({version:1,settings:{theme,followDevice:false,font:'modern',text:'standard',density:'comfortable',layout:'guided',striping:true,stickyColumns:true,motion:'system',reportStyle:'classic',reportFont:'classic',reportSize:'standard',reportSpacing:'comfortable',reportAccent:'blue'}}));
+    if(authenticated){localStorage.setItem('vesa.appcentre.session.v1',JSON.stringify(session));localStorage.setItem('vesa.appcentre.store.v1',JSON.stringify(store));}
+  },{theme,session,store,authenticated});
+  const page=await context.newPage();const errors=[],external=[];
+  page.on('pageerror',error=>errors.push(error.message));page.on('request',request=>{if(!request.url().startsWith(base))external.push(request.url());});
+  await page.goto(`${base}${route}`,{waitUntil:'domcontentloaded'});
+  const evidence=await page.evaluate(({id})=>{
+    const root=getComputedStyle(document.documentElement);
+    const card=document.querySelector(id==='login'?'.auth-card':id==='apps'?'.app-tile':'.admin-panel');
+    const shell=document.querySelector('.vesa-workspace');
+    const visible=node=>{const style=getComputedStyle(node);return style.display!=='none'&&style.visibility!=='hidden'&&node.getClientRects().length};
+    const controls=[...document.querySelectorAll('.app-centre-page :is(button,.btn,.input,select)')].filter(visible).map(node=>node.getBoundingClientRect().height);
+    return {
+      theme:document.documentElement.dataset.vesaTheme,
+      tokens:{canvas:root.getPropertyValue('--canvas').trim(),paper:root.getPropertyValue('--paper').trim(),ink:root.getPropertyValue('--ink').trim(),muted:root.getPropertyValue('--muted').trim()},
+      bodyFont:getComputedStyle(document.body).fontFamily,
+      sharedFont:root.getPropertyValue('--ui').trim().replaceAll('"',''),
+      cardBackground:getComputedStyle(card).backgroundColor,
+      cardRadius:getComputedStyle(card).borderRadius,
+      shellColor:shell?getComputedStyle(shell).color:null,
+      shellLogoFilter:shell?getComputedStyle(shell.querySelector('.vesa-workspace__brand img')).filter:null,
+      cardColor:getComputedStyle(card).color,
+      primary:[...document.querySelectorAll('.btn.primary')].filter(visible).slice(0,1).map(node=>({color:getComputedStyle(node).color,background:getComputedStyle(node).backgroundColor}))[0],
+      minControlHeight:Math.min(...controls),
+      documentWidth:document.documentElement.scrollWidth,
+      bodyWidth:document.body.scrollWidth
+    };
+  },{id});
+  assert.equal(evidence.theme,theme,`${id}/${theme}: selected theme applied`);
+  assert.ok(contrast(evidence.tokens.ink,evidence.tokens.paper)>=4.5,`${id}/${theme}: primary text contrast`);
+  assert.ok(contrast(evidence.tokens.muted,evidence.tokens.paper)>=4.5,`${id}/${theme}: muted text contrast`);
+  assert.match(evidence.bodyFont,/Segoe UI/i,`${id}/${theme}: shared body typography`);
+  assert.equal(evidence.cardBackground,rgb(evidence.tokens.paper),`${id}/${theme}: card uses shared surface token`);
+  assert.equal(evidence.cardColor,rgb(evidence.tokens.ink),`${id}/${theme}: card uses shared text token`);
+  if(authenticated)assert.equal(evidence.shellColor,rgb(evidence.tokens.ink),`${id}/${theme}: shell uses shared text token`);
+  if(authenticated&&['midnight-mono','forest-yellow'].includes(theme))assert.notEqual(evidence.shellLogoFilter,'none',`${id}/${theme}: dark shell logo remains visible`);
+  assert.ok(evidence.primary,`${id}/${theme}: visible primary action exists`);
+  assert.ok(contrastCss(evidence.primary.color,evidence.primary.background)>=4.5,`${id}/${theme}: primary action contrast`);
+  assert.equal(evidence.cardRadius,'14px',`${id}/${theme}: shared card radius`);
+  assert.ok(evidence.minControlHeight>=44,`${id}/${theme}: visible controls meet 44px target`);
+  assert.ok(evidence.documentWidth<=1281&&evidence.bodyWidth<=1281,`${id}/${theme}: no horizontal overflow`);
+  assert.deepEqual(errors,[],`${id}/${theme}: no page errors`);assert.deepEqual(external,[],`${id}/${theme}: no external requests`);
+  if(theme==='midnight-mono')await page.screenshot({path:path.join(output,`vesa-platform-${id}-midnight-mono.png`),fullPage:true});
+  await context.close();
+}
+
 async function run(){
   fs.mkdirSync(output,{recursive:true});const web=server();await new Promise(resolve=>web.listen(0,'127.0.0.1',resolve));const base=`http://127.0.0.1:${web.address().port}`;
   const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,headless:true,args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage']});
-  try{for(const width of widths){await loginProbe(browser,base,width);await authenticatedProbe(browser,base,width,'/apps/','apps');await authenticatedProbe(browser,base,width,'/admin/','admin');}await zoomProbe(browser,base);}
+  try{
+    for(const width of widths){await loginProbe(browser,base,width);await authenticatedProbe(browser,base,width,'/apps/','apps');await authenticatedProbe(browser,base,width,'/admin/','admin');}
+    await zoomProbe(browser,base);
+    for(const theme of themes){await themeProbe(browser,base,theme,'/login/','login',false);await themeProbe(browser,base,theme,'/apps/','apps',true);await themeProbe(browser,base,theme,'/admin/','admin',true);}
+  }
   finally{await browser.close();await new Promise(resolve=>web.close(resolve));}
-  console.log('VESA platform pages passed: Login/App Centre/Admin one-brand ownership at 320/360/390/768/1024/1280/1440, 200% scale, mobile keyboard, Settings immutability, zero external requests/page errors');
+  console.log('VESA platform pages passed: Login/App Centre/Admin one-brand ownership at 320/360/390/768/1024/1280/1440, 200% scale, all five themes, shared tokens/44px controls, mobile keyboard, Settings immutability, zero external requests/page errors');
 }
 run().catch(error=>{console.error(error);process.exitCode=1;});

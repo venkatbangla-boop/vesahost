@@ -81,6 +81,19 @@ VERDICT / SCORE: U-G04, U-G05 and U-G07 ACCEPTED LOCALLY. Shared becomes 7/10; h
 NEXT ACTION (ONE PRECISE STEP): consolidate the root/shared typography, colour, spacing, card and control tokens for U-G03, then run deeper U-G06 accessibility and U-G09 final uniform review.
 ```
 
+### One VESA U-G03 shared-token audit — active
+
+```text
+TIME / TIMEZONE: 2026-10-12 23:21 Asia/Dhaka
+GATE / OBJECTIVE: shared U-G03 — make Login, App Centre, Admin and the authenticated workspace shell consume one central typography, colour, background, spacing, card and control token contract
+BRANCH / BASE COMMIT: feature/tna360-continuous / 706e62d
+FILE-LEVEL AUDIT / OWNERSHIP: js/preferences.js already owns the five approved appearance palettes and writes root theme variables; css/vesa-workspace.css owns shared shell/dialog tokens but currently hard-codes a separate light palette and Inter font; the platform-page section of css/style.css consumes a partial, differently named subset; login/index.html is the only platform page that does not load the shared-token stylesheet. In scope: css/vesa-workspace.css, the isolated Login/App Centre/Admin rules in css/style.css, login/index.html, shared token/browser contract tests and tracker/dashboard evidence. Frozen/out of scope: js/preferences.js persistence and labels, js/auth.js/user records, js/app-catalogue.js/routes, TNA/PPM/AQL domain source, calculations, schemas, saved records, app-owned reports/workers, providers, main and deployment.
+CALL FLOW / STATE: VesaPrefs applies existing root palette/font variables -> shared semantic aliases resolve in CSS -> Login/App Centre/Admin content and VesaWorkspaceShell consume those aliases. No JavaScript state, storage key, record or schema changes.
+RISKS / VERIFICATION: guard against unreadable theme combinations, different card/control geometry, Login regression, shell overflow and accidental record mutation. Add exact static token-owner assertions plus real Chromium checks for all five themes, platform focus/touch targets and computed shared styles; run the complete TNA/PPM/AQL/shared matrix and review representative screenshots. Rollback is a normal revert of this CSS/HTML/test/docs group; no data/cache migration or browser-storage clearing is required.
+VERDICT: active — no acceptance credit until focused and complete regression evidence passes.
+NEXT ACTION (ONE PRECISE STEP): connect the semantic aliases and platform component geometry, then execute focused all-theme browser proof.
+```
+
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
 ## C. Gate definitions and approval authority

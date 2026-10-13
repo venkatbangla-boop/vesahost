@@ -4,17 +4,35 @@
  * The shell receives an app descriptor and callbacks; it owns no domain data.
  */
 :root {
-  --vesa-bg: #f8f4ed;
-  --vesa-surface: #ffffff;
-  --vesa-text: #071a35;
-  --vesa-muted: #5c6b7d;
-  --vesa-border: rgba(7, 26, 53, .14);
-  --vesa-brand: #071a35;
-  --vesa-action: #0b6b6d;
-  --vesa-focus: #c8a33a;
-  --vesa-success: #177a52;
-  --vesa-warning: #a96500;
-  --vesa-danger: #b42318;
+  --vesa-bg: var(--canvas, #f8f4ed);
+  --vesa-surface: var(--paper, #ffffff);
+  --vesa-surface-soft: var(--look-surface, #eef3f9);
+  --vesa-field: var(--look-field, #ffffff);
+  --vesa-text: var(--ink, #071a35);
+  --vesa-muted: var(--muted, #5c6b7d);
+  --vesa-border: var(--line, rgba(7, 26, 53, .14));
+  --vesa-brand: var(--look-sidebar, #071a35);
+  --vesa-action: var(--blue, #0b6b6d);
+  --vesa-action-text: var(--look-on-accent, #ffffff);
+  --vesa-focus: var(--look-side-accent, #c8a33a);
+  --vesa-success: var(--ok, #177a52);
+  --vesa-warning: var(--pending, #a96500);
+  --vesa-danger: var(--action, #b42318);
+  --vesa-font-body: var(--ui, Inter, system-ui, -apple-system, "Segoe UI", sans-serif);
+  --vesa-font-heading: var(--heading-font, var(--vesa-font-body));
+  --vesa-space-1: 4px;
+  --vesa-space-2: 8px;
+  --vesa-space-3: 12px;
+  --vesa-space-4: 16px;
+  --vesa-space-5: 20px;
+  --vesa-space-6: 24px;
+  --vesa-space-8: 32px;
+  --vesa-page-gutter: clamp(16px, 3vw, 32px);
+  --vesa-content-max: 1120px;
+  --vesa-radius-card: 14px;
+  --vesa-radius-control: 10px;
+  --vesa-control-height: 44px;
+  --vesa-card-shadow: var(--shadow, 0 14px 42px rgba(37, 55, 86, .05));
   --vesa-workspace-height: 0px;
 }
 
@@ -27,53 +45,54 @@
   z-index: 10000;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--vesa-space-3);
   min-height: 64px;
-  padding: 8px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
+  padding: var(--vesa-space-2) max(var(--vesa-page-gutter), env(safe-area-inset-right)) var(--vesa-space-2) max(var(--vesa-page-gutter), env(safe-area-inset-left));
   color: var(--vesa-text);
   background: color-mix(in srgb, var(--vesa-bg) 96%, transparent);
   border-bottom: 1px solid var(--vesa-border);
   box-shadow: 0 10px 28px rgba(7, 26, 53, .08);
   backdrop-filter: blur(16px);
-  font: 700 14px/1.3 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 700 14px/1.3 var(--vesa-font-body);
 }
 
 .vesa-workspace__brand,
 .vesa-workspace__app-current,
 .vesa-workspace__user,
 .vesa-workspace__menu,
-.vesa-workspace__mobile-menu { min-height: 44px; }
+.vesa-workspace__mobile-menu { min-height: var(--vesa-control-height); }
 
 .vesa-workspace__brand { display: inline-flex; align-items: center; flex: 0 0 auto; }
 .vesa-workspace__brand img { display: block; width: 132px; max-height: 46px; object-fit: contain; }
-.vesa-workspace__breadcrumb { display: inline-flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; }
+[data-dark="true"] .vesa-workspace__brand img { filter: invert(1) brightness(1.25); }
+.vesa-workspace__breadcrumb { display: inline-flex; align-items: center; gap: var(--vesa-space-2); min-width: 0; white-space: nowrap; }
 .vesa-workspace__breadcrumb a { color: var(--vesa-text); text-decoration: none; }
 .vesa-workspace__app-centre { color: var(--vesa-muted) !important; font-weight: 600; }
-.vesa-workspace__app-current { display: inline-flex; align-items: center; min-height: 44px; font-weight: 800; }
+.vesa-workspace__app-current { display: inline-flex; align-items: center; min-height: var(--vesa-control-height); font-weight: 800; }
 .vesa-workspace__drawer { display: flex; align-items: center; min-width: 0; margin-left: auto; }
-.vesa-workspace__nav { display: flex; align-items: center; gap: 4px; min-width: 0; margin-left: auto; }
+.vesa-workspace__nav { display: flex; align-items: center; gap: var(--vesa-space-1); min-width: 0; margin-left: auto; }
 .vesa-workspace__menu,
 .vesa-workspace__mobile-menu,
 .vesa-workspace__user button,
-.vesa-workspace__user a { display: inline-flex; align-items: center; min-height: 44px; border: 1px solid var(--vesa-border); border-radius: 999px; padding: 0 13px; color: var(--vesa-text); background: color-mix(in srgb, var(--vesa-surface) 82%, transparent); font: inherit; text-decoration: none; cursor: pointer; }
+.vesa-workspace__user a { display: inline-flex; align-items: center; min-height: var(--vesa-control-height); border: 1px solid var(--vesa-border); border-radius: 999px; padding: 0 13px; color: var(--vesa-text); background: color-mix(in srgb, var(--vesa-surface) 82%, transparent); font: inherit; text-decoration: none; cursor: pointer; }
 .vesa-workspace__menu:hover,
 .vesa-workspace__menu[aria-current="page"],
 .vesa-workspace__mobile-menu:hover,
 .vesa-workspace__user button:hover,
 .vesa-workspace__user a:hover { background: var(--vesa-surface); }
-.vesa-workspace__user { display: inline-flex; align-items: center; gap: 8px; margin-left: 4px; white-space: nowrap; }
+.vesa-workspace__user { display: inline-flex; align-items: center; gap: var(--vesa-space-2); margin-left: var(--vesa-space-1); white-space: nowrap; }
 .vesa-workspace__saved { color: var(--vesa-muted); font-size: 12px; font-weight: 600; }
 .vesa-workspace__mobile-menu { display: none; margin-left: auto; }
 .vesa-workspace :where(a, button):focus-visible { outline: 3px solid var(--vesa-focus); outline-offset: 2px; }
 
 @media (max-width: 900px) {
-  .vesa-workspace { flex-wrap: wrap; min-height: 60px; padding-inline: max(12px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-right)); }
+  .vesa-workspace { flex-wrap: wrap; min-height: 60px; padding-inline: max(var(--vesa-space-3), env(safe-area-inset-left)) max(var(--vesa-space-3), env(safe-area-inset-right)); }
   .vesa-workspace__brand img { width: 104px; }
   .vesa-workspace__breadcrumb { max-width: 38vw; overflow: hidden; text-overflow: ellipsis; }
   .vesa-workspace__app-centre, .vesa-workspace__breadcrumb > span, .vesa-workspace__drawer { display: none; }
   .vesa-workspace__mobile-menu { display: inline-flex; align-items: center; justify-content: center; }
-  .vesa-workspace[data-menu-open="true"] .vesa-workspace__drawer { display: grid; flex: 1 0 100%; grid-template-columns: 1fr; gap: 8px; padding-top: 8px; }
-  .vesa-workspace[data-menu-open="true"] .vesa-workspace__nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .vesa-workspace[data-menu-open="true"] .vesa-workspace__drawer { display: grid; flex: 1 0 100%; grid-template-columns: 1fr; gap: var(--vesa-space-2); padding-top: var(--vesa-space-2); }
+  .vesa-workspace[data-menu-open="true"] .vesa-workspace__nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--vesa-space-2); }
   .vesa-workspace[data-menu-open="true"] .vesa-workspace__menu { width: 100%; }
   .vesa-workspace[data-menu-open="true"] .vesa-workspace__user { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; }
   .vesa-workspace[data-menu-open="true"] .vesa-workspace__saved,
@@ -88,7 +107,7 @@
   max-width: 100%;
   padding: 0;
   border: 1px solid var(--vesa-border);
-  border-radius: 16px;
+  border-radius: var(--vesa-radius-card);
   color: var(--vesa-text);
   background: var(--vesa-surface);
   box-shadow: 0 28px 90px rgba(7, 26, 53, .24);
@@ -96,19 +115,19 @@
 .vesa-settings-dialog::backdrop { background: rgba(7, 26, 53, .36); }
 .vesa-settings-dialog form { margin: 0; }
 .vesa-settings-dialog header,
-.vesa-settings-dialog footer { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 18px 20px; }
+.vesa-settings-dialog footer { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--vesa-space-4); padding: 18px var(--vesa-space-5); }
 .vesa-settings-dialog header { border-bottom: 1px solid var(--vesa-border); }
 .vesa-settings-dialog footer { align-items: center; justify-content: flex-end; border-top: 1px solid var(--vesa-border); }
-.vesa-settings-dialog h2 { margin: 2px 0 5px; font-size: 20px; }
+.vesa-settings-dialog h2 { margin: 2px 0 5px; font-family: var(--vesa-font-heading); font-size: 20px; }
 .vesa-settings-dialog p { margin: 0; color: var(--vesa-muted); font-size: 12px; line-height: 1.55; }
 .vesa-settings-dialog .vesa-settings-kicker { color: var(--vesa-action); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 .vesa-settings-dialog header > button,
-.vesa-settings-dialog footer > button { min-height: 44px; border: 1px solid var(--vesa-border); border-radius: 999px; padding: 0 14px; color: var(--vesa-text); background: var(--vesa-surface); font: inherit; cursor: pointer; }
-.vesa-settings-dialog header > button { flex: 0 0 44px; padding: 0; font-size: 24px; line-height: 1; }
+.vesa-settings-dialog footer > button { min-height: var(--vesa-control-height); border: 1px solid var(--vesa-border); border-radius: 999px; padding: 0 14px; color: var(--vesa-text); background: var(--vesa-surface); font: inherit; cursor: pointer; }
+.vesa-settings-dialog header > button { flex: 0 0 var(--vesa-control-height); padding: 0; font-size: 24px; line-height: 1; }
 .vesa-settings-dialog header > button:focus-visible,
 .vesa-settings-dialog footer > button:focus-visible,
 .vesa-settings-dialog select:focus-visible { outline: 3px solid var(--vesa-focus); outline-offset: 2px; }
-.vesa-settings-body { display: grid; gap: 14px; padding: 20px; }
+.vesa-settings-body { display: grid; gap: 14px; padding: var(--vesa-space-5); }
 .vesa-settings-body .vesa-pref-controls { display: grid; gap: 14px; }
 .vesa-settings-body label { display: grid; gap: 6px; color: var(--vesa-text); font-size: 13px; font-weight: 700; }
-.vesa-settings-body select { min-height: 44px; width: 100%; border: 1px solid var(--vesa-border); border-radius: 8px; padding: 8px 10px; color: var(--vesa-text); background: var(--vesa-surface); font: inherit; }
+.vesa-settings-body select { min-height: var(--vesa-control-height); width: 100%; border: 1px solid var(--vesa-border); border-radius: var(--vesa-radius-control); padding: var(--vesa-space-2) 10px; color: var(--vesa-text); background: var(--vesa-field); font: inherit; }
