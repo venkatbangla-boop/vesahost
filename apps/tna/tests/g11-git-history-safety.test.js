@@ -41,18 +41,27 @@ for (let index = 0; index < candidateHashes.length; index += 1) {
   if (type === 'blob') textBlobs.push({ hash: candidateHashes[index], size: Number(sizeText) });
 }
 
-const batch = run(['cat-file', '--batch'], { input: `${textBlobs.map(item => item.hash).join('\n')}\n`, encoding: null });
-let offset = 0;
 const sources = new Map();
-for (const expected of textBlobs) {
-  const newline = batch.indexOf(10, offset);
-  assert(newline >= 0, 'Git batch output must contain an object header.');
-  const header = batch.subarray(offset, newline).toString('utf8').split(' ');
-  const size = Number(header[2]);
-  assert.equal(header[0], expected.hash, 'Git batch output must preserve requested blob order.');
-  assert.equal(header[1], 'blob', 'History safety scan must read blobs only.');
-  sources.set(expected.hash, batch.subarray(newline + 1, newline + 1 + size).toString('utf8'));
-  offset = newline + 1 + size + 1;
+const batches = [];
+for (const item of textBlobs) {
+  let group = batches.at(-1);
+  if (!group || group.bytes + item.size + 100 > 64 * 1024 * 1024) batches.push(group = { bytes: 0, items: [] });
+  group.items.push(item);
+  group.bytes += item.size + 100;
+}
+for (const group of batches) {
+  const batch = run(['cat-file', '--batch'], { input: `${group.items.map(item => item.hash).join('\n')}\n`, encoding: null });
+  let offset = 0;
+  for (const expected of group.items) {
+    const newline = batch.indexOf(10, offset);
+    assert(newline >= 0, 'Git batch output must contain an object header.');
+    const header = batch.subarray(offset, newline).toString('utf8').split(' ');
+    const size = Number(header[2]);
+    assert.equal(header[0], expected.hash, 'Git batch output must preserve requested blob order.');
+    assert.equal(header[1], 'blob', 'History safety scan must read blobs only.');
+    sources.set(expected.hash, batch.subarray(newline + 1, newline + 1 + size).toString('utf8'));
+    offset = newline + 1 + size + 1;
+  }
 }
 
 const secretPatterns = [
