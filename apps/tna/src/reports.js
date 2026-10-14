@@ -39,7 +39,48 @@
   function taskRows(plan={},limit=Infinity){return (plan.tasks||[]).slice(0,limit).map(task=>({ref:task.templateRef,title:task.title,owner:task.ownerParty,status:task.status,baseline:task.dates?.baselineFinish||'',current:task.dates?.currentTargetFinish||'',forecast:task.dates?.forecastFinish||'',actual:task.dates?.actualFinish||'',risk:task.riskStatus||'needs-information'}))}
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone:options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local',revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),warnings:warnings(plan),notes:[I18N[l].labels.noFabrication,I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+
+  /**
+   * R01 source-owned garment table. Use the same pure master-sheet projection
+   * as the onscreen planner to prevent silent date/row discrepancies. Never
+   * include internal GSM, LC reference and follow-up fields in other audiences.
+   * No schedule/approval calculation or storage writes happen in reports.
+   */
+  function garmentMasterSheet(plan,language,options={}){
+    const projection=root.VesaTnaMerchandisingSheet||
+      (typeof require==='function'?require('./merchandising-sheet.js'):null);
+    if(!projection?.TnaMerchandisingSheet)throw new Error('Garment TNA report cannot be prepared until the local sheet is loaded.');
+    const sheet=new projection.TnaMerchandisingSheet();
+    const view=sheet.snapshot(plan,{language,scheduled:options.scheduled,asOfDate:options.asOfDate||''});
+    const refById=new Map((plan.tasks||[]).map(task=>[task.taskId,task.templateRef]));
+    const predecessorMap=new Map();
+    for(const edge of plan.edges||[]){
+      if(!predecessorMap.has(edge.successorTaskId))predecessorMap.set(edge.successorTaskId,[]);
+      const ref=refById.get(edge.predecessorTaskId);
+      if(ref)predecessorMap.get(edge.successorTaskId).push(ref);
+    }
+    const rows=view.rows.map(row=>({
+      ref:row.ref,stage:row.stage,activity:row.title,owner:row.owner,
+      planned:row.planned,revised:row.revised,forecast:row.forecast,actual:row.actual,
+      delayDays:row.delayDays,status:row.status,waiting:row.waiting,
+      proof:row.proof,remarks:row.remarks,
+      predecessors:(predecessorMap.get(row.taskId)||[]).join(', ')
+    }));
+    return {
+      labels:view.labels,columns:projection.COLUMNS.slice(),rows,
+      order:{
+        fabricSpec:plan.order?.fabricSpec||plan.order?.composition||null,
+        fabricWeightGsm:plan.order?.fabricWeightGsm??null,
+        masterLcStatus:plan.commitments?.masterLcStatus||null,
+        masterLcOpenedOn:plan.commitments?.masterLcOpenedOn||null,
+        masterLcProofRef:plan.commitments?.masterLcProofRef||null
+      },
+      sourceRevision:plan.revision??0,
+      baselineCount:(plan.baselineSnapshots||[]).length,
+      evidenceStatus:'Source references are user-entered and not independently verified.'
+    };
+  }
+  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone:options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local',revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),warnings:warnings(plan),notes:[I18N[l].labels.noFabrication,I18N[l].labels.printFallback,I18N[l].labels.shareFallback],masterSheet:report[0]==='R01'?garmentMasterSheet(plan,l,options):null,source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
