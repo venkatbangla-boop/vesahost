@@ -1,6 +1,28 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
 
+## Latest GMR-03 R01 export parity checkpoint — 2026-10-15
+
+**Application status:** TNA Garment Merchandising Rework — **ACTIVE / CONDITIONAL**. GMR-01, GMR-02 and the **R01-only GMR-03 slice are DEVELOPMENT VERIFIED** on feature/tna360-continuous. This does NOT complete TNA rework, all 12 report audiences, human UAT or authorize merge/public demo release.
+
+**BASE SHA / VERIFIED SOURCE SHA:** green GMR-02 commit 616428ae175dd5720816f4d9b793c276c21f673c → green GMR-03 source/test SHA **0551569dae24e88a9e58b70fcb5f0b2df202263d**. [GitHub Actions #38627693400](https://github.com/venkatbangla-boop/vesahost/actions/runs/38627693400) **SUCCESS**.
+
+**Patch scope/audit:** Actual source inspected: apps/tna/src/reports.js (R01–R12 models and audience contract), apps/tna/src/storage.js (local workbook encoder/reader and untrusted text), apps/tna/src/bootstrap.js (report dialog/print), apps/tna/assets/tna.css, original G07 report tests, G11 browser PDF/Excel reader, GMR-02 browser flow, original TNA docs 04 report table and master-sheet projection. The stable read path is validated TNA plan → pure garment sheet snapshot → R01 report masterSheet (only) → HTML split print tables / native XLSX Master TNA worksheet. No new business approval/forecast calculations are introduced.
+
+**CHANGED:** apps/tna/src/reports.js, apps/tna/src/storage.js (only report export and safeCell formula escaping), apps/tna/src/bootstrap.js (R01 report preview), apps/tna/assets/tna.css, apps/tna/index.html, service-worker.js, apps/tna/tests/g07-reports.test.js, apps/tna/tests/g11-artifact-viewers.cjs, apps/tna/tests/g12-merchandising-edits-browser.cjs and existing .github/workflows/tna-merchandising-verification.yml. **ADDED:** apps/tna/tests/g13-merchandising-report-parity.test.js. Source/code changes are scoped to R01 report/export, not a general report-engine rewrite. User-approved source and prior history preserved.
+
+**PROOF:** GitHub real-checkout source run 38627693400: **23/23 direct garment tests PASS**, zero failure. Genuine locally bundled XLSX reader opens exported R01 with existing Report Summary, Order Summary, Report Activities and Report Notes plus a new source-backed, all-activities Master TNA sheet; typed GSM, quantities, date serials and numeric delay; formula-like cells with leading whitespace stay inert. Native buyer/other R02–R12 report shapes retain the old four sheets and do not gain new internal source fields. Chromium actual workflow recorded edited synthetic GSM/LC data, R01 preview and download, long report/PDF browser print, 101 workbook activity rows, **9-page PDF** opened in Chromium viewer, no horizontal clipping/page exceptions; old TNA Full Plan, saved-copy migration, VESA shared shell Login/App Centre, PPM/AQL domain/route checks all PASS. No desktop Excel/LibreOffice manual acceptance is claimed.
+
+**WATCHED / FROZEN:** apps/tna/src/domain.js, scheduling.js, saved-copy format/schema, prior baseline/actual immutable events, PPM/AQL engines, shell/auth/catalogue, public main route, commercial buyer records, provider integrations. Rollback is isolated feature-branch revert; do not clear local browser storage. GitHub Pages is not approved as commercial SaaS hosting, and login remains browser-local.
+
+**REMAINING:** R02–R12 report-specific audience/workflow depth; actual Excel import staging, mapping, review and new-draft confirm (currently preview-only); reader/Unicode font/physical screen human UAT, true garment knit/woven follow-up cases, approval/scheduling/calendar evidence reconciliation, hosting authority and explicit demo release gate. Human TNA UAT checklist still NOT TESTED. Never mark full TNA development or demo complete from this R01 patch.
+
+**NEXT ACTION (GMR-04):** Audit apps/tna/src/storage.js importWorkbookPreview and bootstrap openImportPreview/renderImportPreview against docs/tna/02 and 04 import contracts. Implement reviewed Excel TNA mapping into NEW DRAFT ONLY with explicit date format, duration/calendar basis, duplicate/invalid/formula/unmatched column gates and mandatory preview/confirm. No auto-merge/overwrite; preserve all saved records and prior version compatibility. Then run genuine knit/woven XLSX import and cross-app browser/mobile/report tests. Next portfolio app once TNA accepted: Packing & Container 360.
+
+---
+
+
+
 ## Latest GMR-02 checkpoint — 2026-10-15
 
 **Current portfolio application:** TNA 360 Garment Merchandising Rework — **ACTIVE / CONDITIONAL**. GMR-01 remains development verified. **GMR-02: DEVELOPMENT VERIFIED**, using actual CI [run #38626121298](https://github.com/venkatbangla-boop/vesahost/actions/runs/38626121298) on source/test commit **616428ae175dd5720816f4d9b793c276c21f673c** (SUCCESS). The complete rework and human acceptance are NOT complete and the rework is NOT DEMO LIVE.
