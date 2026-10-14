@@ -1,0 +1,30 @@
+'use strict';
+const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');const vm=require('node:vm');const {test}=require('node:test');
+const page=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+const scripts=[...page.matchAll(/<script data-costing-module="([^"]+)">\s*([\s\S]*?)<\/script>/g)];
+const sandbox={console,TextEncoder,structuredClone};sandbox.globalThis=sandbox;sandbox.window=sandbox;
+const loaded={};for(const match of scripts){if(match[1]==='ui')continue;vm.runInNewContext(match[2],sandbox,{filename:match[1]+'.js'});loaded[match[1]]=true;}
+const E=sandbox.VesaCostingEngine, C=sandbox.VesaCostingConsumption,S=sandbox.VesaCostingStore,R=sandbox.VesaCostingReport,P=sandbox.VesaCostingPortfolio;
+const fixture=sandbox.VESA_COSTING_DEMO;
+const clone=()=>structuredClone(fixture);
+const eq=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} ≠ ${b}`);
+test('single HTML and VESA shared shell only',()=>{
+  assert.deepEqual(Object.keys(loaded).sort(),['consumption','engine','portfolio','practice','report','storage']);
+  assert.match(page,/\/js\/vesa-workspace-shell\.js/);
+  assert.match(page,/\/css\/vesa-workspace\.css/);
+  assert.match(page,/\bHome.*File.*Edit.*View.*Tools.*Help/);
+  assert.doesNotMatch(page,/(fetch\([^\)]*,\s*\{[^}]*method\s*:\s*['"]POST|\.sendBeacon\(|XMLHttpRequest\()/);
+  assert.equal((page.match(/<header class="vesa-workspace"/g)||[]).length,0);
+});
+test('fixtures preserve exact calculations from costing ZIP',()=>{const r=E.calculate(clone());eq(r.summary.baseCostUsdPerPiece,1.6552);eq(r.summary.fobUsdPerPiece,1.6552/.96);eq(r.summary.commissionUsdPerPiece,(1.6552/.96)*.04);assert.equal(r.status,'DEMO_ONLY');});
+test('three commission policies and missing inputs fail closed',()=>{const d=clone();d.policy.commissionTreatment='SEPARATE';eq(E.calculate(d).summary.fobUsdPerPiece,1.6552);eq(E.calculate(d).summary.separateCommissionUsdPerPiece,1.6552*.04);d.policy.commissionTreatment='NONE';d.policy.commissionPercent=0;eq(E.calculate(d).summary.fobUsdPerPiece,1.6552);d.lines[0].rate=null;assert.equal(E.calculate(d).summary,null);});
+test('non-demo commission requires source evidence',()=>{const d=clone();d.sourceKind='user-entry';assert.ok(E.validateRecord(d).some(x=>x.includes('agreement/source reference')));d.policy.commissionSourceRef='Contract fixture (synthetic)';assert.ok(!E.validateRecord(d).some(x=>x.includes('agreement/source reference')));});
+test('unit arithmetic separate area/marker, reject double waste',()=>{eq(C.knitKgPerPiece({approvedCutAreaM2:1.2,gsm:180}).grossKgPerPiece,.216);eq(C.wovenMarkerPerPiece({markerLengthM:9.144,garmentsPerMarker:10}).grossYdPerPiece,1);assert.throws(()=>C.knitKgPerPiece({approvedCutAreaM2:1,gsm:180,additionalShrinkPercent:5,areaAlreadyIncludesShrink:true}));});
+test('offer comparison requires rate, FX and landed adjustment provenance',()=>{const d=clone();const a={lineId:'FAB',label:'TEST ALTERNATIVE',origin:'TEST COUNTRY',rate:4,currency:'USD',fx:1,extraPerPieceUSD:0,sourceRef:'TEST-SOURCE',extraSourceRef:'None - fixture'};const x=P.validatedOffer(a,d);assert.ok(x.usdPerPc>0);eq(x.usdPerPc,.22*1.05*4);assert.ok(P.validatedOffer({...a,fx:0},d).error);assert.ok(P.validatedOffer({...a,extraSourceRef:''},d).error);});
+test('seven reports escaped and honest about incomplete quotes',()=>{for(const type of ['CR01','CR02','CR03','CR04','CR05','CR06','CR07']){let html=P.report(type,clone());assert.match(html,/NOT BUYER APPROVED/);assert.ok(html.includes(type));}const d=clone();d.style.buyer='<img src=x onerror=alert(1)>';const html=P.report('CR01',d);assert.ok(html.includes('&lt;img'));assert.ok(!html.includes('<img src=x'));d.lines[0].rate=null;assert.match(P.report('CR02',d),/NEEDS INFORMATION/);});
+test('CSV formula injection and unsafe record copies are rejected',()=>{assert.match(R.csv({...clone(),style:{...fixture.style,buyer:' =HYPERLINK("x")'}},E.calculate(clone())),/\x27 =HYPERLINK/);const payload=S.encode(clone());assert.equal(S.decode(payload).recordId,fixture.recordId);assert.throws(()=>S.decode(JSON.stringify({format:S.FORMAT,version:999,record:clone()})));});
+test('record saved and reopened independent of TNA/PPM/AQL storage',()=>{const m=new Map(),storage={getItem:k=>m.get(k)??null,setItem:(k,v)=>m.set(k,v)};S.save(storage,clone(),'TEST_USER');const reopened=S.open(storage,fixture.recordId,'TEST_USER');eq(E.calculate(reopened).summary.baseCostUsdPerPiece,1.6552);assert.deepEqual([...m.keys()],['vesa.costing360.records.v1.TEST_USER']);});
+test('import map rejects Excel input formulas and handles blank rate as null',()=>{const d={STYLE_INPUT:{},COST_LINES:{}};const wb={Sheets:d};d.STYLE_INPUT.B7={v:'Style No'};d.STYLE_INPUT.C7={v:'X'};d.STYLE_INPUT.B8={v:'Buyer'};d.STYLE_INPUT.C8={v:'DEMO'};d.STYLE_INPUT.B9={v:'Factory'};d.STYLE_INPUT.C9={v:'DEMO'};d.STYLE_INPUT.B12={v:'Order quantity (pieces)'};d.STYLE_INPUT.C12={v:1000};d.STYLE_INPUT.B18={v:'Commission percentage'};d.STYLE_INPUT.C18={v:4};d.STYLE_INPUT.B19={v:'Commission treatment'};d.STYLE_INPUT.C19={v:'IN_FOB'};d.COST_LINES.A7={v:'FAB'};d.COST_LINES.B7={v:'FABRIC'};d.COST_LINES.C7={v:'DEMO FABRIC'};d.COST_LINES.D7={v:'PER_PIECE'};d.COST_LINES.E7={v:0.2};d.COST_LINES.F7={v:'kg'};d.COST_LINES.G7={v:5};d.COST_LINES.H7={v:4};d.COST_LINES.I7={v:'USD'};d.COST_LINES.J7={v:1};d.COST_LINES.K7={v:'TEST QUOTE'};d.COST_LINES['!ref']='A1:N7';
+ const keys='ABCDEFGHIJKL';const row=keys.split('').map(k=>d.COST_LINES[k+'7']?.v??'');sandbox.XLSX={utils:{sheet_to_json:()=>[[],[],[],[],[],[],row]}};
+ const val=P.workbookDataToDraft(wb,()=> 'ID-TEST');assert.equal(val.lines[0].rate,4);assert.equal(val.style.quantityPieces,1000);d.COST_LINES.H7.f='=NOW()';assert.throws(()=>P.workbookDataToDraft(wb,()=> 'ID-TEST'),/formula/i);
+});
