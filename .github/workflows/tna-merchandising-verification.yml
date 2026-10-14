@@ -28,11 +28,13 @@ jobs:
           node-version: '22'
       - name: Syntax and non-mutating garments projection
         run: |
+          node --check apps/tna/src/reports.js
+          node --check apps/tna/src/storage.js
           node --check apps/tna/src/domain.js
           node --check apps/tna/src/merchandising-sheet.js
           node --check apps/tna/src/bootstrap.js
           node --check service-worker.js
-          node --test apps/tna/tests/g11-merchandising-sheet.test.js apps/tna/tests/g12-merchandising-edits.test.js
+          node --test apps/tna/tests/g11-merchandising-sheet.test.js apps/tna/tests/g12-merchandising-edits.test.js apps/tna/tests/g13-merchandising-report-parity.test.js
       - name: Preserve existing TNA calculations, records and PPM/AQL rules
         run: |
           node apps/tna/tests/g01-shell.test.js
@@ -55,6 +57,7 @@ jobs:
           mkdir -p output/playwright
           node apps/tna/tests/g11-merchandising-sheet.cjs
           node apps/tna/tests/g12-merchandising-edits-browser.cjs
+          node apps/tna/tests/g11-artifact-viewers.cjs
           node apps/tna/tests/g11-f06-order-master.cjs
           node apps/tna/tests/g11-unified-shell-browser.cjs
           node apps/tna/tests/g11-route-regression.cjs
