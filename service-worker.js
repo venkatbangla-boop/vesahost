@@ -1,4 +1,4 @@
-const CACHE='vesa-v69-costing-demo';
+const CACHE='vesa-v70-tna-merch-work';
 const ASSETS=[
   './',
   './index.html',
@@ -13,6 +13,7 @@ const ASSETS=[
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
+  './apps/tna/assets/merchandising-sheet.css?v=0.1.0',
   './apps/tna/src/domain.js',
   './apps/tna/src/scheduling.js',
   './apps/tna/src/operations.js',
@@ -25,6 +26,7 @@ const ASSETS=[
   './apps/tna/src/reports.js',
   './apps/tna/src/scenarios.js',
   './apps/tna/src/remote-api.js',
+  './apps/tna/src/merchandising-sheet.js?v=0.1.0',
   './apps/tna/src/bootstrap.js',
   './admin/',
   './admin/index.html',
