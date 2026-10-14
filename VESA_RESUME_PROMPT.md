@@ -1,5 +1,18 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## Permanent ChatGPT Work / GitHub connector resumption overlay (2026-10-15)
+
+**This section supersedes VS Code-only and local-checkout assumptions below for ChatGPT Work sessions, while preserving the historical prompt.** For `NEXT`, `CONTINUE`, or `RESUME VESA 360`, inspect the live connected repository `venkatbangla-boop/vesahost` first: `main`, active branches, recent commits, CI results, `AGENTS.md`, `VESA_PROGRESS.md`, the current app's authoritative blueprints/tracker, `docs/platform/VESA_UNIFIED_UI_CONTRACT.md`, and `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md`. Prefer GitHub branch reads/writes and actual GitHub Actions proof if local checkout or cloud computer execution is unavailable. Do not claim to have executed local code from connector-only source reads.
+
+**Current work-selection authority:** The maintained portfolio queue in `VESA_PROGRESS.md` takes precedence over the older three-app order in this historical prompt. Determine actual remaining work from branch source, reports, CI and acceptance gates; do not restart accepted milestones. Continue on a development branch with narrow audited patch groups, preserve all existing records, formulas and branch history, and update the existing trackers rather than creating alternatives. An external deployment or human-approval blocker does not block independent development of the next queue item.
+
+**Evidence and release:** Use statuses `NOT STARTED`, `ACTIVE`, `CONDITIONAL`, `BLOCKED`, `DEVELOPMENT VERIFIED`, `DEMO LIVE`. A successful CI run establishes its stated test scope only. Never claim `DEMO LIVE` absent policy-compliant authorization plus actual public route/version verification. Browser-local login is not secure server authentication. No GitHub Pages commercial SaaS approval is implied by permission to commit source on a branch. If a push triggers CI, inspect and record its run ID, SHA, conclusion, missing checks and precise NEXT ACTION.
+
+**Missing specifications:** Recover source handover ZIPs and the approved 15-app roadmap from repository or accessible attachments. If unavailable, keep unresolved blueprint items flagged; never invent business logic, acceptance criteria or fabricated PASS results.
+
+---
+
+
 **USE THIS SAME PROMPT whenever the Codex session stops, the computer restarts, a checkpoint ends, or you return after several days.** Paste the instructions below into VS Code Codex. Once the specs are correctly installed in your `vesahost` checkout, do not upload all ZIPs again for each resume.
 
 **Permanent scope decision:** VESA is a static, browser-first collection of applications using local VS Code/Git, the user's existing GitHub Free repository, and local browser/device records. No separate cloud subscription, remotely hosted application database, external authentication provider, paid hosting, live collaboration backend, SMS/email service or other third-party infrastructure is authorized.
