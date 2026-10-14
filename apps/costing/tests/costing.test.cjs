@@ -28,3 +28,17 @@ test('import map rejects Excel input formulas and handles blank rate as null',()
  const keys='ABCDEFGHIJKL';const row=keys.split('').map(k=>d.COST_LINES[k+'7']?.v??'');sandbox.XLSX={utils:{sheet_to_json:()=>[[],[],[],[],[],[],row]}};
  const val=P.workbookDataToDraft(wb,()=> 'ID-TEST');assert.equal(val.lines[0].rate,4);assert.equal(val.style.quantityPieces,1000);d.COST_LINES.H7.f='=NOW()';assert.throws(()=>P.workbookDataToDraft(wb,()=> 'ID-TEST'),/formula/i);
 });
+
+test('Excel import never silently discards a non-zero workbook margin or source revision',()=>{
+  const style={};
+  for(const [r,k,v] of [[7,'Style No','STYLE-0001'],[8,'Buyer','DEMO BUYER'],[9,'Factory','DEMO FACTORY'],[12,'Order quantity (pieces)',1000],[18,'Commission percentage',0],[19,'Commission treatment','NONE'],[20,'Margin %',6],[21,'Quotation source revision','SOURCE REV 4']]){style['B'+r]={v:k};style['C'+r]={v};}
+  const cost={};const row=['FAB','FABRIC','Synthetic fabric','PER_PIECE',.2,'kg',5,4,'USD',1,'TEST-SOURCE',''];
+  for(let i=0;i<row.length;i++)cost['ABCDEFGHIJKL'[i]+'7']={v:row[i]};
+  cost['!ref']='A1:N7';
+  sandbox.XLSX={utils:{sheet_to_json:()=>[[],[],[],[],[],[],row]}};
+  const wb={Sheets:{STYLE_INPUT:style,COST_LINES:cost}};
+  assert.throws(()=>P.workbookDataToDraft(wb,()=>'NEW-ID'),/Margin % must be 0/);
+  style.C20.v=0;const result=P.workbookDataToDraft(wb,()=>'NEW-ID');
+  assert.equal(result.style.quotationSourceRevision,'SOURCE REV 4');
+  assert.equal(result.policy.marginPercent,0);
+});
