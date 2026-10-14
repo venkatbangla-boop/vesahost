@@ -8,6 +8,9 @@ on:
       - '.github/workflows/costing-360-verification.yml'
       - 'apps/costing/**'
       - 'apps/index.html'
+      - 'service-worker.js'
+      - 'apps/tna/tests/g11-route-regression.cjs'
+      - 'tests/vesa-platform-pages.cjs'
       - 'login/index.html'
       - 'js/**'
       - 'css/**'
@@ -36,10 +39,16 @@ jobs:
           node --check js/app-catalogue.js
           node --check js/auth.js
           node --check js/vesa-workspace-shell.js
-      - name: Smoke-check preserved TNA, PPM, AQL platform boundaries
+          node --check service-worker.js
+      - name: Test TNA, PPM, AQL, shared shell and saved-format compatibility
         run: |
           node tests/vesa-workspace-shell-contract.cjs
+          node tests/vesa-next-app-starter.cjs
           node apps/tna/tests/g01-shell.test.js
+          node apps/tna/tests/g03-scheduling.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
           node apps/aql/tests/a-g03-sampling.cjs
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -49,5 +58,13 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check playwright==1.56.0
           python -m playwright install --with-deps chromium
-      - name: Run real browser Login, App Centre, Costing and Excel checks
+      - name: Run real browser Login, App Centre, Costing, offline and Excel checks
         run: python apps/costing/tests/costing_real_e2e.py
+      - name: Install free Node browser test client (same Chromium revision)
+        run: npm install --no-save --no-package-lock playwright@1.56.0
+      - name: Prove four-app catalogue, original app routes and platform UI
+        run: |
+          node tests/vesa-platform-pages.cjs
+          node apps/tna/tests/g11-route-regression.cjs
+          node tests/vesa-shared-shell-matrix.cjs
+          node tests/vesa-uniform-experience.cjs
