@@ -2,7 +2,7 @@
 
 **Review date:** 2026-10-14
 **Branch:** `feature/tna360-continuous`
-**Local handoff candidate:** `100a565` documentation state (full-regression baseline: `cf8e193`; latest runtime implementation: `cae38ca`)
+**Local handoff candidate:** `f5095b6` documentation state (full-regression baseline: `f5095b6`; latest runtime implementation: `51b4623`)
 **Decision:** **HOLD — not ready for production deployment**
 
 This review reconciles the application execution trackers and the master dashboard. It authorizes no push, merge, deployment, DNS change, live App Centre route change, provider activation or production-data use.
@@ -16,12 +16,12 @@ This supplement is the current handoff authority. The older `48ec023` review rem
 | Item | Current evidence |
 |---|---|
 | Branch | `feature/tna360-continuous`; committed locally, not pushed or merged by this handoff |
-| Local handoff SHA | `100a565` — documentation-only A-G11 acceptance state; its immediately preceding `cf8e193` content passed the complete 90-command matrix and latest runtime remains `cae38ca`; not a deployed release |
-| Latest runtime SHA | `cae38ca` — AQL standard/final and stage reports render bounded authored chrome in EN/BN/HI/TA from the central language preference or transient Report Studio choice, preserve English technical-source disclosure and never translate/store user values or frozen decisions. Runtime remains proportionally and fully regressed at handoff baseline `5cae12c`. Preserves Share fallback `d29d05b`, AR08/AR09 `55a8abd`, AR06/AR07 `9689407`, AR14 `85b4ac7`, AR12 `bfe7f15`, AR10 `e393b6a`, AR02 `ac24f1c`, AR13 `c5920f0`, AR04 `31c3dee`, AR03 `a01caf3`, stage-report `1728ee9`, analytics `4a79280`, shared U-G09 `87f1e2a` and TNA risk/performance lineage `253672c`. |
-| Latest evidence SHA | `cf8e193` — retains `5cae12c` restore evidence and `550b0dd` A4 review, adds exact A01–A60 plus saved-copy/visual indexes, and passes the expanded boundary without inferring physical device/factory/buyer acceptance |
-| Regression | `node tests/vesa-g11-regression.cjs`: PASS, 90 commands / 873.5s, no retry; 55 automated, 22 browser, 12 syntax, 1 repository |
+| Local handoff SHA | `f5095b6` — clean A-G09 acceptance baseline after the local reference runtime and stale handoff-test repair; not a deployed release |
+| Latest runtime SHA | `51b4623` — AQL adds the bounded local PPM/TNA sibling-reference register and cache `vesa-aql-2026-10-14-24`; it preserves all prior report/share/stage/analytics/restore lineage and changes no sampling, Ac/Re, decision, approval, release or date engine |
+| Latest evidence SHA | `f5095b6` — focused AQL/PPM/TNA reference evidence plus the expanded 91-command boundary, retaining the exact A01–A60, 35-area, saved-copy and visual indexes without inferring remote/physical/buyer acceptance |
+| Regression | `node tests/vesa-g11-regression.cjs`: PASS, 91 commands / 860.0s, no internal retry; 56 automated, 22 browser, 12 syntax, 1 repository |
 | Local TNA state | G00–G08 accepted; G10/G11 conditional local evidence; G12 local handoff proof complete but gate remains blocked from release |
-| Local AQL state | A-G00/A-G01/A-G02/A-G04/A-G05/A-G06/A-G07/A-G11 accepted; A-G03 policy-blocked, A-G08/A-G09 conditional; A-G10 provider backend deferred and A-G12 remains HOLD |
+| Local AQL state | A-G00/A-G01/A-G02/A-G04/A-G05/A-G06/A-G07/A-G09/A-G11 accepted; A-G03/A-G08 remain policy/external-evidence conditional; A-G10 provider backend deferred and A-G12 remains HOLD |
 | Shared UX state | U-G00–U-G09 accepted locally; physical screen-reader/device/factory acceptance remains external |
 | Production state | Not staged, not deployed, not live-verified, not authorized |
 
@@ -29,9 +29,9 @@ This supplement is the current handoff authority. The older `48ec023` review rem
 
 | Item | Recorded boundary |
 |---|---|
-| Documentation candidate | `100a565` on `feature/tna360-continuous`; contains the accepted A-G11 status and current progress math |
-| Fully tested baseline | `cf8e193`; 90/90 commands in 873.5s without retry. `100a565` changes documentation only and does not alter runtime, tests, cache or saved formats |
-| Runtime lineage | latest runtime `cae38ca`; report/share/stage/analytics/restore lineage remains enumerated in Safe rollback and recovery below |
+| Documentation candidate | `f5095b6` on `feature/tna360-continuous`; clean baseline immediately before this acceptance-document reconciliation |
+| Fully tested baseline | `f5095b6`; 91/91 commands in 860.0s with no internal retry after the stale handoff assertion was corrected and focused-proven |
+| Runtime lineage | latest runtime `51b4623`; local sibling references plus all prior report/share/stage/analytics/restore lineage remain covered by the full matrix |
 | Included local scope | GitHub-Free/browser-local AQL workflow, calculations, records, saved-copy recovery, offline worker, reports/languages, shared UX, executable 60-requirement/35-area ledgers and stabilization evidence |
 | Explicitly excluded | approved AR11 carton policy, real buyer/legal authority, physical scanner/custody/printer/device/screen-reader/factory acceptance, hosted provider security/sync/notices and production publication |
 | Backup before any future staging | export/download every important local AQL inspection and retain files outside the browser profile; do not clear IndexedDB/localStorage/service-worker data |
@@ -60,7 +60,7 @@ Expected candidate facts: branch `feature/tna360-continuous`; accepted full-matr
 
 -->
 
-Expected current candidate facts: branch `feature/tna360-continuous`; documentation candidate `100a565`; accepted full-matrix handoff/evidence baseline `cf8e193`; latest runtime `cae38ca`; 90-command regression in 873.5s without retry; exact A01–A60 and 35-area ledgers; G12 recovery and 13 offline assets; A-G04/A-G05/A-G06/A-G07/A-G11 accepted locally; six-route shared transitions; 600-record AQL analytics; all 13 stage routes and 14 locally provable AR01–AR15 variants; EN/BN/HI/TA five-page A4 reports; exact general/finding/carton/lot evidence metadata and bytes after selected-file restore plus browser reload; immutable CAPA/source history; bounded 200 MiB decoded-evidence and 280 MiB selected-file rejection; quota rescue and worker offline reopen; loading/packing/barcode evidence through reopen without randomization, custody or release inference. AR11 carton policy, physical-device/factory/buyer acceptance, provider security and production authorization remain unclaimed.
+Expected current candidate facts: branch `feature/tna360-continuous`; documentation/full-matrix baseline `f5095b6`; latest runtime `51b4623`; 91-command regression in 860.0s without internal retry; exact A01–A60 and 35-area ledgers; G12 recovery and 13 offline assets; A-G04/A-G05/A-G06/A-G07/A-G09/A-G11 accepted locally; explicit local PPM/TNA record IDs, versions, dates, status/milestone and verifier provenance with unchanged AQL decisions/dates; six-route shared transitions; 600-record AQL analytics; all 13 stage routes and 14 locally provable AR01–AR15 variants; EN/BN/HI/TA five-page A4 reports; exact general/finding/carton/lot evidence metadata and bytes after selected-file restore plus browser reload; immutable CAPA/source history; bounded 200 MiB decoded-evidence and 280 MiB selected-file rejection; quota rescue and worker offline reopen; loading/packing/barcode evidence through reopen without randomization, custody or release inference. AR11 carton policy, physical-device/factory/buyer acceptance, provider security, remote tenant verification and production authorization remain unclaimed.
 
 ### AQL saved-copy and visual evidence index
 

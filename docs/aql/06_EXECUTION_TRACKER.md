@@ -4,7 +4,7 @@
 
 **Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` makes hosted identity/backend/database, remote collaboration and external notification delivery `DEFERRED_BY_SCOPE`. Sampling/Ac-Re provenance, stage behavior, reinspection history, local records, saved-copy recovery, reports and shared UX remain active; no carton-randomization policy may be invented.
 
-**Free-only denominator:** 12 active gates; A-G10 is excluded. A-G09 and A-G12 retain one active local unit each while provider/deployment portions are deferred. Current accepted numerator: 8. See `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`.
+**Free-only denominator:** 12 active gates; A-G10 is excluded. A-G09 and A-G12 retain one active local unit each while provider/deployment portions are deferred. Current accepted numerator: 9. See `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`.
 
 ## Starting snapshot — 2026-10-10
 | Field | Current reality |
@@ -15,10 +15,10 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01, A-G02, A-G04, A-G05, A-G06, A-G07 and A-G11. A-G03 remains policy-blocked; A-G08 and A-G09 retain conditional local slices. Stage workflows, recovery and full local regression are complete; AR11 policy plus buyer/legal and physical/device/factory acceptance remain separate external evidence. |
-| Current gate | **A-G09 LOCAL SLICE — focused verification passed; full acceptance boundary pending**. A-G12 production publication remains unauthorized. |
-| LAST COMPLETED ACTION | Added and focused-tested the visible, bounded local PPM/TNA sibling-reference register without changing AQL decisions, approvals, release or date state. |
-| NEXT ACTION | Commit the focused A-G09 checkpoint, then run the full cross-app regression once from that clean commit before accepting the gate. |
+| Current verdict | `accepted` locally for A-G00, A-G01, A-G02, A-G04, A-G05, A-G06, A-G07, A-G09 and A-G11. A-G03/A-G08 remain policy/external-evidence conditional. Stage workflows, recovery, local sibling references and full local regression are complete; AR11 policy plus buyer/legal and physical/device/factory acceptance remain separate external evidence. |
+| Current gate | **A-G12 RELEASE BLOCKED / LOCAL HANDOFF PROVEN**; production publication remains unauthorized. |
+| LAST COMPLETED ACTION | A-G09 local sibling-reference slice accepted at clean full-regression baseline `f5095b6`: 91/91 commands in 860.0s. |
+| NEXT ACTION | Stop local release work at HOLD; resume only with approved policy/external evidence, a demonstrated regression or explicit authorization naming a staging/release SHA and rollback window. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
 ### A-G09 local sibling-reference audit — implementation checkpoint open
@@ -31,8 +31,9 @@ RISKS / VERIFICATION / ROLLBACK: reject missing IDs/version/verifier/date, unsup
 IMPLEMENTED / EVIDENCE: `SiblingReferenceRegistry` owns a maximum-30, escaped, validated local register with explicit source app, record ID, version, source date, recorded status/milestone, verifier, verification date and note. The existing Quality Centre now exposes Add/Remove controls and explicit display-only/no-sync/no-authority wording. `CompanionSchema.validate` protects imports/reopens; older projects add only an empty optional register. The authenticated 390 px browser proof rejects a missing version, records fictional PPM and TNA rows, saves/reloads/reopens exact project bytes, removes one row while preserving the other, detects no overflow/external request/page error and proves the AQL result, rules, review, disposition, stage and dates remain unchanged. Reviewed visual: `output/playwright/aql-a-g09-local-references-mobile.png`.
 TEST EVIDENCE: focused PASS — A-G09 static and authenticated browser; A-G00 Q01–Q24; portable safety; atomic import; service-worker replacement/offline reopen at cache `vesa-aql-2026-10-14-24`; release contract; PPM P-G08 deterministic + authenticated UI; TNA G10 deterministic + authenticated UI; `git diff --check`. The first adjacent PPM browser attempt used cached Playwright 1.53 and stopped at its CSP before product assertions; the prescribed cached Playwright 1.64 rerun passed. No network install occurred.
 REGRESSION DIAGNOSTIC: the first clean full-run attempt from `51b4623` stopped once at `apps/tna/tests/g12-local-handoff.test.js` before AQL execution. The test still hard-coded historical baseline `5cae12c`, while the already-accepted handoff and dashboard consistently pin documentation `100a565`, full baseline `cf8e193` and runtime `cae38ca`. The assertion now validates the three explicit SHA roles and cross-document agreement instead of freezing a superseded SHA. Focused syntax/G12 recovery/offline-inventory proof passes. This is a stale evidence-contract repair; no TNA runtime, data or acceptance behavior changed.
-VERDICT: conditional checkpoint accepted — implementation and focused cross-app evidence are sufficient; A-G09 gate acceptance awaits one clean full regression because AQL runtime/cache and cross-app behavior changed. Remote source lookup, tenant authorization and two-account verification remain `DEFERRED_BY_SCOPE`, not failed local requirements.
-NEXT ACTION (ONE PRECISE STEP): commit this focused checkpoint, then run `node tests/vesa-g11-regression.cjs` once from the clean commit and use its no-retry result for the A-G09 local gate verdict.
+FULL ACCEPTANCE EVIDENCE: after the stale handoff assertion was diagnosed and repaired, clean commit `f5095b6` passes `node tests/vesa-g11-regression.cjs`: 91/91 commands in 860.0s (56 automated, 22 browser, 12 syntax, 1 repository), including the new A-G09 browser proof, PPM P-G08, TNA G10, worker/offline, recovery/large-file/report matrices and shared UX. The orchestrator used no internal retry. The earlier stopped attempt is retained above and is not counted as acceptance evidence.
+VERDICT: A-G09 ACCEPTED LOCALLY. The active GitHub-Free/browser-local slice is complete: explicit manually verified PPM/TNA source references and App Centre/preferences/non-interference boundaries are visible, durable and regression-protected. Remote source lookup, tenant authorization and two-account verification remain `DEFERRED_BY_SCOPE`; no provider or external approval is claimed.
+NEXT ACTION (ONE PRECISE STEP): retain A-G12 HOLD; resume only for approved AR11/buyer/legal evidence, external acceptance, a demonstrated regression or explicit named staging/release authorization.
 
 ### A-G12 local handoff and release boundary — local handoff accepted, release blocked
 
@@ -671,9 +672,9 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 ```
 
 ### A-G09 — Shared data references and App Centre consistency
-- [ ] Source-labeled PPM link / TNA milestone data with explicit IDs and versions.
-- [ ] No PPM GO inferred from AQL; no TNA original date overwritten by inspection update.
-- [ ] App Centre/login user preferences visible in SAME location and consistent across apps.
+- [x] Source-labeled PPM link / TNA milestone data with explicit IDs and versions.
+- [x] No PPM GO inferred from AQL; no TNA original date overwritten by inspection update.
+- [x] App Centre/login user preferences visible in SAME location and consistent across apps.
 
 ### A-G09 shared references and cross-app boundaries — conditional, no live integration claimed
 
@@ -688,7 +689,7 @@ TEST COMMANDS + OUTPUT/COUNTS: `node apps/aql/tests/a-g09-cross-app-boundaries.c
 VERDICT: conditional — local route/catalogue/preferences and non-interference contracts are proven; no server-backed PPM/TNA link, tenant authorization, source-record lookup or two-account verification is claimed.
 NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomization requirement/fixture for active A-G03, then run authenticated cross-app route/preferences regression without applying any synthetic external record.
 ```
-- [ ] Cross-app shared CSS/JS file impacts reviewed once, all sibling tests rerun.
+- [x] Cross-app shared CSS/JS file impacts reviewed once, all sibling tests rerun.
 
 ### A-G10 — Server-side roles, collaboration, authorized approvals — `DEFERRED_BY_SCOPE`
 - [ ] API, tenant authorization, audit, optimistic concurrency and offline queue designs.
