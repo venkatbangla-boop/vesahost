@@ -24,6 +24,16 @@
 - A landed additional charge in alternative offers is shown for comparison but cannot be applied directly to replace the cost line; add separate sourced commercial/landed cost lines.
 - Full workbook import/export requires the checked-in TNA local Excel vendor library; no runtime CDN or uploading data.
 
+## Resume verification (2026-10-14, current session)
+
+- GitHub branch `feature/costing-360` now contains the full 7-sheet template as embedded source in `apps/costing/index.html` and the licensed offline spreadsheet library at `js/vendor/xlsx.full.min.js` with `js/vendor/xlsx.LICENSE.txt`. Existing TNA vendor copy stays unchanged.
+- **21/21** source ZIP tests PASS; **10/10** independent single-HTML domain tests PASS.
+- Browser smoke in a **mocked shared-shell environment**: **15/15** checks PASS, not a substitute for real platform route testing.
+- Browser workbook-template Download: original 7-sheet `VESA_COSTING_INPUT_TEMPLATE.xlsx` downloaded byte-for-byte; SHA256 `18fc62add140ef575cab8e48e49fad37288b7509902faf29d831acda1afcce7f`.
+- New HTML/Excel/vendor assets committed to feature branch. Actual third-party XLSX library **runtime import/export of a populated workbook**, real VESA auth/shell, keyboard/zoom/theme, print reports and live deployment still need direct verification. These gates remain conditional, not accepted.
+- User-approved queue changed: **after Costing, TNA garment-merchandiser rework**, then Packing & Container, Order & Commission and other applications. Canonical request: `docs/tna/GARMENT_MERCHANDISING_REWORK_QUEUE.md`.
+- **Current release verdict: CONDITIONAL — DO NOT MARK DEMO LIVE.** No public URL or branch merge claim.
+
 ## Verified development evidence (2026-10-14)
 
 - Supplied standalone costing source Node suite: **21 PASS / 0 FAIL**.
@@ -41,6 +51,6 @@
 4. Test real source-ledger/offer provenance, unapproved quote state, all 7 reports, 4 language menus and saved-copy failure paths.
 5. Run focused TNA/PPM/AQL/shared-shell tests, security/source scan and full relevant cross-app regression on release candidate.
 6. Only after acceptance, safely fast-forward or merge into main for personal non-commercial demo (if actual hosting terms permit), and verify live version/URL before marking `DEMO LIVE`.
-7. Next application after Costing: APP-01 Packing & Container 360, **not** a simultaneous mass build.
+7. Next application after Costing: **TNA 360 Garment Merchandising Rework** (see queued source request), then APP-01 Packing & Container 360.
 
 **Rollback:** feature branch can be discarded without changing main; after publication revert the exact app/catalogue/locale commits without clearing any browser records.
