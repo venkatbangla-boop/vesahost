@@ -41,7 +41,7 @@
 | Physical factory/inspection workflow | NOT TESTED | Factory/inspector evidence for capture, scanner, custody, printer and handling |
 | Buyer-specific carton policy | NOT TESTED / OPTIONAL | Approved policy reference only if buyer certification is required; internal-uniform/manual AR11 is already locally implemented |
 | Provider security/multiuser/remote sync/notifications | DEFERRED_BY_SCOPE | Authorized provider and separate security acceptance if scope changes |
-| Production publication | BLOCKED | Explicit approval naming commit, destination and rollback window |
+| Production publication | BLOCKED | Existing GitHub Pages destination is disallowed for the intended online-business/commercial-SaaS use; select a compliant authorized host before release |
 
 ## Final verdict
 
@@ -56,5 +56,5 @@ Tester sign-off: ____________________  Date: __________
 
 Business owner sign-off: ____________________  Date: __________
 
-Release authority decision: **NOT AUTHORIZED** unless separately written with the exact commit, destination and rollback window.
+Release authority decision: **CONDITIONALLY AUTHORIZED, BUT HOSTING-POLICY BLOCKED**. The feature branch may be pushed; `main`, GitHub Pages and DNS remain unchanged.
 

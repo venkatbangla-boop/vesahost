@@ -14,7 +14,7 @@ This package is for human testing of the existing GitHub-Free/browser-local VESA
 | Last complete automated baseline before this package | `accf1c8` — 94/94 commands in 949.6s without retry |
 | Tested UAT-package baseline | `0bd6582` — 95/95 commands in 899.9s without retry |
 | Storage | This browser profile/device only, plus user-downloaded saved copies |
-| Release state | **HOLD — no push, deployment, DNS change or production-data use is authorized** |
+| Release state | **HOLD — safe feature-branch source push is authorized; production deployment/DNS and production-data use remain blocked** |
 
 ## Before testing
 
@@ -66,4 +66,6 @@ Never convert automated evidence into a human `PASS`. Record screenshots by test
 ## Local acceptance exit rule
 
 Local UAT may be signed `PASS` only when every mandatory human row is `PASS`, every failure has been resolved and retested, saved-copy recovery is demonstrated, and the exact tested commit is recorded. Production readiness remains `HOLD` until separately authorized and all named external acceptance gaps are resolved or explicitly accepted by the responsible owner.
+
+The fast-release instruction preserves `UAT-UI-01` as the only human PASS and leaves the other 48 rows `NOT TESTED`. Do not resume repetitive row-by-row prompting unless the user specifically requests it.
 

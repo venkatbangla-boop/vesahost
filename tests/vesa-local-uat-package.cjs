@@ -32,5 +32,5 @@ const total=results.match(/^\| Total \| (\d+) \| (\d+) \| (\d+) \|/m);
 assert.ok(total,'UAT results total row is missing');
 assert.deepEqual(total.slice(1).map(Number),[statusCounts.PASS,statusCounts.FAIL,statusCounts['NOT TESTED']],'UAT results total must match all human checklist rows');
 assert.equal(Object.values(statusCounts).reduce((sum,value)=>sum+value,0),49,'UAT status counts must total 49');
-assert.ok(results.includes('PRODUCTION HOLD')&&results.includes('NOT AUTHORIZED'), 'UAT sign-off must retain production HOLD');
+assert.ok(results.includes('PRODUCTION HOLD')&&results.includes('HOSTING-POLICY BLOCKED'), 'UAT sign-off must retain production HOLD and the current hosting-policy blocker');
 console.log(`VESA local UAT package passed: human results PASS=${statusCounts.PASS}, FAIL=${statusCounts.FAIL}, NOT TESTED=${statusCounts['NOT TESTED']} with startup, AR11, evidence and HOLD boundaries`);

@@ -31,3 +31,11 @@ No automated check proves human usability, physical carton access, buyer certifi
 - The new package contract passed with all 49 human rows still `NOT TESTED`.
 - No runtime, schema, business rule, saved record, provider or deployment changed in the UAT package patch.
 
+## Fast-release proportional verification
+
+- Changes after `0bd6582` through source candidate `d4a56f2` are documentation, UAT-contract and non-registered starter/test files only; application runtime, schemas, formulas, cache manifests and business decisions are unchanged.
+- PASS: UAT package (1 human PASS / 0 FAIL / 48 NOT TESTED), tracked-file security audit, complete reachable-history safety audit, TNA and PPM handoffs, AQL release and AR11 pure/browser workflows, platform pages, uniform cross-route experience, starter contract, three starter syntax checks and `git diff --check`.
+- AR11 browser proof regenerated synthetic mobile/desktop report screenshots. Platform and uniform browser checks regenerated synthetic cross-route screenshots with zero external requests/page errors.
+- The clean 95/95 `0bd6582` boundary is therefore retained as the final full application regression; it was not needlessly rerun for documentation/starter-only changes.
+- GitHub Pages production publication is blocked by the current Pages prohibition on free hosting for online-business/commercial-SaaS use. No live route, cache, `main`, CNAME or DNS was changed.
+

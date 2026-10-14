@@ -2,14 +2,32 @@
 
 **Review date:** 2026-10-14
 **Branch:** `feature/tna360-continuous`
-**Local handoff candidate:** `0bd6582` documentation state (full-regression baseline: `0bd6582`; latest runtime implementation: `abc465d`)
+**Local handoff candidate:** `d4a56f2` source state (full-regression baseline: `0bd6582`; latest runtime implementation: `abc465d`)
 **Decision:** **HOLD — not ready for production deployment**
 
-This review reconciles the application execution trackers and the master dashboard. It authorizes no push, merge, deployment, DNS change, live App Centre route change, provider activation or production-data use.
+This review reconciles the application execution trackers and the master dashboard. The current authority permits a safe feature-branch push only; it does not permit a `main` merge, GitHub Pages deployment, DNS change, provider activation or production-data use.
 
-## Current local handoff supplement — 2026-10-14
+## Approved fast-release reconciliation — 2026-10-14
 
-This supplement is the current handoff authority. The older `48ec023` review remains below as immutable historical context and must not be used as the current next-action list.
+The user subsequently authorized a safe feature-branch source push and a conditional production release. The production condition cannot be satisfied on the existing GitHub Pages destination: GitHub's current Pages limits and additional-product terms say Pages may not be used as free hosting to run an online business or provide commercial SaaS. VESA 360 is explicitly an enterprise/business application, so `main`, Pages and DNS remain unchanged. This is the single public-deployment blocker for this handoff.
+
+| Item | Final record |
+|---|---|
+| Source release candidate | `d4a56f2` — accepted application plus non-registered next-app starter |
+| Fully tested application baseline | `0bd6582` — 95/95 commands in 899.9s without retry; runtime `abc465d` |
+| Proportional verification after baseline | PASS: UAT contract; tracked-file security scan; all-history safety scan; TNA handoff; PPM handoff; AQL release and AR11 pure/browser contracts; Login/App Centre/Admin platform matrix; six-route uniform-experience matrix; next-app starter contract and syntax |
+| Human UAT | 1 PASS (`UAT-UI-01`), 0 FAIL, 48 NOT TESTED; no automated result was converted into human acceptance |
+| Repository/privacy | 257 tracked files and 369 commits / 3,322 reachable objects / 1,280 unique text blobs scanned; no high-confidence secret or private-record artifact hit |
+| Production before/after | `origin/main` remains `3217e2d`; root `CNAME` remains `vesaent.com`; no merge, Pages publish, DNS or cache change |
+| Feature delivery | Push `feature/tna360-continuous` only after the release-record commit; no force push |
+| Rollback | Production requires none because it was not changed. Revert `d4a56f2` to remove only the next-app starter; use `git revert <offending-feature-sha>` for any later source correction and preserve browser saved copies first |
+| External limitations | Browser login is a local convenience, records remain device/profile-local, hosted identity/multiuser sync/notifications remain deferred, and physical/buyer/device acceptance remains unclaimed |
+
+Official policy evidence: <https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits> and <https://docs.github.com/en/site-policy/github-terms/github-terms-for-additional-products-and-features>.
+
+## Prior local handoff supplement — 2026-10-14
+
+This supplement predates the fast-release reconciliation above. The older `48ec023` review remains below as immutable historical context and must not be used as the current next-action list.
 
 ### Candidate and verified local status
 
