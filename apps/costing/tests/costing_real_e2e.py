@@ -275,7 +275,7 @@ def main():
                 'Offline Costing reopens the same saved synthetic records')
         page.locator('button[data-section="reports"]').click()
         with page.expect_download(timeout=30000) as offline_download:
-            page.locator('#costingMain button[data-cmd="xlsxExport"]').click()
+            page.locator('#costingMain button[data-cmd="xlsxExport"]').nth(1).click()
         offline_workbook=tmp/'offline-draft.xlsx'
         offline_download.value.save_as(offline_workbook)
         with zipfile.ZipFile(offline_workbook) as workbook:
