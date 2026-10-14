@@ -493,7 +493,8 @@
     task.dates.currentTargetFinish=revised;
     task.dates.actualFinish=actual;
     if(evidence&&!task.proofRefs.includes(evidence))task.proofRefs.push(evidence);
-    if(reason)task.delayReason=reason;
+    // Follow-up reason is not automatically a manufacturing delay cause.
+    if(reason)task.followUpNote=reason;
     const validation=validatePlan(next);
     if(!validation.ok)return {ok:false,error:validation.errors.join('; ')};
     const stamped=now(),actorId=clean(context.actorId)||next.ownerUserId;
