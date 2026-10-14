@@ -1,6 +1,28 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
 
+## Latest GMR-02 checkpoint — 2026-10-15
+
+**Current portfolio application:** TNA 360 Garment Merchandising Rework — **ACTIVE / CONDITIONAL**. GMR-01 remains development verified. **GMR-02: DEVELOPMENT VERIFIED**, using actual CI [run #38626121298](https://github.com/venkatbangla-boop/vesahost/actions/runs/38626121298) on source/test commit **616428ae175dd5720816f4d9b793c276c21f673c** (SUCCESS). The complete rework and human acceptance are NOT complete and the rework is NOT DEMO LIVE.
+
+**GMR-02 objective and explicit scope:** add source-backed garment order GSM/Master LC fields and controlled activity owner/waiting/planned/revised/actual edits, preserve the schema and original baseline, and avoid changing frozen scheduling, PPM, AQL and shared UX. Source directly inspected: apps/tna/src/domain.js (OrderPlan factory, validatePlan, freezeBaseline, updateTaskStatus), apps/tna/src/bootstrap.js (form/action listeners), apps/tna/src/merchandising-sheet.js (pure projection), apps/tna/src/storage.js (save/copy/migration), apps/tna/src/reports.js (read-only watched consumer), prior GMR-01 tests/CI, canonical docs 01–06 and the approved rework queue. Dependencies: in-sheet button → existing bootstrap/controller → new pure domain revision command → local autosave after validation → read-only merchandising sheet and prior reports.
+
+**In-scope files changed:** apps/tna/src/domain.js; apps/tna/src/bootstrap.js; apps/tna/src/merchandising-sheet.js; apps/tna/assets/merchandising-sheet.css; apps/tna/index.html; service-worker.js; apps/tna/tests/g11-merchandising-sheet.test.js (expected bundle revisions); .github/workflows/tna-merchandising-verification.yml. **New tests:** apps/tna/tests/g12-merchandising-edits.test.js and apps/tna/tests/g12-merchandising-edits-browser.cjs. **Documentation:** same authoritative TNA ledger, the existing UI contract and VESA_PROGRESS.md, no competing tracker.
+
+**Frozen/out-of-scope:** apps/tna/src/scheduling.js, storage.js, reports.js, operations.js, scenarios.js, template IDs, CPM/calendar formulas, baselineSnapshots history, old saved-copy codec/migration, PPM 168-checkpoint rules, AQL sampling tables, js/auth.js, VESA shared shell and catalogue, remote/provider contracts, main/public route, production customer data. Optional new fields keep schema 1.1.0 unchanged. The domain clones source and rejects invalid dates, undocumented revised target, unevidenced LC opening, unauthorized approvals/waivers, stale revisions and overwriting confirmed baseline or recorded actual.
+
+**Real verification and factual results:** [run #38626121298](https://github.com/venkatbangla-boop/vesahost/actions/runs/38626121298) on source/test SHA 616428ae reported **18 tests, 18 pass, 0 fail** from the new/previous garment sheet Node suites. Existing TNA G01/G02/G03/G05/G07, original 1.0 → 1.1 saved-copy migration, PPM P-G00 and AQL A-G00/A-G03 were PASS in the separate runner step. Real Chromium served the actual checkout: original GMR-01 knit/denim sheet flow; new GMR-02 LC failed-evidence atomicity, valid LC, waiting-party filter, approved/actual rejection, immutable actual correction, save/reopen and 390px; existing TNA Full Plan F06, shared shell at required widths/200% zoom, Login/App Centre routes and PPM/AQL/TNA platform smoke all PASS. All CI job steps SUCCESS. No buyer/factory human, desktop Excel, physical device or commercial deployment acceptance claimed.
+
+**GMR-02 verdict:** **DEVELOPMENT VERIFIED** for the declared unit/browser/regression surface. Source behavior changed only by explicit user-approved GMR-02. GMR-01 historical frozen acceptance remains. **Rollback:** reversible feature branch commits since the GMR-01 checkpoint; no forced ref changes, schema migration, browser storage reset or merging to main.
+
+**Outstanding:** True R01/R02/R03 etc garment report and XLSX parity (GSM/LC/source/waiting/full 12-column master sheet and typed Excel), input/import mapping, knit/woven UAT, completion dependencies and CPM feasibility, cross-report consistency, human Excel reader, physical/mobile/print QA and accepted release permission. The older 12-row TNA human UAT stays NOT TESTED. Existing domain status-only method remains intact as an API, but the new guarded editor is the normal garment UI.
+
+**PRECISE NEXT ACTION — GMR-03:** audit apps/tna/src/reports.js and apps/tna/src/storage.js full report/XLSX export surfaces; add a genuine source-backed complete garment sheet workbook/report (without silently upgrading existing report IDs or exposing restricted fields), preserve formula escaping and typed numbers/dates, test old/new saved copies and at least one knit and woven synthetic workbook in an actual reader; then browser print/PDF and EN/BN/HI/TA report parity. Do not mark TNA REWORK DEMO LIVE until separate owner acceptance, hosting decision and real public version check. Portfolio item after accepted TNA remains Packing & Container 360.
+
+---
+
+
+
 ## Latest approved apparel-merchandising rework overlay — 2026-10-15
 
 **Current work item:** TNA 360 Garment Merchandising Rework — `ACTIVE`. Previous G00–G10/G11/G12 status rows below remain as historical pre-rework evidence; they are NOT authorization to skip this separately approved interface correction. **New GMR-01 development slice: `DEVELOPMENT VERIFIED` in GitHub Actions; full rework and human acceptance remain `CONDITIONAL`.**
