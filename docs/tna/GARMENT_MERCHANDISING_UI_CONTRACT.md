@@ -3,6 +3,25 @@
 **Authority:** `docs/tna/GARMENT_MERCHANDISING_REWORK_QUEUE.md`, original TNA docs 01–06 and mandatory `docs/platform/VESA_UNIFIED_UI_CONTRACT.md`. This is a UI contract and gap ledger, **not a competing execution tracker**. Status is **ACTIVE / CONDITIONAL** until CI and genuine business-user acceptance.
 
 
+
+## GMR-03 R01 master report and native Excel parity — verified 2026-10-15
+
+**Actual evidence:** GitHub Actions [run #38627693400](https://github.com/venkatbangla-boop/vesahost/actions/runs/38627693400) on source SHA **0551569dae24e88a9e58b70fcb5f0b2df202263d**, SUCCESS. Node GMR-01/02/03 sheet, domain, report/export source suites: **23 pass, 0 fail**. Existing TNA domain, CPM, saved-copy migration, G07 multilingual R01–R12 catalogue/report verification, PPM 168-checkpoint baseline and AQL sampling checks PASS. Actual Chromium: original/edited TNA local save/reopen, R01 source-backed Excel download, 101 task rows in a genuine workbook, 9-page printed PDF opened in browser PDF viewer, no tested report overflow; cross-app Login/App Centre/PPM/AQL/TNA UI and mobile/zoom regression PASS.
+
+**Exact R01 boundary:** apps/tna/src/reports.js uses the same pure TnaMerchandisingSheet.snapshot() projection as the UI; it adds a source-backed masterSheet only to R01 (factory/agent master). Order GSM, Master LC status/date/proof, 13 master activity columns (includes predecessors), baseline/target/forecast/actual, owner/waiting, delay, approval/source and follow-up are kept separate. The four existing Excel worksheets and 12 report IDs remain; R01 appends a fifth native worksheet, **Master TNA**, with properly typed numeric quantities/GSM/calendar-day delays and Excel date cells. Spreadsheet formula-like text, including leading whitespace before operators, is escaped; the original source plan remains immutable.
+
+**Readable PDF:** R01 browser preview shows all task rows in two related, repeat-header tables rather than shrinking 13 columns into unreadable print. Real Chromium browser printing produced a multipage PDF and opened it in its PDF viewer. EN/BN/HI/TA labels are carried through the source projection. This is genuine browser print, **not a new dedicated PDF generation engine or signed business report**.
+
+**Audience boundary:** R02–R12 retain their prior four-sheet export and receive no newly introduced raw LC proof, GSM, waiting party or factory follow-up master data from R01. The original report models are not yet fully specialized for each audience; DO NOT claim verified buyer confidentiality or cloud enforced permissions. Browser-local login is not server-side security.
+
+**Changed code/test boundaries:** apps/tna/src/reports.js, storage.js (export writer and formula escaping only), bootstrap.js (R01 preview), assets/tna.css, index.html and root service-worker.js. Existing G07 asset pin test and G11 artifact-viewer workbook expectation were updated, GMR-02 real browser test extended for authentic R01 Excel/PDF, new apps/tna/tests/g13-merchandising-report-parity.test.js added, same GitHub workflow expanded. **Frozen:** TNA domain.js, scheduling.js, signed baseline revisions, saved copy schema and migrations, PPM/AQL engines, VESA header/auth/catalogue, main. Revert these feature-branch patches if acceptance evidence regresses; never reset actual saved records.
+
+**Unfinished rework:** The completed GMR-03 slice covers R01 only. Source-backed R02–R12 report-specific actions, a reviewed Excel TNA import mapping/commit workflow (currently preview-only), dedicated print/font visual UAT in Bengali/Tamil, genuine desktop Excel/LibreOffice opening, factory buyer/practical merchandiser trials and hosting/release approval remain NOT VERIFIED.
+
+**Precise NEXT ACTION:** GMR-04 — audit storage.importWorkbookPreview(), current Excel import dialog and original mapping/validation spec; implement a safe reviewed Excel import into a NEW DRAFT only, with sheet selection, explicit column/date-basis mapping, duplicate/formula/cyclic reference rejection, preview and explicit confirm. Preserve old draft/saved copies and existing 1.1.0 schema, and test actual knit/woven Excel files. Do not turn preview into silent overwrite.
+
+---
+
 ## GMR-02 evidence-backed extension — 2026-10-15
 
 **Verification:** [GitHub Actions #38626121298](https://github.com/venkatbangla-boop/vesahost/actions/runs/38626121298), real checkout source/test SHA 616428ae175dd5720816f4d9b793c276c21f673c — **SUCCESS**. Combined garment unit suite 18/18 PASS, real Chromium activity/order forms, source-failure atomicity, local save/reopen, four languages, mobile, TNA scheduling/storage/report/saved-copy migration and PPM/AQL/shared-shell regression passed. This proves GMR-02 development behavior only, **not human UAT or public rework deployment**.
