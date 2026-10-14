@@ -3,6 +3,7 @@ const assert = require('assert/strict');
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
+const { pathToFileURL } = require('url');
 const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '../../..');
@@ -68,6 +69,7 @@ async function run() {
     });
 
     fs.mkdirSync(output, { recursive: true });
+    const printDocuments = {};
     for (const language of ['en', 'bn', 'hi', 'ta']) {
       const settings = await openSettings(page);
       await settings.locator('[data-pref-language]').selectOption(language);
@@ -83,6 +85,7 @@ async function run() {
       assert.equal(await frame.locator('html').getAttribute('data-visual-report'), 'classic', `${language}: report appearance decoration was lost`);
       const text = await frame.locator('body').innerText();
       for (const value of [...expected[language], 'Technical headings and source terms remain in English', 'Buyer <North> বাংলা हिन्दी தமிழ்', 'Factory & User Value', 'PO-USER-<42>', 'User finding & <unchanged>', 'NOT CONFORMED', 'Sampling & acceptance']) assert.ok(text.includes(value), `${language}: report is missing exact value/text: ${value}`);
+      printDocuments[language] = await frame.locator('html').evaluate(element => `<!doctype html>${element.outerHTML}`);
       assert.equal(await frame.locator('script').count(), 0, `${language}: report contains executable script`);
       assert.equal(await page.evaluate(() => JSON.stringify(window.__vesaApp.p)), source, `${language}: report generation mutated inspection data`);
       const geometry = await frame.locator('html').evaluate(element => ({ client: element.clientWidth, scroll: element.scrollWidth }));
@@ -91,6 +94,29 @@ async function run() {
       await frame.locator('.sheet').screenshot({ path: path.join(output, `aql-a-g08-report-language-${language}-document-390.png`) });
       await page.keyboard.press('Escape');
     }
+
+    const pdfDir = path.join(output, 'pdf'); fs.mkdirSync(pdfDir, { recursive: true });
+    const printPage = await context.newPage();
+    for (const language of ['en', 'bn', 'hi', 'ta']) {
+      await printPage.setContent(printDocuments[language], { waitUntil: 'load' });
+      await printPage.emulateMedia({ media: 'print' });
+      const pdfPath = path.join(pdfDir, `aql-a-g08-report-language-${language}.pdf`);
+      await printPage.pdf({ path: pdfPath, format: 'A4', printBackground: true, margin: { top: '10mm', right: '8mm', bottom: '10mm', left: '8mm' } });
+      assert.ok(fs.statSync(pdfPath).size > 50000, `${language}: rendered PDF is unexpectedly small`);
+    }
+    await printPage.close();
+    const viewerContext = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    for (const language of ['en', 'bn', 'hi', 'ta']) {
+      const viewer = await viewerContext.newPage();
+      await viewer.goto(pathToFileURL(path.join(pdfDir, `aql-a-g08-report-language-${language}.pdf`)).href, { waitUntil: 'load' });
+      await viewer.waitForTimeout(600);
+      await viewer.screenshot({ path: path.join(output, `aql-a-g08-report-language-${language}-pdf-first.png`) });
+      await viewer.mouse.click(800, 760); await viewer.keyboard.press('Control+End');
+      await viewer.waitForTimeout(300);
+      await viewer.screenshot({ path: path.join(output, `aql-a-g08-report-language-${language}-pdf-last.png`) });
+      await viewer.close();
+    }
+    await viewerContext.close();
 
     const stage = await page.evaluate(async () => {
       const app = window.__vesaApp, p = ProjectSchema.fresh('Knit Top / T-Shirt / Polo');
