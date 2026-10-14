@@ -40,12 +40,20 @@ for (const boundary of [
   'Quality OS signals never release a shipment automatically.',
   'Remote JSON pulled for review',
   'Connected snapshot opened as separate review draft',
+  'class SiblingReferenceRegistry',
+  "sourceApp:this.clean(value.sourceApp,10).toLowerCase()",
+  'Source record ID, version, source date, verifier and verification date are required.',
+  'These are manually verified, display-only references.',
+  'AQL does not read sibling-app storage, synchronize the source, infer PPM GO, overwrite a TNA date',
+  "p.companion.qualityOS.references=next",
 ]) {
   expect(aql.includes(boundary), `A-G09 AQL boundary marker is missing: ${boundary}`);
 }
 
 expect(!aql.includes("localStorage.getItem('ppm"), 'A-G09 AQL source reads a PPM local-storage namespace directly.');
 expect(!aql.includes("localStorage.getItem('tna"), 'A-G09 AQL source reads a TNA local-storage namespace directly.');
+expect(!aql.includes("indexedDB.open('ppm"), 'A-G09 AQL source opens a PPM database directly.');
+expect(!aql.includes("indexedDB.open('tna"), 'A-G09 AQL source opens a TNA database directly.');
 expect(aql.includes('sourceTrace'), 'A-G09 source trace remains an explicit local record field.');
 expect(aql.includes('reportDate'), 'A-G09 report/date fields remain distinct from cross-app milestone updates.');
 
