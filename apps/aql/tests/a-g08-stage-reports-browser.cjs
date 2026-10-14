@@ -898,6 +898,26 @@ async function run() {
       for(const [stage,preset,text] of [['inline','production-control','No inline records are recorded. This does not prove that the stage was inspected, completed or released.'],['prefinal','readiness-control','No readiness records are recorded. This does not prove endline completion, pre-final readiness or approval.']]){const p=ProjectSchema.fresh('Knit Top / T-Shirt / Polo');p.stageSuite=StageCatalog.fresh(stage);const before=JSON.stringify(p),html=await ReportComposer.html(p,app.assets,{...p.report,preset});output.push({text,html,unchanged:before===JSON.stringify(p)});}return output;
     });
     for(const row of emptyControls){assert.equal(row.unchanged,true,'empty AR08/AR09 report mutated source');assert.ok(row.html.includes(row.text),'empty AR08/AR09 report inferred inspection, readiness or approval');}
+    const shareFallback = await page.evaluate(async () => {
+      const app=window.__vesaApp,before=JSON.stringify(app.p),downloads=[],shares=[],toasts=[],originalDownload=ProjectTransfer.download,originalToast=app.toast.bind(app);ProjectTransfer.download=(blob,name)=>downloads.push({name,blob});app.toast=message=>toasts.push(message);
+      const set=(key,value)=>Object.defineProperty(navigator,key,{configurable:true,value});
+      set('share',undefined);set('canShare',undefined);const unsupported=await app.dispatch('share',document.body),unsupportedBytes=await downloads.at(-1).blob.text();
+      set('canShare',payload=>payload.files?.length===1&&payload.files[0].type==='text/html');set('share',async payload=>shares.push(payload));const supported=await app.dispatch('share',document.body);
+      set('share',async()=>{const error=new Error('cancelled');error.name='AbortError';throw error;});const cancelled=await app.dispatch('share',document.body);
+      set('share',async()=>{throw Error('device failure');});const failed=await app.dispatch('share',document.body),failedBytes=await downloads.at(-1).blob.text();
+      ProjectTransfer.download=originalDownload;app.toast=originalToast;
+      return {before,after:JSON.stringify(app.p),unsupported:{mode:unsupported.mode,name:unsupported.name,bytes:unsupportedBytes,html:unsupported.html},supported:{mode:supported.mode,name:supported.name},cancelled:cancelled.mode,failed:{mode:failed.mode,bytes:failedBytes,html:failed.html},downloads:downloads.map(row=>row.name),share:{title:shares[0]?.title,text:shares[0]?.text,name:shares[0]?.files?.[0]?.name,type:shares[0]?.files?.[0]?.type},toasts};
+    });
+    assert.equal(shareFallback.before,shareFallback.after,'Share Report changed the current inspection');
+    assert.equal(shareFallback.unsupported.mode,'download','unsupported Web Share did not use download fallback');
+    assert.equal(shareFallback.unsupported.bytes,shareFallback.unsupported.html,'download fallback bytes differ from generated report');
+    assert.equal(shareFallback.supported.mode,'share','supported Web Share did not receive the report file');
+    assert.deepEqual(shareFallback.share,{title:'VESA inspection report A-G08-AR09-PREFINAL',text:'Read-only VESA inspection report. Review the result and scope in the attached file.',name:'A-G08-AR09-PREFINAL-buyer.html',type:'text/html'},'Web Share file payload changed');
+    assert.equal(shareFallback.cancelled,'cancelled','user cancellation did not remain cancellation');
+    assert.equal(shareFallback.failed.mode,'download','failed Web Share did not use download fallback');
+    assert.equal(shareFallback.failed.bytes,shareFallback.failed.html,'failed-share fallback bytes differ from generated report');
+    assert.deepEqual(shareFallback.downloads,['A-G08-AR09-PREFINAL-buyer.html','A-G08-AR09-PREFINAL-buyer.html'],'share fallback download/cancellation count changed');
+    for(const expected of ['report was downloaded','Report handed to the device share menu','Sharing cancelled','It was downloaded instead'])assert.ok(shareFallback.toasts.some(message=>message.includes(expected)),`Share Report feedback is missing ${expected}`);
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join(' | ')}`);
     assert.deepEqual(consoleErrors, [], `console errors: ${consoleErrors.join(' | ')}`);
     assert.deepEqual(external, [], `unexpected external requests: ${external.join(' | ')}`);
