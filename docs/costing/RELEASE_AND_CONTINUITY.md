@@ -62,3 +62,16 @@
 - Source audit confirms centralized VESA `js/vesa-workspace-shell.js`, catalog, preferences, auth and CSS are separately owned. No changes to TNA, PPM or AQL runtime files. `main` stays unchanged for this checkpoint.
 - **Release verdict: CONDITIONAL**. Still requires full true HTTP route test using real shared assets, real XLSX vendor runtime round-trip, cross-app regression, and policy-compliant hosting/live verification. No `DEMO LIVE` claim.
 - **NEXT ACTION:** obtain the actual complete repo as a runnable local checkout or supported Work cloud-computer runtime, run real Login -> App Centre -> Costing browser integration with the checked-in licensed XLSX bundle, remediate any failures, then execute release acceptance; after Costing, proceed to the queued TNA garment merchandising rework.
+
+## Real repository CI acceptance — 2026-10-14
+
+**Verified GitHub workflow:** [Costing real checkout / end-to-end PASS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38615777595) (commit `3942a90b456001ea9488c45e38d872c75418162c`).
+
+- **PASS:** 11/11 Node Costing pure-domain tests on a fresh actual GitHub checkout.
+- **PASS:** `node --check` across shared preferences, catalogue, auth, and workspace shell. This uncovered and corrected a prior malformed multilingual `js/preferences.js` object; the fix remains restricted to the Costing feature branch.
+- **PASS:** Existing shared shell contract, TNA g01 shell, and AQL sampling Node checks. This is focused smoke evidence **not** proof that PPM/AQL/TNA full regression suites were rerun.
+- **PASS:** 34 real Playwright browser assertions with the actual VESA shared sources and licensed local `xlsx.full.min.js`: deep-link login, App Centre tile, one workspace header, ordered commands, seven-sheet input template download, real Excel import/export, rejection of nonzero margin without replacing saved records, preserved source revision, CR01–CR07 report actions, safe draft report, local saved-copy backup/restore into a new identity, BN/HI/TA/EN switching, document overflow at 320/390/768/1024/1280, zero external requests and zero uncaught page errors.
+- **Verification scope:** synthetic browser-local records on a GitHub Actions disposable runner. No buyer/factory approval, real quotation/source verification, paid backend or secure server authentication claimed.
+- **GO for Costing source / local browser demo verification. NO-GO for `DEMO LIVE` on current commercial-use GitHub Pages site:** live public URL and hosting eligibility have not been established. Do not silently move this feature branch to public `main` or change CNAME/DNS solely based on tests.
+- **NEXT ACTION:** Resolve publication eligibility and owner release gate; verify exact public route/version if a permitted demo release is arranged. Then begin the separately approved TNA 360 garment-merchandising rework, without confusing its business process with this Costing feature.
+
