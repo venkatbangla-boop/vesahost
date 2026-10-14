@@ -78,6 +78,21 @@ test('confirmed LC contractual anchor is not overwritten by an order-detail edit
   assert.equal(res.ok,false);
   assert.deepEqual(baseline.plan.baselineSnapshots,before);
 });
+test('first verified Master LC opening may be recorded after baseline, without changing its snapshot',()=>{
+  const p=make();
+  const baseline=domain.freezeBaseline(p,{actorId:'qa',reason:'Signed original order targets'});
+  assert.equal(baseline.ok,true);
+  const snapshot=structuredClone(baseline.plan.baselineSnapshots);
+  const opened=domain.reviseMerchandisingOrder(baseline.plan,{
+    masterLcOpenedOn:'2026-11-15',masterLcStatus:'opened',
+    masterLcProofRef:'LC-REGISTER-NEW',sourceRef:'LC issue advice',
+    reason:'First bank issue recorded after baseline confirmation'
+  });
+  assert.equal(opened.ok,true,opened.error);
+  assert.deepEqual(opened.plan.baselineSnapshots,snapshot);
+  assert.equal(opened.plan.commitments.masterLcOpenedOn,'2026-11-15');
+});
+
 test('owner/waiting party revision records exact changes and powers distinct follow-ups',()=>{
   const p=make(),id=task(p).taskId;
   const res=domain.reviseMerchandisingTask(p,id,{
