@@ -1,0 +1,198 @@
+"""VESA Costing 360: real checked-out Login -> App Centre -> Costing browser proof.
+
+Run from a complete repository checkout. All test data are synthetic and local.
+Requires Python Playwright and a locally installed Chromium browser.
+"""
+import base64
+import os
+import threading
+import zipfile
+from contextlib import contextmanager
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from playwright.sync_api import sync_playwright
+
+ROOT = Path(__file__).resolve().parents[3]
+
+
+class QuietHandler(SimpleHTTPRequestHandler):
+    def log_message(self, *args):
+        pass
+
+
+@contextmanager
+def http_repository():
+    server = ThreadingHTTPServer(("127.0.0.1", 0), partial(QuietHandler, directory=str(ROOT)))
+    worker = threading.Thread(target=server.serve_forever, daemon=True)
+    worker.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_address[1]}"
+    finally:
+        server.shutdown()
+        server.server_close()
+        worker.join(timeout=5)
+
+
+def require(predicate, label):
+    if not predicate:
+        raise AssertionError(label)
+    print("PASS", label, flush=True)
+
+
+def record_snapshot(page):
+    return page.evaluate("""() => {
+      const key = Object.keys(localStorage).find(k => k.startsWith('vesa.costing360.records.v1.'));
+      return key ? JSON.parse(localStorage.getItem(key)).records : [];
+    }""")
+
+
+def change_language(page, language):
+    page.evaluate("""lang => {
+      const next = window.VesaPrefs.write({...window.VesaPrefs.read(), language:lang});
+      window.VesaPrefs.apply(next);
+      window.dispatchEvent(new Event('vesa-preferences-change'));
+    }""", language)
+
+
+def make_input_workbook(page, margin):
+    """Use the REAL vendored SheetJS code and ORIGINAL embedded seven-sheet template."""
+    encoded = page.evaluate("""margin => {
+      const X = window.XLSX;
+      if (!X || typeof X.read !== 'function' || typeof X.write !== 'function')
+        throw Error('Real vendored XLSX runtime not loaded');
+      const src = document.getElementById('costingExcelTemplate').textContent.replace(/\\s+/g, '');
+      const bytes = Uint8Array.from(atob(src), ch => ch.charCodeAt(0));
+      const wb = X.read(bytes, {type:'array'});
+      if (!wb.Sheets.STYLE_INPUT || !wb.Sheets.COST_LINES || wb.SheetNames.length !== 7)
+        throw Error('Original seven-sheet costing template unavailable');
+      const style = wb.Sheets.STYLE_INPUT, lines = wb.Sheets.COST_LINES;
+      const cells = {
+        C7:'SYNTHETIC-STYLE-25', C8:'SYNTHETIC BUYER', C9:'SYNTHETIC FACTORY',
+        C10:'Cotton jersey T-shirt', C11:'Bangladesh', C12:1000,
+        C13:'China', C14:'100% cotton jersey', C15:180, C16:'GSM',
+        C17:120, C18:4, C19:'IN_FOB', C20:margin, C21:'QUOTE-REV-06', C22:'SYNTHETIC TEST ONLY'
+      };
+      Object.entries(cells).forEach(([a,v]) => {style[a] = {t:typeof v === 'number' ? 'n':'s', v};});
+      const values = ['FAB','FABRIC','SYNTHETIC BODY FABRIC','PER_PIECE',0.22,'kg',5,4,'USD',1,'TEST-QUOTE-001',''];
+      'ABCDEFGHIJKL'.split('').forEach((c,i) => {lines[c+'7'] = {t:typeof values[i] === 'number'?'n':'s', v:values[i]};});
+      return X.write(wb, {bookType:'xlsx', type:'base64', compression:true});
+    }""", margin)
+    return base64.b64decode(encoded)
+
+
+def upload_for_command(page, command, path):
+    page.locator('.vesa-workspace__nav [data-vesa-menu="File"]').click()
+    with page.expect_file_chooser(timeout=12000) as handle:
+        page.locator(f'.costing-dialog [data-cmd="{command}"]').click()
+    handle.value.set_files(str(path))
+
+
+def main():
+    require((ROOT / 'js/vesa-workspace-shell.js').is_file(), 'Original shared shell exists in full checkout')
+    require((ROOT / 'js/auth.js').is_file(), 'Original local login adapter exists in full checkout')
+    require((ROOT / 'js/vendor/xlsx.full.min.js').is_file(), 'Licensed offline XLSX asset exists')
+    require((ROOT / 'apps/costing/index.html').is_file(), 'Costing HTML exists in full checkout')
+
+    with TemporaryDirectory(prefix='vesa-costing-ci-') as raw_dir, http_repository() as base, sync_playwright() as p:
+        tmp = Path(raw_dir)
+        args = ['--no-sandbox','--disable-dev-shm-usage']
+        executable = os.environ.get('CHROMIUM_EXECUTABLE')
+        browser = p.chromium.launch(headless=True, executable_path=executable or None, args=args)
+        context = browser.new_context(viewport={'width':1280,'height':850}, accept_downloads=True)
+        page = context.new_page()
+        page.set_default_timeout(15000)
+        errors, off_origin = [], []
+        page.on('pageerror', lambda e: errors.append(str(e)))
+        page.on('request', lambda req: off_origin.append(req.url) if not req.url.startswith(base+'/') and not req.url.startswith('data:') and not req.url.startswith('blob:') else None)
+
+        page.goto(base+'/apps/costing/', wait_until='domcontentloaded')
+        page.wait_for_url('**/login/?*', timeout=18000)
+        require('next=' in page.url, 'Costing deep link requires local login')
+        page.locator('#email').fill('user@vesa')
+        page.locator('#password').fill('vesa')
+        page.locator('#loginForm button[type=submit]').click()
+        page.wait_for_url('**/apps/costing/', timeout=18000)
+        require(page.locator('h1').first.text_content().strip()=='VESA Costing 360', 'Login returns to requested Costing route')
+        require(page.locator('.vesa-workspace').count()==1 and page.locator('.app-user-bar').count()==0, 'Exactly one shared VESA header, no duplicate auth bar')
+        menu_order=page.locator('.vesa-workspace__nav [data-vesa-menu]').evaluate_all('(xs)=>xs.map(x=>x.dataset.vesaMenu)')
+        require(menu_order==['Home','File','Edit','View','Tools','Help'], 'Shared six-menu order')
+
+        page.goto(base+'/apps/', wait_until='domcontentloaded')
+        app_tile=page.locator('.app-catalogue a[href="/apps/costing/"]')
+        require(app_tile.count()==1, 'App Centre registers exactly one Costing 360 tile')
+        app_tile.click()
+        page.wait_for_url('**/apps/costing/', timeout=18000)
+        require(page.locator('.vesa-workspace').count()==1 and page.locator('.app-user-bar').count()==0, 'App Centre -> Costing keeps one global shell')
+
+        page.locator('button[data-cmd="practice"]').click()
+        require('1.655200' in page.locator('#costingCurrentSummary').inner_text(), 'Synthetic garment FOB fixtures preserve tested arithmetic')
+        page.locator('button[data-cmd="save"]').click()
+        snapshot=record_snapshot(page)
+        require(len(snapshot)==1, 'First synthetic costing saved in isolated browser storage')
+
+        with page.expect_download(timeout=20000) as dl:
+            page.locator('button[data-cmd="xlsxExport"]').click()
+        report_file=tmp/'synthetic-report.xlsx'
+        dl.value.save_as(report_file)
+        with zipfile.ZipFile(report_file) as z:
+            require('xl/workbook.xml' in z.namelist() and len([x for x in z.namelist() if x.startswith('xl/worksheets/sheet')])>=6, 'Real vendored XLSX exports a readable multi-sheet workbook')
+
+        page.locator('.vesa-workspace__nav [data-vesa-menu="File"]').click()
+        with page.expect_download() as dt:
+            page.locator('.costing-dialog [data-cmd="template"]').click()
+        template_file=tmp/'Costing-Input-Template.xlsx';dt.value.save_as(template_file)
+        with zipfile.ZipFile(template_file) as z:
+            require('xl/workbook.xml' in z.namelist(), 'Original seven-sheet Excel input template downloads')
+        page.locator('.costing-dialog [data-cmd="dismiss"]').click()
+
+        bad=tmp/'invalid-margin.xlsx';bad.write_bytes(make_input_workbook(page,6))
+        upload_for_command(page,'xlsxImport',bad)
+        require('Margin % must be 0' in page.locator('#costingToast').inner_text(), 'Non-zero Excel margin fails closed')
+        require(len(record_snapshot(page))==1, 'Invalid Excel import leaves prior saved record intact')
+
+        good=tmp/'approved-no-margin.xlsx';good.write_bytes(make_input_workbook(page,0))
+        upload_for_command(page,'xlsxImport',good)
+        page.locator('input[data-style="styleNo"]').wait_for(timeout=15000)
+        require(page.locator('input[data-style="styleNo"]').input_value()=='SYNTHETIC-STYLE-25', 'Real XLSX import maps style fields correctly')
+        recs=record_snapshot(page)
+        new=[r for r in recs if r['style']['styleNo']=='SYNTHETIC-STYLE-25']
+        require(len(recs)==2 and len(new)==1 and new[0]['style'].get('quotationSourceRevision')=='QUOTE-REV-06', 'Imported workbook remains a separate source-revisioned record')
+
+        page.locator('button[data-section="reports"]').click()
+        require(all(page.locator(f'button[data-report="CR{i:02d}"]').count()==1 for i in range(1,8)), 'All seven draft report actions exist')
+        with page.expect_popup() as popup:
+            page.locator('button[data-report="CR01"]').click()
+        report=popup.value
+        require('NOT BUYER APPROVED' in report.content(), 'Draft report never implies buyer approval')
+        report.close()
+
+        with page.expect_download() as dc:
+            page.locator('button[data-cmd="download"]').click()
+        backup=tmp/'synthetic-record.vesacost';dc.value.save_as(backup)
+        require(backup.stat().st_size>100, 'Saved-copy file downloaded locally')
+        upload_for_command(page,'copy',backup)
+        page.locator('input[data-style="styleNo"]').wait_for(timeout=12000)
+        recs=record_snapshot(page)
+        source_id=new[0]['recordId']
+        require(len(recs)==3 and len({r['recordId'] for r in recs})==3, 'Restored saved copy is a new record; old records preserved')
+        require(any(r.get('importedFromRecordId')==source_id for r in recs), 'Saved-copy restore retains original-record reference')
+
+        for lang in ('bn','hi','ta','en'):
+            change_language(page,lang)
+            require(page.locator('h1').count()>=1 and page.locator('.vesa-workspace').count()==1, f'{lang.upper()} mode keeps the unified workspace')
+        for width in (320,390,768,1024,1280):
+            page.set_viewport_size({'width':width,'height':850})
+            page.locator('button[data-section="style"]').click()
+            overflow=page.evaluate('document.documentElement.scrollWidth > window.innerWidth+2')
+            require(not overflow,f'No document-level overflow at {width}px')
+        require(not off_origin,'No external network requests during local-only workflow')
+        require(not errors,'No uncaught browser JavaScript errors')
+        context.close();browser.close()
+    print('VESA_COSTING_REAL_INTEGRATION_ACCEPTANCE: PASS',flush=True)
+
+
+if __name__=='__main__':
+    main()
