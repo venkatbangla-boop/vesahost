@@ -9,6 +9,7 @@ const fs=require('node:fs');
 const http=require('node:http');
 const path=require('node:path');
 const {chromium}=require('playwright');
+const XLSX=require('../vendor/xlsx.full.min.js');
 const root=path.resolve(__dirname,'../../..');
 const session={email:'qa@vesaent.com',name:'QA User',role:'admin',userKey:'qa-vesaent-com',
   loginAt:'2026-10-15T00:00:00.000Z',expiresAt:'2099-01-01T00:00:00.000Z'};
@@ -133,6 +134,40 @@ async function run(){
     assert.equal(saved.tasks[0].dates.actualFinish,'2026-11-09');
     assert.equal(saved.tasks[0].waitingFor,'local-office');
     assert.ok(saved.revisionEvents.some(e=>e.eventType==='merchandising-task-revised'));
+    // Native R01 output must match the same user-entered GSM, LC, owner,
+    // evidence and dates shown by the garment sheet. Non-R01 reports remain
+    // scoped to their original audiences.
+    await page.locator('[data-vesa-menu="Tools"]').click();
+    await page.locator('[data-menu-action="Prepare Report"]').click();
+    const preview=page.locator('.tna-report-preview');
+    await preview.waitFor({state:'visible'});
+    assert.equal(await preview.locator('.tna-report-master-table').count(),2);
+    assert.equal(await preview.locator('.tna-report-master-table').first().locator('tbody tr').count(),done.tasks.length);
+    assert.match(await preview.innerText(),/SOURCE-MASTER-LC-15|BANK-LC-015/);
+    assert.match(await preview.innerText(),/Bangladesh merchandiser/);
+    const geometry=await preview.evaluate(node=>({visible:node.clientWidth,scroll:node.scrollWidth}));
+    assert.ok(geometry.scroll<=geometry.visible+2,'GMR-03 print report preview does not clip horizontally');
+    const downloadPromise=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const file=await downloadPromise;
+    fs.mkdirSync(path.join(root,'output','playwright'),{recursive:true});
+    const filename=path.join(root,'output','playwright','tna-gmr03-browser-master.xlsx');
+    await file.saveAs(filename);
+    const workbook=XLSX.read(fs.readFileSync(filename),{type:'buffer',cellStyles:true});
+    assert.ok(workbook.SheetNames.includes('Master TNA'),'R01 Excel has full garment master');
+    assert.equal(XLSX.utils.sheet_to_json(workbook.Sheets['Master TNA'],{header:1}).length,done.tasks.length+1);
+    const orderValues=XLSX.utils.sheet_to_json(workbook.Sheets['Order Summary'],{header:1,raw:true});
+    assert.equal(orderValues.find(row=>row[0]==='Fabric GSM')[1],210);
+    assert.equal(orderValues.find(row=>row[0]==='Master LC evidence')[1],'BANK-LC-015');
+
+    await page.emulateMedia({media:'print'});
+    await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const printed=await page.pdf({format:'A4',landscape:true,printBackground:true});
+    assert.equal(printed.subarray(0,5).toString(),'%PDF-','R01 print produces genuine PDF');
+    assert.ok(printed.length>2000,'R01 printed PDF is not an empty placeholder');
+    await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    await page.emulateMedia({media:'screen'});
+    await page.locator('#tnaDialog .tna-dialog-head button').click();
     await page.setViewportSize({width:390,height:844});
     const width=await page.evaluate(()=>({body:document.body.scrollWidth,html:document.documentElement.scrollWidth,viewport:innerWidth}));
     assert.ok(width.body<=391&&width.html<=391,'TNA 390px remains within viewport');
