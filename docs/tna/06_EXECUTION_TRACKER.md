@@ -128,6 +128,15 @@ NEXT ACTION (ONE PRECISE STEP): reconcile the remaining non-shared active AQL/TN
 
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
+### AQL A-G07 local gate acceptance — evidence reconciliation
+
+TIME / TIMEZONE: 2026-10-14 11:50 Asia/Dhaka
+BRANCH / FULL-MATRIX BASELINE: `feature/tna360-continuous` / `5cae12c`
+FILES / OWNERSHIP: AQL/program documentation only; TNA/PPM/shared/AQL runtime, formats, workers and domain rules remain unchanged.
+TEST EVIDENCE: all five A-G07 checklist requirements pass in the clean 89-command / 891.5s matrix: current/legacy and four-owner selected-file restore, strict atomic project/master/sync rejection, real 200 MiB decoded-evidence and 280 MiB selected-file limits, quota demotion/partial rescue/restart, failed-install rollback, dirty-tab preservation, cache replacement and offline saved-record reopen.
+VERDICT / SCORE: A-G07 accepted locally. AQL becomes 5/13 historical and 5/12 Free-only; historical program score becomes 67% and Free-only score 72%. Physical/native-device/factory field acceptance and production release remain unclaimed. TNA remains 9/13 historical and 9/12 Free-only.
+NEXT ACTION (ONE PRECISE STEP): reconcile A-G04/A-G05 remaining local rows, beginning with loading/carton/barcode/seal/handover traceability while keeping AR11 and physical evidence separate.
+
 ### AQL A-G06 local gate acceptance — evidence reconciliation
 
 TIME / TIMEZONE: 2026-10-14 11:40 Asia/Dhaka
@@ -799,6 +808,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | 2026-10-14 10:15 Asia/Dhaka | AQL A-G08 Share Report Fallback | `feature/tna360-continuous` / `d29d05b` | AQL report share command/dispatch, exact standalone HTML file/fallback browser proof, cache 22 pins and AQL/program trackers | ACCEPTED LOCAL SLICE: supported Web Share receives one HTML file; unavailable/unsupported and non-cancellation error paths download identical report bytes; cancellation downloads nothing. Exact project bytes remain unchanged and all user messages avoid delivery/acceptance claims. Focused browser/static, worker replacement/offline reopen, Q01-Q24 baseline, release, syntax and diff checks pass; no full-matrix rerun while report language/AR11/external boundaries remain. | accepted local slice | Implement and prove authored report chrome/sentences in EN/BN/HI/TA without translating buyer/user values |
 | 2026-10-14 10:35 Asia/Dhaka | AQL A-G08 Four-Language Rendered Reports | `feature/tna360-continuous` / runtime `cae38ca`, evidence `550b0dd` | bounded report-chrome dictionary/selector, standard/final and stage rendering, cache 23, EN/BN/HI/TA browser/A4 PDF proof and trackers | ACCEPTED LOCAL SLICE: central Settings and transient Report Studio selection produce exact supported `lang`, native-script authored chrome, English technical-source disclosure and unchanged buyer/user values, IDs and NOT CONFORMED decision. Script-free 390/1280 previews and four five-page A4 PDFs pass first/last-page visual review without clipping; AR01/stage/worker/Q01-Q24/static/release/diff checks pass. AR11 policy and physical/device/printer/screen-reader/factory/buyer evidence remain open; no full matrix rerun or score change. | accepted local slice | Reconcile A-G06 restore/render/large-record proof; retain external boundaries |
 | 2026-10-14 11:40 Asia/Dhaka | AQL A-G06 Local Gate Acceptance | `feature/tna360-continuous` / `5cae12c` | four-owner portable evidence restore/reload, existing measurement/CAPA/analytics/large-boundary evidence, AQL/program trackers | ACCEPTED LOCALLY: exact finding/carton/lot relationships and bytes survive import/reload with fresh asset IDs; full 89-command matrix passes in 891.5s without retry. AQL becomes 4/13 historical and 4/12 Free-only; program scores become 65% historical and 70% Free-only. No physical/device/factory/buyer/provider/release claim. | accepted | Reconcile A-G07 local evidence versus external device wording |
+| 2026-10-14 11:50 Asia/Dhaka | AQL A-G07 Local Gate Acceptance | `feature/tna360-continuous` / full baseline `5cae12c` | A-G07 save/import/large-boundary/quota/worker evidence reconciliation and program trackers | ACCEPTED LOCALLY: all five software checklist requirements pass inside the clean 89-command matrix; stale conditional residue is only physical/native-device field acceptance. AQL becomes 5/13 historical and 5/12 Free-only; program scores become 67% historical and 72% Free-only. No runtime, provider, device, factory or release claim. | accepted | Reconcile A-G04/A-G05 loading/carton/barcode/seal/handover rows |
 
 ### Open blockers and decisions
 

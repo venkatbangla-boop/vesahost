@@ -16,11 +16,12 @@ This supplement is the current handoff authority. The older `48ec023` review rem
 | Item | Current evidence |
 |---|---|
 | Branch | `feature/tna360-continuous`; committed locally, not pushed or merged by this handoff |
-| Local handoff SHA | `5cae12c` — current accepted local implementation/test baseline; includes four-language reports, linked finding/carton/lot evidence restore, accepted A-G06 local evidence and the complete clean gate-boundary matrix; not a deployed release |
+| Local handoff SHA | `5cae12c` — current accepted local implementation/test baseline; includes four-language reports, linked finding/carton/lot evidence restore, accepted A-G06/A-G07 local evidence and the complete clean gate-boundary matrix; not a deployed release |
 | Latest runtime SHA | `cae38ca` — AQL standard/final and stage reports render bounded authored chrome in EN/BN/HI/TA from the central language preference or transient Report Studio choice, preserve English technical-source disclosure and never translate/store user values or frozen decisions. Runtime remains proportionally and fully regressed at handoff baseline `5cae12c`. Preserves Share fallback `d29d05b`, AR08/AR09 `55a8abd`, AR06/AR07 `9689407`, AR14 `85b4ac7`, AR12 `bfe7f15`, AR10 `e393b6a`, AR02 `ac24f1c`, AR13 `c5920f0`, AR04 `31c3dee`, AR03 `a01caf3`, stage-report `1728ee9`, analytics `4a79280`, shared U-G09 `87f1e2a` and TNA risk/performance lineage `253672c`. |
 | Latest evidence SHA | `5cae12c` — current-format restore proves fresh asset IDs with unchanged general/finding/carton/lot owners, registered piece/carton/frozen-lot references and exact bytes after reload; it retains earlier four-language A4 evidence `550b0dd` without inferring physical device/factory/buyer acceptance |
 | Regression | `node tests/vesa-g11-regression.cjs`: PASS, 89 commands / 891.5s, no retry; 54 automated, 22 browser, 12 syntax, 1 repository |
 | Local TNA state | G00–G08 accepted; G10/G11 conditional local evidence; G12 local handoff proof complete but gate remains blocked from release |
+| Local AQL state | A-G00/A-G01/A-G02/A-G06/A-G07 accepted; A-G03 policy-blocked, A-G04/A-G05/A-G08/A-G09 conditional; A-G10 provider backend deferred, release gates remain HOLD |
 | Shared UX state | U-G00–U-G09 accepted locally; physical screen-reader/device/factory acceptance remains external |
 | Production state | Not staged, not deployed, not live-verified, not authorized |
 
@@ -44,7 +45,7 @@ Expected candidate facts: branch `feature/tna360-continuous`; accepted full-matr
 
 -->
 
-Expected current candidate facts: branch `feature/tna360-continuous`; accepted full-matrix handoff/evidence baseline `5cae12c`; latest runtime `cae38ca`; 89-command regression in 891.5s without retry; G12 recovery and 13 offline assets; six-route shared transitions; 600-record AQL analytics; all 13 stage routes and 14 locally provable AR01–AR15 variants; EN/BN/HI/TA five-page A4 reports; exact general/finding/carton/lot evidence metadata and bytes after selected-file restore plus browser reload; immutable CAPA/source history; bounded 200 MiB decoded-evidence and 280 MiB selected-file rejection. AR11 carton policy, physical-device/factory/buyer acceptance, provider security and production authorization remain unclaimed.
+Expected current candidate facts: branch `feature/tna360-continuous`; accepted full-matrix handoff/evidence baseline `5cae12c`; latest runtime `cae38ca`; 89-command regression in 891.5s without retry; G12 recovery and 13 offline assets; A-G06/A-G07 accepted locally; six-route shared transitions; 600-record AQL analytics; all 13 stage routes and 14 locally provable AR01–AR15 variants; EN/BN/HI/TA five-page A4 reports; exact general/finding/carton/lot evidence metadata and bytes after selected-file restore plus browser reload; immutable CAPA/source history; bounded 200 MiB decoded-evidence and 280 MiB selected-file rejection; quota rescue and worker offline reopen. AR11 carton policy, physical-device/factory/buyer acceptance, provider security and production authorization remain unclaimed.
 
 ### Migration and backup/restore rehearsal
 

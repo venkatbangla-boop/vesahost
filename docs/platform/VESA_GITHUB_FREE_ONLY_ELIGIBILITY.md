@@ -61,14 +61,14 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 | A-G04 | ACTIVE | CONDITIONAL | Stage/35-area evidence incomplete |
 | A-G05 | ACTIVE | CONDITIONAL | Rework/reinspection/loading evidence incomplete |
 | A-G06 | ACTIVE | ACCEPTED | Local measurement/report/reopen, finding/carton/lot-owned evidence restore, immutable CAPA/source chain, 600-record accessible analytics and bounded large-file/long-output evidence pass; physical capture/device/factory acceptance is external |
-| A-G07 | ACTIVE | CONDITIONAL | Saved-copy/close-reopen/worker/device proof incomplete |
+| A-G07 | ACTIVE | ACCEPTED | Current/legacy restore, atomic project/master/sync rejection, real 200/280 MiB boundaries, quota rescue/restart and failed-install/old-tab/offline worker lifecycle pass locally; physical/native-device field acceptance is external |
 | A-G08 | ACTIVE | CONDITIONAL | Four-language authored report chrome, five-page A4 rendering and share fallback pass locally; AR11 approved randomization policy and physical/device/printer/screen-reader/factory/buyer acceptance remain incomplete |
 | A-G09 | ACTIVE — LOCAL SLICE ONLY | CONDITIONAL | Explicit manual reference/App Centre boundaries stay active; server lookup/tenant verification is deferred |
 | A-G10 | DEFERRED_BY_SCOPE | EXCLUDED | Hosted roles/authorization/API/database/remote collaboration |
 | A-G11 | ACTIVE | NOT STARTED | Local code/data/visual regression |
 | A-G12 | ACTIVE — LOCAL SLICE ONLY | BLOCKED | Local readiness/limitations/rollback remain active; public production authorization/deployment is outside current execution scope |
 
-`AQL free-only = ROUND(100 × 4 / 12) = 33%`.
+`AQL free-only = ROUND(100 × 5 / 12) = 42%`.
 
 ## Shared UX eligibility — 10 active gates, 10 accepted
 
@@ -82,13 +82,13 @@ All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-1
 ROUND(
   30 × 9/12 +
   30 × 9/10 +
-  30 × 4/12 +
+  30 × 5/12 +
   10 × 10/10
-) = ROUND(69.5) = 70%
+) = ROUND(72.0) = 72%
 ```
 
-**FREE-ONLY VERIFIED: 70%**
+**FREE-ONLY VERIFIED: 72%**
 
-**FREE-ONLY REMAINING: 30%**
+**FREE-ONLY REMAINING: 28%**
 
-This 70% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; the dated 2026-10-12 reassessments add U-G01 and then U-G04/U-G05/U-G07, the 2026-10-13 reassessments add U-G03/U-G06/U-G09, and the 2026-10-14 reassessment adds A-G06 only after linked-evidence restore plus the 89-command gate-boundary matrix passed. Historical values remain recorded in their dated tracker entries.
+This 72% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; dated reassessments through 2026-10-13 add the accepted shared gates, and the 2026-10-14 reassessment adds A-G06 plus A-G07 only after linked-evidence restore and all local save/import/rescue/worker requirements passed the 89-command gate-boundary matrix. Historical values remain recorded in their dated tracker entries.
