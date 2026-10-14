@@ -61,7 +61,18 @@ async function run() {
     const current = await page.evaluate(async () => {
       const app = window.__vesaApp;
       await app.dispatch('demo', { dataset: { kind: 'apparel' } });
-      const evidence = await app.assets.add(new File(['A-G07 fictional evidence bytes'], 'a-g07-fictional-evidence.txt', { type: 'text/plain' }), { owner: 'general', caption: 'A-G07 fictional restore fixture', key: true });
+      const finding = app.p.defects[0];
+      const carton = app.p.cartons.find(row => row.id === finding.cartonId);
+      const unit = app.p.units.find(row => row.code === finding.sampleId);
+      const line = app.p.orders.find(row => row.id === finding.lineId);
+      if (!finding || !carton || !unit || !line || unit.cartonId !== carton.id || unit.identity?.lot !== SamplingEngine.groupKey(line, app.p.rules)) throw new Error('Fictional evidence-link source fixture is incomplete.');
+      const evidence = [];
+      for (const fixture of [
+        { name: 'a-g07-general-evidence.txt', bytes: 'A-G07 fictional general evidence bytes', owner: 'general', role: 'context', caption: 'A-G07 fictional general restore fixture' },
+        { name: 'a-g06-finding-evidence.txt', bytes: 'A-G06 fictional registered-piece finding evidence bytes', owner: finding.id, role: 'close-up', caption: `Registered piece ${unit.code}; carton ${carton.number}; finding ${finding.id}` },
+        { name: 'a-g06-carton-evidence.txt', bytes: 'A-G06 fictional selected-carton evidence bytes', owner: carton.id, role: 'approved reference', caption: `Selected carton ${carton.number}; PO ${carton.po}; style ${carton.item}` },
+        { name: 'a-g06-lot-evidence.txt', bytes: 'A-G06 fictional frozen-lot evidence bytes', owner: line.id, role: 'test result', caption: `Frozen lot ${unit.identity.lot}; line ${line.id}` },
+      ]) evidence.push(await app.assets.add(new File([fixture.bytes], fixture.name, { type: 'text/plain' }), { owner: fixture.owner, role: fixture.role, caption: fixture.caption, key: true }));
       app.store.change('A-G07 fictional current-file fixture', project => {
         project.info.buyer = 'A-G07 Current Buyer - Fictional';
         project.info.factory = 'A-G07 Current Factory - Fictional';
@@ -82,12 +93,12 @@ async function run() {
         project.measurementPlan.signature = 'fictional-measurement-approval';
         project.disposition.status = 'Released';
         project.disposition.basis = 'Fictional fixture only';
-        project.assets.push(evidence);
+        project.assets.push(...evidence);
       });
       await app.autosave.flush();
       const source = JSON.parse(JSON.stringify(app.p));
       const records = await app.repository.list();
-      return { pack: await ProjectTransfer.pack(app.p, app.assets), source, ids: records.map(record => record.id) };
+      return { pack: await ProjectTransfer.pack(app.p, app.assets), source, ids: records.map(record => record.id), expectedLot: unit.identity.lot };
     });
     fs.writeFileSync(currentFile, JSON.stringify(current.pack));
 
@@ -96,8 +107,12 @@ async function run() {
     const restoredCurrent = await page.evaluate(async sourceId => {
       const app = window.__vesaApp;
       await app.autosave.flush();
-      const evidence = await app.assets.get(app.p.assets[0].id);
-      return { project: JSON.parse(JSON.stringify(app.p)), ids: (await app.repository.list()).map(record => record.id), toast: document.getElementById('toast').textContent, evidenceText: await evidence.blob.text() };
+      const evidence = [];
+      for (const meta of app.p.assets) {
+        const record = await app.assets.get(meta.id);
+        evidence.push({ meta: JSON.parse(JSON.stringify(meta)), text: await record.blob.text() });
+      }
+      return { project: JSON.parse(JSON.stringify(app.p)), ids: (await app.repository.list()).map(record => record.id), toast: document.getElementById('toast').textContent, evidence };
     }, current.source.meta.id);
     assert.notEqual(restoredCurrent.project.meta.id, current.source.meta.id, 'current copy must receive a fresh local identity');
     assert.equal(restoredCurrent.project.meta.parentId, current.source.meta.id, 'current copy must retain source provenance');
@@ -106,11 +121,35 @@ async function run() {
     assert.deepEqual(restoredCurrent.project.orders, current.source.orders, 'current copy must retain order rows');
     assert.deepEqual(restoredCurrent.project.defects, current.source.defects, 'current copy must retain findings');
     assert.deepEqual(restoredCurrent.project.measurements, current.source.measurements, 'current copy must retain measurements');
+    assert.deepEqual(restoredCurrent.project.cartons, current.source.cartons, 'current copy must retain selected-carton records');
+    assert.deepEqual(restoredCurrent.project.units, current.source.units, 'current copy must retain registered piece and frozen lot identities');
     assert.deepEqual(restoredCurrent.project.stageSuite, current.source.stageSuite, 'current copy must retain the selected stage, criteria, checks and records');
-    assert.equal(restoredCurrent.project.assets.length, 1, 'current copy must retain the selected evidence record');
-    assert.notEqual(restoredCurrent.project.assets[0].id, current.source.assets[0].id, 'current copy must remap evidence identity');
-    assert.equal(restoredCurrent.project.assets[0].name, current.source.assets[0].name, 'current copy must retain evidence metadata');
-    assert.equal(restoredCurrent.evidenceText, 'A-G07 fictional evidence bytes', 'current copy must retain verified evidence bytes');
+    assert.equal(restoredCurrent.project.assets.length, 4, 'current copy must retain every linked evidence record');
+    const sourceEvidence = new Map(current.source.assets.map(meta => [meta.name, meta]));
+    const restoredEvidence = new Map(restoredCurrent.evidence.map(row => [row.meta.name, row]));
+    const expectedBytes = new Map([
+      ['a-g07-general-evidence.txt', 'A-G07 fictional general evidence bytes'],
+      ['a-g06-finding-evidence.txt', 'A-G06 fictional registered-piece finding evidence bytes'],
+      ['a-g06-carton-evidence.txt', 'A-G06 fictional selected-carton evidence bytes'],
+      ['a-g06-lot-evidence.txt', 'A-G06 fictional frozen-lot evidence bytes'],
+    ]);
+    for (const [name, source] of sourceEvidence) {
+      const restored = restoredEvidence.get(name);
+      assert.ok(restored, `current copy lost ${name}`);
+      assert.notEqual(restored.meta.id, source.id, `${name} must receive a fresh asset identity`);
+      assert.deepEqual({ ...restored.meta, id: source.id }, source, `${name} metadata other than remapped identity changed`);
+      assert.equal(restored.text, expectedBytes.get(name), `${name} verified bytes changed`);
+    }
+    const sourceFinding = current.source.defects[0];
+    const sourceCarton = current.source.cartons.find(row => row.id === sourceFinding.cartonId);
+    const sourceUnit = current.source.units.find(row => row.code === sourceFinding.sampleId);
+    const sourceLine = current.source.orders.find(row => row.id === sourceFinding.lineId);
+    assert.ok(sourceCarton?.selected && sourceUnit?.cartonId === sourceCarton.id, 'source finding lost its selected-carton relationship');
+    assert.equal(sourceUnit.identity?.lot, current.expectedLot, 'source registered piece lost its frozen lot relationship');
+    assert.equal(restoredEvidence.get('a-g06-finding-evidence.txt').meta.owner, sourceFinding.id, 'finding evidence lost its registered-piece/carton owner chain');
+    assert.equal(restoredEvidence.get('a-g06-carton-evidence.txt').meta.owner, sourceCarton.id, 'carton evidence lost its selected-carton owner');
+    assert.equal(restoredEvidence.get('a-g06-lot-evidence.txt').meta.owner, sourceLine.id, 'lot evidence lost its source-line owner');
+    assert.ok(restoredEvidence.get('a-g06-lot-evidence.txt').meta.caption.includes(sourceUnit.identity.lot), 'lot evidence lost the frozen lot reference');
     assert.equal(restoredCurrent.project.meta.locked, false, 'current copy must be editable');
     assert.equal(restoredCurrent.project.rules.confirmed, false, 'current copy must require rule confirmation');
     assert.equal(restoredCurrent.project.review.confirmed, false, 'current copy must require review confirmation');
@@ -173,6 +212,18 @@ async function run() {
     const reenter = page.locator('#vesa-enter');
     if (await reenter.count()) await reenter.click();
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db);
+    const durableCurrent = await page.evaluate(async id => {
+      const app = window.__vesaApp;
+      const row = await app.repository.get(id);
+      const evidence = [];
+      for (const meta of row.project.assets) {
+        const record = await app.assets.get(meta.id);
+        evidence.push({ meta: JSON.parse(JSON.stringify(meta)), text: await record.blob.text() });
+      }
+      return { project: JSON.parse(JSON.stringify(row.project)), evidence };
+    }, restoredCurrent.project.meta.id);
+    assert.deepEqual(durableCurrent.project, restoredCurrent.project, 'browser reload changed the restored current project or evidence links');
+    assert.deepEqual(durableCurrent.evidence, restoredCurrent.evidence, 'browser reload changed restored evidence metadata or bytes');
     await page.locator('[data-action="saved"]').click();
     const reopenButton = page.locator(`[data-action="resume"][data-id="${restoredLegacy.project.meta.id}"]`).filter({ hasText: /^Open$/ });
     await reopenButton.focus();
@@ -183,7 +234,7 @@ async function run() {
     assert.deepEqual(pageErrors, [], 'restore flow must have no uncaught page errors');
     assert.deepEqual(external, [], 'restore flow must make no external requests');
     await context.close();
-    console.log('AQL A-G07 browser restore passed: current + legacy file chooser imports, evidence bytes, fresh identities, provenance, reset approvals, reload/reopen, preserved records/archive, zero external requests/page errors');
+    console.log('AQL A-G06/A-G07 browser restore passed: current + legacy imports, general/finding/carton/lot evidence ownership and exact bytes after reload, fresh identities, provenance, reset approvals, preserved records/archive, zero external requests/page errors');
   } finally {
     if (browser) await browser.close();
     await host.stop().catch(() => {});
