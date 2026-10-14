@@ -67,7 +67,9 @@ async function run(){
     const workbookPath=path.join(output,'tna-g11-report-viewer.xlsx');
     await download.saveAs(workbookPath);
     const workbook=XLSX.read(fs.readFileSync(workbookPath),{type:'buffer',cellFormula:true,cellStyles:true});
-    assert.deepEqual(workbook.SheetNames,['Report Summary','Order Summary','Report Activities','Report Notes']);
+    assert.deepEqual(workbook.SheetNames,['Report Summary','Order Summary','Report Activities','Master TNA','Report Notes']);
+    const garmentRows=XLSX.utils.sheet_to_json(workbook.Sheets['Master TNA'],{header:1,raw:true});
+    assert.equal(garmentRows.length,stored.records[0].plan.tasks.length+1,'R01 garment report must export every source task');
     const activityRows=XLSX.utils.sheet_to_json(workbook.Sheets['Report Activities'],{header:1,raw:false});
     assert.equal(activityRows.length,stored.records[0].plan.tasks.length+1,'Excel report must contain every activity plus its header.');
     assert.ok(workbook.Sheets['Report Activities']['!cols'][1].wch>=40,'Excel report must retain a readable activity column width.');
