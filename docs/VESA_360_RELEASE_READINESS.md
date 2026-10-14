@@ -21,7 +21,7 @@ This supplement is the current handoff authority. The older `48ec023` review rem
 | Latest evidence SHA | `5cae12c` — current-format restore proves fresh asset IDs with unchanged general/finding/carton/lot owners, registered piece/carton/frozen-lot references and exact bytes after reload; it retains earlier four-language A4 evidence `550b0dd` without inferring physical device/factory/buyer acceptance |
 | Regression | `node tests/vesa-g11-regression.cjs`: PASS, 89 commands / 891.5s, no retry; 54 automated, 22 browser, 12 syntax, 1 repository |
 | Local TNA state | G00–G08 accepted; G10/G11 conditional local evidence; G12 local handoff proof complete but gate remains blocked from release |
-| Local AQL state | A-G00/A-G01/A-G02/A-G05/A-G06/A-G07 accepted; A-G03 policy-blocked, A-G04/A-G08/A-G09 conditional; A-G10 provider backend deferred, release gates remain HOLD |
+| Local AQL state | A-G00/A-G01/A-G02/A-G04/A-G05/A-G06/A-G07 accepted; A-G03 policy-blocked, A-G08/A-G09 conditional; A-G10 provider backend deferred, A-G11 stabilization in progress and A-G12 remains HOLD |
 | Shared UX state | U-G00–U-G09 accepted locally; physical screen-reader/device/factory acceptance remains external |
 | Production state | Not staged, not deployed, not live-verified, not authorized |
 
@@ -46,6 +46,30 @@ Expected candidate facts: branch `feature/tna360-continuous`; accepted full-matr
 -->
 
 Expected current candidate facts: branch `feature/tna360-continuous`; accepted full-matrix handoff/evidence baseline `5cae12c`; latest runtime `cae38ca`; 89-command regression in 891.5s without retry; G12 recovery and 13 offline assets; A-G05/A-G06/A-G07 accepted locally; six-route shared transitions; 600-record AQL analytics; all 13 stage routes and 14 locally provable AR01–AR15 variants; EN/BN/HI/TA five-page A4 reports; exact general/finding/carton/lot evidence metadata and bytes after selected-file restore plus browser reload; immutable CAPA/source history; bounded 200 MiB decoded-evidence and 280 MiB selected-file rejection; quota rescue and worker offline reopen; loading/packing/barcode evidence through reopen without randomization, custody or release inference. AR11 carton policy, physical-device/factory/buyer acceptance, provider security and production authorization remain unclaimed.
+
+### AQL saved-copy and visual evidence index
+
+This index identifies the current local proof used for A-G11 stabilization. Generated files under `output/playwright/` are review artifacts from disposable synthetic sessions; they are not production records, release bundles or substitutes for independent device/factory acceptance.
+
+| Evidence family | Executable owner | Verified local outcome |
+|---|---|---|
+| Current and legacy saved-copy restore | `apps/aql/tests/a-g07-browser-restore.cjs` | current/legacy selected-file restore, fresh project/asset identities, reset approval/release state, general/finding/carton/lot ownership and exact bytes after browser reload |
+| Atomic import rejection | `apps/aql/tests/a-g07-atomic-import.cjs`, `a-g07-portable-safety.cjs` | malformed, hostile, duplicate, future/oversized project/master/sync data is rejected without replacing current good state |
+| Large-file boundaries | `apps/aql/tests/a-g07-large-import-boundary.cjs` | real 200 MiB decoded-evidence and 280 MiB selected-file boundaries retain exact state with bounded telemetry |
+| Quota/restart recovery | `apps/aql/tests/a-g07-quota-rescue.cjs` | forced quota failure reports partial-only rescue truthfully and preserves recovery across restart |
+| Offline/update survival | `apps/aql/tests/a-g07-worker-update.cjs` | failed install rollback, dirty old-tab preservation, safe cache replacement and offline saved-record reopen |
+| Stage/data lineage | `apps/aql/tests/a-g04-stage-browser.cjs`, `a-g05-final-boundary-browser.cjs`, `a-g05-packing-barcode-browser.cjs` | exact stage/evidence/CAPA/rework/reinspection, Final Ac/Re and packing/barcode records survive save/reload/reopen without release inference |
+
+| Visual family | Current retained inventory | Review boundary |
+|---|---:|---|
+| A-G04 stage/material/traceability | 10 PNGs / 1,684,607 bytes (`output/playwright/aql-a-g04-*`) | mobile stage decisions, registers, evidence, lineage and 390px containment |
+| A-G05 final/readiness/loading/packing | 7 PNGs / 1,311,532 bytes (`output/playwright/aql-a-g05-*`) | Final boundary, pre-final, loading evidence, rework and packing/barcode views |
+| A-G06 measurement/analytics | 5 PNGs / 139,884 bytes (`output/playwright/aql-a-g06-*`) | measurement report and 600-record dashboard at mobile/desktop widths |
+| A-G08 reports/languages | 67 PNGs / 13,691,371 bytes (`output/playwright/aql-a-g08-*`) | stage/AR variants, EN/BN/HI/TA document views, narrow-table right edges and PDF first/last-page review |
+| A-G08 generated A4 files | 4 PDFs / 966,623 bytes (`output/playwright/pdf/aql-a-g08-report-language-*.pdf`) | five-page EN/BN/HI/TA browser-generated reports; no physical printer/device claim |
+| Shared route/accessibility/uniform UX | `output/playwright/shared-*`, `vesa-accessibility-*`, `vesa-platform-*`, `vesa-unified-*`, `vesa-uniform-*` | Login/App Centre/Admin/TNA/PPM/AQL desktop/tablet/mobile/zoom/keyboard visual and DOM evidence |
+
+The artifact inventory is reproducible through the owning browser suites and may be regenerated. AQL A-G11 local acceptance still requires the expanded full runner to pass after the new A01–A60 validator is included. Real devices, independent assistive-technology review, physical factory workflows, approved buyer/legal/randomization inputs, provider security and production authorization remain external.
 
 ### Migration and backup/restore rehearsal
 
