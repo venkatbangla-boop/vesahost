@@ -52,9 +52,9 @@
     if(!projection?.TnaMerchandisingSheet)throw new Error('Garment TNA report cannot be prepared until the local sheet is loaded.');
     const sheet=new projection.TnaMerchandisingSheet();
     const view=sheet.snapshot(plan,{language,scheduled:options.scheduled,asOfDate:options.asOfDate||''});
-    const refById=new Map((plan.tasks||[]).map(task=>[task.taskId,task.templateRef]));
+    const refById=new Map((plan?.tasks||[]).map(task=>[task.taskId,task.templateRef]));
     const predecessorMap=new Map();
-    for(const edge of plan.edges||[]){
+    for(const edge of plan?.edges||[]){
       if(!predecessorMap.has(edge.successorTaskId))predecessorMap.set(edge.successorTaskId,[]);
       const ref=refById.get(edge.predecessorTaskId);
       if(ref)predecessorMap.get(edge.successorTaskId).push(ref);
@@ -69,14 +69,14 @@
     return {
       labels:view.labels,columns:projection.COLUMNS.slice(),rows,
       order:{
-        fabricSpec:plan.order?.fabricSpec||plan.order?.composition||null,
-        fabricWeightGsm:plan.order?.fabricWeightGsm??null,
-        masterLcStatus:plan.commitments?.masterLcStatus||null,
-        masterLcOpenedOn:plan.commitments?.masterLcOpenedOn||null,
-        masterLcProofRef:plan.commitments?.masterLcProofRef||null
+        fabricSpec:plan?.order?.fabricSpec||plan?.order?.composition||null,
+        fabricWeightGsm:plan?.order?.fabricWeightGsm??null,
+        masterLcStatus:plan?.commitments?.masterLcStatus||null,
+        masterLcOpenedOn:plan?.commitments?.masterLcOpenedOn||null,
+        masterLcProofRef:plan?.commitments?.masterLcProofRef||null
       },
-      sourceRevision:plan.revision??0,
-      baselineCount:(plan.baselineSnapshots||[]).length,
+      sourceRevision:plan?.revision??0,
+      baselineCount:(plan?.baselineSnapshots||[]).length,
       evidenceStatus:'Source references are user-entered and not independently verified.'
     };
   }
