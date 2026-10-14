@@ -2,11 +2,14 @@
 
 ## Current Work portfolio queue and evidence-based resumption (2026-10-15)
 
+**Owner demo-release decision and verified gate:** The owner explicitly requested that Costing 360 appear on `main` under Login → App Centre, as a **personal demo only**. Expanded GitHub Actions [run 38620428421](https://github.com/venkatbangla-boop/vesahost/actions/runs/38620428421) **PASS** for the Costing calculation/Excel/save/report/offline path, PPM/AQL/TNA baseline checks, existing-app route and full VESA shell/browser regression. `service-worker.js` is now versioned `vesa-v69-costing-demo` to prevent stale catalogue assets; no PPM/AQL/TNA domain code or historical gate percentage was changed. **GitHub Pages remains unsuitable for commercial SaaS/live business data; browser-local login is not server authentication.** Public deployment status stays `DEMO NOT YET VERIFIED` pending Pages and exact live-source check.
+
+
 The following is the **approved execution priority**, not a count of completed apps. Preserve the historical TNA/PPM/AQL percentage dashboard below unchanged; those percentages are not evidence that any of the 17 portfolio items is publicly deployed.
 
 | # | Application | Work-queue status | Evidence / next dependency |
 |---|---|---|---|
-| 1 | Costing 360 | CONDITIONAL | `feature/costing-360` source and real CI; public release blocked by hosting/release gate |
+| 1 | Costing 360 | DEVELOPMENT VERIFIED / DEMO RELEASE CANDIDATE | `feature/costing-360` green CI; owner authorized restricted demo on main, live verification still pending |
 | 2 | TNA 360 Garment Merchandising Rework | NOT STARTED (rework) | `docs/tna/GARMENT_MERCHANDISING_REWORK_QUEUE.md` on Costing branch; current TNA core already exists |
 | 3 | Packing & Container 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
 | 4 | Order & Commission 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
@@ -28,9 +31,9 @@ The following is the **approved execution priority**, not a count of completed a
 
 **Costing evidence:** Last previously green GitHub Actions checkout run [38615777595](https://github.com/venkatbangla-boop/vesahost/actions/runs/38615777595) on `3942a90b456001ea9488c45e38d872c75418162c` covers 11 pure tests and 34 authentic Playwright assertions for login, App Centre, offline seven-sheet Excel, no-margin protection, save/reopen and responsive layout. It is NOT proof of human UAT or public release. The later `7383cb78c2618a60f02f2a993c1fa731bd052a92` test-only commit expands CI coverage to CR01–CR07 native draft downloads, print PDF, invalid saved-copy atomicity, actual Settings themes, keyboard dialog actions and mobile menu semantics. **Its GitHub Actions run [38618432331](https://github.com/venkatbangla-boop/vesahost/actions/runs/38618432331) finished SUCCESS** with the browser verification step, deterministic costing checks, shared syntax and focused TNA/AQL/shared smoke checks all successful. No domain source, TNA/PPM/AQL records, `main`, service worker, DNS or public route changed by this test patch.
 
-**Current application:** Costing 360 — `CONDITIONAL`, release remains `BLOCKED` pending policy-compliant hosting/owner release and verified route/version. The next independent development application is **TNA Garment Merchandising Rework** once Costing verification scope is recorded; do not hold the entire portfolio for a commercial Pages decision.
+**Current application:** Costing 360 — `DEVELOPMENT VERIFIED` for recorded CI scope. Owner now authorizes a **non-commercial personal demo only** on `main`; `DEMO LIVE` is NOT yet verified, and any real commercial SaaS/business hosting remains excluded by GitHub Pages policy. The next independent development item remains **TNA Garment Merchandising Rework**.
 
-**NEXT ACTION:** Begin the TNA Garment Merchandising Rework audit at `apps/tna/src/bootstrap.js`, `apps/tna/src/domain.js`, `apps/tna/src/scheduling.js`, `apps/tna/src/storage.js` and `docs/tna/01_MASTER_BLUEPRINT.md`–`06_EXECUTION_TRACKER.md`; preserve its existing calculation and saved-copy contracts. Costing is DEVELOPMENT VERIFIED for recorded local CI scope but release remains BLOCKED independently.
+**NEXT ACTION:** Safely fast-forward approved personal-demo Costing release to `main`, verify Pages deployment and the actual public Login → App Centre → Costing route/version. If live smoke passes, record `DEMO LIVE` and move to the existing TNA Garment Merchandising Rework audit without modifying its frozen scheduling or saved-copy logic.
 
 **Specification continuity:** Source of original Costing handover and 15-app roadmap remains an external/previously supplied artifact; neither was located in the inspected GitHub main or Costing branch tree, and accessible current Project/Library search did not locate an exact named copy. Keep unverified roadmap details explicitly pending rather than inventing them. The Costing branch's `docs/costing/RELEASE_AND_CONTINUITY.md` is an implemented-specification summary, not a substitute for any missing original source.
 
