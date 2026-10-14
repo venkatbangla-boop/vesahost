@@ -12,7 +12,7 @@ The current view keeps the fixed program weights: TNA 30%, PPM 30%, AQL 30%, Sha
 
 Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerator and denominator and are never relabeled accepted. Dormant provider-neutral contracts may remain for safety/history but earn no credit. For a mixed gate, the provider component is deferred while the local component remains one active gate unit; its existing `CONDITIONAL`, `BLOCKED`, or `NOT STARTED` status earns zero.
 
-## TNA eligibility — 12 active gates, 9 accepted
+## TNA eligibility — 12 active gates, 10 accepted
 
 | Gate | Free-only disposition | Counted status | Evidence boundary |
 |---|---|---|---|
@@ -26,11 +26,11 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 | G07 | ACTIVE | ACCEPTED | Local languages/reports/print/download |
 | G08 | ACTIVE | ACCEPTED | Local recovery/scenarios/multiorder planning |
 | G09 | DEFERRED_BY_SCOPE | EXCLUDED | Hosted identity/API/database/object storage/remote collaboration; dormant zero-network contracts retained without credit |
-| G10 | ACTIVE — LOCAL SLICE ONLY | CONDITIONAL | Manual typed PPM/AQL references and in-app alerts stay active; external delivery is deferred |
-| G11 | ACTIVE | CONDITIONAL | Local full-regression/stabilization evidence is incomplete |
+| G10 | ACTIVE — LOCAL SLICE ONLY | ACCEPTED | Manual typed PPM/AQL references plus visible in-app alerts, authorization, deduplication, quiet-hours and fail-closed channel policies pass locally; external delivery is deferred |
+| G11 | ACTIVE | CONDITIONAL | Local regression/stabilization matrix passes; genuine Excel desktop-reader plus independent real-device/screen-reader/factory evidence remains incomplete |
 | G12 | ACTIVE — LOCAL SLICE ONLY | BLOCKED | Local readiness/limitations/rollback remain active; public commercial deployment is deferred and any production action remains unauthorized |
 
-`TNA free-only = ROUND(100 × 9 / 12) = 75%`.
+`TNA free-only = ROUND(100 × 10 / 12) = 83%`.
 
 ## PPM eligibility — 10 active gates, 9 accepted
 
@@ -80,15 +80,15 @@ All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-1
 
 ```text
 ROUND(
-  30 × 9/12 +
+  30 × 10/12 +
   30 × 9/10 +
   30 × 9/12 +
   10 × 10/10
-) = ROUND(82) = 82%
+) = ROUND(84.5) = 85%
 ```
 
-**FREE-ONLY VERIFIED: 82%**
+**FREE-ONLY VERIFIED: 85%**
 
-**FREE-ONLY REMAINING: 18%**
+**FREE-ONLY REMAINING: 15%**
 
-This 82% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; dated reassessments through 2026-10-13 add the accepted shared gates, and the 2026-10-14 reassessment adds A-G04/A-G05/A-G06/A-G07/A-G09/A-G11 only after their current local contracts passed focused evidence checks and the clean expanded 91-command gate-boundary matrix. Historical values remain recorded in their dated tracker entries.
+This 85% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; dated reassessments through 2026-10-13 add the accepted shared gates, and the 2026-10-14 reassessment adds TNA G10 plus A-G04/A-G05/A-G06/A-G07/A-G09/A-G11 only after their current local contracts passed focused evidence checks and the clean expanded 91-command gate-boundary matrix. Historical values remain recorded in their dated tracker entries.

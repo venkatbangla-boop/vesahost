@@ -6,28 +6,28 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current audited value |
 |---|---|
-| **FREE-ONLY VERIFIED** | **82%** — 30/30/30/10 weighted score from the frozen eligibility map |
-| **FREE-ONLY REMAINING** | **18%** |
-| **TNA / PPM / AQL / SHARED** | **75% / 90% / 75% / 100%** |
+| **FREE-ONLY VERIFIED** | **85%** — 30/30/30/10 weighted score from the frozen eligibility map |
+| **FREE-ONLY REMAINING** | **15%** |
+| **TNA / PPM / AQL / SHARED** | **83% / 90% / 75% / 100%** |
 | Architecture | GitHub source/version control plus local browser calculation/storage and manual saved-copy transfer only |
 | Canonical contract | `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` |
 | Deferred by scope | Hosted backend/identity/database/object storage, remote multiuser sync, external notification delivery, paid services and commercial SaaS hosting on GitHub Pages |
-| Eligibility map | `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`: TNA 9/12, PPM 9/10, AQL 9/12, Shared 10/10 |
+| Eligibility map | `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`: TNA 10/12, PPM 9/10, AQL 9/12, Shared 10/10 |
 
 ## A. Historical full-scope program at a glance
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **76%** |
-| **REMAINING** | **24%** |
-| **TNA 360** | **69%** - accepted gates 9 / 13 |
+| **OVERALL VERIFIED** | **78%** |
+| **REMAINING** | **22%** |
+| **TNA 360** | **77%** - accepted gates 10 / 13 |
 | **PPM 360** | **82%** - accepted gates 9 / 11 |
 | **AQL 360** | **69%** - accepted gates 9 / 13 |
 | **ONE VESA SHARED UX** | **100%** - accepted gates 10 / 10 |
 | Program stage | All ten active Shared UX gates are accepted locally. Login, App Centre, Admin, TNA, PPM and AQL now have one reviewed platform system for ownership, navigation, tokens, responsive behavior, accessibility semantics, regression protection, rollback documentation and final uniform transitions. No domain formula, saved format, production record, provider or deployment changed. |
 | Active gate | **No incomplete shared UX gate; app-specific conditional/external acceptance work remains** |
-| Current subtask / subchecks | A-G09 is accepted and PPM P-G10 local handoff is proven; P-G10/A-G12 release approval remains BLOCKED/HOLD. A-G03/A-G08 still require approved AR11 policy and external acceptance. Resume only on new evidence, a demonstrated regression, or explicit named staging/release authorization. |
-| Last ACCEPTED gate | **AQL A-G09 — local sibling references and cross-app consistency** (`f5095b6`, 91/91 commands in 860.0s without internal retry; no remote lookup/tenant/provider/deployment claim) |
+| Current subtask / subchecks | TNA G10 and AQL A-G09 local slices are accepted; PPM P-G10 local handoff is proven; release gates remain BLOCKED/HOLD. G11/AR11-dependent gates still require independent Excel/device/assistive/factory or approved policy evidence. |
+| Last ACCEPTED gate | **TNA G10 — local integration references and in-app alerts** (`f5095b6`, 91/91 commands in 860.0s without internal retry; external delivery/provider work deferred) |
 | Last tested commit SHA | Full cross-app boundary `f5095b6`: 91/91 commands / 860.0s (56 automated, 22 browser, 12 syntax, 1 repository). Latest runtime is `51b4623`; explicit local PPM/TNA IDs, versions, dates, statuses and verifier provenance save/reopen without changing AQL decisions or reading sibling stores. |
 | Last update (UTC) | 2026-10-14 12:54:46 UTC |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
@@ -45,7 +45,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=9, p=9, a=9, s=10.
+Current counted gates: t=10, p=9, a=9, s=10.
 ```
 
 ## C. Application gate checklist
@@ -64,9 +64,9 @@ Current counted gates: t=9, p=9, a=9, s=10.
 | G07 | Four languages + reports | ACCEPTED | 03ca0cd accepted locally; R01-R12 report model/UI/JSON, Excel export, browser print/PDF route and EN/BN/HI/TA glyph sweep passed; dedicated licensed in-app PDF renderer remains not claimed |
 | G08 | Recovery, scenarios + multiorder | ACCEPTED | 5d4e3b1 accepted locally; visible scenario/recovery UI, portfolio capacity conflicts, split shipments, uncertainty handling and 390px browser proof recorded in docs/tna tracker |
 | G09 | Secure backend + multiuser | CONDITIONAL | 24c42d1 local v1 contracts, disabled adapter, bounded offline queue/reconciliation, health and attachment boundaries; secure provider/identity/database/object storage not authorized/provisioned |
-| G10 | PPM/AQL links + notifications | CONDITIONAL / PROVIDER DEFERRED | Local typed references, visible linked-record workflow and in-app alert/deduplication/quiet-hours contracts pass; external delivery remains `DEFERRED_BY_SCOPE` |
-| G11 | All-regression stabilization | CONDITIONAL | Current deterministic/browser/syntax/repository matrix passes 77 commands; genuine Excel desktop-reader, real-device/screen-reader/factory and remote/live-asset evidence remain open |
-| G12 | Release readiness + authorized deploy | BLOCKED / LOCAL HANDOFF PROVEN | `d0e3011` refreshes the HOLD runbook at baseline `3cf9f5e` / runtime `253672c`; 77 commands passed in 567.6s without retry; no staging, push or deployment authorized |
+| G10 | PPM/AQL links + notifications | ACCEPTED / PROVIDER DELIVERY DEFERRED | Local typed references, visible linked-record workflow and in-app alert/authorization/deduplication/quiet-hours/fail-closed contracts pass within clean `f5095b6` 91/91 matrix; external delivery remains `DEFERRED_BY_SCOPE`. |
+| G11 | All-regression stabilization | CONDITIONAL | Clean `f5095b6` deterministic/browser/syntax/repository matrix passes 91/91; genuine Excel desktop-reader and independent real-device/screen-reader/factory evidence remain open. |
+| G12 | Release readiness + authorized deploy | BLOCKED / LOCAL HANDOFF PROVEN | Current HOLD runbook pins tested baseline `f5095b6` and latest TNA runtime `253672c`; no staging, push or deployment authorized. |
 
 ### PPM 360 - 11 gates, 30% of program
 
@@ -136,7 +136,7 @@ These are engineering-effort ranges, not delivery promises. They exclude waiting
 
 | Requirement | Already implemented | Exact work remaining | Required verification | User/external blocker | Estimated development effort |
 |---|---|---|---|---|---|
-| TNA G10–G12 local closure | Local typed PPM/AQL references, in-app due notices, recovery, current/legacy restore, security/performance matrices and handoff runbook pass | No independent source patch is currently identified; reconcile only new supplied acceptance evidence and keep external-delivery/provider portions deferred | Owner-controlled Excel desktop read, representative saved-copy corpus, real device/screen-reader/factory review, named staging/release SHA before publication | **YES** — evidence and release authorization | 0.5–1.0 engineering day after evidence is supplied; no estimate for external waiting |
+| TNA G10–G12 local closure | G10 local typed PPM/AQL references and in-app alert policy are accepted; recovery, current/legacy restore, 91-command security/performance matrix and handoff runbook pass | No independent source patch is currently identified; reconcile only newly supplied acceptance evidence and keep external-delivery/provider portions deferred | Owner-controlled Excel desktop read, representative saved-copy corpus, real device/screen-reader/factory review, named staging/release SHA before publication | **YES** — evidence and release authorization | No planned local development; 0.5–1.0 engineering day after evidence is supplied |
 | PPM P-G10 local acceptance/handoff | P-G00–P-G08 accepted; exact P01–P52 ledger, clean 91-command cross-app matrix, seven-width/200%-zoom shell evidence, 40-PDF reports, saved-record posture, backup/rollback and HOLD are reconciled | None for the current local handoff; do not perform staging/deployment without explicit named authorization | Re-run proportional PPM/shared checks only if affected; actual site/cache/device verification only after an approved deployment | **YES** — independent physical/assistive review, production authorization and any provider evidence | No planned local development; deployment effort only after authorization |
 | AQL AR08 + AR09 production/readiness reports | Complete locally at `55a8abd`, with four-language authored chrome/A4 proof at `cae38ca`/`550b0dd`: five current-event fixtures preserve exact source fields, DHU/defective/RFT/readiness outputs and PENDING/NOT READY guards | Physical device/printer and factory/buyer review only; no additional local report code identified | Re-run focused contracts only if affected; include in the next meaningful full gate matrix | **YES for external acceptance only** | No planned local development |
 | AQL AR01 buyer final report | Complete locally at `873296e`, with four-language authored chrome/A4 proof at `cae38ca`/`550b0dd`: exact saved/reopened code F/n20/Ac-Re/count/result, findings, disposition and immutability pass | Physical device/printer and buyer review only | Re-run focused contract only if affected; include in next meaningful gate matrix | **YES for external acceptance only** | No planned local development |
@@ -296,6 +296,7 @@ These are engineering-effort ranges, not delivery promises. They exclude waiting
 | 2026-10-14 07:25:00 UTC | AQL A-G12 Local Handoff / Release Boundary | BLOCKED GATE / ACCEPTED LOCAL HANDOFF | Release-readiness now distinguishes documentation candidate `100a565`, tested baseline `cf8e193` and runtime `cae38ca`; records included/excluded scope, mandatory saved-copy backup, non-destructive rollback, HOLD, absent live URL/timestamp and the exact authorization still required. Ledgers/release/diff checks pass and the 90-command boundary is reused because no runtime/test changed. No push, merge, staging or deployment occurred; percentages remain unchanged. |
 | 2026-10-14 12:54:46 UTC | AQL A-G09 Local Sibling References | ACCEPTED LOCALLY | Runtime `51b4623` adds an escaped maximum-30 manual PPM/TNA provenance register inside the existing Quality Centre with required source ID/version/date/verifier fields, exact save/reopen/removal and explicit no-sync/no-authority wording. Focused AQL/PPM/TNA checks pass. The first clean full attempt exposed a stale TNA handoff SHA assertion; `f5095b6` repaired that evidence contract without runtime change, then the clean matrix passed 91/91 in 860.0s with no internal retry. AQL becomes 9/13 historical and 9/12 Free-only; historical overall becomes 76% and Free-only 82%. Remote lookup/tenant/two-account, policy, physical and release evidence remain unclaimed. |
 | 2026-10-14 12:58:02 UTC | PPM P-G10 Local Handoff / Release Boundary | BLOCKED GATE / LOCAL HANDOFF PROVEN | Documentation reconciliation checks the P01–P52 disposition, cross-app regression and responsive/report evidence rows. Clean `f5095b6` supplies 91/91 coverage including all 17 PPM commands; existing P-G01/P-G07 proofs supply seven widths, 200% zoom, modal and 40-PDF output. Independent physical/assistive review, approval, deployment and live cache checks remain unchecked and P-G09 remains deferred. No runtime changed and percentages remain 90% PPM Free-only / 82% program Free-only. |
+| 2026-10-14 13:04:00 UTC | TNA G10 Local References / In-App Alerts | ACCEPTED LOCALLY | All active local G10 rows are proven by deterministic typed-reference and notification-policy tests plus authenticated 390px add/save/reopen/remove and alert UI. Clean `f5095b6` passes 91/91 including adjacent PPM/AQL reference workflows; task decisions remain unchanged and unconfigured external channels fail closed. The only open G10 row is server delivery/receipt/retry/unsubscribe, explicitly deferred by scope. TNA becomes 10/13 historical and 10/12 Free-only; historical overall becomes 78% and Free-only 85%. No provider, physical acceptance or deployment is claimed. |
 
 ## G. NEXT ACTION
 

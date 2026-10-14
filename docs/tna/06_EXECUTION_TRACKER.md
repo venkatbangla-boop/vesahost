@@ -4,7 +4,7 @@
 
 **Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` governs platform choices. Hosted backend/identity/database/object storage, remote multiuser synchronization and external notification delivery are `DEFERRED_BY_SCOPE`, not failed or accepted. Local planning, references, in-app alerts, saved-copy safety and regression work remain active.
 
-**Free-only denominator:** 12 active gates; G09 is excluded. G10 and G12 retain one active local unit each while their provider/deployment portions are deferred. Current accepted numerator: 9. See `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`.
+**Free-only denominator:** 12 active gates; G09 is excluded. G10 and G12 retain one active local unit each while their provider/deployment portions are deferred. Current accepted numerator: 10. See `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`.
 
 ## A. Current execution snapshot — initial handover
 
@@ -14,14 +14,14 @@
 | Repository | `venkatbangla-boop/vesahost` |
 | Deployment target | `/apps/tna/` under VESA App Centre |
 | Specifications | This file plus root `AGENTS.md` and documents `01`–`05` |
-| Design status | **G08 accepted locally** on the feature branch; G09 provider work is deferred/externally blocked, G10 local references and in-app alerts are implemented, and G11 remains conditional while exact fixture/reader/physical evidence is completed |
-| Implementation status | **G00–G08 ACCEPTED LOCALLY / NOT DEPLOYED; G09 DEFERRED WITH CONDITIONAL LOCAL CONTRACTS; G10 LOCAL SCOPE IMPLEMENTED; G11 CONDITIONAL; G12 LOCAL HANDOFF COMPLETE / RELEASE BLOCKED**. No server, identity, database, storage or notification provider is live. |
-| Last accepted patch group | **G12 — refreshed local handoff evidence (local slice)** |
+| Design status | **G00–G08 and the G10 local slice accepted** on the feature branch; G09 provider work is deferred, G11 remains conditional on independent reader/physical evidence and G12 release remains blocked |
+| Implementation status | **G00–G08 + G10 ACCEPTED LOCALLY / NOT DEPLOYED; G09 DEFERRED WITH CONDITIONAL LOCAL CONTRACTS; G11 CONDITIONAL; G12 LOCAL HANDOFF COMPLETE / RELEASE BLOCKED**. No server, identity, database, storage or notification provider is live. |
+| Last accepted patch group | **G10 — local references and in-app alert policy** (accepted from clean full baseline `f5095b6`) |
 | Current patch group | **G12 — external acceptance and release blockers** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
 | Deferred by current scope | Cloud hosting/identity/database/object storage, remote collaboration and external notification providers |
-| Resume anchor | Commit `d0e3011` pins accepted baseline `3cf9f5e`, latest runtime `253672c`, recovery/offline evidence and the release HOLD; no staging or deployment occurred |
-| LAST COMPLETED ACTION | Commit `d0e3011` refreshed the G12 runbook and its executable consistency guard; the complete 77-command matrix passed in 567.6 seconds without retry. |
+| Resume anchor | Clean `f5095b6` passes the current 91-command matrix; latest TNA runtime remains `253672c`, and release HOLD remains explicit |
+| LAST COMPLETED ACTION | Reconciled and accepted G10's GitHub-Free local slice: typed PPM/AQL references plus visible in-app alert/deduplication/quiet-hours/fail-closed contracts pass; external delivery remains deferred. |
 | NEXT ACTION | No further independent TNA source patch is identified. Obtain owner-controlled Excel desktop-reader, real-device/screen-reader/factory and representative saved-copy evidence, or explicit authorization for remote/live-asset verification and a named staging/release SHA; provider capabilities remain `DEFERRED_BY_SCOPE`. |
 
 **Snapshot date:** 2026-10-10. The GitHub public repo/main and files were inspected at a documentation level; **Codex must directly inspect its checkout** before code writes. Never treat these notes as a completed local repo audit.
@@ -418,6 +418,8 @@ Each group is a checkpoint in **one unified project** (not permission to stop af
 - [x] In-app action alerts from rules; permission-scoped notifications and quiet-hours/deduplication policies.
 - [ ] `DEFERRED_BY_SCOPE`: configured server-delivered notification channels, delivery receipts/retries and unsubscribe; never label these 'sent'.
 - [x] Local contract tests for false approval, duplicate delivery, unauthorized recipients, quiet hours, disabled policy and fail-closed external channels. Actual provider delivery/retry tests remain part of the blocked item above.
+
+**Local-slice acceptance — 2026-10-14 19:04 Asia/Dhaka:** The only unchecked G10 row is explicitly provider-delivery work deferred by the approved scope. Deterministic `g10-integration-references.test.js` and `g10-notification-rules.test.js` plus authenticated `g10-linked-ui.cjs` prove bounded source IDs/versions/verifier provenance, stale/mismatch rejection, exact save/reopen/removal, unchanged task decisions, explicit as-of action alerts, authorization/deduplication/quiet-hours and fail-closed unconfigured channels. Adjacent PPM P-G08 and AQL A-G09 reference workflows pass without sibling-store/network access. Clean `f5095b6` passes 91/91 commands in 860.0s with no internal retry. **VERDICT: G10 ACCEPTED LOCALLY**; external notification delivery, receipts/retries/unsubscribe and provider identity remain `DEFERRED_BY_SCOPE`, not accepted or simulated. Rollback is documentation only; runtime/schema/cache are unchanged. **NEXT ACTION:** retain G12 HOLD and seek only new external/independent evidence or explicit named staging authorization.
 
 ### G11 — Full verification and stabilization
 
