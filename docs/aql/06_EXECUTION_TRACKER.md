@@ -17,8 +17,8 @@
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00 through A-G09 except provider-only A-G10, plus A-G11. A-G03 and A-G08 close locally through AR11's explicit automatic/manual/combined selection, durable history and report proof. Buyer-certified selection policies and physical/device/factory acceptance remain external evidence, not local software blockers. |
 | Current gate | **A-G12 RELEASE BLOCKED / LOCAL HANDOFF PROVEN**; production publication remains unauthorized. |
-| LAST COMPLETED ACTION | AR11 A-G03/A-G08 accepted from clean `accf1c8`: 94/94 cross-app commands pass in 949.6s without retry after the focused runtime/evidence checkpoint `abc465d`. |
-| NEXT ACTION | Retain A-G12 HOLD. Resume only for a demonstrated regression, supplied approved buyer-specific policy, external acceptance evidence or explicit release authorization naming the SHA/destination/rollback window. |
+| LAST COMPLETED ACTION | Final local UAT package accepted from clean `0bd6582`: 95/95 cross-app commands pass in 899.9s without retry; 49 human rows remain honestly `NOT TESTED`. AR11 runtime remains `abc465d`. |
+| NEXT ACTION | Execute the human UAT package and record evidence/sign-off; retain A-G12/production HOLD until all mandatory rows pass and explicit release authorization names the SHA/destination/rollback window. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; buyer-certified policy evidence and real physical/device/factory acceptance remain external, while the general internal method is locally complete. |
 
 ### A-G03 / A-G08 AR11 automatic + manual carton selection — acceptance checkpoint
@@ -32,13 +32,14 @@ FULL ACCEPTANCE EVIDENCE: clean `accf1c8` passes `node tests/vesa-g11-regression
 VERDICT: `accepted` locally for AR11, A-G03 and A-G08. Buyer-certified policies and physical acceptance remain unclaimed; selection alone still cannot approve or release an inspection.
 NEXT ACTION (ONE PRECISE STEP): retain A-G12 HOLD until explicit external evidence or production authorization is supplied; do not push or deploy.
 
-### Final local UAT package preparation — checkpoint pending boundary
+### Final local UAT package preparation — accepted locally / human execution pending
 
 TIME / TIMEZONE: 2026-10-14 Asia/Dhaka
 FILE-LEVEL AUDIT / SCOPE: clean start `182cf52`; accepted AR11 runtime `abc465d` and tested baseline `accf1c8` were reconciled directly against `CartonSelectionEngine`, the Carton Selection dialog, report integration and both focused AR11 tests. In scope: `docs/uat/` human checklists/results/evidence, additive `tests/vesa-local-uat-package.cjs`, the full-runner entry and acceptance ledgers. Frozen: all application runtime, SamplingEngine, garment sample size, Ac/Re, decisions, schemas/saved records, service workers, shared UI runtime, providers and deployment. Risks: marking human rows PASS from automation, omitting either selection method/Auto Fill Remaining, or implying buyer certification/release. Rollback removes only documentation/test/runner changes.
 FOCUSED EVIDENCE: repeated AR11 pure/browser tests pass automatic/manual/combined selection, actual IDs/ranges, leading zeros, uniqueness/no replacement, replacement confirmation/history, inspected completion, local/portable reopen, four-language guidance and printable 390/1280 reports. Adjacent frozen sampling, all-report/language and release contracts pass. The new AQL UAT checklist has 15 human rows, including six explicit AR11 workflow/safety/persistence/report checks; all remain `NOT TESTED`. The local server command was exercised and `/login/`, `/apps/`, TNA, PPM and AQL returned HTTP 200.
-VERDICT: package checkpoint is `conditional` until committed and included in one clean complete acceptance-boundary regression. AR11 implementation remains accepted; no source change was required.
-NEXT ACTION (ONE PRECISE STEP): commit the reversible UAT package candidate, run the expanded full matrix once, then pin the tested SHA and retain production HOLD.
+FULL ACCEPTANCE EVIDENCE: clean `0bd6582` passes the expanded complete matrix once without retry: 95/95 commands in 899.9s (60 automated, 22 browser, 12 syntax, 1 repository), including the UAT-package validator and every prior TNA/PPM/AQL/Shared boundary.
+VERDICT: UAT package `accepted` locally; human execution remains `NOT TESTED`. AR11 implementation remains accepted; no source change was required. Production remains HOLD.
+NEXT ACTION (ONE PRECISE STEP): open `docs/uat/00_READ_ME_FIRST.md`, execute all 49 human rows with synthetic/anonymized data, record evidence and sign-off, and do not deploy without explicit authorization.
 
 ### A-G09 local sibling-reference audit — implementation checkpoint open
 

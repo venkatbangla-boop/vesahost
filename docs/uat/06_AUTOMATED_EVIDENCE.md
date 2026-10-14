@@ -23,3 +23,11 @@ Automated evidence reduces regression risk but does not change any human checkli
 
 No automated check proves human usability, physical carton access, buyer certification, actual scanner/printer behavior, screen-reader acceptance, factory custody, server security, remote collaboration or production authorization. Record those only in `05_RESULTS_AND_SIGNOFF.md` after real evidence exists.
 
+## Final package boundary
+
+- Clean tested commit: `0bd6582`.
+- `node tests/vesa-g11-regression.cjs`: PASS, 95/95 commands in 899.9 seconds without retry.
+- Classification: 60 automated, 22 browser, 12 syntax and 1 repository check.
+- The new package contract passed with all 49 human rows still `NOT TESTED`.
+- No runtime, schema, business rule, saved record, provider or deployment changed in the UAT package patch.
+

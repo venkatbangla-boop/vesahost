@@ -12,6 +12,7 @@ This package is for human testing of the existing GitHub-Free/browser-local VESA
 | Source baseline before this package | `182cf52` |
 | Latest application runtime | AQL AR11 `abc465d`; other application runtime lineage remains in `docs/VESA_360_RELEASE_READINESS.md` |
 | Last complete automated baseline before this package | `accf1c8` — 94/94 commands in 949.6s without retry |
+| Tested UAT-package baseline | `0bd6582` — 95/95 commands in 899.9s without retry |
 | Storage | This browser profile/device only, plus user-downloaded saved copies |
 | Release state | **HOLD — no push, deployment, DNS change or production-data use is authorized** |
 

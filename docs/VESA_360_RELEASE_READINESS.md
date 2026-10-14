@@ -2,7 +2,7 @@
 
 **Review date:** 2026-10-14
 **Branch:** `feature/tna360-continuous`
-**Local handoff candidate:** `accf1c8` documentation state (full-regression baseline: `accf1c8`; latest runtime implementation: `abc465d`)
+**Local handoff candidate:** `0bd6582` documentation state (full-regression baseline: `0bd6582`; latest runtime implementation: `abc465d`)
 **Decision:** **HOLD — not ready for production deployment**
 
 This review reconciles the application execution trackers and the master dashboard. It authorizes no push, merge, deployment, DNS change, live App Centre route change, provider activation or production-data use.
@@ -16,10 +16,10 @@ This supplement is the current handoff authority. The older `48ec023` review rem
 | Item | Current evidence |
 |---|---|
 | Branch | `feature/tna360-continuous`; committed locally, not pushed or merged by this handoff |
-| Local handoff SHA | `accf1c8` — clean AR11 acceptance candidate on `feature/tna360-continuous`; not a deployed release |
+| Local handoff SHA | `0bd6582` — clean final-local-UAT package candidate on `feature/tna360-continuous`; not a deployed release |
 | Latest runtime SHA | `abc465d` — AQL adds automatic internal-uniform, manual and combined AR11 carton selection, cache `vesa-aql-2026-10-14-25`, durable provenance/history and printable report detail without changing SamplingEngine, garment sample size, Ac/Re, approval or release |
-| Latest evidence SHA | `accf1c8` — focused AR11 evidence plus the clean expanded complete boundary |
-| Regression | `node tests/vesa-g11-regression.cjs`: PASS, 94/94 commands / 949.6s, no retry; 59 automated, 22 browser, 12 syntax, 1 repository |
+| Latest evidence SHA | `0bd6582` — focused AR11/package evidence plus the clean expanded complete boundary |
+| Regression | `node tests/vesa-g11-regression.cjs`: PASS, 95/95 commands / 899.9s, no retry; 60 automated, 22 browser, 12 syntax, 1 repository |
 | Local TNA state | G00–G08 plus G10 local references/in-app alerts accepted; G11 retains independent Excel/device/assistive/factory evidence gaps; G12 local handoff proof is complete but release remains blocked |
 | Local PPM state | P-G00–P-G08 accepted; P-G10 feature-ledger/test/screenshot/backup/rollback handoff is complete locally but release stays blocked on independent review and authorization; P-G09 provider collaboration is deferred |
 | Local AQL state | A-G00–A-G09 plus A-G11 are accepted locally; A-G03/A-G08 close through AR11 internal-uniform/manual/combined selection and all 15 report variants; A-G10 provider backend is deferred and A-G12 remains HOLD |
@@ -28,14 +28,14 @@ This supplement is the current handoff authority. The older `48ec023` review rem
 
 ### Local human UAT package
 
-`docs/uat/00_READ_ME_FIRST.md` provides the exact local PowerShell server command, URL and demonstration login, followed by TNA (12 rows), PPM (12), AQL (15) and Shared UI (10) human checklists plus results/sign-off and automated-evidence boundaries. All 49 human rows deliberately start `NOT TESTED`; automated proof does not pre-approve them. The documented server command was exercised locally and Login/App Centre/TNA/PPM/AQL each returned HTTP 200. Package-integrity and app handoff checks pass; the expanded complete boundary is pending on the clean package candidate.
+`docs/uat/00_READ_ME_FIRST.md` provides the exact local PowerShell server command, URL and demonstration login, followed by TNA (12 rows), PPM (12), AQL (15) and Shared UI (10) human checklists plus results/sign-off and automated-evidence boundaries. All 49 human rows deliberately start `NOT TESTED`; automated proof does not pre-approve them. The documented server command was exercised locally and Login/App Centre/TNA/PPM/AQL each returned HTTP 200. Clean `0bd6582` passes the expanded 95/95 complete boundary in 899.9s without retry. Package structure is accepted; human UAT is not yet executed.
 
 ### AQL A-G12 local handoff record
 
 | Item | Recorded boundary |
 |---|---|
-| Documentation candidate | `accf1c8` on `feature/tna360-continuous`; clean boundary content immediately before this evidence-only reconciliation |
-| Fully tested baseline | `accf1c8`; 94/94 commands in 949.6s with no retry after focused AR11 proof |
+| Documentation candidate | `0bd6582` on `feature/tna360-continuous`; clean UAT-package content immediately before this evidence-only reconciliation |
+| Fully tested baseline | `0bd6582`; 95/95 commands in 899.9s with no retry after focused AR11/package proof |
 | Runtime lineage | latest runtime `abc465d`; carton selection plus local sibling references and all prior report/share/stage/analytics/restore lineage |
 | Included local scope | GitHub-Free/browser-local AQL workflow, calculations, automatic internal-uniform/manual/combined carton selection, records, saved-copy recovery, offline worker, all 15 report variants/languages, shared UX, executable 60-requirement/35-area ledgers and stabilization evidence |
 | Explicitly excluded | buyer-certified selection policies unless an approved reference is supplied, real buyer/legal authority, physical scanner/custody/printer/device/screen-reader/factory acceptance, hosted provider security/sync/notices and production publication |
@@ -65,7 +65,7 @@ Expected candidate facts: branch `feature/tna360-continuous`; accepted full-matr
 
 -->
 
-Expected current candidate facts: branch `feature/tna360-continuous`; documentation/full-matrix baseline `accf1c8`; latest runtime `abc465d`; 94-command regression in 949.6s without retry; exact A01–A60 and 35-area ledgers; G12 recovery and 13 offline assets; A-G03–A-G09 except deferred A-G10 plus A-G11 accepted locally; explicit local PPM/TNA record IDs, versions, dates, status/milestone and verifier provenance with unchanged AQL decisions/dates; six-route shared transitions; 600-record AQL analytics; all 13 stage routes and all 15 locally provable AR01–AR15 variants; EN/BN/HI/TA five-page A4 reports; exact general/finding/carton/lot evidence metadata and bytes after selected-file restore plus browser reload; immutable CAPA/source/selection history; bounded 200 MiB decoded-evidence and 280 MiB selected-file rejection; quota rescue and worker offline reopen; automatic internal-uniform/manual/combined carton selection with exact eligible IDs and origin plus loading/packing/barcode evidence through reopen without buyer-policy, custody or release inference. Buyer-certified policies, physical-device/factory/buyer acceptance, provider security, remote tenant verification and production authorization remain unclaimed.
+Expected current candidate facts: branch `feature/tna360-continuous`; documentation/full-matrix baseline `0bd6582`; latest runtime `abc465d`; 95-command regression in 899.9s without retry; exact A01–A60 and 35-area ledgers; 49-row local human UAT package with every row still NOT TESTED; G12 recovery and 13 offline assets; A-G03–A-G09 except deferred A-G10 plus A-G11 accepted locally; explicit local PPM/TNA record IDs, versions, dates, status/milestone and verifier provenance with unchanged AQL decisions/dates; six-route shared transitions; 600-record AQL analytics; all 13 stage routes and all 15 locally provable AR01–AR15 variants; EN/BN/HI/TA five-page A4 reports; exact general/finding/carton/lot evidence metadata and bytes after selected-file restore plus browser reload; immutable CAPA/source/selection history; bounded 200 MiB decoded-evidence and 280 MiB selected-file rejection; quota rescue and worker offline reopen; automatic internal-uniform/manual/combined carton selection with exact eligible IDs and origin plus loading/packing/barcode evidence through reopen without buyer-policy, custody or release inference. Buyer-certified policies, human/physical-device/factory/buyer acceptance, provider security, remote tenant verification and production authorization remain unclaimed.
 
 ### AQL saved-copy and visual evidence index
 
@@ -91,7 +91,7 @@ This index identifies the current local proof used for A-G11 stabilization. Gene
 | AR11 selection and report | `output/playwright/aql-ar11-combined-selection-mobile.png`, `aql-ar11-carton-selection-report-mobile.png`, `aql-ar11-carton-selection-report-desktop.png` | reviewed combined-selection workflow and report provenance/history at mobile/desktop widths |
 | Shared route/accessibility/uniform UX | `output/playwright/shared-*`, `vesa-accessibility-*`, `vesa-platform-*`, `vesa-unified-*`, `vesa-uniform-*` | Login/App Centre/Admin/TNA/PPM/AQL desktop/tablet/mobile/zoom/keyboard visual and DOM evidence |
 
-The artifact inventory is reproducible through the owning browser suites and may be regenerated. AR11 is covered by the clean `accf1c8` 94-command boundary. Real devices, independent assistive-technology review, physical factory workflows, approved buyer/legal inputs and buyer-certified selection policies, provider security and production authorization remain external.
+The artifact inventory is reproducible through the owning browser suites and may be regenerated. AR11 and the local UAT package are covered by the clean `0bd6582` 95-command boundary. Real human UAT, devices, independent assistive-technology review, physical factory workflows, approved buyer/legal inputs and buyer-certified selection policies, provider security and production authorization remain external.
 
 ### Migration and backup/restore rehearsal
 

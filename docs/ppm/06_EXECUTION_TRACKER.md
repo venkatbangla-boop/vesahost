@@ -17,15 +17,15 @@
 | Last accepted implementation gate | **P-G08 — TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G08 reference integration; P-G09 has a tested dormant local contract while its live provider/two-account portion is `DEFERRED_BY_SCOPE`; no production deployment |
 | Current gate | `P-G10 — LOCAL HANDOFF PROVEN / RELEASE BLOCKED (P-G09 remains deferred by scope)` |
-| LAST COMPLETED ACTION | P-G10 local handoff remains proven in clean `accf1c8` 94-command cross-app matrix (949.6s, no retry): feature ledger, tests and responsive/report evidence remain green; independent/user/physical and production rows remain open. |
+| LAST COMPLETED ACTION | P-G10 local handoff and the 12-row PPM UAT package remain proven in clean `0bd6582` 95-command matrix (899.9s, no retry); human rows remain `NOT TESTED`, and independent/physical/production rows remain open. |
 | NEXT ACTION | Stop local PPM release work at HOLD; resume only for independent acceptance evidence, an approved provider-scope change, a demonstrated regression or explicit authorization naming a staging/release SHA and rollback window. |
 | Deferred / active setup issue | Hosted backend and cross-company provider roles are `DEFERRED_BY_SCOPE`; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
-### Final local UAT package preparation — checkpoint pending boundary
+### Final local UAT package preparation — accepted locally / human execution pending
 
 **Audit / scope (2026-10-14):** Clean start at `182cf52`; tested application baseline `accf1c8` remains 94/94 and AQL AR11 runtime is `abc465d`. In scope is the documentation-only `docs/uat/02_PPM_LOCAL_UAT.md`, shared package/index/results/evidence files, additive package validator and one full-runner entry. PPM runtime, 168 identities, planning/decision rules, schemas/saves, reports, service worker, providers and deployment are frozen. Rollback removes only the UAT package/test/runner entry.
 
-**PPM package evidence:** 12 human rows cover entry paths, applicability/checkpoints, decisions/measurements/approvals, follow-up, controlled amendment, save/reopen/recovery, reports/languages, sibling references and mobile/keyboard. Every human status remains `NOT TESTED`; automated evidence is kept separate. Focused package and P-G10 handoff contracts pass; final expanded cross-app boundary is pending.
+**PPM package evidence:** 12 human rows cover entry paths, applicability/checkpoints, decisions/measurements/approvals, follow-up, controlled amendment, save/reopen/recovery, reports/languages, sibling references and mobile/keyboard. Every human status remains `NOT TESTED`; automated evidence is kept separate. Clean `0bd6582` passes the expanded 95/95 matrix in 899.9s without retry; package structure is accepted, human execution and external evidence remain pending.
 
 ## Universal session protocol
 Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits, tests and screenshots with ledger. If there is a discrepancy, downgrade status and inspect before changing. Pick earliest *accepted-prerequisite* group, implement one small patch, run tests, verify other apps not broken, commit, append log, set next action. Any new/changed UI model must be measured against `VESA-UNIFORM-UI-v1` in document 04. Never directly push main without explicit release instruction.

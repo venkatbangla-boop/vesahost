@@ -16,21 +16,21 @@
 | Specifications | This file plus root `AGENTS.md` and documents `01`–`05` |
 | Design status | **G00–G08 and the G10 local slice accepted** on the feature branch; G09 provider work is deferred, G11 remains conditional on independent reader/physical evidence and G12 release remains blocked |
 | Implementation status | **G00–G08 + G10 ACCEPTED LOCALLY / NOT DEPLOYED; G09 DEFERRED WITH CONDITIONAL LOCAL CONTRACTS; G11 CONDITIONAL; G12 LOCAL HANDOFF COMPLETE / RELEASE BLOCKED**. No server, identity, database, storage or notification provider is live. |
-| Last accepted patch group | **G10 — local references and in-app alert policy** (retained by clean full baseline `accf1c8`) |
+| Last accepted patch group | **G10 — local references and in-app alert policy** (retained by clean final-UAT baseline `0bd6582`) |
 | Current patch group | **G12 — external acceptance and release blockers** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
 | Deferred by current scope | Cloud hosting/identity/database/object storage, remote collaboration and external notification providers |
-| Resume anchor | Clean `accf1c8` passes the current 94-command matrix in 949.6s without retry; latest TNA runtime remains `253672c`, and release HOLD remains explicit |
+| Resume anchor | Clean `0bd6582` passes the current 95-command matrix in 899.9s without retry; latest TNA runtime remains `253672c`, 12-row TNA human UAT remains `NOT TESTED`, and release HOLD remains explicit |
 | LAST COMPLETED ACTION | Reconciled and accepted G10's GitHub-Free local slice: typed PPM/AQL references plus visible in-app alert/deduplication/quiet-hours/fail-closed contracts pass; external delivery remains deferred. |
 | NEXT ACTION | No further independent TNA source patch is identified. Obtain owner-controlled Excel desktop-reader, real-device/screen-reader/factory and representative saved-copy evidence, or explicit authorization for remote/live-asset verification and a named staging/release SHA; provider capabilities remain `DEFERRED_BY_SCOPE`. |
 
 **Snapshot date:** 2026-10-10. The GitHub public repo/main and files were inspected at a documentation level; **Codex must directly inspect its checkout** before code writes. Never treat these notes as a completed local repo audit.
 
-### Final local UAT package preparation — checkpoint pending boundary
+### Final local UAT package preparation — accepted locally / human execution pending
 
 **Audit / scope (2026-10-14):** Clean start at `182cf52`; latest tested application baseline is `accf1c8` (94/94) and latest AQL AR11 runtime is `abc465d`. `docs/uat/` is a new human-execution package; `tests/vesa-local-uat-package.cjs` validates its structure and `tests/vesa-g11-regression.cjs` owns final boundary inclusion. No TNA source, formula, schema, saved record, cache, provider or deployment file is in scope. Risks are pre-claiming human acceptance, omitting recovery/mobile/language evidence, exposing real data, or presenting local login as server security. Rollback removes only the package, its contract test and runner entry.
 
-**TNA package evidence:** `01_TNA_LOCAL_UAT.md` has 12 step-by-step rows covering entry/navigation, order/template/calculation, baseline/history, readiness, save/reopen, portable copy, XLSX/PDF, four languages/themes, mobile/keyboard, local references/alerts and practice isolation. Every human status remains `NOT TESTED`. Focused package, TNA G12, PPM P-G10, AQL A-G11 and diff checks pass; final expanded cross-app boundary is pending.
+**TNA package evidence:** `01_TNA_LOCAL_UAT.md` has 12 step-by-step rows covering entry/navigation, order/template/calculation, baseline/history, readiness, save/reopen, portable copy, XLSX/PDF, four languages/themes, mobile/keyboard, local references/alerts and practice isolation. Every human status remains `NOT TESTED`. Clean `0bd6582` passes the expanded 95/95 matrix in 899.9s without retry; package structure is accepted, human execution and external evidence remain pending.
 
 ## B. Continuity protocol — what Codex must do each session
 
