@@ -60,7 +60,7 @@ async function authenticatedProbe(browser,base,width,route,id){
   assert.equal(await shell.locator('[data-vesa-logout]').count(),1,`${id}@${width}: one Logout owner`);
   assert.equal(await shell.locator('[data-vesa-saved]').count(),1,`${id}@${width}: one state owner`);
   assert.equal(await page.evaluate(()=>[...document.querySelectorAll('.vesa-workspace,.app-user-bar')].filter(node=>['sticky','fixed'].includes(getComputedStyle(node).position)).length),1,`${id}@${width}: one sticky header`);
-  if(id==='apps')assert.equal(await page.locator('#appCatalogue .app-tile').count(),3,`${id}@${width}: registered catalogue cards`);
+  if(id==='apps')assert.deepEqual(await page.locator('#appCatalogue a[href^="/apps/"]').evaluateAll(nodes=>nodes.map(x=>x.getAttribute('href')).sort()),['/apps/aql/','/apps/costing/','/apps/ppm/','/apps/tna/'],`${id}@${width}: exactly four approved App Centre routes`);
   if(id==='admin')assert.equal(await page.locator('.admin-grid').count(),1,`${id}@${width}: admin content retained`);
   await geometry(page,width,id);
   if(width===390||width===1280)await page.screenshot({path:path.join(output,`vesa-platform-${id}-${width}.png`),fullPage:true});
