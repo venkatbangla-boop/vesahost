@@ -361,6 +361,8 @@
     const input=(ws,cells)=>{for(const addr of cells){const cell=ws[addr];if(cell?.f)throw Error('Editable workbook input contains a formula at '+addr+'.');}};
     const map=Object.create(null),styleWs=wb.Sheets.STYLE_INPUT,costWs=wb.Sheets.COST_LINES;
     for(let i=6;i<=22;i++){input(styleWs,['C'+i]);const key=clean(styleWs['B'+i]?.v||'').trim(),val=styleWs['C'+i]?.v;if(key)map[key]=val;}
+    const sourceMargin=map['Margin %'];
+    if(sourceMargin!==undefined&&sourceMargin!==null&&sourceMargin!==''&&(!Number.isFinite(Number(sourceMargin))||Number(sourceMargin)!==0))throw Error('The imported workbook Margin % must be 0 for without-margin costing; edit the original workbook.');
     const rows=X.utils.sheet_to_json(costWs,{header:1,raw:true,defval:''});
     if(rows.length>260)throw Error('Too many workbook rows.');
     const lines=[];
@@ -371,7 +373,7 @@
       const n=v=>(v===''||v==null)?null:Number(v);
       lines.push({id:clean(row[0]),category:clean(row[1]),description:clean(row[2]),basis:clean(row[3]),quantity:n(row[4]),unit:clean(row[5]),wastePercent:n(row[6]),rate:n(row[7]),currency:clean(row[8]).toUpperCase(),localCurrencyPerUSD:n(row[9]),sourceRef:clean(row[10]),zeroRateReason:clean(row[11]),sourceDate:'',verifiedSource:false,isRequired:true});
     }
-    return {schemaVersion:E.VERSION,recordId:makeId(),revision:1,sourceKind:'user-entry',style:{buyer:clean(map.Buyer),factory:clean(map.Factory),styleNo:clean(map['Style No']),quantityPieces:map['Order quantity (pieces)']==null?null:Number(map['Order quantity (pieces)']),garmentType:clean(map['Garment category']),countryOfManufacture:clean(map['Manufacturing country']),fabricOriginCountry:clean(map['Fabric origin country']),fabricDetails:clean(map['Fabric description']),fabricWeightValue:map['Nominal fabric weight GSM/oz']||'',fabricWeightUnit:clean(map['Fabric weight unit']),fabricLCdays:map['Fabric LC days']||'',remarks:clean(map.Remarks)},policy:{marginPercent:0,commissionPercent:map['Commission percentage']==null?null:Number(map['Commission percentage']),commissionTreatment:clean(map['Commission treatment'])},lines};
+    return {schemaVersion:E.VERSION,recordId:makeId(),revision:1,sourceKind:'user-entry',style:{buyer:clean(map.Buyer),factory:clean(map.Factory),styleNo:clean(map['Style No']),quantityPieces:map['Order quantity (pieces)']==null?null:Number(map['Order quantity (pieces)']),garmentType:clean(map['Garment category']),countryOfManufacture:clean(map['Manufacturing country']),fabricOriginCountry:clean(map['Fabric origin country']),fabricDetails:clean(map['Fabric description']),fabricWeightValue:map['Nominal fabric weight GSM/oz']||'',fabricWeightUnit:clean(map['Fabric weight unit']),fabricLCdays:map['Fabric LC days']||'',quotationSourceRevision:clean(map['Quotation source revision']),remarks:clean(map.Remarks)},policy:{marginPercent:0,commissionPercent:map['Commission percentage']==null?null:Number(map['Commission percentage']),commissionTreatment:clean(map['Commission treatment'])},lines};
   }
   root.VesaCostingPortfolio=Object.freeze({report,validatedOffer,validOffers,comparisons,revisions,exportSheets,workbookDataToDraft,safeCell});
 })(globalThis);
