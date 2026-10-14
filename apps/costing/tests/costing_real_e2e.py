@@ -173,6 +173,24 @@ def main():
         require('NOT BUYER APPROVED' in report.content(), 'Draft report never implies buyer approval')
         report.close()
 
+        # Every approved draft report must download with its own identity and
+        # the explicit non-approval warning; none can silently become a quote.
+        for report_id in (f'CR{n:02d}' for n in range(1, 8)):
+            with page.expect_download(timeout=20000) as report_download:
+                page.locator(f'button[data-report-download="{report_id}"]').click()
+            report_path = tmp / f'{report_id}-draft.html'
+            report_download.value.save_as(report_path)
+            report_text = report_path.read_text(encoding='utf-8')
+            require(report_id in report_text and 'NOT BUYER APPROVED' in report_text,
+                    f'{report_id} native report download remains a labelled draft')
+        with page.expect_popup() as print_preview:
+            page.locator('button[data-report="CR07"]').click()
+        printable = print_preview.value
+        pdf_bytes = printable.pdf(format='A4', print_background=True)
+        require(pdf_bytes.startswith(b'%PDF-') and len(pdf_bytes) > 1000,
+                'Chromium renders the source and approval report as an A4 PDF')
+        printable.close()
+
         with page.expect_download() as dc:
             page.locator('#costingMain button[data-cmd="download"]').click()
         backup=tmp/'synthetic-record.vesacost';dc.value.save_as(backup)
@@ -184,14 +202,57 @@ def main():
         require(len(recs)==3 and len({r['recordId'] for r in recs})==3, 'Restored saved copy is a new record; old records preserved')
         require(any(r.get('importedFromRecordId')==source_id for r in recs), 'Saved-copy restore retains original-record reference')
 
+        # A broken selected file must never replace or delete valid local records.
+        before_corruption = record_snapshot(page)
+        invalid_copy = tmp / 'damaged-copy.vesacost'
+        invalid_copy.write_text('This is not a VESA saved copy.', encoding='utf-8')
+        upload_for_command(page, 'copy', invalid_copy)
+        require(record_snapshot(page) == before_corruption,
+                'Invalid saved-copy import preserves all previously saved costings')
+
+        # Use the actual shared Settings controls, not a mocked preferences bar.
+        settings_button = page.locator('.vesa-workspace [data-vesa-user]')
+        settings_button.click()
+        page.locator('.vesa-settings-dialog [data-pref-theme]').select_option('midnight-mono')
+        require(page.locator('html').get_attribute('data-dark') == 'true',
+                'Actual VESA Settings applies the shared dark theme')
+        require(record_snapshot(page) == before_corruption,
+                'Theme switching does not change any saved source or quotation')
+        page.locator('.vesa-settings-dialog [data-pref-theme]').select_option('clear-blue')
+        require(page.locator('html').get_attribute('data-dark') == 'false',
+                'Actual VESA Settings restores the shared light theme')
+        page.locator('.vesa-settings-dialog button[aria-label="Close settings"]').click()
+        require(not page.locator('.vesa-settings-dialog[open]').count(),
+                'Settings closes without a second workspace owner')
+
+        # Enter/Escape must reach the real shared File menu and close its dialog.
+        file_menu = page.locator('.vesa-workspace__nav [data-vesa-menu="File"]')
+        file_menu.focus()
+        file_menu.press('Enter')
+        require(page.locator('.costing-dialog[open]').count() == 1,
+                'Keyboard Enter opens the shared File command dialog')
+        page.keyboard.press('Escape')
+        require(page.locator('.costing-dialog[open]').count() == 0,
+                'Keyboard Escape dismisses the File command dialog')
+
         for lang in ('bn','hi','ta','en'):
             change_language(page,lang)
             require(page.locator('h1').count()>=1 and page.locator('.vesa-workspace').count()==1, f'{lang.upper()} mode keeps the unified workspace')
-        for width in (320,390,768,1024,1280):
+        for width in (320,390,640,768,1024,1280):
             page.set_viewport_size({'width':width,'height':850})
             page.locator('button[data-section="style"]').click()
             overflow=page.evaluate('document.documentElement.scrollWidth > window.innerWidth+2')
             require(not overflow,f'No document-level overflow at {width}px')
+        page.set_viewport_size({'width':390,'height':850})
+        mobile_menu = page.locator('[data-vesa-mobile-menu]')
+        mobile_menu.click()
+        require(mobile_menu.get_attribute('aria-expanded') == 'true',
+                'Mobile shared menu opens with accessible expanded state')
+        page.keyboard.press('Escape')
+        require(mobile_menu.get_attribute('aria-expanded') == 'false',
+                'Escape closes mobile menu and resets accessible expanded state')
+        require(record_snapshot(page) == before_corruption,
+                'Reports, settings, languages and viewport changes preserve records')
         require(not off_origin,'No external network requests during local-only workflow')
         require(not errors,'No uncaught browser JavaScript errors')
         context.close();browser.close()
