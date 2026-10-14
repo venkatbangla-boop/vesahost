@@ -174,7 +174,7 @@ def main():
         report.close()
 
         with page.expect_download() as dc:
-            page.locator('button[data-cmd="download"]').click()
+            page.locator('#costingMain button[data-cmd="download"]').click()
         backup=tmp/'synthetic-record.vesacost';dc.value.save_as(backup)
         require(backup.stat().st_size>100, 'Saved-copy file downloaded locally')
         upload_for_command(page,'copy',backup)
