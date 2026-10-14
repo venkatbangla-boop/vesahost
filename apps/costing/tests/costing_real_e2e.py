@@ -122,6 +122,10 @@ def main():
 
         page.goto(base+'/apps/', wait_until='domcontentloaded')
         app_tile=page.locator('.app-catalogue a[href="/apps/costing/"]')
+        page.wait_for_timeout(350)
+        if app_tile.count() != 1:
+            detail = page.evaluate("""() => ({url:location.href, catalogue:window.VesaAppCatalogue?.apps?.map(a => ({id:a.id,route:a.route})), cards:[...document.querySelectorAll('.app-catalogue a')].map(a=>({href:a.getAttribute('href'),label:a.textContent})), source:[...document.scripts].map(s=>s.src).filter(Boolean), appCentreHTML:document.getElementById('appCatalogue')?.innerHTML.slice(0,1500)})""")
+            raise AssertionError('App Centre Costing tile missing: '+repr(detail)+'; JS errors '+repr(errors))
         require(app_tile.count()==1, 'App Centre registers exactly one Costing 360 tile')
         app_tile.click()
         page.wait_for_url('**/apps/costing/', timeout=18000)
