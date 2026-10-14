@@ -1,5 +1,18 @@
 # VESA Costing 360 - Build / Acceptance Log
 
+## 2026-10-15: owner-authorized **demo-only** promotion candidate
+
+The owner expressly requested publishing the completed **personal VESA Costing 360 demo** from the verified feature branch to GitHub `main` under **Login → App Centre → Costing 360**. This is release authorization for **a static, non-commercial showcase/demo**, not authorization to offer paid/commercial SaaS or run real buyer/factory financial operations on GitHub Pages. Official hosting limitation: https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits.
+
+**Login and records:** Browser-local login is a UI convenience, not real server access control; the public repository/static pages can be fetched directly. Demo users must use fictional data only and must not enter confidential buyer, customer, factory or commercial rates. Records stay in the user's local browser; downloadable copies are required for recovery.
+
+**Actual tested release candidate:** [GitHub Actions Costing run 38620428421](https://github.com/venkatbangla-boop/vesahost/actions/runs/38620428421) completed **SUCCESS** at `0ef5ddbfa29c9749006fcf87b8ad7e6724af3026`: pure domain and import checks, syntax, TNA date/storage, PPM 168-checkpoint baseline, AQL sampling/portable invariants, real login/App Centre/Costing, all seven report downloads/PDF, Excel file flows and offline asset recovery, four-language/theme/mobile/keyboard tests and cross-route browser checks. The root service-worker cache was versioned and App Centre scripts cache-busted; the previous three app engines, storage formats and acceptance rules remain unmodified. Later branch additions contain only this release record and the post-Pages static-integrity workflow.
+
+**Pre-publication verdict:** `DEVELOPMENT VERIFIED` for the above tests; **DEMO NOT YET VERIFIED** until main fast-forwards, Pages finishes and the served URL/version matches source. Full human/physical buyer or factory acceptance is not being claimed. If hosting is used for commercial SaaS or real business operations, the prior Pages prohibition still applies and compliant hosting is required.
+
+**NEXT ACTION:** Fast-forward `main` from the audited tested candidate with expected SHA guard; inspect Pages deployment and the public Costing/App Centre/Login routes before changing status to `DEMO LIVE`. Preserve this work item; next development application is TNA Garment Merchandising Rework.
+
+
 **Source of requirements:** `VESA_COSTING_360_VSCODE_HANDOVER.zip` and its ten Costing blueprint documents. Separate 15-app master roadmap is a *planning reference*, not a claim that other applications are built.
 
 **Status:** `CONDITIONAL - FEATURE BRANCH ONLY`. Not public demo live; no claims of human/factory/buyer approval. Last verified GitHub branch commit should be checked before continuing.
