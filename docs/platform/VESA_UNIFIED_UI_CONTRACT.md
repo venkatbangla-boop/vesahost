@@ -139,6 +139,18 @@ Before acceptance:
 
 A new page is **not accepted** when these checks are absent, even if its domain feature works.
 
+### Permanent owner rule — visual uniformity and `DEMO LIVE` gate (2026-10-14)
+
+This contract is the permanent visual standard for **all existing and future VESA applications**. Every interface change must first read and follow this contract. Reuse the shared VESA header, CSS, navigation, English/Bengali/Hindi/Tamil language system, theme, and common buttons, forms, tables, typography, spacing, save actions and responsive patterns. App-specific content may differ, but global visual ownership and presentation must not diverge.
+
+Before marking an application **`DEMO LIVE`**:
+
+1. Automatically inspect and compare its desktop, tablet and mobile rendered screens with the approved VESA reference screens; fix observed UI drift and record the verification outcome.
+2. Verify its relevant working menus, forms, save/reopen, reports and app-specific functionality without altering TNA, PPM or AQL domain calculations merely to standardize visuals.
+3. Verify the **actual publicly served route and version** after deployment. A passing local test, Git commit or push alone is not proof that the demo is live.
+
+If required evidence is absent, record **`DEMO NOT YET VERIFIED`** rather than claiming `DEMO LIVE`. Preserve the existing regression, data-safety and release-authorization requirements.
+
 ## 9. Current regression and migration boundary
 
 The 2026-10-12 rendered audit reopened the prior shared-header acceptance: TNA visibly contains a global authenticated bar plus a second app header, each with a VESA logo and repeated identity/navigation controls. PPM contains its legacy home branding plus the global authenticated bar and shared workspace bar. AQL uses a separate branded entrance beneath the authenticated bar and has additional app-specific navigation after entry. These are implementation defects, not the approved target.
