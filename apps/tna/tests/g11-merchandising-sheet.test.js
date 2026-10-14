@@ -114,8 +114,8 @@ test('root service worker inventories both local view assets and TNA still uses 
   const html=fs.readFileSync(path.join(root,'apps/tna/index.html'),'utf8');
   const worker=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
   const css=fs.readFileSync(path.join(root,'apps/tna/assets/merchandising-sheet.css'),'utf8');
-  assert.match(html,/merchandising-sheet\.js\?v=0\.1\.0/);
-  assert.match(html,/merchandising-sheet\.css\?v=0\.1\.0/);
+  assert.match(html,/merchandising-sheet\.js\?v=0\.2\.0/);
+  assert.match(html,/merchandising-sheet\.css\?v=0\.1\.1/);
   assert.match(worker,/apps\/tna\/src\/merchandising-sheet\.js/);
   assert.match(worker,/apps\/tna\/assets\/merchandising-sheet\.css/);
   assert.match(css,/@media\(max-width:620px\)/);
