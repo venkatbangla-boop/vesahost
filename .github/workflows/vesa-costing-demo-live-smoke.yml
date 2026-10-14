@@ -3,6 +3,16 @@
 name: VESA Costing demo live smoke
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/vesa-costing-demo-live-smoke.yml'
+      - 'apps/costing/**'
+      - 'apps/index.html'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+      - 'service-worker.js'
   workflow_run:
     workflows:
       - pages build and deployment
