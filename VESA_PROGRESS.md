@@ -1,5 +1,42 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## Current Work portfolio queue and evidence-based resumption (2026-10-15)
+
+The following is the **approved execution priority**, not a count of completed apps. Preserve the historical TNA/PPM/AQL percentage dashboard below unchanged; those percentages are not evidence that any of the 17 portfolio items is publicly deployed.
+
+| # | Application | Work-queue status | Evidence / next dependency |
+|---|---|---|---|
+| 1 | Costing 360 | CONDITIONAL | `feature/costing-360` source and real CI; public release blocked by hosting/release gate |
+| 2 | TNA 360 Garment Merchandising Rework | NOT STARTED (rework) | `docs/tna/GARMENT_MERCHANDISING_REWORK_QUEUE.md` on Costing branch; current TNA core already exists |
+| 3 | Packing & Container 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 4 | Order & Commission 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 5 | Tech Pack & Spec 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 6 | Purchase Order 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 7 | LC & Payment 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 8 | Sampling & Approval 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 9 | Fabric & Trims 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 10 | Shipment & Documentation 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 11 | Production Tracker 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 12 | Factory & Vendor 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 13 | Label & Artwork Approval 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 14 | Buyer CRM 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 15 | Fabric & Supplier Comparison 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 16 | Claims & Disputes 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+| 17 | Product Development 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
+
+**Live branch audit:** `main` = `67d099b590905cf4dc1ac4473fb7f0c7166cd3e2`; `feature/tna360-continuous` = same SHA; `feature/costing-360` originally at `82bb0b6ede64ec4690bff65bedc2905fc9031bb3` and was 20 commits ahead of `main` when inspected. Costing source is **only** in the development branch; never mistake absence from `main` for lost work.
+
+**Costing evidence:** Last previously green GitHub Actions checkout run [38615777595](https://github.com/venkatbangla-boop/vesahost/actions/runs/38615777595) on `3942a90b456001ea9488c45e38d872c75418162c` covers 11 pure tests and 34 authentic Playwright assertions for login, App Centre, offline seven-sheet Excel, no-margin protection, save/reopen and responsive layout. It is NOT proof of human UAT or public release. The later `7383cb78c2618a60f02f2a993c1fa731bd052a92` test-only commit expands CI coverage to CR01–CR07 native draft downloads, print PDF, invalid saved-copy atomicity, actual Settings themes, keyboard dialog actions and mobile menu semantics. **Its CI verdict is PENDING** until the associated workflow completes. No domain source, TNA/PPM/AQL records, `main`, service worker, DNS or public route changed by this test patch.
+
+**Current application:** Costing 360 — `CONDITIONAL`, release remains `BLOCKED` pending policy-compliant hosting/owner release and verified route/version. The next independent development application is **TNA Garment Merchandising Rework** once Costing verification scope is recorded; do not hold the entire portfolio for a commercial Pages decision.
+
+**NEXT ACTION:** Inspect the final GitHub Actions result for Costing test commit `7383cb78` and resolve any failing real check without changing accepted pricing logic. If green, mark its specific development checks verified, record CI evidence in `docs/costing/RELEASE_AND_CONTINUITY.md`, then begin TNA merchandising UI file-level audit under the existing blueprint and queue.
+
+**Specification continuity:** Source of original Costing handover and 15-app roadmap remains an external/previously supplied artifact; neither was located in the inspected GitHub main or Costing branch tree, and accessible current Project/Library search did not locate an exact named copy. Keep unverified roadmap details explicitly pending rather than inventing them. The Costing branch's `docs/costing/RELEASE_AND_CONTINUITY.md` is an implemented-specification summary, not a substitute for any missing original source.
+
+---
+
+
 This is the single human dashboard for the VESA 360 program. It is updated from repository evidence, app execution trackers and passing tests. Only ACCEPTED gates count toward percentages; CONDITIONAL, ACTIVE, BLOCKED, REJECTED and NOT STARTED count as zero.
 
 ## Current GitHub-Free-only scope
