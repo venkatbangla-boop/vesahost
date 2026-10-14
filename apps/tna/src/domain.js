@@ -471,7 +471,10 @@
     delta('actualFinish',previousDates.actualFinish||null,actual);
     const editedKeys=Object.keys(changes);
     if(!editedKeys.length&&!evidence)return {ok:true,plan,unchanged:true};
-    if(!reason)return {ok:false,error:'Enter a reason or follow-up note for this activity change.'};
+    // Ordinary status progress was already permitted without a reason; keep
+    // that frozen flow, while requiring reasons for changing dates/ownership.
+    if(!reason&&(editedKeys.some(key=>key!=='status')||evidence||['blocked','rejected','waived','not-applicable'].includes(status)))
+      return {ok:false,error:'Enter a reason or follow-up note for this activity change.'};
     if(changes.baselineFinish&&((plan.baselineSnapshots||[]).length||plan.recordStatus!=='draft'))
       return {ok:false,error:'Original planned date is confirmed and cannot be overwritten.'};
     if(changes.currentTargetFinish&&(!source||!authority))
