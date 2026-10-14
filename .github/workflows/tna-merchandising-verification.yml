@@ -1,0 +1,60 @@
+name: VESA TNA garment-merchandising rework verification
+
+on:
+  push:
+    branches:
+      - feature/tna360-continuous
+    paths:
+      - '.github/workflows/tna-merchandising-verification.yml'
+      - 'apps/tna/**'
+      - 'service-worker.js'
+      - 'js/**'
+      - 'css/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tna-garment-rework:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout actual VESA repository
+        uses: actions/checkout@v4
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and non-mutating garments projection
+        run: |
+          node --check apps/tna/src/merchandising-sheet.js
+          node --check apps/tna/src/bootstrap.js
+          node --check service-worker.js
+          node --test apps/tna/tests/g11-merchandising-sheet.test.js
+      - name: Preserve existing TNA calculations, records and PPM/AQL rules
+        run: |
+          node apps/tna/tests/g01-shell.test.js
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g03-scheduling.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/tna/tests/g07-reports.test.js
+          node apps/tna/tests/g11-saved-copy-migration.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+      - name: Install browser test runner and Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Real HTTP browser proof for garment sheet and older app routes
+        run: |
+          export CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
+          mkdir -p output/playwright
+          node apps/tna/tests/g11-merchandising-sheet.cjs
+          node apps/tna/tests/g11-f06-order-master.cjs
+          node apps/tna/tests/g11-unified-shell-browser.cjs
+          node apps/tna/tests/g11-route-regression.cjs
+          node tests/vesa-platform-pages.cjs
+          node tests/vesa-shared-shell-matrix.cjs
