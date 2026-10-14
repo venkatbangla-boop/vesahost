@@ -1,5 +1,38 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+
+## Latest approved apparel-merchandising rework overlay — 2026-10-15
+
+**Current work item:** TNA 360 Garment Merchandising Rework — `ACTIVE`. Previous G00–G10/G11/G12 status rows below remain as historical pre-rework evidence; they are NOT authorization to skip this separately approved interface correction. **New GMR-01 development slice: `DEVELOPMENT VERIFIED` in GitHub Actions; full rework and human acceptance remain `CONDITIONAL`.**
+
+**Source baseline:** `main` at `33865558ab918cfa84fe08c66ccf77b65e1139a3` before GMR-01. Implemented strictly on existing `feature/tna360-continuous`; no merge/deploy/public TNA rework authorized or claimed. Canonical scope: `docs/tna/GARMENT_MERCHANDISING_REWORK_QUEUE.md` and `docs/tna/GARMENT_MERCHANDISING_UI_CONTRACT.md` plus original six TNA docs and the shared VESA UI/GitHub-Free-only contracts.
+
+### GMR-01 — real repository file-level audit and narrow, reversible UI patch
+
+| Path | Owner / data flow | Classification and change |
+|---|---|---|
+| `apps/tna/src/bootstrap.js` | existing controller and screen wiring; user clicks existing Edit Activity → `domain.updateTaskStatus` → local autosave | **Changed**: preserve existing editor; project a full master sheet first; maintain view-only as-of and filter state |
+| `apps/tna/src/merchandising-sheet.js` | new source-safe UI presentation class: existing OrderPlan + validated schedule → escaped sheet HTML/view model | **Added**: full rows, four locales, source-based planned/revised/forecast/actual, explicit waiting and overdue filters; **no writes** |
+| `apps/tna/assets/merchandising-sheet.css` | TNA-only responsive content styles using shared theme variables | **Added**: scrollable desktop table and mobile activity cards, no extra header/sidebar |
+| `apps/tna/index.html` | one TNA entry point / ordered local JS and CSS | **Changed**: load presentation script/styles before bootstrap |
+| `service-worker.js` | existing root static asset inventory | **Changed**: include new view assets and version cache; TNA route bypass behavior otherwise unchanged; do not claim new offline acceptance |
+| `apps/tna/tests/g11-merchandising-sheet.test.js` | read-only unit/contract proof | **Added**: knit/woven row count, missing evidence, civil date delay, explicit waiting, valid critical, four-language escape, nonmutation |
+| `apps/tna/tests/g11-merchandising-sheet.cjs` | disposable real HTTP Chromium/browser flow | **Added**: practice/knit complete rows, existing task edit, save/reload, locale and responsive behavior |
+| `.github/workflows/tna-merchandising-verification.yml` | GitHub real checkout CI | **Added**: focused domain/backup/security + cross-app browser regression |
+| `docs/tna/GARMENT_MERCHANDISING_UI_CONTRACT.md` | source mapping, honesty and acceptance criteria | **Added**, not a competing progress tracker |
+
+**Explicitly frozen/out of scope:** `apps/tna/src/domain.js`, `scheduling.js`, `storage.js`, `reports.js`, `operations.js`, their schemas/engines/critical path/baselines; PPM/AQL domain/inspection/sampling data; `js/auth.js`, `js/vesa-workspace-shell.js`, catalogue, vendor XLSX, existing records, CNAME and `main`. There are no provider calls, buyer order data, guessed calendar days, guessed master/B2B LCs, invented approvals, date baseline rewrites or required saved-record migration.
+
+**Verification:** [actual GitHub Actions run #38623739836](https://github.com/venkatbangla-boop/vesahost/actions/runs/38623739836), source/test commit `e4dedd83938da75cdaf83620aff08a19e73541f2`, **SUCCESS**. Node sheet suite: **6/6 PASS**. Existing TNA G01/G02/G03/G05/G07/G11 backup-migration and PPM/AQL frozen baseline/sample tests PASS; Node syntax PASS. Genuine Chromium real-HTTP TNA master-sheet edit/save/reopen/locales/mobile PASS; existing TNA Full Plan F06, unified shell, Login/App Centre route flow, platform pages at 320–1440px/200% zoom, and PPM/AQL/TNA shared-shell matrix PASS. No confidential data, no external network requests or browser page errors in the proof. This is **not** the original 95-command full local run or a human merchandiser acceptance.
+
+**Known gaps / not falsely counted:** Target/forecast/actual date editing needs a new audited validation/approval command; status-only Edit Activity is still the existing workflow. Canonical GSM and LC status are not present as approved structured source fields; display `Needs Information`. Approval authority/waiting party update UI, real LC planning, Excel-import column parity, report/print parity and real buyer/factory merchandiser testing remain separate rework gates. Cached TNA browser routes were not demonstrated fully offline by GMR-01. Previous 12-row TNA human UAT checklist remains `NOT TESTED`.
+
+**GMR-01 verdict:** `DEVELOPMENT VERIFIED` for its exact automated UI/read-only projection scope; overall rework `ACTIVE / CONDITIONAL` and **NOT TNA REWORK DEMO LIVE**. **Rollback:** revert only GMR-01 commits on the feature branch, without touching original saved copies or re-baselining any dates.
+
+**NEXT ACTION (one bounded patch):** Audit and implement **GMR-02** source-backed garment order detail/LC/GSM and activity-edit commands for owner, explicit waiting party, planned vs approved-revised dates and evidence, with baseline protection and backward-compatible saved copies. Unit-test each transition before exposing editable cells. Then test linked Excel/report parity and authentic knit/woven merchandiser UAT. **Next portfolio app after TNA acceptance: Packing & Container 360.**
+
+---
+
 **THIS FILE IS THE RESUMPTION SOURCE OF TRUTH FOR VS CODE CODEX.** Keep it in Git. Reconcile it with real code/commits/tests before advancing; do not mark boxes from confidence or narrative alone.
 
 **Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` governs platform choices. Hosted backend/identity/database/object storage, remote multiuser synchronization and external notification delivery are `DEFERRED_BY_SCOPE`, not failed or accepted. Local planning, references, in-app alerts, saved-copy safety and regression work remain active.
