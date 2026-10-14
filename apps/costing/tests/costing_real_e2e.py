@@ -253,6 +253,36 @@ def main():
                 'Escape closes mobile menu and resets accessible expanded state')
         require(record_snapshot(page) == before_corruption,
                 'Reports, settings, languages and viewport changes preserve records')
+        # Check the actual root service-worker update on a disposable profile.
+        # This catches stale App Centre scripts and missing offline Excel assets.
+        page.evaluate("""async () => {
+          await navigator.serviceWorker.register('/service-worker.js');
+          await navigator.serviceWorker.ready;
+        }""")
+        page.wait_for_function("() => !!navigator.serviceWorker.controller", timeout=90000)
+        require(page.evaluate("() => caches.keys().then(keys => keys.includes('vesa-v69-costing-demo'))"),
+                'New root cache version activates for the Costing App Centre release')
+
+        context.set_offline(True)
+        page.goto(base+'/apps/', wait_until='domcontentloaded', timeout=25000)
+        page.locator('.app-catalogue a[href="/apps/costing/"]').wait_for(timeout=12000)
+        require(page.locator('.app-catalogue a[href="/apps/costing/"]').count()==1,
+                'Offline App Centre still shows exactly one Costing card')
+        page.locator('.app-catalogue a[href="/apps/costing/"]').click()
+        page.locator('button[data-cmd="resume"]').wait_for(timeout=12000)
+        page.locator('button[data-cmd="resume"]').click()
+        require(record_snapshot(page)==before_corruption,
+                'Offline Costing reopens the same saved synthetic records')
+        page.locator('button[data-section="reports"]').click()
+        with page.expect_download(timeout=30000) as offline_download:
+            page.locator('button[data-cmd="xlsxExport"]').click()
+        offline_workbook=tmp/'offline-draft.xlsx'
+        offline_download.value.save_as(offline_workbook)
+        with zipfile.ZipFile(offline_workbook) as workbook:
+            require('xl/workbook.xml' in workbook.namelist(),
+                    'Vendored Excel export works offline after real service-worker installation')
+        context.set_offline(False)
+
         require(not off_origin,'No external network requests during local-only workflow')
         require(not errors,'No uncaught browser JavaScript errors')
         context.close();browser.close()
