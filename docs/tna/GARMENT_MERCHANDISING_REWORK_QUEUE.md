@@ -25,4 +25,4 @@
 
 **Priority queue:** (1) Complete Costing 360, (2) TNA 360 Garment Merchandising Rework, (3) Packing & Container 360, (4) Order & Commission 360, then remaining approved roadmap.
 
-**Current status:** **QUEUED / NOT STARTED**. No TNA source changes authorized by this tracker alone.
+**Current status (2026-10-15): ACTIVE / CONDITIONAL.** GMR-01 full garment master-sheet presentation is **DEVELOPMENT VERIFIED** in [real checkout CI 38623739836](https://github.com/venkatbangla-boop/vesahost/actions/runs/38623739836), on `feature/tna360-continuous` only. See `docs/tna/GARMENT_MERCHANDISING_UI_CONTRACT.md` and the existing `docs/tna/06_EXECUTION_TRACKER.md` for actual UI/schema gaps, frozen records, tests, rollback and exact next GMR-02 command. No public rework deployment or factory/buyer UAT is claimed.
