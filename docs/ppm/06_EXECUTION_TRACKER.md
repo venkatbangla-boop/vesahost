@@ -17,7 +17,7 @@
 | Last accepted implementation gate | **P-G08 — TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G08 reference integration; P-G09 has a tested dormant local contract while its live provider/two-account portion is `DEFERRED_BY_SCOPE`; no production deployment |
 | Current gate | `P-G10 — LOCAL HANDOFF PROVEN / RELEASE BLOCKED (P-G09 remains deferred by scope)` |
-| LAST COMPLETED ACTION | Reconciled P-G10 against the current release-readiness report and clean `f5095b6` 91-command matrix: feature ledger, cross-app tests and responsive/report screenshot requirements are locally proven; independent/user/physical and production rows remain open. |
+| LAST COMPLETED ACTION | P-G10 local handoff remains proven in clean `accf1c8` 94-command cross-app matrix (949.6s, no retry): feature ledger, tests and responsive/report evidence remain green; independent/user/physical and production rows remain open. |
 | NEXT ACTION | Stop local PPM release work at HOLD; resume only for independent acceptance evidence, an approved provider-scope change, a demonstrated regression or explicit authorization naming a staging/release SHA and rollback window. |
 | Deferred / active setup issue | Hosted backend and cross-company provider roles are `DEFERRED_BY_SCOPE`; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 

@@ -16,11 +16,11 @@
 | Specifications | This file plus root `AGENTS.md` and documents `01`–`05` |
 | Design status | **G00–G08 and the G10 local slice accepted** on the feature branch; G09 provider work is deferred, G11 remains conditional on independent reader/physical evidence and G12 release remains blocked |
 | Implementation status | **G00–G08 + G10 ACCEPTED LOCALLY / NOT DEPLOYED; G09 DEFERRED WITH CONDITIONAL LOCAL CONTRACTS; G11 CONDITIONAL; G12 LOCAL HANDOFF COMPLETE / RELEASE BLOCKED**. No server, identity, database, storage or notification provider is live. |
-| Last accepted patch group | **G10 — local references and in-app alert policy** (accepted from clean full baseline `f5095b6`) |
+| Last accepted patch group | **G10 — local references and in-app alert policy** (retained by clean full baseline `accf1c8`) |
 | Current patch group | **G12 — external acceptance and release blockers** |
 | Production / cloud status | **NOT DEPLOYED / NOT VERIFIED** |
 | Deferred by current scope | Cloud hosting/identity/database/object storage, remote collaboration and external notification providers |
-| Resume anchor | Clean `f5095b6` passes the current 91-command matrix; latest TNA runtime remains `253672c`, and release HOLD remains explicit |
+| Resume anchor | Clean `accf1c8` passes the current 94-command matrix in 949.6s without retry; latest TNA runtime remains `253672c`, and release HOLD remains explicit |
 | LAST COMPLETED ACTION | Reconciled and accepted G10's GitHub-Free local slice: typed PPM/AQL references plus visible in-app alert/deduplication/quiet-hours/fail-closed contracts pass; external delivery remains deferred. |
 | NEXT ACTION | No further independent TNA source patch is identified. Obtain owner-controlled Excel desktop-reader, real-device/screen-reader/factory and representative saved-copy evidence, or explicit authorization for remote/live-asset verification and a named staging/release SHA; provider capabilities remain `DEFERRED_BY_SCOPE`. |
 

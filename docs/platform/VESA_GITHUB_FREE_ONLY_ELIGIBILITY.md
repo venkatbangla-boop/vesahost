@@ -65,7 +65,7 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 | A-G08 | ACTIVE | ACCEPTED | All AR01–AR15 variants, including AR11 selection provenance/history/inspection completion, four-language authored report chrome, A4 rendering and share fallback pass locally; physical/device/printer/screen-reader/factory/buyer acceptance remains external |
 | A-G09 | ACTIVE — LOCAL SLICE ONLY | ACCEPTED | Explicit local PPM/TNA record IDs, versions, dates, status/milestone and verifier provenance pass visible save/reopen/removal without changing AQL decisions/dates or reading sibling storage; server lookup/tenant/two-account verification is deferred |
 | A-G10 | DEFERRED_BY_SCOPE | EXCLUDED | Hosted roles/authorization/API/database/remote collaboration |
-| A-G11 | ACTIVE | ACCEPTED | Clean `f5095b6` expanded matrix passes 91/91 commands across code/data/browser/visual/offline/sibling/shared boundaries |
+| A-G11 | ACTIVE | ACCEPTED | Clean `accf1c8` expanded matrix passes 94/94 commands across code/data/browser/visual/offline/sibling/shared boundaries, including AR11 automatic/manual/combined selection |
 | A-G12 | ACTIVE — LOCAL SLICE ONLY | BLOCKED | Local readiness/limitations/rollback remain active; public production authorization/deployment is outside current execution scope |
 
 `AQL free-only = ROUND(100 × 11 / 12) = 92%`.
