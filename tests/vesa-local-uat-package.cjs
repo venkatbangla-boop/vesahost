@@ -17,16 +17,20 @@ const checks={
   '03_AQL_LOCAL_UAT.md':15,
   '04_SHARED_UI_LOCAL_UAT.md':10,
 };
+const statusCounts={PASS:0,FAIL:0,'NOT TESTED':0};
 for(const [name,count] of Object.entries(checks)){
   const body=text(name),rows=[...body.matchAll(/^\| UAT-[A-Z]+-\d+ \|.+\| (PASS|FAIL|NOT TESTED) \|/gm)];
   assert.equal(rows.length,count,`${name} must contain ${count} human checklist rows`);
-  assert.ok(rows.every(row=>row[1]==='NOT TESTED'),`${name} must not pre-claim human PASS/FAIL`);
+  for(const row of rows)statusCounts[row[1]]++;
   assert.ok(body.includes('Expected result')&&body.includes('Evidence / notes'),`${name} must retain expected-result and evidence columns`);
 }
 
 const aql=text('03_AQL_LOCAL_UAT.md');
 for(const marker of ['Automatic','manual','Auto Fill Remaining','combined','without replacement','leading zeros','replacement','history','saved copy','inspected','report','not buyer-certified'])assert.ok(aql.toLowerCase().includes(marker.toLowerCase()),`AR11 human UAT marker missing: ${marker}`);
 const results=text('05_RESULTS_AND_SIGNOFF.md');
-assert.ok(results.includes('| Total | 0 | 0 | 49 | NOT TESTED |'), 'UAT results total must match all human checklist rows');
+const total=results.match(/^\| Total \| (\d+) \| (\d+) \| (\d+) \|/m);
+assert.ok(total,'UAT results total row is missing');
+assert.deepEqual(total.slice(1).map(Number),[statusCounts.PASS,statusCounts.FAIL,statusCounts['NOT TESTED']],'UAT results total must match all human checklist rows');
+assert.equal(Object.values(statusCounts).reduce((sum,value)=>sum+value,0),49,'UAT status counts must total 49');
 assert.ok(results.includes('PRODUCTION HOLD')&&results.includes('NOT AUTHORIZED'), 'UAT sign-off must retain production HOLD');
-console.log('VESA local UAT package passed: 49 human rows remain NOT TESTED with startup, AR11, evidence and HOLD boundaries');
+console.log(`VESA local UAT package passed: human results PASS=${statusCounts.PASS}, FAIL=${statusCounts.FAIL}, NOT TESTED=${statusCounts['NOT TESTED']} with startup, AR11, evidence and HOLD boundaries`);

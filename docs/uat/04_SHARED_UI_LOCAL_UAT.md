@@ -4,7 +4,7 @@ Tester: __________  Date/time/timezone: __________  Browser/device: __________  
 
 | ID | Human test steps | Expected result | Status | Evidence / notes |
 |---|---|---|---|---|
-| UAT-UI-01 | Open Login, authenticate, then view App Centre, TNA, PPM and AQL. | Login has one logged-out brand; every authenticated route has exactly one visible VESA logo/header/account/Settings/save owner. | NOT TESTED | |
+| UAT-UI-01 | Open Login, authenticate, then view App Centre, TNA, PPM and AQL. | Login has one logged-out brand; every authenticated route has exactly one visible VESA logo/header/account/Settings/save owner. | PASS | User-confirmed 2026-10-14 14:48:44 UTC. Chrome/Windows screenshots supplied in chat for App Centre, AQL and PPM; user explicitly confirmed the complete check passed. |
 | UAT-UI-02 | On each authenticated app inspect the command order. | Commands appear once and in order: Home / File / Edit / View / Tools / Help. | NOT TESTED | |
 | UAT-UI-03 | Use Home/App Centre links and direct authenticated routes; log out and try a protected route. | Navigation preserves the intended route; logged-out protected access returns to Login with a same-origin return target. | NOT TESTED | |
 | UAT-UI-04 | Change language and all available themes in Settings, then move among apps. | Preferences apply consistently; app records and user-entered values do not change. | NOT TESTED | |

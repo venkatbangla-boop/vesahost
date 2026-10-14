@@ -18,11 +18,11 @@
 
 | Area | PASS | FAIL | NOT TESTED | Area verdict | Evidence folder/reference |
 |---|---:|---:|---:|---|---|
-| Shared UI | 0 | 0 | 10 | NOT TESTED | |
+| Shared UI | 1 | 0 | 9 | IN PROGRESS | Chat evidence: UAT-UI-01, 2026-10-14 |
 | TNA | 0 | 0 | 12 | NOT TESTED | |
 | PPM | 0 | 0 | 12 | NOT TESTED | |
 | AQL | 0 | 0 | 15 | NOT TESTED | |
-| Total | 0 | 0 | 49 | NOT TESTED | |
+| Total | 1 | 0 | 48 | IN PROGRESS | |
 
 ## Defects and retests
 
