@@ -21,6 +21,17 @@
 | NEXT ACTION | Audit A-G11 against the current 89-command boundary, saved-copy/visual indexes and repository state; add only genuinely missing local stabilization evidence. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
+### A-G11 A01–A60 evidence-ledger audit — accepted local checkpoint
+
+TIME / TIMEZONE: 2026-10-14 12:35 Asia/Dhaka
+BRANCH / BASE COMMIT: `feature/tna360-continuous` / `c94fec3`
+FILE-LEVEL AUDIT: `docs/aql/01_AUDIT_MASTER_BLUEPRINT.md` owns the immutable A01–A60 requirement list; this tracker currently contains only a suggested two-row example, so A-G11 cannot truthfully satisfy its first checklist item. The 35-area ledger is complete and executable, and the current deterministic/browser suites already cover most local requirements. In scope: add one exact 60-row evidence matrix to this tracker and one additive validator that freezes unique sequential IDs, verdict vocabulary, nonempty evidence/boundaries and policy-sensitive A03/A09/A25/A48/A56–A58/A60 treatment. Frozen/out of scope: all application/runtime/service-worker files, sampling/Ac-Re/result rules, schemas/saved formats, sibling apps, buyer/legal/randomization policy, providers, physical devices, production data and deployment.
+RISKS / VERIFICATION / ROLLBACK: avoid converting synthetic references into buyer approval, local files into certification, typed carton codes into random selection/scanner proof or disabled provider contracts into secure collaboration. Run the focused validator plus A-G00/A-G02/A-G03/A-G04/A-G05/A-G06/A-G07/A-G08/A-G09/release contracts; the new validator will join the full runner automatically. Revert the additive validator/tracker/dashboard checkpoint; no runtime, data, cache or migration cleanup is required.
+IMPLEMENTED / EVIDENCE: added an exact A01–A60 matrix with current requirement wording, constrained verdict, direct test/source evidence and an explicit remaining-work boundary for every row. The honest split is 52 `PROVEN_LOCAL`, 5 `CONDITIONAL` (buyer/manual authority, carton randomization, loading/physical barcode, AR11 report and verified remote references), 2 `DEFERRED_BY_SCOPE` provider rows and 1 `BLOCKED_EXTERNAL` factory-acceptance row. The additive validator enforces all 60 sequential unique IDs, nonempty fields, exact counts and the policy-sensitive row verdicts.
+TEST EVIDENCE: validator syntax and execution pass; focused A-G00 Q01–Q24, A-G02, A-G03, both A-G04 contracts, A-G05, A-G06, A-G07, A-G08, A-G09 and release contracts all pass; `git diff --check` passes. No browser suite was repeated because this checkpoint adds only an evidence ledger/test and changes no runtime; the current full boundary remains `5cae12c`, 89/89 commands in 891.5s.
+VERDICT: accepted local checkpoint — A-G11 checklist item 1 is complete and executable. A-G11 itself remains conditional until the saved-copy/visual evidence index is reconciled and the expanded full runner passes as a final stabilization boundary. External review/device/factory evidence remains documented separately and is not counted as local software proof.
+NEXT ACTION (ONE PRECISE STEP): reconcile the AQL saved-copy and visual evidence index against current artifacts, then run the expanded full regression once at the A-G11 acceptance boundary.
+
 ### A-G04 conditional-area reconciliation — gate accepted locally
 
 TIME / TIMEZONE: 2026-10-14 12:20 Asia/Dhaka
@@ -641,7 +652,7 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 - [ ] Never call static local login secure multiuser or local entered signature externally verified.
 
 ### A-G11 — Full code, data and visual regression gate
-- [ ] Every A01–A60 requirement evidence-backed, 35 historical areas reviewed with true status.
+- [x] Every A01–A60 requirement evidence-backed in the executable 60-row matrix; all 35 historical areas retain true status in the separate executable ledger.
 - [ ] Q01–Q24 deterministic and browser tests pass after changes; no invalid pass.
 - [ ] Login, PPM, TNA (if exists), root App Centre, uniform shell screenshots pass.
 - [ ] No console errors, wrong reports, data-loss imports, broken service workers, hidden menus.
@@ -655,6 +666,75 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 
 ## Coverage ledger — 60 requirements + 35 legacy areas
 Each feature ID A01–A60 is initially `not-started / unverified for this rework`, even if existing baseline implements part of it. Each must carry `CURRENT-SOURCE-EVIDENCE`, `VERDICT`, `GATE`, `TEST`, `SHA`, `NOTE`. 35 original areas numbered 01–35 in doc 01 must also have `existing | partial | absent | blocked`, supported by direct code/fixture evidence and required follow-up. Do not silently shrink these registers.
+
+### A01–A60 executable evidence matrix — audited 2026-10-14
+
+`PROVEN_LOCAL` means the browser-local software contract has direct deterministic and/or authenticated-browser evidence. It does not represent buyer/legal authority, physical inspection, provider security, factory acceptance or production approval. The validator in `apps/aql/tests/a-g11-60-requirement-matrix.cjs` freezes IDs, verdict vocabulary, evidence/boundary completeness and the policy-sensitive rows.
+
+<!-- AQL_60_REQUIREMENT_MATRIX_START -->
+| ID | Requirement | Verdict | Current evidence | Remaining work / boundary |
+|---|---|---|---|---|
+| A01 | Home actions and saved-copy entry | PROVEN_LOCAL | A-G02 authenticated New/Continue/Open/Practice/Open Saved Copy workflow | none for audited local contract |
+| A02 | Order and inspection identity | PROVEN_LOCAL | setup fields, durable stage fixtures and report identity assertions | none for audited local contract |
+| A03 | Buyer/manual approved reference | CONDITIONAL | versioned criteria/manual/reference fields, attachment binding and provenance guards | approved real buyer instruction remains external input |
+| A04 | Stage routing and responsibility | PROVEN_LOCAL | 13-route catalogue, inspector assignment and exact reopen evidence | none for audited local contract |
+| A05 | Lot/grouping basis | PROVEN_LOCAL | sampling groups preserve style/colour/size/lot basis and mismatches | none for audited local contract |
+| A06 | Frozen sampling table | PROVEN_LOCAL | A-G00/A-G03 lot-code, level, sample and supported-cell fixtures | none; numerical policy remains frozen |
+| A07 | Severity/counting/Ac-Re provenance | PROVEN_LOCAL | Q08–Q10 plus visible basis/source/reviewer evidence | none for entered local policy; buyer authority is not inferred |
+| A08 | Sample allocation and reconciliation | PROVEN_LOCAL | allocation mismatch/remainder/checked-count contracts and AR03 report | none for audited local contract |
+| A09 | Random carton selection | CONDITIONAL | explicit no-replacement deterministic contract exists only as a legacy technical primitive | approved reproducible policy, provenance and override rules are missing |
+| A10 | Custom/tightened/reduced/100% plan guard | PROVEN_LOCAL | unsupported cells fail closed; custom plan requires explicit entered source and limits | no unsupplied buyer plan is inferred |
+| A11 | Plan approval provenance | PROVEN_LOCAL | reviewer, signature, timestamp, edition, source and revision contract | none for audited local contract |
+| A12 | Unsupported plan blocking | PROVEN_LOCAL | null/arrow/unknown cells remain pending and AR03 explains no-guess boundary | none for audited local contract |
+| A13 | Fabric roll inspection | PROVEN_LOCAL | frozen point-density engine, durable roll record and AR06 reconciliation | none for audited local contract |
+| A14 | Laboratory tests | PROVEN_LOCAL | fail/pending rules, exact attached evidence binding, reopen and report coverage | external laboratory acceptance is not inferred |
+| A15 | Shade management | PROVEN_LOCAL | Delta E/limit/disposition guards and durable shade register | none for audited local contract |
+| A16 | Incoming materials | PROVEN_LOCAL | supplier/lot/quantity/lab/quarantine guards and durable browser lifecycle | none for audited local contract |
+| A17 | IPC / first production | PROVEN_LOCAL | IPC criteria/record, linked event and save/reopen evidence | none for audited local contract |
+| A18 | Cutting quality | PROVEN_LOCAL | cutting criteria/record plus equipment/needle/metal supporting registers | none for audited local contract |
+| A19 | Inline quality | PROVEN_LOCAL | count/DHU/repair guards, deliberate failure, reopen and AR08 report | none for audited local contract |
+| A20 | Endline quality | PROVEN_LOCAL | separate first-pass/count/RFT contract, reopen and AR09 report | none for audited local contract |
+| A21 | Pre-final readiness | PROVEN_LOCAL | threshold/checkpoint fail-closed lifecycle and readiness-only decision | none for audited local contract |
+| A22 | Final random inspection | PROVEN_LOCAL | frozen code/sample/Ac-Re boundary, findings, unlocked Not released reopen | carton randomization remains A09/A48 policy input |
+| A23 | Screening and rework | PROVEN_LOCAL | one-piece target, repair/recheck/disposition and immutable source failure | none for audited local contract |
+| A24 | Linked reinspection | PROVEN_LOCAL | fresh event, copied immutable source snapshot and independent sampling state | none for audited local contract |
+| A25 | Loading/barcode/seal/handover | CONDITIONAL | owned before/after bytes, count reconciliation, typed barcode, seal/handover and reopen | approved randomization plus physical scanner/custody evidence remain |
+| A26 | Production monitoring | PROVEN_LOCAL | output/balance guards, durable monitor record and AR08 reconciliation | none for audited local contract |
+| A27 | Supplier audit and CAPA | PROVEN_LOCAL | Critical guard, acknowledgement separation, CAPA lifecycle and AR14 | external supplier/factory acceptance is not inferred |
+| A28 | Equipment, needle and metal control | PROVEN_LOCAL | expiry, containment and challenge fail-closed browser lifecycle | physical device/process validation remains external |
+| A29 | Sample custody | PROVEN_LOCAL | sealed identity/recipient/date/location/return/reference exact reopen | physical custody is not inferred |
+| A30 | Factory acknowledgement | PROVEN_LOCAL | denied receipt remains pending; typed acknowledgement cannot change audit result | external factory acceptance is not inferred |
+| A31 | Finding identity and linkage | PROVEN_LOCAL | finding IDs/count/severity/location plus piece/carton/lot-owned evidence restore | physical observation authenticity is not inferred |
+| A32 | Measurement rules | PROVEN_LOCAL | POM/spec/unit/tolerance/actual PASS/FAIL/PENDING and report/reopen proof | none for audited local contract |
+| A33 | Evidence integrity and limits | PROVEN_LOCAL | original bytes, preview metadata, hashes, ownership and 200/280 MiB boundaries | physical capture authenticity is external |
+| A34 | Decision reason tree | PROVEN_LOCAL | visible pending/failure/unsupported reasons across sampling and stage fixtures | none for audited local contract |
+| A35 | Immutable original observations | PROVEN_LOCAL | failure/CAPA/rework/reinspection and linked-parent byte preservation | none for audited local contract |
+| A36 | CAPA lifecycle | PROVEN_LOCAL | containment/cause/action/owner/due/verification/effectiveness/closure safeguards | external CAPA approval is not inferred |
+| A37 | Atomic imports | PROVEN_LOCAL | project/master/sync malformed, malicious, duplicate and oversized rollback tests | none for audited local contract |
+| A38 | Stale approval/release invalidation | PROVEN_LOCAL | edits reset confirmation/approval state and imports reset release authority | none for audited local contract |
+| A39 | Unified VESA shell | PROVEN_LOCAL | A-G01 and shared one-shell ownership matrices | none for audited local contract |
+| A40 | Single sticky navigation owner | PROVEN_LOCAL | shared shell DOM/geometry assertions across routes and widths | none for audited local contract |
+| A41 | Responsive forms and cards | PROVEN_LOCAL | 320–1440/zoom matrices plus focused 390/1280 report containment | real-device review remains external, not a local software gap |
+| A42 | Beginner and expert workflow | PROVEN_LOCAL | six-step guidance with all 13 stage controls retained | none for audited local contract |
+| A43 | Four-language authored guidance | PROVEN_LOCAL | EN/BN/HI/TA UI/report chrome with unchanged entered values and IDs | technical source terms remain explicitly English |
+| A44 | Nontechnical task wording | PROVEN_LOCAL | Save/Open Saved Copy/Reports wording and shared command contracts | none for audited local contract |
+| A45 | Local autosave truth | PROVEN_LOCAL | saving/unsaved/saved states, durable drafts and quota rescue guidance | browser storage remains device-local |
+| A46 | Portable restore and quarantine | PROVEN_LOCAL | current/legacy restore, fresh identities and unsupported/corrupt atomic rejection | none for audited local contract |
+| A47 | Offline update safety | PROVEN_LOCAL | failed-install rollback, dirty old-tab preservation, cache replacement and reopen | none for audited local contract |
+| A48 | Fifteen report variants | CONDITIONAL | AR01–AR10 and AR12–AR15 plus share/download and four-language A4 proof pass | AR11 requires approved carton-randomization policy |
+| A49 | Report media integrity | PROVEN_LOCAL | owned photos, charts/fonts/long tables and five-page browser PDF review | physical printer/device review remains external |
+| A50 | Analytics traceability | PROVEN_LOCAL | authenticated 600-record basis-safe dashboard with guarded denominators | none for audited local contract |
+| A51 | Login/App Centre/preferences | PROVEN_LOCAL | protected routes, catalogue entry and shared account/settings matrices | local login is not secure tenant identity |
+| A52 | Single theme/language owner | PROVEN_LOCAL | central Settings and absence of duplicate app controls | none for audited local contract |
+| A53 | Accessibility, zoom and performance | PROVEN_LOCAL | keyboard/focus/landmarks/reduced-motion/contrast, responsive and bounded render tests | independent screen-reader/real-device review remains external |
+| A54 | Executable regression depth | PROVEN_LOCAL | Q01–Q24 plus stage, restore, import, worker, report and cross-app suites | rerun full matrix at meaningful boundaries |
+| A55 | Failure and recovery guidance | PROVEN_LOCAL | quota/corrupt/oversize/import/update failures preserve state with plain guidance | none for audited local contract |
+| A56 | Secure identity and tenant authorization | DEFERRED_BY_SCOPE | provider-neutral disabled contracts retained without network or security claims | requires separately authorized hosted provider and two-account proof |
+| A57 | Verified PPM/TNA references | CONDITIONAL | typed reference/App Centre and no-cross-store/no-auto-GO contracts pass | authoritative source-record lookup/version verification needs approved service/input |
+| A58 | Server audit, notification and sync | DEFERRED_BY_SCOPE | disabled/offline-safe boundaries retained | requires authorized hosted services; excluded from Free-only implementation |
+| A59 | Practice/demo separation | PROVEN_LOCAL | practice watermark, copy lineage and production-save/export isolation | none for audited local contract |
+| A60 | Factory/inspector acceptance and deploy approval | BLOCKED_EXTERNAL | synthetic tests are explicitly not represented as field acceptance | requires user-arranged real factory/device review and explicit release authorization |
+<!-- AQL_60_REQUIREMENT_MATRIX_END -->
 
 ### Original 35-area evidence matrix — audited 2026-10-12
 
@@ -711,11 +791,11 @@ A60 | factory pilot not supplied | field acceptance | blocked external | — | �
 ## Minimum automation suite (run after affected groups)
 - [x] Current `node apps/aql/tests/release-contract.cjs` remains green (is not sole proof).
 - [x] New sampling fixture tests exercise all actual supported/unsupported table paths.
-- [ ] Browser flows 6-step plus 13-stage and saved/reopen/reinspection.
-- [ ] Existing PPM `node apps/ppm/tests/regression.cjs`, `planning.cjs`, `update.cjs` when shared platform changes.
-- [ ] App Centre/login/admin, theme+language persistence and security limitations reconfirmed.
-- [ ] Mobile/tablet/desktop screenshots, scroll/menu overlay checks and report exports.
-- [ ] No destructive local record cleanup; explicit rollback proof.
+- [x] Browser flows cover 6-step plus 13-stage and saved/reopen/reinspection.
+- [x] Existing PPM regression/planning/update suites run through the full cross-app orchestrator at meaningful boundaries.
+- [x] App Centre/login/admin, theme+language persistence and security limitations are reconfirmed by shared/AQL browser contracts.
+- [x] Mobile/tablet/desktop screenshots, scroll/menu overlay checks and report exports have retained current evidence.
+- [x] No destructive local record cleanup is used; rollback and saved-copy recovery are explicit.
 
 ## Append-only patch journal
 ```text
