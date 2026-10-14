@@ -30,6 +30,17 @@ jobs:
           node-version: '22'
       - name: Run Costing calculation and import contract tests
         run: node --test apps/costing/tests/costing.test.cjs
+      - name: Check shared JavaScript syntax
+        run: |
+          node --check js/preferences.js
+          node --check js/app-catalogue.js
+          node --check js/auth.js
+          node --check js/vesa-workspace-shell.js
+      - name: Smoke-check preserved TNA, PPM, AQL platform boundaries
+        run: |
+          node tests/vesa-workspace-shell-contract.cjs
+          node apps/tna/tests/g01-shell.test.js
+          node apps/aql/tests/a-g03-sampling.cjs
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
