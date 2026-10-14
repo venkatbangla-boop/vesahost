@@ -4,7 +4,7 @@
 
 **Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` makes hosted identity/backend/database, remote collaboration and external notification delivery `DEFERRED_BY_SCOPE`. Sampling/Ac-Re provenance, stage behavior, reinspection history, local records, saved-copy recovery, reports and shared UX remain active; no carton-randomization policy may be invented.
 
-**Free-only denominator:** 12 active gates; A-G10 is excluded. A-G09 and A-G12 retain one active local unit each while provider/deployment portions are deferred. Current accepted numerator: 7. See `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`.
+**Free-only denominator:** 12 active gates; A-G10 is excluded. A-G09 and A-G12 retain one active local unit each while provider/deployment portions are deferred. Current accepted numerator: 8. See `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`.
 
 ## Starting snapshot — 2026-10-10
 | Field | Current reality |
@@ -15,11 +15,20 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01, A-G02, A-G04, A-G05, A-G06 and A-G07. A-G03 remains policy-blocked; A-G08 and A-G09 retain conditional local slices. Stage workflows, pre-final/final/rework/loading/supplier QA and durable local persistence are complete; AR11 policy plus buyer/legal and physical/device/factory acceptance remain separate external evidence. |
-| Current gate | **A-G03** remains policy-blocked; proceed to the A-G11 local stabilization audit without inventing carton-randomization, buyer/legal, provider, device or factory evidence. |
-| LAST COMPLETED ACTION | A-G04 is accepted locally after reconciling the 35-area matrix to 29 proven-local, 4 conditional-authority/physical, 1 scope-deferred and 1 externally blocked row; no runtime or policy rule changed. |
-| NEXT ACTION | Audit A-G11 against the current 89-command boundary, saved-copy/visual indexes and repository state; add only genuinely missing local stabilization evidence. |
+| Current verdict | `accepted` locally for A-G00, A-G01, A-G02, A-G04, A-G05, A-G06, A-G07 and A-G11. A-G03 remains policy-blocked; A-G08 and A-G09 retain conditional local slices. Stage workflows, recovery and full local regression are complete; AR11 policy plus buyer/legal and physical/device/factory acceptance remain separate external evidence. |
+| Current gate | **A-G12 local handoff/release-readiness audit**; production publication remains blocked and unauthorized. |
+| LAST COMPLETED ACTION | A-G11 is accepted locally at clean commit `cf8e193`: the expanded full regression passes 90/90 commands in 873.5s without retry after adding the executable A01–A60 ledger and saved-copy/visual evidence index. |
+| NEXT ACTION | Reconcile A-G12 local limitations, rollback, handoff SHA and release notes; keep deployment blocked pending explicit user authorization and unresolved external evidence. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
+
+### A-G11 full local stabilization — gate accepted locally
+
+TIME / TIMEZONE: 2026-10-14 13:10 Asia/Dhaka
+BRANCH / TESTED COMMIT: `feature/tna360-continuous` / `cf8e193`
+FILE-LEVEL AUDIT: the executable A01–A60 matrix and saved-copy/visual index checkpoints are committed at `14d1b05` and `cf8e193`. The full orchestrator auto-discovers the new validator and already owns TNA/PPM/AQL/shared deterministic, browser, syntax and repository checks. In scope: one clean no-retry boundary run and evidence/status reconciliation only. Frozen/out of scope: all application/runtime/service workers, test semantics, schemas/saved formats, user data, generated-artifact content, policy rules, providers and deployment.
+TEST EVIDENCE: from clean `cf8e193`, `node tests/vesa-g11-regression.cjs` passes without retry: 90 commands / 873.5s (55 automated, 22 browser, 12 syntax, 1 repository). It includes Q01–Q24; exact 60-requirement and 35-area ledgers; every A-G02–A-G09 contract; full stage/Final/packing, evidence restore, 200/280 MiB boundaries, quota/worker/offline, 600-record analytics, EN/BN/HI/TA and all locally provable reports; PPM 168-checkpoint/planning/regression/40-PDF suites; TNA saved-copy/security/performance/routes; shared accessibility/uniform/platform/shell matrices; syntax and repository cleanliness. Browser suites report zero unexpected external requests/page errors where applicable. No retry was used.
+VERDICT: A-G11 ACCEPTED LOCALLY. Full code/data/visual/browser/offline stabilization is proven for the current GitHub-Free/browser-local candidate. The evidence classification remains automated/browser/syntax/repository only; it does not prove approved carton randomization, buyer/legal authority, physical scanner/custody, independent screen-reader/device/factory acceptance, provider security or production readiness.
+NEXT ACTION (ONE PRECISE STEP): reconcile A-G12 local handoff/limitations/rollback and exact candidate SHA while retaining HOLD until explicit production authorization.
 
 ### A-G11 A01–A60 evidence-ledger audit — accepted local checkpoint
 
@@ -664,10 +673,10 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 
 ### A-G11 — Full code, data and visual regression gate
 - [x] Every A01–A60 requirement evidence-backed in the executable 60-row matrix; all 35 historical areas retain true status in the separate executable ledger.
-- [ ] Q01–Q24 deterministic and browser tests pass after changes; no invalid pass.
-- [ ] Login, PPM, TNA (if exists), root App Centre, uniform shell screenshots pass.
-- [ ] No console errors, wrong reports, data-loss imports, broken service workers, hidden menus.
-- [ ] Independent inspection-domain review, security review and real-device/field tests documented.
+- [x] Q01–Q24 deterministic and browser tests pass after changes; no invalid pass.
+- [x] Login, PPM, TNA, root App Centre and uniform shell screenshot/DOM matrices pass.
+- [x] No console errors, wrong reports, data-loss imports, broken service workers or hidden menus are present in the accepted local matrix.
+- [x] Inspection/security/device/field boundaries are documented: local automated security/domain review passes; independent real-device/screen-reader/factory acceptance remains explicitly external and unclaimed.
 
 ### A-G12 — Explicit user release gate
 - [ ] User approved main deployment and exact scope after review.

@@ -50,7 +50,7 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 
 `PPM free-only = ROUND(100 × 9 / 10) = 90%`.
 
-## AQL eligibility — 12 active gates, 7 accepted
+## AQL eligibility — 12 active gates, 8 accepted
 
 | Gate | Free-only disposition | Counted status | Evidence boundary |
 |---|---|---|---|
@@ -65,10 +65,10 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 | A-G08 | ACTIVE | CONDITIONAL | Four-language authored report chrome, five-page A4 rendering and share fallback pass locally; AR11 approved randomization policy and physical/device/printer/screen-reader/factory/buyer acceptance remain incomplete |
 | A-G09 | ACTIVE — LOCAL SLICE ONLY | CONDITIONAL | Explicit manual reference/App Centre boundaries stay active; server lookup/tenant verification is deferred |
 | A-G10 | DEFERRED_BY_SCOPE | EXCLUDED | Hosted roles/authorization/API/database/remote collaboration |
-| A-G11 | ACTIVE | NOT STARTED | Local code/data/visual regression |
+| A-G11 | ACTIVE | ACCEPTED | Clean `cf8e193` expanded matrix passes 90/90 commands without retry across code/data/browser/visual/offline/sibling/shared boundaries |
 | A-G12 | ACTIVE — LOCAL SLICE ONLY | BLOCKED | Local readiness/limitations/rollback remain active; public production authorization/deployment is outside current execution scope |
 
-`AQL free-only = ROUND(100 × 7 / 12) = 58%`.
+`AQL free-only = ROUND(100 × 8 / 12) = 67%`.
 
 ## Shared UX eligibility — 10 active gates, 10 accepted
 
@@ -82,13 +82,13 @@ All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-1
 ROUND(
   30 × 9/12 +
   30 × 9/10 +
-  30 × 7/12 +
+  30 × 8/12 +
   10 × 10/10
-) = ROUND(77) = 77%
+) = ROUND(79.5) = 80%
 ```
 
-**FREE-ONLY VERIFIED: 77%**
+**FREE-ONLY VERIFIED: 80%**
 
-**FREE-ONLY REMAINING: 23%**
+**FREE-ONLY REMAINING: 20%**
 
-This 77% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; dated reassessments through 2026-10-13 add the accepted shared gates, and the 2026-10-14 reassessment adds A-G04/A-G05/A-G06/A-G07 only after their current local contracts passed the focused evidence checks and clean 89-command gate-boundary matrix. Historical values remain recorded in their dated tracker entries.
+This 80% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; dated reassessments through 2026-10-13 add the accepted shared gates, and the 2026-10-14 reassessment adds A-G04/A-G05/A-G06/A-G07/A-G11 only after their current local contracts passed focused evidence checks and the clean expanded 90-command gate-boundary matrix. Historical values remain recorded in their dated tracker entries.
