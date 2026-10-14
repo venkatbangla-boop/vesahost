@@ -50,3 +50,11 @@
  .tna-merch-table th,.tna-merch-table td{position:static!important;min-width:0;max-width:none;padding:3px}
  .tna-merch-table tr{break-inside:avoid}
 }
+
+/* Domain actions are in-sheet; never create a second application header. */
+.tna-merch-heading .tna-mini-btn{display:inline-flex;align-items:center;justify-content:center;
+  margin-top:10px;min-height:44px;max-width:100%;border:1px solid var(--blue,#244fd6);
+  border-radius:8px;background:var(--blue,#244fd6);color:var(--look-on-accent,#fff);
+  padding:8px 14px;font:inherit;font-weight:750;cursor:pointer}
+#tnaEditError:not(:empty){border-left:4px solid #b42318;padding:10px;
+  color:var(--ink,#17263d);background:var(--look-surface,#f2f5fa);font-weight:750}
