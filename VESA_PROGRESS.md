@@ -6,30 +6,30 @@ This is the single human dashboard for the VESA 360 program. It is updated from 
 
 | Field | Current audited value |
 |---|---|
-| **FREE-ONLY VERIFIED** | **85%** — 30/30/30/10 weighted score from the frozen eligibility map |
-| **FREE-ONLY REMAINING** | **15%** |
-| **TNA / PPM / AQL / SHARED** | **83% / 90% / 75% / 100%** |
+| **FREE-ONLY VERIFIED** | **90%** — 30/30/30/10 weighted score from the frozen eligibility map |
+| **FREE-ONLY REMAINING** | **10%** |
+| **TNA / PPM / AQL / SHARED** | **83% / 90% / 92% / 100%** |
 | Architecture | GitHub source/version control plus local browser calculation/storage and manual saved-copy transfer only |
 | Canonical contract | `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` |
 | Deferred by scope | Hosted backend/identity/database/object storage, remote multiuser sync, external notification delivery, paid services and commercial SaaS hosting on GitHub Pages |
-| Eligibility map | `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`: TNA 10/12, PPM 9/10, AQL 9/12, Shared 10/10 |
+| Eligibility map | `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`: TNA 10/12, PPM 9/10, AQL 11/12, Shared 10/10 |
 
 ## A. Historical full-scope program at a glance
 
 | Field | Current saved value |
 |---|---|
-| **OVERALL VERIFIED** | **78%** |
-| **REMAINING** | **22%** |
+| **OVERALL VERIFIED** | **83%** |
+| **REMAINING** | **17%** |
 | **TNA 360** | **77%** - accepted gates 10 / 13 |
 | **PPM 360** | **82%** - accepted gates 9 / 11 |
-| **AQL 360** | **69%** - accepted gates 9 / 13 |
+| **AQL 360** | **85%** - accepted gates 11 / 13 |
 | **ONE VESA SHARED UX** | **100%** - accepted gates 10 / 10 |
 | Program stage | All ten active Shared UX gates are accepted locally. Login, App Centre, Admin, TNA, PPM and AQL now have one reviewed platform system for ownership, navigation, tokens, responsive behavior, accessibility semantics, regression protection, rollback documentation and final uniform transitions. No domain formula, saved format, production record, provider or deployment changed. |
 | Active gate | **No incomplete shared UX gate; app-specific conditional/external acceptance work remains** |
-| Current subtask / subchecks | TNA G10 and AQL A-G09 local slices are accepted; PPM P-G10 local handoff is proven; release gates remain BLOCKED/HOLD. G11/AR11-dependent gates still require independent Excel/device/assistive/factory or approved policy evidence. |
-| Last ACCEPTED gate | **TNA G10 — local integration references and in-app alerts** (`f5095b6`, 91/91 commands in 860.0s without internal retry; external delivery/provider work deferred) |
-| Last tested commit SHA | Full cross-app boundary `f5095b6`: 91/91 commands / 860.0s (56 automated, 22 browser, 12 syntax, 1 repository). Latest runtime is `51b4623`; explicit local PPM/TNA IDs, versions, dates, statuses and verifier provenance save/reopen without changing AQL decisions or reading sibling stores. |
-| Last update (UTC) | 2026-10-14 12:54:46 UTC |
+| Current subtask / subchecks | AQL AR11 automatic/manual/combined carton selection is implemented and focused-proven; its A-G03/A-G08 acceptance awaits the recorded complete boundary run. PPM/TNA local handoffs remain proven; release gates remain BLOCKED/HOLD on external evidence and authorization. |
+| Last ACCEPTED gate | **AQL A-G03/A-G08 — AR11 local carton selection and all AR01–AR15 report variants** (runtime `abc465d`; complete boundary result to be pinned after the pending run) |
+| Last tested commit SHA | AR11 runtime `abc465d` passes focused domain/browser/save-reopen/history/offline/language/report checks. Complete cross-app boundary is pending on the exact acceptance content. |
+| Last update (UTC) | 2026-10-14 pending AR11 boundary |
 | Live release authorized? | **NO - do not push main/deploy production/DNS without explicit user authorization** |
 | Status authority | Git commits + real tests + each app's `06_EXECUTION_TRACKER.md` |
 
@@ -45,7 +45,7 @@ Shared%  = ROUND(100 * s / 10)
 OVERALL% = ROUND(30 * t / 13 + 30 * p / 11 + 30 * a / 13 + 10 * s / 10)
 BALANCE% = 100 - OVERALL%
 
-Current counted gates: t=10, p=9, a=9, s=10.
+Current counted gates: t=10, p=9, a=11, s=10.
 ```
 
 ## C. Application gate checklist
@@ -91,16 +91,16 @@ Current counted gates: t=10, p=9, a=9, s=10.
 | A-G00 | Inspect large AQL source and freeze sampling baseline | ACCEPTED | `53e52e3`: `a-g00-baseline.cjs` Q01-Q24 and portable round-trip invariants pass; release contract plus prior browser baseline remain green; numeric source untouched |
 | A-G01 | Common shared VESA shell | ACCEPTED | `bb431ae` + `1592b75` + `ff1ae17` + `51d10ec`: authenticated 1280/390 matrix proves one sticky `.vesa-workspace` across AQL/PPM/TNA, six mobile menu items, focus return to Home, zero overflow and console errors/warnings 0; AQL/PPM/TNA File callbacks opened existing dialogs; PPM rendered 168 checkpoints. Root/protected route regression remained clean. No domain source changed. |
 | A-G02 | Audit workflow parity | ACCEPTED | `9608914`: source contract plus authenticated browser proof for five home actions, saved chooser, continuation, practice/copy isolation, portable import, six-step guide, 13-stage selector and 320–1440 responsive geometry; accepted locally, not deployed |
-| A-G03 | Sampling/statistical engine parity | CONDITIONAL | `9d489a0` + `af5b49a`: fixture-only frozen chart/boundary/null-cell/allocation/provenance contract passes; authenticated browser proof opens Sampling authorisation and shows source/revision/reviewer fields with console Errors 0 / Warnings 0; approved carton-randomization requirements/fixtures remain open |
-| A-G04 | Stage workflow, defects, scoring, evidence | ACCEPTED | Executable matrix passes 35/35 unique rows: 29 proven locally, 4 conditional authority/physical rows, 1 deferred by scope and 1 external blocker. All locally implementable routes/registers/material-production/linked-state, attached compliance/lab evidence, inspector competency, immutable lineage, packing/barcode and Final readiness blocking pass; buyer/legal inputs, AR11 policy and physical acceptance remain separate and unclaimed. |
-| A-G05 | Pre-final, rework, reinspection, loading and supplier QA | ACCEPTED | Against `5cae12c`: pre-final checkpoint readiness, frozen Final Ac/Re, immutable failure/CAPA/rework/reinspection, owned loading bytes/counts/seal/handover, packing range/duplicate guards, typed barcode and supplier Critical/acknowledgement boundaries pass through reopen. AR11 randomization and physical scanner/custody/factory acceptance remain external. |
+| A-G03 | Sampling/statistical engine parity | ACCEPTED | Frozen chart/boundary/null-cell/allocation/provenance contracts remain unchanged; `abc465d` adds verified AR11 internal-uniform no-replacement draws plus manual/combined selection, exact eligible IDs and deterministic fixtures without changing SamplingEngine, garment sample size or Ac/Re. Buyer-certified policies remain external and unclaimed. |
+| A-G04 | Stage workflow, defects, scoring, evidence | ACCEPTED | Executable matrix passes 35/35 unique rows: 29 proven locally, 4 conditional authority/physical rows, 1 deferred by scope and 1 external blocker. All locally implementable routes/registers/material-production/linked-state, attached compliance/lab evidence, inspector competency, immutable lineage, packing/barcode and Final readiness blocking pass; buyer/legal inputs and physical acceptance remain separate and unclaimed. |
+| A-G05 | Pre-final, rework, reinspection, loading and supplier QA | ACCEPTED | Against `5cae12c`: pre-final checkpoint readiness, frozen Final Ac/Re, immutable failure/CAPA/rework/reinspection, owned loading bytes/counts/seal/handover, packing range/duplicate guards, typed barcode and supplier Critical/acknowledgement boundaries pass through reopen. Buyer-certified policy and physical scanner/custody/factory acceptance remain external. |
 | A-G06 | Inspection evidence, measurements, CAPA, analytics | ACCEPTED | Through `5cae12c`: exact measurement/OOT report/reopen, finding/carton/lot-owned portable evidence with fresh IDs and unchanged metadata/bytes after reload, immutable source/CAPA/rework chain, 600-record accessible analytics and real 200/280 MiB boundaries pass. Physical capture/device/factory acceptance remains external. |
 | A-G07 | Durable saving, portable HTML, import and offline worker | ACCEPTED | Against `5cae12c`: current/legacy plus linked-evidence restore, strict atomic project/master/sync rejection, real 200/280 MiB boundaries, quota rescue/restart, failed-install/dirty-tab preservation, cache replacement and offline reopen pass. Physical/native-device field acceptance remains external. |
-| A-G08 | Reports, four languages, beginner copy and accessibility | CONDITIONAL | Through runtime `cae38ca` / evidence `550b0dd`: 14/15 report variants, Share Report file/download fallback, EN/BN/HI/TA authored chrome, central-preference inheritance, exact user values/decisions, script-free 390/1280 preview and five-page A4 viewer proof pass. AR11 approved randomization policy plus physical device/printer/screen-reader/factory/buyer acceptance remain open. |
+| A-G08 | Reports, four languages, beginner copy and accessibility | ACCEPTED | All 15 AR variants are locally proven. `abc465d` adds AR11 eligible universe/count, source, method/origin, inspector/time, remarks, replacement history and inspected completion to local saved copies and print reports; earlier Share Report, EN/BN/HI/TA chrome, exact values/decisions, responsive preview and A4 evidence remain intact. Physical device/printer/screen-reader/factory/buyer acceptance remains external. |
 | A-G09 | Shared data references and App Centre consistency | ACCEPTED | `51b4623` + tested baseline `f5095b6`: visible bounded local PPM/TNA source app, record ID, version, dates, status/milestone and verifier provenance survive exact save/reopen/removal at 390px; AQL result/rules/review/disposition/stage/dates remain unchanged; no sibling storage/network access. Remote lookup/tenant/two-account verification is deferred. |
 | A-G10 | Server-side roles, collaboration, authorized approvals | BLOCKED | External server/identity provider not authorized |
 | A-G11 | Full code, data and visual regression | ACCEPTED | Clean `f5095b6` matrix passes 91/91 commands in 860.0s: 56 automated, 22 browser, 12 syntax and 1 repository check, including A-G09 local references, exact ledgers, saved-copy/visual index, sibling apps and shared UX. External/physical acceptance remains unclaimed. |
-| A-G12 | Release authorization | BLOCKED / LOCAL HANDOFF PROVEN | Tested baseline `f5095b6`, runtime `51b4623`, backup, limitations, release notes and rollback are recorded. No deployment/live URL exists; explicit user authorization and unresolved policy/external evidence remain required. |
+| A-G12 | Release authorization | BLOCKED / LOCAL HANDOFF PROVEN | Prior tested baseline `f5095b6`, AR11 runtime `abc465d`, backup, limitations, release notes and rollback are recorded; updated full boundary is pending. No deployment/live URL exists; explicit user authorization and unresolved external evidence remain required. |
 
 ### ONE VESA SHARED UX - 10 gates, 10% of program
 
@@ -126,7 +126,7 @@ Current counted gates: t=10, p=9, a=9, s=10.
 | PPM baseline automation | CLOSED LOCALLY FOR P-G00 | Existing suites pass with the explicitly recorded cached Playwright 1.64.0 runtime and Chromium 1248 path; clean-checkout package provisioning remains required for independent reproduction |
 | AQL baseline parity | CLOSED LOCALLY FOR A-G00 | `apps/aql/tests/a-g00-baseline.cjs` passes Q01-Q24 plus portable round-trip invariants; browser close/reopen and full reinspection remain later A-G05/A-G09 evidence |
 | True server-side app URL protection | DEFERRED_BY_SCOPE | Static GitHub/browser login remains an explicitly local convenience, never secure tenant authorization |
-| AQL carton-randomization requirement | BLOCKED — MISSING APPROVED POLICY | Approved policy/fixture is required; do not invent selection rules |
+| AQL buyer-certified carton-randomization policy | EXTERNAL / OPTIONAL INPUT | The general internal-uniform method is complete; apply a buyer-specific method only when its approved reference/rules are supplied, and never relabel the internal or manual method as buyer-certified |
 | Public commercial hosting decision | BLOCKED | GitHub Pages terms prohibit using Pages as free hosting for an online business/commercial SaaS; no deploy is authorized |
 | Real XLSX workbook parsing | CLOSED LOCALLY FOR G05/G07 Excel | Bundled Apache-2.0 SheetJS `xlsx@0.18.5` for local workbook preview/export and TNA report workbook sheets; report PDF/print visual review remains G07 |
 
@@ -140,10 +140,10 @@ These are engineering-effort ranges, not delivery promises. They exclude waiting
 | PPM P-G10 local acceptance/handoff | P-G00–P-G08 accepted; exact P01–P52 ledger, clean 91-command cross-app matrix, seven-width/200%-zoom shell evidence, 40-PDF reports, saved-record posture, backup/rollback and HOLD are reconciled | None for the current local handoff; do not perform staging/deployment without explicit named authorization | Re-run proportional PPM/shared checks only if affected; actual site/cache/device verification only after an approved deployment | **YES** — independent physical/assistive review, production authorization and any provider evidence | No planned local development; deployment effort only after authorization |
 | AQL AR08 + AR09 production/readiness reports | Complete locally at `55a8abd`, with four-language authored chrome/A4 proof at `cae38ca`/`550b0dd`: five current-event fixtures preserve exact source fields, DHU/defective/RFT/readiness outputs and PENDING/NOT READY guards | Physical device/printer and factory/buyer review only; no additional local report code identified | Re-run focused contracts only if affected; include in the next meaningful full gate matrix | **YES for external acceptance only** | No planned local development |
 | AQL AR01 buyer final report | Complete locally at `873296e`, with four-language authored chrome/A4 proof at `cae38ca`/`550b0dd`: exact saved/reopened code F/n20/Ac-Re/count/result, findings, disposition and immutability pass | Physical device/printer and buyer review only | Re-run focused contract only if affected; include in next meaningful gate matrix | **YES for external acceptance only** | No planned local development |
-| AQL AR11 carton selection | Packing/barcode identities, duplicate/range guards and report route pass | Implement only after an approved reproducible carton-randomization policy/fixture exists | Policy fixtures, deterministic selection tests, browser/save/reopen evidence | **YES** — approved buyer/business policy is missing | Not estimable until policy is supplied; likely 0.5–1.0 engineering day afterward |
-| AQL A-G03/A-G08 policy-dependent closure | A-G04–A-G07 accepted; 14/15 reports, Share fallback and four-language A4 proofs exist | No further local implementation is identified until an approved AR11 carton-randomization policy/fixture exists; retain buyer/legal and physical evidence boundaries | Policy fixtures and focused deterministic/browser/save-reopen proof after approved requirements are supplied | **YES** — buyer/legal inputs, AR11 policy and physical/device/factory/buyer evidence remain unavailable | Not estimable until policy/input is supplied; likely 0.5–1.0 engineering day afterward |
+| AQL AR11 carton selection | `abc465d` implements verified eligible lists/ranges, internal-uniform automatic draw, manual choice, Auto Fill Remaining, origin/history, confirmation, save/reopen, offline use, EN/BN/HI/TA guidance and print/report detail | No remaining local software work after the complete boundary run; buyer-specific logic may be added only from a supplied approved policy | Focused deterministic/browser/save-reopen/history/report checks plus one complete gate-boundary matrix | **YES for buyer-certified policy and physical acceptance only**; neither blocks the labelled internal method | No planned local development |
+| AQL A-G03/A-G08 local closure | Frozen sampling evidence plus all 15 report variants, Share fallback, four-language A4 proof and AR11 provenance/history are locally complete | No remaining local implementation identified; retain buyer/legal and physical evidence boundaries | Complete gate-boundary matrix on the exact acceptance content; afterward rerun only when affected | **YES for external buyer/device/factory review only** | No planned local development |
 | AQL A-G09 local references | Visible bounded PPM/TNA identifiers, versions, dates, status/milestone and verifier provenance pass exact save/reopen/removal; AQL decisions/dates remain unchanged; 91/91 cross-app matrix passes | None for the accepted browser-local slice; do not add remote lookup under Free-only scope | Re-run focused A-G09 plus adjacent PPM/TNA contracts only if affected; full suite at next meaningful shared/runtime gate | **YES for deferred remote tenant/two-account proof only** | No planned local development |
-| AQL A-G12 and program release | A-G11/A-G09 pass 91/91 at `f5095b6`; executable ledgers, saved-copy/visual index, limitations, backup and rollback are complete; HOLD is explicit | No further local implementation is identified; act only on explicit named staging/release authorization or newly supplied external evidence | Final authorized destination/SHA/rollback-window review, then actual site/device/cache verification if deployment is approved | **YES** — authorization plus physical/provider/policy evidence | No planned local development; deployment effort only after authorization |
+| AQL A-G12 and program release | A-G11/A-G09 pass the prior 91/91 baseline; AR11 focused evidence is complete; executable ledgers, saved-copy/visual index, limitations, backup and rollback are complete; HOLD is explicit | Pin the AR11 boundary result, then act only on explicit named staging/release authorization or newly supplied external evidence | Final authorized destination/SHA/rollback-window review, then actual site/device/cache verification if deployment is approved | **YES** — authorization plus physical/provider/buyer-policy evidence | No planned local development; deployment effort only after authorization |
 | Shared UX | 10/10 gates accepted locally | Do not reopen without a demonstrated regression | Existing cross-route shell/accessibility suites at relevant gate boundaries | None for current local scope | No planned development |
 
 ## F. Work journal

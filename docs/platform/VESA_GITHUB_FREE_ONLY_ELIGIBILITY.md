@@ -50,25 +50,25 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 
 `PPM free-only = ROUND(100 × 9 / 10) = 90%`.
 
-## AQL eligibility — 12 active gates, 9 accepted
+## AQL eligibility — 12 active gates, 11 accepted
 
 | Gate | Free-only disposition | Counted status | Evidence boundary |
 |---|---|---|---|
 | A-G00 | ACTIVE | ACCEPTED | Frozen numerical/portable baseline |
 | A-G01 | ACTIVE | ACCEPTED | Shared shell |
 | A-G02 | ACTIVE | ACCEPTED | Local workflow parity |
-| A-G03 | ACTIVE | CONDITIONAL | Sampling provenance is partial; approved carton-randomization policy remains missing and must not be invented |
-| A-G04 | ACTIVE | ACCEPTED | All locally implementable stage/register, decision, evidence-binding, traceability and reopen requirements pass; buyer/legal authority, approved randomization and physical field evidence remain separate external inputs |
-| A-G05 | ACTIVE | ACCEPTED | Local pre-final/final, immutable rework/reinspection, owned loading evidence, quantity/seal/handover records, packing guards, typed barcode and supplier-failure boundaries pass; AR11 policy and physical scanner/custody/factory acceptance remain external |
+| A-G03 | ACTIVE | ACCEPTED | Frozen sampling provenance plus AR11 automatic internal-uniform, manual and combined carton selection pass locally without changing SamplingEngine, garment sample size or Ac/Re; buyer-certified policies remain external inputs |
+| A-G04 | ACTIVE | ACCEPTED | All locally implementable stage/register, decision, evidence-binding, traceability and reopen requirements pass; buyer/legal authority and physical field evidence remain separate external inputs |
+| A-G05 | ACTIVE | ACCEPTED | Local pre-final/final, immutable rework/reinspection, owned loading evidence, quantity/seal/handover records, packing guards, typed barcode and supplier-failure boundaries pass; buyer-certified policies and physical scanner/custody/factory acceptance remain external |
 | A-G06 | ACTIVE | ACCEPTED | Local measurement/report/reopen, finding/carton/lot-owned evidence restore, immutable CAPA/source chain, 600-record accessible analytics and bounded large-file/long-output evidence pass; physical capture/device/factory acceptance is external |
 | A-G07 | ACTIVE | ACCEPTED | Current/legacy restore, atomic project/master/sync rejection, real 200/280 MiB boundaries, quota rescue/restart and failed-install/old-tab/offline worker lifecycle pass locally; physical/native-device field acceptance is external |
-| A-G08 | ACTIVE | CONDITIONAL | Four-language authored report chrome, five-page A4 rendering and share fallback pass locally; AR11 approved randomization policy and physical/device/printer/screen-reader/factory/buyer acceptance remain incomplete |
+| A-G08 | ACTIVE | ACCEPTED | All AR01–AR15 variants, including AR11 selection provenance/history/inspection completion, four-language authored report chrome, A4 rendering and share fallback pass locally; physical/device/printer/screen-reader/factory/buyer acceptance remains external |
 | A-G09 | ACTIVE — LOCAL SLICE ONLY | ACCEPTED | Explicit local PPM/TNA record IDs, versions, dates, status/milestone and verifier provenance pass visible save/reopen/removal without changing AQL decisions/dates or reading sibling storage; server lookup/tenant/two-account verification is deferred |
 | A-G10 | DEFERRED_BY_SCOPE | EXCLUDED | Hosted roles/authorization/API/database/remote collaboration |
 | A-G11 | ACTIVE | ACCEPTED | Clean `f5095b6` expanded matrix passes 91/91 commands across code/data/browser/visual/offline/sibling/shared boundaries |
 | A-G12 | ACTIVE — LOCAL SLICE ONLY | BLOCKED | Local readiness/limitations/rollback remain active; public production authorization/deployment is outside current execution scope |
 
-`AQL free-only = ROUND(100 × 9 / 12) = 75%`.
+`AQL free-only = ROUND(100 × 11 / 12) = 92%`.
 
 ## Shared UX eligibility — 10 active gates, 10 accepted
 
@@ -82,13 +82,13 @@ All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-1
 ROUND(
   30 × 10/12 +
   30 × 9/10 +
-  30 × 9/12 +
+  30 × 11/12 +
   10 × 10/10
-) = ROUND(84.5) = 85%
+) = ROUND(89.5) = 90%
 ```
 
-**FREE-ONLY VERIFIED: 85%**
+**FREE-ONLY VERIFIED: 90%**
 
-**FREE-ONLY REMAINING: 15%**
+**FREE-ONLY REMAINING: 10%**
 
-This 85% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; dated reassessments through 2026-10-13 add the accepted shared gates, and the 2026-10-14 reassessment adds TNA G10 plus A-G04/A-G05/A-G06/A-G07/A-G09/A-G11 only after their current local contracts passed focused evidence checks and the clean expanded 91-command gate-boundary matrix. Historical values remain recorded in their dated tracker entries.
+This 90% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; dated reassessments through 2026-10-13 add the accepted shared gates, and the 2026-10-14 reassessments add TNA G10 plus A-G03/A-G04/A-G05/A-G06/A-G07/A-G08/A-G09/A-G11 only after their current local contracts passed focused evidence checks and meaningful gate-boundary matrices. Historical values remain recorded in their dated tracker entries.

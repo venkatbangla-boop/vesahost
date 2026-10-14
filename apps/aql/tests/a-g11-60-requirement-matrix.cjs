@@ -28,9 +28,10 @@ for (const row of rows) {
 }
 
 const counts = rows.reduce((out, row) => ({ ...out, [row.verdict]: (out[row.verdict] || 0) + 1 }), {});
-assert.deepEqual(counts, { PROVEN_LOCAL: 52, CONDITIONAL: 5, DEFERRED_BY_SCOPE: 2, BLOCKED_EXTERNAL: 1 }, 'A-G11 honest-status counts changed without tracker review');
-for (const id of ['A03', 'A09', 'A25', 'A48', 'A57']) assert.equal(rows.find(row => row.id === id).verdict, 'CONDITIONAL', `${id} must retain its missing authority/policy boundary`);
+assert.deepEqual(counts, { PROVEN_LOCAL: 54, CONDITIONAL: 3, DEFERRED_BY_SCOPE: 2, BLOCKED_EXTERNAL: 1 }, 'A-G11 honest-status counts changed without tracker review');
+for (const id of ['A03', 'A25', 'A57']) assert.equal(rows.find(row => row.id === id).verdict, 'CONDITIONAL', `${id} must retain its missing authority boundary`);
+for (const id of ['A09', 'A48']) assert.equal(rows.find(row => row.id === id).verdict, 'PROVEN_LOCAL', `${id} AR11 local evidence must remain proven`);
 for (const id of ['A56', 'A58']) assert.equal(rows.find(row => row.id === id).verdict, 'DEFERRED_BY_SCOPE', `${id} must remain deferred under the Free-only contract`);
 assert.equal(rows.find(row => row.id === 'A60').verdict, 'BLOCKED_EXTERNAL', 'A60 factory acceptance must not be represented as local proof');
 
-console.log('AQL A-G11 requirement matrix passed: A01-A60 unique, 52 proven local, 5 conditional, 2 deferred by scope, 1 external blocker');
+console.log('AQL A-G11 requirement matrix passed: A01-A60 unique, 54 proven local, 3 conditional, 2 deferred by scope, 1 external blocker');
