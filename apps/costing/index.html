@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f3f6fa">
+<meta name="description" content="VESA Costing 360 personal demo: source-backed garment cost calculations and no-margin FOB.">
+<title>VESA Costing 360 | Garment Costing</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/vesa-workspace.css">
+<script src="/js/preferences.js"></script>
+<script src="/js/auth.js" data-auth-guard="app" data-auth-bar="true"></script>
+<script src="/js/vesa-workspace-shell.js"></script>
+<style>
+.costing-page{min-height:100vh;margin:0;background:var(--canvas,#f5f7fa);color:var(--ink,#102033);font-family:var(--ui,system-ui,"Segoe UI",sans-serif)}
+.costing-page *{box-sizing:border-box}.costing-container{width:min(1220px,calc(100vw - 28px));margin:auto;padding:24px 0 64px;overflow-wrap:anywhere}.costing-panel,.costing-tile{padding:22px;background:var(--paper,#fff);border:1px solid var(--line,#d3dee9);border-radius:17px;box-shadow:var(--shadow,0 8px 28px rgba(0,0,0,.06));margin-bottom:18px}.costing-kicker{color:var(--blue,#2356c1);font-weight:800;font-size:.74rem;letter-spacing:.11em}.costing-title{font-size:clamp(1.85rem,4vw,3.25rem);letter-spacing:-.035em;line-height:1.08;margin:10px 0}.costing-lead{max-width:800px;color:var(--muted,#526174)}.costing-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.costing-grid .costing-tile{margin:0;min-height:142px;display:flex;flex-direction:column;gap:8px}.costing-btn{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 17px;margin:4px 6px 4px 0;border:1px solid var(--blue,#244fd6);border-radius:999px;background:var(--blue,#244fd6);color:var(--look-on-accent,#fff);font-size:.9rem;font-weight:760;text-decoration:none}.costing-btn.secondary{background:var(--paper,#fff);color:var(--ink,#17263d);border-color:var(--line,#bbc8d8)}.costing-btn:focus-visible,.costing-form input:focus-visible,.costing-form select:focus-visible,.costing-form textarea:focus-visible{outline:3px solid #c5a03f;outline-offset:3px}.costing-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.costing-form label{display:grid;gap:5px;min-width:0;font-size:.79rem;font-weight:750;color:var(--muted,#526174)}.costing-form input,.costing-form select,.costing-form textarea,.costing-edit-grid input,.costing-edit-grid select{font:inherit;width:100%;min-width:0;min-height:41px;padding:7px 9px;border:1px solid var(--line,#cad4e4);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#101b2b)}.costing-form label.costing-wide{grid-column:span 2}.costing-table-scroll{overflow-x:auto;max-width:100%;border-radius:11px;border:1px solid var(--line,#d0dae6)}.costing-table{width:100%;min-width:930px;border-collapse:collapse}.costing-table th,.costing-table td{text-align:left;padding:9px;white-space:nowrap;border-bottom:1px solid var(--line,#dae2ec);font-size:.81rem}.costing-table th{font-size:.75rem;background:var(--look-surface,#eff3f8);color:var(--ink,#1c2c42)}.costing-table td input,.costing-table td select{width:100%;min-width:86px;font:inherit;color:var(--ink,#18263a);padding:7px;background:var(--paper,#fff);border:1px solid var(--line,#d5dce4);border-radius:7px}.costing-table td input[data-line-field="description"]{min-width:155px}.costing-number{font-variant-numeric:tabular-nums}.costing-total{font-size:1.15rem;font-weight:840;color:var(--blue,#254db9)}.costing-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.costing-metric{padding:14px;border-radius:13px;background:var(--look-surface,#eff4fa);border:1px solid var(--line,#d9e3ee)}.costing-metric small{display:block;margin-bottom:6px;color:var(--muted,#4c5e73);font-weight:700}.costing-warning{background:color-mix(in srgb,#d18c24 12%,var(--paper,#fff));padding:12px 15px;border-left:4px solid #ad7525;border-radius:8px;margin-top:12px}.costing-error{color:#a63325;white-space:pre-line;font-size:.86rem}.costing-badge{font-size:.72rem;letter-spacing:.03em;font-weight:860;color:var(--ink,#142339);background:var(--look-surface,#edf1f7);padding:5px 9px;border-radius:20px}.costing-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.costing-dialog{border:0;border-radius:16px;box-shadow:0 20px 80px rgba(0,0,0,.23);color:var(--ink,#17263d);background:var(--paper,#fff);padding:20px;width:min(600px,calc(100vw - 30px))}.costing-dialog::backdrop{background:rgba(5,15,37,.48)}.costing-dialog h2{margin:0 0 10px}.costing-dialog .costing-btn{max-width:100%}.costing-footer{text-align:center;font-size:.75rem;color:var(--muted,#647185);margin:34px 0}.costing-line-remove{border:0;background:transparent;color:#ac3327;cursor:pointer;padding:8px}.costing-save-msg{font-weight:700;color:var(--muted,#627184)}@media(max-width:920px){.costing-form{grid-template-columns:repeat(2,minmax(0,1fr))}.costing-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.costing-grid{grid-template-columns:1fr}.costing-form,.costing-metrics{grid-template-columns:1fr}.costing-form label.costing-wide{grid-column:auto}.costing-panel{padding:15px}.costing-container{padding-top:14px}.costing-metric{padding:12px}}@media print{.vesa-workspace,.costing-actions,.costing-line-remove,.costing-dialog{display:none!important}.costing-container{width:100%;padding:0}.costing-panel{box-shadow:none;break-inside:avoid}}
+
+
+.costing-page .costing-container{width:min(1240px,calc(100vw - 24px));padding:22px 0 72px}
+.costing-section-tabs{display:flex;align-items:center;flex-wrap:wrap;gap:3px;margin-top:13px;border-top:1px solid var(--line,#d0d6df);padding-top:12px}
+.costing-section-tabs button{margin:2px;font-size:.8rem;min-height:40px}
+.costing-record-list,.costing-menu-list{display:flex;gap:8px;flex-wrap:wrap}
+.costing-edit-table{min-width:1650px}
+.costing-edit-table td input,.costing-edit-table td select{min-width:90px;max-width:235px;min-height:40px}
+.costing-edit-table td input[data-lkey=description]{min-width:165px}
+.costing-edit-table td input[type=checkbox]{min-width:22px;width:22px;height:22px;vertical-align:middle}
+.costing-dialog{max-height:90vh;max-width:100%;overflow:auto;width:min(780px,calc(100vw - 24px))}
+.costing-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line,#d0d6df);padding-bottom:9px;margin-bottom:10px}
+.costing-dialog-header h2{margin:0}.costing-dialog-content{display:grid;gap:12px}
+.costing-dialog-content input,.costing-dialog-content select{width:100%;min-height:42px;border:1px solid var(--line,#b9c5d8);border-radius:8px;padding:8px;background:var(--paper,#fff);color:var(--ink,#17263d);font:inherit}
+.costing-dialog-content label{display:grid;gap:6px;font-weight:650;color:var(--ink,#17263d);font-size:.86rem}
+.costing-dialog-content label:has([type=checkbox]){display:flex;align-items:center}.costing-dialog-content label [type=checkbox]{width:22px;height:22px;min-height:22px}
+.costing-report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.costing-report-grid article{padding:14px;border:1px solid var(--line,#d3dee9);border-radius:12px;background:var(--look-surface,#eff4fa)}
+.costing-report-grid h3{font-size:.94rem;margin:0 0 12px}.costing-report-grid .costing-btn{font-size:.8rem}
+.costing-summary{margin:15px 0}
+.costing-toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:2500;min-width:min(400px,calc(100vw - 30px));max-width:92vw;border-radius:12px;padding:13px 18px;background:var(--ink,#071a35);color:var(--paper,#fff);box-shadow:0 12px 28px #0003;font-weight:650;text-align:center}
+.costing-toast[hidden]{display:none}
+.costing-dialog form .costing-btn{align-self:end}.costing-dialog .costing-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+.costing-page .costing-btn{max-width:100%;white-space:normal;text-align:center}
+.costing-page .costing-table th{position:sticky;top:0;z-index:1}
+.costing-page .costing-table td{vertical-align:middle}
+@media(max-width:700px){.costing-dialog .costing-form{grid-template-columns:1fr}.costing-page .costing-container{width:calc(100vw - 22px)}}
+
+</style>
+<script data-costing-module="consumption">
+(function (root, factory) {
+  'use strict';
+  const moduleValue = factory();
+  if (typeof module !== 'undefined' && module.exports) module.exports = moduleValue;
+  root.VesaCostingConsumption = moduleValue;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const METERS_PER_YARD = 0.9144;
+  const GRAMS_PER_OZ_PER_SQ_YARD_IN_GSM = 28.349523125 / (METERS_PER_YARD * METERS_PER_YARD);
+  function finitePositive(value, name) {
+    if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) throw new Error(`${name} must be a positive finite number.`);
+    return value;
+  }
+  function allowance(value, name) {
+    if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 100) throw new Error(`${name} must be within 0–100 percent.`);
+    return value;
+  }
+  function knitKgPerPiece({ approvedCutAreaM2, gsm, wastePercent = 0, additionalShrinkPercent = 0, areaAlreadyIncludesShrink = false }) {
+    finitePositive(approvedCutAreaM2, 'Approved cut area');
+    finitePositive(gsm, 'GSM');
+    allowance(wastePercent, 'Waste');
+    allowance(additionalShrinkPercent, 'Additional shrink allowance');
+    if (areaAlreadyIncludesShrink && additionalShrinkPercent !== 0) throw new Error('Shrinkage is already in the cut area; do not apply it twice.');
+    const netKgPerPiece = approvedCutAreaM2 * gsm / 1000;
+    return Object.freeze({method:'APPROVED_KNIT_AREA',netKgPerPiece, grossKgPerPiece:netKgPerPiece*(1+wastePercent/100)*(1+additionalShrinkPercent/100),unit:'kg/pc',sourceReminder:'Use approved CAD/marker area. GSM alone cannot give garment consumption.'});
+  }
+  function wovenMarkerPerPiece({ markerLengthM, garmentsPerMarker, wastePercent = 0, markerAlreadyIncludesWaste = false }) {
+    finitePositive(markerLengthM, 'Marker length');
+    if (!Number.isInteger(garmentsPerMarker) || garmentsPerMarker <= 0) throw new Error('Garments per marker must be a positive integer.');
+    allowance(wastePercent, 'Waste');
+    if (markerAlreadyIncludesWaste && wastePercent !== 0) throw new Error('Waste is already included in the marker; do not add it twice.');
+    const netMPerPiece=markerLengthM/garmentsPerMarker;
+    const grossMPerPiece=netMPerPiece*(1+wastePercent/100);
+    return Object.freeze({method:'APPROVED_WOVEN_MARKER',netMPerPiece,grossMPerPiece,grossYdPerPiece:grossMPerPiece/METERS_PER_YARD,unit:'m/pc',sourceReminder:'Confirm marker width, size ratio, shrink and usable fabric width separately.'});
+  }
+  function ozSqYdToGsm(ouncesPerSquareYard) {
+    finitePositive(ouncesPerSquareYard, 'oz per square yard');
+    return ouncesPerSquareYard*GRAMS_PER_OZ_PER_SQ_YARD_IN_GSM;
+  }
+  function gsmToOzSqYd(gsm) {
+    finitePositive(gsm,'GSM');
+    return gsm/GRAMS_PER_OZ_PER_SQ_YARD_IN_GSM;
+  }
+  return Object.freeze({METERS_PER_YARD, GRAMS_PER_OZ_PER_SQ_YARD_IN_GSM,knitKgPerPiece,wovenMarkerPerPiece,ozSqYdToGsm,gsmToOzSqYd});
+});
+
+</script>
+<script data-costing-module="engine">
+(function (root, factory) {
+  'use strict';
+  const moduleValue = factory();
+  if (typeof module !== 'undefined' && module.exports) module.exports = moduleValue;
+  root.VesaCostingEngine = moduleValue;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const VERSION='VESA-COSTING-1.0.0';
+  const CATEGORY=Object.freeze(['FABRIC','TRIMS','MAKING','PROCESS','PACKING','TESTING','LOGISTICS','BANK','OTHER']);
+  const TREATMENT=Object.freeze(['NONE','IN_FOB','SEPARATE']);
+  const BASIS=Object.freeze(['PER_PIECE','PER_ORDER']);
+  const MAX_LINES=200;
+  function isNumber(v){return typeof v === 'number' && Number.isFinite(v);}
+  function nonnegative(v){return isNumber(v) && v>=0;}
+  function validText(v,max=600){return typeof v==='string'&&v.trim().length>0&&v.length<=max;}
+  function finitePercent(v){return isNumber(v)&&v>=0&&v<=100;}
+  function validateLine(line,index, ids) {
+    const errors=[];
+    const at=`Line ${index+1}`;
+    if (!line || typeof line!=='object'||Array.isArray(line))return [`${at} is invalid.`];
+    if(!validText(line.id,80)||!(/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/).test(line.id))errors.push(`${at}: invalid line ID.`);
+    else if(ids.has(line.id))errors.push(`${at}: duplicate line ID ${line.id}.`);
+    else ids.add(line.id);
+    if(!CATEGORY.includes(line.category))errors.push(`${at}: select a cost category.`);
+    if(!validText(line.description,400))errors.push(`${at}: description missing.`);
+    if(!BASIS.includes(line.basis))errors.push(`${at}: choose per piece or per order.`);
+    if(!isNumber(line.quantity)||line.quantity<=0)errors.push(`${at}: quantity missing or invalid.`);
+    if(!validText(line.unit,32))errors.push(`${at}: unit missing.`);
+    if(!finitePercent(line.wastePercent))errors.push(`${at}: waste % missing/invalid.`);
+    if(line.basis==='PER_ORDER'&&line.wastePercent!==0)errors.push(`${at}: per-order expense cannot have per-piece waste.`);
+    if(!nonnegative(line.rate))errors.push(`${at}: rate missing/invalid.`);
+    if(line.rate===0&&!validText(line.zeroRateReason,200))errors.push(`${at}: explicit zero rate needs a reason.`);
+    if(!/^[A-Z]{3}$/.test(line.currency||''))errors.push(`${at}: currency must be a 3-letter code.`);
+    if(!isNumber(line.localCurrencyPerUSD)||line.localCurrencyPerUSD<=0)errors.push(`${at}: actual currency units per USD is required.`);
+    if(line.currency==='USD'&&line.localCurrencyPerUSD!==1)errors.push(`${at}: USD must use 1 USD per USD.`);
+    if(!validText(line.sourceRef,240))errors.push(`${at}: original quote/source reference missing.`);
+    return errors;
+  }
+  function validateRecord(record){
+    const errors=[];
+    if(!record||typeof record!=='object'||Array.isArray(record))return ['Missing costing record.'];
+    if(record.schemaVersion!==VERSION)errors.push('Unsupported costing record schema version.');
+    if(!validText(record.recordId,120))errors.push('Record ID is missing.');
+    if(!Number.isInteger(record.revision)||record.revision<1)errors.push('Revision must be 1 or greater.');
+    const s=record.style||{};
+    if(!validText(s.styleNo,120))errors.push('Style No is required.');
+    if(!validText(s.buyer,200))errors.push('Buyer is required.');
+    if(!validText(s.factory,200))errors.push('Factory is required.');
+    if(!Number.isSafeInteger(s.quantityPieces)||s.quantityPieces<=0)errors.push('Order quantity must be a positive integer.');
+    if(!Array.isArray(record.lines)||record.lines.length===0||record.lines.length>MAX_LINES)errors.push('Enter 1–200 cost lines.');
+    else {const ids=new Set();record.lines.forEach((line,i)=>errors.push(...validateLine(line,i,ids)));}
+    const policy=record.policy||{};
+    if(!TREATMENT.includes(policy.commissionTreatment))errors.push('Commission treatment is required (NONE, IN_FOB, SEPARATE).');
+    if(!isNumber(policy.marginPercent)||policy.marginPercent!==0)errors.push('Without-margin V1 requires marginPercent 0.');
+    if(policy.commissionTreatment==='NONE'){
+      if(policy.commissionPercent!=null && policy.commissionPercent!==0)errors.push('NONE commission cannot contain a non-zero rate.');
+    } else if(!finitePercent(policy.commissionPercent)||policy.commissionPercent>=100){
+      errors.push('Commission percentage is required and must be 0 to less than 100.');
+    }
+    if(record.sourceKind==='user-entry' && policy.commissionTreatment!=='NONE' && Number(policy.commissionPercent)>0 && !validText(policy.commissionSourceRef,240))errors.push('Commission policy needs an original agreement/source reference.');
+    return errors;
+  }
+  function unitUSDPrice(line){return line.rate/line.localCurrencyPerUSD;}
+  function lineUSDPerPiece(line,quantityPieces){
+    const usd=unitUSDPrice(line);
+    return line.basis==='PER_ORDER'
+      ? (line.quantity*usd/quantityPieces)
+      : (line.quantity*(1+line.wastePercent/100)*usd);
+  }
+  function calculate(record){
+    const errors=validateRecord(record);
+    if(errors.length)return Object.freeze({status:'NEEDS_INFORMATION',errors,summary:null,lines:[]});
+    const quantityPieces=record.style.quantityPieces;
+    const lines=record.lines.map(line=>Object.freeze({id:line.id,category:line.category,description:line.description,basis:line.basis,quantity:line.quantity,unit:line.unit,unitPriceUSD:unitUSDPrice(line),usdPerPiece:lineUSDPerPiece(line,quantityPieces),sourceRef:line.sourceRef,verifiedSource:!!line.verifiedSource}));
+    const baseCostUsdPerPiece=lines.reduce((total,line)=>total+line.usdPerPiece,0);
+    const treatment=record.policy.commissionTreatment;
+    const rate=(record.policy.commissionPercent??0)/100;
+    const fobUsdPerPiece=treatment==='IN_FOB'?baseCostUsdPerPiece/(1-rate):baseCostUsdPerPiece;
+    const commissionUsdPerPiece=treatment==='NONE'?0:fobUsdPerPiece*rate;
+    const includedCommissionUsdPerPiece=treatment==='IN_FOB'?commissionUsdPerPiece:0;
+    const separateCommissionUsdPerPiece=treatment==='SEPARATE'?commissionUsdPerPiece:0;
+    const netAfterIncludedCommissionUsdPerPiece=fobUsdPerPiece-includedCommissionUsdPerPiece;
+    const missingVerifiedEvidence=lines.filter(line=>!line.verifiedSource).map(line=>line.id);
+    const isSynthetic=record.sourceKind==='demo';
+    const status=isSynthetic?'DEMO_ONLY':missingVerifiedEvidence.length?'DRAFT_REVIEW_REQUIRED':'DRAFT_CALCULATED';
+    const summary=Object.freeze({quantityPieces,baseCostUsdPerPiece,fobUsdPerPiece,commissionPercent:rate*100,commissionTreatment:treatment,commissionUsdPerPiece,includedCommissionUsdPerPiece,separateCommissionUsdPerPiece,netAfterIncludedCommissionUsdPerPiece,fobTotalUSD:fobUsdPerPiece*quantityPieces,baseCostTotalUSD:baseCostUsdPerPiece*quantityPieces,marginPercent:0,missingVerifiedEvidence});
+    return Object.freeze({status,errors:[],summary,lines});
+  }
+  function roundDisplay(value,digits=4){return isNumber(value)?value.toFixed(digits):'—';}
+  return Object.freeze({VERSION,CATEGORY,TREATMENT,BASIS,MAX_LINES,validateRecord,calculate,roundDisplay});
+});
+
+</script>
+<script data-costing-module="storage">
+(function (root, factory) {
+  'use strict';
+  const moduleValue=factory(root.VesaCostingEngine || (typeof require==='function'?require('./costing-engine.js'):null));
+  if(typeof module!=='undefined'&&module.exports)module.exports=moduleValue;
+  root.VesaCostingStore=moduleValue;
+})(typeof globalThis!=='undefined'?globalThis:this,function(engine){
+  'use strict';
+  const FORMAT='VESA-COSTING-SAVED-COPY';
+  const COPY_VERSION=1;
+  const MAX_BYTES=2*1024*1024;
+  const INDEX_KEY_PREFIX='vesa.costing360.records.v1.';
+  const utfBytes=value=>new TextEncoder().encode(value).length;
+  function badKeys(node,depth=0){
+    if(depth>35)throw new Error('Saved copy is too deeply nested.');
+    if(!node||typeof node!=='object')return;
+    for(const k of Object.keys(node)){
+      if(k==='__proto__'||k==='constructor'||k==='prototype')throw new Error('Saved copy has unsafe keys.');
+      badKeys(node[k],depth+1);
+    }
+  }
+  function canonicalRecord(record){
+    if(!record||typeof record!=='object'||Array.isArray(record)||record.schemaVersion!==engine.VERSION||typeof record.recordId!=='string'||!record.recordId.trim())throw new Error('Invalid or unsupported costing draft identity.');
+    if(!['demo','user-entry'].includes(record.sourceKind))throw new Error('Invalid source kind; demo pricing must stay labelled demo.');
+    if(!Number.isInteger(record.revision)||record.revision<1||!record.style||typeof record.style!=='object'||!record.policy||typeof record.policy!=='object'||!Array.isArray(record.lines)||record.lines.length>engine.MAX_LINES)throw new Error('Invalid costing draft structure.');
+    const ids=new Set();
+    for(const line of record.lines){
+      if(!line||typeof line!=='object'||Array.isArray(line)||typeof line.id!=='string'||!line.id.trim()||ids.has(line.id))throw new Error('Invalid or repeated draft cost-line ID.');
+      ids.add(line.id);
+    }
+    badKeys(record);
+    const json=JSON.stringify(record);
+    if(typeof json!=='string'||utfBytes(json)>MAX_BYTES)throw new Error('Costing draft is too large.');
+    return JSON.parse(json);
+  }
+  function encode(record){
+    const value=canonicalRecord(record);
+    const envelope={format:FORMAT,version:COPY_VERSION,exportedAt:new Date().toISOString(),record:value};
+    const body=JSON.stringify(envelope);
+    if(utfBytes(body)>MAX_BYTES)throw new Error('Saved copy is too large.');
+    return body;
+  }
+  function decode(body){
+    if(typeof body!=='string'||utfBytes(body)>MAX_BYTES)throw new Error('Saved copy is missing or too large.');
+    let envelope;
+    try{envelope=JSON.parse(body);}catch{throw new Error('Saved copy cannot be read.');}
+    badKeys(envelope);
+    if(!envelope||envelope.format!==FORMAT||envelope.version!==COPY_VERSION)throw new Error('Unsupported Costing saved copy version.');
+    return canonicalRecord(envelope.record);
+  }
+  function safeLocalUser(user){return String(user||'local-browser-user').replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,120)||'local-browser-user';}
+  function key(user){return INDEX_KEY_PREFIX+safeLocalUser(user);}
+  function loadBox(storage,user){
+    const raw=storage.getItem(key(user));
+    if(raw==null)return {version:1,records:[]};
+    let data;
+    try{data=JSON.parse(raw);badKeys(data);}catch{throw new Error('Local saved record list is unreadable. Download any current draft before attempting recovery.');}
+    if(data?.version!==1||!Array.isArray(data.records)||data.records.length>100)throw new Error('Unsupported local saved record list; existing bytes were preserved.');
+    return data;
+  }
+  function save(storage,record,user){
+    const clean=canonicalRecord(record);
+    const box=loadBox(storage,user);
+    const records=[clean,...box.records.filter(item=>item.recordId!==clean.recordId)];
+    if(records.length>100)throw new Error('Local record limit reached. Download a saved copy before continuing.');
+    const body=JSON.stringify({version:1,records});
+    if(utfBytes(body)>MAX_BYTES)throw new Error('Local storage budget reached. Download a saved copy; the existing records were not deleted.');
+    try{storage.setItem(key(user),body);}catch{throw new Error('Could not save on this device. The current draft is still open; download a saved copy.');}
+    return clean;
+  }
+  function list(storage,user){return loadBox(storage,user).records.map(r=>({recordId:r.recordId,styleNo:r.style.styleNo,buyer:r.style.buyer,quantityPieces:r.style.quantityPieces,revision:r.revision,sourceKind:r.sourceKind||'user-entry'}));}
+  function open(storage,recordId,user){const x=loadBox(storage,user).records.find(r=>r.recordId===recordId);return x?canonicalRecord(x):null;}
+  function importAsNewDraft(body,makeId){
+    const record=decode(body);
+    if(typeof makeId!=='function')throw new Error('Unique ID factory is required.');
+    const newId=makeId();
+    if(typeof newId!=='string'||!newId.trim()||newId===record.recordId)throw new Error('Imported record needs a distinct new identity.');
+    return {...record,recordId:newId,revision:1,sourceKind:record.sourceKind==='demo'?'demo':'user-entry',importedFromRecordId:record.recordId,updatedAt:new Date().toISOString()};
+  }
+  return Object.freeze({FORMAT,COPY_VERSION,MAX_BYTES,key,encode,decode,save,list,open,importAsNewDraft,canonicalRecord});
+});
+
+</script>
+<script data-costing-module="report">
+(function (root, factory) {
+ 'use strict';const result=factory(root.VesaCostingEngine||(typeof require==='function'?require('./costing-engine.js'):null));
+ if(typeof module!=='undefined'&&module.exports)module.exports=result;
+ root.VesaCostingReport=result;
+})(typeof globalThis!=='undefined'?globalThis:this,function(engine){
+ 'use strict';
+ const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function safeCell(value){let text=String(value??'');if(/^[\s\uFEFF]*[=+\-@\t\r]/.test(text)||/^0\d{2,}$/.test(text))text="'"+text;return '"'+text.replace(/"/g,'""')+'"';}
+ function csv(record,result){
+  if(!result||!result.summary)throw new Error('Complete input before downloading a cost sheet.');
+  const rows=[['VESA COSTING 360 / DRAFT / NOT APPROVED'],['Source kind',record.sourceKind||'user-entry'],['Style',record.style.styleNo],['Buyer',record.style.buyer],['Factory',record.style.factory],['Pieces',record.style.quantityPieces],['Commission treatment',record.policy.commissionTreatment],['Category','Description','Cost USD/pc','Quote ref']];
+  for(const line of result.lines)rows.push([line.category,line.description,line.usdPerPiece,line.sourceRef]);
+  rows.push(['SUMMARY','Base cost USD/pc',result.summary.baseCostUsdPerPiece],['SUMMARY','No-margin FOB USD/pc',result.summary.fobUsdPerPiece],['SUMMARY','Commission USD/pc',result.summary.commissionUsdPerPiece],['SUMMARY','Total FOB USD',result.summary.fobTotalUSD],['STATUS',result.status]);
+  return '\uFEFF'+rows.map(row=>row.map(safeCell).join(',')).join('\r\n');
+ }
+ function html(record,result){
+  const body=result&&result.summary?`<table><thead><tr><th>Category</th><th>Description</th><th>Cost USD/pc</th><th>Source</th></tr></thead><tbody>${result.lines.map(l=>`<tr><td>${escape(l.category)}</td><td>${escape(l.description)}</td><td>${escape(engine.roundDisplay(l.usdPerPiece,6))}</td><td>${escape(l.sourceRef)}</td></tr>`).join('')}</tbody></table><section><p>Base cost USD/pc: <b>${escape(engine.roundDisplay(result.summary.baseCostUsdPerPiece,6))}</b></p><p>No-margin FOB USD/pc: <b>${escape(engine.roundDisplay(result.summary.fobUsdPerPiece,6))}</b></p><p>Commission USD/pc: <b>${escape(engine.roundDisplay(result.summary.commissionUsdPerPiece,6))}</b></p><p>Total FOB USD: <b>${escape(engine.roundDisplay(result.summary.fobTotalUSD,2))}</b></p></section>`:`<p>NEEDS INFORMATION. ${escape((result?.errors||[]).join('; '))}</p>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>VESA Costing 360 — DRAFT</title><style>body{font:14px/1.5 system-ui,Arial;margin:32px;color:#13263e}h1{font-size:25px}small{color:#a33625}table{border-collapse:collapse;width:100%}th,td{padding:8px;border-bottom:1px solid #d9e1ea;text-align:left}th{background:#edf1f7}@media print{body{margin:12mm}tr{break-inside:avoid}}</style></head><body><h1>VESA Costing 360</h1><small>DEMO / DRAFT ONLY — NOT BUYER APPROVED — NO REAL MARKET RATES PROVIDED</small><p>Style: ${escape(record?.style?.styleNo)} | Buyer: ${escape(record?.style?.buyer)} | Factory: ${escape(record?.style?.factory)} | Qty: ${escape(record?.style?.quantityPieces)}</p>${body}<footer><small>All pricing must be independently sourced and verified. No cloud upload.</small></footer></body></html>`;
+ }
+ return Object.freeze({escape,safeCell,csv,html});
+});
+
+</script>
+<script data-costing-module="portfolio">
+/* Costing-specific report, comparison and workbook tools. No external network requests. */
+(function (root) {
+  'use strict';
+  const E=root.VesaCostingEngine, R=root.VesaCostingReport;
+  const esc=R.escape;
+  const clean=v=>String(v??'');
+  const amount=v=>Number.isFinite(v)?E.roundDisplay(v,6):'Needs information';
+  const safeCell=v=>{const s=clean(v);return /^[\s\uFEFF]*[=+\-@\t\r]/.test(s)?"'"+s:s;};
+  const validatedOffer=(a,r)=>{
+    const line=r.lines.find(l=>l.id===a.lineId);
+    if(!line||line.category!=='FABRIC'||line.basis!=='PER_PIECE')return {error:'Select a matching per-piece fabric cost line.'};
+    if(!a.label||!a.sourceRef||!a.currency||!/^[A-Z]{3}$/.test(a.currency))return {error:'Offer name, currency and source are required.'};
+    if(!Number.isFinite(a.rate)||a.rate<0||!Number.isFinite(a.fx)||a.fx<=0)return {error:'Enter a non-negative price and verified FX rate.'};
+    if(a.currency==='USD'&&a.fx!==1)return {error:'USD conversion must be 1.'};
+    if(!Number.isFinite(a.extraPerPieceUSD)||a.extraPerPieceUSD<0)return {error:'Enter a verified landed adjustment (0 only if none applies).'};
+    if(a.rate===0&&!a.zeroRateReason)return {error:'A free rate requires a documented reason.'};
+    if(!a.extraSourceRef)return {error:'Landed adjustment source or explicit none-reason is required.'};
+    const base=line.quantity*(1+line.wastePercent/100)*(a.rate/a.fx);
+    return {line,usdPerPc:base+a.extraPerPieceUSD,baseUsdPerPc:base,currentUsdPerPc:E.lineUSDPerPiece?E.lineUSDPerPiece(line,r.style.quantityPieces):line.quantity*(1+line.wastePercent/100)*line.rate/line.localCurrencyPerUSD,source:a.sourceRef};
+  };
+  function validOffers(r){return (r.alternatives||[]).map(a=>({...a,...validatedOffer(a,r)}));}
+  function comparisons(r){
+    const offers=validOffers(r);
+    return '<table><thead><tr><th>Offer</th><th>Fabric line</th><th>Origin</th><th>Quoted rate</th><th>Landed adj USD/pc</th><th>Compared USD/pc</th><th>Source</th></tr></thead><tbody>'+
+      offers.map(a=>`<tr><td>${esc(a.label)}</td><td>${esc(a.lineId)}</td><td>${esc(a.origin||'Not provided')}</td><td>${esc(clean(a.rate))} ${esc(a.currency)}</td><td>${esc(clean(a.extraPerPieceUSD))}</td><td>${a.error?esc(a.error):esc(amount(a.usdPerPc))}</td><td>${esc(a.sourceRef)}</td></tr>`).join('')+
+    '</tbody></table>'+(offers.length?'':'<p>No alternatives entered. Enter source-backed options for the same approved consumption.</p>');
+  }
+  function revisions(r){
+    const hist=r.revisionHistory||[];
+    return '<table><thead><tr><th>Revision</th><th>Timestamp</th><th>Reason</th><th>Base USD/pc</th><th>FOB USD/pc</th></tr></thead><tbody>'+
+      [...hist.map(x=>({rev:x.revision,at:x.recordedAt,reason:x.reason,data:x.snapshot})),{rev:r.revision,at:r.updatedAt||'',reason:'Current working revision',data:r}].map(x=>{const v=E.calculate(x.data);return `<tr><td>${esc(x.rev)}</td><td>${esc(x.at)}</td><td>${esc(x.reason)}</td><td>${esc(v.summary?amount(v.summary.baseCostUsdPerPiece):'Needs information')}</td><td>${esc(v.summary?amount(v.summary.fobUsdPerPiece):'Needs information')}</td></tr>`;}).join('')+'</tbody></table>';
+  }
+  const table=(headers,rows)=>'<div class="costing-table-scroll"><table class="costing-table"><thead><tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(v=>`<td>${esc(v)}</td>`).join('')+'</tr>').join('')+'</tbody></table></div>';
+  const rows=(r,res)=>res?.summary?res.lines.map(l=>[l.category,l.description,l.basis,l.quantity,l.unit,l.usdPerPiece.toFixed(6),l.sourceRef]):[];
+  const metrics=(s)=>table(['Metric','USD'],[['Base cost / pc',amount(s.baseCostUsdPerPiece)],['FOB / pc',amount(s.fobUsdPerPiece)],['Commission / pc',amount(s.commissionUsdPerPiece)],['Separate commission / pc',amount(s.separateCommissionUsdPerPiece)],['Total FOB / order',amount(s.fobTotalUSD)]]);
+  function report(type,record){
+    const res=E.calculate(record),s=res.summary;
+    const names={CR01:'Detailed Cost Sheet',CR02:'Buyer Quote Draft',CR03:'Fabric Comparison',CR04:'Commission Breakdown',CR05:'Price Source Ledger',CR06:'Missing Information',CR07:'Revision Comparison'};
+    if(!names[type])throw Error('Unknown report type.');
+    let section='';
+    if(type==='CR01')section=table(['Category','Description','Basis','Quantity','Unit','USD/pc','Source'],rows(record,res))+ (s?metrics(s):'');
+    if(type==='CR02')section=s?metrics(s):'<p>Not available until required values are complete.</p>';
+    if(type==='CR03')section=comparisons(record);
+    if(type==='CR04')section=s?table(['Treatment','USD/pc'],[['Policy',record.policy.commissionTreatment],['Base cost',amount(s.baseCostUsdPerPiece)],['Buyer FOB',amount(s.fobUsdPerPiece)],['Included commission',amount(s.includedCommissionUsdPerPiece)],['Separate commission',amount(s.separateCommissionUsdPerPiece)],['Net after included commission',amount(s.netAfterIncludedCommissionUsdPerPiece)]]):'<p>Needs information.</p>';
+    if(type==='CR05')section=table(['Line','Description','Source','Date','Currency','FX / USD','Evidence checked'],(record.lines||[]).map(l=>[l.id,l.description,l.sourceRef,l.sourceDate||'Not supplied',l.currency,l.localCurrencyPerUSD,l.verifiedSource?'User-marked':'Not reviewed']));
+    if(type==='CR06')section=res.errors.length?'<ol>'+res.errors.map(e=>`<li>${esc(e)}</li>`).join('')+'</ol>':'<p>No missing line inputs under the current validated schema. External prices and commercial inclusion still require independent approval.</p>';
+    if(type==='CR07')section=revisions(record);
+    const complete=['CR01','CR02','CR04'].includes(type);
+    if(complete&&!s)section='<p class="warning">NEEDS INFORMATION — this is not a complete costing or quotation.</p>'+section+'<ol>'+res.errors.map(e=>`<li>${esc(e)}</li>`).join('')+'</ol>';
+    return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>VESA Costing 360 '+esc(type)+' — Draft</title><style>body{font:14px/1.6 Arial,system-ui;margin:30px;color:#17263d}h1{font-size:24px}h2{font-size:17px}header{border-bottom:2px solid #071a35;margin-bottom:16px}small{color:#8b4e1c}.warning{padding:10px;border-left:4px solid #b37d30;background:#fff8e9}table{width:100%;border-collapse:collapse;margin:16px 0}th,td{padding:8px;border-bottom:1px solid #cbd6e4;text-align:left;word-break:break-word;vertical-align:top}th{background:#eef3f9}@media print{body{margin:12mm}tr{break-inside:avoid}}</style></head><body><header><h1>VESA Costing 360 — '+esc(type)+' '+esc(names[type])+'</h1><p><small>DEMO / DRAFT — NOT BUYER APPROVED — NOT A VERIFIED MARKET QUOTATION</small></p></header><p><b>Style:</b> '+esc(record.style.styleNo)+' &nbsp; <b>Buyer:</b> '+esc(record.style.buyer)+' &nbsp; <b>Factory:</b> '+esc(record.style.factory)+'</p><p><b>Quantity:</b> '+esc(record.style.quantityPieces)+' pcs &nbsp; <b>Revision:</b> '+esc(record.revision)+' &nbsp; <b>Source:</b> '+esc(record.sourceKind)+' &nbsp; <b>Calculation:</b> '+esc(res.status)+'</p>'+section+'<footer><hr><small>Quote sources, rates, FX, fabric yield, duties, margins and contracts require separate independent verification. No cloud upload.</small></footer></body></html>';
+  }
+  const exportSheets=(r)=>{
+    const v=E.calculate(r),s=v.summary;
+    const sheetStyle=[['VESA COSTING 360 · DRAFT / NOT APPROVED'],['Field','Value'],...Object.entries({...r.style,revision:r.revision,sourceKind:r.sourceKind}).map(([k,x])=>[k,safeCell(x)])];
+    const sheetLines=[['Line ID','Category','Description','Basis','Qty','Unit','Waste %','Rate','Currency','FX (units/USD)','Source','Source date','Evidence checked','USD/pc'],...(r.lines||[]).map(l=>[l.id,l.category,safeCell(l.description),l.basis,l.quantity,l.unit,l.wastePercent,l.rate,l.currency,l.localCurrencyPerUSD,safeCell(l.sourceRef),l.sourceDate||'',l.verifiedSource?'User-marked':'Not reviewed',v.summary?(v.lines.find(z=>z.id===l.id)?.usdPerPiece??''):'' ])];
+    const sheetTotals=[['VESA COSTING 360 · NO MARGIN · DRAFT'],['Metric','Value'],['Status',v.status],['Revision',r.revision],['Commission treatment',r.policy.commissionTreatment],['Commission %',r.policy.commissionPercent],['Margin %',0],['Base USD/pc',s?s.baseCostUsdPerPiece:'NEEDS INFORMATION'],['FOB USD/pc',s?s.fobUsdPerPiece:'NEEDS INFORMATION'],['Commission USD/pc',s?s.commissionUsdPerPiece:'NEEDS INFORMATION'],['Separate commission USD/pc',s?s.separateCommissionUsdPerPiece:'NEEDS INFORMATION'],['Total FOB USD',s?s.fobTotalUSD:'NEEDS INFORMATION']];
+    const sheetAlternates=[['Fabric line','Offer','Origin','Rate','Currency','FX (units/USD)','Extra USD/pc','Source','Compared USD/pc'],...(r.alternatives||[]).map(a=>{const x=validatedOffer(a,r);return [a.lineId,safeCell(a.label),safeCell(a.origin),a.rate,a.currency,a.fx,a.extraPerPieceUSD,safeCell(a.sourceRef),x.error?x.error:x.usdPerPc]})];
+    const sheetHistory=[['Revision','Recorded at','Reason','Base USD/pc','FOB USD/pc'],...(r.revisionHistory||[]).map(h=>{const e=E.calculate(h.snapshot);return[h.revision,h.recordedAt,safeCell(h.reason),e.summary?.baseCostUsdPerPiece??'',e.summary?.fobUsdPerPiece??'']})];
+    const sheetSources=[['ID','Category','Description','Source ref','Source date','Verified source'],...(r.lines||[]).map(l=>[l.id,l.category,safeCell(l.description),safeCell(l.sourceRef),l.sourceDate||'',l.verifiedSource?'User marked':'No'])];
+    return [['Style',sheetStyle],['Cost Lines',sheetLines],['Summary',sheetTotals],['Fabric Offers',sheetAlternates],['Source Ledger',sheetSources],['Revision History',sheetHistory]];
+  };
+  function workbookDataToDraft(wb,makeId){
+    if(!wb||!wb.Sheets?.COST_LINES||!wb.Sheets?.STYLE_INPUT)throw Error('Select the supplied VESA Costing input workbook containing STYLE_INPUT and COST_LINES.');
+    const X=root.XLSX;
+    const input=(ws,cells)=>{for(const addr of cells){const cell=ws[addr];if(cell?.f)throw Error('Editable workbook input contains a formula at '+addr+'.');}};
+    const map=Object.create(null),styleWs=wb.Sheets.STYLE_INPUT,costWs=wb.Sheets.COST_LINES;
+    for(let i=6;i<=22;i++){input(styleWs,['C'+i]);const key=clean(styleWs['B'+i]?.v||'').trim(),val=styleWs['C'+i]?.v;if(key)map[key]=val;}
+    const rows=X.utils.sheet_to_json(costWs,{header:1,raw:true,defval:''});
+    if(rows.length>260)throw Error('Too many workbook rows.');
+    const lines=[];
+    for(let i=6;i<rows.length;i++){
+      const row=rows[i]||[];if(!row.slice(0,12).some(v=>v!==''&&v!=null))continue;
+      const seq=i+1;input(costWs,'ABCDEFGHIJKL'.split('').map(c=>c+seq));
+      if(lines.length>=E.MAX_LINES)throw Error('The workbook exceeds 200 cost lines.');
+      const n=v=>(v===''||v==null)?null:Number(v);
+      lines.push({id:clean(row[0]),category:clean(row[1]),description:clean(row[2]),basis:clean(row[3]),quantity:n(row[4]),unit:clean(row[5]),wastePercent:n(row[6]),rate:n(row[7]),currency:clean(row[8]).toUpperCase(),localCurrencyPerUSD:n(row[9]),sourceRef:clean(row[10]),zeroRateReason:clean(row[11]),sourceDate:'',verifiedSource:false,isRequired:true});
+    }
+    return {schemaVersion:E.VERSION,recordId:makeId(),revision:1,sourceKind:'user-entry',style:{buyer:clean(map.Buyer),factory:clean(map.Factory),styleNo:clean(map['Style No']),quantityPieces:map['Order quantity (pieces)']==null?null:Number(map['Order quantity (pieces)']),garmentType:clean(map['Garment category']),countryOfManufacture:clean(map['Manufacturing country']),fabricOriginCountry:clean(map['Fabric origin country']),fabricDetails:clean(map['Fabric description']),fabricWeightValue:map['Nominal fabric weight GSM/oz']||'',fabricWeightUnit:clean(map['Fabric weight unit']),fabricLCdays:map['Fabric LC days']||'',remarks:clean(map.Remarks)},policy:{marginPercent:0,commissionPercent:map['Commission percentage']==null?null:Number(map['Commission percentage']),commissionTreatment:clean(map['Commission treatment'])},lines};
+  }
+  root.VesaCostingPortfolio=Object.freeze({report,validatedOffer,validOffers,comparisons,revisions,exportSheets,workbookDataToDraft,safeCell});
+})(globalThis);
+
+</script>
+<script data-costing-module="practice">window.VESA_COSTING_DEMO={"schemaVersion":"VESA-COSTING-1.0.0","recordId":"DEMO-COST-001","revision":1,"sourceKind":"demo","style":{"buyer":"DEMO BUYER - NOT REAL","factory":"DEMO FACTORY - NOT REAL","styleNo":"SYNTHETIC-TEE-001","description":"Fabric costing arithmetic fixture","garmentType":"cotton-jersey-tee","quantityPieces":1200,"countryOfManufacture":"Bangladesh","fabricOriginCountry":"China","fabricWeightValue":180,"fabricWeightUnit":"GSM","incoterm":"FOB","remarks":"SYNTHETIC / NOT A MARKET QUOTE"},"policy":{"marginPercent":0,"commissionPercent":4,"commissionTreatment":"IN_FOB"},"lines":[{"id":"FAB","category":"FABRIC","description":"Body fabric / DEMO ONLY","basis":"PER_PIECE","quantity":0.22,"unit":"kg","wastePercent":5,"rate":4.0,"currency":"USD","localCurrencyPerUSD":1,"sourceRef":"SYNTHETIC-ONLY-NOT-A-QUOTE","sourceDate":"2026-10-14","verifiedSource":false,"isRequired":true},{"id":"RIB","category":"FABRIC","description":"Neck rib / DEMO ONLY","basis":"PER_PIECE","quantity":0.012,"unit":"kg","wastePercent":2,"rate":5.0,"currency":"USD","localCurrencyPerUSD":1,"sourceRef":"SYNTHETIC-ONLY-NOT-A-QUOTE","sourceDate":"2026-10-14","verifiedSource":false,"isRequired":true},{"id":"TRM","category":"TRIMS","description":"Labels and thread / DEMO ONLY","basis":"PER_PIECE","quantity":1,"unit":"service","wastePercent":0,"rate":0.07,"currency":"USD","localCurrencyPerUSD":1,"sourceRef":"SYNTHETIC-ONLY-NOT-A-QUOTE","sourceDate":"2026-10-14","verifiedSource":false,"isRequired":true},{"id":"CM","category":"MAKING","description":"CM / DEMO ONLY","basis":"PER_PIECE","quantity":1,"unit":"pcs","wastePercent":0,"rate":0.25,"currency":"USD","localCurrencyPerUSD":1,"sourceRef":"SYNTHETIC-ONLY-NOT-A-QUOTE","sourceDate":"2026-10-14","verifiedSource":false,"isRequired":true},{"id":"WASH","category":"PROCESS","description":"Bio-wash / DEMO ONLY","basis":"PER_PIECE","quantity":1,"unit":"pcs","wastePercent":0,"rate":0.1,"currency":"USD","localCurrencyPerUSD":1,"sourceRef":"SYNTHETIC-ONLY-NOT-A-QUOTE","sourceDate":"2026-10-14","verifiedSource":false,"isRequired":true},{"id":"LAB","category":"TESTING","description":"Lab fee allocated / DEMO ONLY","basis":"PER_ORDER","quantity":1,"unit":"order","wastePercent":0,"rate":120,"currency":"USD","localCurrencyPerUSD":1,"sourceRef":"SYNTHETIC-ONLY-NOT-A-QUOTE","sourceDate":"2026-10-14","verifiedSource":false,"isRequired":true},{"id":"FRT","category":"LOGISTICS","description":"Local freight / DEMO ONLY","basis":"PER_ORDER","quantity":1,"unit":"order","wastePercent":0,"rate":180,"currency":"USD","localCurrencyPerUSD":1,"sourceRef":"SYNTHETIC-ONLY-NOT-A-QUOTE","sourceDate":"2026-10-14","verifiedSource":false,"isRequired":true}]};</script></head>
+<body class="costing-page">
+<main class="costing-container" id="costingMain" tabindex="-1"><section class="costing-panel"><h1>Opening VESA Costing 360…</h1></section></main>
+<div id="costingToast" class="costing-toast" role="status" aria-live="polite" hidden></div>
+<script data-costing-module="ui">
+(function(){
+  'use strict';
+  const E=window.VesaCostingEngine, S=window.VesaCostingStore;
+  const T={
+    en:{title:'VESA Costing 360',lead:'Garment cost and no-margin FOB, calculated only from entered values.',new:'New Costing',resume:'Continue Last Costing',open:'Open Saved Costing',practice:'Practice Example',copy:'Open Saved Copy',home:'Local costing work',style:'Style Details',lines:'Cost Lines',summary:'Cost Summary',buyer:'Buyer',factory:'Factory',styleNo:'Style No',pieces:'Order quantity (pcs)',commission:'Commission %',commissionTreatment:'Commission treatment',none:'None — no commission in FOB',inFob:'Deducted from FOB (break-even)',separate:'Separate payment (not in FOB)',add:'Add Cost Line',save:'Save Now',download:'Download Saved Copy',report:'Prepare Report',csv:'Download Cost Sheet CSV',back:'Back Home',help:'Help',error:'Please provide missing inputs. Unknown rates are never treated as zero.',draft:'DEMO/DRAFT — not buyer approved',status:'Status',qty:'Qty',rate:'Rate',fx:'Currency units / USD',source:'Source ref',waste:'Waste %',basis:'Cost basis',category:'Category',desc:'Description',remove:'Remove',noSaved:'No local costing record is saved yet.',choose:'Choose a saved costing:',openName:'Open this costing',settings:'Use Settings in the shared VESA header to change language/theme.',guide:'Enter source references for every cost; enter an explicit FX rate for non-USD costs. Save/Download keeps data local.',confirmed:'Price evidence reviewed separately. This demo is not an approved quote.'},
+    bn:{title:'VESA Costing 360',lead:'প্রদত্ত মান থেকে পোশাকের খরচ এবং লাভ ছাড়া FOB গণনা।',new:'নতুন Costing',resume:'শেষ Costing চালু করুন',open:'সেভ করা Costing খুলুন',practice:'অনুশীলন নমুনা',copy:'সেভ করা কপি খুলুন',home:'লোকাল Costing',style:'স্টাইল বিবরণ',lines:'খরচের লাইন',summary:'খরচের সারাংশ',buyer:'Buyer',factory:'Factory',styleNo:'Style No',pieces:'অর্ডার সংখ্যা (pcs)',commission:'কমিশন %',commissionTreatment:'কমিশন পদ্ধতি',none:'কোনো কমিশন নয়',inFob:'FOB থেকে কাটবে',separate:'আলাদা পেমেন্ট',add:'খরচের লাইন যোগ করুন',save:'এখন সেভ করুন',download:'সেভ কপি ডাউনলোড',report:'রিপোর্ট প্রস্তুত',csv:'Cost Sheet CSV',back:'হোমে ফিরুন',help:'সাহায্য',error:'যে তথ্য নেই তা দিন। অজানা দাম শূন্য ধরা হবে না।',draft:'ডেমো/ড্রাফট — Buyer অনুমোদিত নয়',status:'অবস্থা',qty:'পরিমাণ',rate:'রেট',fx:'মুদ্রা / USD',source:'সূত্র',waste:'ওয়েস্ট %',basis:'হিসাব ভিত্তি',category:'বিভাগ',desc:'বিবরণ',remove:'বাদ দিন',noSaved:'এখনও কোনো লোকাল Costing সেভ নেই।',choose:'সেভ করা Costing:',openName:'Costing খুলুন',settings:'উপরের Settings থেকে ভাষা/থিম বদলান।',guide:'প্রতিটি খরচের সোর্স ও বাস্তব FX লিখুন; সেভ/ডাউনলোড লোকাল থাকে।',confirmed:'মূল্য যাচাই আলাদা। এটি অনুমোদিত quotation নয়।'},
+    hi:{title:'VESA Costing 360',lead:'दर्ज किए गए मूल्यों से बिना मार्जिन वाला परिधान FOB लागत हिसाब।',new:'नई Costing',resume:'पिछली Costing खोलें',open:'सेव की Costing खोलें',practice:'अभ्यास नमूना',copy:'सेव कॉपी खोलें',home:'स्थानीय Costing',style:'स्टाइल विवरण',lines:'लागत की लाइनें',summary:'लागत सारांश',buyer:'Buyer',factory:'Factory',styleNo:'Style No',pieces:'ऑर्डर मात्रा (pcs)',commission:'कमीशन %',commissionTreatment:'कमीशन तरीका',none:'कमीशन नहीं',inFob:'FOB से कटेगा',separate:'अलग भुगतान',add:'लागत लाइन जोड़ें',save:'अभी सेव करें',download:'सेव कॉपी डाउनलोड करें',report:'रिपोर्ट तैयार करें',csv:'Cost Sheet CSV',back:'होम',help:'सहायता',error:'लापता इनपुट भरें। अज्ञात कीमत को शून्य नहीं मानेंगे।',draft:'डेमो/ड्राफ्ट — Buyer की मंजूरी नहीं',status:'स्थिति',qty:'मात्रा',rate:'रेट',fx:'मुद्रा / USD',source:'स्रोत',waste:'वेस्ट %',basis:'हिसाब आधार',category:'श्रेणी',desc:'विवरण',remove:'हटाएँ',noSaved:'अभी कोई स्थानीय Costing सेव नहीं है।',choose:'सेव की गई Costing:',openName:'Costing खोलें',settings:'ऊपर के Settings से भाषा/थीम बदलें।',guide:'हर लागत का प्रमाण और FX दर्ज करें; सेव/डाउनलोड आपके ब्राउज़र में रहता है।',confirmed:'मूल्य प्रमाण अलग से जाँचना है। यह स्वीकृत quotation नहीं।'},
+    ta:{title:'VESA Costing 360',lead:'நீங்கள் உள்ளிடும் விலைகளிலிருந்து மட்டுமே, margin இல்லாத garment FOB கணக்கு.',new:'புதிய Costing',resume:'கடைசியாக சேமித்த Costing',open:'சேமித்த Costing திறக்க',practice:'Practice Example',copy:'Saved Copy திறக்க',home:'Local Costing',style:'Style விவரங்கள்',lines:'Cost Lines',summary:'Cost Summary',buyer:'Buyer',factory:'Factory',styleNo:'Style No',pieces:'Order quantity (pcs)',commission:'Commission %',commissionTreatment:'Commission கணக்கு முறை',none:'Commission இல்லை',inFob:'FOB-லிருந்து பிடிக்கப்படும்',separate:'தனியாக பெறுவது',add:'Cost Line சேர்க்க',save:'இப்போது Save செய்ய',download:'Saved Copy பதிவிறக்க',report:'Report தயார் செய்',csv:'Cost Sheet CSV',back:'Home செல்ல',help:'உதவி',error:'விடுபட்ட தகவல்களை நிரப்புங்கள். தெரியாத விலையை பூஜ்ஜியமாகக் கணக்கிடாது.',draft:'DEMO/DRAFT — Buyer approved இல்லை',status:'நிலை',qty:'Qty',rate:'Rate',fx:'Currency units / USD',source:'Quote source',waste:'Wastage %',basis:'Cost basis',category:'Category',desc:'Description',remove:'நீக்க',noSaved:'இந்த browser-ல் Costing save ஆகவில்லை.',choose:'Saved Costing தேர்வு செய்யுங்கள்:',openName:'இந்த Costing திறக்க',settings:'மேலே VESA Settings-ல் language/theme மாற்றலாம்.',guide:'ஒவ்வொரு cost-க்கும் quote/source கொடுக்கவும். USD அல்லாத rate-க்கு FX கொடுக்கவும். Data local-லேயே இருக்கும்.',confirmed:'Price proof தனியாக verify செய்ய வேண்டும். இது approved quotation அல்ல.'}
+  };
+  const C=window.VesaCostingConsumption, P=window.VesaCostingPortfolio;
+  const main=document.querySelector('#costingMain');
+  const esc=window.VesaCostingReport.escape;
+  const USER=window.VesaAuth?.currentUserKey?.()||'local-browser-user';
+  const EXTRA={
+    en:{fabric:'Fabric Consumption',commercial:'Commercial & Commission',offers:'Fabric Offers',history:'Revision History',sources:'Source Ledger',missing:'Missing Information',tools:'Consumption Tools',quote:'Draft Reports',sourceDate:'Source date',verified:'Evidence checked by user',noValues:'Missing details keep the quote incomplete.',newRev:'Start New Revision',reason:'Reason for revision',saveCopy:'Make Another Copy',print:'Print Report',xlsx:'Download Excel Workbook',importWorkbook:'Open Costing Excel Template',importCsv:'Import BOM Cost Lines',share:'Share App Link',next:'Next steps',rates:'All prices require real source references. Synthetic rates are not market quotations.',alt:'Alternative quote',compare:'Compare',fob:'No-margin FOB',currency:'Currency',zeroReason:'Zero-price reason',weight:'Fabric weight',sizeRatio:'Size ratio',colour:'Colorways',country:'Production country',origin:'Fabric origin',fabricDetails:'Fabric description',incoterm:'Incoterm',lc:'Fabric LC days',notes:'Remarks',description:'Description',unit:'Unit',addOffer:'Add Source Offer',lineId:'Fabric line',offer:'Supplier offer',landed:'Extra landed USD/pc',extraSource:'Landed adjustment source / none reason',exchange:'FX units per USD',showSource:'View sources',guide2:'Enter price and exchange rate from a dated quote. No estimated prices are filled.',auto:'Auto-saved locally',notSaved:'Not saved yet',last:'Recent saved costings',backup:'Keep a downloaded copy to protect against browser data loss.',treat:'Commission treatment',percentage:'Commission %',quoteRef:'Commission contract / quote reference',quantity:'Pieces',sourceKind:'Source kind',addLine:'Add Cost Line',alerts:'Errors / missing entries',reportType:'Report type',downReport:'Download Report',prepare:'Prepare Report',close:'Close',method:'Method',knit:'Knit: approved area + GSM',woven:'Woven: approved marker',target:'Apply quantity to fabric line',run:'Calculate & Use',area:'Approved cut area (m²)',gsm:'GSM',shrink:'Additional shrink %',alreadyShrink:'Area already includes shrink',marker:'Marker length (m)',markers:'Garments per marker',alreadyWaste:'Marker already includes waste',save:'Save Now',open:'Open Saved Costing',new:'New Costing',practice:'Practice Example',copy:'Open Saved Copy',download:'Download Saved Copy',clear:'Clear / New Costing',report:'Prepare Report',status:'Status',lines:'Cost Lines',summary:'Cost Summary',style:'Style Details',draft:'DEMO / DRAFT — NOT BUYER APPROVED',goBack:'Back to Home',badSource:'Missing source prevents complete costing.',remind:'Inputs and records remain in this browser; download a saved copy for backup.',option:'Options',toolsHelp:'Approved consumption area or marker data is mandatory. GSM alone is insufficient.',orderTotal:'FOB order total',base:'Base USD/pc',included:'Commission USD/pc',rows:'Cost components',choose:'Select a record',chooseLine:'Choose fabric line',applyOffer:'Use offer in a new revision',verify:'Verified',no:'No',yes:'Yes',noSaved:'No local costings yet.',cancel:'Cancel',file:'Files',commissionCompare:'Compare commission modes'},
+    bn:{fabric:'ফ্যাব্রিক খরচ',commercial:'কমার্শিয়াল ও কমিশন',offers:'ফ্যাব্রিক অফার',history:'রিভিশন ইতিহাস',sources:'উৎস তালিকা',missing:'অসম্পূর্ণ তথ্য',tools:'কনজাম্পশন টুলস',quote:'ড্রাফট রিপোর্ট',sourceDate:'সোর্সের তারিখ',verified:'ব্যবহারকারী যাচাই করেছেন',noValues:'প্রয়োজনীয় তথ্য ছাড়া পূর্ণ FOB নয়।',newRev:'নতুন রিভিশন',reason:'পরিবর্তনের কারণ',saveCopy:'আরেকটি কপি',print:'রিপোর্ট প্রিন্ট',xlsx:'Excel Workbook ডাউনলোড',importWorkbook:'Costing Excel খুলুন',importCsv:'BOM Cost Lines আনুন',share:'অ্যাপ লিংক শেয়ার',next:'পরের ধাপ',rates:'মূল্য ও FX প্রকৃত উৎস থেকে দিতে হবে। ডেমোর দাম বাজারমূল্য নয়।',alt:'বিকল্প দর',compare:'তুলনা',fob:'লাভ ছাড়া FOB',currency:'মুদ্রা',zeroReason:'শূন্য রেটের কারণ',weight:'ফ্যাব্রিক ওজন',sizeRatio:'সাইজ রেশিও',colour:'কালার',country:'উৎপাদনের দেশ',origin:'ফ্যাব্রিকের উৎস',fabricDetails:'ফ্যাব্রিক বিবরণ',incoterm:'ইনকোটার্ম',lc:'ফ্যাব্রিক LC দিন',notes:'মন্তব্য',description:'বিবরণ',unit:'একক',addOffer:'অফার যোগ করুন',lineId:'ফ্যাব্রিক লাইন',offer:'সাপ্লায়ার অফার',landed:'অতিরিক্ত ল্যান্ডেড USD/pc',extraSource:'ল্যান্ডেড খরচের সূত্র / নেই কারণ',exchange:'প্রতি USD-এ মুদ্রা',showSource:'উৎস দেখুন',guide2:'তারিখসহ সোর্স রেট লিখুন; কোনো অনুমান করা হয় না।',auto:'এই ব্রাউজারে সেভ হয়েছে',notSaved:'এখনও সেভ হয়নি',last:'সাম্প্রতিক Costing',backup:'ডেটা সুরক্ষায় ডাউনলোড কপি রাখুন।',treat:'কমিশন পদ্ধতি',percentage:'কমিশন %',quoteRef:'কমিশন চুক্তির সূত্র',quantity:'পিস',sourceKind:'উৎসের ধরন',addLine:'খরচ যোগ করুন',alerts:'অসম্পূর্ণ / ভুল তথ্য',reportType:'রিপোর্ট ধরন',downReport:'রিপোর্ট ডাউনলোড',prepare:'রিপোর্ট তৈরি',close:'বন্ধ',method:'পদ্ধতি',knit:'নিট: এরিয়া + GSM',woven:'ওভেন: অনুমোদিত মার্কার',target:'ফ্যাব্রিক লাইনে যোগ করুন',run:'হিসাব করুন ও ব্যবহার করুন',area:'অনুমোদিত এরিয়া (m²)',gsm:'GSM',shrink:'অতিরিক্ত শ্রিংক %',alreadyShrink:'এরিয়ায় শ্রিংক ধরা আছে',marker:'মার্কার দৈর্ঘ্য (m)',markers:'মার্কারে পিস',alreadyWaste:'মার্কারে ওয়েস্ট ধরা আছে',goBack:'হোমে ফিরুন',draft:'ডেমো / ড্রাফট — Buyer approved নয়',remind:'ডেটা এই ব্রাউজারে থাকে; ব্যাকআপ ডাউনলোড করুন।'},
+    hi:{fabric:'फैब्रिक खपत',commercial:'कमर्शियल और कमीशन',offers:'फैब्रिक ऑफर',history:'रिविजन इतिहास',sources:'सोर्स लेजर',missing:'अधूरी जानकारी',tools:'खपत कैलकुलेटर',quote:'ड्राफ्ट रिपोर्ट',sourceDate:'सोर्स तारीख',verified:'उपयोगकर्ता द्वारा जांच',noValues:'अधूरा डेटा पूरी कीमत नहीं है।',newRev:'नया रिविजन',reason:'बदलाव का कारण',saveCopy:'नई कॉपी बनाएं',print:'रिपोर्ट प्रिंट',xlsx:'Excel Workbook डाउनलोड',importWorkbook:'Costing Excel खोलें',importCsv:'BOM Cost Lines आयात',share:'ऐप लिंक शेयर',next:'अगला कदम',rates:'कीमत और FX असली स्रोत से भरें। डेमो दर बाजार दर नहीं है।',alt:'दूसरी कीमत',compare:'तुलना',fob:'बिना मार्जिन FOB',currency:'मुद्रा',zeroReason:'शून्य कीमत का कारण',weight:'फैब्रिक वजन',sizeRatio:'साइज अनुपात',colour:'रंग',country:'उत्पादन देश',origin:'फैब्रिक स्रोत',fabricDetails:'फैब्रिक विवरण',incoterm:'इनकोटर्म',lc:'फैब्रिक LC दिन',notes:'नोट',description:'विवरण',unit:'इकाई',addOffer:'सोर्स ऑफर जोड़ें',lineId:'फैब्रिक लाइन',offer:'सप्लायर ऑफर',landed:'अतिरिक्त लैंडेड USD/pc',extraSource:'लैंडेड लागत स्रोत / नहीं होने का कारण',exchange:'मुद्रा प्रति USD',showSource:'सोर्स देखें',guide2:'तारीख के साथ असली रेट भरें; अनुमान नहीं।',auto:'इस ब्राउज़र में सहेजा',notSaved:'अभी सहेजा नहीं',last:'हाल के Costing',backup:'सुरक्षा के लिए डाउनलोड की हुई कॉपी रखें।',treat:'कमीशन तरीका',percentage:'कमीशन %',quoteRef:'कमीशन समझौते का स्रोत',quantity:'पीस',sourceKind:'स्रोत प्रकार',addLine:'लागत जोड़ें',alerts:'अधूरा / गलत डेटा',reportType:'रिपोर्ट प्रकार',downReport:'रिपोर्ट डाउनलोड',prepare:'रिपोर्ट तैयार',close:'बंद',method:'तरीका',knit:'निट: एरिया + GSM',woven:'वोवन: मार्कर',target:'फैब्रिक लाइन में जोड़ें',run:'गणना करें और लगाएं',area:'अनुमोदित एरिया (m²)',gsm:'GSM',shrink:'अतिरिक्त श्रिंक %',alreadyShrink:'एरिया में श्रिंक शामिल',marker:'मार्कर लंबाई (m)',markers:'मार्कर में पीस',alreadyWaste:'मार्कर में वेस्ट शामिल',goBack:'होम',draft:'डेमो / ड्राफ्ट — Buyer approved नहीं',remind:'डेटा इसी ब्राउज़र में है; बैकअप डाउनलोड करें।'},
+    ta:{fabric:'துணி பயன்பாடு',commercial:'Commercial & Commission',offers:'துணி விலை ஒப்பீடு',history:'Revision வரலாறு',sources:'விலை ஆதாரங்கள்',missing:'விடுபட்ட தகவல்கள்',tools:'Fabric Calculation',quote:'Draft Reports',sourceDate:'விலை ஆதார தேதி',verified:'ஆதாரம் சரிபார்த்தது',noValues:'முழு தகவல் இல்லாமல் FOB கணக்கை உறுதி செய்ய முடியாது.',newRev:'புதிய Revision',reason:'மாற்றத்திற்கான காரணம்',saveCopy:'வேறொரு Copy உருவாக்கு',print:'Report Print',xlsx:'Excel Workbook பதிவிறக்கு',importWorkbook:'Costing Excel திறக்க',importCsv:'BOM Cost Lines இறக்கு',share:'App Link பகிர்',next:'அடுத்த படி',rates:'அனைத்து விலைகளுக்கும் உண்மையான Quote தேவை. Demo விலை market rate அல்ல.',alt:'மாற்று Quote',compare:'ஒப்பீடு',fob:'Margin இல்லாத FOB',currency:'Currency',zeroReason:'Zero rate காரணம்',weight:'Fabric Weight',sizeRatio:'Size Ratio',colour:'நிறங்கள்',country:'உற்பத்தி நாடு',origin:'துணி வரும் நாடு',fabricDetails:'Fabric விவரங்கள்',incoterm:'Incoterm',lc:'Fabric LC நாட்கள்',notes:'குறிப்புகள்',description:'விவரம்',unit:'Unit',addOffer:'மாற்று Quote சேர்',lineId:'Fabric Line',offer:'Supplier Quote',landed:'மேலும் Landed USD/pc',extraSource:'Landed cost ஆதாரம் / இல்லை காரணம்',exchange:'USD-க்கு Currency Units',showSource:'விலை ஆதாரம் பார்',guide2:'ஒவ்வொரு rate-க்கும் தேதி, quotation ஆதாரம் கொடுங்கள்; ஊகமாக விலை நிரப்பாது.',auto:'இந்த browser-ல் Save ஆனது',notSaved:'இன்னும் Save ஆகவில்லை',last:'கடைசி Costing பதிவுகள்',backup:'Browser data அழிய வாய்ப்பு உண்டு; Download Saved Copy எடுத்து வைத்துக்கொள்ளவும்.',treat:'Commission முறை',percentage:'Commission %',quoteRef:'Commission ஒப்பந்த ஆதாரம்',quantity:'Pieces',sourceKind:'தரவு வகை',addLine:'Cost Line சேர்',alerts:'விடுபட்ட / தவறான தகவல்கள்',reportType:'Report வகை',downReport:'Report பதிவிறக்கு',prepare:'Report தயார்',close:'மூடு',method:'முறை',knit:'Knit: Area + GSM',woven:'Woven: Marker',target:'Fabric Line-க்கு அளவு இடு',run:'கணக்கிட்டு பயன்படுத்து',area:'Approved Area (m²)',gsm:'GSM',shrink:'கூடுதல் Shrink %',alreadyShrink:'Area-வில் Shrink அடங்கும்',marker:'Marker Length (m)',markers:'Marker-ல் Garments',alreadyWaste:'Marker-ல் Waste அடங்கும்',goBack:'Home',draft:'DEMO / DRAFT — Buyer Approval இல்லை',remind:'தரவு இந்த Browser-ல் மட்டுமே; Backup Download செய்யவும்.'}
+  };
+  function lang(){return window.VesaPrefs?.read?.().language||'en'}
+  function tr(k){return EXTRA[lang()]?.[k]||T[lang()]?.[k]||EXTRA.en[k]||T.en[k]||k}
+  const id=()=>`COST-${globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(36).slice(2)}`;
+  const newRecord=()=>({schemaVersion:E.VERSION,recordId:id(),revision:1,sourceKind:'user-entry',style:{buyer:'',factory:'',styleNo:'',quantityPieces:null,description:'',garmentType:'',countryOfManufacture:'',fabricOriginCountry:'',fabricDetails:'',fabricWeightValue:'',fabricWeightUnit:'GSM',sizeRatio:'',colorways:'',incoterm:'FOB',fabricLCdays:'',remarks:''},policy:{marginPercent:0,commissionPercent:null,commissionTreatment:'',commissionSourceRef:''},lines:[],alternatives:[],revisionHistory:[]});
+  let record=null,dirty=false,shell=null,view='home',section='style',currentReport='CR01',timer=null,dialogFocus=null;
+  const dialog=document.createElement('dialog');dialog.className='costing-dialog';dialog.setAttribute('aria-label','VESA costing action');document.body.append(dialog);
+  const picker=document.createElement('input');picker.type='file';picker.hidden=true;document.body.append(picker);let pickType='copy';
+  function notify(msg){const s=main.querySelector('#costingNotice');if(s)s.textContent=msg;}
+  function pending(){dirty=true;shell?.setSavedState('unsaved');notify(tr('notSaved'));clearTimeout(timer);timer=setTimeout(()=>save(false),1050);}
+  function save(show){if(!record)return false;clearTimeout(timer);try{S.save(localStorage,record,USER);dirty=false;shell?.setSavedState('saved');notify(tr('auto'));if(show)toast(tr('auto'));return true;}catch(e){shell?.setSavedState('failed');notify(e.message+' — '+tr('backup'));if(show)toast(e.message);return false;}}
+  function toast(msg){const t=document.getElementById('costingToast');if(!t)return;t.textContent=msg;t.hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.hidden=true,4000);}
+  function download(content,name,type){const blob=content instanceof Blob?content:new Blob([content],{type});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);}
+  function chooseFile(which){pickType=which;picker.value='';picker.accept=which==='copy'?'.vesacost,.json,application/json':which==='xlsx'?'.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':'.csv,text/csv';picker.click();}
+  function modal(title,body){dialogFocus=document.activeElement;dialog.innerHTML=`<div class="costing-dialog-header"><h2>${esc(title)}</h2><button type="button" class="costing-btn secondary" data-cmd="dismiss" aria-label="${esc(tr('close'))}">×</button></div><div class="costing-dialog-content">${body}</div>`;dialog.showModal();}
+  dialog.addEventListener('close',()=>dialogFocus?.focus?.());
+  function menu(name){const menus={Home:[['home',tr('goBack')],['new',tr('new')],['practice',tr('practice')],['resume',tr('resume')]],File:[['new',tr('new')],['save',tr('save')],['duplicate',tr('saveCopy')],['download',tr('download')],['copy',tr('copy')],['xlsxImport',tr('importWorkbook')],['csvImport',tr('importCsv')],['reports',tr('quote')],['xlsxExport',tr('xlsx')],['print',tr('print')],['share',tr('share')]],Edit:[['add',tr('addLine')],['addOffer',tr('addOffer')],['revision',tr('newRev')]],View:[['style',tr('style')],['lines',tr('lines')],['offers',tr('offers')],['sources',tr('sources')],['history',tr('history')],['missing',tr('missing')]],Tools:[['consumption',tr('tools')],['commissionCompare',tr('commissionCompare')],['xlsxExport',tr('xlsx')]],Help:[['help',tr('help')]]};
+    modal(name,'<div class="costing-menu-list">'+(menus[name]||[]).map(([a,b])=>`<button class="costing-btn secondary" data-cmd="${esc(a)}">${esc(b)}</button>`).join('')+'</div>');
+  }
+  function head(title,lead){return `<section class="costing-panel"><span class="costing-kicker">VESA 360 · PERSONAL DEMO · LOCAL ONLY</span><h1 class="costing-title">${esc(title)}</h1><p class="costing-lead">${esc(lead)}</p><p class="costing-warning">${esc(tr('draft'))}</p></section>`;}
+  function showHome(){view='home';let saved=[];try{saved=S.list(localStorage,USER)}catch(e){toast(e.message)}
+    const actions=[[tr('new'),'new'],[tr('resume'),'resume'],[tr('open'),'open'],[tr('practice'),'practice'],[tr('copy'),'copy']];
+    main.innerHTML=head('VESA Costing 360',tr('lead')||tr('rates'))+`<section class="costing-grid">${actions.map(([label,command])=>`<article class="costing-tile"><h2>${esc(label)}</h2><p class="costing-lead">${esc(command==='practice'?tr('rates'):tr('remind'))}</p><button class="costing-btn" data-cmd="${esc(command)}">${esc(label)}</button></article>`).join('')}</section>`+`<section class="costing-panel"><h2>${esc(tr('last'))}</h2>${saved.length?'<div class="costing-record-list">'+saved.map(x=>`<button class="costing-btn secondary" data-open="${esc(x.recordId)}">${esc(x.styleNo||x.recordId)} · ${esc(x.buyer||'')} ${x.sourceKind==='demo'?' · DEMO':''}</button>`).join('')+'</div>':`<p>${esc(tr('noSaved'))}</p>`}<p class="costing-lead">${esc(tr('remind'))}</p></section><footer class="costing-footer">Powered by EGENVA · Personal demo · No remote upload</footer>`;
+  }
+  const STYLE_FIELDS=[['buyer','buyer'],['factory','factory'],['styleNo','styleNo'],['quantityPieces','pieces','number'],['garmentType','Garment category'],['countryOfManufacture','country'],['fabricOriginCountry','origin'],['fabricDetails','fabricDetails'],['fabricWeightValue','weight'],['fabricWeightUnit','Weight unit','select',['GSM','OZ_PER_YD2']],['sizeRatio','sizeRatio'],['colorways','colour'],['incoterm','incoterm'],['fabricLCdays','lc','number'],['description','description'],['remarks','notes']];
+  const select=(attr,options,value)=>`<select ${attr}>${options.map(([v,t])=>`<option value="${esc(v)}" ${String(value)===String(v)?'selected':''}>${esc(t)}</option>`).join('')}</select>`;
+  function styleField([key,label,kind,values]){const value=record.style[key]??'',name=tr(label);return `<label>${esc(name)}${kind==='select'?select(`data-style="${esc(key)}"`,values.map(v=>[v,v]),value):`<input data-style="${esc(key)}" type="${kind==='number'?'number':'text'}" ${kind==='number'?'step="any" min="0"':''} value="${esc(value)}">`}</label>`;}
+  const cat=()=>E.CATEGORY.map(x=>[x,x]),basis=()=>E.BASIS.map(x=>[x,x]);
+  function lineRow(l,i){const n=(name,type='text')=>`<input data-line="${i}" data-lkey="${name}" aria-label="${esc(name)}" ${type==='number'?'type="number" step="any" min="0"':''} value="${esc(l[name]??'')}">`;
+    return `<tr><td>${esc(l.id)}</td><td>${select(`data-line="${i}" data-lkey="category"`,cat(),l.category)}</td><td>${n('description')}</td><td>${select(`data-line="${i}" data-lkey="basis"`,basis(),l.basis)}</td><td>${n('quantity','number')}</td><td>${n('unit')}</td><td>${n('wastePercent','number')}</td><td>${n('rate','number')}</td><td>${n('currency')}</td><td>${n('localCurrencyPerUSD','number')}</td><td>${n('sourceRef')}</td><td>${n('sourceDate','date')}</td><td>${n('zeroRateReason')}</td><td><input type="checkbox" data-line="${i}" data-lkey="verifiedSource" ${l.verifiedSource?'checked':''} aria-label="${esc(tr('verified'))}"></td><td><button class="costing-line-remove" data-remove-line="${i}" aria-label="Remove line">×</button></td></tr>`;}
+  const offerRow=(a,i)=>{const inp=(k,t='text')=>`<input data-offer="${i}" data-okey="${k}" ${t==='number'?'type="number" min="0" step="any"':''} aria-label="${esc(k)}" value="${esc(a[k]??'')}">`;
+    const fab=(record.lines||[]).filter(l=>l.category==='FABRIC'&&l.basis==='PER_PIECE').map(l=>[l.id,l.description||l.id]);
+    const v=P.validatedOffer(a,record);
+    return `<tr><td>${select(`data-offer="${i}" data-okey="lineId"`,[['','Choose'],...fab],a.lineId)}</td><td>${inp('label')}</td><td>${inp('origin')}</td><td>${inp('rate','number')}</td><td>${inp('currency')}</td><td>${inp('fx','number')}</td><td>${inp('extraPerPieceUSD','number')}</td><td>${inp('sourceRef')}</td><td>${inp('extraSourceRef')}</td><td>${v.error?`<small>${esc(v.error)}</small>`:esc(E.roundDisplay(v.usdPerPc,6))}</td><td><button class="costing-btn secondary" data-apply-offer="${i}">Use</button><button class="costing-line-remove" data-remove-offer="${i}" aria-label="Remove offer">×</button></td></tr>`;
+  };
+  const tabNames=()=>[['style',tr('style')],['lines',tr('lines')],['commission',tr('commercial')],['offers',tr('offers')],['sources',tr('sources')],['history',tr('history')],['reports',tr('quote')]];
+  const reportNames=[['CR01','Detailed Cost Sheet'],['CR02','Buyer Quote Draft'],['CR03','Fabric Comparison'],['CR04','Commission Breakdown'],['CR05','Price Source Ledger'],['CR06','Missing Information'],['CR07','Revision Comparison']];
+  function showEditor(which=section){if(!record)return showHome();view='editor';section=which;
+    main.innerHTML=head('VESA Costing 360',`${record.style.styleNo||tr('new')} · Revision ${record.revision} · ${record.sourceKind.toUpperCase()}`)+`<section class="costing-panel"><div class="costing-actions"><button class="costing-btn" data-cmd="save">${esc(tr('save'))}</button><button class="costing-btn secondary" data-cmd="download">${esc(tr('download'))}</button><button class="costing-btn secondary" data-cmd="reports">${esc(tr('quote'))}</button><button class="costing-btn secondary" data-cmd="xlsxExport">${esc(tr('xlsx'))}</button><button class="costing-btn secondary" data-cmd="home">${esc(tr('goBack'))}</button><small id="costingNotice" aria-live="polite">${esc(dirty?tr('notSaved'):tr('auto'))}</small></div><div class="costing-section-tabs">${tabNames().map(([k,v])=>`<button class="costing-btn ${k===section?'':'secondary'}" data-section="${k}" aria-pressed="${k===section}">${esc(v)}</button>`).join('')}</div></section>`+sectionMarkup()+`<footer class="costing-footer">${esc(tr('draft'))} · Powered by EGENVA</footer>`;
+    updateSummary();
+  }
+  function sectionMarkup(){
+    if(section==='style')return `<section class="costing-panel"><h2>${esc(tr('style'))}</h2><p class="costing-lead">${esc(tr('rates'))}</p><div class="costing-form">${STYLE_FIELDS.map(styleField).join('')}</div></section>`;
+    if(section==='lines')return `<section class="costing-panel"><h2>${esc(tr('lines'))}</h2><p>${esc(tr('guide2'))}</p><p><button class="costing-btn" data-cmd="add">${esc(tr('addLine'))}</button><button class="costing-btn secondary" data-cmd="consumption">${esc(tr('tools'))}</button><button class="costing-btn secondary" data-cmd="csvImport">${esc(tr('importCsv'))}</button></p><div class="costing-table-scroll"><table class="costing-table costing-edit-table"><thead><tr>${['ID',tr('category'),tr('description'),tr('basis'),tr('quantity'),tr('unit'),tr('waste'),tr('rate'),tr('currency'),tr('exchange'),tr('source'),tr('sourceDate'),tr('zeroReason'),tr('verified'),''].map(x=>`<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${record.lines.map(lineRow).join('')}</tbody></table></div><div id="costingCurrentSummary" class="costing-summary"></div></section>`;
+    if(section==='commission')return `<section class="costing-panel"><h2>${esc(tr('commercial'))}</h2><div class="costing-form"><label>${esc(tr('treat'))}${select('data-policy="commissionTreatment"',[['','Choose'],['NONE',tr('none')],['IN_FOB',tr('inFob')],['SEPARATE',tr('separate')]],record.policy.commissionTreatment)}</label><label>${esc(tr('percentage'))}<input data-policy="commissionPercent" type="number" min="0" max="99.999" step="any" value="${esc(record.policy.commissionPercent??'')}"></label><label>${esc(tr('quoteRef'))}<input data-policy="commissionSourceRef" value="${esc(record.policy.commissionSourceRef??'')}"></label><label>Margin %<input value="0" disabled aria-label="No-margin pricing"></label></div><p class="costing-warning">${esc(tr('guide2'))}</p><button class="costing-btn secondary" data-cmd="commissionCompare">${esc(tr('commissionCompare'))}</button><div id="costingCurrentSummary" class="costing-summary"></div></section>`;
+    if(section==='offers')return `<section class="costing-panel"><h2>${esc(tr('offers'))}</h2><p>${esc(tr('guide2'))} · Same approved fabric consumption per alternative. Landed add-ons must include a source or explicit no-charge reason.</p><button class="costing-btn" data-cmd="addOffer">${esc(tr('addOffer'))}</button><div class="costing-table-scroll"><table class="costing-table costing-edit-table"><thead><tr>${[tr('lineId'),tr('offer'),tr('origin'),tr('rate'),tr('currency'),tr('exchange'),tr('landed'),tr('source'),tr('extraSource'),'USD/pc',''].map(x=>`<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${(record.alternatives||[]).map(offerRow).join('')}</tbody></table></div><p class="costing-warning">Changing a material offer starts a new costing revision; nothing is applied automatically.</p></section>`;
+    if(section==='sources')return `<section class="costing-panel"><h2>${esc(tr('sources'))}</h2><div class="costing-table-scroll"><table class="costing-table"><thead><tr>${['Line','Description','Source','Date','Currency','Evidence'].map(x=>`<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${record.lines.map(l=>`<tr><td>${esc(l.id)}</td><td>${esc(l.description)}</td><td>${esc(l.sourceRef)}</td><td>${esc(l.sourceDate||'Not provided')}</td><td>${esc(l.currency)}</td><td>${esc(l.verifiedSource?'User-marked':'Not reviewed')}</td></tr>`).join('')}</tbody></table></div><p class="costing-warning">User-marked source checking is not independent approval.</p></section>`;
+    if(section==='history')return `<section class="costing-panel"><h2>${esc(tr('history'))}</h2><button class="costing-btn" data-cmd="revision">${esc(tr('newRev'))}</button><div class="costing-table-scroll">${P.revisions(record)}</div></section>`;
+    if(section==='reports')return `<section class="costing-panel"><h2>${esc(tr('quote'))}</h2><p>${esc(tr('draft'))}. Reports cannot approve missing rates.</p><div class="costing-report-grid">${reportNames.map(([id,name])=>`<article><h3>${esc(id)} · ${esc(name)}</h3><button class="costing-btn secondary" data-report="${id}">${esc(tr('prepare'))}</button><button class="costing-btn secondary" data-report-download="${id}">${esc(tr('downReport'))}</button></article>`).join('')}</div><button class="costing-btn" data-cmd="xlsxExport">${esc(tr('xlsx'))}</button><button class="costing-btn secondary" data-cmd="print">${esc(tr('print'))}</button></section>`;
+    if(section==='missing')return `<section class="costing-panel"><h2>${esc(tr('missing'))}</h2><div id="costingCurrentSummary"></div></section>`;
+    return '';
+  }
+  function updateSummary(){if(!record)return;const result=E.calculate(record);const summary=main.querySelector('#costingCurrentSummary');if(!summary)return;
+    if(!result.summary){summary.innerHTML=`<div class="costing-warning"><b>${esc(tr('noValues'))}</b><ol>${result.errors.slice(0,50).map(e=>`<li>${esc(e)}</li>`).join('')}</ol></div>`;return;}
+    const s=result.summary;summary.innerHTML=`<p class="costing-badge">${esc(result.status)} ${record.sourceKind==='demo'?' · DEMO ONLY':''}</p><div class="costing-metrics">${[['base',s.baseCostUsdPerPiece],['fob',s.fobUsdPerPiece],['included',s.commissionUsdPerPiece],['orderTotal',s.fobTotalUSD]].map(([label,num])=>`<div class="costing-metric"><small>${esc(tr(label))}</small><strong class="costing-number">${esc(E.roundDisplay(num,6))}</strong></div>`).join('')}</div><p class="costing-warning">${esc(tr('rates'))}</p>`;
+  }
+  function addLine(){if(!record) return; if(record.lines.length>=E.MAX_LINES)return toast('200 cost lines maximum');const n=record.lines.length+1;record.lines.push({id:`L${String(n).padStart(3,'0')}-${Math.random().toString(36).slice(2,7)}`,category:'FABRIC',description:'',basis:'PER_PIECE',quantity:null,unit:'pcs',wastePercent:0,rate:null,currency:'USD',localCurrencyPerUSD:1,sourceRef:'',sourceDate:'',zeroRateReason:'',verifiedSource:false,isRequired:true});pending();showEditor('lines');}
+  function addOffer(){if(!record)return;record.alternatives??=[];record.alternatives.push({lineId:'',label:'',origin:'',rate:null,currency:'USD',fx:1,extraPerPieceUSD:null,sourceRef:'',extraSourceRef:'',zeroRateReason:''});pending();showEditor('offers');}
+  function askDiscard(){return !dirty||confirm('This draft is still saving. Continue without waiting for save?')}
+  function saveCopy(){if(!record)return toast('Open a costing first');if(!save(false))return;const before=record;record={...structuredClone(before),recordId:id(),revision:1,revisionHistory:[],copiedFromRecordId:before.recordId,updatedAt:new Date().toISOString()};dirty=true;save(true);showEditor();}
+  function newRevision(reason){if(!record)return;reason=String(reason||'').trim();if(!reason)return toast('Explain this revision before continuing');if((record.revisionHistory||[]).length>=15)return toast('Download a saved copy before more revisions');const old=structuredClone(record);delete old.revisionHistory;record.revisionHistory??=[];record.revisionHistory.push({revision:record.revision,recordedAt:new Date().toISOString(),reason,snapshot:old});record.revision+=1;record.updatedAt=new Date().toISOString();pending();showEditor('history');}
+  function offerApply(i){const a=record?.alternatives?.[i];if(!a)return;const check=P.validatedOffer(a,record);if(check.error)return toast(check.error);if(a.extraPerPieceUSD>0)return toast('Add sourced landed charges as a separate cost line before applying this material rate; they will not be silently omitted.');if(!confirm('Start a new revision and apply this fabric rate? Ensure that relevant commercial charges are included separately.'))return;
+    const reason='Applied fabric offer '+a.label+' / source '+a.sourceRef;const old=structuredClone(record);delete old.revisionHistory;record.revisionHistory??=[];record.revisionHistory.push({revision:record.revision,recordedAt:new Date().toISOString(),reason,snapshot:old});record.revision++;const line=record.lines.find(l=>l.id===a.lineId);line.rate=a.rate;line.currency=a.currency;line.localCurrencyPerUSD=a.fx;line.sourceRef=a.sourceRef;line.sourceDate=a.sourceDate||'';line.verifiedSource=false;record.updatedAt=new Date().toISOString();pending();showEditor('lines');}
+  const getReport=type=>P.report(type,record);
+  function reportAction(type,which){if(!record)return toast('Open a costing first');const html=getReport(type);if(which==='download')return download(html,`VESA-COSTING-${type}-${record.recordId}.html`,'text/html');
+    const win=window.open('','_blank');if(win){win.document.open();win.document.write(html);win.document.close();if(which==='print')win.addEventListener('load',()=>win.print(),{once:true});}else download(html,`VESA-COSTING-${type}-${record.recordId}.html`,'text/html');}
+  async function loadXLSX(){if(window.XLSX?.read)return window.XLSX;return new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/apps/tna/vendor/xlsx.full.min.js';script.onload=()=>window.XLSX?.read?resolve(window.XLSX):reject(Error('Spreadsheet library missing'));script.onerror=()=>reject(Error('Offline Excel library not available. CSV and saved copies still work.'));document.head.append(script);});}
+  async function xlsxExport(){if(!record)return toast('Open a costing first');try{const X=await loadXLSX(),book=X.utils.book_new();for(const [name,arr] of P.exportSheets(record)){X.utils.book_append_sheet(book,X.utils.aoa_to_sheet(arr),name);}const data=X.write(book,{bookType:'xlsx',type:'array',compression:true});download(new Blob([data],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),`VESA-COSTING-${record.recordId}.xlsx`);}catch(e){toast(e.message)}}
+  function reportMenu(){modal(tr('reportType'),`<div class="costing-report-grid">${reportNames.map(([key,name])=>`<article><b>${esc(key)} · ${esc(name)}</b><div><button class="costing-btn secondary" data-report="${key}">${esc(tr('prepare'))}</button><button class="costing-btn secondary" data-report-download="${key}">${esc(tr('downReport'))}</button></div></article>`).join('')}</div>`);}
+  function consumption(){if(!record)return toast('Open a costing first');const fabric=record.lines.filter(l=>l.category==='FABRIC'&&l.basis==='PER_PIECE');if(!fabric.length)return toast('Add a per-piece fabric cost line first');const lines=fabric.map(l=>[l.id,l.description||l.id]);
+    modal(tr('tools'),`<form id="costingCalculator" class="costing-form"><label>${esc(tr('method'))}${select('name="method" id="calculationMethod"',[['knit',tr('knit')],['woven',tr('woven')]],'knit')}</label><label>${esc(tr('target'))}${select('name="target"',lines,lines[0][0])}</label><label>${esc(tr('area'))}<input type="number" name="area" min="0" step="any"></label><label>${esc(tr('gsm'))}<input type="number" name="gsm" min="0" step="any"></label><label>${esc(tr('marker'))}<input type="number" name="marker" min="0" step="any"></label><label>${esc(tr('markers'))}<input type="number" name="count" min="1" step="1"></label><label>Waste %<input type="number" name="waste" min="0" max="100" step="any" value="0"></label><label>${esc(tr('shrink'))}<input type="number" name="shrink" min="0" max="100" step="any" value="0"></label><label><input type="checkbox" name="alreadyShrink">${esc(tr('alreadyShrink'))}</label><label><input type="checkbox" name="alreadyWaste">${esc(tr('alreadyWaste'))}</label><label>Woven output ${select('name="unit"',[['m','metres'],['yd','yards']],'m')}</label><label>Approved marker / area source<input name="calcSource" required maxlength="240"></label><label>Usable fabric width in cm (woven)<input name="width" type="number" min="1" step="any"></label><button class="costing-btn" type="submit">${esc(tr('run'))}</button></form><p class="costing-warning">${esc(tr('toolsHelp'))}</p>`);
+  }
+  const number=(v)=>v===''||v==null?null:Number(v);
+  function applyConsumption(form){const fd=new FormData(form);const method=fd.get('method'), target=record.lines.find(l=>l.id===fd.get('target'));if(!target)throw Error('Select a valid fabric line');if(!String(fd.get('calcSource')||'').trim())throw Error('Enter the approved marker/area source first');const n=k=>Number(fd.get(k));let quantity,unit;
+    if(method==='knit'){const calc=C.knitKgPerPiece({approvedCutAreaM2:n('area'),gsm:n('gsm'),wastePercent:n('waste'),additionalShrinkPercent:n('shrink'),areaAlreadyIncludesShrink:fd.has('alreadyShrink')});quantity=calc.grossKgPerPiece;unit='kg';}
+    else{if(!Number.isFinite(n('width'))||n('width')<=0)throw Error('Confirm the approved usable fabric width');const calc=C.wovenMarkerPerPiece({markerLengthM:n('marker'),garmentsPerMarker:n('count'),wastePercent:n('waste'),markerAlreadyIncludesWaste:fd.has('alreadyWaste')});unit=fd.get('unit');quantity=unit==='yd'?calc.grossYdPerPiece:calc.grossMPerPiece;}
+    target.quantity=quantity;target.unit=unit;target.wastePercent=0;target.consumptionMethod=method==='knit'?'APPROVED_KNIT_AREA':'APPROVED_WOVEN_MARKER';target.consumptionSourceRef=String(fd.get('calcSource'));target.usableWidthCm=method==='woven'?n('width'):null;pending();dialog.close();showEditor('lines');toast('Consumption applied. Confirm source, rates and waste assumptions.');}
+  function commissionCompare(){if(!record)return;const rate=record.policy.commissionPercent;if(rate==null||!Number.isFinite(rate)||rate<0||rate>=100)return toast('Enter a valid commission % first');const rows=['NONE','IN_FOB','SEPARATE'].map(mode=>{const clone=structuredClone(record);clone.policy.commissionTreatment=mode;clone.policy.commissionPercent=mode==='NONE'?0:rate;const result=E.calculate(clone);return `<tr><td>${esc(mode)}</td><td>${esc(result.summary?E.roundDisplay(result.summary.fobUsdPerPiece,6):'Needs information')}</td><td>${esc(result.summary?E.roundDisplay(result.summary.commissionUsdPerPiece,6):'Needs information')}</td></tr>`;});modal(tr('commissionCompare'),`<table class="costing-table"><thead><tr><th>Mode</th><th>Buyer FOB USD/pc</th><th>Commission USD/pc</th></tr></thead><tbody>${rows.join('')}</tbody></table><p>${esc(tr('rates'))}</p>`);}
+  const parseCSV=text=>{const out=[],row=[],s=String(text).replace(/^\uFEFF/,'');let buf='',quoted=false;for(let i=0;i<s.length;i++){const ch=s[i];if(quoted){if(ch==='"'&&s[i+1]==='"'){buf+='"';i++;}else if(ch==='"')quoted=false;else buf+=ch;}else if(ch==='"'){if(buf)throw Error('Invalid CSV quoting');quoted=true;}else if(ch===','){row.push(buf);buf='';}else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&s[i+1]==='\n')i++;row.push(buf);if(row.some(v=>v!==''))out.push([...row]);row.length=0;buf='';}else buf+=ch;}if(quoted)throw Error('Unclosed CSV quote');row.push(buf);if(row.some(v=>v!==''))out.push(row);return out;};
+  function importedLinesCsv(body){const rows=parseCSV(body);if(!rows.length)throw Error('Cost lines file is empty');const keys=rows[0].map(x=>x.toLowerCase().trim().replace(/^\uFEFF/,''));const required=['line_id','category','description','basis','quantity','unit','waste_percent','rate','currency','currency_units_per_usd','source_ref'];if(!required.every(k=>keys.includes(k)))throw Error('Select the BOM_COST_LINES.csv template with the expected column names');if(rows.length>201)throw Error('Maximum 200 cost lines');const result=[];for(let i=1;i<rows.length;i++){const cells=Object.fromEntries(keys.map((k,j)=>[k,rows[i]?.[j]??'']));const n=k=>number(cells[k]);const line={id:cells.line_id,category:cells.category,description:cells.description,basis:cells.basis,quantity:n('quantity'),unit:cells.unit,wastePercent:n('waste_percent'),rate:n('rate'),currency:cells.currency.toUpperCase(),localCurrencyPerUSD:n('currency_units_per_usd'),sourceRef:cells.source_ref,sourceDate:cells.source_date||'',zeroRateReason:cells.zero_rate_reason||'',verifiedSource:String(cells.verified_source||'').toLowerCase()==='true',isRequired:true};if(!line.id)throw Error('Line ID missing on CSV row '+(i+1));result.push(line);}return result;}
+  async function handlePicked(){const file=picker.files?.[0];if(!file)return;try{
+      if(pickType==='copy'){if(file.size>S.MAX_BYTES)throw Error('Saved copy exceeds 2 MB');const draft=S.importAsNewDraft(await file.text(),id);if(!askDiscard())return;record=draft;dirty=true;save(true);showEditor('style');}
+      else if(pickType==='xlsx'){if(file.size>1024*1024)throw Error('Excel file too large (1 MB maximum)');const X=await loadXLSX(),wb=X.read(await file.arrayBuffer(),{type:'array',cellFormula:true,cellHTML:false,cellText:false});const draft=P.workbookDataToDraft(wb,id);if(!askDiscard())return;record=draft;dirty=true;save(true);showEditor('style');toast('Excel draft imported. Review each rate/source and commission.');}
+      else{if(file.size>256*1024)throw Error('CSV file too large (256 KB maximum)');if(!record)throw Error('Open a costing first');const lines=importedLinesCsv(await file.text());const trial=structuredClone(record);trial.lines=[...trial.lines,...lines];if(trial.lines.length>E.MAX_LINES)throw Error('Maximum 200 cost lines');const ids=trial.lines.map(l=>l.id);if(new Set(ids).size!==ids.length)throw Error('Duplicate cost-line IDs');if(!confirm(`Append ${lines.length} cost lines to this draft?`))return;record=trial;pending();showEditor('lines');}
+    }catch(e){toast(e.message)}finally{picker.value='';}
+  }
+  function run(command){if(command==='dismiss'){dialog.close();return;}if(dialog.open)dialog.close();
+    const needsRecord=()=>{if(record)return true;toast('Open or create a costing first');return false;};
+    switch(command){case 'home':showHome();break;case 'new':if(!askDiscard())return;record=newRecord();dirty=true;pending();showEditor('style');break;case 'practice':if(!askDiscard())return;record=structuredClone(window.VESA_COSTING_DEMO);record.recordId=id();record.revisionHistory=[];record.alternatives=[];dirty=true;pending();showEditor('lines');break;
+    case 'resume':try{const saved=S.list(localStorage,USER);if(!saved.length)return toast(tr('noSaved'));record=S.open(localStorage,saved[0].recordId,USER);dirty=false;showEditor('style');}catch(e){toast(e.message)}break;
+    case 'open':try{const saved=S.list(localStorage,USER);if(!saved.length)return toast(tr('noSaved'));modal(tr('choose'),saved.map(x=>`<button class="costing-btn secondary" data-open="${esc(x.recordId)}">${esc(x.styleNo||x.recordId)} · ${esc(x.buyer||'')} ${x.sourceKind==='demo'?'· DEMO':''}</button>`).join(''));}catch(e){toast(e.message)}break;
+    case 'add':if(needsRecord())addLine();break;case 'addOffer':if(needsRecord())addOffer();break;case 'save':if(needsRecord())save(true);break;case 'duplicate':if(needsRecord())saveCopy();break;
+    case 'download':if(needsRecord())try{download(S.encode(record),`VESA-COSTING-${record.recordId}.vesacost`,'application/json')}catch(e){toast(e.message)}break;
+    case 'copy':chooseFile('copy');break;case 'xlsxImport':chooseFile('xlsx');break;case 'csvImport':chooseFile('csv');break;case 'xlsxExport':xlsxExport();break;
+    case 'report':case 'reports':if(needsRecord())reportMenu();break;case 'print':if(needsRecord())reportAction(currentReport,'print');break;
+    case 'share':if(navigator.share)navigator.share({title:'VESA Costing 360 demo',text:'Personal costing tool. No buyer data included.',url:location.origin+'/apps/costing/'}).catch(()=>{});else toast('Share unavailable; you can copy the app URL.');break;
+    case 'revision':if(needsRecord())modal(tr('newRev'),`<form id="costingRevision"><label>${esc(tr('reason'))}<input required name="reason" maxlength="200" autofocus></label><button class="costing-btn" type="submit">${esc(tr('newRev'))}</button></form>`);break;
+    case 'consumption':consumption();break;case 'commissionCompare':commissionCompare();break;
+    case 'help':modal(tr('help'),`<p>${esc(tr('guide2'))}</p><p>${esc(tr('remind'))}</p><p class="costing-warning">${esc(tr('rates'))}</p><p>${esc(tr('toolsHelp'))}</p>`);break;
+    case 'style':case 'lines':case 'commission':case 'offers':case 'sources':case 'history':case 'missing':showEditor(command);break;
+    case 'viewSummary':showEditor('commission');break;
+  }}
+  function openSaved(recordId){try{const next=S.open(localStorage,recordId,USER);if(!next)throw Error('Record not found');if(!askDiscard())return;record=next;dirty=false;if(dialog.open)dialog.close();showEditor('style');}catch(e){toast(e.message)}}
+  function updateField(el){if(!record)return;const n=v=>v===''?null:Number(v);
+    if(el.dataset.style){const k=el.dataset.style;record.style[k]=['quantityPieces','fabricLCdays','fabricWeightValue'].includes(k)?n(el.value):el.value;}
+    else if(el.dataset.policy){const k=el.dataset.policy;record.policy[k]=k==='commissionPercent'?n(el.value):el.value;if(k==='commissionTreatment'&&el.value==='NONE')record.policy.commissionPercent=0;}
+    else if(el.dataset.line!=null){const l=record.lines[Number(el.dataset.line)];if(!l)return;const k=el.dataset.lkey;l[k]=k==='verifiedSource'?el.checked:['quantity','rate','localCurrencyPerUSD','wastePercent'].includes(k)?n(el.value):k==='currency'?el.value.toUpperCase():el.value;if(k==='basis'&&el.value==='PER_ORDER')l.wastePercent=0;}
+    else if(el.dataset.offer!=null){const a=record.alternatives[Number(el.dataset.offer)];if(!a)return;const k=el.dataset.okey;a[k]=['rate','fx','extraPerPieceUSD'].includes(k)?n(el.value):k==='currency'?el.value.toUpperCase():el.value;}
+    else return;record.updatedAt=new Date().toISOString();pending();updateSummary();
+  }
+  main.addEventListener('input',e=>{if(e.target.matches('[data-style],[data-policy],[data-line],[data-offer]')&&!e.target.matches('select,[type="checkbox"]'))updateField(e.target);});
+  main.addEventListener('change',e=>{if(e.target.matches('select[data-style],select[data-policy],select[data-line],select[data-offer],input[type="checkbox"][data-line]')){updateField(e.target);if(e.target.dataset.policy==='commissionTreatment'||e.target.dataset.lkey==='basis')showEditor(section);}});
+  main.addEventListener('click',e=>{const x=e.target.closest('button');if(!x)return;
+    if(x.dataset.section){showEditor(x.dataset.section);return;}
+    if(x.dataset.open){openSaved(x.dataset.open);return;}
+    if(x.dataset.removeLine!=null){record.lines.splice(Number(x.dataset.removeLine),1);pending();showEditor('lines');return;}
+    if(x.dataset.removeOffer!=null){record.alternatives.splice(Number(x.dataset.removeOffer),1);pending();showEditor('offers');return;}
+    if(x.dataset.applyOffer!=null){offerApply(Number(x.dataset.applyOffer));return;}
+    if(x.dataset.report){currentReport=x.dataset.report;reportAction(currentReport,'open');return;}
+    if(x.dataset.reportDownload){currentReport=x.dataset.reportDownload;reportAction(currentReport,'download');return;}
+    if(x.dataset.cmd)run(x.dataset.cmd);
+  });
+  dialog.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.report){currentReport=b.dataset.report;reportAction(currentReport,'open');return;}if(b.dataset.reportDownload){currentReport=b.dataset.reportDownload;reportAction(currentReport,'download');return;}if(b.dataset.open){openSaved(b.dataset.open);return;}if(b.dataset.cmd)run(b.dataset.cmd);});
+  dialog.addEventListener('submit',e=>{e.preventDefault();try{if(e.target.id==='costingCalculator')applyConsumption(e.target);if(e.target.id==='costingRevision'){const reason=new FormData(e.target).get('reason');dialog.close();newRevision(reason);}}catch(err){toast(err.message)}});
+  picker.addEventListener('change',handlePicked);
+  window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
+  window.addEventListener('vesa-preferences-change',()=>{if(view==='editor')showEditor(section);else showHome()});
+  const session=window.VesaAuth?.session?.()||{};
+  shell=new window.VesaWorkspaceShell.VesaWorkspaceShell({root:document.body,descriptor:{id:'costing',name:'VESA Costing 360',route:'/apps/costing/',contentTarget:'#costingMain',userLabel:session.name||session.email||'',userRole:session.role||''},callbacks:{menu}});
+  shell.mount();showHome();
+
+})();
+
+</script>
+</body>
+</html>
