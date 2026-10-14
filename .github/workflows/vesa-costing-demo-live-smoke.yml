@@ -1,0 +1,59 @@
+# Checks served demo bytes only after GitHub Pages finishes publishing main.
+# No buyer data, passwords, financial records or external storage are involved.
+name: VESA Costing demo live smoke
+
+on:
+  workflow_run:
+    workflows:
+      - pages build and deployment
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-public-demo:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout current main release source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Compare exact live Costing, App Centre and cache bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          verified=0
+          for attempt in {1..12}; do
+            if curl --fail --silent --show-error --location --max-time 25 https://vesaent.com/apps/costing/ -o /tmp/vesa-costing-live.html &&
+               curl --fail --silent --show-error --location --max-time 25 https://vesaent.com/apps/ -o /tmp/vesa-apps-live.html &&
+               curl --fail --silent --show-error --location --max-time 25 'https://vesaent.com/js/app-catalogue.js?v=20261015-costing-demo' -o /tmp/vesa-catalogue-live.js &&
+               curl --fail --silent --show-error --location --max-time 25 https://vesaent.com/service-worker.js -o /tmp/vesa-worker-live.js &&
+               curl --fail --silent --show-error --location --max-time 25 https://vesaent.com/login/ -o /tmp/vesa-login-live.html &&
+               cmp -s apps/costing/index.html /tmp/vesa-costing-live.html &&
+               cmp -s apps/index.html /tmp/vesa-apps-live.html &&
+               cmp -s js/app-catalogue.js /tmp/vesa-catalogue-live.js &&
+               cmp -s service-worker.js /tmp/vesa-worker-live.js &&
+               grep -Fq "id:'costing'" /tmp/vesa-catalogue-live.js &&
+               grep -Fq 'id="loginForm"' /tmp/vesa-login-live.html; then
+              verified=1
+              break
+            fi
+            echo "Live static demo has not matched main yet (attempt ${attempt}/12)"
+            sleep 8
+          done
+          if [ "$verified" -ne 1 ]; then
+            echo "HOLD: served public routes do not exactly match approved main candidate" >&2
+            exit 1
+          fi
+          for route in aql ppm tna; do
+            curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/$route/" -o /dev/null
+          done
+          printf 'LIVE PASS: Login -> App Centre -> Costing static assets, exact hosted source bytes, existing three app routes intact; main=%s\n' "$(git rev-parse HEAD)"
+          echo "This check does not establish server-side authentication, buyer approval or production SaaS permission."
