@@ -56,7 +56,7 @@
     }
   };
 
-  const state={dialog:null,language:'en',currentPlan:null,workspaceFilter:{owner:null,stage:null},workspaceView:'timeline',portfolioFilter:{buyer:null,factory:null,po:null},scenarioDraft:null,scenarioPreview:null};
+  const state={dialog:null,language:'en',currentPlan:null,workspaceFilter:{owner:null,stage:null},workspaceView:'timeline',portfolioFilter:{buyer:null,factory:null,po:null},merchandisingFilter:'all',merchandisingAsOf:'',merchandisingRecordId:null,scenarioDraft:null,scenarioPreview:null};
   const domain=globalThis.VesaTnaDomain;
   const scheduling=globalThis.VesaTnaScheduling;
   const operations=globalThis.VesaTnaOperations;
@@ -107,12 +107,20 @@
     const rows=breakdown.map(row=>`<div role="row"><span>${esc(row.color)}</span><span>${esc(row.size)}</span><span>${esc(row.quantity)} ${esc(order.unit||'pcs')}</span></div>`).join('');
     return `<section aria-label="Order master"><h3>Order master</h3><div class="tna-report-grid"><span>Market: ${esc(order.destinationMarket||'Needs Information')}</span><span>Loading port: ${esc(order.portOfLoading||'Needs Information')}</span><span>Discharge port: ${esc(order.portOfDischarge||'Needs Information')}</span><span>Terms: ${esc(order.incoterm||'Needs Information')}</span><span>Shipment: ${esc(order.shipmentMethod||'Needs Information')}</span><span>Size range: ${esc(order.styles?.[0]?.sizeRange||'Needs Information')}</span><span>Required ETD: ${esc(commitments.buyerRequiredETD||'Needs Information')}</span><span>Required ETA: ${esc(commitments.buyerRequiredETA||'Needs Information')}</span><span>Destination date: ${esc(commitments.destinationRequiredDate||'Needs Information')}</span></div>${rows?`<div class="tna-task-table tna-order-breakdown" role="table" aria-label="Color and size breakdown"><div role="row"><b>Color</b><b>Size</b><b>Quantity</b></div>${rows}</div>`:'<p class="tna-note">Color / size breakdown is Needs Information.</p>'}</section>`;
   }
+  // Source-safe TNA sheet projection only: status/date changes stay with domain.
+  function merchandisingPanel(plan){
+    if(!globalThis.VesaTnaMerchandisingSheet?.TnaMerchandisingSheet)
+      return '<section class="tna-panel"><h3>Garment TNA sheet unavailable</h3><p>Existing TNA data and calculations are unchanged.</p></section>';
+    const sheet=new globalThis.VesaTnaMerchandisingSheet.TnaMerchandisingSheet();
+    return sheet.render(plan,{language:state.language,filter:state.merchandisingFilter,asOfDate:state.merchandisingAsOf,scheduled:planSchedule(plan)});
+  }
   function planPanel(plan){if(!plan)return `<div class="tna-panel"><h2>${esc(text('templateLibrary'))}</h2><p>${esc(text('notSaved'))}</p><p>${Object.values(domain?.TEMPLATE_PROFILES||{}).map(t=>esc(t.name)).join(' · ')}</p></div>`;
     const warnings=plan.validation?.warnings||[];const errors=plan.validation?.errors||[];const unknown=plan.unknownFields||[];const savedNote=plan.mode==='practice'?'Practice example is isolated from real production records and cannot be saved as a production TNA.':currentPlanSaved(plan)?'Saved locally in this browser.':'Draft is not saved yet. Use Save TNA to keep it in this browser.';
     const stageCounts=plan.tasks.reduce((acc,task)=>{acc[task.stageCode]=(acc[task.stageCode]||0)+1;return acc},{});
     return `<div class="tna-panel tna-plan-panel"><div class="tna-plan-head"><div><span class="tna-kicker">${esc(text('workspace'))}</span><h2>${esc(plan.order.styles[0]?.styleNo||'Untitled TNA')} · ${esc(plan.order.buyerName||'Buyer unknown')}</h2><p>${esc(plan.order.factoryName||'Factory unknown')} · ${esc(plan.order.poNumbers[0]||'PO unknown')} · ${esc(plan.order.totalQty??'Qty unknown')} ${esc(plan.order.unit)}</p></div><span class="tna-status-pill">${esc((domain.TEMPLATE_PROFILES[plan.templateId]||{}).name||plan.templateId)}</span></div>
       <div class="tna-metrics"><b>${plan.tasks.length}</b><span>${esc(text('tasks'))}</span><b>${plan.baselineSnapshots.length}</b><span>${esc(text('baseline'))}</span><b>${unknown.length+warnings.length+errors.length}</b><span>${esc(text('validation'))}</span></div>
       <p class="tna-note">${esc(savedNote)}</p>
+      ${merchandisingPanel(plan)}
       ${orderMasterPanel(plan)}
       ${unknown.length?`<h3>${esc(text('unknown'))}</h3><ul>${unknown.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
       ${errors.length?`<h3>Errors</h3><ul>${errors.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
@@ -139,11 +147,19 @@
     document.body.classList.add('tna-vesa-adapted');
     window.__tnaWorkspaceShell=shell;
   }
-  function render(){state.language=language();ensureWorkspaceShell();const records=readRecords();const offline=offlineSummary();const portfolioPlans=readSavedPlans(records);if(state.currentPlan&&!portfolioPlans.some(plan=>plan.recordId===state.currentPlan.recordId))portfolioPlans.unshift(state.currentPlan);const root=document.getElementById('tnaMain');root.innerHTML=`
+  function render(){state.language=language();ensureWorkspaceShell();
+    if(state.currentPlan&&state.merchandisingRecordId!==state.currentPlan.recordId){
+      state.merchandisingRecordId=state.currentPlan.recordId;
+      state.merchandisingFilter='all';
+      state.merchandisingAsOf='';
+    }
+    if(!state.currentPlan)state.merchandisingRecordId=null;
+const records=readRecords();const offline=offlineSummary();const portfolioPlans=readSavedPlans(records);if(state.currentPlan&&!portfolioPlans.some(plan=>plan.recordId===state.currentPlan.recordId))portfolioPlans.unshift(state.currentPlan);const root=document.getElementById('tnaMain');root.innerHTML=`
     <section class="tna-hero">
       <div class="tna-hero-card"><span class="tna-kicker">${esc(text('tag'))}</span><h1>${esc(text('title'))}</h1><p class="tna-lead">${esc(text('lead'))}</p><p class="tna-note">${esc(text('privacy'))}</p></div>
       <aside class="tna-status-card"><span class="tna-status-pill">${esc(text('mode'))}</span><p class="tna-muted">${esc(text('modeText'))}</p><p class="tna-muted">${esc(text('cloud'))}</p></aside>
     </section>
+    ${state.currentPlan?planPanel(state.currentPlan):''}
     <section class="tna-grid" aria-label="TNA home actions">
       ${actionCard('new')}${actionCard('save',true,!state.currentPlan)}${actionCard('continue',true,records.length===0)}${actionCard('open',true)}${actionCard('download',true,!state.currentPlan)}${actionCard('copy',true)}${actionCard('practice',true)}${actionCard('orders',true)}
     </section>
@@ -152,7 +168,7 @@
       <div class="tna-panel"><h2>${esc(text('recent'))}</h2><div class="tna-list">${records.length?records.map(r=>`<article><b>${esc(r.style||'Untitled TNA')}</b><p>${esc(r.buyer||'Buyer unknown')} · ${esc(r.po||'PO unknown')} · ${esc(r.updatedAt||'No saved time')}</p></article>`).join(''):`<article>${esc(text('empty'))}</article>`}</div></div>
       ${portfolioPanel(records,portfolioPlans)}
     </section>
-    ${planPanel(state.currentPlan)}
+    ${state.currentPlan?'':planPanel(state.currentPlan)}
     <p class="tna-footer-note">VESA Enterprise Inc. · Powered by EGENVA · ${esc(text('mode'))}</p>
     <dialog class="tna-dialog" id="tnaDialog"><div class="tna-dialog-head"><h2 id="tnaDialogTitle"></h2><button type="button" aria-label="Close">×</button></div><div class="tna-dialog-body" id="tnaDialogBody"></div></dialog>`;
     state.dialog=document.getElementById('tnaDialog');state.dialog.querySelector('button').onclick=()=>state.dialog.close();
@@ -163,6 +179,16 @@
     root.querySelectorAll('[data-filter-stage]').forEach(btn=>btn.onclick=()=>{state.workspaceFilter={...(state.workspaceFilter||{}),stage:btn.dataset.filterStage||null};render();});
     root.querySelectorAll('[data-clear-filters]').forEach(btn=>btn.onclick=()=>{state.workspaceFilter={owner:null,stage:null};render();});
     root.querySelectorAll('[data-workspace-view]').forEach(btn=>btn.onclick=()=>{state.workspaceView=btn.dataset.workspaceView||'timeline';render();});
+    root.querySelectorAll('[data-tna-sheet-filter]').forEach(input=>input.onchange=()=>{
+      state.merchandisingFilter=input.value;
+      render();
+      document.getElementById('tnaMerchSheet')?.scrollIntoView({behavior:'auto',block:'start'});
+    });
+    root.querySelectorAll('[data-tna-sheet-asof]').forEach(input=>input.onchange=()=>{
+      state.merchandisingAsOf=input.value;
+      render();
+      document.getElementById('tnaMerchSheet')?.scrollIntoView({behavior:'auto',block:'start'});
+    });
     root.querySelectorAll('[data-portfolio-buyer]').forEach(btn=>btn.onclick=()=>{state.portfolioFilter={...(state.portfolioFilter||{}),buyer:btn.dataset.portfolioBuyer||null};render();});
     root.querySelectorAll('[data-portfolio-factory]').forEach(btn=>btn.onclick=()=>{state.portfolioFilter={...(state.portfolioFilter||{}),factory:btn.dataset.portfolioFactory||null};render();});
     root.querySelectorAll('[data-portfolio-po]').forEach(btn=>btn.onclick=()=>{state.portfolioFilter={...(state.portfolioFilter||{}),po:btn.dataset.portfolioPo||null};render();});
