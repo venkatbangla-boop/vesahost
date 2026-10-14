@@ -55,11 +55,14 @@ assert.equal(localStorage.getItem('vesa.tna360.records.handoff-user'),storedBefo
 const index=fs.readFileSync(path.join(root,'apps/tna/index.html'),'utf8');
 const worker=fs.readFileSync(path.join(root,'service-worker.js'),'utf8');
 const readiness=fs.readFileSync(path.join(root,'docs/VESA_360_RELEASE_READINESS.md'),'utf8');
+const progress=fs.readFileSync(path.join(root,'VESA_PROGRESS.md'),'utf8');
 const localAssets=[...index.matchAll(/(?:src|href)="(\.\/[^"?]+)(?:\?[^" ]*)?"/g)].map(match=>match[1]);
 assert.ok(localAssets.length>=10,'Release inventory must find the local TNA bundle assets.');
 for(const asset of localAssets)assert.ok(worker.includes(`'./apps/tna/${asset.slice(2)}'`),`Offline inventory is missing ${asset}.`);
 assert.match(worker,/vesa-v68-platform-g09/,'Release inventory must pin the tested service-worker cache.');
-assert.match(readiness,/\*\*Local handoff candidate:\*\* `5cae12c` \(latest runtime implementation: `cae38ca`\)/,'Runbook must pin the accepted full-matrix baseline and latest proportionally tested runtime SHA.');
+const handoff=readiness.match(/\*\*Local handoff candidate:\*\* `([0-9a-f]{7})` documentation state \(full-regression baseline: `([0-9a-f]{7})`; latest runtime implementation: `([0-9a-f]{7})`\)/);
+assert.ok(handoff,'Runbook must pin documentation, accepted full-matrix and latest runtime SHAs.');
+for(const sha of handoff.slice(1))assert.match(progress,new RegExp('`'+sha+'`'),'Dashboard must agree with every pinned handoff SHA.');
 assert.match(readiness,/\*\*Decision:\*\* \*\*HOLD — not ready for production deployment\*\*/,'Runbook must retain the release HOLD.');
 assert.match(readiness,/Not staged, not deployed, not live-verified, not authorized/,'Runbook must distinguish local evidence from production state.');
 assert.match(readiness,/Microsoft Excel desktop-reader inspection remains unproven/,'Runbook must retain the genuine Excel-reader gap.');
