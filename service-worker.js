@@ -1,4 +1,4 @@
-const CACHE='vesa-v68-platform-g09';
+const CACHE='vesa-v69-costing-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -8,6 +8,8 @@ const ASSETS=[
   './login/index.html',
   './apps/',
   './apps/index.html',
+  './apps/costing/',
+  './apps/costing/index.html',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
@@ -29,11 +31,16 @@ const ASSETS=[
   './llms.txt',
   './css/style.css',
   './css/vesa-workspace.css?v=20261013-platform-g09',
+  './css/vesa-workspace.css',
   './js/main.js',
   './js/auth.js',
   './js/preferences.js',
+  './js/preferences.js?v=20261015-costing-demo',
   './js/vesa-workspace-shell.js?v=20261013-platform-g09',
+  './js/vesa-workspace-shell.js',
   './js/app-catalogue.js',
+  './js/app-catalogue.js?v=20261015-costing-demo',
+  './js/vendor/xlsx.full.min.js',
   './manifest.webmanifest',
   './favicon.ico',
   './favicon-32x32.png',
