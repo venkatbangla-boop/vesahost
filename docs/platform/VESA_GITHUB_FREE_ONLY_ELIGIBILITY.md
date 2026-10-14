@@ -46,7 +46,7 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 | P-G07 | ACTIVE | ACCEPTED | Local reports/languages/accessibility |
 | P-G08 | ACTIVE | ACCEPTED | Manual typed TNA/AQL references |
 | P-G09 | DEFERRED_BY_SCOPE | EXCLUDED | Hosted identity/API/database/audit/remote collaboration; dormant zero-network contracts retained without credit |
-| P-G10 | ACTIVE — LOCAL SLICE ONLY | CONDITIONAL | Local full acceptance/readiness remains active; public production authorization/deployment is outside current execution scope |
+| P-G10 | ACTIVE — LOCAL SLICE ONLY | CONDITIONAL / LOCAL HANDOFF PROVEN | Feature ledger, full cross-app matrix, responsive/report evidence, saved-record posture, backup/rollback and HOLD are complete locally; independent physical/assistive review remains external and production authorization/deployment is outside current execution scope |
 
 `PPM free-only = ROUND(100 × 9 / 10) = 90%`.
 

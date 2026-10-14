@@ -16,9 +16,9 @@
 | Source review | GitHub file-level static audit performed; NO live browser screenshot here |
 | Last accepted implementation gate | **P-G08 — TNA/AQL references and platform compatibility** (`11b582f`; accepted locally, not deployed) |
 | Status | `accepted locally` for P-G00 baseline through P-G08 reference integration; P-G09 has a tested dormant local contract while its live provider/two-account portion is `DEFERRED_BY_SCOPE`; no production deployment |
-| Current gate | `P-G10 — Final acceptance evidence audit (P-G09 remains externally blocked)` |
-| LAST COMPLETED ACTION | Reconciled all 52 PPM feature IDs against executable gate evidence at HEAD: P01–P48 and P51 are accepted locally, P49/P50 remain externally blocked, and P52 remains conditional pending independent screen-reader/performance/physical-device review; P-G10 is not accepted |
-| NEXT ACTION | Create the separate program release-readiness report from all three trackers, including verified/incomplete/blocked features, missing tests, saved-record upgrade posture, internal staging prerequisites and production authorization gates |
+| Current gate | `P-G10 — LOCAL HANDOFF PROVEN / RELEASE BLOCKED (P-G09 remains deferred by scope)` |
+| LAST COMPLETED ACTION | Reconciled P-G10 against the current release-readiness report and clean `f5095b6` 91-command matrix: feature ledger, cross-app tests and responsive/report screenshot requirements are locally proven; independent/user/physical and production rows remain open. |
+| NEXT ACTION | Stop local PPM release work at HOLD; resume only for independent acceptance evidence, an approved provider-scope change, a demonstrated regression or explicit authorization naming a staging/release SHA and rollback window. |
 | Deferred / active setup issue | Hosted backend and cross-company provider roles are `DEFERRED_BY_SCOPE`; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
 ## Universal session protocol
@@ -87,12 +87,23 @@ Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits
 - [x] No claim of secure multi-user while running static local login.
 
 ### P-G10 — Final acceptance & release gate
-- [ ] Every P01–P52 feature has evidence-backed disposition; no silent omission.
-- [ ] Full PPM tests; AQL tests; login/App Centre/TNA checks where available.
-- [ ] Screenshot set 320/360/390/768/1024/1280/1440 and scroll/modal/report.
+- [x] Every P01–P52 feature has evidence-backed disposition; no silent omission.
+- [x] Full PPM tests; AQL tests; login/App Centre/TNA checks where available.
+- [x] Screenshot set 320/360/390/768/1024/1280/1440 and scroll/modal/report.
 - [ ] Independent/user review of release behavior, backup migration and rollback.
 - [ ] User expressly approved production deployment (otherwise do not deploy).
 - [ ] After approved deploy, cache/version and live checks recorded with exact commit.
+
+### P-G10 local handoff reconciliation — local work complete, release blocked
+
+```text
+TIME / TIMEZONE: 2026-10-14 18:58 Asia/Dhaka
+BRANCH / EVIDENCE BASELINE: feature/tna360-continuous / f5095b6
+FILE-LEVEL AUDIT: the exact P01–P52 ledger already records 52 unique dispositions: P01–P48 and P51 accepted locally, P49/P50 provider-backed collaboration blocked/deferred, and P52 conditional on independent assistive-technology/performance/physical-device review. `docs/VESA_360_RELEASE_READINESS.md` owns verified/incomplete scope, saved-record posture, backup, staging prerequisites, rollback and explicit HOLD. `p-g01-unified-ui.cjs` owns 320/360/390/768/1024/1280/1440 plus 200% shell/editor evidence; `p-g07-reports.cjs` owns 40 PDF and mobile/report/modal evidence; the orchestrator owns sibling/login/App Centre/shared verification. In scope: documentation/checklist reconciliation only. Frozen/out of scope: PPM runtime, 168 checkpoints, decisions/signatures, schemas/saved records, service worker, sibling source, provider setup, staging and deployment.
+VERIFICATION: clean `f5095b6` full matrix passes 91/91 commands in 860.0s (56 automated, 22 browser, 12 syntax, 1 repository), including all 17 PPM deterministic/browser commands, TNA/AQL reference workflows and shared platform/accessibility/shell matrices. PPM report proof covers 40 PDFs plus 12 language/theme/320px/200%-zoom checks. No internal orchestrator retry was used. Additive `p-g10-handoff.cjs` now freezes all 52 sequential dispositions, the three completed local rows, three open external/release rows, cross-document status and HOLD; it passes with P-G00/P-G08/P-G09 and handoff/diff contracts and will join the next meaningful full matrix automatically. The 91-command matrix is not repeated for this documentation/test-only checkpoint.
+BOUNDARY / VERDICT: P-G10 local handoff is proven, but P-G10 RELEASE REMAINS BLOCKED. Independent/user screen-reader/performance/physical-device review, explicit production approval, deployment and post-deploy cache/live checks are intentionally unchecked. P-G09 hosted collaboration stays DEFERRED_BY_SCOPE; no secure multiuser or production claim is made. This documentation closure earns no additional gate percentage.
+ROLLBACK / NEXT ACTION: revert this documentation checkpoint only; no record/cache migration or cleanup is required. Retain HOLD until new external evidence or explicit named release authorization is supplied.
+```
 
 ## Feature verification ledger — do not leave IDs silently unchecked
 For each ID P01 through P52 defined in `01_AUDIT_MASTER_BLUEPRINT.md` record `accepted | conditional | blocked | rejected | not-started` and evidence link/command. A `PRESERVE` capability is not automatically complete until verified against the real baseline.

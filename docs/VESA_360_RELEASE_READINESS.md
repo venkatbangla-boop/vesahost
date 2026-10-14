@@ -21,6 +21,7 @@ This supplement is the current handoff authority. The older `48ec023` review rem
 | Latest evidence SHA | `f5095b6` — focused AQL/PPM/TNA reference evidence plus the expanded 91-command boundary, retaining the exact A01–A60, 35-area, saved-copy and visual indexes without inferring remote/physical/buyer acceptance |
 | Regression | `node tests/vesa-g11-regression.cjs`: PASS, 91 commands / 860.0s, no internal retry; 56 automated, 22 browser, 12 syntax, 1 repository |
 | Local TNA state | G00–G08 accepted; G10/G11 conditional local evidence; G12 local handoff proof complete but gate remains blocked from release |
+| Local PPM state | P-G00–P-G08 accepted; P-G10 feature-ledger/test/screenshot/backup/rollback handoff is complete locally but release stays blocked on independent review and authorization; P-G09 provider collaboration is deferred |
 | Local AQL state | A-G00/A-G01/A-G02/A-G04/A-G05/A-G06/A-G07/A-G09/A-G11 accepted; A-G03/A-G08 remain policy/external-evidence conditional; A-G10 provider backend deferred and A-G12 remains HOLD |
 | Shared UX state | U-G00–U-G09 accepted locally; physical screen-reader/device/factory acceptance remains external |
 | Production state | Not staged, not deployed, not live-verified, not authorized |
