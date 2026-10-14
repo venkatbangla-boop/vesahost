@@ -128,6 +128,15 @@ NEXT ACTION (ONE PRECISE STEP): reconcile the remaining non-shared active AQL/TN
 
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
+### AQL A-G06 local gate acceptance — evidence reconciliation
+
+TIME / TIMEZONE: 2026-10-14 11:40 Asia/Dhaka
+BRANCH / EVIDENCE COMMIT: `feature/tna360-continuous` / `5cae12c`
+FILES / OWNERSHIP: AQL selected-file restore browser evidence plus AQL/program trackers only; TNA/PPM/shared/runtime source and every frozen domain formula remain unchanged.
+TEST EVIDENCE: the current-format restore fixture proves general, immutable-finding, selected-carton and source-line/frozen-lot owners; fresh imported asset IDs retain exact role/caption/name/hash and byte strings after browser reload. Existing authenticated proofs cover measurement/OOT report/reopen, owned photo/document bytes, immutable source/CAPA/rework/reinspection, named keyboard-focusable 600-record analytics, real 200 MiB decoded-evidence and 280 MiB selected-file boundaries, quota rescue, worker replacement/offline reopen and long A4 reports. The complete matrix passes 89/89 in 891.5s without retry (54 automated, 22 browser, 12 syntax, 1 repository).
+VERDICT / SCORE: A-G06 accepted locally. AQL becomes 4/13 historical and 4/12 Free-only; historical program score becomes 65% and Free-only score 70%. Physical capture/device/factory/buyer acceptance, provider security and production release remain unclaimed. TNA remains 9/13 historical and 9/12 Free-only.
+NEXT ACTION (ONE PRECISE STEP): reconcile A-G07's fully checked local save/import/worker/rescue requirements against its remaining physical-device wording; add no runtime code without a reproduced local gap.
+
 ### AQL A-G08 four-language rendered reports — accepted local slice
 
 TIME / TIMEZONE: 2026-10-14 10:35 Asia/Dhaka
@@ -789,6 +798,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 
 | 2026-10-14 10:15 Asia/Dhaka | AQL A-G08 Share Report Fallback | `feature/tna360-continuous` / `d29d05b` | AQL report share command/dispatch, exact standalone HTML file/fallback browser proof, cache 22 pins and AQL/program trackers | ACCEPTED LOCAL SLICE: supported Web Share receives one HTML file; unavailable/unsupported and non-cancellation error paths download identical report bytes; cancellation downloads nothing. Exact project bytes remain unchanged and all user messages avoid delivery/acceptance claims. Focused browser/static, worker replacement/offline reopen, Q01-Q24 baseline, release, syntax and diff checks pass; no full-matrix rerun while report language/AR11/external boundaries remain. | accepted local slice | Implement and prove authored report chrome/sentences in EN/BN/HI/TA without translating buyer/user values |
 | 2026-10-14 10:35 Asia/Dhaka | AQL A-G08 Four-Language Rendered Reports | `feature/tna360-continuous` / runtime `cae38ca`, evidence `550b0dd` | bounded report-chrome dictionary/selector, standard/final and stage rendering, cache 23, EN/BN/HI/TA browser/A4 PDF proof and trackers | ACCEPTED LOCAL SLICE: central Settings and transient Report Studio selection produce exact supported `lang`, native-script authored chrome, English technical-source disclosure and unchanged buyer/user values, IDs and NOT CONFORMED decision. Script-free 390/1280 previews and four five-page A4 PDFs pass first/last-page visual review without clipping; AR01/stage/worker/Q01-Q24/static/release/diff checks pass. AR11 policy and physical/device/printer/screen-reader/factory/buyer evidence remain open; no full matrix rerun or score change. | accepted local slice | Reconcile A-G06 restore/render/large-record proof; retain external boundaries |
+| 2026-10-14 11:40 Asia/Dhaka | AQL A-G06 Local Gate Acceptance | `feature/tna360-continuous` / `5cae12c` | four-owner portable evidence restore/reload, existing measurement/CAPA/analytics/large-boundary evidence, AQL/program trackers | ACCEPTED LOCALLY: exact finding/carton/lot relationships and bytes survive import/reload with fresh asset IDs; full 89-command matrix passes in 891.5s without retry. AQL becomes 4/13 historical and 4/12 Free-only; program scores become 65% historical and 70% Free-only. No physical/device/factory/buyer/provider/release claim. | accepted | Reconcile A-G07 local evidence versus external device wording |
 
 ### Open blockers and decisions
 

@@ -15,13 +15,13 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01 and A-G02. A-G03 remains policy-blocked; A-G04, A-G05, A-G06, A-G07, A-G08 and A-G09 retain conditional slices. Areas 29 analytics dashboards and 31 stage reports are `PROVEN_LOCAL`; A-G08 has 14/15 report variants plus local share and four-language A4 proof, while AR11 policy and provider/physical acceptance remain separate. |
+| Current verdict | `accepted` locally for A-G00, A-G01, A-G02 and A-G06. A-G03 remains policy-blocked; A-G04, A-G05, A-G07, A-G08 and A-G09 retain conditional slices. A-G06 now has complete local measurement, linked-evidence restore, CAPA/source, 600-record analytics and bounded large-file/long-output proof; physical capture/device/factory acceptance remains external evidence, not an incomplete software claim. |
 | Current gate | **A-G03** remains policy-blocked; continue the next independently safe conditional AQL slice without inventing carton-randomization, buyer/legal, provider, device or factory evidence. |
-| LAST COMPLETED ACTION | Runtime `cae38ca` plus PDF evidence `550b0dd` add and prove EN/BN/HI/TA authored report chrome for standard/final and stage reports, with transient central-preference selection, exact user values, frozen decisions and five-page A4 viewer proof. |
-| NEXT ACTION | Reconcile A-G06's remaining full restore/render/large-record evidence against the current saved-copy, attachment and 600-record analytics fixtures; add only the smallest missing deterministic proof and keep physical/device acceptance separate. |
+| LAST COMPLETED ACTION | Test/evidence commit `5cae12c` proves finding/carton/lot-owned evidence metadata and exact bytes through portable import and browser reload; the complete 89-command cross-app matrix passes without retry in 891.5s, accepting A-G06 locally. |
+| NEXT ACTION | Reconcile A-G07's already-checked local save/import/worker/rescue requirements against its remaining physical-device wording; add no runtime code unless a concrete local gap is found. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
 
-### A-G06 evidence ownership / restore reconciliation — accepted local evidence; gate boundary pending
+### A-G06 evidence ownership / restore reconciliation — gate accepted locally
 
 TIME / TIMEZONE: 2026-10-14 11:05 Asia/Dhaka
 BRANCH / BASE COMMIT: `feature/tna360-continuous` / `ce65ea2`
@@ -34,9 +34,11 @@ IMPLEMENTED / EVIDENCE: the existing selected-file fixture now packs four distin
 
 FOCUSED TEST EVIDENCE: `a-g07-browser-restore.cjs` passes in 26 seconds with general/finding/carton/lot ownership and exact bytes after reload, zero external requests and zero page errors. `a-g06-analytics-browser.cjs` passes 600 immutable saved inspections at 390/1280 with exact basis-safe groups and 472/425 ms renders. `a-g04-stage-browser.cjs` passes owned documents/photos, immutable source failure/CAPA/rework/reinspection, exact reload/reopen and 390px containment. `a-g06-evidence-analytics.cjs`, `a-g07-portable-safety.cjs`, the 35-area matrix, release contract, syntax and `git diff --check` pass. Existing accepted evidence separately covers explicit measurement/reopen (`14aeb66`), 200 MiB decoded-evidence and 280 MiB selected-file boundaries with bounded resource telemetry, named keyboard-focusable contained analytics and long multi-page report output.
 
-VERDICT: accepted local evidence slice. The four A-G06 software checklist requirements now have reproducible browser/static evidence without inferring physical capture, buyer/factory acceptance or external approval. A-G06 promotion and percentage changes remain pending the mandatory full cross-app gate-boundary run.
+FULL GATE VERIFICATION: from committed checkpoint `5cae12c`, `node tests/vesa-g11-regression.cjs` passes without retry: 89 commands / 891.5s (54 automated, 22 browser, 12 syntax, 1 repository). The same run re-proves the expanded four-owner portable restore, 600-record analytics at 402/438 ms, measurement/OOT report/reopen, owned stage evidence and CAPA/source immutability, 200 MiB+1 decoded-evidence rejection in 4.636s, 280 MiB+1 selected-file rejection in 28 ms, quota rescue, worker replacement/offline reopen, all AQL reports/languages, sibling apps, shared UI, syntax and repository cleanliness.
 
-NEXT ACTION (ONE PRECISE STEP): commit this test-only evidence checkpoint, run the complete cross-app matrix once, and promote A-G06 only if that unchanged full regression passes cleanly.
+VERDICT: A-G06 ACCEPTED LOCALLY. All four software checklist requirements are proven by current deterministic/browser evidence. This does not claim camera authenticity, physical-device performance, factory use, buyer approval, external CAPA acceptance or production release. AQL becomes 4/13 historical and 4/12 Free-only; program scores update only through the fixed formulas.
+
+NEXT ACTION (ONE PRECISE STEP): reconcile A-G07's fully checked local checklist against its remaining physical-device wording; add no runtime code unless a concrete local defect is reproduced.
 
 ### A-G08 four-language rendered-report contract — accepted local slice
 
@@ -508,10 +510,10 @@ NEXT ACTION (ONE PRECISE STEP): add the smallest fail-closed laboratory-report e
 
 ### A-G06 — Inspection evidence, measurements, CAPA, quality analytics
 - [x] Measurement POM/tolerance/actual/units validated and reported — authenticated explicit spec/matrix/piece-reading/OOT report and exact reopen proof in `14aeb66`.
-- [ ] Photos/documents and sample/lot/carton references link correctly and survive restore.
-- [ ] CAPA ownership and closure verification with original finding chain.
+- [x] Photos/documents and sample/lot/carton references link correctly and survive restore — `5cae12c` proves four owners, fresh asset IDs, exact metadata/bytes after selected-file import and browser reload.
+- [x] CAPA ownership and closure verification with original finding chain — stage lifecycle preserves the failed source record/result through verified CAPA, rework and reinspection; AR13 distinguishes unresolved, verified-not-closed and recorded-closed states.
 - [x] Quality analytics state numerator/denominator; missing data -> needs information, not fabricated result — authenticated 600-record basis-safe dashboard proof in `4a79280`.
-- [ ] Performance and accessibility for huge evidence/long records.
+- [x] Performance and accessibility for huge evidence/long records — named keyboard-focusable contained 600-record analytics, real 200/280 MiB file boundaries with resource telemetry, bounded evidence previews and reviewed long A4 reports pass locally.
 
 ### A-G07 — Durable saving, portable HTML, import and offline worker
 - [x] Current/legacy portable saved inspection opens and preserves all selected stages/assets — deterministic current inline-stage + attachment-byte restore and legacy migration/reopen browser proof.
