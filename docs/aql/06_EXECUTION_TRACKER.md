@@ -15,11 +15,20 @@
 | Known shell | Independent sidebar+topbar+dynamic sticky `#aqlReleaseMenu` |
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
-| Current verdict | `accepted` locally for A-G00, A-G01, A-G02, A-G06 and A-G07. A-G03 remains policy-blocked; A-G04, A-G05, A-G08 and A-G09 retain conditional slices. Durable browser-local save/restore/import/rescue/worker behavior is complete; physical/native-device field acceptance remains separate external evidence. |
+| Current verdict | `accepted` locally for A-G00, A-G01, A-G02, A-G05, A-G06 and A-G07. A-G03 remains policy-blocked; A-G04, A-G08 and A-G09 retain conditional slices. Pre-final/final/rework/loading/supplier QA and durable local persistence are complete; AR11 policy plus physical/device/factory acceptance remain separate external evidence. |
 | Current gate | **A-G03** remains policy-blocked; continue the next independently safe conditional AQL slice without inventing carton-randomization, buyer/legal, provider, device or factory evidence. |
-| LAST COMPLETED ACTION | A-G07 is accepted locally by reconciliation against the clean `5cae12c` 89-command boundary: all five save/import/large-file/quota/worker requirements pass; physical/native-device field acceptance remains external. |
-| NEXT ACTION | Reconcile A-G04 and A-G05's remaining local checklist rows, beginning with loading/carton/barcode/seal/handover traceability; keep AR11 policy and physical evidence separate. |
+| LAST COMPLETED ACTION | A-G05 is accepted locally against the clean `5cae12c` boundary after reconciling owned loading evidence, count/seal/handover fields, packing range/duplicate guards and typed barcode comparison through exact reopen. |
+| NEXT ACTION | Reconcile A-G04's five remaining conditional 35-area rows against local evidence; keep buyer/legal inputs, AR11 policy and physical/factory evidence separate. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
+
+### A-G05 pre-final / final / rework / loading / supplier QA reconciliation — gate accepted locally
+
+TIME / TIMEZONE: 2026-10-14 12:00 Asia/Dhaka
+BRANCH / FULL-MATRIX BASELINE: `feature/tna360-continuous` / `5cae12c`
+FILE-LEVEL AUDIT: four of five A-G05 checklist rows were already checked. The remaining loading/carton/barcode/seal/handover row is covered by two authenticated browser contracts. `a-g04-stage-browser.cjs` attaches separate owned before/after PNG bytes to the loading record, reconciles expected/loaded cartons and pieces, retains seal, typed handover and user-entered carton IDs, rejects approval/randomization inference, then proves metadata/bytes after reload. `a-g05-packing-barcode-browser.cjs` records carton ranges 1–2, proves duplicate 1 and missing 2 guards, corrects the register to 1/2/3, records matching typed expected/actual barcode, rejects a duplicate carton identity without mutating the accepted row, and proves exact save/reload/reopen. `a-g08-stage-reports-browser.cjs` separately renders the AR12 quantity/seal/handover/evidence reconciliation with explicit no-randomization/no-custody/no-release boundaries. In scope: checklist/status reconciliation only. Frozen/out of scope: runtime, packing/loading schemas, random selection, native scanners, SamplingEngine/Ac-Re/ResultEngine, sibling apps, physical custody/factory/buyer acceptance, providers and deployment.
+TEST EVIDENCE: the clean `5cae12c` full matrix passes 89/89 in 891.5s without retry. Within it, the complete stage lifecycle passes in 56.6s, Final Ac/Re/AR01 in 8.4s, packing/barcode in 12.0s, readiness/rework contracts in 0.2s and all stage/report variants including AR12 in 29.3s. Assertions retain exact original source/load/evidence bytes, Not released disposition, no external requests/page errors and 390/1280 containment where applicable.
+VERDICT: A-G05 ACCEPTED LOCALLY. The software gate's five checklist requirements are complete. This does not certify carton randomization, barcode scanner hardware, physical seal/custody/handover, supplier/factory acceptance, buyer approval or shipment release; AR11 remains policy-blocked under A-G03/A-G08 and physical evidence remains external.
+NEXT ACTION (ONE PRECISE STEP): reconcile A-G04's five conditional area rows against current local evidence and identify only genuinely missing browser-local proof.
 
 ### A-G07 durable local saving / import / worker reconciliation — gate accepted locally
 
@@ -514,7 +523,7 @@ NEXT ACTION (ONE PRECISE STEP): add the smallest fail-closed laboratory-report e
 - [x] Prefinal readiness prerequisites and pending evidence cannot be bypassed — passing thresholds remain PENDING until all 11 checkpoints are visibly reviewed; READY FOR FINAL INSPECTION remains unlocked and Not released through reopen.
 - [x] Final AQL defect/severity result matches approved plan and original engine — authenticated code F / n20 / Major Ac1-Re2 browser proof with explicit piece IDs/severity and exact reopen.
 - [x] Rework/CAPA/reinspection creates linked history and never deletes prior failure — authenticated three-event browser chain, repository deep-equality checks, visible journey and exact reload/reopen.
-- [ ] Loading/carton/barcode/seal/handover traceability complete where selected.
+- [x] Loading/carton/barcode/seal/handover traceability complete where selected — owned before/after bytes, exact carton/piece counts, retained seal/handover, packing range/duplicate guards and typed barcode comparison survive reopen; no randomization, scanner, custody or release is inferred.
 - [x] Supplier QMS critical audit failure and factory denied acknowledgement remain blocked; authenticated browser evidence proves later partial acknowledgement does not clear the Critical failure or imply VESA approval.
 
 ### A-G06 — Inspection evidence, measurements, CAPA, quality analytics

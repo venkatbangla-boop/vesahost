@@ -128,6 +128,15 @@ NEXT ACTION (ONE PRECISE STEP): reconcile the remaining non-shared active AQL/TN
 
 If execution is interrupted **before** this block is updated, inspect `git diff`, prior commit, tests and set the actual status. Do not assume work saved in chat history or re-run code generation blindly.
 
+### AQL A-G05 local gate acceptance — evidence reconciliation
+
+TIME / TIMEZONE: 2026-10-14 12:00 Asia/Dhaka
+BRANCH / FULL-MATRIX BASELINE: `feature/tna360-continuous` / `5cae12c`
+FILES / OWNERSHIP: AQL/program documentation only; TNA/PPM/shared/AQL runtime and frozen domain rules remain unchanged.
+TEST EVIDENCE: the clean 89-command matrix proves all five A-G05 local checklist rows. The stage lifecycle retains separate owned before/after loading bytes, exact cartons/pieces, seal/handover and reopen; packing/barcode proves range/duplicate guards, matching typed codes, duplicate rejection and reopen; adjacent Final Ac/Re, readiness/rework and all AR12 report boundaries pass.
+VERDICT / SCORE: A-G05 accepted locally. AQL becomes 6/13 historical and 6/12 Free-only; historical program score becomes 69% and Free-only score 75%. AR11 randomization policy plus physical scanner/custody/factory/buyer acceptance remain external and unclaimed. TNA remains 9/13 historical and 9/12 Free-only.
+NEXT ACTION (ONE PRECISE STEP): reconcile A-G04's five conditional 35-area rows against current browser-local evidence.
+
 ### AQL A-G07 local gate acceptance — evidence reconciliation
 
 TIME / TIMEZONE: 2026-10-14 11:50 Asia/Dhaka
@@ -809,6 +818,7 @@ Mandatory for each report: generated date/as-of, buyer/factory/style/PO as permi
 | 2026-10-14 10:35 Asia/Dhaka | AQL A-G08 Four-Language Rendered Reports | `feature/tna360-continuous` / runtime `cae38ca`, evidence `550b0dd` | bounded report-chrome dictionary/selector, standard/final and stage rendering, cache 23, EN/BN/HI/TA browser/A4 PDF proof and trackers | ACCEPTED LOCAL SLICE: central Settings and transient Report Studio selection produce exact supported `lang`, native-script authored chrome, English technical-source disclosure and unchanged buyer/user values, IDs and NOT CONFORMED decision. Script-free 390/1280 previews and four five-page A4 PDFs pass first/last-page visual review without clipping; AR01/stage/worker/Q01-Q24/static/release/diff checks pass. AR11 policy and physical/device/printer/screen-reader/factory/buyer evidence remain open; no full matrix rerun or score change. | accepted local slice | Reconcile A-G06 restore/render/large-record proof; retain external boundaries |
 | 2026-10-14 11:40 Asia/Dhaka | AQL A-G06 Local Gate Acceptance | `feature/tna360-continuous` / `5cae12c` | four-owner portable evidence restore/reload, existing measurement/CAPA/analytics/large-boundary evidence, AQL/program trackers | ACCEPTED LOCALLY: exact finding/carton/lot relationships and bytes survive import/reload with fresh asset IDs; full 89-command matrix passes in 891.5s without retry. AQL becomes 4/13 historical and 4/12 Free-only; program scores become 65% historical and 70% Free-only. No physical/device/factory/buyer/provider/release claim. | accepted | Reconcile A-G07 local evidence versus external device wording |
 | 2026-10-14 11:50 Asia/Dhaka | AQL A-G07 Local Gate Acceptance | `feature/tna360-continuous` / full baseline `5cae12c` | A-G07 save/import/large-boundary/quota/worker evidence reconciliation and program trackers | ACCEPTED LOCALLY: all five software checklist requirements pass inside the clean 89-command matrix; stale conditional residue is only physical/native-device field acceptance. AQL becomes 5/13 historical and 5/12 Free-only; program scores become 67% historical and 72% Free-only. No runtime, provider, device, factory or release claim. | accepted | Reconcile A-G04/A-G05 loading/carton/barcode/seal/handover rows |
+| 2026-10-14 12:00 Asia/Dhaka | AQL A-G05 Local Gate Acceptance | `feature/tna360-continuous` / full baseline `5cae12c` | loading/packing/barcode evidence reconciliation and program trackers | ACCEPTED LOCALLY: all five software rows pass, including owned before/after loading bytes, exact count/seal/handover records, packing range/duplicate guards and typed barcode through reopen. AQL becomes 6/13 historical and 6/12 Free-only; program scores become 69% historical and 75% Free-only. AR11 and physical scanner/custody/factory acceptance remain unclaimed. | accepted | Reconcile A-G04 five conditional area rows |
 
 ### Open blockers and decisions
 

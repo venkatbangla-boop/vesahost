@@ -59,7 +59,7 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 | A-G02 | ACTIVE | ACCEPTED | Local workflow parity |
 | A-G03 | ACTIVE | CONDITIONAL | Sampling provenance is partial; approved carton-randomization policy remains missing and must not be invented |
 | A-G04 | ACTIVE | CONDITIONAL | Stage/35-area evidence incomplete |
-| A-G05 | ACTIVE | CONDITIONAL | Rework/reinspection/loading evidence incomplete |
+| A-G05 | ACTIVE | ACCEPTED | Local pre-final/final, immutable rework/reinspection, owned loading evidence, quantity/seal/handover records, packing guards, typed barcode and supplier-failure boundaries pass; AR11 policy and physical scanner/custody/factory acceptance remain external |
 | A-G06 | ACTIVE | ACCEPTED | Local measurement/report/reopen, finding/carton/lot-owned evidence restore, immutable CAPA/source chain, 600-record accessible analytics and bounded large-file/long-output evidence pass; physical capture/device/factory acceptance is external |
 | A-G07 | ACTIVE | ACCEPTED | Current/legacy restore, atomic project/master/sync rejection, real 200/280 MiB boundaries, quota rescue/restart and failed-install/old-tab/offline worker lifecycle pass locally; physical/native-device field acceptance is external |
 | A-G08 | ACTIVE | CONDITIONAL | Four-language authored report chrome, five-page A4 rendering and share fallback pass locally; AR11 approved randomization policy and physical/device/printer/screen-reader/factory/buyer acceptance remain incomplete |
@@ -68,7 +68,7 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 | A-G11 | ACTIVE | NOT STARTED | Local code/data/visual regression |
 | A-G12 | ACTIVE — LOCAL SLICE ONLY | BLOCKED | Local readiness/limitations/rollback remain active; public production authorization/deployment is outside current execution scope |
 
-`AQL free-only = ROUND(100 × 5 / 12) = 42%`.
+`AQL free-only = ROUND(100 × 6 / 12) = 50%`.
 
 ## Shared UX eligibility — 10 active gates, 10 accepted
 
@@ -82,13 +82,13 @@ All U-G00 through U-G09 outcomes are browser-local and remain active. The 2026-1
 ROUND(
   30 × 9/12 +
   30 × 9/10 +
-  30 × 5/12 +
+  30 × 6/12 +
   10 × 10/10
-) = ROUND(72.0) = 72%
+) = ROUND(74.5) = 75%
 ```
 
-**FREE-ONLY VERIFIED: 72%**
+**FREE-ONLY VERIFIED: 75%**
 
-**FREE-ONLY REMAINING: 28%**
+**FREE-ONLY REMAINING: 25%**
 
-This 72% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; dated reassessments through 2026-10-13 add the accepted shared gates, and the 2026-10-14 reassessment adds A-G06 plus A-G07 only after linked-evidence restore and all local save/import/rescue/worker requirements passed the 89-command gate-boundary matrix. Historical values remain recorded in their dated tracker entries.
+This 75% is a scope-normalized checkpoint score, not elapsed effort, production readiness, secure-hosting approval, or proof that deferred features exist. The original 2026-10-11 baseline was 60%; dated reassessments through 2026-10-13 add the accepted shared gates, and the 2026-10-14 reassessment adds A-G05/A-G06/A-G07 only after their current local contracts passed the 89-command gate-boundary matrix. Historical values remain recorded in their dated tracker entries.
