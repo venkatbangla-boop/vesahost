@@ -34,6 +34,9 @@ expect(!escaped.includes('<script>'), 'A-G08 report table emitted unescaped user
 expect(escaped.includes('&lt;script&gt;') && escaped.includes('&amp;'), 'A-G08 report table did not HTML-escape user text.');
 expect(ReportComposer.validImage('javascript:alert(1)') === '', 'A-G08 report image guard accepted a script URL.');
 expect(ReportComposer.validImage('data:image/png;base64,AAAA') === 'data:image/png;base64,AAAA', 'A-G08 valid image data was rejected.');
+for (const language of ['en', 'bn', 'hi', 'ta']) expect(ReportComposer.REPORT_LANG[language]?.languageBoundary, `A-G08 rendered report chrome is incomplete for ${language}.`);
+expect(ReportComposer.language('unsupported') === 'en', 'A-G08 report language must fail safely to English.');
+expect(ReportComposer.boundary(ReportComposer.REPORT_LANG.bn).includes('lang="en"'), 'A-G08 translated report must retain the English technical-source disclosure.');
 
 expect(KnowledgeAcademy.TASKS.length === 12, 'A-G08 guided report/evidence task count changed.');
 for (const language of ['en', 'bn', 'hi', 'ta']) {
@@ -61,6 +64,12 @@ for (const requiredText of [
   "['readiness-control','Endline & Pre-Final Readiness']",
   "if(action==='share')return this.shareReport()",
   "navigator.canShare(payload)",
+  "this.draftField('Report language','language'",
+  "language:this.reportLanguage()",
+  'Noto Sans Bengali',
+  'Noto Sans Devanagari',
+  'Noto Sans Tamil',
+  'ReportComposer.boundary(t)',
   "Sharing cancelled. No report was sent or downloaded.",
   "['measurements','Measurement report']",
   "['packing','Packing / barcode report']",
