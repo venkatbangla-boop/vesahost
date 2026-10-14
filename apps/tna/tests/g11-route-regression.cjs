@@ -34,7 +34,7 @@ async function run(){
     page.on('request',request=>{if(!request.url().startsWith(base))external.push(request.url());});
     await page.goto(`${base}/apps/`,{waitUntil:'domcontentloaded'});
     const routes=await page.locator('#appCatalogue a').evaluateAll(nodes=>nodes.map(node=>new URL(node.href).pathname).sort());
-    assert.deepEqual(routes,['/apps/aql/','/apps/ppm/','/apps/tna/'],'App Centre must expose exactly the registered AQL, PPM and TNA routes.');
+    assert.deepEqual(routes,['/apps/aql/','/apps/costing/','/apps/ppm/','/apps/tna/'],'App Centre must expose the four approved AQL, Costing, PPM and TNA routes.');
 
     for(const route of routes){
       await page.goto(`${base}${route}`,{waitUntil:'domcontentloaded',timeout:120000});
@@ -50,10 +50,10 @@ async function run(){
     }
     await page.locator('.vesa-workspace__app-centre').click();
     await page.waitForURL(url=>url.pathname==='/apps/');
-    assert.equal(await page.locator('#appCatalogue .app-tile').count(),3,'the in-app App Centre link must return to all three registered apps.');
+    assert.equal(await page.locator('#appCatalogue .app-tile').count(),4,'the in-app App Centre link must return to all four approved apps.');
     assert.deepEqual(errors,[],'route regression must have no uncaught page errors');
     assert.deepEqual(external,[],'route regression must make no external requests');
-    console.log('TNA G11 route regression passed: anonymous login return, App Centre AQL/PPM/TNA cards, direct routes, Home/App Centre links, zero external requests/page errors');
+    console.log('TNA G11 route regression passed: anonymous login return, App Centre AQL/Costing/PPM/TNA cards, direct routes, Home/App Centre links, zero external requests/page errors');
     await context.close();
   }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 }
