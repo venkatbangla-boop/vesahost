@@ -29,3 +29,27 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
 @media print{body.tna-printing-report .tna-shell>:not(.tna-dialog){display:none!important}body.tna-printing-report .tna-dialog{display:block!important;position:static!important;inset:auto!important;width:auto!important;max-width:none!important;max-height:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;background:#fff!important;color:#111!important}body.tna-printing-report .tna-dialog::backdrop{display:none!important}body.tna-printing-report .tna-dialog-head,body.tna-printing-report .tna-dialog-body>.tna-form-grid,body.tna-printing-report .tna-dialog-body>.menu-grid{display:none!important}body.tna-printing-report .tna-report-preview{display:block!important;border:0!important;border-radius:0!important;padding:0!important;margin:0!important;background:#fff!important;color:#111!important;font-size:10pt;line-height:1.35}body.tna-printing-report .tna-report-preview h2,body.tna-printing-report .tna-report-preview h3{break-after:avoid;color:#111!important}body.tna-printing-report .tna-report-grid span,body.tna-printing-report .tna-report-table [role=row]{break-inside:avoid;background:#fff!important;color:#111!important;border-color:#777!important}body.tna-printing-report .tna-note{color:#333!important}}
 .tna-advanced-grid{display:grid;grid-template-columns:1fr;gap:16px;margin:18px 0}.tna-scenario-panel{margin-top:0}.tna-scenario-result{border-top:1px solid var(--line,#d5deea);margin-top:18px;padding-top:16px}.tna-scenario-result h4{margin:0}.tna-portfolio-advanced{margin-top:0}.tna-portfolio-advanced .tna-stage-chips{margin:10px 0}.tna-scenario-panel input:focus-visible,.tna-scenario-panel select:focus-visible,.tna-scenario-panel button:focus-visible,.tna-portfolio-advanced button:focus-visible{outline:3px solid #c8a33a;outline-offset:2px}
 @media(max-width:850px){.tna-advanced-grid{grid-template-columns:1fr}}
+
+/* Complete garment Master TNA (R01): two source-identical printable sections. */
+.tna-report-master{min-width:0;max-width:100%;margin:16px 0}
+.tna-report-master-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.tna-report-master-facts span{padding:8px;border:1px solid var(--line,#d5deea);border-radius:8px;
+ background:var(--look-surface,#eef3f9);overflow-wrap:anywhere}
+.tna-report-master-scroll{max-width:100%;overflow-x:auto;margin:12px 0;border:1px solid var(--line,#d5deea);border-radius:8px}
+.tna-report-master-table{width:100%;min-width:620px;table-layout:fixed;border-collapse:collapse;font-size:.75rem;line-height:1.4}
+.tna-report-master-table th,.tna-report-master-table td{padding:6px;border:1px solid var(--line,#d5deea);
+ text-align:left;vertical-align:top;overflow-wrap:anywhere;word-break:break-word}
+.tna-report-master-table th{font-weight:750;background:var(--look-surface,#eef3f9)}
+.tna-report-master-table thead{display:table-header-group}
+.tna-report-master-table tr{break-inside:avoid}
+.tna-report-master-table th:nth-child(2){width:27%}
+@media(max-width:740px){.tna-report-master-facts{grid-template-columns:1fr}}
+@media print{
+ body.tna-printing-report .tna-report-master-scroll{overflow:visible;border:0;max-width:100%}
+ body.tna-printing-report .tna-report-master-table{min-width:0;width:100%;font-size:7pt;line-height:1.25;table-layout:fixed}
+ body.tna-printing-report .tna-report-master-table th,body.tna-printing-report .tna-report-master-table td{
+   padding:3px 4px;border:1px solid #666;overflow-wrap:anywhere;word-break:break-word;color:#111;background:#fff}
+ body.tna-printing-report .tna-report-master-table thead{display:table-header-group}
+ body.tna-printing-report .tna-report-master-facts{grid-template-columns:repeat(3,minmax(0,1fr));font-size:8pt}
+ body.tna-printing-report .tna-report-master{break-inside:auto}
+}
