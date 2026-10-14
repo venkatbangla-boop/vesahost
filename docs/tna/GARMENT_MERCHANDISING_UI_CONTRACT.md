@@ -2,6 +2,26 @@
 
 **Authority:** `docs/tna/GARMENT_MERCHANDISING_REWORK_QUEUE.md`, original TNA docs 01–06 and mandatory `docs/platform/VESA_UNIFIED_UI_CONTRACT.md`. This is a UI contract and gap ledger, **not a competing execution tracker**. Status is **ACTIVE / CONDITIONAL** until CI and genuine business-user acceptance.
 
+
+## GMR-02 evidence-backed extension — 2026-10-15
+
+**Verification:** [GitHub Actions #38626121298](https://github.com/venkatbangla-boop/vesahost/actions/runs/38626121298), real checkout source/test SHA 616428ae175dd5720816f4d9b793c276c21f673c — **SUCCESS**. Combined garment unit suite 18/18 PASS, real Chromium activity/order forms, source-failure atomicity, local save/reopen, four languages, mobile, TNA scheduling/storage/report/saved-copy migration and PPM/AQL/shared-shell regression passed. This proves GMR-02 development behavior only, **not human UAT or public rework deployment**.
+
+**Backward-compatible optional plan additions:** order.fabricWeightGsm (positive number or null), commitments.masterLcStatus (unknown, not-applicable, pending, opened, amended, cancelled), commitments.masterLcProofRef, task.waitingFor, task.followUpNote. Existing commitments.masterLcOpenedOn, task dates.baselineFinish/currentTargetFinish/actualFinish and audit/revision events are reused. OrderPlan schema version 1.1.0 and the VESA-TNA saved-copy codec stay unchanged; older records missing optional fields validate, load and round-trip without synthetic backfilling.
+
+**Domain-owned commands:**
+- reviseMerchandisingOrder(): GSM must be a documented positive number. Master LC opened/amended requires real opening date and source document; no date/status is inferred from PO or fabric/trims B2B LC. A historical actual LC opening is immutable once baseline is confirmed; first opening after baseline is allowed with evidence.
+- reviseMerchandisingTask(): owner and explicit waiting party, planned/revised/actual dates, status and evidence are validated as one atomic clone before autosave. A confirmed original planned baseline cannot be overwritten. Revised target requires reason, source and named authorizing party; user-entered authority is not independently verified. First actual requires completed/approved status plus evidence; later actual corrections require a separate authorized process. Status-approved/waived/rejected transitions require supporting authority/evidence, while ordinary in-progress updates keep prior status-only usability.
+- Both reject stale expectedRevision and invalid dates, append revision/audit provenance, keep factual delay reason separate from follow-up notes, and preserve the original plan on failure.
+
+**UI:** One in-sheet Edit order details action and existing shared Edit Order menu; individual Update buttons open a source-validated garment form. Four-language labels and mobile styling use the existing single VESA shell. Practice edits never enter real autosave. No PPM/AQL/status/CPM/baseline code is changed.
+
+**GMR-02 source boundary:** Changed apps/tna/src/domain.js, apps/tna/src/bootstrap.js, apps/tna/src/merchandising-sheet.js, apps/tna/assets/merchandising-sheet.css, apps/tna/index.html, service-worker.js, prior sheet version test, and the same CI workflow. Added apps/tna/tests/g12-merchandising-edits.test.js and apps/tna/tests/g12-merchandising-edits-browser.cjs. Kept apps/tna/src/storage.js, scheduling.js, reports.js, PPM/AQL, auth, catalogue and main frozen. Rollback by reverting only GMR-02 feature-branch commits; no browser data deletion or schema migration needed.
+
+**Next gap (GMR-03):** Genuine garment Excel and report parity is missing. Existing report/summary workbook only partially presents task fields; GSM, Master LC evidence, waiting party, source, planned/revised dates and follow-up comments are not all represented. Preserve R01–R12 report identities, review audience fields, import safety and data typing before changing exports. Excel **import** is still preview-only and must not be described as a completed commit/mapping flow. Factory/user UAT remains NOT TESTED.
+
+---
+
 ## Practical screen / data ownership
 
 On opening a local order, one full, familiar garment **Time & Action Master Sheet** appears before secondary Home cards and advanced dashboards. Existing single VESA shared header and File/Edit/View/Tools/Help menus remain authoritative. The sheet uses one row per actual `plan.tasks[]` member (no first-12 sample or fake task), in the original library's stable activity order, for knit and woven.
