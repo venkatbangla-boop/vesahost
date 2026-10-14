@@ -412,7 +412,7 @@
     const reason=clean(input.reason),source=clean(input.sourceRef);
     if(!reason)return {ok:false,error:'Explain why the garment or LC details changed.'};
     if(!source)return {ok:false,error:'Enter the source document or approval reference.'};
-    if(before.masterLcOpenedOn!==after.masterLcOpenedOn&&plan.baselineSnapshots?.length)
+    if(before.masterLcOpenedOn&&before.masterLcOpenedOn!==after.masterLcOpenedOn&&plan.baselineSnapshots?.length)
       return {ok:false,error:'Confirmed baseline LC opening date is locked. Use a separately authorized correction.'};
     if(['opened','amended'].includes(after.masterLcStatus)&&(!after.masterLcOpenedOn||!after.masterLcProofRef))
       return {ok:false,error:'Opened or amended Master LC requires an actual date and its document reference.'};
