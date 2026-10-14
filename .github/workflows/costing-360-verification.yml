@@ -1,0 +1,42 @@
+name: VESA Costing 360 verification
+
+on:
+  push:
+    branches:
+      - feature/costing-360
+    paths:
+      - '.github/workflows/costing-360-verification.yml'
+      - 'apps/costing/**'
+      - 'apps/index.html'
+      - 'login/index.html'
+      - 'js/**'
+      - 'css/**'
+      - 'assets/vesa-logo-black.png'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  costing-real-checkout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout real VESA repository
+        uses: actions/checkout@v4
+      - name: Use Node for pure deterministic checks
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run Costing calculation and import contract tests
+        run: node --test apps/costing/tests/costing.test.cjs
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install free browser test runtime
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Run real browser Login, App Centre, Costing and Excel checks
+        run: python apps/costing/tests/costing_real_e2e.py
