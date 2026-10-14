@@ -1,0 +1,52 @@
+/*
+ * Garment Time & Action sheet. Scoped to TNA domain content, reuses one VESA
+ * palette/typography and never creates a second sticky page header or menu.
+ */
+.tna-merch-panel{margin:20px 0;padding:18px;border:1px solid var(--line,#ccd5e0);border-radius:14px;background:var(--paper,#fff);color:var(--ink,#17263d);max-width:100%;min-width:0}
+.tna-merch-heading{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}
+.tna-merch-heading h3{margin:0;font-size:1.3rem;line-height:1.3}
+.tna-merch-heading p{margin:6px 0;color:var(--muted,#526176)}
+.tna-merch-heading>span{font-weight:700;border:1px solid var(--line,#ccd5e0);border-radius:8px;padding:7px 11px}
+.tna-merch-order{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:16px 0}
+.tna-merch-order>div{border:1px solid var(--line,#ccd5e0);border-radius:9px;background:var(--look-surface,#f2f5fa);padding:9px 11px;min-width:0}
+.tna-merch-order dt{font-size:.72rem;font-weight:750;color:var(--muted,#526176);line-height:1.4}
+.tna-merch-order dd{margin:3px 0 0;font-weight:650;overflow-wrap:anywhere}
+.tna-merch-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin:14px 0}
+.tna-merch-controls label{display:grid;gap:4px;min-width:min(100%,210px);font-size:.85rem;font-weight:750}
+.tna-merch-controls input,.tna-merch-controls select{font:inherit;color:var(--ink,#17263d);background:var(--look-field,var(--paper,#fff));border:1px solid var(--line,#ccd5e0);border-radius:8px;min-height:44px;padding:7px 10px;max-width:100%}
+.tna-merch-controls :is(input,select):focus-visible,.tna-merch-scroll:focus-visible,.tna-merch-table button:focus-visible{outline:3px solid var(--blue,#244fd6);outline-offset:2px}
+.tna-merch-counts{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.tna-merch-counts span{border:1px solid var(--line,#ccd5e0);border-radius:8px;background:var(--look-surface,#f2f5fa);padding:6px 9px;font-size:.82rem}
+.tna-merch-note{font-size:.82rem;color:var(--muted,#526176);line-height:1.5}
+.tna-merch-scroll{max-height:68vh;max-width:100%;overflow:auto;border:1px solid var(--line,#ccd5e0);border-radius:10px}
+.tna-merch-table{border-collapse:separate;border-spacing:0;min-width:1540px;width:100%;font-size:.8rem}
+.tna-merch-table th,.tna-merch-table td{padding:9px 10px;border-bottom:1px solid var(--line,#ccd5e0);border-right:1px solid var(--line,#ccd5e0);text-align:left;vertical-align:top;min-width:95px;max-width:240px;overflow-wrap:anywhere}
+.tna-merch-table th{position:sticky;top:0;z-index:2;background:var(--look-surface,#f2f5fa);font-size:.76rem}
+.tna-merch-table td:first-child,.tna-merch-table th:first-child{position:sticky;left:0;background:var(--paper,#fff);z-index:1;min-width:120px}
+.tna-merch-table th:first-child{z-index:3;background:var(--look-surface,#f2f5fa)}
+.tna-merch-table tbody tr:hover td{background:var(--look-surface,#f2f5fa)}
+.tna-merch-table tbody tr:hover td:first-child{background:var(--look-surface,#f2f5fa)}
+.tna-merch-table .tna-mini-btn{min-height:44px;max-width:100%;border:1px solid var(--blue,#244fd6);border-radius:8px;padding:8px 11px;color:var(--look-on-accent,#fff);background:var(--blue,#244fd6);font:inherit;font-weight:750;cursor:pointer}
+@media(max-width:920px){.tna-merch-order{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){
+ .tna-merch-panel{padding:12px;margin:12px 0}
+ .tna-merch-order{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .tna-merch-controls{display:grid;grid-template-columns:1fr}
+ .tna-merch-controls label{width:100%}
+ .tna-merch-scroll{max-height:none;overflow:visible;border:0}
+ .tna-merch-table,.tna-merch-table tbody{display:block;min-width:0;width:100%}
+ .tna-merch-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .tna-merch-table tbody tr{display:grid;gap:0;margin:0 0 12px;border:1px solid var(--line,#ccd5e0);border-radius:10px;overflow:hidden;background:var(--paper,#fff)}
+ .tna-merch-table tbody td{display:grid;grid-template-columns:minmax(86px,38%) minmax(0,1fr);gap:8px;align-items:start;border-right:0;max-width:none;min-width:0;width:100%;padding:8px 10px}
+ .tna-merch-table tbody td::before{content:attr(data-label);font-weight:750;color:var(--muted,#526176);font-size:.76rem}
+ .tna-merch-table tbody td:first-child{position:static;min-width:0}
+}
+@media(max-width:350px){.tna-merch-order{grid-template-columns:1fr}}
+@media print{
+ .tna-merch-controls,.tna-merch-counts,.tna-merch-table button{display:none!important}
+ .tna-merch-panel{border:0;padding:0}
+ .tna-merch-scroll{max-height:none;overflow:visible}
+ .tna-merch-table{min-width:0;font-size:8px}
+ .tna-merch-table th,.tna-merch-table td{position:static!important;min-width:0;max-width:none;padding:3px}
+ .tna-merch-table tr{break-inside:avoid}
+}
