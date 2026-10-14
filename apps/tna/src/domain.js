@@ -6,6 +6,10 @@
   const DATE_KEYS=['baselineStart','baselineFinish','currentTargetStart','currentTargetFinish','forecastStart','forecastFinish','actualStart','actualFinish'];
   const STATUSES=['not-started','in-progress','submitted','awaiting-approval','approved','rejected','blocked','completed','waived','not-applicable'];
   const RISK_STATUSES=['on-track','at-risk','delayed','blocked','needs-information'];
+  // User-declared commercial milestones and follow-up parties are not inferred
+  // from the task owner or a nominal approval/delivery date.
+  const MASTER_LC_STATUSES=Object.freeze(['unknown','not-applicable','pending','opened','amended','cancelled']);
+  const WAITING_PARTIES=Object.freeze(['','buyer','local-office','factory','fabric-supplier','trim-supplier','merchant','logistics']);
   const STAGE_LABELS={
     O:'Order / commercial',D:'Product development and approvals',FA:'Fabric approvals',FP:'Fabric procurement / manufacturing',
     TR:'Trims and accessories',PP:'Pre-production readiness',C:'Cutting / preparations',P:'Sewing, wash, finishing',
@@ -97,6 +101,7 @@
       taskKind:activity.taskKind,
       applicability:'required',
       ownerParty:activity.ownerParty,
+      waitingFor:'',
       ownerUserId:null,
       calendarId:'default',
       durationUnits:activity.durationUnits,
@@ -134,8 +139,8 @@
     const plan={
       schemaVersion:SCHEMA_VERSION,recordId:makeId('tna'),createdAt,updatedAt:createdAt,revision:0,mode:context.mode||'local',recordStatus:'draft',
       tenantId:context.tenantId||null,ownerUserId:context.ownerUserId||'local-browser-user',visibilityPolicyId:'local-private',permissionsSnapshot:{mode:'local-browser-only'},
-      order:{buyerId:null,buyerName:clean(input.buyerName),brand:clean(input.brand),factoryId:null,factoryName:clean(input.factoryName),vendor:clean(input.vendor),sourcingAgent:clean(input.sourcingAgent),poNumbers,styles,productProfile:template.id,construction:clean(input.construction)||template.construction,destinationMarket:clean(input.destinationMarket),portOfLoading:clean(input.portOfLoading),portOfDischarge:clean(input.portOfDischarge),fabricSpec:clean(input.fabricSpec),fabricRoute:clean(input.fabricRoute)||'unknown',trimRoute:clean(input.trimRoute)||'unknown',processFlags:flags,techPackRevision:clean(input.techPackRevision),buyerManualRevision:clean(input.buyerManualRevision),composition:clean(input.composition),colorSizeBreakdown:breakdown.rows,totalQty:input.totalQty===''||input.totalQty==null?null:Number(input.totalQty),unit:clean(input.unit)||'pcs',incoterm:clean(input.incoterm),shipmentMethod:clean(input.shipmentMethod),currency:clean(input.currency),commercialNotes:clean(input.commercialNotes)},
-      commitments:{orderConfirmedOn:clean(input.orderConfirmedOn)||null,poReceivedOn:clean(input.poReceivedOn)||null,masterLcOpenedOn:clean(input.masterLcOpenedOn)||null,leadTimeAnchor:clean(input.leadTimeAnchor)||'unknown',leadTimeBasis:clean(input.leadTimeBasis)||'calendar',contractualLeadDays:input.contractualLeadDays?Number(input.contractualLeadDays):null,buyerRequiredExFactory:clean(input.buyerRequiredExFactory)||null,buyerRequiredETD:clean(input.buyerRequiredETD)||null,buyerRequiredETA:clean(input.buyerRequiredETA)||null,destinationRequiredDate:clean(input.destinationRequiredDate)||null},
+      order:{buyerId:null,buyerName:clean(input.buyerName),brand:clean(input.brand),factoryId:null,factoryName:clean(input.factoryName),vendor:clean(input.vendor),sourcingAgent:clean(input.sourcingAgent),poNumbers,styles,productProfile:template.id,construction:clean(input.construction)||template.construction,destinationMarket:clean(input.destinationMarket),portOfLoading:clean(input.portOfLoading),portOfDischarge:clean(input.portOfDischarge),fabricSpec:clean(input.fabricSpec),fabricWeightGsm:input.fabricWeightGsm===''||input.fabricWeightGsm==null?null:Number(input.fabricWeightGsm),fabricRoute:clean(input.fabricRoute)||'unknown',trimRoute:clean(input.trimRoute)||'unknown',processFlags:flags,techPackRevision:clean(input.techPackRevision),buyerManualRevision:clean(input.buyerManualRevision),composition:clean(input.composition),colorSizeBreakdown:breakdown.rows,totalQty:input.totalQty===''||input.totalQty==null?null:Number(input.totalQty),unit:clean(input.unit)||'pcs',incoterm:clean(input.incoterm),shipmentMethod:clean(input.shipmentMethod),currency:clean(input.currency),commercialNotes:clean(input.commercialNotes)},
+      commitments:{orderConfirmedOn:clean(input.orderConfirmedOn)||null,poReceivedOn:clean(input.poReceivedOn)||null,masterLcOpenedOn:clean(input.masterLcOpenedOn)||null,masterLcStatus:clean(input.masterLcStatus)||'unknown',masterLcProofRef:clean(input.masterLcProofRef),leadTimeAnchor:clean(input.leadTimeAnchor)||'unknown',leadTimeBasis:clean(input.leadTimeBasis)||'calendar',contractualLeadDays:input.contractualLeadDays?Number(input.contractualLeadDays):null,buyerRequiredExFactory:clean(input.buyerRequiredExFactory)||null,buyerRequiredETD:clean(input.buyerRequiredETD)||null,buyerRequiredETA:clean(input.buyerRequiredETA)||null,destinationRequiredDate:clean(input.destinationRequiredDate)||null},
       calendars:[{calendarId:'default',name:'Default order calendar',weekendDays:[],holidays:[],source:'user-not-configured'}],
       selectedCalendarIds:['default'],templateId:template.id,templateVersion:template.version,tasks,edges,approvals:[],materials:[],suppliers:[],operations:[],quantityLedger:[],shipmentLots:[],constraints:[],baselineSnapshots:[],revisionEvents:[],auditEvents:[{eventId:makeId('audit'),eventType:'created-draft',actorId:context.ownerUserId||'local-browser-user',createdAt,details:{unknownFields:requiredUnknowns(input),templateId:template.id}}],evidenceReferences:[],scenarioBranches:[],integrationReferences:[],notificationPolicies:[],uiPreferences:{}
     };
@@ -154,6 +159,14 @@
     if(!plan.order?.styles?.length)warnings.push('Style is missing.');
     if(!plan.order?.poNumbers?.length)warnings.push('PO / order reference is missing.');
     if(plan.order?.totalQty!=null && (!(Number.isFinite(plan.order.totalQty)) || plan.order.totalQty<=0))errors.push('Total quantity must be a positive number.');
+    const gsm=plan.order?.fabricWeightGsm;
+    if(gsm!==null&&gsm!==undefined&&(!Number.isFinite(gsm)||gsm<=0))errors.push('Fabric GSM must be a positive, documented number.');
+    const lcStatus=plan.commitments?.masterLcStatus;
+    if(lcStatus!==null&&lcStatus!==undefined&&!MASTER_LC_STATUSES.includes(lcStatus))errors.push('Invalid Master LC status.');
+    const lcDate=plan.commitments?.masterLcOpenedOn;
+    if(lcDate&&!validDateOnly(lcDate))errors.push('Master LC opened date must use a valid YYYY-MM-DD date.');
+    if(['opened','amended'].includes(lcStatus)&&(!lcDate||!clean(plan.commitments?.masterLcProofRef)))errors.push('Opened or amended Master LC requires an actual date and source reference.');
+    if(lcStatus==='not-applicable'&&lcDate)errors.push('Master LC cannot be marked not applicable while an opened date is recorded.');
     const breakdown=normalizeColorSizeBreakdown(plan.order?.colorSizeBreakdown||[]);
     errors.push(...breakdown.errors);
     if(breakdown.rows.length&&Number.isFinite(plan.order?.totalQty)){
@@ -167,6 +180,7 @@
       taskIds.add(task.taskId);
       if(!ACTIVITY_LIBRARY.some(activity=>activity.templateRef===task.templateRef) && !String(task.templateRef||'').startsWith('CUSTOM'))errors.push('Unknown templateRef: '+task.templateRef);
       if(!STATUSES.includes(task.status))errors.push('Invalid status for '+task.title);
+      if(task.waitingFor!==undefined&&!WAITING_PARTIES.includes(task.waitingFor))errors.push('Invalid waiting party for '+task.title);
       if(!RISK_STATUSES.includes(task.riskStatus))warnings.push('Invalid or missing risk status for '+task.title);
       for(const key of DATE_KEYS)if(!(key in (task.dates||{})))errors.push('Task date field missing '+key+' for '+task.title);
     }
@@ -258,7 +272,7 @@
     const next=clone(plan);
     const task={
       taskId:makeId('task'),templateRef:'CUSTOM-'+stageCode,title,stage:STAGE_LABELS[stageCode],stageCode,taskKind:input.taskKind||'work',applicability:'optional',
-      ownerParty:clean(input.ownerParty)||'merchant',ownerUserId:null,calendarId:'default',durationUnits:Number(input.durationUnits||0),durationBasis:input.durationBasis||'working',scheduleMode:'calculated',progressMethod:'manual',status:'not-started',
+      ownerParty:clean(input.ownerParty)||'merchant',waitingFor:'',ownerUserId:null,calendarId:'default',durationUnits:Number(input.durationUnits||0),durationBasis:input.durationBasis||'working',scheduleMode:'calculated',progressMethod:'manual',status:'not-started',
       dates:Object.fromEntries(DATE_KEYS.map(key=>[key,null])),quantity:{required:null,completed:null,unit:next.order?.unit||'pcs'},proofRefs:[],delayReason:'',recoveryAction:'',riskOverrideReason:null,riskStatus:'needs-information',isRequiredGate:false,displayOrder:(next.tasks?.length||0)+1,lastChangedBy:context.actorId||next.ownerUserId,lastChangedAt:timestamp
     };
     next.tasks.push(task);
@@ -353,7 +367,145 @@
     if(!next.validation.ok)return {ok:false,error:next.validation.errors.join(' '),errors:next.validation.errors};
     return {ok:true,plan:next,lot,warnings:next.validation.warnings};
   }
-  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,normalizeColorSizeBreakdown,createPlan,validatePlan,freezeBaseline,updateTaskStatus,addCustomTask,addCapacityEntry,addShipmentLot};
+
+  /**
+   * Update the signed-source commercial facts displayed by the garment sheet.
+   *
+   * Ownership: TNA domain only. Inputs are user-entered evidence references,
+   * not independently authenticated buyer approvals. Result is an immutable
+   * clone with audit/revision history; failures leave the caller's plan intact.
+   * Historical snapshots and contract dates are never rewritten by this action.
+   * Schema version stays 1.1.0 because every added property is optional; old
+   * portable copies and records are valid without filling any new property.
+   */
+  function reviseMerchandisingOrder(plan,input={},context={}){
+    if(!plan||!plan.order||!plan.commitments)return {ok:false,error:'Open an existing TNA order first.'};
+    if(context.expectedRevision!==undefined&&Number(context.expectedRevision)!==Number(plan.revision))return {ok:false,error:'Order changed since this form was opened. Reopen details before saving.'};
+    const next=clone(plan),previous=plan.commitments,oldOrder=plan.order;
+    const before={
+      fabricWeightGsm:oldOrder.fabricWeightGsm??null,
+      masterLcStatus:previous.masterLcStatus??'unknown',
+      masterLcOpenedOn:previous.masterLcOpenedOn||null,
+      masterLcProofRef:previous.masterLcProofRef||''
+    };
+    const after={...before};
+    if(Object.prototype.hasOwnProperty.call(input,'fabricWeightGsm')){
+      if(input.fabricWeightGsm===''||input.fabricWeightGsm==null)after.fabricWeightGsm=null;
+      else if(!Number.isFinite(Number(input.fabricWeightGsm))||Number(input.fabricWeightGsm)<=0)return {ok:false,error:'Enter a positive, documented fabric GSM or leave it blank.'};
+      else after.fabricWeightGsm=Number(input.fabricWeightGsm);
+    }
+    if(Object.prototype.hasOwnProperty.call(input,'masterLcStatus')){
+      after.masterLcStatus=clean(input.masterLcStatus)||'unknown';
+      if(!MASTER_LC_STATUSES.includes(after.masterLcStatus))return {ok:false,error:'Choose a supported Master LC status.'};
+    }
+    if(Object.prototype.hasOwnProperty.call(input,'masterLcOpenedOn')){
+      after.masterLcOpenedOn=clean(input.masterLcOpenedOn)||null;
+      if(after.masterLcOpenedOn&&!validDateOnly(after.masterLcOpenedOn))return {ok:false,error:'Enter a real Master LC opened date (YYYY-MM-DD).'};
+    }
+    if(Object.prototype.hasOwnProperty.call(input,'masterLcProofRef')){
+      after.masterLcProofRef=clean(input.masterLcProofRef);
+      if(after.masterLcProofRef.length>240)return {ok:false,error:'Source reference is too long.'};
+    }
+    const changes={};
+    for(const key of Object.keys(after))if(after[key]!==before[key])changes[key]={before:before[key],after:after[key]};
+    if(!Object.keys(changes).length)return {ok:true,plan,unchanged:true};
+    const reason=clean(input.reason),source=clean(input.sourceRef);
+    if(!reason)return {ok:false,error:'Explain why the garment or LC details changed.'};
+    if(!source)return {ok:false,error:'Enter the source document or approval reference.'};
+    if(before.masterLcOpenedOn!==after.masterLcOpenedOn&&plan.baselineSnapshots?.length)
+      return {ok:false,error:'Confirmed baseline LC opening date is locked. Use a separately authorized correction.'};
+    if(['opened','amended'].includes(after.masterLcStatus)&&(!after.masterLcOpenedOn||!after.masterLcProofRef))
+      return {ok:false,error:'Opened or amended Master LC requires an actual date and its document reference.'};
+    if(after.masterLcStatus==='not-applicable'&&after.masterLcOpenedOn)
+      return {ok:false,error:'An opened Master LC date cannot also be marked Not Applicable.'};
+    next.order.fabricWeightGsm=after.fabricWeightGsm;
+    next.commitments.masterLcStatus=after.masterLcStatus;
+    next.commitments.masterLcOpenedOn=after.masterLcOpenedOn;
+    next.commitments.masterLcProofRef=after.masterLcProofRef;
+    const validation=validatePlan(next);
+    if(!validation.ok)return {ok:false,error:validation.errors.join('; ')};
+    const stamped=now(),actorId=clean(context.actorId)||next.ownerUserId;
+    next.revision=(Number(next.revision)||0)+1;
+    next.updatedAt=stamped;
+    next.validation=validation;
+    next.revisionEvents.push({eventId:makeId('revision'),eventType:'merchandising-order-revised',revision:next.revision,actorId,createdAt:stamped,details:{changes,reason,sourceRef:source,sourceVerification:'user-entered-unverified'}});
+    next.auditEvents.push({eventId:makeId('audit'),eventType:'merchandising-order-revised',actorId,createdAt:stamped,details:{fields:Object.keys(changes),sourceRef:source}});
+    return {ok:true,plan:next,changes};
+  }
+
+  /**
+   * Apply a single atomic activity follow-up. Date-only validation and source
+   * checks precede all edits. A confirmed original baseline or evidenced actual
+   * finish is immutable; a revised working target needs reason, source and
+   * named authorizing party. Existing updateTaskStatus() remains compatible.
+   */
+  function reviseMerchandisingTask(plan,taskId,input={},context={}){
+    if(!plan||!Array.isArray(plan.tasks))return {ok:false,error:'Open a TNA order first.'};
+    if(context.expectedRevision!==undefined&&Number(context.expectedRevision)!==Number(plan.revision))return {ok:false,error:'TNA changed since this activity was opened. Reopen it before saving.'};
+    const original=plan.tasks.find(item=>item.taskId===taskId);
+    if(!original)return {ok:false,error:'Activity not found.'};
+    const next=clone(plan),task=next.tasks.find(item=>item.taskId===taskId);
+    const previousDates=original.dates||{};
+    const status=clean(input.nextStatus??original.status);
+    const owner=clean(input.ownerParty??original.ownerParty);
+    const waiting=clean(input.waitingFor??original.waitingFor??'');
+    const planned=clean(input.plannedDate??previousDates.baselineFinish)||null;
+    const revised=clean(input.revisedDate??previousDates.currentTargetFinish)||null;
+    const actual=clean(input.actualDate??previousDates.actualFinish)||null;
+    const evidence=clean(input.evidenceRef),reason=clean(input.reason),source=clean(input.sourceRef);
+    const authority=clean(input.authorityParty);
+    if(!STATUSES.includes(status))return {ok:false,error:'Choose a supported activity status.'};
+    if(!owner||owner.length>120)return {ok:false,error:'Responsible party must be entered (maximum 120 characters).'};
+    if(!WAITING_PARTIES.includes(waiting))return {ok:false,error:'Choose a supported waiting party.'};
+    for(const [label,date] of [['planned',planned],['revised',revised],['actual',actual]])if(date&&!validDateOnly(date))
+      return {ok:false,error:'Enter a valid '+label+' date in YYYY-MM-DD format.'};
+    if(evidence.length>240||source.length>240||authority.length>120||reason.length>600)
+      return {ok:false,error:'Reason, source or authority entry is too long.'};
+    const changes={};
+    function delta(key,before,after){if(before!==after)changes[key]={before:before??null,after:after??null};}
+    delta('status',original.status,status);
+    delta('ownerParty',original.ownerParty,owner);
+    delta('waitingFor',original.waitingFor||'',waiting);
+    delta('baselineFinish',previousDates.baselineFinish||null,planned);
+    delta('currentTargetFinish',previousDates.currentTargetFinish||null,revised);
+    delta('actualFinish',previousDates.actualFinish||null,actual);
+    const editedKeys=Object.keys(changes);
+    if(!editedKeys.length&&!evidence)return {ok:true,plan,unchanged:true};
+    if(!reason)return {ok:false,error:'Enter a reason or follow-up note for this activity change.'};
+    if(changes.baselineFinish&&((plan.baselineSnapshots||[]).length||plan.recordStatus!=='draft'))
+      return {ok:false,error:'Original planned date is confirmed and cannot be overwritten.'};
+    if(changes.currentTargetFinish&&(!source||!authority))
+      return {ok:false,error:'A revised target requires an evidence source and the authorizing party.'};
+    if(changes.actualFinish&&previousDates.actualFinish)
+      return {ok:false,error:'Recorded actual completion is immutable. Use a separately reviewed correction.'};
+    if(changes.actualFinish&&(!evidence||!['completed','approved'].includes(status)))
+      return {ok:false,error:'An actual finish date needs completion or approval status and evidence.'};
+    if(changes.status&&status==='approved'&&(!evidence||!authority))
+      return {ok:false,error:'Approval requires a new evidence reference and authorized party.'};
+    if(changes.status&&status==='completed'&&(!actual||!evidence))
+      return {ok:false,error:'Completion requires an actual date and evidence reference.'};
+    if(changes.status&&['waived','not-applicable'].includes(status)&&(!authority||!evidence))
+      return {ok:false,error:'Waiver or N/A requires its authorized party and source evidence.'};
+    if(changes.status&&status==='rejected'&&!evidence)
+      return {ok:false,error:'A rejected activity needs a decision reference.'};
+    task.status=status;task.ownerParty=owner;task.waitingFor=waiting;
+    task.dates.baselineFinish=planned;
+    task.dates.currentTargetFinish=revised;
+    task.dates.actualFinish=actual;
+    if(evidence&&!task.proofRefs.includes(evidence))task.proofRefs.push(evidence);
+    if(reason)task.delayReason=reason;
+    const validation=validatePlan(next);
+    if(!validation.ok)return {ok:false,error:validation.errors.join('; ')};
+    const stamped=now(),actorId=clean(context.actorId)||next.ownerUserId;
+    task.lastChangedBy=actorId;task.lastChangedAt=stamped;
+    next.updatedAt=stamped;next.revision=(Number(next.revision)||0)+1;
+    next.validation=validation;
+    next.revisionEvents.push({eventId:makeId('revision'),eventType:'merchandising-task-revised',revision:next.revision,actorId,createdAt:stamped,details:{taskId,changes,reason,sourceRef:source,authorityParty:authority,sourceVerification:'user-entered-unverified'}});
+    next.auditEvents.push({eventId:makeId('audit'),eventType:'merchandising-task-revised',actorId,createdAt:stamped,details:{taskId,fields:editedKeys}});
+    return {ok:true,plan:next,changes};
+  }
+
+  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,MASTER_LC_STATUSES,WAITING_PARTIES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,normalizeColorSizeBreakdown,createPlan,validatePlan,freezeBaseline,updateTaskStatus,reviseMerchandisingOrder,reviseMerchandisingTask,addCustomTask,addCapacityEntry,addShipmentLot};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaDomain=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
