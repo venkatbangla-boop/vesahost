@@ -75,3 +75,10 @@
 - **GO for Costing source / local browser demo verification. NO-GO for `DEMO LIVE` on current commercial-use GitHub Pages site:** live public URL and hosting eligibility have not been established. Do not silently move this feature branch to public `main` or change CNAME/DNS solely based on tests.
 - **NEXT ACTION:** Resolve publication eligibility and owner release gate; verify exact public route/version if a permitted demo release is arranged. Then begin the separately approved TNA 360 garment-merchandising rework, without confusing its business process with this Costing feature.
 
+
+## Connected GitHub Work verification checkpoint — 2026-10-15
+
+- **Real runner evidence:** [GitHub Actions run 38618432331](https://github.com/venkatbangla-boop/vesahost/actions/runs/38618432331) completed **SUCCESS** for source/test commit `7383cb78c2618a60f02f2a993c1fa731bd052a92`. The `costing-real-checkout` job and all its listed steps concluded success.
+- Focused deterministic Costing calculations/imports, shared JS syntax, shared-shell/TNA G01/AQL A-G03 smoke checks, and real Chromium Login -> App Centre -> Costing/Excel tests all ran on the actual checkout. The browser script now additionally exercises all CR01–CR07 downloadable draft identities/non-approval statements, A4 PDF rendering, invalid selected saved-copy immutability, actual light/dark Settings, keyboard Enter/Escape File dialog flow, 320/390/640/768/1024/1280 responsive widths, mobile menu aria state, and saved-record immutability after language/theme/reflow.
+- **Verdict:** `DEVELOPMENT VERIFIED` for these specified local/CI test surfaces, **not** buyer approval, physical UAT, external Excel desktop-reader certification, full TNA/PPM/AQL regression, or public release. Source costing calculation/storage modules unchanged in this patch. Public Costing status remains `CONDITIONAL / DEMO NOT YET VERIFIED`.
+- **NEXT ACTION:** Treat release as an independent policy/authorization block, not a gate preventing the approved TNA garment-merchandising rework. Audit its existing source and approved workflow requirements before changing any TNA code.
