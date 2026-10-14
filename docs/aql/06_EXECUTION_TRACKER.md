@@ -16,10 +16,21 @@
 | Existing test | `apps/aql/tests/release-contract.cjs` plus earlier engineering logs |
 | Last accepted new rework gate | **A-G02** — AQL workflow parity accepted locally; no live deploy |
 | Current verdict | `accepted` locally for A-G00, A-G01, A-G02, A-G04, A-G05, A-G06, A-G07 and A-G11. A-G03 remains policy-blocked; A-G08 and A-G09 retain conditional local slices. Stage workflows, recovery and full local regression are complete; AR11 policy plus buyer/legal and physical/device/factory acceptance remain separate external evidence. |
-| Current gate | **A-G12 local handoff/release-readiness audit**; production publication remains blocked and unauthorized. |
-| LAST COMPLETED ACTION | A-G11 is accepted locally at clean commit `cf8e193`: the expanded full regression passes 90/90 commands in 873.5s without retry after adding the executable A01–A60 ledger and saved-copy/visual evidence index. |
-| NEXT ACTION | Reconcile A-G12 local limitations, rollback, handoff SHA and release notes; keep deployment blocked pending explicit user authorization and unresolved external evidence. |
+| Current gate | **A-G12 RELEASE BLOCKED / LOCAL HANDOFF PROVEN**; production publication remains unauthorized. |
+| LAST COMPLETED ACTION | A-G12 local handoff now records candidate `100a565`, fully tested baseline `cf8e193`, runtime `cae38ca`, backup, limitations, rollback and explicit HOLD without deploying. |
+| NEXT ACTION | Stop local release work; resume only for approved policy/external evidence, a demonstrated regression or explicit authorization naming a staging/release SHA and rollback window. |
 | Deferred / active blockers | Server-side identity/tenant store, cloud database, external notices and provider credentials are `DEFERRED_BY_SCOPE`; approved carton-randomization policy and real factory pilot remain active external evidence blockers |
+
+### A-G12 local handoff and release boundary — local handoff accepted, release blocked
+
+TIME / TIMEZONE: 2026-10-14 13:25 Asia/Dhaka
+BRANCH / BASE COMMIT / FULL-REGRESSION BASELINE: `feature/tna360-continuous` / `100a565` / `cf8e193`
+FILE-LEVEL AUDIT: `docs/VESA_360_RELEASE_READINESS.md` is the current handoff/runbook and already owns the HOLD decision, clean verification recipe, backup/restore rehearsal, rollback, known limitations and production-authorization prerequisites. It now identifies `cf8e193` as the 90-command tested baseline, while `100a565` is the later documentation-only A-G11 acceptance commit. The A-G12 checklist still needs one explicit AQL handoff record distinguishing the documentation candidate, tested code/evidence baseline and runtime SHA; naming included/excluded scope; stating the backup/rollback sequence; and recording that no live URL/timestamp exists because deployment is unauthorized. In scope: documentation/status reconciliation only. Frozen/out of scope: all runtime/tests/service workers, schemas/saved formats, generated artifacts, sibling apps, public routes, Git remotes, main branch, staging and deployment.
+RISKS / VERIFICATION / ROLLBACK: never label the documentation commit as a separately runtime-tested build, invent a live URL, imply release authorization or erase unresolved policy/external dependencies. Verify branch/status/SHAs, focused release/ledger contracts and `git diff --check`; reuse `cf8e193` 90/90 evidence because no runtime or test changed. Revert documentation only; no application/data/cache action is required.
+IMPLEMENTED / EVIDENCE: the current release-readiness supplement now records `100a565` as the documentation candidate, `cf8e193` as the fully tested 90-command baseline and `cae38ca` as the latest runtime. The AQL handoff table names included local scope, every excluded policy/physical/provider boundary, pre-staging saved-copy steps, non-destructive `git revert` rollback, explicit HOLD state, absent live URL/timestamp because no deployment occurred, and the exact authorization decision still required.
+TEST EVIDENCE: branch/SHA/status inspection confirms `feature/tna360-continuous`, clean `100a565` before this documentation patch and tested baseline `cf8e193`; A01–A60, 35-area and release contracts pass; `git diff --check` passes. The clean full boundary remains 90/90 in 873.5s without retry because no runtime/test/cache/schema file changed.
+VERDICT: local A-G12 handoff slice accepted; A-G12 RELEASE REMAINS BLOCKED. Documentation, backup, limitations, rollback and candidate identity are complete, but no production authorization, staging verification, live URL, deployment timestamp or external acceptance exists.
+NEXT ACTION (ONE PRECISE STEP): stop local release work at HOLD; resume only with an approved AR11/buyer/legal fixture, external acceptance evidence, a demonstrated regression, or explicit user authorization for a named staging/release action.
 
 ### A-G11 full local stabilization — gate accepted locally
 
@@ -680,9 +691,9 @@ NEXT ACTION (ONE PRECISE STEP): obtain or document the approved carton-randomiza
 
 ### A-G12 — Explicit user release gate
 - [ ] User approved main deployment and exact scope after review.
-- [ ] Coherent Git commit, built assets, backup, release notes and rollback identified.
+- [x] Coherent documentation candidate, fully tested baseline, static assets, backup steps, release notes and rollback are identified.
 - [ ] Deploy only after acceptance. Test actual website/phone flows and cache after deployment.
-- [ ] Record exact live URL/commit/timestamp, unresolved external dependencies and remaining caveats.
+- [x] Candidate/baseline/runtime SHAs, unresolved external dependencies and caveats are recorded; live URL/timestamp are explicitly not applicable because no deployment occurred.
 
 ## Coverage ledger — 60 requirements + 35 legacy areas
 Each feature ID A01–A60 is initially `not-started / unverified for this rework`, even if existing baseline implements part of it. Each must carry `CURRENT-SOURCE-EVIDENCE`, `VERDICT`, `GATE`, `TEST`, `SHA`, `NOTE`. 35 original areas numbered 01–35 in doc 01 must also have `existing | partial | absent | blocked`, supported by direct code/fixture evidence and required follow-up. Do not silently shrink these registers.
