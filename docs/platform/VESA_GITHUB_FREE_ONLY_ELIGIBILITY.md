@@ -62,7 +62,7 @@ Provider-only gates are `DEFERRED_BY_SCOPE`: they are excluded from both numerat
 | A-G05 | ACTIVE | CONDITIONAL | Rework/reinspection/loading evidence incomplete |
 | A-G06 | ACTIVE | CONDITIONAL | Evidence/measurement/CAPA/analytics proof incomplete |
 | A-G07 | ACTIVE | CONDITIONAL | Saved-copy/close-reopen/worker/device proof incomplete |
-| A-G08 | ACTIVE | CONDITIONAL | Report/language/accessibility rendered proof incomplete |
+| A-G08 | ACTIVE | CONDITIONAL | Four-language authored report chrome, five-page A4 rendering and share fallback pass locally; AR11 approved randomization policy and physical/device/printer/screen-reader/factory/buyer acceptance remain incomplete |
 | A-G09 | ACTIVE — LOCAL SLICE ONLY | CONDITIONAL | Explicit manual reference/App Centre boundaries stay active; server lookup/tenant verification is deferred |
 | A-G10 | DEFERRED_BY_SCOPE | EXCLUDED | Hosted roles/authorization/API/database/remote collaboration |
 | A-G11 | ACTIVE | NOT STARTED | Local code/data/visual regression |
