@@ -32,6 +32,14 @@ FULL ACCEPTANCE EVIDENCE: clean `accf1c8` passes `node tests/vesa-g11-regression
 VERDICT: `accepted` locally for AR11, A-G03 and A-G08. Buyer-certified policies and physical acceptance remain unclaimed; selection alone still cannot approve or release an inspection.
 NEXT ACTION (ONE PRECISE STEP): retain A-G12 HOLD until explicit external evidence or production authorization is supplied; do not push or deploy.
 
+### Final local UAT package preparation — checkpoint pending boundary
+
+TIME / TIMEZONE: 2026-10-14 Asia/Dhaka
+FILE-LEVEL AUDIT / SCOPE: clean start `182cf52`; accepted AR11 runtime `abc465d` and tested baseline `accf1c8` were reconciled directly against `CartonSelectionEngine`, the Carton Selection dialog, report integration and both focused AR11 tests. In scope: `docs/uat/` human checklists/results/evidence, additive `tests/vesa-local-uat-package.cjs`, the full-runner entry and acceptance ledgers. Frozen: all application runtime, SamplingEngine, garment sample size, Ac/Re, decisions, schemas/saved records, service workers, shared UI runtime, providers and deployment. Risks: marking human rows PASS from automation, omitting either selection method/Auto Fill Remaining, or implying buyer certification/release. Rollback removes only documentation/test/runner changes.
+FOCUSED EVIDENCE: repeated AR11 pure/browser tests pass automatic/manual/combined selection, actual IDs/ranges, leading zeros, uniqueness/no replacement, replacement confirmation/history, inspected completion, local/portable reopen, four-language guidance and printable 390/1280 reports. Adjacent frozen sampling, all-report/language and release contracts pass. The new AQL UAT checklist has 15 human rows, including six explicit AR11 workflow/safety/persistence/report checks; all remain `NOT TESTED`. The local server command was exercised and `/login/`, `/apps/`, TNA, PPM and AQL returned HTTP 200.
+VERDICT: package checkpoint is `conditional` until committed and included in one clean complete acceptance-boundary regression. AR11 implementation remains accepted; no source change was required.
+NEXT ACTION (ONE PRECISE STEP): commit the reversible UAT package candidate, run the expanded full matrix once, then pin the tested SHA and retain production HOLD.
+
 ### A-G09 local sibling-reference audit — implementation checkpoint open
 
 TIME / TIMEZONE: 2026-10-14 12:54 Asia/Dhaka

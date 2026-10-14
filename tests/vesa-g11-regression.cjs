@@ -65,6 +65,7 @@ function main(){
   for(const file of aql)run('automated','AQL '+path.basename(file),node,[rel(file)]);
 
   run('automated','shared workspace shell contract',node,['tests/vesa-workspace-shell-contract.cjs']);
+  run('automated','local UAT package contract',node,['tests/vesa-local-uat-package.cjs']);
   run('browser','shared accessibility matrix',node,['tests/vesa-accessibility.cjs']);
   run('browser','shared final uniform experience',node,['tests/vesa-uniform-experience.cjs']);
   run('browser','shared Login/App Centre/Admin page matrix',node,['tests/vesa-platform-pages.cjs']);

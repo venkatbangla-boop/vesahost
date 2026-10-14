@@ -21,6 +21,12 @@
 | NEXT ACTION | Stop local PPM release work at HOLD; resume only for independent acceptance evidence, an approved provider-scope change, a demonstrated regression or explicit authorization naming a staging/release SHA and rollback window. |
 | Deferred / active setup issue | Hosted backend and cross-company provider roles are `DEFERRED_BY_SCOPE`; clean-checkout reproduction still needs an intentional package/runtime setup because the repository has no package manifest |
 
+### Final local UAT package preparation — checkpoint pending boundary
+
+**Audit / scope (2026-10-14):** Clean start at `182cf52`; tested application baseline `accf1c8` remains 94/94 and AQL AR11 runtime is `abc465d`. In scope is the documentation-only `docs/uat/02_PPM_LOCAL_UAT.md`, shared package/index/results/evidence files, additive package validator and one full-runner entry. PPM runtime, 168 identities, planning/decision rules, schemas/saves, reports, service worker, providers and deployment are frozen. Rollback removes only the UAT package/test/runner entry.
+
+**PPM package evidence:** 12 human rows cover entry paths, applicability/checkpoints, decisions/measurements/approvals, follow-up, controlled amendment, save/reopen/recovery, reports/languages, sibling references and mobile/keyboard. Every human status remains `NOT TESTED`; automated evidence is kept separate. Focused package and P-G10 handoff contracts pass; final expanded cross-app boundary is pending.
+
 ## Universal session protocol
 Read `apps/ppm/AGENTS.md` and this tracker; compare actual `git status`, commits, tests and screenshots with ledger. If there is a discrepancy, downgrade status and inspect before changing. Pick earliest *accepted-prerequisite* group, implement one small patch, run tests, verify other apps not broken, commit, append log, set next action. Any new/changed UI model must be measured against `VESA-UNIFORM-UI-v1` in document 04. Never directly push main without explicit release instruction.
 

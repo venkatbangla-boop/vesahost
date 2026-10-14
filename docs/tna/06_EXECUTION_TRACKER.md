@@ -26,6 +26,12 @@
 
 **Snapshot date:** 2026-10-10. The GitHub public repo/main and files were inspected at a documentation level; **Codex must directly inspect its checkout** before code writes. Never treat these notes as a completed local repo audit.
 
+### Final local UAT package preparation — checkpoint pending boundary
+
+**Audit / scope (2026-10-14):** Clean start at `182cf52`; latest tested application baseline is `accf1c8` (94/94) and latest AQL AR11 runtime is `abc465d`. `docs/uat/` is a new human-execution package; `tests/vesa-local-uat-package.cjs` validates its structure and `tests/vesa-g11-regression.cjs` owns final boundary inclusion. No TNA source, formula, schema, saved record, cache, provider or deployment file is in scope. Risks are pre-claiming human acceptance, omitting recovery/mobile/language evidence, exposing real data, or presenting local login as server security. Rollback removes only the package, its contract test and runner entry.
+
+**TNA package evidence:** `01_TNA_LOCAL_UAT.md` has 12 step-by-step rows covering entry/navigation, order/template/calculation, baseline/history, readiness, save/reopen, portable copy, XLSX/PDF, four languages/themes, mobile/keyboard, local references/alerts and practice isolation. Every human status remains `NOT TESTED`. Focused package, TNA G12, PPM P-G10, AQL A-G11 and diff checks pass; final expanded cross-app boundary is pending.
+
 ## B. Continuity protocol — what Codex must do each session
 
 ### Mandatory initial read/verification

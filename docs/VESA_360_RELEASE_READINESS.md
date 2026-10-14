@@ -26,6 +26,10 @@ This supplement is the current handoff authority. The older `48ec023` review rem
 | Shared UX state | U-G00–U-G09 accepted locally; physical screen-reader/device/factory acceptance remains external |
 | Production state | Not staged, not deployed, not live-verified, not authorized |
 
+### Local human UAT package
+
+`docs/uat/00_READ_ME_FIRST.md` provides the exact local PowerShell server command, URL and demonstration login, followed by TNA (12 rows), PPM (12), AQL (15) and Shared UI (10) human checklists plus results/sign-off and automated-evidence boundaries. All 49 human rows deliberately start `NOT TESTED`; automated proof does not pre-approve them. The documented server command was exercised locally and Login/App Centre/TNA/PPM/AQL each returned HTTP 200. Package-integrity and app handoff checks pass; the expanded complete boundary is pending on the clean package candidate.
+
 ### AQL A-G12 local handoff record
 
 | Item | Recorded boundary |
