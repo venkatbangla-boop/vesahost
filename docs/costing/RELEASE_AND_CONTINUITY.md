@@ -1,5 +1,19 @@
 # VESA Costing 360 - Build / Acceptance Log
 
+
+## LIVE DEMO ACCEPTED — 2026-10-15 (Bangladesh time)
+
+**Status: `DEMO LIVE` — owner-authorized personal showcase only; not approved for live commercial SaaS, confidential records or production business transactions.** The earlier feature-branch-only and external release HOLD sections below are retained as historical checkpoints and continue to apply to **commercial** hosting and buyer/factory approval, not to this isolated personal demonstration.
+
+- **Authorized path:** [Login](https://vesaent.com/login/) → [VESA App Centre](https://vesaent.com/apps/) → [Costing 360](https://vesaent.com/apps/costing/). App Centre has exactly one new Costing tile; AQL, PPM and TNA retain their existing routes. Application login is browser-local and is not server-side security.
+- **Source promotion:** feature branch was fast-forwarded to public `main` at `c7455ad89b5ca2add7b35a0e323cdb207811bd05`, after source CI [38620428421](https://github.com/venkatbangla-boop/vesahost/actions/runs/38620428421) completed **SUCCESS**. Later main commits changed the live-smoke workflow only; application source code and frozen domain engines were unchanged.
+- **Actual Pages deployment:** [Pages run 38620818355](https://github.com/venkatbangla-boop/vesahost/actions/runs/38620818355) completed **SUCCESS** for the promoted application source.
+- **Live URL and exact version/byte verification:** [VESA Costing demo live smoke 38621067300](https://github.com/venkatbangla-boop/vesahost/actions/runs/38621067300) completed **SUCCESS**. Its actual runner fetched `https://vesaent.com/apps/costing/`, `/apps/`, versioned `/js/app-catalogue.js`, `/service-worker.js` and `/login/`. Exact Costing HTML, App Centre HTML, catalogue JS and worker JS bytes matched the checked-out `main` source (smoke checkout `9936c87db6a7f250391f8dfbbebd45c6bd5eeca3`). Login form and Costing registration were present; all AQL, PPM and TNA public routes returned success.
+- **Prior browser acceptance:** Actual real-checkout source CI proved no-margin arithmetic, import rejection, saved-record recovery, real 7-sheet Excel, seven draft reports/A4 PDF, English/Bengali/Hindi/Tamil, dark/light and responsive/keyboard controls, root offline cache activation and offline Excel/report record reopening; cross-app source/browser regressions passed. Human real-device, factory, buyer and source-commercial approvals are not claimed.
+- **Usage restriction:** Only fictional/demo records. Do not enter real buyer/factory/customer data, sensitive prices, orders, passwords or other confidential information. Browser-only records require deliberate downloaded backups. GitHub Pages terms still disallow using this deployment to run a commercial SaaS or other prohibited business hosting.
+- **NEXT ACTION:** Portfolio item 1 has reached `DEMO LIVE` under this restricted scope. Begin item 2, TNA Garment Merchandising Rework, using its already recorded queue and existing TNA blueprint; audit the current TNA interface and preserve CPM, baselines, saved records and PPM/AQL contracts.
+
+
 ## 2026-10-15: owner-authorized **demo-only** promotion candidate
 
 The owner expressly requested publishing the completed **personal VESA Costing 360 demo** from the verified feature branch to GitHub `main` under **Login → App Centre → Costing 360**. This is release authorization for **a static, non-commercial showcase/demo**, not authorization to offer paid/commercial SaaS or run real buyer/factory financial operations on GitHub Pages. Official hosting limitation: https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits.
@@ -15,7 +29,7 @@ The owner expressly requested publishing the completed **personal VESA Costing 3
 
 **Source of requirements:** `VESA_COSTING_360_VSCODE_HANDOVER.zip` and its ten Costing blueprint documents. Separate 15-app master roadmap is a *planning reference*, not a claim that other applications are built.
 
-**Status:** `CONDITIONAL - FEATURE BRANCH ONLY`. Not public demo live; no claims of human/factory/buyer approval. Last verified GitHub branch commit should be checked before continuing.
+**Historical status (2026-10-14):** `CONDITIONAL - FEATURE BRANCH ONLY`. The updated 2026-10-15 personal-demo acceptance above supersedes this **for non-commercial demo publication only**; human/factory/buyer approval is not claimed.
 
 ## Ownership and boundaries
 
