@@ -54,3 +54,11 @@
 7. Next application after Costing: **TNA 360 Garment Merchandising Rework** (see queued source request), then APP-01 Packing & Container 360.
 
 **Rollback:** feature branch can be discarded without changing main; after publication revert the exact app/catalogue/locale commits without clearing any browser records.
+
+## Continued focused verification — 2026-10-14
+
+- Corrected the repository-relative Node test path and committed the 11th Excel no-margin / source-revision regression test; local command `node --test apps/costing/tests/costing.test.cjs` **11 PASS, 0 FAIL** (on the reconstructed Costing app source and tests).
+- Strict browser fixture test **PASS**: saved-copy download/restore as a separate record; invalid 6% imported workbook margin rejected without changing prior records; valid 0%-margin workbook accepted with style `SOURCE-STYLE-25` and source revision `QUOTE-REV-06` preserved; missing commission policy evidence surfaced. Tests ran against synthetic records and a simulated VESA shared shell, **not** a complete fresh repository browser flow.
+- Source audit confirms centralized VESA `js/vesa-workspace-shell.js`, catalog, preferences, auth and CSS are separately owned. No changes to TNA, PPM or AQL runtime files. `main` stays unchanged for this checkpoint.
+- **Release verdict: CONDITIONAL**. Still requires full true HTTP route test using real shared assets, real XLSX vendor runtime round-trip, cross-app regression, and policy-compliant hosting/live verification. No `DEMO LIVE` claim.
+- **NEXT ACTION:** obtain the actual complete repo as a runnable local checkout or supported Work cloud-computer runtime, run real Login -> App Centre -> Costing browser integration with the checked-in licensed XLSX bundle, remediate any failures, then execute release acceptance; after Costing, proceed to the queued TNA garment merchandising rework.
