@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');const vm=require('node:vm');const {test}=require('node:test');
-const page=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+const page=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
 const scripts=[...page.matchAll(/<script data-costing-module="([^"]+)">\s*([\s\S]*?)<\/script>/g)];
 const sandbox={console,TextEncoder,structuredClone};sandbox.globalThis=sandbox;sandbox.window=sandbox;
 const loaded={};for(const match of scripts){if(match[1]==='ui')continue;vm.runInNewContext(match[2],sandbox,{filename:match[1]+'.js'});loaded[match[1]]=true;}
