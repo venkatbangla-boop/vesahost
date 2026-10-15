@@ -134,6 +134,44 @@ class TnaMerchandisingSheetBrowserProof {
     assert.equal(recovered.tasks[0].dates.currentTargetFinish,'2026-10-18','Editing another task must not overwrite original target finish');
   }
 
+  async verifyFollowupEdit(){
+    const before=await this.page.evaluate(()=>JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan);
+    await this.page.locator('.tna-master-activities [data-edit-task]').last().click();
+    const form=this.page.locator('#tnaFollowupEdit');
+    await form.waitFor();
+    await form.locator('[name="ownerParty"]').fill('Bangladesh Follow-up Team');
+    await form.locator('[name="currentTargetFinish"]').fill('2026-11-29');
+    await form.locator('[name="forecastFinish"]').fill('2026-12-04');
+    await form.locator('[name="note"]').fill('Factory weekly follow-up confirmed');
+    await form.locator('button[type="submit"]').click();
+    const after=await this.page.evaluate(()=>JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan);
+    const lastTask=after.tasks.at(-1),oldTask=before.tasks.at(-1);
+    assert.equal(lastTask.ownerParty,'Bangladesh Follow-up Team');
+    assert.equal(lastTask.dates.currentTargetFinish,'2026-11-29');
+    assert.equal(lastTask.dates.forecastFinish,'2026-12-04');
+    assert.equal(lastTask.dates.actualFinish,oldTask.dates.actualFinish,'Actual may not be overwritten.');
+    assert.equal(lastTask.status,oldTask.status,'Follow-up cannot grant approval or alter status.');
+    assert.deepEqual(after.baselineSnapshots,before.baselineSnapshots,'Baseline cannot change.');
+    assert.deepEqual(after.approvals,before.approvals,'Approvals cannot be fabricated.');
+    assert.equal(after.revisionEvents.at(-1).details.reason,'Factory weekly follow-up confirmed');
+    const record=await this.page.evaluate(()=>{
+      const plan=JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan;
+      const reopened=VesaTnaStorage.importCopy(VesaTnaStorage.exportCopy(plan));
+      const model=VesaTnaReports.buildReportModel(reopened,{reportId:'R01',language:'en'});
+      const task=model.tasks.at(-1);
+      const workbook=XLSX.read(VesaTnaStorage.exportReportWorkbook(model),{type:'buffer'});
+      const rows=XLSX.utils.sheet_to_json(workbook.Sheets['Report Activities'],{header:1,raw:false});
+      return {saved:reopened.tasks.at(-1),report:task,excel:rows.at(-1)};
+    });
+    assert.equal(record.saved.ownerParty,'Bangladesh Follow-up Team','Backup round-trip must retain owner.');
+    assert.equal(record.report.owner,'Bangladesh Follow-up Team','Report must retain owner.');
+    assert.equal(record.report.current,'2026-11-29','Report must retain target.');
+    assert.equal(record.report.forecast,'2026-12-04','Report must retain forecast.');
+    assert.ok(record.excel.includes('Bangladesh Follow-up Team'),'Excel must retain owner.');
+    assert.ok(record.excel.includes('2026-11-29'),'Excel must retain target.');
+    assert.ok(record.excel.includes('2026-12-04'),'Excel must retain forecast.');
+
+  }
   /** Closes the runtime even when an assertion fails. */
   async close() {
     if(this.context)await this.context.close();
@@ -148,11 +186,13 @@ class TnaMerchandisingSheetBrowserProof {
       await this.verifyLanguages();
       await this.verifyResponsive();
       await this.verifyLastActivityEdit();
+      await this.verifyFollowupEdit();
       await this.openSyntheticOrder('woven');
       await this.verifyResponsive();
+      await this.verifyFollowupEdit();
       assert.deepEqual(this.errors,[],'No uncaught browser exceptions');
       assert.deepEqual(this.external,[],'No remote network requests');
-      console.log('TNA merchandising sheet browser PASS: knit/woven, all task rows, four languages, dates, edits, local reopen, responsive 390/1280, no external requests');
+      console.log('TNA merchandising sheet browser PASS: knit/woven, all task rows, four languages, dates, follow-ups, Excel, portable copies, edits, local reopen, responsive 390/1280, no external requests');
     }finally{await this.close();}
   }
 }

@@ -347,7 +347,69 @@
     openDialog('Confirm scenario revision',`<form class="tna-wizard" id="tnaScenarioApply"><p>This creates a new local revision and keeps the original baseline snapshots. It does not claim buyer approval or cloud collaboration.</p>${state.scenarioPreview.branch.violations.length?`<p class="tna-note">Review first: ${esc(state.scenarioPreview.branch.violations.join(' '))}</p>`:''}<label class="tna-wide"><span>Revision reason *</span><textarea name="reason" rows="4" required placeholder="Explain the verified recovery decision"></textarea></label><label><input type="checkbox" name="confirm" required> I confirm this scenario should create a new revision.</label><button class="tna-btn" type="submit">Confirm and apply</button></form>`);
     document.getElementById('tnaScenarioApply').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());const result=scenarios.applyScenario(state.currentPlan,state.scenarioPreview.branch,{actorId:userKey(),reason:data.reason,confirm:data.confirm==='on'});if(!result.ok)return openDialog('Apply scenario',`<p>${esc(result.error)}</p>`);state.currentPlan=result.plan;if(storage)storage.autosave(state.currentPlan,userKey());state.scenarioPreview=null;state.scenarioDraft=null;render();openDialog('Scenario applied',`<p>Recovery option applied as revision ${esc(result.plan.revision)}. Baseline snapshots remain preserved.</p>`);};
   }
-  function openTaskEdit(taskId){if(!state.currentPlan)return openDialog('Edit Activity','<p>Create or open a TNA draft before editing activities.</p>');const task=state.currentPlan.tasks.find(item=>item.taskId===taskId);if(!task)return openDialog('Edit Activity','<p>Activity not found in this draft.</p>');openDialog('Edit Activity',`<form class="tna-wizard" id="tnaTaskEdit"><p><b>${esc(task.templateRef)}</b> · ${esc(task.title)}</p><div class="tna-form-grid">${selectField('nextStatus','Status',domain.STATUSES.map(status=>[status,status]),task.status)}${field('actualDate','Actual finish date','date')}${field('evidenceRef','Evidence reference')}${field('reason','Reason / note')}</div><p class="tna-note">Choose Completed only with the actual finish date, Approved only with evidence, and Waived only with a reason. The original approved plan stays unchanged.</p><button class="tna-btn" type="submit">Save activity edit</button></form>`);document.getElementById('tnaTaskEdit').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());const result=domain.updateTaskStatus(state.currentPlan,taskId,data.nextStatus,{actualDate:data.actualDate,evidenceRef:data.evidenceRef,reason:data.reason,actorId:userKey()});if(result.ok){state.currentPlan=result.plan;if(storage)storage.autosave(state.currentPlan,userKey());state.dialog.close();render();}else openDialog('Edit Activity',`<p>${esc(result.error)}</p>`);};}
+  /**
+   * Owns the localized in-dialog follow-up form and its local save lifecycle.
+   * Domain validation remains in VesaTnaDomain; status/approval editor is separate.
+   * The caller is openTaskEdit(taskId), never a new platform header or route.
+   */
+  class GarmentTnaFollowupEditor {
+    static labels(language){
+      const copy={
+        en:['Update activity follow-up','Responsible party','Current target finish','Forecast finish','Follow-up note / reason','Save follow-up','No dates or approval are assumed. Save Now keeps a named copy.'],
+        bn:['কাজের ফলো-আপ আপডেট','দায়িত্বপ্রাপ্ত পক্ষ','বর্তমান লক্ষ্য সমাপ্তি','পূর্বাভাস সমাপ্তি','ফলো-আপ মন্তব্য / কারণ','ফলো-আপ সেভ','তারিখ বা অনুমোদন অনুমান করা হয় না।'],
+        hi:['कार्य फॉलो-अप अपडेट','जिम्मेदार पक्ष','वर्तमान लक्ष्य समाप्ति','अनुमानित समाप्ति','फॉलो-अप टिप्पणी / कारण','फॉलो-अप सेव करें','तारीख और अनुमोदन का अनुमान नहीं लगाया जाता।'],
+        ta:['செயல்பாடு தொடர்ச்சி புதுப்பிப்பு','பொறுப்பான தரப்பு','தற்போதைய இலக்கு முடிவு','எதிர்பார்க்கும் முடிவு','தொடர்ச்சி குறிப்பு / காரணம்','தொடர்ச்சியைச் சேமி','தேதி அல்லது ஒப்புதலை ஊகிக்க மாட்டோம்.']
+      };
+      return copy[language]||copy.en;
+    }
+    /** Renders a second, independent form; existing approval/status form stays intact. */
+    static render(task,language){
+      const words=this.labels(language);
+      return '<section class="tna-followup-editor" aria-label="'+esc(words[0])+'">'+
+        '<h3>'+esc(words[0])+'</h3>'+
+        '<form class="tna-wizard" id="tnaFollowupEdit">'+
+          '<div class="tna-form-grid">'+
+            field('ownerParty',words[1],'text',task.ownerParty||'',true)+
+            field('currentTargetFinish',words[2],'date',task.dates?.currentTargetFinish||'')+
+            field('forecastFinish',words[3],'date',task.dates?.forecastFinish||'')+
+          '</div>'+
+          '<label class="tna-wide"><span>'+esc(words[4])+' *</span><textarea name="note" rows="3" maxlength="800" required></textarea></label>'+
+          '<p class="tna-note">'+esc(words[6])+'</p>'+
+          '<p role="alert" data-tna-followup-error></p>'+
+          '<button class="tna-btn" type="submit">'+esc(words[5])+'</button>'+
+        '</form></section>';
+    }
+
+    /**
+     * Saves validated local records, preserving the existing status editor.
+     * On storage failure the dialog remains open and the active plan is unchanged.
+     */
+    static bind(taskId){
+      const form=document.getElementById('tnaFollowupEdit');
+      if(!form)return;
+      form.onsubmit=event=>{
+        event.preventDefault();
+        const values=Object.fromEntries(new FormData(form).entries());
+        const result=domain.updateTaskFollowup(state.currentPlan,taskId,values,{actorId:userKey()});
+        const error=form.querySelector('[data-tna-followup-error]');
+        if(!result.ok){error.textContent=result.error;return;}
+        try{
+          if(state.currentPlan.mode!=='practice'){
+            if(!storage?.autosave)throw new Error('Local save unavailable');
+            storage.autosave(result.plan,userKey());
+            if(currentPlanSaved(state.currentPlan))storage.savePlan(result.plan,userKey());
+          }
+        }catch{
+          error.textContent='Could not save this update in the browser. Check available storage and retry.';
+          return;
+        }
+        state.currentPlan=result.plan;
+        state.dialog.close();render();
+      };
+    }
+
+  }
+  function openTaskEdit(taskId){if(!state.currentPlan)return openDialog('Edit Activity','<p>Create or open a TNA draft before editing activities.</p>');const task=state.currentPlan.tasks.find(item=>item.taskId===taskId);if(!task)return openDialog('Edit Activity','<p>Activity not found in this draft.</p>');openDialog('Edit Activity',`<form class="tna-wizard" id="tnaTaskEdit"><p><b>${esc(task.templateRef)}</b> · ${esc(task.title)}</p><div class="tna-form-grid">${selectField('nextStatus','Status',domain.STATUSES.map(status=>[status,status]),task.status)}${field('actualDate','Actual finish date','date')}${field('evidenceRef','Evidence reference')}${field('reason','Reason / note')}</div><p class="tna-note">Choose Completed only with the actual finish date, Approved only with evidence, and Waived only with a reason. The original approved plan stays unchanged.</p><button class="tna-btn" type="submit">Save activity edit</button></form>${GarmentTnaFollowupEditor.render(task,state.language)}`);document.getElementById('tnaTaskEdit').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());const result=domain.updateTaskStatus(state.currentPlan,taskId,data.nextStatus,{actualDate:data.actualDate,evidenceRef:data.evidenceRef,reason:data.reason,actorId:userKey()});if(result.ok){state.currentPlan=result.plan;if(storage)storage.autosave(state.currentPlan,userKey());state.dialog.close();render();}else openDialog('Edit Activity',`<p>${esc(result.error)}</p>`);};GarmentTnaFollowupEditor.bind(taskId);}
   function openCustomTask(){if(!state.currentPlan)return openDialog('Add Activity',`<p>Create a draft TNA first, then add custom checkpoints to that draft.</p>`);
     openDialog('Add Activity',`<form class="tna-wizard" id="tnaCustomTask"><div class="tna-form-grid">${field('title','Activity title','text','',true)}${selectField('stageCode','Stage',Object.entries(domain.STAGE_LABELS).map(([k,v])=>[k,`${k} · ${v}`]),'O')}${field('ownerParty','Owner party','text','merchant')}${field('durationUnits','Duration units','number','0')}</div><p class="tna-note">Custom activities are added as optional draft checkpoints with audit history. They do not change baseline snapshots silently.</p><button class="tna-btn" type="submit">Add Activity</button></form>`);
     document.getElementById('tnaCustomTask').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());const result=domain.addCustomTask(state.currentPlan,data,{actorId:globalThis.VesaAuth?.userKey?.()||'local-browser-user'});if(result.ok){state.currentPlan=result.plan;state.dialog.close();render();}else openDialog('Add Activity',`<p>${esc(result.error||(result.errors||[]).join(', '))}</p>`);};
