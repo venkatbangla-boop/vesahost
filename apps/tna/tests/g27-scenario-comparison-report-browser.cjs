@@ -16,7 +16,7 @@ function fixture(){
   {ownerUserId:session.userKey});
  plan.order.commercialNotes='PRIVATE-SCENARIO-FOB';
  plan.commitments.masterLcProofRef='PRIVATE-SCENARIO-LC';
- const task=plan.tasks.find(x=>x.durationUnits>3);
+ const task=plan.tasks.find(x=>x.durationUnits>2);
  assert.ok(task);
  task.title='PRIVATE-SCENARIO-ACTOR-REMARK';
  return {plan,task};
