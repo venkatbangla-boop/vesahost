@@ -3,6 +3,7 @@
   const SUPPORTED_LANGUAGES=['en','bn','hi','ta'];
   const BRAND='VESA Enterprise Inc.';
   const criticalReport=root.VesaTnaCriticalPath||(typeof require==='function'?require('./critical-path-report.js'):null);
+  const weeklyReport=root.VesaTnaWeeklyReport||(typeof require==='function'?require('./weekly-report.js'):null);
   const REPORT_TYPES=[
     ['R01','masterTna','factoryAgent','Order, stages, activities, dates, owners, status, dependencies and revision.'],
     ['R02','buyerTna','buyerBrand','Buyer-facing milestones, required buyer actions, forecast and verified targets.'],
@@ -343,12 +344,23 @@
     const buyer=report[0]==='R02'?buyerProjection(plan,l):null;
     const daily=report[0]==='R03'?factoryDailyProjection(plan,l,options.asOfDate||''):null;
     const critical=report[0]==='R04'?criticalReport?.project(plan,{language:l,review:options.criticalReview}):null;
+    // R05 receives only canonical buyer-safe milestones plus bounded allowlisted
+    // production references; edited source titles, LC and proof details stay private.
+    const weekly=report[0]==='R05'?weeklyReport?.project(plan,{
+      language:l,weekStart:options.weekStart,weekEnd:options.weekEnd,
+      reviewDate:options.reviewDate,recoveryConfirmations:options.recoveryConfirmations,
+      buyerMilestones:buyerProjection(plan,l).milestones,
+      statusFor:status=>Object.hasOwn(BUYER_STATUS,status)?BUYER_STATUS[status][langIndex[l]]:BUYER_WORDS[l].unknown
+    }):null;
     const order=orderContext(plan);
-    if(buyer)order.factory=buyer.labels.unknown; // no internal factory identity on buyer exports
+    if(buyer||weekly)order.factory=buyer?.labels.unknown||weekly.labels.unknown; // no internal factory identity
     const tasks=critical?critical.rows.map(row=>({ref:row.ref,title:row.title,owner:row.owner||'',
       status:row.status,baseline:'',current:row.lateFinish||'',forecast:row.earlyFinish||'',
       actual:'',risk:'needs-information'})):daily?daily.rows.map(row=>({ref:row.ref,title:row.activity,owner:row.department||'',
       status:row.status,baseline:row.original||'',current:row.revised||'',forecast:row.forecast||'',
+      actual:row.actual||'',risk:'needs-information'})):weekly?weekly.rows.map(row=>({
+      ref:row.ref,title:row.title,owner:'',status:row.statusId,
+      baseline:row.original||'',current:row.revised||'',forecast:row.forecast||'',
       actual:row.actual||'',risk:'needs-information'})):buyer?buyer.milestones.map(row=>({
       ref:row.ref,title:row.title,owner:'',status:row.statusId,
       baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',
@@ -360,14 +372,16 @@
       timezone:options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local',
       revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,
       headings:I18N[l].headings,labels:I18N[l].labels,order,tasks,
-      warnings:critical?[...critical.missingInputs,...critical.unsupported,...critical.warnings]:daily?daily.warnings:buyer?buyer.gaps:warnings(plan),
+      warnings:critical?[...critical.missingInputs,...critical.unsupported,...critical.warnings]:weekly?weekly.warnings:daily?daily.warnings:buyer?buyer.gaps:warnings(plan),
       notes:[I18N[l].labels.noFabrication,...(buyer?[buyer.sourceDisclosure]:[]),
+        ...(weekly?[weekly.labels.source,weekly.labels.recoveryNotice]:[]),
         ...(critical?[critical.labels.model]:[]),
         I18N[l].labels.printFallback,I18N[l].labels.shareFallback],
       masterSheet:report[0]==='R01'?garmentMasterSheet(plan,l,options):null,
       ...(buyer?{buyerTna:buyer}:{}),
       ...(daily?{factoryDaily:daily}:{}),
       ...(critical?{criticalPath:critical}:{}),
+      ...(weekly?{weeklyTna:weekly}:{}),
       source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}};
   }
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}

@@ -151,7 +151,7 @@ test('genuine Excel R03 workbook uses typed review/target dates, correct section
  }
  assert.equal(JSON.stringify(p),before);
 });
-test('R01 factory, R02 buyer, R05-R12 and portable storage stay unchanged',()=>{
+test('R01 factory, R02 buyer, R06-R12 and portable storage stay unchanged',()=>{
  const p=source(),old=JSON.stringify(p);
  const r01=reports.buildReportModel(p,{reportId:'R01'});
  const r02=reports.buildReportModel(p,{reportId:'R02'});
@@ -163,7 +163,7 @@ test('R01 factory, R02 buyer, R05-R12 and portable storage stay unchanged',()=>{
   ['Report Summary','Order Summary','Report Activities','Master TNA','Report Notes']);
  assert.deepEqual(XLSX.read(storage.exportReportWorkbook(r02),{type:'buffer'}).SheetNames,
   ['Report Summary','Order Summary','Report Activities','Buyer Milestones','Buyer Actions','Report Notes']);
- for(const id of reports.catalogue('en').map(x=>x.id).filter(x=>!['R01','R02','R03','R04'].includes(x))){
+ for(const id of reports.catalogue('en').map(x=>x.id).filter(x=>!['R01','R02','R03','R04','R05'].includes(x))){
   const m=reports.buildReportModel(p,{reportId:id});
   assert.equal(m.tasks.length,p.tasks.length,id);
   assert.equal(m.factoryDaily,undefined,id);

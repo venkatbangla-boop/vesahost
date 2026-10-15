@@ -63,6 +63,8 @@
       throw new Error(model.factoryDaily?.labels?.selectDate||'Select a valid review date before downloading this report.');
     if(model.reportId==='R04'&&!model.criticalPath?.ready)
       throw new Error(model.criticalPath?.labels?.controls||'Review the critical-path source assumptions before downloading.');
+    if(model.reportId==='R05'&&!model.weeklyTna?.ready)
+      throw new Error(model.weeklyTna?.labels?.selectDates||'Select the weekly report dates before downloading.');
     const workbook=XLSX.utils.book_new();
     const addSheet=(name,rows,widths,filter=false)=>{
       const sheet=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
@@ -218,6 +220,43 @@
         [cell(t.week),cell(cpm.workingWeek)]);
       workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(metaRows,{dateNF:'yyyy-mm-dd'});
       workbook.Sheets['Report Summary']['!cols']=[{wch:28},{wch:98}];
+    }
+    // R05: strictly buyer-safe, reviewed weekly sections. A source recovery
+    // note is never automatically labelled as an agreement; the report model
+    // exposes only separately attested safe wording, not raw source remarks.
+    if(model.reportId==='R05'){
+      const weekly=model.weeklyTna,words=weekly.labels;
+      const show=value=>safeCell(value==null||value===''?words.unknown:value);
+      const typedDate=value=>value==null||value===''?show(words.unknown):dateCell(value);
+      const headings=[words.weekStart,words.ref,words.activity,words.status,
+        words.original,words.revised,words.forecast,words.actual,words.due,words.action];
+      const actionRows=[headings];
+      for(const key of ['completed','missed','nextWeek','approvals']){
+        const rows=weekly.sections[key]||[];
+        if(!rows.length){actionRows.push([show(words[key]),show(words.noRows)]);continue;}
+        for(const row of rows)actionRows.push([
+          show(words[key]),show(row.ref),show(row.title),show(row.status),
+          typedDate(row.original),typedDate(row.revised),
+          typedDate(row.forecast),typedDate(row.actual),typedDate(row.due),
+          show(row.request)
+        ]);
+      }
+      addSheet('Weekly TNA',actionRows,[31,15,50,24,19,19,19,19,19,56],true);
+      const recoveryRows=[[words.ref,words.activity,words.action,
+        words.agreementDate,words.authority,words.source],
+        ...(weekly.sections.recoveries.length?weekly.sections.recoveries.map(row=>[
+          show(row.ref),show(row.title),show(row.publicAction),typedDate(row.agreementDate),
+          show(row.confirmedBy),show(row.evidenceRecorded)
+        ]):[[show(words.noRows)]])];
+      addSheet('Confirmed Recovery',recoveryRows,[15,50,72,21,37,70],true);
+      const summary=workbook.Sheets['Report Summary'];
+      const summaryRows=XLSX.utils.sheet_to_json(summary,{header:1,raw:true});
+      summaryRows.push([show(words.weekStart),typedDate(weekly.weekStart)],
+        [show(words.weekEnd),typedDate(weekly.weekEnd)],
+        [show(words.reviewDate),typedDate(weekly.reviewDate)],
+        [show(words.missing),numberCell(weekly.missingDueCount)]);
+      workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(summaryRows,{dateNF:'yyyy-mm-dd'});
+      workbook.Sheets['Report Summary']['!cols']=[{wch:31},{wch:100}];
     }
     if(model.reportId==='R01'&&model.masterSheet){
       const l=model.masterSheet.labels||{};

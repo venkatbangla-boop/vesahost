@@ -29,6 +29,7 @@ for (const lang of ['en', 'bn', 'hi', 'ta']) {
   const seen = new Set();
   for (const item of catalogue) {
     const model = reports.buildReportModel(plan, { reportId: item.id, asOfDate: item.id==='R03'?'2026-10-10':undefined,
+      ...(item.id==='R05'?{weekStart:'2026-10-05',weekEnd:'2026-10-11',reviewDate:'2026-10-10'}:{}),
       criticalReview:item.id==='R04'?{startAnchor:'orderConfirmedOn',weekKey:'mon-fri',exceptionDates:'',calendarConfirmed:true,
         durationsReviewed:true,dependenciesReviewed:true,endpointReviewed:true}:undefined,
       language: lang, generatedAt: '2026-10-10T07:10:00.000Z', timezone: 'Asia/Dhaka' });
@@ -36,7 +37,7 @@ for (const lang of ['en', 'bn', 'hi', 'ta']) {
     assert(model.schema === 'VESA-TNA-REPORT-1', `G07 ${lang} ${item.id} should use the report schema.`);
     assert(model.generatedLabel && model.timezone === 'Asia/Dhaka', `G07 ${lang} ${item.id} should preserve generated date/timezone metadata.`);
     assert(model.order.buyer === 'Buyer Report' && model.order.style === 'STYLE-RPT', `G07 ${lang} ${item.id} must not translate typed buyer/style values.`);
-    assert(item.id === 'R02' ? model.tasks.length <= plan.tasks.length && !!model.buyerTna : item.id==='R03' ? model.tasks.length <= plan.tasks.length && !!model.factoryDaily?.ready : item.id==='R04' ? model.tasks.length <= plan.tasks.length && !!model.criticalPath?.ready : model.tasks.length === plan.tasks.length, `G07 ${lang} ${item.id} must respect its approved audience scope.`);
+    assert(item.id === 'R02' ? model.tasks.length <= plan.tasks.length && !!model.buyerTna : item.id==='R03' ? model.tasks.length <= plan.tasks.length && !!model.factoryDaily?.ready : item.id==='R04' ? model.tasks.length <= plan.tasks.length && !!model.criticalPath?.ready : item.id==='R05' ? model.tasks.length <= plan.tasks.length && !!model.weeklyTna?.ready : model.tasks.length === plan.tasks.length, `G07 ${lang} ${item.id} must respect its approved audience scope.`);
     assert(model.labels.noFabrication && model.labels.shareFallback && model.labels.printFallback, `G07 ${lang} ${item.id} should include report fallback notes.`);
     assert(model.tasks.every(task => ['not-started','in-progress','blocked','submitted','approved','rejected','completed','waived','not-applicable'].includes(task.status)), `G07 ${lang} ${item.id} must preserve stable status IDs.`);
     const jsonExport = JSON.stringify(model, null, 2);
@@ -68,8 +69,8 @@ for (const model of [bnModel, taModel]) {
 }
 
 for (const fragment of [
-  './assets/tna.css?v=0.11.5',
-  './src/reports.js?v=0.10.0',
+  './assets/tna.css?v=0.11.6',
+  './src/reports.js?v=0.11.0',
   './src/storage.js?v=0.12.0',
   './src/bootstrap.js',
   "'./apps/tna/src/reports.js'",

@@ -557,6 +557,45 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       '<p>'+esc(t.none)+'</p>';
     return html+'</section>';
   }
+  /**
+   * R05 preview consumes only the buyer-filtered, source-reported weekly model.
+   * Never copy source task titles, factory/LC comments or recovery text here.
+   */
+  function weeklyReportPreview(data){
+    const t=data.labels,cell=value=>esc(value===null||value===undefined||value===''?t.unknown:value);
+    let html='<section class="tna-report-weekly" aria-label="'+esc(t.weekStart)+'">';
+    if(!data.ready)return html+'<p role="status" class="tna-note">'+esc(data.warnings.join(' · '))+'</p></section>';
+    html+='<div class="tna-report-weekly-dates">'+[
+      [t.weekStart,data.weekStart],[t.weekEnd,data.weekEnd],[t.reviewDate,data.reviewDate]
+    ].map(([label,value])=>'<span><b>'+esc(label)+':</b> '+cell(value)+'</span>').join('')+'</div>';
+    html+='<p class="tna-note">'+esc(t.source)+' '+esc(t.calendar)+' '+esc(t.recoveryNotice)+'</p>';
+    for(const key of ['completed','missed','nextWeek','approvals','recoveries']){
+      const rows=data.sections[key]||[];
+      html+='<section class="tna-report-weekly-section" data-weekly-group="'+esc(key)+'">';
+      html+='<h3>'+esc(t[key])+' · '+rows.length+'</h3>';
+      if(!rows.length)html+='<p>'+esc(t.noRows)+'</p>';
+      else{
+        const parts=key==='recoveries'?[
+          {head:[t.ref,t.activity,t.action,t.agreementDate,t.authority,t.source],
+           values:r=>[r.ref,r.title,r.publicAction,r.agreementDate,r.confirmedBy,r.evidenceRecorded]}
+        ]:[
+          {head:[t.ref,t.activity,t.original,t.revised,t.forecast,t.actual,t.due],
+           values:r=>[r.ref,r.title,r.original,r.revised,r.forecast,r.actual,r.due]},
+          {head:[t.ref,t.status,t.action],
+           values:r=>[r.ref,r.status,r.request]}
+        ];
+        for(const [index,part] of parts.entries()){
+          html+='<div class="tna-report-weekly-scroll"><table class="tna-report-weekly-table" data-weekly-part="'+(index+1)+'"><thead><tr>'+
+            part.head.map(h=>'<th scope="col">'+esc(h)+'</th>').join('')+'</tr></thead><tbody>';
+          html+=rows.map(row=>'<tr>'+part.values(row).map(value=>'<td>'+cell(value)+'</td>').join('')+'</tr>').join('');
+          html+='</tbody></table></div>';
+        }
+      }
+      html+='</section>';
+    }
+    html+='<p class="tna-note">'+esc(t.asOf)+'</p></section>';
+    return html;
+  }
   function reportPreviewHtml(model){
     const order=model.order;
     let html='<article class="tna-report-preview"><h2>'+esc(model.title)+'</h2>';
@@ -564,12 +603,13 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     html+='<p>'+esc(model.labels.generated)+': '+esc(model.generatedLabel)+' · '+esc(model.labels.timezone)+': '+esc(model.timezone)+' · '+esc(model.labels.revision)+': '+esc(model.revision)+'</p>';
     html+='<h3>'+esc(model.headings.order)+'</h3><div class="tna-report-grid">';
     html+=[
-      [model.labels.buyer,order.buyer],...(model.buyerTna?[]:[[model.labels.factory,order.factory]]),
+      [model.labels.buyer,order.buyer],...(model.buyerTna||model.weeklyTna?[]:[[model.labels.factory,order.factory]]),
       [model.labels.style,order.style],[model.labels.po,order.po],
       [model.labels.quantity,String(order.quantity)+' '+String(order.unit)],
       [model.labels.required,order.requiredExFactory]
     ].map(([label,value])=>'<span>'+esc(label)+': '+esc(value)+'</span>').join('')+'</div>';
     if(model.criticalPath)html+=criticalReportPreview(model.criticalPath);
+    else if(model.weeklyTna)html+=weeklyReportPreview(model.weeklyTna);
     else if(model.factoryDaily)html+=dailyReportPreview(model.factoryDaily);
     else if(model.buyerTna)html+=buyerReportPreview(model.buyerTna);
     else if(model.masterSheet)html+=masterReportPreview(model);
@@ -589,6 +629,23 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const first=reports.catalogue(state.language)[0];
     const dailyWords=reportModel('R03').factoryDaily.labels;
     const cpWords=reportModel('R04').criticalPath.labels;
+    const weekWords=globalThis.VesaTnaWeeklyReport?.WORDS?.[state.language]||
+      globalThis.VesaTnaWeeklyReport?.WORDS?.en;
+    // Only canonical outward milestones may appear as recovery references.
+    // Internal recoveryAction content NEVER populates a report input.
+    const safeNames=new Map(reportModel('R02').buyerTna.milestones.map(row=>[row.ref,row.title]));
+    const extra=globalThis.VesaTnaWeeklyReport?.EXTRA||{};
+    const langIx={en:0,bn:1,hi:2,ta:3}[state.language]??0;
+    const reviewable=[];
+    const usedRefs=new Set();
+    for(const task of state.currentPlan.tasks||[]){
+      const ref=String(task.templateRef||'');
+      if(usedRefs.has(ref)||typeof task.recoveryAction!=='string'||!task.recoveryAction.trim())continue;
+      const safeTitle=safeNames.get(ref)||extra[ref]?.[langIx];
+      if(!safeTitle)continue;
+      usedRefs.add(ref);
+      reviewable.push({ref,title:safeTitle});
+    }
     const starts=[['',cpWords.noStart],...[
       ['orderConfirmedOn',state.currentPlan.commitments?.orderConfirmedOn,cpWords.first],
       ['poReceivedOn',state.currentPlan.commitments?.poReceivedOn,cpWords.second]
@@ -610,12 +667,35 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       check('criticalDependenciesReviewed',cpWords.confirmEdges)+
       check('criticalEndpointReviewed',cpWords.confirmEndpoint)+
       '</div><p class="tna-note">'+esc(cpWords.allSupported)+'</p></fieldset>';
+    const weeklyControls='<fieldset id="tnaWeeklyReviewWrap" class="tna-wide tna-weekly-review" hidden>'+
+      '<legend>'+esc(weekWords.weekStart)+' / '+esc(weekWords.weekEnd)+'</legend>'+
+      '<div class="tna-form-grid">'+
+      '<label><span>'+esc(weekWords.weekStart)+'</span><input id="tnaReportWeekStart" type="date" aria-required="true"></label>'+
+      '<label><span>'+esc(weekWords.weekEnd)+'</span><input id="tnaReportWeekEnd" type="date" aria-required="true"></label>'+
+      '<label><span>'+esc(weekWords.reviewDate)+'</span><input id="tnaReportReviewDate" type="date" aria-required="true"></label>'+
+      '</div><p class="tna-note">'+esc(weekWords.selectDates)+' '+esc(weekWords.recoveryNotice)+'</p>'+
+      reviewable.map(row=>
+        '<details class="tna-weekly-confirmation" data-weekly-recovery-ref="'+esc(row.ref)+'">'+
+        '<summary>'+esc(row.ref)+' · '+esc(row.title)+'</summary>'+
+        '<div class="tna-form-grid">'+
+        '<label class="tna-wide tna-cpm-checkbox"><input name="shareApproved" type="checkbox">'+
+        '<span>'+esc(weekWords.shareLabel)+'</span></label>'+
+        '<label class="tna-wide"><span>'+esc(weekWords.action)+'</span>'+
+        '<input name="publicAction" maxlength="240" autocomplete="off"></label>'+
+        '<label><span>'+esc(weekWords.authority)+'</span>'+
+        '<input name="confirmedBy" maxlength="120" autocomplete="off"></label>'+
+        '<label><span>'+esc(weekWords.agreementDate)+'</span>'+
+        '<input name="agreedOn" type="date"></label>'+
+        '<label class="tna-wide"><span>'+esc(weekWords.sourceRef)+'</span>'+
+        '<input name="evidenceRef" maxlength="180" autocomplete="off"></label>'+
+        '</div></details>').join('')+
+      '</fieldset>';
     openDialog('Reports',
       '<div class="tna-form-grid">'+
       '<label><span>Report type</span><select id="tnaReportType">'+reportOptions()+'</select></label>'+
       '<label><span>Language</span><input readonly value="'+esc(state.language)+'"></label>'+
       '<label id="tnaReportAsOfWrap" hidden><span>'+esc(dailyWords.asOf)+'</span>'+
-      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+'</div>'+
+      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+weeklyControls+'</div>'+
       '<p id="tnaReportGate" role="status" aria-live="polite" class="tna-note"></p>'+
       '<div class="menu-grid">'+
       '<button class="tna-btn" type="button" data-report-action="preview">Preview report</button>'+
@@ -628,6 +708,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const review=document.getElementById('tnaReportAsOf');
     const reviewWrap=document.getElementById('tnaReportAsOfWrap');
     const criticalWrap=document.getElementById('tnaCriticalReviewWrap');
+    const weeklyWrap=document.getElementById('tnaWeeklyReviewWrap');
     const gate=document.getElementById('tnaReportGate');
     const criticalReview=()=>{
       const value=name=>criticalWrap.querySelector('[name="'+name+'"]')?.value||'';
@@ -641,14 +722,29 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
         dependenciesReviewed:checked('criticalDependenciesReviewed'),
         endpointReviewed:checked('criticalEndpointReviewed')};
     };
+    const weeklyReview=()=>{
+      const value=id=>weeklyWrap.querySelector('#'+id)?.value||'';
+      const recoveryConfirmations=[...weeklyWrap.querySelectorAll('[data-weekly-recovery-ref]')]
+        .filter(node=>node.querySelector('[name="shareApproved"]')?.checked).map(node=>{
+          const field=name=>node.querySelector('[name="'+name+'"]')?.value||'';
+          return {ref:node.dataset.weeklyRecoveryRef,shareApproved:true,
+            publicAction:field('publicAction'),confirmedBy:field('confirmedBy'),
+            agreedOn:field('agreedOn'),evidenceRef:field('evidenceRef')};
+        });
+      return {weekStart:value('tnaReportWeekStart'),weekEnd:value('tnaReportWeekEnd'),
+        reviewDate:value('tnaReportReviewDate'),recoveryConfirmations};
+    };
     const currentModel=()=>reportModel(type.value,
       type.value==='R03'?{asOfDate:review.value}:
-      type.value==='R04'?{criticalReview:criticalReview()}:{});
+      type.value==='R04'?{criticalReview:criticalReview()}:
+      type.value==='R05'?weeklyReview():{});
     const update=()=>{
       reviewWrap.hidden=type.value!=='R03';
       criticalWrap.hidden=type.value!=='R04';
+      weeklyWrap.hidden=type.value!=='R05';
       const model=currentModel();
       gate.textContent=model.factoryDaily&&!model.factoryDaily.ready?model.factoryDaily.labels.selectDate:
+        model.weeklyTna&&!model.weeklyTna.ready?model.weeklyTna.warnings.filter(w=>w===model.weeklyTna.labels.selectDates||w===model.weeklyTna.labels.badRecovery).join(' · '):
         model.criticalPath&&!model.criticalPath.ready?
           [...model.criticalPath.missingInputs,...model.criticalPath.unsupported].join(' · '):'';
       document.getElementById('tnaReportPreview').innerHTML=reportPreviewHtml(model);
@@ -662,11 +758,16 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       if(control.type==='checkbox'||control.tagName==='SELECT')return;
       control.addEventListener('input',update);
     });
+    weeklyWrap.querySelectorAll('input').forEach(control=>{
+      control.addEventListener('change',update);
+      if(control.type!=='checkbox')control.addEventListener('input',update);
+    });
     document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{
       const model=currentModel();
-      // R03 and R04 may never export or print a fabricated/unsupported model.
+      // R03, R04 and R05 may not export/print a missing source selection.
       if((model.factoryDaily&&!model.factoryDaily.ready)||
-        (model.criticalPath&&!model.criticalPath.ready))return update();
+        (model.criticalPath&&!model.criticalPath.ready)||
+        (model.weeklyTna&&!model.weeklyTna.ready))return update();
       if(btn.dataset.reportAction==='preview')return update();
       if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}
       if(btn.dataset.reportAction==='share')return openDialog('Share fallback',
