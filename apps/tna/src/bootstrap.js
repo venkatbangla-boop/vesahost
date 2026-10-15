@@ -455,6 +455,38 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     html+='<p class="tna-note">'+esc(master.evidenceStatus)+'</p>';
     return html+'</section>';
   }
+  // Buyer report preview must consume sanitized R02 model only, not the plan.
+  function buyerReportPreview(data){
+    const t=data.labels,cell=value=>esc(value==null||value===''?t.unknown:value);
+    const tables=[
+      {heads:[t.ref,t.milestone,t.original,t.current,t.forecast,t.actual],
+       cells:row=>[row.ref,row.title,row.original,row.current,row.forecast,row.actual]},
+      {heads:[t.ref,t.status,t.action,t.verification],
+       cells:row=>[row.ref,row.status,row.buyerAction,row.verification]}
+    ];
+    let html='<section class="tna-report-buyer" aria-label="'+esc(t.milestones)+'">';
+    html+='<h3>'+esc(t.milestones)+'</h3><p class="tna-note">'+esc(data.sourceDisclosure)+'</p>';
+    for(const [index,table] of tables.entries()){
+      html+='<div class="tna-report-buyer-scroll"><table class="tna-report-buyer-table" data-buyer-part="'+(index+1)+'"><thead><tr>'+
+        table.heads.map(h=>'<th scope="col">'+esc(h)+'</th>').join('')+'</tr></thead><tbody>';
+      for(const row of data.milestones)html+='<tr>'+table.cells(row).map(v=>'<td>'+cell(v)+'</td>').join('')+'</tr>';
+      if(!data.milestones.length)html+='<tr><td colspan="'+table.heads.length+'">'+esc(t.noMilestones)+'</td></tr>';
+      html+='</tbody></table></div>';
+    }
+    html+='<h3>'+esc(t.actions)+'</h3>';
+    if(data.actions.length){
+      html+='<div class="tna-report-buyer-scroll"><table class="tna-report-buyer-table"><thead><tr>'+
+        [t.ref,t.milestone,t.action,t.current].map(h=>'<th scope="col">'+esc(h)+'</th>').join('')+'</tr></thead><tbody>';
+      for(const action of data.actions)html+='<tr>'+[
+        action.ref,action.title,action.request,action.target
+      ].map(v=>'<td>'+cell(v)+'</td>').join('')+'</tr>';
+      html+='</tbody></table></div>';
+    }else html+='<p>'+esc(t.noActions)+'</p>';
+    html+='<div class="tna-report-grid">'+
+      '<span>'+esc(t.requested)+': '+cell(data.requestedExFactory)+'</span>'+
+      '<span>'+esc(t.confirmed)+': '+cell(data.buyerConfirmedTarget)+'</span></div></section>';
+    return html;
+  }
   function reportPreviewHtml(model){
     const order=model.order;
     let html='<article class="tna-report-preview"><h2>'+esc(model.title)+'</h2>';
@@ -462,12 +494,13 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     html+='<p>'+esc(model.labels.generated)+': '+esc(model.generatedLabel)+' · '+esc(model.labels.timezone)+': '+esc(model.timezone)+' · '+esc(model.labels.revision)+': '+esc(model.revision)+'</p>';
     html+='<h3>'+esc(model.headings.order)+'</h3><div class="tna-report-grid">';
     html+=[
-      [model.labels.buyer,order.buyer],[model.labels.factory,order.factory],
+      [model.labels.buyer,order.buyer],...(model.buyerTna?[]:[[model.labels.factory,order.factory]]),
       [model.labels.style,order.style],[model.labels.po,order.po],
       [model.labels.quantity,String(order.quantity)+' '+String(order.unit)],
       [model.labels.required,order.requiredExFactory]
     ].map(([label,value])=>'<span>'+esc(label)+': '+esc(value)+'</span>').join('')+'</div>';
-    if(model.masterSheet)html+=masterReportPreview(model);
+    if(model.buyerTna)html+=buyerReportPreview(model.buyerTna);
+    else if(model.masterSheet)html+=masterReportPreview(model);
     else{
       html+='<h3>'+esc(model.headings.tasks)+'</h3><div class="tna-task-table tna-report-table" role="table" aria-label="TNA report activity preview">';
       html+=(model.tasks||[]).map(task=>'<div role="row"><span>'+esc(task.ref)+'</span><span>'+esc(task.title)+'</span><span>'+esc(task.owner)+'</span><span>'+esc(task.status)+'</span><span>'+esc(task.forecast||task.actual||task.current||task.baseline||'Needs Information')+'</span></div>').join('')+'</div>';
