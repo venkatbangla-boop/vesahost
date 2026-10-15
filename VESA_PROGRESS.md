@@ -3,6 +3,13 @@
 ## Current Work portfolio queue and evidence-based resumption (2026-10-15)
 
 
+### 2026-10-15 — TNA rework accuracy correction (CONDITIONAL)
+
+Source commit `6b8b0286a9e3fb6d40265f402c70cd35bc097b21` changes only `apps/tna/src/bootstrap.js` column headings in EN/BN/HI/TA: displayed date fields are **finish dates** (current target or baseline fallback, forecast finish, actual finish); previously labeled “Remarks” was actually `task.delayReason`, now correctly called Delay reason. This prevents misleading business meaning without changing values, editing behavior, CPM, schema or storage. GitHub-connected file source checked; **runtime syntax, browser, CI, and PPM/AQL regressions NOT RUN**: local git checkout failed DNS resolution to github.com, and commit `e55ffdd90f5cd458bbc2d941ba996eecbdf87b46` has no associated PR-triggered workflow runs returned by the connector. No PASS or DEVELOPMENT VERIFIED claim. **Status ACTIVE / CONDITIONAL. NEXT ACTION:** obtain genuine runnable GitHub checkout or supported Work computer, execute syntax, browser 390/1280, saved-copy/Excel and cross-app regression, then add dedicated approval-source and remarks columns only with real domain mappings. Costing DEMO LIVE unchanged; next portfolio app Packing & Container 360.
+
+
+
+
 ### 2026-10-15 — TNA merchandising rework patch 2 (CONDITIONAL)
 
 On `feature/tna-merchandising-rework`, source commits `38d62acc5` and `9017257` add a nine-column, four-language-header activity sheet with sourced Planned/Forecast/Actual dates and mobile horizontal scrolling. Existing tasks/edit actions are preserved. Six direct GitHub-source invariants passed; **runtime, browser, Excel, saved-copy and PPM/AQL regressions not run**. No deployment or development-verification assertion. **NEXT ACTION:** perform real syntax/browser/regression proof on branch, then audit missing approval and precise delay/remarks data before any schema additions. Portfolio next remains Packing & Container 360.
