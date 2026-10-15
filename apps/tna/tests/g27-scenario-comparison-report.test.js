@@ -1,6 +1,7 @@
 /**
  * GMR-15 R12 source-backed same-revision scenario A/B report regression.
  * Synthetic knit/woven plans; real engine results, immutability and privacy.
+ * Duration fixture uses a recorded work task (>2 units) as in G08; never invents task data.
  */
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict');
