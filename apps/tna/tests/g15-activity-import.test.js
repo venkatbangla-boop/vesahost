@@ -87,7 +87,7 @@ test('unmatched, duplicate Excel and duplicate target mappings are all rejected'
   let out=reviewed(source).activityReview;
   assert.equal(out.ready,false);
   assert.equal(out.unmatched.length,1);
-  const mapping={3:'D05'};
+  const mapping={4:'D05'};
   out=reviewed(source,{rowBindings:mapping}).activityReview;
   assert.equal(out.ready,true,out.errors.join('; '));
   assert.equal(out.rows[2].sourceKey,'UNRELATED-REF');
