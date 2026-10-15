@@ -72,6 +72,12 @@ test('approved audience boundaries: R02-R12 omit internal garment/LC master proj
   const plan=example('knit');
   for(const {id} of reports.catalogue('en')){
     if(id==='R01')continue;
+    if(id==='R04'){
+      const notReady=reports.buildReportModel(plan,{reportId:id,language:'en'});
+      assert.equal(notReady.criticalPath.ready,false,'R04 cannot manufacture criticality from unreviewed actual source');
+      assert.throws(()=>storage.exportReportWorkbook(notReady),/Critical|review|source|CPM|R04/i);
+      continue;
+    }
     const model=reports.buildReportModel(plan,{reportId:id,language:'en',asOfDate:id==='R03'?'2026-10-15':undefined,generatedAt:'2026-10-15T08:00:00.000Z'});
     assert.equal(model.masterSheet,null,id+' must not gain internal master sheet');
     assert.ok(!JSON.stringify(model).includes('SOURCE-MASTER-LC-15'));
