@@ -23,7 +23,7 @@
     ta:{languageName:'தமிழ்',headings:{order:'ஆர்டர் விவரம்',dates:'தேதி காலங்கள்',tasks:'செயல்பாடுகள்',warnings:'டேட்டா குறை / கவனம்',actions:'ரிப்போர்ட் செயல்கள்',meta:'ரிப்போர்ட் தகவல்'},labels:{brand:BRAND,generated:'உருவாக்கப்பட்டது',timezone:'டைம்சோன்',audience:'பார்வையாளர்',revision:'ரிவிஷன்',baseline:'பேஸ்லைன் snapshots',buyer:'Buyer',factory:'Factory',style:'Style',po:'PO',quantity:'Quantity',status:'Status',owner:'Owner',forecast:'Forecast',required:'Required ex-factory',noFabrication:'approval, date, quantity, rate அல்லது shipment result எதுவும் உருவாக்கிப் போடப்படவில்லை. காலியான source data Needs Information ஆகவே இருக்கும்.',shareFallback:'Supported browser action இல்லையெனில் native share கிடையாது; report download அல்லது print செய்யவும்.',printFallback:'Verified local route-க்கு browser print பயன்படுத்தவும். Licensed local PDF renderer verify ஆகும் வரை dedicated PDF conditional ஆகும்.'},reports:{}}
   };
   const titleTranslations={
-    masterTna:['Master TNA','মাস্টার TNA','मास्टर TNA','மாஸ்டர் TNA'],buyerTna:['Buyer TNA','Buyer TNA','Buyer TNA','Buyer TNA'],factoryDailyAction:['Factory Daily Action','ফ্যাক্টরি দৈনিক কাজ','फैक्ट्री दैनिक कार्य','தொழிற்சாலை தினசரி செயல்கள்'],criticalPath:['Critical Path','Critical Path','Critical Path','Critical Path'],weeklyTna:['Weekly TNA','Weekly TNA','Weekly TNA','Weekly TNA'],delayRecovery:['Delay & Recovery','Delay & Recovery','Delay & Recovery','Delay & Recovery'],productionStatus:['Production Status','Production Status','Production Status','Production Status'],materialLc:['Material & LC','Material & LC','Material & LC','Material & LC'],shipmentReadiness:['Shipment Readiness','Shipment Readiness','Shipment Readiness','Shipment Readiness'],portfolioMultiPo:['Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO'],approvalHistory:['Approval History','Approval History','Approval History','Approval History'],scenarioComparison:['Scenario Comparison','Scenario Comparison','Scenario Comparison','Scenario Comparison']
+    masterTna:['Master TNA','মাস্টার TNA','मास्टर TNA','மாஸ்டர் TNA'],buyerTna:['Buyer TNA','Buyer TNA','Buyer TNA','Buyer TNA'],factoryDailyAction:['Factory Daily Action','ফ্যাক্টরি দৈনিক কাজ','फैक्ट्री दैनिक कार्य','தொழிற்சாலை தினசரி செயல்கள்'],criticalPath:['Critical Path','ক্রিটিকাল পাথ','क्रिटिकल पाथ','முக்கிய செயல்பாதை'],weeklyTna:['Weekly TNA','Weekly TNA','Weekly TNA','Weekly TNA'],delayRecovery:['Delay & Recovery','Delay & Recovery','Delay & Recovery','Delay & Recovery'],productionStatus:['Production Status','Production Status','Production Status','Production Status'],materialLc:['Material & LC','Material & LC','Material & LC','Material & LC'],shipmentReadiness:['Shipment Readiness','Shipment Readiness','Shipment Readiness','Shipment Readiness'],portfolioMultiPo:['Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO'],approvalHistory:['Approval History','Approval History','Approval History','Approval History'],scenarioComparison:['Scenario Comparison','Scenario Comparison','Scenario Comparison','Scenario Comparison']
   };
   const audienceTranslations={
     factoryAgent:['Factory + agent','Factory + agent','Factory + agent','Factory + agent'],buyerBrand:['Buyer / brand','Buyer / brand','Buyer / brand','Buyer / brand'],departments:['Departments','Departments','Departments','Departments'],management:['Management','Management','Management','Management'],buyerAgentFactory:['Buyer / agent / factory','Buyer / agent / factory','Buyer / agent / factory','Buyer / agent / factory'],productionBuyer:['Production / authorized buyer','Production / authorized buyer','Production / authorized buyer','Production / authorized buyer'],commercialSourcing:['Commercial / sourcing','Commercial / sourcing','Commercial / sourcing','Commercial / sourcing'],qualityShipping:['Quality / shipping','Quality / shipping','Quality / shipping','Quality / shipping'],managementAgent:['Management / agent','Management / agent','Management / agent','Management / agent'],buyerFactory:['Buyer / factory','Buyer / factory','Buyer / factory','Buyer / factory'],plannerManagement:['Planner / management','Planner / management','Planner / management','Planner / management']
@@ -176,10 +176,123 @@
 
   }
 
+  /**
+   * Owns the MANAGEMENT-ONLY R04 Critical Path projection, using the frozen
+   * VesaTnaScheduling engine verbatim. Access: buildReportModel(...,{reportId:'R04'}).
+   * Does not mutate orders, infer working-week/holiday inputs or promise delivery.
+   * It fails closed if any used factory calendar is not explicitly user-confirmed,
+   * if the project dates are absent/invalid, or if graph/duration proof is missing.
+   * Local user calendar confirmation is not independently verified factory evidence.
+   */
+  class TnaCriticalPathProjection {
+    /** Localized human-facing headings; source references and entered values remain unmodified. */
+    static labels(language){
+      const words={
+        en:{unknown:'Needs Information',title:'Critical Path — planning calculation',missing:'Required scheduling inputs are missing or invalid.',
+          noZero:'No zero or negative float controlling chain under this deadline.',noViolations:'No required-date violation in this dependency and calendar model.',asOf:'Scheduling start',required:'Required ex-factory',forecast:'Calculated finish',buffer:'Working-day difference (+late / −early)',
+          paths:'Controlling task chains (zero/negative float)',violations:'Required-date conflicts',
+          note:'A planning calculation based on locally entered calendar and task durations, not a buyer-approved delivery promise. Production capacity and approval release require separate evidence.',
+          labels:['Ref / Stage','Activity','Responsible','Early start','Early finish','Late finish','Total float','Free float','Critical','Status','Duration basis','Predecessors']},
+        bn:{unknown:'তথ্য প্রয়োজন',title:'ক্রিটিকাল পাথ — পরিকল্পনার হিসাব',missing:'সময়সূচির প্রয়োজনীয় তথ্য পাওয়া যায়নি।',
+          noZero:'এই নির্ধারিত তারিখে শূন্য বা ঋণাত্মক ফ্লোটের কাজ নেই।',noViolations:'লেখা সময়সূচিতে প্রয়োজনীয় তারিখের বাধা নেই।',asOf:'পরিকল্পনা শুরু',required:'প্রয়োজনীয় এক্স-ফ্যাক্টরি',forecast:'হিসাবের সমাপ্তি',buffer:'কর্মদিবসের পার্থক্য (+দেরি / −আগে)',
+          paths:'নিয়ন্ত্রণকারী কার্যক্রম',violations:'ডেলিভারি তারিখের বাধা',
+          note:'স্থানীয়ভাবে লেখা ক্যালেন্ডার ও কাজের সময় দিয়ে হিসাব। ক্রেতার অনুমোদিত ডেলিভারি প্রতিশ্রুতি নয়।',
+          labels:['নং / ধাপ','কার্যক্রম','দায়িত্ব','শুরু','শেষ','শেষ সীমা','মোট ফ্লোট','ফ্রি ফ্লোট','গুরুত্বপূর্ণ','অবস্থা','সময় ভিত্তি','আগের কাজ']},
+        hi:{unknown:'जानकारी चाहिए',title:'क्रिटिकल पाथ — योजना गणना',missing:'शेड्यूल बनाने के लिए जरूरी जानकारी नहीं है।',
+          noZero:'इस तारीख के लिए शून्य या ऋणात्मक फ्लोट श्रृंखला नहीं है।',noViolations:'दर्ज शेड्यूल में आवश्यक तारीख की बाधा नहीं है।',asOf:'योजना शुरू',required:'आवश्यक एक्स-फैक्ट्री',forecast:'गणना की समाप्ति',buffer:'कार्यदिवस अंतर (+देरी / −पहले)',
+          paths:'समय नियंत्रित करने वाली कार्य श्रृंखला',violations:'आवश्यक तारीख की बाधाएं',
+          note:'स्थानीय कैलेंडर और कार्य अवधि से गणना; खरीदार की मंजूर डिलीवरी गारंटी नहीं।',
+          labels:['क्रम / चरण','कार्य','जिम्मेदार','जल्दी शुरू','जल्दी समाप्ति','अंतिम समाप्ति','कुल फ्लोट','मुक्त फ्लोट','महत्वपूर्ण','स्थिति','अवधि आधार','पिछला कार्य']},
+        ta:{unknown:'தகவல் தேவை',title:'முக்கிய செயல்பாதை — திட்டக் கணக்கு',missing:'கணக்கிடத் தேவையான வேலைநாள் அல்லது தேதி தகவல் இல்லை.',
+          noZero:'இந்த முடிவுத் தேதியில் பூஜ்ஜியம் / எதிர்மறை மிதவை செயல்தொடர் இல்லை.',noViolations:'பதிந்த திட்டத்தில் தேதியை மீறும் முரண்பாடு இல்லை.',asOf:'திட்டத் தொடக்கம்',required:'தேவையான எக்ஸ்-ஃபேக்டரி',forecast:'கணிக்கப்பட்ட முடிவு',buffer:'வேலைநாள் வித்தியாசம் (+தாமதம் / −முன்னதாக)',
+          paths:'முடிவை நிர்ணயிக்கும் செயல்தொடர்',violations:'தேதி முரண்பாடுகள்',
+          note:'உள்ளூரில் பதிந்த calendar மற்றும் task duration அடிப்படையிலான திட்டக் கணக்கு; buyer ஒப்புதல் பெற்ற delivery உறுதி அல்ல.',
+          labels:['எண் / நிலை','செயல்','பொறுப்பு','முன் தொடக்கம்','முன் முடிவு','கடைசி முடிவு','மொத்த மிதவை','இடைவெளி மிதவை','முக்கியம்','நிலை','கால அளவு','முந்தைய செயல்']}
+      };
+      return words[language]||words.en;
+    }
+
+    /** A factory calendar must be explicitly sourced; synthetic fallbacks are prohibited. */
+    static checkedCalendar(calendar){
+      if(!calendar||calendar.source!=='user-confirmed'||!String(calendar.sourceReference||'').trim())return false;
+      const week=calendar.workingWeek;
+      if(!Array.isArray(week)||!week.length||new Set(week).size!==week.length||
+        week.some(day=>!Number.isInteger(day)||day<0||day>6))return false;
+      if(typeof calendar.timezone!=='string'||!calendar.timezone.trim())return false;
+      if(!Array.isArray(calendar.holidays)||!Array.isArray(calendar.shutdowns))return false;
+      try{new Intl.DateTimeFormat('en-US',{timeZone:calendar.timezone});}
+      catch{return false;}
+      const dates=[...(calendar.holidays||[]),...(calendar.shutdowns||[])];
+      return dates.every(day=>TnaMasterReportProjection.day(day)!==null);
+    }
+
+    /** Build a read-only management summary from the real engine, never an estimated fallback. */
+    static build(plan={},options={}){
+      const words=TnaCriticalPathProjection.labels(options.language);
+      const missing=[],errors=[],tasks=Array.isArray(plan.tasks)?plan.tasks:[];
+      const engine=root.VesaTnaScheduling||(typeof require==='function'?require('./scheduling.js'):null);
+      const startCandidates=[['orderConfirmedOn','Order confirmed'],['poReceivedOn','PO received']];
+      const startItem=startCandidates.find(([key])=>Boolean(plan.commitments?.[key]));
+      const startDate=startItem?plan.commitments[startItem[0]]:null;
+      const requiredDate=plan.commitments?.buyerRequiredExFactory||null;
+      if(!startItem||TnaMasterReportProjection.day(startDate)===null)missing.push('Valid order confirmed / PO received start date');
+      if(TnaMasterReportProjection.day(requiredDate)===null)missing.push('Valid buyer-required ex-factory date');
+      if(!tasks.length)missing.push('Garment TNA activities');
+      if(!Array.isArray(plan.edges))missing.push('Task dependency graph');
+      const calendars=Array.isArray(plan.calendars)?plan.calendars:[];
+      const usedIds=[...new Set(['default',...tasks.map(task=>task.calendarId||'default')])];
+      for(const task of tasks){
+        if(task.durationUnits===null||task.durationUnits===''||!Number.isFinite(Number(task.durationUnits))||Number(task.durationUnits)<0||!['working','calendar'].includes(task.durationBasis))missing.push('Valid duration and date basis for '+(task.templateRef||task.taskId));
+      }
+      for(const id of usedIds){
+        const calendar=calendars.find(item=>item.calendarId===id);
+        if(!TnaCriticalPathProjection.checkedCalendar(calendar))missing.push('User-confirmed working calendar for '+id);
+      }
+      if(!engine?.schedule)missing.push('Existing VESA scheduling engine');
+      const empty={schema:'VESA-TNA-CPM-1',audience:'management',validity:'incomplete',
+        planningStart:startDate,startSource:startItem?.[1]||null,requiredDate,forecastDate:null,
+        workingDaysEarlyOrLate:null,criticalPaths:[],rows:[],constraintViolations:[],
+        missingInputs:missing,errors,engineVersion:engine?.ENGINE_VERSION||null,labels:words,
+        calendarSource:'local user-entered / not independently verified'};
+      if(missing.length)return empty;
+      let calculated;
+      try{
+        const primary=calendars.find(item=>item.calendarId==='default')||calendars[0];
+        calculated=engine.schedule(tasks,plan.edges,{
+          calendar:primary,calendars,startDate,requiredDate,nearCriticalDays:0
+        });
+      }catch(error){
+        return {...empty,validity:'invalid',errors:[String(error?.message||'Scheduling calculation failed.')]};
+      }
+      if(calculated.validity!=='valid'){
+        return {...empty,validity:calculated.validity,missingInputs:[...missing,...(calculated.missingInputs||[])],
+          errors:calculated.errors||[],engineVersion:calculated.engineVersion||empty.engineVersion};
+      }
+      const refs=new Map(tasks.map(task=>[task.taskId,task.templateRef||'Needs Information']));
+      const rows=tasks.map(task=>{
+        const result=calculated.taskResults[task.taskId];
+        return {ref:task.templateRef||'—',stage:task.stage||words.unknown,
+          activity:task.title||words.unknown,owner:task.ownerParty||words.unknown,
+          earlyStart:result.earlyStart,earlyFinish:result.earlyFinish,
+          lateStart:result.lateStart,lateFinish:result.lateFinish,
+          totalFloat:result.floatDays,freeFloat:result.freeFloatDays,
+          isCritical:result.isCritical,taskDuration:task.durationUnits,
+          durationBasis:task.durationBasis||'working',status:task.status||words.unknown,
+          predecessors:result.blockingPredecessors.map(id=>refs.get(id)||words.unknown)};
+      });
+      const paths=(calculated.project.criticalPaths||[]).map(path=>path.map(id=>refs.get(id)||words.unknown));
+      return {...empty,validity:'valid',forecastDate:calculated.project.forecastDate,
+        workingDaysEarlyOrLate:calculated.project.workingDaysEarlyOrLate,
+        rows,criticalPaths:paths,constraintViolations:calculated.constraintViolations||[],
+        missingInputs:calculated.missingInputs||[],errors:calculated.errors||[],
+        engineVersion:calculated.engineVersion||empty.engineVersion};
+    }
+  }
+
   function taskRows(plan={},limit=Infinity){return (plan.tasks||[]).slice(0,limit).map(task=>({ref:task.templateRef,title:task.title,owner:task.ownerParty,status:task.status,baseline:task.dates?.baselineFinish||'',current:task.dates?.currentTargetFinish||'',forecast:task.dates?.forecastFinish||'',actual:task.dates?.actualFinish||'',risk:task.riskStatus||'needs-information'}))}
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local';const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),warnings:warnings(plan),notes:[I18N[l].labels.noFabrication,I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local';const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:warnings(plan),notes:[I18N[l].labels.noFabrication,I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;

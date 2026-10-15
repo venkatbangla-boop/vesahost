@@ -131,6 +131,49 @@ class TnaMerchandisingSheetBrowserProof {
       'The named TNA calendar must survive a full browser restart.');
   }
 
+  /**
+   * Real browser evidence for verified R04: only after the local user has
+   * recorded a factory calendar. The report never grants a buyer approval.
+   */
+  async verifyCriticalPathReport(){
+    const mobile=this.page.locator('[data-vesa-mobile-menu]');
+    if(await mobile.isVisible())await mobile.click();
+    await this.page.locator('[data-vesa-menu="Tools"]').click();
+    await this.page.locator('[data-menu-action="Prepare Report"]').click();
+    await this.page.locator('#tnaReportType').selectOption('R04');
+    await this.page.locator('.tna-cpm-print').waitFor();
+    const named=await this.page.evaluate(()=>JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan);
+    const report=await this.page.evaluate(()=>{
+      const plan=JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan;
+      return VesaTnaReports.buildReportModel(plan,{reportId:'R04',language:document.documentElement.lang});
+    });
+    assert.equal(report.criticalPath.validity,'valid','Only a confirmed calendar activates the R04 CPM calculation.');
+    assert.equal(await this.page.locator('.tna-cpm-table tbody tr').count(),named.tasks.length,
+      'R04 must include every underlying activity, not a truncated dashboard excerpt.');
+    assert.equal(await this.page.locator('.tna-cpm-table thead th').count(),10);
+    assert.deepEqual(report.criticalPath.rows.map(row=>row.ref),named.tasks.map(task=>task.templateRef));
+    const before=JSON.stringify(named);
+    await this.page.emulateMedia({media:'print'});
+    await this.page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const geometry=await this.page.locator('.tna-cpm-table').evaluate(table=>({
+      width:table.getBoundingClientRect().width,
+      limit:table.parentElement.getBoundingClientRect().width,
+      heading:getComputedStyle(table.tHead).display
+    }));
+    assert.ok(geometry.width<=geometry.limit+1,'R04 printed table must not overflow its page container.');
+    assert.equal(geometry.heading,'table-header-group','R04 print must repeat column headers.');
+    const folder=path.join(this.root,'output','playwright');
+    fs.mkdirSync(folder,{recursive:true});
+    const pdfPath=path.join(folder,'tna-r04-'+this.templateId+'.pdf');
+    await this.page.pdf({path:pdfPath,landscape:true,printBackground:true,preferCSSPageSize:true});
+    assert.equal(fs.readFileSync(pdfPath).subarray(0,5).toString(),'%PDF-','R04 must produce a real Chromium PDF.');
+    await this.page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    await this.page.emulateMedia({media:'screen'});
+    await this.page.locator('#tnaDialog .tna-dialog-head button').click();
+    const after=await this.page.evaluate(()=>JSON.stringify(JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan));
+    assert.equal(after,before,'R04 preview and print must be pure and preserve saved local orders.');
+  }
+
   /** Proves each supported language changes labels but never changes a saved business record. */
   async verifyLanguages() {
     const before=await this.page.evaluate(()=>localStorage.getItem('vesa.tna360.records.qa-vesaent-com'));
@@ -252,12 +295,14 @@ class TnaMerchandisingSheetBrowserProof {
       await this.start();
       await this.openSyntheticOrder('knit');
       await this.verifyFactoryCalendar();
+      await this.verifyCriticalPathReport();
       await this.verifyLanguages();
       await this.verifyResponsive();
       await this.verifyLastActivityEdit();
       await this.verifyFollowupEdit();
       await this.openSyntheticOrder('woven');
       await this.verifyFactoryCalendar();
+      await this.verifyCriticalPathReport();
       await this.verifyResponsive();
       await this.verifyFollowupEdit();
       assert.deepEqual(this.errors,[],'No uncaught browser exceptions');

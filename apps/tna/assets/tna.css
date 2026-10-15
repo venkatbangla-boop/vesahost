@@ -111,3 +111,29 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
 .tna-calendar-editor .tna-calendar-confirm{display:flex;align-items:flex-start;gap:8px;margin:12px 0;font-weight:650}
 .tna-calendar-editor textarea{max-width:100%}
 @media(max-width:650px){.tna-calendar-editor .tna-calendar-days{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* R04 management CPM: source-derived schedule with clear print and mobile overflow. */
+.tna-cpm-print,.tna-cpm-unavailable{min-width:0;max-width:100%}
+.tna-cpm-summary{display:flex;flex-wrap:wrap;gap:8px 16px;margin:12px 0}
+.tna-cpm-summary span{font-size:12px;max-width:100%;overflow-wrap:anywhere}
+.tna-cpm-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.tna-cpm-table{width:100%;min-width:980px;table-layout:fixed;border-collapse:collapse}
+.tna-cpm-table th,.tna-cpm-table td{padding:6px;border:1px solid var(--line,#d5deea);vertical-align:top;overflow-wrap:anywhere;white-space:normal;font-size:11px}
+.tna-cpm-table th{font-weight:800;text-align:left;background:var(--look-surface,#eef3f9)}
+.tna-cpm-table th:nth-child(1){width:8%}
+.tna-cpm-table th:nth-child(2){width:22%}
+.tna-cpm-table th:nth-child(3){width:12%}
+.tna-cpm-table th:nth-child(n+4):nth-child(-n+6){width:9%}
+.tna-cpm-table th:nth-child(n+7):nth-child(-n+9){width:7%}
+.tna-cpm-table th:nth-child(10){width:10%}
+.tna-cpm-table td small{display:block;color:var(--muted,#526176);font-size:10px}
+@media print{
+  body.tna-printing-report .tna-cpm-scroll{max-width:100%!important;overflow:visible!important}
+  body.tna-printing-report .tna-cpm-table{min-width:0!important;width:100%!important;table-layout:fixed!important}
+  body.tna-printing-report .tna-cpm-table thead{display:table-header-group!important}
+  body.tna-printing-report .tna-cpm-table tr{break-inside:avoid!important;page-break-inside:avoid!important}
+  body.tna-printing-report .tna-cpm-table th,
+  body.tna-printing-report .tna-cpm-table td{font-size:7pt!important;line-height:1.2!important;padding:2px 3px!important;background:#fff!important;color:#111!important;border:1px solid #999!important;overflow-wrap:anywhere!important}
+  body.tna-printing-report .tna-cpm-table td small{font-size:6pt!important;color:#333!important}
+  body.tna-printing-report .tna-cpm-summary span{color:#111!important}
+}
