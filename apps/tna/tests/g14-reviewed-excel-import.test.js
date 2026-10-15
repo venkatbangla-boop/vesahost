@@ -75,7 +75,8 @@ test('user chooses a worksheet, header row, data row and woven template explicit
  assert.equal(plan.calendars[0].source,'user-not-configured','no fabricated factory calendar');
 });
 test('dates never guessed: slash source needs a selected basis, invalid dates fail closed',()=>{
- const snap=importer.parseWorkbook(fixture([headers,[...baseRow.slice(0,5),'10/11/2026',...baseRow.slice(6)]]),'dates.xlsx');
+ const row=baseRow.slice();row[5]='10/11/2026';row[8]='';
+ const snap=importer.parseWorkbook(fixture([headers,row]),'dates.xlsx');
  assert.equal(review(snap).ready,false,'ISO cannot treat a slash date as ISO');
  const dmy=review(snap,'Orders',{dateFormat:'dmy'});
  const mdy=review(snap,'Orders',{dateFormat:'mdy'});
@@ -87,7 +88,8 @@ test('dates never guessed: slash source needs a selected basis, invalid dates fa
 test('actual Excel numeric date requires explicit Excel option, not implicit locale conversion',()=>{
  const serial=XLSX.SSF.parse_date_code(46324);
  assert.ok(serial?.y>2020);
- const book=fixture([headers,[...baseRow.slice(0,5),46324,...baseRow.slice(6)]]);
+ const row=baseRow.slice();row[5]=46324;row[8]='';
+ const book=fixture([headers,row]);
  const snap=importer.parseWorkbook(book,'numeric-dates.xlsx');
  assert.equal(review(snap).ready,false);
  const out=review(snap,'Orders',{dateFormat:'excel'});
