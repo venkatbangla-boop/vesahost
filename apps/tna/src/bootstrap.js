@@ -864,8 +864,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       reviewable.push({ref,title:safeTitle});
     }
     const starts=[['',cpWords.noStart],...[
-      ['orderConfirmedOn',state.currentPlan.commitments?.orderConfirmedOn,cpWords.first],
-      ['poReceivedOn',state.currentPlan.commitments?.poReceivedOn,cpWords.second]
+      ['orderConfirmedOn',state.currentPlan?.commitments?.orderConfirmedOn,cpWords.first],
+      ['poReceivedOn',state.currentPlan?.commitments?.poReceivedOn,cpWords.second]
     ].filter(([key,source])=>!!source).map(([key,source,label])=>[key,label+' · '+source])];
     const weekOptions=[['',cpWords.noWeek],...Object.entries(globalThis.VesaTnaCriticalPath?.WEEK||{}).map(([key,choice])=>[key,choice.title])];
     const optionsHtml=items=>items.map(([value,label])=>'<option value="'+esc(value)+'">'+esc(label)+'</option>').join('');
@@ -875,7 +875,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       '<div class="tna-form-grid">'+
       '<label><span>'+esc(cpWords.start)+'</span><select name="criticalStartAnchor">'+optionsHtml(starts)+'</select></label>'+
       '<label><span>'+esc(cpWords.required)+'</span><input readonly value="'+
-        esc(state.currentPlan.commitments?.buyerRequiredExFactory||cpWords.unknown)+'"></label>'+
+        esc(state.currentPlan?.commitments?.buyerRequiredExFactory||cpWords.unknown)+'"></label>'+
       '<label><span>'+esc(cpWords.week)+'</span><select name="criticalWeek">'+optionsHtml(weekOptions)+'</select></label>'+
       '<label><span>'+esc(cpWords.threshold)+'</span><input name="criticalThreshold" inputmode="numeric" type="number" min="0" max="60" step="1" placeholder="'+esc(cpWords.unknown)+'"></label>'+
       '<label class="tna-wide"><span>'+esc(cpWords.exceptions)+'</span><textarea name="criticalExceptions" rows="2" placeholder="YYYY-MM-DD"></textarea></label>'+
