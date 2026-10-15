@@ -2,6 +2,12 @@
 
 ## Current Work portfolio queue and evidence-based resumption (2026-10-15)
 
+### 2026-10-15 — TNA Activity Follow-up Editor VERIFIED (not whole TNA)
+
+**Active:** TNA Garment Merchandising Rework. **Development-verified patch SHA:** `b2616f102ce8a272eb90a039c04bc597f0f10faf`; [Actions 38751663266](https://github.com/venkatbangla-boop/vesahost/actions/runs/38751663266) SUCCESS with real TNA domain/scheduling/saved-copy/migrated legacy and R01 Excel parity, knit/woven Chromium, four languages, PPM/AQL baseline and shared-shell browser regressions. New validated local Follow-up editor changes responsible party, current target finish, forecast finish and recorded note without touching baseline/actual or approvals; imported 1.0 saved records remain editable and portable. No main/public release or additional services. **Whole rework status ACTIVE; targeted follow-up slice DEVELOPMENT VERIFIED.** Preserved earlier test failure run 38750629944 (stale named-record comparison fixed in later test). **NEXT ACTION:** repair the older Status Edit flow's named-record persistence on local save, prove record reopen in Chromium; do not mix restricted notes into buyer reports before an approved audience policy. Costing remains personal DEMO LIVE. Portfolio next Packing & Container 360.
+
+
+
 **CURRENT APPLICATION: TNA 360 GARMENT MERCHANDISING REWORK — ACTIVE.** Latest verified feature-branch UI patch `6498c8b`, authentic [CI PASS 38746595983](https://github.com/venkatbangla-boop/vesahost/actions/runs/38746595983). Costing 360 remains personal **DEMO LIVE**, not commercial release. **NEXT ACTION:** audit and implement separately validated editable activity follow-up values while preserving frozen baseline, schema compatibility, exports and approval provenance. Next queue Packing & Container 360.
 
 ### 2026-10-15 — TNA garment follow-up sheet and mobile cards — VERIFIED PATCH GROUP
