@@ -139,7 +139,7 @@
       const needsBuyer=task.waitingFor==='buyer'&&!['completed','approved','waived','not-applicable'].includes(key);
       const row={ref,title:BUYER_REFS[ref][i],original:validBuyerDay(d.baselineFinish),
         current:validBuyerDay(d.currentTargetFinish),forecast:validBuyerDay(d.forecastFinish),
-        actual:validBuyerDay(d.actualFinish),status:BUYER_STATUS[key][i],
+        actual:validBuyerDay(d.actualFinish),status:BUYER_STATUS[key][i],statusId:key,
         verification:proofRecorded?words.recorded:words.unverified,
         buyerAction:needsBuyer?words.followup:null};
       milestones.push(row);
@@ -202,7 +202,7 @@
     const order=orderContext(plan);
     if(buyer)order.factory=buyer.labels.unknown; // no internal factory identity on buyer exports
     const tasks=buyer?buyer.milestones.map(row=>({
-      ref:row.ref,title:row.title,owner:'',status:row.status,
+      ref:row.ref,title:row.title,owner:'',status:row.statusId,
       baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',
       actual:row.actual||'',risk:'needs-information'
     })):taskRows(plan);
