@@ -493,8 +493,9 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       const importer=globalThis.VesaTnaImportReview;
       if(!importer?.parseWorkbook)throw Error('Excel review is unavailable. The selected file was not saved.');
       const snapshot=importer.parseWorkbook(bytes,file.name);
+      const suggested=importer.suggestWorksheet(snapshot);
       state.importSession={snapshot,settings:{
-        sheetName:snapshot.sheetNames[0],headerRow:1,recordRow:2,dateFormat:'iso',
+        sheetName:suggested.name,headerRow:suggested.row,recordRow:suggested.row+1,dateFormat:'iso',
         basis:'calendar',templateId:'knit',mapping:null
       },reviewed:null};
       renderWorkbookMapping();
@@ -516,7 +517,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const mapFields=importer.FIELD_IDS.map(id=>{
       const choices=[[-1,t.missing||'Not mapped'],...details.headers.map((value,index)=>
         [index,(index+1)+': '+(value||'Unnamed column')])];
-      return '<label><span>'+esc(id.replace(/([A-Z])/g,' $1'))+'</span><select name="map-'+esc(id)+'">'+
+      return '<label><span>'+esc(t.fields?.[id]||id.replace(/([A-Z])/g,' $1'))+'</span><select name="map-'+esc(id)+'">'+
         htmlOptions(choices,setting.mapping[id]??-1)+'</select></label>';
     }).join('');
     const allRows=details.dataRows.map(item=>[item.line,'Row '+item.line+' · '+item.values.slice(0,6).join(' | ').slice(0,115)]);
@@ -524,7 +525,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       '<tr><th scope="row">'+esc(item.line)+'</th><td>'+item.values.map(x=>esc(String(x??''))).join(' | ')+'</td></tr>').join('');
     rootNode.innerHTML='<form id="tnaWorkbookMapping" class="tna-import-stage">'+
       '<h3>'+esc(t.title)+'</h3>'+
-      '<p class="tna-note">'+esc(t.warning)+'</p>'+
+      '<p class="tna-note">'+esc(t.warning)+'</p>'+ 
+      '<p class="tna-note">'+esc(t.rows)+': '+details.dataRows.length+'</p>'+
       '<div class="tna-form-grid">'+
       selectField('sheetName',t.sheet,snap.sheetNames.map(name=>[name,name]),setting.sheetName)+
       field('headerRow',t.header,'number',setting.headerRow,true)+
@@ -551,6 +553,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       session.reviewed=null;
       document.getElementById('tnaWorkbookDecision').innerHTML='';
       if(['sheetName','headerRow'].includes(event.target.name)){
+        if(event.target.name==='sheetName')session.settings.headerRow=importer.suggestHeaderRow(snap,session.settings.sheetName).row;
         session.settings.mapping=null;session.settings.recordRow='';
         renderWorkbookMapping();
       }
