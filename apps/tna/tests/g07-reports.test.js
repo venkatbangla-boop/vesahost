@@ -71,7 +71,7 @@ for (const model of [bnModel, taModel]) {
 for (const fragment of [
   './assets/tna.css?v=0.11.6',
   './src/reports.js?v=0.11.0',
-  './src/storage.js?v=0.12.0',
+  './src/storage.js?v=0.13.0',
   './src/bootstrap.js',
   "'./apps/tna/src/reports.js'",
   'const reports=globalThis.VesaTnaReports',
