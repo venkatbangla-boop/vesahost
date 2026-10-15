@@ -135,7 +135,7 @@ class TnaMerchandisingSheetBrowserProof {
   }
 
   async verifyFollowupEdit(){
-    const before=await this.page.evaluate(()=>JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan);
+    const before=await this.page.evaluate(()=>{const named=JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan;const draft=JSON.parse(localStorage.getItem('vesa.tna360.autosave.qa-vesaent-com')||'null')?.plan;return draft?.recordId===named.recordId?draft:named;});
     await this.page.locator('.tna-master-activities [data-edit-task]').last().click();
     const form=this.page.locator('#tnaFollowupEdit');
     await form.waitFor();
