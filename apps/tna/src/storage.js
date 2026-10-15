@@ -144,7 +144,7 @@
       const rowCells=row=>[
         txt(labels[row.group]),txt(row.ref),txt(row.activity),txt(row.department),
         dateCell(row.due),dateCell(row.original),dateCell(row.revised),
-        dateCell(row.forecast),dateCell(row.actual),txt(row.status),txt(row.waiting),
+        dateCell(row.forecast),dateCell(row.actual),txt(row.statusDisplay),txt(row.waiting),
         txt(row.reason),txt(row.followup),txt(row.recovery),txt(row.proof)
       ];
       const actions=[headers];
