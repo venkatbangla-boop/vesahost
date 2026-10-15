@@ -64,7 +64,7 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
-      - name: Real HTTP browser proof for garment sheet and older app routes
+      - name: Real Chromium new-draft Excel import, save/reopen and legacy app route proof
         run: |
           export CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
           mkdir -p output/playwright
