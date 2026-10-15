@@ -195,13 +195,138 @@
       evidenceStatus:'Source references are user-entered and not independently verified.'
     };
   }
+  /**
+   * GMR-06 R03 factory daily actions are a READ-ONLY civil-calendar projection.
+   * The operator MUST supply YYYY-MM-DD; browser clock/timezone never fills it.
+   * Source finish dates are not verified commitments or factory working days.
+   */
+  const DAILY_CLOSED=new Set(['approved','completed','waived','not-applicable']);
+  const DAILY_LABELS=Object.freeze({
+    en:{asOf:'Review as-of date',selectDate:'Select a valid as-of date before preparing this report.',
+      today:'Today',overdue:'Overdue',nextSeven:'Next 7 days',needsDate:'Needs Information — missing date',
+      group:'Action window',ref:'Ref',activity:'Activity',department:'Responsible department',
+      target:'Due / target',original:'Original plan',revised:'Revised target',forecast:'Recorded forecast',
+      actual:'Actual finish',status:'Recorded status',waiting:'Waiting for',reason:'Recorded delay reason',
+      followup:'Follow-up',recovery:'Recovery action',proof:'Evidence references',
+      noActions:'No source-recorded actions in this section.',unknown:'Needs Information',
+      source:'Source-entered details; owners, dates, evidence and approvals are not independently verified.',
+      calendar:'Calendar-day windows only; factory holidays, shifts and capacity were not verified.',
+      count:'Undated open activities',missingOwner:'Open activities without a recorded owner',
+      dueMeaning:'An explicitly recorded revised finish takes precedence over original planned finish.',
+      invalid:'An invalid source date cannot be classified and requires review.',
+      completedToday:'Completed today (source-recorded)'},
+    bn:{asOf:'পর্যালোচনার তারিখ',selectDate:'রিপোর্ট তৈরির আগে সঠিক পর্যালোচনার তারিখ বেছে নিন।',
+      today:'আজ',overdue:'সময়সীমা পেরিয়েছে',nextSeven:'পরের ৭ দিন',needsDate:'তথ্য প্রয়োজন — তারিখ নেই',
+      group:'কাজের সময়সীমা',ref:'রেফারেন্স',activity:'কাজ',department:'দায়িত্বপ্রাপ্ত বিভাগ',
+      target:'লক্ষ্য তারিখ',original:'মূল পরিকল্পনা',revised:'সংশোধিত লক্ষ্য',forecast:'রেকর্ডকৃত পূর্বাভাস',
+      actual:'বাস্তব শেষ',status:'রেকর্ডকৃত অবস্থা',waiting:'যার জন্য অপেক্ষা',reason:'বিলম্বের কারণ',
+      followup:'ফলো-আপ',recovery:'রিকভারি কাজ',proof:'প্রমাণের রেফারেন্স',
+      noActions:'এই অংশে উৎসে কোনো কাজ রেকর্ড নেই।',unknown:'তথ্য প্রয়োজন',
+      source:'উৎসে লেখা তথ্য; বিভাগ, তারিখ ও অনুমোদন স্বাধীনভাবে যাচাই হয়নি।',
+      calendar:'শুধু ক্যালেন্ডার দিন; কারখানার ছুটি, শিফট ও ক্ষমতা যাচাই হয়নি।',
+      count:'তারিখবিহীন চলমান কাজ',missingOwner:'দায়িত্ব নির্ধারিত নয় এমন কাজ',
+      dueMeaning:'উৎসে সংশোধিত শেষ তারিখ থাকলে মূল তারিখের আগে তা ব্যবহার হয়।',
+      invalid:'ভুল উৎস তারিখ দিয়ে কাজের সময় নির্ধারণ করা যায় না।',
+      completedToday:'আজ সম্পন্ন (উৎস অনুযায়ী)'},
+    hi:{asOf:'समीक्षा की तारीख',selectDate:'रिपोर्ट बनाने से पहले सही समीक्षा तारीख चुनें।',
+      today:'आज',overdue:'समय सीमा बीत गई',nextSeven:'अगले 7 दिन',needsDate:'जानकारी चाहिए — तारीख नहीं',
+      group:'कार्रवाई अवधि',ref:'रेफरेंस',activity:'काम',department:'जिम्मेदार विभाग',
+      target:'लक्ष्य तारीख',original:'मूल योजना',revised:'संशोधित लक्ष्य',forecast:'दर्ज पूर्वानुमान',
+      actual:'वास्तविक समाप्ति',status:'दर्ज स्थिति',waiting:'किसके जवाब का इंतजार',reason:'दर्ज देरी का कारण',
+      followup:'फॉलो-अप',recovery:'रिकवरी कार्रवाई',proof:'प्रमाण रेफरेंस',
+      noActions:'इस भाग में कोई दर्ज कार्रवाई नहीं है।',unknown:'जानकारी चाहिए',
+      source:'स्रोत में दर्ज; विभाग, तारीख या मंजूरी स्वतंत्र रूप से सत्यापित नहीं।',
+      calendar:'केवल कैलेंडर दिन; फैक्ट्री छुट्टियाँ, शिफ्ट या क्षमता सत्यापित नहीं।',
+      count:'बिना तारीख खुले काम',missingOwner:'बिना जिम्मेदार विभाग के काम',
+      dueMeaning:'दर्ज संशोधित समाप्ति को मूल लक्ष्य से प्राथमिकता दी जाती है।',
+      invalid:'गलत स्रोत तारीख के आधार पर काम तय नहीं किया जा सकता।',
+      completedToday:'आज पूरा हुआ (दर्ज स्थिति)'},
+    ta:{asOf:'Review தேதி',selectDate:'Report தயாரிக்க சரியான review தேதியைத் தேர்ந்தெடுக்கவும்.',
+      today:'இன்று',overdue:'காலக்கெடு கடந்தது',nextSeven:'அடுத்த 7 நாட்கள்',
+      needsDate:'தகவல் தேவை — தேதி இல்லை',group:'Action காலம்',ref:'Ref',activity:'வேலை',
+      department:'பொறுப்பான துறை',target:'Due / target',original:'முதல் திட்டம்',
+      revised:'திருத்திய இலக்கு',forecast:'பதிவான Forecast',actual:'Actual முடிவு',
+      status:'பதிவான நிலை',waiting:'பதில் காத்திருப்பது',reason:'பதிவான தாமதக் காரணம்',
+      followup:'Follow-up',recovery:'Recovery செயல்',proof:'ஆதார references',
+      noActions:'இந்த பகுதியில் source-ல் பதிவு செய்த வேலை இல்லை.',unknown:'தகவல் தேவை',
+      source:'Source பதிவுகள் மட்டுமே; owner, dates, evidence மற்றும் approval தனியாக verify செய்யவில்லை.',
+      calendar:'Calendar நாட்கள் மட்டும்; factory விடுமுறை, shift, capacity verify செய்யப்படவில்லை.',
+      count:'தேதி இல்லாத open வேலைகள்',missingOwner:'Owner பதிவு இல்லாத வேலைகள்',
+      dueMeaning:'பதிவான revised finish இருந்தால் original finish-ஐவிட அதற்கு முன்னுரிமை.',
+      invalid:'தவறான source தேதியால் வேலை காலத்தை நிர்ணயிக்க முடியாது.',
+      completedToday:'இன்று முடிந்தது (source பதிவு)'}
+  });
+  const dailyDay=value=>{
+    if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;
+    const date=new Date(value+'T00:00:00Z');
+    return !Number.isNaN(date.getTime())&&date.toISOString().slice(0,10)===value?Math.floor(date.getTime()/86400000):null;
+  };
+  function factoryDailyProjection(plan,language,asOfDate){
+    const labels=DAILY_LABELS[language],asOf=dailyDay(asOfDate);
+    const sections={overdue:[],today:[],nextSeven:[],needsDate:[]};
+    const initialWarnings=[labels.source,labels.calendar,labels.dueMeaning];
+    if(asOf===null)return {
+      ready:false,asOfDate:null,labels,sections,rows:[],counts:{overdue:0,today:0,nextSeven:0,needsDate:0},
+      warnings:[labels.selectDate],undatedCount:0,missingOwnerCount:0
+    };
+    const warningsList=[...initialWarnings],rows=[];
+    let missingOwnerCount=0,invalidCount=0;
+    for(const task of Array.isArray(plan?.tasks)?plan.tasks:[]){
+      if(task?.applicability==='not-applicable')continue;
+      const status=String(task?.status||'not-started'),closed=DAILY_CLOSED.has(status);
+      const dates=task?.dates||{},original=dailyDay(dates.baselineFinish);
+      const revised=dailyDay(dates.currentTargetFinish),actual=dailyDay(dates.actualFinish);
+      // An invalid explicit revised date is NOT silently replaced by the older plan.
+      const hasRevised=dates.currentTargetFinish!==null&&dates.currentTargetFinish!==undefined&&dates.currentTargetFinish!=='';
+      const due=hasRevised?revised:original;
+      let window=null;
+      if(closed){
+        if(['completed','approved'].includes(status)&&actual===asOf)window='today';
+      }else if(due===null){window='needsDate';if(hasRevised||dates.baselineFinish)invalidCount+=1;}
+      else if(due<asOf)window='overdue';
+      else if(due===asOf)window='today';
+      else if(due<=asOf+7)window='nextSeven';
+      if(!window)continue;
+      const owner=String(task.ownerParty||'').trim();
+      if(!owner)missingOwnerCount+=1;
+      const row={
+        group:window,ref:String(task.templateRef||''),activity:String(task.title||''),
+        department:owner||null,status,waiting:String(task.waitingFor||'')||null,
+        original:original===null?null:dates.baselineFinish,
+        revised:revised===null?null:dates.currentTargetFinish,
+        forecast:dailyDay(dates.forecastFinish)===null?null:dates.forecastFinish,
+        actual:actual===null?null:dates.actualFinish,
+        due:due===null?null:hasRevised?dates.currentTargetFinish:dates.baselineFinish,
+        reason:String(task.delayReason||'')||null,
+        followup:String(task.followUpNote||'')||null,
+        recovery:String(task.recoveryAction||'')||null,
+        proof:Array.isArray(task.proofRefs)?task.proofRefs.filter(p=>typeof p==='string'&&p.trim()).join(', ')||null:null
+      };
+      sections[window].push(row);
+      rows.push(row);
+    }
+    // Sort within each report window by sourced due civil day, with stable ref.
+    for(const section of Object.values(sections))section.sort((a,b)=>
+      String(a.due||'9999-12-31').localeCompare(String(b.due||'9999-12-31'))||
+      a.ref.localeCompare(b.ref));
+    const ordered=['overdue','today','nextSeven','needsDate'].flatMap(key=>sections[key]);
+    if(invalidCount)warningsList.push(labels.invalid+' ('+invalidCount+')');
+    if(missingOwnerCount)warningsList.push(labels.missingOwner+': '+missingOwnerCount);
+    return {ready:true,asOfDate,labels,sections,rows:ordered,
+      counts:Object.fromEntries(Object.entries(sections).map(([key,items])=>[key,items.length])),
+      warnings:warningsList,undatedCount:sections.needsDate.length,missingOwnerCount};
+  }
+
   function buildReportModel(plan,options={}){
     const l=lang(options.language),report=reportType(options.reportId||'R01');
     const generatedAt=options.generatedAt||new Date().toISOString();
     const buyer=report[0]==='R02'?buyerProjection(plan,l):null;
+    const daily=report[0]==='R03'?factoryDailyProjection(plan,l,options.asOfDate||''):null;
     const order=orderContext(plan);
     if(buyer)order.factory=buyer.labels.unknown; // no internal factory identity on buyer exports
-    const tasks=buyer?buyer.milestones.map(row=>({
+    const tasks=daily?daily.rows.map(row=>({ref:row.ref,title:row.activity,owner:row.department||'',
+      status:row.status,baseline:row.original||'',current:row.revised||'',forecast:row.forecast||'',
+      actual:row.actual||'',risk:'needs-information'})):buyer?buyer.milestones.map(row=>({
       ref:row.ref,title:row.title,owner:'',status:row.statusId,
       baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',
       actual:row.actual||'',risk:'needs-information'
@@ -212,11 +337,12 @@
       timezone:options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local',
       revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,
       headings:I18N[l].headings,labels:I18N[l].labels,order,tasks,
-      warnings:buyer?buyer.gaps:warnings(plan),
+      warnings:daily?daily.warnings:buyer?buyer.gaps:warnings(plan),
       notes:[I18N[l].labels.noFabrication,...(buyer?[buyer.sourceDisclosure]:[]),
         I18N[l].labels.printFallback,I18N[l].labels.shareFallback],
       masterSheet:report[0]==='R01'?garmentMasterSheet(plan,l,options):null,
       ...(buyer?{buyerTna:buyer}:{}),
+      ...(daily?{factoryDaily:daily}:{}),
       source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}};
   }
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
