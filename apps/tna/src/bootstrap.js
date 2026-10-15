@@ -519,6 +519,44 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     html+='</section>';
     return html;
   }
+  function criticalReportPreview(data){
+    const t=data.labels,cell=value=>esc(value==null||value===''?t.unknown:value);
+    let html='<section class="tna-report-critical" aria-label="'+esc(t.heading)+'">';
+    html+='<h3>'+esc(t.heading)+'</h3>';
+    if(!data.ready){
+      html+='<p class="tna-note" role="status">'+esc(t.controls)+'</p>';
+      html+='<ul>'+[...data.missingInputs,...data.unsupported].map(reason=>'<li>'+esc(reason)+'</li>').join('')+'</ul>';
+      return html+'</section>';
+    }
+    html+='<p class="tna-note">'+esc(t.model)+' '+esc(t.notProduction)+'</p>';
+    html+='<div class="tna-report-critical-facts">'+[
+      [t.start,data.startDate],[t.required,data.requiredDate],
+      [t.forecast,data.forecastDate],[t.margin,data.bufferWorkdays],
+      [t.week,data.workingWeek],[t.version,data.engineVersion+' / '+data.inputRevision]
+    ].map(([label,value])=>'<span><b>'+esc(label)+':</b> '+cell(value)+'</span>').join('')+'</div>';
+    html+='<h3>'+esc(t.headingDrivers)+'</h3>';
+    html+=data.criticalChains.length?
+      '<ol>'+data.criticalChains.map(chain=>'<li>'+chain.map(cell).join(' → ')+'</li>').join('')+'</ol>':
+      '<p>'+esc(t.unknown)+'</p>';
+    html+='<h3>'+esc(t.headingRows)+'</h3>';
+    const parts=[
+      {heads:[t.ref,t.task,t.owner,t.es,t.ef,t.ls,t.lf],
+       values:row=>[row.ref,row.title,row.owner,row.earlyStart,row.earlyFinish,row.lateStart,row.lateFinish]},
+      {heads:[t.ref,t.status,t.tf,t.ff,t.driver],
+       values:row=>[row.ref,row.status,row.totalFloat,row.freeFloat,row.drivesExFactory?t.yes:t.no]}
+    ];
+    for(const [i,p] of parts.entries()){
+      html+='<div class="tna-report-critical-scroll"><table class="tna-report-critical-table" data-critical-part="'+(i+1)+'"><thead><tr>'+
+        p.heads.map(h=>'<th scope="col">'+esc(h)+'</th>').join('')+'</tr></thead><tbody>';
+      html+=data.rows.map(row=>'<tr>'+p.values(row).map(v=>'<td>'+cell(v)+'</td>').join('')+'</tr>').join('');
+      html+='</tbody></table></div>';
+    }
+    html+='<h3>'+esc(t.headingGates)+'</h3>';
+    html+=data.gateIssues.length?'<ul>'+data.gateIssues.map(item=>
+      '<li>'+cell(item.ref)+' · '+cell(item.status)+' · '+cell(item.reason)+'</li>').join('')+'</ul>':
+      '<p>'+esc(t.none)+'</p>';
+    return html+'</section>';
+  }
   function reportPreviewHtml(model){
     const order=model.order;
     let html='<article class="tna-report-preview"><h2>'+esc(model.title)+'</h2>';
@@ -531,7 +569,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       [model.labels.quantity,String(order.quantity)+' '+String(order.unit)],
       [model.labels.required,order.requiredExFactory]
     ].map(([label,value])=>'<span>'+esc(label)+': '+esc(value)+'</span>').join('')+'</div>';
-    if(model.factoryDaily)html+=dailyReportPreview(model.factoryDaily);
+    if(model.criticalPath)html+=criticalReportPreview(model.criticalPath);
+    else if(model.factoryDaily)html+=dailyReportPreview(model.factoryDaily);
     else if(model.buyerTna)html+=buyerReportPreview(model.buyerTna);
     else if(model.masterSheet)html+=masterReportPreview(model);
     else{
@@ -549,12 +588,34 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     if(state.currentPlan.mode==='practice')return openDialog('Reports','<p>Practice example reports are preview-only and cannot be used as business evidence.</p>');
     const first=reports.catalogue(state.language)[0];
     const dailyWords=reportModel('R03').factoryDaily.labels;
+    const cpWords=reportModel('R04').criticalPath.labels;
+    const starts=[['',cpWords.noStart],...[
+      ['orderConfirmedOn',state.currentPlan.commitments?.orderConfirmedOn,cpWords.first],
+      ['poReceivedOn',state.currentPlan.commitments?.poReceivedOn,cpWords.second]
+    ].filter(([key,source])=>!!source).map(([key,source,label])=>[key,label+' · '+source])];
+    const weekOptions=[['',cpWords.noWeek],...Object.entries(globalThis.VesaTnaCriticalPath?.WEEK||{}).map(([key,choice])=>[key,choice.title])];
+    const optionsHtml=items=>items.map(([value,label])=>'<option value="'+esc(value)+'">'+esc(label)+'</option>').join('');
+    const check=(name,content)=>'<label class="tna-wide tna-cpm-checkbox"><input name="'+name+'" type="checkbox"><span>'+esc(content)+'</span></label>';
+    const criticalControls='<fieldset id="tnaCriticalReviewWrap" class="tna-wide tna-cpm-review" hidden>'+
+      '<legend>'+esc(cpWords.heading)+'</legend><p class="tna-note">'+esc(cpWords.model)+'</p>'+
+      '<div class="tna-form-grid">'+
+      '<label><span>'+esc(cpWords.start)+'</span><select name="criticalStartAnchor">'+optionsHtml(starts)+'</select></label>'+
+      '<label><span>'+esc(cpWords.required)+'</span><input readonly value="'+
+        esc(state.currentPlan.commitments?.buyerRequiredExFactory||cpWords.unknown)+'"></label>'+
+      '<label><span>'+esc(cpWords.week)+'</span><select name="criticalWeek">'+optionsHtml(weekOptions)+'</select></label>'+
+      '<label><span>'+esc(cpWords.threshold)+'</span><input name="criticalThreshold" inputmode="numeric" type="number" min="0" max="60" step="1" placeholder="'+esc(cpWords.unknown)+'"></label>'+
+      '<label class="tna-wide"><span>'+esc(cpWords.exceptions)+'</span><textarea name="criticalExceptions" rows="2" placeholder="YYYY-MM-DD"></textarea></label>'+
+      check('criticalCalendarConfirmed',cpWords.confirmCalendar)+
+      check('criticalDurationsReviewed',cpWords.confirmDurations)+
+      check('criticalDependenciesReviewed',cpWords.confirmEdges)+
+      check('criticalEndpointReviewed',cpWords.confirmEndpoint)+
+      '</div><p class="tna-note">'+esc(cpWords.allSupported)+'</p></fieldset>';
     openDialog('Reports',
       '<div class="tna-form-grid">'+
       '<label><span>Report type</span><select id="tnaReportType">'+reportOptions()+'</select></label>'+
       '<label><span>Language</span><input readonly value="'+esc(state.language)+'"></label>'+
       '<label id="tnaReportAsOfWrap" hidden><span>'+esc(dailyWords.asOf)+'</span>'+
-        '<input id="tnaReportAsOf" type="date" aria-required="true"></label></div>'+
+      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+'</div>'+
       '<p id="tnaReportGate" role="status" aria-live="polite" class="tna-note"></p>'+
       '<div class="menu-grid">'+
       '<button class="tna-btn" type="button" data-report-action="preview">Preview report</button>'+
@@ -566,22 +627,46 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const type=document.getElementById('tnaReportType');
     const review=document.getElementById('tnaReportAsOf');
     const reviewWrap=document.getElementById('tnaReportAsOfWrap');
+    const criticalWrap=document.getElementById('tnaCriticalReviewWrap');
     const gate=document.getElementById('tnaReportGate');
-    const currentModel=()=>reportModel(type.value,type.value==='R03'?{asOfDate:review.value}:{});
+    const criticalInputs=()=>new FormData(criticalWrap);
+    const criticalReview=()=>{
+      const d=criticalInputs();
+      return {startAnchor:d.get('criticalStartAnchor')||'',
+        weekKey:d.get('criticalWeek')||'',
+        exceptionDates:String(d.get('criticalExceptions')||''),
+        nearCriticalDays:d.get('criticalThreshold')||'',
+        calendarConfirmed:d.has('criticalCalendarConfirmed'),
+        durationsReviewed:d.has('criticalDurationsReviewed'),
+        dependenciesReviewed:d.has('criticalDependenciesReviewed'),
+        endpointReviewed:d.has('criticalEndpointReviewed')};
+    };
+    const currentModel=()=>reportModel(type.value,
+      type.value==='R03'?{asOfDate:review.value}:
+      type.value==='R04'?{criticalReview:criticalReview()}:{});
     const update=()=>{
       reviewWrap.hidden=type.value!=='R03';
+      criticalWrap.hidden=type.value!=='R04';
       const model=currentModel();
-      gate.textContent=model.factoryDaily&&!model.factoryDaily.ready?model.factoryDaily.labels.selectDate:'';
+      gate.textContent=model.factoryDaily&&!model.factoryDaily.ready?model.factoryDaily.labels.selectDate:
+        model.criticalPath&&!model.criticalPath.ready?
+          [...model.criticalPath.missingInputs,...model.criticalPath.unsupported].join(' · '):'';
       document.getElementById('tnaReportPreview').innerHTML=reportPreviewHtml(model);
       return model;
     };
     type.onchange=update;
     review.onchange=update;
     review.oninput=update;
+    criticalWrap.querySelectorAll('input,select,textarea').forEach(control=>{
+      control.addEventListener('change',update);
+      if(control.type==='checkbox'||control.tagName==='SELECT')return;
+      control.addEventListener('input',update);
+    });
     document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{
       const model=currentModel();
-      // All R03 exports, print and share are blocked until a valid explicit date.
-      if(model.factoryDaily&&!model.factoryDaily.ready)return update();
+      // R03 and R04 may never export or print a fabricated/unsupported model.
+      if((model.factoryDaily&&!model.factoryDaily.ready)||
+        (model.criticalPath&&!model.criticalPath.ready))return update();
       if(btn.dataset.reportAction==='preview')return update();
       if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}
       if(btn.dataset.reportAction==='share')return openDialog('Share fallback',
