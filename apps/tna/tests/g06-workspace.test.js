@@ -45,6 +45,12 @@ for (const fragment of [
   'task.dates?.forecastFinish',
   'task.dates?.actualFinish',
   'task.delayReason||',
+  'GarmentTnaActivityView.lateCalendarDays(task,state.language)',
+  'GarmentTnaActivityView.approvalSource(plan,task,state.language)',
+  'GarmentTnaActivityView.recordedNote(plan,task)',
+  'Calendar days late',
+  'Approval / source',
+  'Recorded note',
   'data-edit-task',
   'data-edit-task',
   'Save activity edit',
@@ -73,6 +79,8 @@ assert(orderMasterAt !== -1 && sheetAt > orderMasterAt && schedulingAt > sheetAt
   'Garment sheet must follow Order Master and precede specialist dashboards.');
 assert(!bootstrap.includes('plan.tasks.slice(0,12)'),
   'Activity edit access cannot silently exclude the remaining template tasks.');
+assert(css.includes('.tna-sheet-scroll .tna-activity-table{min-width:1700px'),
+  'Twelve source-backed follow-up columns must retain their mobile scroll width.');
 assert(css.includes('.tna-sheet-scroll{max-width:100%;overflow-x:auto'),
   'Narrow screens must scroll inside the sheet instead of overflowing the page.');
 
