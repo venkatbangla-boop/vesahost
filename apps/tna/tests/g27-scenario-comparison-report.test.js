@@ -18,7 +18,7 @@ function plan(profile='knit'){
   {ownerUserId:'test-planner'});
  p.order.commercialNotes=secrets[1];
  p.commitments.masterLcProofRef=secrets[5];
- const task=p.tasks.find(x=>x.durationUnits>3);
+ const task=p.tasks.find(x=>x.durationUnits>2);
  assert.ok(task);
  task.title=secrets[2];
  return {p,task};
