@@ -86,7 +86,7 @@ async function run(){
   const preview=page.locator('#tnaReportPreview'),text=await preview.innerText();
   assert.match(text,/Recovery A/);assert.match(text,/Recovery B/);
   assert.match(text,/SAME saved\/current input revision|SAME|same current|SAME CURRENT|same current/i);
-  assert.match(text,/do NOT independently authenticate buyer approval/);
+  assert.match(text,/does NOT independently authenticate buyer approval/);
   assert.match(text,/R12 LIVE BUYER/);
   assert.equal(await preview.locator('[data-scenario-report-part="forecasts"] tbody tr').count(),3);
   assert.equal(await preview.locator('[data-scenario-report-part="inputs"] tbody tr').count(),2);
