@@ -18,6 +18,13 @@ Branch `feature/tna-merchandising-rework`, implementation SHAs `38d62acc5` and `
 
 ## A. Current execution snapshot — initial handover
 
+
+### 2026-10-15 — TNA rework accuracy correction (CONDITIONAL)
+
+Source commit `6b8b0286a9e3fb6d40265f402c70cd35bc097b21` changes only `apps/tna/src/bootstrap.js` column headings in EN/BN/HI/TA: displayed date fields are **finish dates** (current target or baseline fallback, forecast finish, actual finish); previously labeled “Remarks” was actually `task.delayReason`, now correctly called Delay reason. This prevents misleading business meaning without changing values, editing behavior, CPM, schema or storage. GitHub-connected file source checked; **runtime syntax, browser, CI, and PPM/AQL regressions NOT RUN**: local git checkout failed DNS resolution to github.com, and commit `e55ffdd90f5cd458bbc2d941ba996eecbdf87b46` has no associated PR-triggered workflow runs returned by the connector. No PASS or DEVELOPMENT VERIFIED claim. **Status ACTIVE / CONDITIONAL. NEXT ACTION:** obtain genuine runnable GitHub checkout or supported Work computer, execute syntax, browser 390/1280, saved-copy/Excel and cross-app regression, then add dedicated approval-source and remarks columns only with real domain mappings. Costing DEMO LIVE unchanged; next portfolio app Packing & Container 360.
+
+
+
 | Field | Current value |
 |---|---|
 | Product | VESA TNA 360 — one program incorporating Phase 1 + Phase 2 + Phase 3 |
