@@ -3,6 +3,13 @@
 ## Current Work portfolio queue and evidence-based resumption (2026-10-15)
 
 
+### 2026-10-15 — TNA merchandising rework patch 2 (CONDITIONAL)
+
+On `feature/tna-merchandising-rework`, source commits `38d62acc5` and `9017257` add a nine-column, four-language-header activity sheet with sourced Planned/Forecast/Actual dates and mobile horizontal scrolling. Existing tasks/edit actions are preserved. Six direct GitHub-source invariants passed; **runtime, browser, Excel, saved-copy and PPM/AQL regressions not run**. No deployment or development-verification assertion. **NEXT ACTION:** perform real syntax/browser/regression proof on branch, then audit missing approval and precise delay/remarks data before any schema additions. Portfolio next remains Packing & Container 360.
+
+
+
+
 ### 2026-10-15 — TNA merchandising rework slice 1 (CONDITIONAL)
 
 GitHub development branch `feature/tna-merchandising-rework` source patch `8a30a25ce1fd33c59e0ec0f2cd6a62a375de2a99`: `apps/tna/src/bootstrap.js` now places full editable activity sheet after order master and ahead of dashboards, replacing 12-row excerpt. Existing TNA-specific CSS already defines five desktop columns and mobile stacking. Six static source-contract checks passed; **no actual browser/CI/syntax or cross-app regressions were run**, and four-language headers plus comprehensive dates/approval/remarks columns remain unfinished. Domain/CPM/storage, PPM/AQL, shared shell, main and demo deployment were not modified. Status **ACTIVE / CONDITIONAL**, not DEVELOPMENT VERIFIED or DEMO LIVE. **NEXT ACTION:** run executable syntax and responsive/browser regression on patch SHA, extend master-sheet date/approval columns and localization in separately verified narrow groups, preserve old saved copies and formulas. Next portfolio app: Packing & Container 360.
