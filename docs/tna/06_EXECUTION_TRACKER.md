@@ -6,6 +6,11 @@
 
 **Free-only denominator:** 12 active gates; G09 is excluded. G10 and G12 retain one active local unit each while their provider/deployment portions are deferred. Current accepted numerator: 10. See `docs/platform/VESA_GITHUB_FREE_ONLY_ELIGIBILITY.md`.
 
+
+### 2026-10-15 — TNA merchandising rework slice 1 (CONDITIONAL)
+
+GitHub development branch `feature/tna-merchandising-rework` source patch `8a30a25ce1fd33c59e0ec0f2cd6a62a375de2a99`: `apps/tna/src/bootstrap.js` now places full editable activity sheet after order master and ahead of dashboards, replacing 12-row excerpt. Existing TNA-specific CSS already defines five desktop columns and mobile stacking. Six static source-contract checks passed; **no actual browser/CI/syntax or cross-app regressions were run**, and four-language headers plus comprehensive dates/approval/remarks columns remain unfinished. Domain/CPM/storage, PPM/AQL, shared shell, main and demo deployment were not modified. Status **ACTIVE / CONDITIONAL**, not DEVELOPMENT VERIFIED or DEMO LIVE. **NEXT ACTION:** run executable syntax and responsive/browser regression on patch SHA, extend master-sheet date/approval columns and localization in separately verified narrow groups, preserve old saved copies and formulas. Next portfolio app: Packing & Container 360.
+
 ## A. Current execution snapshot — initial handover
 
 | Field | Current value |
