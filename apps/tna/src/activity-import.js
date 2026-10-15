@@ -130,6 +130,9 @@
     if(!orderReview?.ready||!orderReview.proposal)return {ready:false,errors:['Complete the valid order review first.'],warnings,rows,unmatched};
     if(!domain?.createPlan||!scheduling?.validateGraph||!orderImporter)return {ready:false,errors:['Local TNA engine is unavailable.'],warnings,rows,unmatched};
     const proposal=orderReview.proposal;
+    if(!['iso','dmy','mdy','excel'].includes(settings.dateFormat))errors.push('Choose the activity source date format.');
+    if(!['calendar','working'].includes(settings.durationBasis))errors.push('Choose a reviewed activity duration basis.');
+    if(settings.sheetName===proposal.importSource?.sheetName)errors.push('Activity rows must come from a separate reviewed worksheet, not the order heading.');
     let d;
     try{d=describe(snapshot,settings);}catch(e){return {ready:false,errors:[e.message],warnings,rows,unmatched};}
     errors.push(...d.errors);
