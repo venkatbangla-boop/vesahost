@@ -25,6 +25,41 @@
   function savePlan(plan,user){assertPlan(plan);const box=readBox(user);const without=box.records.filter(item=>item.recordId!==plan.recordId);const saved={recordId:plan.recordId,updatedAt:new Date().toISOString(),buyer:plan.order.buyerName,style:plan.order.styles?.[0]?.styleNo,po:plan.order.poNumbers?.[0],plan};writeBox(user,{storageVersion:STORAGE_VERSION,records:[saved,...without]});return saved;}
   function listPlans(user){return readBox(user).records.map(({plan,...summary})=>summary);}
   function loadPlan(recordId,user){const box=readBox(user);const index=box.records.findIndex(item=>item.recordId===recordId);if(index<0)return null;const result=migratePlan(box.records[index].plan);if(result.migrated){const records=box.records.slice();records[index]={...records[index],plan:result.plan};writeBox(user,{storageVersion:STORAGE_VERSION,records});}return result.plan;}
+  /**
+   * GMR-13: read only explicitly requested records from THIS user-key box.
+   * Unlike loadPlan(), migration happens on detached clones and never writes.
+   * Missing, duplicate, training or invalid saved entries fail the entire set.
+   * The UI owns review/selection; this is not server access control.
+   */
+  /**
+   * Read-only selection catalogue. Keeps practice/invalid sources out of the
+   * R10 chooser; never triggers loadPlan's migration write-back.
+   */
+  function listPortfolioCandidates(user){
+    return readBox(user).records.flatMap(entry=>{
+      try{
+        const plan=migratePlan(entry.plan).plan;
+        if(plan.mode==='practice'||entry.recordId!==plan.recordId)return [];
+        return [{recordId:plan.recordId,buyer:plan.order?.buyerName||'',
+          style:plan.order?.styles?.[0]?.styleNo||'',po:plan.order?.poNumbers?.[0]||'',
+          updatedAt:entry.updatedAt||''}];
+      }catch{return []}
+    });
+  }
+  function readPortfolioSnapshots(recordIds,user){
+    if(!Array.isArray(recordIds)||!recordIds.length||recordIds.length>250||
+      recordIds.some(id=>typeof id!=='string'||!id.trim())||
+      new Set(recordIds).size!==recordIds.length)
+      throw new Error('Select distinct saved orders for the portfolio review.');
+    const box=readBox(user),records=new Map(box.records.map(record=>[record.recordId,record]));
+    return recordIds.map(recordId=>{
+      const entry=records.get(recordId);
+      if(!entry||entry.recordId!==recordId)throw new Error('Selected saved order is unavailable.');
+      const plan=migratePlan(entry.plan).plan;
+      if(plan.recordId!==recordId||plan.mode==='practice')throw new Error('A selected saved order is not available for production reporting.');
+      return plan;
+    });
+  }
   function autosave(plan,user){assertPlan(plan);localStorage.setItem(autoKey(user),safeJson({savedAt:new Date().toISOString(),plan}));return true;}
   function recoverAutosave(user){try{const box=JSON.parse(localStorage.getItem(autoKey(user))||'null');if(!box)return null;const result=migratePlan(box.plan);const recovered={...box,plan:result.plan};if(result.migrated)localStorage.setItem(autoKey(user),safeJson(recovered));return recovered;}catch{return null}}
   function containsKey(value,keyName){if(!value||typeof value!=='object')return false;if(Object.prototype.hasOwnProperty.call(value,keyName))return true;return Array.isArray(value)?value.some(item=>containsKey(item,keyName)):Object.values(value).some(item=>containsKey(item,keyName));}
@@ -72,6 +107,7 @@
     if(model.reportId==='R08'&&!model.materialLcReport?.ready)
       throw new Error(model.materialLcReport?.labels?.selectReview||'Select a commercial review date and authorization.');
     if(model.reportId==='R09'&&!model.shipmentReadiness?.ready)throw new Error(model.shipmentReadiness?.labels?.selectReview||'Review restricted shipment information first.');
+    if(model.reportId==='R10'&&!model.portfolioReport?.ready)throw new Error(model.portfolioReport?.labels?.select||'Select and review saved portfolio orders first.');
     const workbook=XLSX.utils.book_new();
     const addSheet=(name,rows,widths,filter=false)=>{
       const sheet=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
@@ -431,6 +467,36 @@
       summaryRows.push([val(t.asOf),date(s.asOfDate)],[val(t.summary),val(s.summary?JSON.stringify(s.summary):t.noSummary)]);
       workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(summaryRows,{dateNF:'yyyy-mm-dd'});
     }
+    // R10 workbook reads only the sanitized multi-order report, never a raw plan.
+    // Each record gets one row; a multi-PO order is NOT multiplied into fake qty.
+    if(model.reportId==='R10'){
+      const p=model.portfolioReport,t=p.labels;
+      const v=x=>safeCell(x===null||x===undefined||x===''?t.missing:x);
+      const q=x=>x===null?v(t.missing):numberCell(x);
+      const d=x=>x?dateCell(x):v(t.missing);
+      const orderRows=[[t.record,t.buyer,t.factory,t.style,t.po,t.qty,t.unit,
+        t.status,t.revision,t.due,t.forecast,t.actual,t.blocked,t.waiting,t.state],
+        ...p.orders.map(o=>[v(o.recordId),v(o.buyer),v(o.factory),v(o.styles),
+          v(o.po),q(o.quantity),v(o.unit),v(o.status),q(o.revision),
+          d(o.due),d(o.forecast),d(o.actual),numberCell(o.blocked),
+          numberCell(o.waiting),v(o.state)])];
+      addSheet('Portfolio Orders',orderRows,
+        [38,35,35,36,38,20,15,26,16,23,23,23,22,22,73],true);
+      const actionRows=[[t.record,t.ref,t.activity,t.status,t.target,t.window],
+        ...(p.actions.length?p.actions.map(a=>[v(a.recordId),v(a.ref),v(a.title),
+          v(a.status),d(a.target),v(t[a.window]||a.window)]):[[v(t.noActions)]])];
+      addSheet('Portfolio Follow-ups',actionRows,[38,18,48,29,23,52],true);
+      const groupRows=[[t.type,t.groupName,t.count],
+        ...p.groups.map(g=>[v(g.type),v(g.name),numberCell(g.count)])];
+      addSheet('Portfolio Groups',groupRows,[30,55,24],true);
+      const old=XLSX.utils.sheet_to_json(workbook.Sheets['Report Summary'],{header:1,raw:true});
+      old.push([v(t.asOf),d(p.asOfDate)],[v(t.orders),numberCell(p.summary.orders)],
+        [v(t.po),numberCell(p.summary.poReferences)],
+        [v(t.blocked),numberCell(p.summary.blockedOrders)],
+        [v(t.waiting),numberCell(p.summary.waitingApprovalOrders)]);
+      workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(old,{dateNF:'yyyy-mm-dd'});
+      workbook.Sheets['Report Summary']['!cols']=[{wch:36},{wch:102}];
+    }
     if(model.reportId==='R01'&&model.masterSheet){
       const l=model.masterSheet.labels||{};
       const h=[l.stage||'Section',l.activity||'Activity',l.owner||'Responsible party',
@@ -454,7 +520,7 @@
     addSheet('Report Notes',warningRows,[110]);
     return XLSX.write(workbook,{type:'buffer',bookType:'xlsx'});
   }
-  const api={STORAGE_VERSION,FORMAT,MAX_BYTES,QUEUE_VERSION,QUEUE_MAX_ITEMS,QUEUE_MAX_BYTES,checksum,migratePlan,savePlan,listPlans,loadPlan,autosave,recoverAutosave,queueOfflineIntent,listOfflineIntents,updateOfflineIntent,reconcileOfflineIntent,exportCopy,importCopy,createHistory,pushHistory,undo,redo,importPreview,importWorkbookPreview,exportCsv,exportWorkbook,exportReportWorkbook,safeCell};
+  const api={STORAGE_VERSION,FORMAT,MAX_BYTES,QUEUE_VERSION,QUEUE_MAX_ITEMS,QUEUE_MAX_BYTES,checksum,migratePlan,savePlan,listPlans,loadPlan,autosave,recoverAutosave,queueOfflineIntent,listOfflineIntents,updateOfflineIntent,reconcileOfflineIntent,exportCopy,importCopy,listPortfolioCandidates,readPortfolioSnapshots,createHistory,pushHistory,undo,redo,importPreview,importWorkbookPreview,exportCsv,exportWorkbook,exportReportWorkbook,safeCell};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaStorage=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

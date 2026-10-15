@@ -8,6 +8,7 @@
   const productionReport=root.VesaTnaProductionStatusReport||(typeof require==='function'?require('./production-status-report.js'):null);
   const materialReport=root.VesaTnaMaterialLcReport||(typeof require==='function'?require('./material-lc-report.js'):null);
   const shipmentReport=root.VesaTnaShipmentReadinessReport||(typeof require==='function'?require('./shipment-readiness-report.js'):null);
+  const portfolioReport=root.VesaTnaPortfolioReport||(typeof require==='function'?require('./portfolio-report.js'):null);
   const REPORT_TYPES=[
     ['R01','masterTna','factoryAgent','Order, stages, activities, dates, owners, status, dependencies and revision.'],
     ['R02','buyerTna','buyerBrand','Buyer-facing milestones, required buyer actions, forecast and verified targets.'],
@@ -372,7 +373,9 @@
       authorityRef:options.commercialAuthorityRef
     }):null;
     const shipment=report[0]==='R09'?shipmentReport?.project(plan,{language:l,asOfDate:options.asOfDate,qualityConfirmed:options.qualityConfirmed,authorityRef:options.qualityAuthorityRef}):null;
-    const order=orderContext(plan);
+    // R10 is a multi-OrderPlan report; the active single order is never a hidden source.
+    const portfolio=report[0]==='R10'?portfolioReport?.project(options.portfolioPlans,{language:l,asOfDate:options.asOfDate,managementConfirmed:options.managementConfirmed,authorityRef:options.portfolioAuthorityRef,selectedIds:options.portfolioSelectedIds}):null;
+    const order=portfolio?{buyer:'Selected saved orders',factory:'Selected saved orders',style:'Portfolio',po:'Per selected order',quantity:portfolio.ready?portfolio.summary.orders:'Needs Information',unit:'orders',requiredExFactory:'Per selected order'}:orderContext(plan);
     if(buyer||weekly)order.factory=buyer?.labels.unknown||weekly.labels.unknown; // no internal factory identity
     if(production?.mode==='buyer')order.factory=production.labels.unknown;
     if((delay&&!delay.ready)||(production&&!production.ready)||(materialLc&&!materialLc.ready)||(shipment&&!shipment.ready)){
@@ -400,7 +403,7 @@
       ref:row.ref,title:row.title,owner:'',status:row.status,
       baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',
       actual:row.actual||'',risk:'needs-information'
-    })):shipment?shipment.milestones.map(row=>({ref:row.ref,title:row.title,owner:'',status:row.status,baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',actual:row.actual||'',risk:'needs-information'})):buyer?buyer.milestones.map(row=>({
+    })):shipment?shipment.milestones.map(row=>({ref:row.ref,title:row.title,owner:'',status:row.status,baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',actual:row.actual||'',risk:'needs-information'})):portfolio?portfolio.actions.map(row=>({ref:row.ref,title:row.title+' · '+row.recordId,owner:'',status:row.status,baseline:'',current:row.target||'',forecast:'',actual:'',risk:'needs-information'})):buyer?buyer.milestones.map(row=>({
       ref:row.ref,title:row.title,owner:'',status:row.statusId,
       baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',
       actual:row.actual||'',risk:'needs-information'
@@ -409,15 +412,16 @@
       language:l,languageName:I18N[l].languageName,audience:production?(production.mode==='buyer'?production.labels.buyer:production.mode==='internal'?production.labels.internal:production.labels.choose):audienceFor(report,l),
       generatedAt,generatedLabel:formatDateTime(generatedAt,l),
       timezone:options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local',
-      revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,
+      revision:portfolio?'per selected order':plan?.revision??0,baselineSnapshots:portfolio?0:(plan?.baselineSnapshots||[]).length,
       headings:I18N[l].headings,labels:I18N[l].labels,order,tasks,
-      warnings:critical?[...critical.missingInputs,...critical.unsupported,...critical.warnings]:weekly?weekly.warnings:delay?delay.warnings:production?production.warnings:materialLc?materialLc.warnings:shipment?shipment.warnings:daily?daily.warnings:buyer?buyer.gaps:warnings(plan),
+      warnings:critical?[...critical.missingInputs,...critical.unsupported,...critical.warnings]:weekly?weekly.warnings:delay?delay.warnings:production?production.warnings:materialLc?materialLc.warnings:shipment?shipment.warnings:portfolio?portfolio.warnings:daily?daily.warnings:buyer?buyer.gaps:warnings(plan),
       notes:[I18N[l].labels.noFabrication,...(buyer?[buyer.sourceDisclosure]:[]),
         ...(weekly?[weekly.labels.source,weekly.labels.recoveryNotice]:[]),
         ...(delay?[delay.labels.calendar,delay.labels.scenarioCaution,delay.labels.consentNotAccess]:[]),
         ...(production?[production.labels.noLotAggregation,production.labels.noAccess]:[]),
         ...(materialLc?[materialLc.labels.masterWarning,materialLc.labels.noAutomatic,materialLc.labels.noAccess]:[]),
         ...(shipment?[shipment.labels.noClearance,shipment.labels.noDispatch,shipment.labels.noAccess]:[]),
+        ...(portfolio?[portfolio.labels.noCpm,portfolio.labels.noShip,portfolio.labels.noPrivate,portfolio.labels.noAccess]:[]),
         ...(critical?[critical.labels.model]:[]),
         I18N[l].labels.printFallback,I18N[l].labels.shareFallback],
       masterSheet:report[0]==='R01'?garmentMasterSheet(plan,l,options):null,
@@ -429,7 +433,8 @@
       ...(production?{productionStatus:production}:{}),
       ...(materialLc?{materialLcReport:materialLc}:{}),
       ...(shipment?{shipmentReadiness:shipment}:{}),
-      source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}};
+      ...(portfolio?{portfolioReport:portfolio}:{}),
+      source:portfolio?{recordId:null,schemaVersion:null,mode:'browser-local-portfolio'}:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}};
   }
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};

@@ -91,7 +91,7 @@
     const poRefs=[...new Set(plans.flatMap(plan=>plan.order?.poNumbers||[]).filter(Boolean))];
     const rows=summary.orders.slice(0,10).map(order=>`<div role="row"><span>${esc(order.style||'Untitled TNA')}</span><span>${esc(order.buyer||'Buyer unknown')} · ${esc(order.factory||'Factory unknown')}</span><span>${esc(order.po||'PO unknown')}</span><span>${esc(order.forecastDate||'Needs Information')} · ${esc(order.risk)}</span></div>`).join('');
     const conflicts=summary.capacity.conflicts.map(item=>`${item.resourceId} on ${item.date}: over by ${item.overAllocatedBy} line(s)`).join(' · ');
-    return `<div class="tna-panel tna-portfolio-advanced"><h2>Portfolio & shared capacity</h2><div class="tna-dashboard-grid"><article><b>${esc(summary.accessibleOrderCount)}</b><span>Local orders in view</span></article><article><b>${esc(poRefs.length)}</b><span>PO references</span></article><article><b>${esc(summary.conflictCount)}</b><span>Capacity conflicts</span></article><article><b>${esc(summary.orders.filter(order=>order.risk==='delayed').length)}</b><span>Delayed forecasts</span></article><article><b>${esc(summary.orders.filter(order=>order.risk==='needs-information').length)}</b><span>Needs Information</span></article></div><p class="tna-note">${conflicts?`Shared capacity warning: ${esc(conflicts)}`:'No shared capacity conflict is present in the entered local records.'} Forecast rows retain source revision and engine provenance. Portfolio is browser-local until authenticated backend storage is provisioned. Connected multi-company access remains blocked until an authenticated backend is provisioned.</p><h3>Management filters</h3><div class="tna-stage-chips">${buyers.map(buyer=>`<button type="button" data-portfolio-buyer="${esc(buyer)}" aria-pressed="${filter.buyer===buyer?'true':'false'}">Buyer · ${esc(buyer)}</button>`).join('')}${factories.map(factory=>`<button type="button" data-portfolio-factory="${esc(factory)}" aria-pressed="${filter.factory===factory?'true':'false'}">Factory · ${esc(factory)}</button>`).join('')}${poRefs.slice(0,8).map(po=>`<button type="button" data-portfolio-po="${esc(po)}" aria-pressed="${filter.po===po?'true':'false'}">PO · ${esc(po)}</button>`).join('')}<button type="button" data-clear-portfolio="true">Clear filters</button></div>${summary.orders.length?`<div class="tna-task-table tna-portfolio-table" role="table" aria-label="Local multi-PO portfolio proof">${rows}</div>`:'<p>No saved local order details are available for this portfolio view.</p>'}</div>`;
+    return `<div class="tna-panel tna-portfolio-advanced"><h2>Portfolio & shared capacity</h2><div class="tna-dashboard-grid"><article><b>${esc(summary.accessibleOrderCount)}</b><span>Local orders in view</span></article><article><b>${esc(poRefs.length)}</b><span>PO references</span></article><article><b>${esc(summary.conflictCount)}</b><span>Capacity conflicts</span></article><article><b>${esc(summary.orders.filter(order=>order.risk==='delayed').length)}</b><span>Delayed forecasts</span></article><article><b>${esc(summary.orders.filter(order=>order.risk==='needs-information').length)}</b><span>Needs Information</span></article></div><p class="tna-note">${conflicts?`Shared capacity warning: ${esc(conflicts)}`:'No shared capacity conflict is present in the entered local records.'} Forecast rows retain source revision and engine provenance. Portfolio is browser-local until authenticated backend storage is provisioned. Connected multi-company access remains blocked until an authenticated backend is provisioned.</p><h3>Management filters</h3><div class="tna-stage-chips">${buyers.map(buyer=>`<button type="button" data-portfolio-buyer="${esc(buyer)}" aria-pressed="${filter.buyer===buyer?'true':'false'}">Buyer · ${esc(buyer)}</button>`).join('')}${factories.map(factory=>`<button type="button" data-portfolio-factory="${esc(factory)}" aria-pressed="${filter.factory===factory?'true':'false'}">Factory · ${esc(factory)}</button>`).join('')}${poRefs.slice(0,8).map(po=>`<button type="button" data-portfolio-po="${esc(po)}" aria-pressed="${filter.po===po?'true':'false'}">PO · ${esc(po)}</button>`).join('')}<button type="button" data-clear-portfolio="true">Clear filters</button></div>${summary.orders.length?`<div class="tna-task-table tna-portfolio-table" role="table" aria-label="Local multi-PO portfolio proof">${rows}</div>`:'<p>No saved local order details are available for this portfolio view.</p>'}${records.length?'<p><button type="button" class="tna-btn secondary" data-tna-portfolio-report>Prepare Portfolio Report</button></p>':''}</div>`;
   }
   function workspacePanel(plan){const data=workspaceData(plan);const filter=state.workspaceFilter||{};const view=state.workspaceView||'timeline';const statusCounts=plan.tasks.reduce((acc,task)=>{acc[task.status]=(acc[task.status]||0)+1;return acc},{});const ownerOptions=Object.keys(data.ownerCounts).slice(0,8);const stageOptions=Object.entries(domain.STAGE_LABELS).filter(([stage])=>plan.tasks.some(task=>task.stageCode===stage));const baseRows=data.rows.filter(row=>(!filter.owner||row.task.ownerParty===filter.owner)&&(!filter.stage||row.task.stageCode===filter.stage));const viewRows=view==='today'?baseRows.filter(row=>data.dueToday.includes(row)||data.nextSeven.includes(row)):view==='critical'?baseRows.filter(row=>row.result?.isCritical):baseRows;const datedRows=viewRows.filter(row=>row.date).slice(0,24);const visibleRows=(datedRows.length?datedRows:viewRows.slice(0,24));const ganttRows=visibleRows.slice(0,10);const activeFilter=[filter.owner?`Owner ${filter.owner}`:null,filter.stage?`Stage ${filter.stage}`:null].filter(Boolean).join(' · ')||'All activities';const viewButtons=[['table','Table'],['timeline','Timeline (Gantt)'],['today','Today / Next 7 Days'],['critical','Critical Only']];return `<section class="tna-workspace-grid" aria-label="TNA dashboard and timeline"><div class="tna-panel"><span class="tna-kicker">Dashboard</span><h3>Action view</h3><div class="tna-dashboard-grid"><article><b>${esc(data.dueToday.length)}</b><span>Due today</span></article><article><b>${esc(data.overdue.length)}</b><span>Overdue</span></article><article><b>${esc(data.nextSeven.length)}</b><span>Next 7 days</span></article><article><b>${esc(data.critical.length)}</b><span>Critical path</span></article></div><p class="tna-note">${data.asOf?`As-of date uses explicit order start ${esc(data.asOf)}. No hidden current-date assumption is used.`:'Enter an explicit order start date to activate due-today, overdue and next-7-day filters.'}</p><p class="tna-note">Active timeline filter: ${esc(activeFilter)} · ${esc(viewRows.length)} visible activities · View ${esc(view)}.</p><h4>Workspace views</h4><div class="tna-stage-chips">${viewButtons.map(([key,label])=>`<button type="button" data-workspace-view="${esc(key)}" aria-pressed="${view===key?'true':'false'}">${esc(label)}</button>`).join('')}</div><h4>Owner filters</h4><div class="tna-stage-chips">${ownerOptions.map(owner=>`<button type="button" data-filter-owner="${esc(owner)}" aria-pressed="${filter.owner===owner?'true':'false'}">${esc(owner)} · ${esc(data.ownerCounts[owner])}</button>`).join('')}</div><h4>Stage filters</h4><div class="tna-stage-chips">${stageOptions.map(([stage,label])=>`<button type="button" data-filter-stage="${esc(stage)}" aria-pressed="${filter.stage===stage?'true':'false'}">${esc(stage)} · ${esc(label)}</button>`).join('')}<button type="button" data-clear-filters="true">Clear filters</button></div></div><div class="tna-panel"><span class="tna-kicker">Timeline</span><h3>${esc(viewButtons.find(([key])=>key===view)?.[1]||'Timeline')}</h3>${data.scheduled&&view!=='table'?`<div class="tna-gantt" aria-hidden="true">${ganttRows.map(row=>`<span style="--tna-bar:${Math.min(100,Math.max(8,(row.result?.floatDays??0)+12))}%"><i>${esc(row.task.templateRef)}</i></span>`).join('')}</div>`:view==='table'?'<p class="tna-note">Table view keeps all calculated date and risk details in text form.</p>':`<p class="tna-note">Timeline needs explicit start and buyer required ex-factory dates. It will not invent dates.</p>`}<div class="tna-task-table tna-timeline-table" role="table" aria-label="Accessible TNA timeline table filtered view">${visibleRows.length?visibleRows.map(row=>`<div role="row"><span>${esc(row.task.templateRef)}</span><span>${esc(row.task.title)}</span><span>${esc(row.task.ownerParty)}</span><span>${esc(row.date||'Needs date')}</span><span>${esc(row.result?.risk||row.task.riskStatus||'needs-information')}</span></div>`).join(''):`<div role="row"><span>No activities match the active filter or view.</span></div>`}</div></div></section>`}
   function currentPlanSaved(plan){return !!plan&&readRecords().some(record=>record.recordId===plan.recordId)}
@@ -193,6 +193,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     root.querySelectorAll('[data-portfolio-factory]').forEach(btn=>btn.onclick=()=>{state.portfolioFilter={...(state.portfolioFilter||{}),factory:btn.dataset.portfolioFactory||null};render();});
     root.querySelectorAll('[data-portfolio-po]').forEach(btn=>btn.onclick=()=>{state.portfolioFilter={...(state.portfolioFilter||{}),po:btn.dataset.portfolioPo||null};render();});
     root.querySelectorAll('[data-clear-portfolio]').forEach(btn=>btn.onclick=()=>{state.portfolioFilter={buyer:null,factory:null,po:null};render();});
+    root.querySelectorAll('[data-tna-portfolio-report]').forEach(btn=>btn.onclick=()=>openReportPanel('Portfolio Report'));
     root.querySelectorAll('[data-open-capacity]').forEach(btn=>btn.onclick=openCapacityEntry);
     root.querySelectorAll('[data-add-shipment-lot]').forEach(btn=>btn.onclick=openShipmentLotEntry);
     const scenarioForm=document.getElementById('tnaScenarioForm');if(scenarioForm)scenarioForm.onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());state.scenarioDraft={...data,durationUnits:Number(data.durationUnits),verifiedDailyOutput:data.verifiedDailyOutput};state.scenarioPreview=scenarios.previewScenario(state.currentPlan,{name:data.name,durationAdjustments:[{taskId:data.taskId,durationUnits:Number(data.durationUnits),reason:data.name}],capacity:data.verifiedDailyOutput?{plannedQty:state.currentPlan.order.totalQty,completedQty:0,verifiedDailyOutput:Number(data.verifiedDailyOutput)}:undefined},{actorId:userKey()});render();};
@@ -769,6 +770,34 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     html+='<h3>'+esc(t.summary)+'</h3><p>'+esc(data.summary?JSON.stringify(data.summary):t.noSummary)+'</p><p>'+esc(t.noClearance)+' '+esc(t.noDispatch)+' '+esc(t.noAccess)+'</p></section>';
     return html;
   }
+  /**
+   * GMR-13 R10 preview uses ONLY the explicit, sanitized portfolio model.
+   * No unselected currentPlan, unreviewed local storage, costs, or proof refs.
+   */
+  function portfolioReportPreview(data){
+    const t=data.labels,cell=x=>esc(x==null||x===''?t.missing:x);
+    let html='<section class="tna-report-portfolio" aria-label="'+esc(t.title)+'">';
+    if(!data.ready)return html+'<p role="status">'+esc(data.warnings[0]||t.select)+'</p></section>';
+    const table=(part,heads,rows)=>'<div class="tna-report-portfolio-scroll"><table class="tna-report-portfolio-table" data-portfolio-report-part="'+esc(part)+'"><thead><tr>'+
+      heads.map(value=>'<th scope="col">'+esc(value)+'</th>').join('')+'</tr></thead><tbody>'+
+      rows.map(row=>'<tr>'+row.map(value=>'<td>'+cell(value)+'</td>').join('')+'</tr>').join('')+
+      '</tbody></table></div>';
+    html+='<p>'+esc(t.asOf)+': '+cell(data.asOfDate)+'</p>';
+    html+='<h3>'+esc(t.orders)+' · '+cell(data.summary.orders)+'</h3>';
+    html+=table('identity',[t.record,t.buyer,t.factory,t.style,t.po,t.qty,t.unit],
+      data.orders.map(r=>[r.recordId,r.buyer,r.factory,r.styles,r.po,r.quantity,r.unit]));
+    html+=table('dates',[t.record,t.status,t.revision,t.due,t.forecast,t.actual,t.blocked,t.waiting,t.state],
+      data.orders.map(r=>[r.recordId,r.status,r.revision,r.due,r.forecast,r.actual,r.blocked,r.waiting,r.state]));
+    html+='<h3>'+esc(t.actions)+'</h3>';
+    html+=data.actions.length?table('actions',[t.record,t.ref,t.activity,t.status,t.target,t.window],
+      data.actions.map(a=>[a.recordId,a.ref,a.title,a.status,a.target,t[a.window]||a.window])):
+      '<p>'+esc(t.noActions)+'</p>';
+    html+='<h3>'+esc(t.groups)+'</h3>';
+    html+=table('groups',[t.type,t.groupName,t.count],
+      data.groups.map(group=>[group.type,group.name,group.count]));
+    html+='<p class="tna-note">'+esc(t.noCpm)+' '+esc(t.noQty)+' '+esc(t.noAccess)+'</p></section>';
+    return html;
+  }
   function reportPreviewHtml(model){
     const order=model.order;
     let html='<article class="tna-report-preview"><h2>'+esc(model.title)+'</h2>';
@@ -781,7 +810,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       [model.labels.quantity,String(order.quantity)+' '+String(order.unit)],
       [model.labels.required,order.requiredExFactory]
     ].map(([label,value])=>'<span>'+esc(label)+': '+esc(value)+'</span>').join('')+'</div>';
-    if(model.shipmentReadiness)html+=shipmentReadinessPreview(model.shipmentReadiness);
+    if(model.portfolioReport)html+=portfolioReportPreview(model.portfolioReport);
+    else if(model.shipmentReadiness)html+=shipmentReadinessPreview(model.shipmentReadiness);
     else if(model.criticalPath)html+=criticalReportPreview(model.criticalPath);
     else if(model.materialLcReport)html+=materialLcReportPreview(model.materialLcReport);
     else if(model.productionStatus)html+=productionReportPreview(model.productionStatus);
@@ -801,9 +831,12 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
   }
   function openReportPanel(action='Prepare Report'){
     if(!reports)return openDialog('Reports','<p>Reports are temporarily unavailable. Keep the order open and try again.</p>');
-    if(!state.currentPlan)return openDialog('Reports','<p>Create or open a TNA before preparing reports.</p>');
-    if(state.currentPlan.mode==='practice')return openDialog('Reports','<p>Practice example reports are preview-only and cannot be used as business evidence.</p>');
-    const first=reports.catalogue(state.language)[0];
+    // R10 is useful from the portfolio homepage without opening an arbitrary order.
+    if(!state.currentPlan&&!readRecords().length)return openDialog('Reports','<p>Save at least one production TNA before preparing reports.</p>');
+    if(state.currentPlan?.mode==='practice')return openDialog('Reports','<p>Practice example reports are preview-only and cannot be used as business evidence.</p>');
+    const portfolioOnly=!state.currentPlan;
+    const first=reports.catalogue(state.language).find(x=>x.id===(action==='Portfolio Report'||portfolioOnly?'R10':'R01'));
+    const portfolioWords=globalThis.VesaTnaPortfolioReport?.WORDS?.[state.language]||globalThis.VesaTnaPortfolioReport?.WORDS?.en;
     const dailyWords=reportModel('R03').factoryDaily.labels;
     const cpWords=reportModel('R04').criticalPath.labels;
     const shipmentWords=globalThis.VesaTnaShipmentReadinessReport?.WORDS?.[state.language]||globalThis.VesaTnaShipmentReadinessReport?.WORDS?.en;
@@ -817,12 +850,12 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       globalThis.VesaTnaWeeklyReport?.WORDS?.en;
     // Only canonical outward milestones may appear as recovery references.
     // Internal recoveryAction content NEVER populates a report input.
-    const safeNames=new Map(reportModel('R02').buyerTna.milestones.map(row=>[row.ref,row.title]));
+    const safeNames=new Map((state.currentPlan?reportModel('R02').buyerTna.milestones:[]).map(row=>[row.ref,row.title]));
     const extra=globalThis.VesaTnaWeeklyReport?.EXTRA||{};
     const langIx={en:0,bn:1,hi:2,ta:3}[state.language]??0;
     const reviewable=[];
     const usedRefs=new Set();
-    for(const task of state.currentPlan.tasks||[]){
+    for(const task of state.currentPlan?.tasks||[]){
       const ref=String(task.templateRef||'');
       if(usedRefs.has(ref)||typeof task.recoveryAction!=='string'||!task.recoveryAction.trim())continue;
       const safeTitle=safeNames.get(ref)||extra[ref]?.[langIx];
@@ -908,12 +941,20 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       '<input id="tnaMaterialAuthorityRef" type="text" maxlength="180" autocomplete="off" aria-required="true"></label>'+
       '<p class="tna-note">'+esc(materialWords.noAccess)+'</p></fieldset>';
     const shipmentControls='<fieldset id="tnaShipmentReviewWrap" class="tna-wide tna-shipment-review" hidden><legend>'+esc(shipmentWords.title)+'</legend><label><span>'+esc(shipmentWords.asOf)+'</span><input id="tnaShipmentAsOf" type="date" aria-required="true"></label><label class="tna-wide tna-cpm-checkbox"><input id="tnaShipmentConsent" type="checkbox"><span>'+esc(shipmentWords.consent)+'</span></label><label><span>'+esc(shipmentWords.accessRef)+'</span><input id="tnaShipmentAuthorityRef" type="text" maxlength="180" autocomplete="off"></label><p class="tna-note">'+esc(shipmentWords.noAccess)+'</p></fieldset>';
+    const savedPortfolioRecords=storage.listPortfolioCandidates(userKey()).slice(0,250);
+    const portfolioControls='<fieldset id="tnaPortfolioReviewWrap" class="tna-wide tna-portfolio-review" hidden><legend>'+esc(portfolioWords.title)+'</legend>'+ 
+      '<label><span>'+esc(portfolioWords.asOf)+'</span><input id="tnaPortfolioAsOf" type="date" aria-required="true"></label>'+
+      '<label class="tna-wide tna-cpm-checkbox"><input id="tnaPortfolioConsent" type="checkbox"><span>'+esc(portfolioWords.consent)+'</span></label>'+
+      '<label><span>'+esc(portfolioWords.authority)+'</span><input id="tnaPortfolioAuthority" type="text" maxlength="180" autocomplete="off"></label>'+
+      '<div class="tna-portfolio-choices" role="group" aria-label="'+esc(portfolioWords.choose)+'"><strong>'+esc(portfolioWords.choose)+'</strong>'+
+      (savedPortfolioRecords.length?savedPortfolioRecords.map(record=>'<label class="tna-portfolio-choice"><input type="checkbox" data-portfolio-report-record value="'+esc(record.recordId)+'"><span>'+esc(record.style||'Untitled TNA')+' · '+esc(record.po||'PO not recorded')+' · '+esc(record.buyer||'Buyer not recorded')+'</span></label>').join(''):'<p>'+esc(portfolioWords.empty)+'</p>')+'</div>'+
+      '<p class="tna-note">'+esc(portfolioWords.noCloud)+' '+esc(portfolioWords.noAccess)+'</p></fieldset>';
     openDialog('Reports',
       '<div class="tna-form-grid">'+
-      '<label><span>Report type</span><select id="tnaReportType">'+reportOptions()+'</select></label>'+
+      '<label><span>Report type</span><select id="tnaReportType">'+(portfolioOnly?'<option value="R10">R10 · '+esc(first.title)+'</option>':reportOptions())+'</select></label>'+
       '<label><span>Language</span><input readonly value="'+esc(state.language)+'"></label>'+
       '<label id="tnaReportAsOfWrap" hidden><span>'+esc(dailyWords.asOf)+'</span>'+
-      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+weeklyControls+delayControls+productionControls+materialControls+shipmentControls+'</div>'+
+      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+weeklyControls+delayControls+productionControls+materialControls+shipmentControls+portfolioControls+'</div>'+
       '<p id="tnaReportGate" role="status" aria-live="polite" class="tna-note"></p>'+
       '<div class="menu-grid">'+
       '<button class="tna-btn" type="button" data-report-action="preview">Preview report</button>'+
@@ -922,6 +963,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       '<button class="tna-btn secondary" type="button" data-report-action="print">Print report</button>'+
       '<button class="tna-btn secondary" type="button" data-report-action="share">Share fallback</button></div>'+
       '<div id="tnaReportPreview">'+reportPreviewHtml(reportModel(first.id))+'</div>');
+    if(first.id==='R10')document.getElementById('tnaReportType').value='R10';
     const type=document.getElementById('tnaReportType');
     const review=document.getElementById('tnaReportAsOf');
     const reviewWrap=document.getElementById('tnaReportAsOfWrap');
@@ -931,6 +973,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const productionWrap=document.getElementById('tnaProdReviewWrap');
     const materialWrap=document.getElementById('tnaMaterialReviewWrap');
     const shipmentWrap=document.getElementById('tnaShipmentReviewWrap');
+    const portfolioWrap=document.getElementById('tnaPortfolioReviewWrap');
     const gate=document.getElementById('tnaReportGate');
     const criticalReview=()=>{
       const value=name=>criticalWrap.querySelector('[name="'+name+'"]')?.value||'';
@@ -973,6 +1016,18 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       commercialAuthorityRef:materialWrap.querySelector('#tnaMaterialAuthorityRef')?.value||''
     });
     const shipmentReview=()=>({asOfDate:shipmentWrap.querySelector('#tnaShipmentAsOf')?.value||'',qualityConfirmed:!!shipmentWrap.querySelector('#tnaShipmentConsent')?.checked,qualityAuthorityRef:shipmentWrap.querySelector('#tnaShipmentAuthorityRef')?.value||''});
+    const portfolioReview=()=>{
+      const selectedIds=[...portfolioWrap.querySelectorAll('[data-portfolio-report-record]:checked')].map(box=>box.value);
+      const asOfDate=portfolioWrap.querySelector('#tnaPortfolioAsOf')?.value||'';
+      const managementConfirmed=!!portfolioWrap.querySelector('#tnaPortfolioConsent')?.checked;
+      const portfolioAuthorityRef=portfolioWrap.querySelector('#tnaPortfolioAuthority')?.value||'';
+      const data={asOfDate,managementConfirmed,portfolioAuthorityRef,portfolioSelectedIds:selectedIds,portfolioPlans:[]};
+      // No saved source is read until deliberate review consent and selection.
+      if(managementConfirmed&&portfolioAuthorityRef.trim()&&asOfDate&&selectedIds.length){
+        try{data.portfolioPlans=storage.readPortfolioSnapshots(selectedIds,userKey());}catch{data.portfolioPlans=[];}
+      }
+      return data;
+    };
     const currentModel=()=>reportModel(type.value,
       type.value==='R03'?{asOfDate:review.value}:
       type.value==='R04'?{criticalReview:criticalReview()}:
@@ -980,7 +1035,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       type.value==='R06'?delayReview():
       type.value==='R07'?productionReview():
       type.value==='R08'?materialReview():
-      type.value==='R09'?shipmentReview():{});
+      type.value==='R09'?shipmentReview():
+      type.value==='R10'?portfolioReview():{});
     const update=()=>{
       reviewWrap.hidden=type.value!=='R03';
       criticalWrap.hidden=type.value!=='R04';
@@ -989,11 +1045,13 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       productionWrap.hidden=type.value!=='R07';
       materialWrap.hidden=type.value!=='R08';
       shipmentWrap.hidden=type.value!=='R09';
+      portfolioWrap.hidden=type.value!=='R10';
       const prodMode=productionWrap.querySelector('#tnaProdMode')?.value||'';
       productionWrap.querySelector('#tnaProdInternalWrap').hidden=prodMode!=='internal';
       productionWrap.querySelector('#tnaProdBuyerWrap').hidden=prodMode!=='buyer';
       const model=currentModel();
-      gate.textContent=model.shipmentReadiness&&!model.shipmentReadiness.ready?model.shipmentReadiness.labels.selectReview:
+      gate.textContent=model.portfolioReport&&!model.portfolioReport.ready?model.portfolioReport.warnings[0]:
+        model.shipmentReadiness&&!model.shipmentReadiness.ready?model.shipmentReadiness.labels.selectReview:
         model.materialLcReport&&!model.materialLcReport.ready?model.materialLcReport.labels.selectReview:
         model.productionStatus&&!model.productionStatus.ready?model.productionStatus.warnings.join(' · '):
         model.delayRecovery&&!model.delayRecovery.ready?model.delayRecovery.labels.selectReview:
@@ -1029,6 +1087,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       if(control.type!=='checkbox')control.addEventListener('input',update);
     });
     shipmentWrap.querySelectorAll('input').forEach(control=>{control.addEventListener('change',update);if(control.type!=='checkbox')control.addEventListener('input',update);});
+    portfolioWrap.querySelectorAll('input').forEach(control=>{control.addEventListener('change',update);if(control.type!=='checkbox')control.addEventListener('input',update);});
+    update();
     document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{
       const model=currentModel();
       // R03-R08 never export, print or share without source review.
@@ -1038,7 +1098,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
         (model.delayRecovery&&!model.delayRecovery.ready)||
         (model.productionStatus&&!model.productionStatus.ready)||
         (model.materialLcReport&&!model.materialLcReport.ready)||
-        (model.shipmentReadiness&&!model.shipmentReadiness.ready))return update();
+        (model.shipmentReadiness&&!model.shipmentReadiness.ready)||
+        (model.portfolioReport&&!model.portfolioReport.ready))return update();
       if(btn.dataset.reportAction==='preview')return update();
       if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}
       if(btn.dataset.reportAction==='share')return openDialog('Share fallback',
