@@ -4,12 +4,42 @@
   const MS_PER_DAY=86400000;
   const DEFAULT_CALENDAR={calendarId:'default',name:'Default Monday-Friday',workingWeek:[1,2,3,4,5],holidays:[],shutdowns:[],revision:0};
   const pad=n=>String(n).padStart(2,'0');
-  function assertDate(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(String(value||'')))throw new Error('Invalid civil date: '+value);}
-  function toDay(value){assertDate(value);const [y,m,d]=value.split('-').map(Number);return Math.floor(Date.UTC(y,m-1,d)/MS_PER_DAY);}
-  function fromDay(day){const dt=new Date(day*MS_PER_DAY);return `${dt.getUTCFullYear()}-${pad(dt.getUTCMonth()+1)}-${pad(dt.getUTCDate())}`;}
+  /**
+   * Validate an exact Gregorian YYYY-MM-DD civil date in UTC. A format-only
+   * check lets 2026-02-30 silently normalize to March, which would create
+   * fabricated delivery and approval dates. Retain years 0000–9999 without
+   * Date.UTC's special 1900 offset for years 0–99.
+   */
+  function assertDate(value){
+    if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))
+      throw new Error('Invalid civil date: '+value);
+    const ticks=Date.parse(value+'T00:00:00Z');
+    if(!Number.isFinite(ticks)||new Date(ticks).toISOString().slice(0,10)!==value)
+      throw new Error('Invalid civil date: '+value);
+  }
+  function toDay(value){assertDate(value);return Math.floor(Date.parse(value+'T00:00:00Z')/MS_PER_DAY);}
+  function fromDay(day){
+    const dt=new Date(day*MS_PER_DAY);
+    return `${String(dt.getUTCFullYear()).padStart(4,'0')}-${pad(dt.getUTCMonth()+1)}-${pad(dt.getUTCDate())}`;
+  }
   function weekday(value){const day=typeof value==='number'?value:toDay(value);return new Date(day*MS_PER_DAY).getUTCDay();}
   function normalizeCalendar(calendar={}){return {...DEFAULT_CALENDAR,...calendar,workingWeek:calendar.workingWeek||DEFAULT_CALENDAR.workingWeek,holidays:calendar.holidays||[],shutdowns:calendar.shutdowns||[]};}
-  function isWorkingDate(date,calendar=DEFAULT_CALENDAR){const cal=normalizeCalendar(calendar);assertDate(date);return cal.workingWeek.includes(weekday(date))&&!cal.holidays.includes(date)&&!cal.shutdowns.includes(date);}
+  /**
+   * A configuration with no valid weekday would make the scheduler's
+   * next/previous-working-date loops infinite. Reject it before iteration;
+   * do not silently replace explicit [] with a guessed Mon–Fri calendar.
+   */
+  function assertWorkingWeek(calendar){
+    const week=calendar?.workingWeek;
+    if(!Array.isArray(week)||!week.length||
+      week.some(day=>!Number.isInteger(day)||day<0||day>6))
+      throw new Error('Calendar requires a valid nonempty working week (weekday 0–6).');
+  }
+  function isWorkingDate(date,calendar=DEFAULT_CALENDAR){
+    const cal=normalizeCalendar(calendar);
+    assertDate(date);assertWorkingWeek(cal);
+    return cal.workingWeek.includes(weekday(date))&&!cal.holidays.includes(date)&&!cal.shutdowns.includes(date);
+  }
   function nextWorkingDate(date,calendar=DEFAULT_CALENDAR,include=true){let day=toDay(date)+(include?0:1);while(!isWorkingDate(fromDay(day),calendar))day+=1;return fromDay(day);}
   function previousWorkingDate(date,calendar=DEFAULT_CALENDAR,include=true){let day=toDay(date)-(include?0:1);while(!isWorkingDate(fromDay(day),calendar))day-=1;return fromDay(day);}
   function shiftDate(date,amount,calendar=DEFAULT_CALENDAR,basis='working'){
@@ -54,9 +84,7 @@
     if(basis==='calendar')return toDay(end)-toDay(start);
     if(basis!=='working')throw new Error('Workday difference requires working or calendar basis.');
     const cal=normalizeCalendar(calendar);
-    if(!Array.isArray(cal.workingWeek)||!cal.workingWeek.length||
-      cal.workingWeek.some(day=>!Number.isInteger(day)||day<0||day>6))
-      throw new Error('Workday difference requires a valid nonempty working week.');
+    assertWorkingWeek(cal);
     const dir=compareDate(start,end)<0?1:-1;
     const first=dir>0?toDay(start):toDay(end);
     const last=dir>0?toDay(end):toDay(start);

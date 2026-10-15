@@ -76,6 +76,41 @@ strict.equal(weekendDue.project.requiredDate,'2026-10-18',
 strict.equal(weekendDue.project.workingDaysEarlyOrLate,1,
   'The Monday forecast is one factory working day late against Sunday delivery.');
 
+// GMR-17: strict civil date and invalid factory calendars are rejected,
+// never silently normalized or entered as an infinite scheduling loop.
+for(const invalidCivil of [
+  '2026-02-30','1900-02-29','2026-04-31','2026-13-01',
+  '2026-00-10','2026-10-00','2026-2-03','2026-10-18T00:00:00Z'
+]){
+  strict.throws(()=>scheduling.toDay(invalidCivil),/Invalid civil date/i,
+    'Invalid source date must not become a planned garment milestone: '+invalidCivil);
+}
+for(const civil of ['2024-02-29','2000-02-29','2026-10-18','0099-12-31','0001-01-01']){
+  strict.equal(scheduling.fromDay(scheduling.toDay(civil)),civil,
+    'Civil dates must round-trip without locale drift or year 0–99 offsets: '+civil);
+}
+strict.equal(scheduling.shiftDate('2024-02-29',1,cal,'calendar'),'2024-03-01',
+  'Leap-day +1 calendar date must reach March 1.');
+strict.throws(()=>scheduling.workdayDifference('2026-02-30','2026-03-03',cal,'calendar'),
+  /Invalid civil date/i,'Commercial lead/date gaps may not use impossible dates.');
+for(const invalidWeek of [[],[7],[-1],['1',2],[1,NaN]]){
+  const badCalendar={...cal,workingWeek:invalidWeek};
+  for(const compute of [
+    ()=>scheduling.isWorkingDate('2026-10-19',badCalendar),
+    ()=>scheduling.nextWorkingDate('2026-10-19',badCalendar),
+    ()=>scheduling.previousWorkingDate('2026-10-19',badCalendar),
+    ()=>scheduling.shiftDate('2026-10-19',1,badCalendar,'working'),
+    ()=>scheduling.workdayDifference('2026-10-16','2026-10-19',badCalendar,'working')
+  ]){
+    strict.throws(compute,/nonempty working week/i,
+      'Invalid site calendars must fail closed in every calendar calculation.');
+  }
+}
+strict.equal(scheduling.workdayDifference('2026-10-16','2026-10-19',cal,'working'),1,
+  'Valid Monday–Friday difference remains unchanged.');
+strict.equal(scheduling.nextWorkingDate('2026-10-18',cal),'2026-10-19',
+  'Valid weekend-next-working-date remains unchanged.');
+
 const mixed = [
   { taskId: 'S', durationUnits: 2, durationBasis: 'working', status: 'not-started' },
   { taskId: 'SS', durationUnits: 1, durationBasis: 'working', status: 'not-started' },
