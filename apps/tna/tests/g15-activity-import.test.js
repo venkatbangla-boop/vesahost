@@ -147,6 +147,7 @@ test('formula-bearing activity sheet is rejected anywhere; unrelated order sheet
   const rows=[activityHeaders,...activityRows,...Array.from({length:28},(_,i)=>['','','','','','','','','','','','','','','','',''])];
   const sheet=XLSX.utils.aoa_to_sheet(rows);
   sheet['J30']={t:'n',f:'1+1',v:2};
+  sheet['!ref']='A1:Q30'; // Persist the distant formula cell in the real workbook ZIP.
   XLSX.utils.book_append_sheet(workbook,sheet,'Activities');
   const snap=orderImport.parseWorkbook(XLSX.write(workbook,{type:'buffer',bookType:'xlsx'}),'bad-formula.xlsx');
   const result=reviewed(snap).activityReview;
