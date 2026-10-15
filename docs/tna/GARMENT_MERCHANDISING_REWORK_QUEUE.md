@@ -1,6 +1,15 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
-**Latest checkpoint (supersedes historical queued label): ACTIVE / selected slices DEVELOPMENT VERIFIED.** See the latest GitHub Actions evidence below.
+**Latest checkpoint (supersedes historical queued label): ACTIVE / selected slices DEVELOPMENT VERIFIED.**
+
+### 2026-10-15 — R01 garment Master TNA print view DEVELOPMENT VERIFIED
+
+**Verified code SHA:** `8e1300e55fcedc07f6a4621493ee348efe1871e7` on `feature/tna-merchandising-rework`. Exact [GitHub Actions run 38771074998](https://github.com/venkatbangla-boop/vesahost/actions/runs/38771074998) **SUCCESS**. Real Chromium proof: 101 activity rows in the internal R01 Master TNA, separate original confirmed baseline / current target / forecast / actual / calendar-day delay / status / predecessor values, browser-fit table, repeating print header, and 6-page PDF opened in the Chromium viewer with no horizontal clipping. [Synthetic screenshot and PDF artifact 11992385472](https://github.com/venkatbangla-boop/vesahost/actions/runs/38771074998/artifacts/11992385472). Other report IDs continue using the established compact preview; no buyer-specific confidential notes or financial fields added. EN/BN/HI/TA column wording is defined, while physical-device Bengali/Tamil print readability and garment-merchandiser UAT are still unverified. Browser tests and immutable-schema/storage regression, PPM 168 baseline cases, AQL sampling baseline and shared shell checks passed.
+
+**Preserved failure evidence:** [run 38770984556](https://github.com/venkatbangla-boop/vesahost/actions/runs/38770984556) failed because an added G07 static assertion expected the word `Predecessor` while the approved UI actually labels it `Depends on`. Test-only repair `8e1300e` and complete subsequent clean CI run supplied the proof. Application UI/contract was not changed to hide the test failure. **Verdict:** R01 print and previous R01 XLSX are **DEVELOPMENT VERIFIED**. Overall **TNA GARMENT MERCHANDISING REWORK remains ACTIVE, not DEVELOPMENT VERIFIED in full, not DEMO LIVE**, with no public/main deployment.
+
+**NEXT ACTION:** Audit the still-generic R02–R12 report outputs and the source-backed activity/workbook import workflow against the full TNA blueprint. Next independently testable business slice should be the factory-internal Daily Action follow-up (R03), with actual due-date sources, owners and Needs Information handling. Never copy internal notes/financial information into buyer-facing R02 without an approved audience policy. Continue full TNA acceptance and garment-merchandiser UAT before moving to **Packing & Container 360**, unless a genuine independent external blocker remains after all local requirements are developed.
+ See the latest GitHub Actions evidence below.
 
 ### 2026-10-15 — TNA status persistence + R01 Master TNA Excel verified
 
