@@ -11,6 +11,11 @@
 
 GitHub development branch `feature/tna-merchandising-rework` source patch `8a30a25ce1fd33c59e0ec0f2cd6a62a375de2a99`: `apps/tna/src/bootstrap.js` now places full editable activity sheet after order master and ahead of dashboards, replacing 12-row excerpt. Existing TNA-specific CSS already defines five desktop columns and mobile stacking. Six static source-contract checks passed; **no actual browser/CI/syntax or cross-app regressions were run**, and four-language headers plus comprehensive dates/approval/remarks columns remain unfinished. Domain/CPM/storage, PPM/AQL, shared shell, main and demo deployment were not modified. Status **ACTIVE / CONDITIONAL**, not DEVELOPMENT VERIFIED or DEMO LIVE. **NEXT ACTION:** run executable syntax and responsive/browser regression on patch SHA, extend master-sheet date/approval columns and localization in separately verified narrow groups, preserve old saved copies and formulas. Next portfolio app: Packing & Container 360.
 
+
+### 2026-10-15 — TNA merchandising rework patch 2 (CONDITIONAL)
+
+Branch `feature/tna-merchandising-rework`, implementation SHAs `38d62acc5` and `9017257`. `bootstrap.js` and `tna.css` only; nine-column read-only sheet displays source-backed task dates, status and delay reason with EN/BN/HI/TA labels, full activities and retained edit command. Scheduling, records and other application domains remain frozen. Six static source checks PASS; executable syntax, browser, saved-copy, Excel, four-language visual and cross-app regressions NOT RUN. Status **CONDITIONAL**, not accepted or live. NEXT ACTION: run actual branch checks before advancing.
+
 ## A. Current execution snapshot — initial handover
 
 | Field | Current value |
