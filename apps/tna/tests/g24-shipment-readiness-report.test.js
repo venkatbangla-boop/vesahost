@@ -100,7 +100,7 @@ test('R09 invalid units, allocations and source dates never fabricate whole-orde
 test('R09 real typed Excel with separate shipment/PO/PPM-AQL sheets and private data omitted',()=>{
  const p=fixture(),before=JSON.stringify(p),m=model(p);
  const bytes=storage.exportReportWorkbook(m);
- assert.equal(bytes.subarray(0,2).toString(),'PK');
+ assert.deepEqual([...bytes.subarray(0,2)],[80,75]);
  const workbook=XLSX.read(bytes,{type:'buffer'});
  assert.deepEqual(workbook.SheetNames,['Report Summary','Order Summary','Report Activities',
   'Shipment Lots','PO Allocations','Shipping Milestones','PPM AQL References','Report Notes']);
