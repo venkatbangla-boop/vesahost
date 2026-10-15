@@ -66,7 +66,7 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
-      - name: Chromium R04 reviewed critical path Excel PDF and complete TNA PPM AQL regression
+      - name: Chromium R04 canonical zero buffer, genuine Excel PDF and all TNA PPM AQL regression
         run: |
           export CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
           mkdir -p output/playwright
