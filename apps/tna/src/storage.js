@@ -65,6 +65,8 @@
       throw new Error(model.criticalPath?.labels?.controls||'Review the critical-path source assumptions before downloading.');
     if(model.reportId==='R05'&&!model.weeklyTna?.ready)
       throw new Error(model.weeklyTna?.labels?.selectDates||'Select the weekly report dates before downloading.');
+    if(model.reportId==='R06'&&!model.delayRecovery?.ready)
+      throw new Error(model.delayRecovery?.labels?.selectReview||'Review internal report access and select a valid date.');
     const workbook=XLSX.utils.book_new();
     const addSheet=(name,rows,widths,filter=false)=>{
       const sheet=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
@@ -257,6 +259,71 @@
         [show(words.missing),numberCell(weekly.missingDueCount)]);
       workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(summaryRows,{dateNF:'yyyy-mm-dd'});
       workbook.Sheets['Report Summary']['!cols']=[{wch:31},{wch:100}];
+    }
+    // R06 internal management only: serialise the already reviewed read-only
+    // adapter. Do not access plan, recalculate CPM/throughput, invent agreement
+    // status or emit private approval proof identifiers from hidden source.
+    if(model.reportId==='R06'){
+      const report=model.delayRecovery,t=report.labels;
+      const val=value=>safeCell(value==null||value===''?t.unknown:value);
+      const typedDate=value=>value==null||value===''?val(t.unknown):dateCell(value);
+      const num=value=>value==null?val(t.unknown):numberCell(value);
+      const yes=value=>val(value?'Yes (source recorded)':'Not recorded');
+      const dateRows=[[
+        t.ref,t.task,t.owner,t.status,t.original,t.current,t.forecast,t.actual,t.due,
+        t.targetChange,t.forecastChange,t.actualChange,t.indicators
+      ],...report.issues.map(item=>[
+        val(item.ref),val(item.title),val(item.owner),val(item.status),
+        typedDate(item.original),typedDate(item.current),typedDate(item.forecast),
+        typedDate(item.actual),typedDate(item.due),num(item.targetChangeDays),
+        num(item.forecastChangeDays),num(item.actualChangeDays),
+        val(item.indicators.join(' / '))
+      ])];
+      addSheet('Delay Actions',dateRows,[14,58,25,24,18,18,18,18,18,20,20,20,62],true);
+      const followRows=[[t.ref,t.task,t.waiting,t.cause,t.recovery,t.linked,t.evidence],
+        ...report.issues.map(item=>[
+          val(item.ref),val(item.title),val(item.waiting),val(item.cause),
+          val(item.recovery),val(item.successors.join(', ')),yes(item.evidenceRecorded)
+        ])];
+      addSheet('Delay Follow-up',followRows,[13,51,24,75,75,51,26],true);
+      const dependencies=[[t.ref,t.linked,t.source],
+        ...report.issues.flatMap(item=>item.successors.map(ref=>[
+          val(item.ref),val(ref),val(t.linkedCaution)
+        ]))];
+      if(dependencies.length===1)dependencies.push([val(t.noIssues)]);
+      addSheet('Dependency Links',dependencies,[16,17,100],true);
+      const scenarioRows=[[
+        t.scenario,t.scenarioState,t.created,t.applied,t.baseRevision,
+        'Duration changes','Route changes','Calendar changes','Capacity changes',t.affected
+      ],...report.scenarios.map(item=>[
+        val(item.name),val(item.state),val(item.createdAt),val(item.appliedAt),
+        num(item.baseRevision),numberCell(item.counts.durationAdjustments),
+        numberCell(item.counts.routeChanges),numberCell(item.counts.calendarChanges),
+        numberCell(item.counts.capacityChanges),val(item.relatedRefs.join(', '))
+      ])];
+      if(scenarioRows.length===1)scenarioRows.push([val(t.noScenarios)]);
+      addSheet('Recovery Scenarios',scenarioRows,[55,22,27,27,17,20,20,20,20,47],true);
+      const approvalRows=[[
+        t.approval,t.approvalState,t.response,t.submitted,t.decision,t.authority,t.proof,t.related
+      ],...report.approvals.map(item=>[
+        val(item.item),val(item.state),val(item.response),typedDate(item.submitted),
+        typedDate(item.decision),yes(item.authorityRecorded),yes(item.evidenceRecorded),
+        val(item.relatedRefs.join(', '))
+      ])];
+      if(approvalRows.length===1)approvalRows.push([val(t.noApprovals)]);
+      addSheet('Approval Records',approvalRows,[57,25,24,20,20,34,34,50],true);
+      const summary=workbook.Sheets['Report Summary'];
+      const summaryRows=XLSX.utils.sheet_to_json(summary,{header:1,raw:true});
+      summaryRows.push([val(t.asOf),typedDate(report.asOfDate)],
+        [val(t.headingIssues),numberCell(report.counts.issues)],
+        [val(t.overdue),numberCell(report.counts.overdue)],
+        [val(t.blocked),numberCell(report.counts.blocked)],
+        [val(t.noTarget),numberCell(report.counts.missingTarget)],
+        [val(t.headingScenarios),numberCell(report.counts.scenario)],
+        [val(t.headingApprovals),numberCell(report.counts.approval)],
+        [val(t.consentNotAccess),val(t.source)]);
+      workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(summaryRows,{dateNF:'yyyy-mm-dd'});
+      workbook.Sheets['Report Summary']['!cols']=[{wch:55},{wch:106}];
     }
     if(model.reportId==='R01'&&model.masterSheet){
       const l=model.masterSheet.labels||{};

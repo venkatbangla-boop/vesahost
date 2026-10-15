@@ -154,3 +154,31 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
  body.tna-printing-report .tna-report-weekly-table thead{display:table-header-group}
  body.tna-printing-report .tna-report-weekly-dates{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
+
+/* GMR-09 R06: internal management-only source report, unified VESA dialog. */
+#tnaDelayReviewWrap[hidden]{display:none!important}
+.tna-delay-review{min-width:0;max-width:100%;border:1px solid var(--line,#d5deea);border-radius:12px;padding:12px;overflow-wrap:anywhere}
+.tna-delay-review legend{padding:0 6px;font-weight:800}
+.tna-delay-review label{display:flex;align-items:flex-start;gap:9px;min-width:0;margin:8px 0}
+.tna-delay-review label:has(input[type=date]){display:grid;gap:5px}
+.tna-delay-review input[type=date]{min-height:42px;max-width:100%}
+.tna-delay-review input[type=checkbox]{min-height:18px;width:18px;height:18px;flex:none;margin-top:4px}
+.tna-report-delay{min-width:0;max-width:100%;margin:16px 0;overflow-wrap:anywhere}
+.tna-report-delay h3{margin:16px 0 8px;overflow-wrap:anywhere}
+.tna-report-delay-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.tna-report-delay-facts span{padding:9px;background:var(--look-surface,#eef3f9);border:1px solid var(--line,#d5deea);border-radius:8px;overflow-wrap:anywhere}
+.tna-report-delay-scroll{max-width:100%;min-width:0;overflow:auto;border:1px solid var(--line,#d5deea);border-radius:8px;margin:10px 0}
+.tna-report-delay-table{min-width:680px;width:100%;border-collapse:collapse;table-layout:fixed;font-size:.79rem;line-height:1.42}
+.tna-report-delay-table thead{display:table-header-group}
+.tna-report-delay-table th,.tna-report-delay-table td{border:1px solid var(--line,#d5deea);padding:7px;vertical-align:top;text-align:start;white-space:normal;overflow-wrap:anywhere}
+.tna-report-delay-table th{background:var(--look-surface,#eef3f9);font-weight:750}
+.tna-report-delay-table tr{break-inside:avoid}
+.tna-report-delay-table th:nth-child(2){width:24%}
+@media(max-width:700px){.tna-report-delay-facts{grid-template-columns:1fr}}
+@media print{
+ body.tna-printing-report .tna-report-delay-scroll{max-width:100%;overflow:visible;border:0}
+ body.tna-printing-report .tna-report-delay-table{min-width:0;width:100%;font-size:7pt;table-layout:fixed}
+ body.tna-printing-report .tna-report-delay-table th,body.tna-printing-report .tna-report-delay-table td{padding:4pt;overflow-wrap:anywhere;white-space:normal}
+ body.tna-printing-report .tna-report-delay-table thead{display:table-header-group}
+ body.tna-printing-report .tna-report-delay-facts{grid-template-columns:repeat(3,minmax(0,1fr))}
+}

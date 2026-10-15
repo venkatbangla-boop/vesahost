@@ -596,6 +596,68 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     html+='<p class="tna-note">'+esc(t.asOf)+'</p></section>';
     return html;
   }
+  /**
+   * R06 is an internal management review of source dates and recorded decisions.
+   * Never display raw activity/approval data until the operator confirms scope
+   * and selects a date. Rendering stays within the existing report dialog.
+   */
+  function delayReportPreview(data){
+    const t=data.labels,cell=value=>esc(value===null||value===undefined||value===''?t.unknown:value);
+    let html='<section class="tna-report-delay" aria-label="'+esc(t.headingIssues)+'">';
+    if(!data.ready)return html+'<p class="tna-note" role="status">'+esc(t.selectReview)+'</p></section>';
+    html+='<h3>'+esc(t.asOf)+': '+cell(data.asOfDate)+'</h3>';
+    html+='<p class="tna-note">'+esc(t.source)+' '+esc(t.calendar)+' '+esc(t.linkedCaution)+'</p>';
+    html+='<div class="tna-report-delay-facts">'+[
+      [t.headingIssues,data.counts.issues],[t.overdue,data.counts.overdue],
+      [t.blocked,data.counts.blocked],[t.headingScenarios,data.counts.scenario],
+      [t.headingApprovals,data.counts.approval]
+    ].map(([label,num])=>'<span><b>'+esc(label)+':</b> '+cell(num)+'</span>').join('')+'</div>';
+    html+='<h3>'+esc(t.headingIssues)+'</h3>';
+    const parts=[
+      {heads:[t.ref,t.task,t.owner,t.original,t.current,t.forecast,t.actual,t.due],
+       values:r=>[r.ref,r.title,r.owner,r.original,r.current,r.forecast,r.actual,r.due]},
+      {heads:[t.ref,t.status,t.indicators,t.targetChange,t.forecastChange,t.actualChange],
+       values:r=>[r.ref,r.status,r.indicators.join(' / '),r.targetChangeDays,
+         r.forecastChangeDays,r.actualChangeDays]},
+      {heads:[t.ref,t.waiting,t.cause,t.recovery,t.linked],
+       values:r=>[r.ref,r.waiting,r.cause,r.recovery,r.successors.join(', ')]}
+    ];
+    if(!data.issues.length)html+='<p>'+esc(t.noIssues)+'</p>';
+    else for(const [i,part] of parts.entries()){
+      html+='<div class="tna-report-delay-scroll"><table class="tna-report-delay-table" data-delay-part="'+(i+1)+'"><thead><tr>'+
+        part.heads.map(h=>'<th scope="col">'+esc(h)+'</th>').join('')+'</tr></thead><tbody>';
+      html+=data.issues.map(row=>'<tr>'+part.values(row).map(v=>'<td>'+cell(v)+'</td>').join('')+'</tr>').join('');
+      html+='</tbody></table></div>';
+    }
+    html+='<h3>'+esc(t.headingScenarios)+'</h3><p class="tna-note">'+esc(t.scenarioCaution)+'</p>';
+    if(!data.scenarios.length)html+='<p>'+esc(t.noScenarios)+'</p>';
+    else{
+      const headers=[t.scenario,t.scenarioState,t.created,t.applied,t.baseRevision,t.adjustments,t.affected];
+      html+='<div class="tna-report-delay-scroll"><table class="tna-report-delay-table" data-delay-scenarios><thead><tr>'+
+        headers.map(x=>'<th scope="col">'+esc(x)+'</th>').join('')+'</tr></thead><tbody>';
+      html+=data.scenarios.map(row=>'<tr>'+[
+        row.name,row.state,row.createdAt,row.appliedAt,row.baseRevision,
+        Object.entries(row.counts).map(([k,v])=>k+': '+v).join('; '),
+        row.relatedRefs.join(', ')
+      ].map(v=>'<td>'+cell(v)+'</td>').join('')+'</tr>').join('');
+      html+='</tbody></table></div>';
+    }
+    html+='<h3>'+esc(t.headingApprovals)+'</h3><p class="tna-note">'+esc(t.approvalCaution)+'</p>';
+    if(!data.approvals.length)html+='<p>'+esc(t.noApprovals)+'</p>';
+    else{
+      const headers=[t.approval,t.approvalState,t.response,t.submitted,t.decision,t.authority,t.proof,t.related];
+      html+='<div class="tna-report-delay-scroll"><table class="tna-report-delay-table" data-delay-approvals><thead><tr>'+
+        headers.map(x=>'<th scope="col">'+esc(x)+'</th>').join('')+'</tr></thead><tbody>';
+      html+=data.approvals.map(row=>'<tr>'+[
+        row.item,row.state,row.response,row.submitted,row.decision,
+        row.authorityRecorded?'Yes (source recorded)':'Not recorded',
+        row.evidenceRecorded?'Yes (source recorded)':'Not recorded',row.relatedRefs.join(', ')
+      ].map(v=>'<td>'+cell(v)+'</td>').join('')+'</tr>').join('');
+      html+='</tbody></table></div>';
+    }
+    html+='<p class="tna-note">'+esc(t.noInfo)+' '+esc(t.consentNotAccess)+'</p></section>';
+    return html;
+  }
   function reportPreviewHtml(model){
     const order=model.order;
     let html='<article class="tna-report-preview"><h2>'+esc(model.title)+'</h2>';
@@ -609,6 +671,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       [model.labels.required,order.requiredExFactory]
     ].map(([label,value])=>'<span>'+esc(label)+': '+esc(value)+'</span>').join('')+'</div>';
     if(model.criticalPath)html+=criticalReportPreview(model.criticalPath);
+    else if(model.delayRecovery)html+=delayReportPreview(model.delayRecovery);
     else if(model.weeklyTna)html+=weeklyReportPreview(model.weeklyTna);
     else if(model.factoryDaily)html+=dailyReportPreview(model.factoryDaily);
     else if(model.buyerTna)html+=buyerReportPreview(model.buyerTna);
@@ -629,6 +692,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const first=reports.catalogue(state.language)[0];
     const dailyWords=reportModel('R03').factoryDaily.labels;
     const cpWords=reportModel('R04').criticalPath.labels;
+    const delayWords=globalThis.VesaTnaDelayRecoveryReport?.WORDS?.[state.language]||
+      globalThis.VesaTnaDelayRecoveryReport?.WORDS?.en;
     const weekWords=globalThis.VesaTnaWeeklyReport?.WORDS?.[state.language]||
       globalThis.VesaTnaWeeklyReport?.WORDS?.en;
     // Only canonical outward milestones may appear as recovery references.
@@ -690,12 +755,19 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
         '<input name="evidenceRef" maxlength="180" autocomplete="off"></label>'+
         '</div></details>').join('')+
       '</fieldset>';
+    const delayControls='<fieldset id="tnaDelayReviewWrap" class="tna-wide tna-delay-review" hidden>'+
+      '<legend>'+esc(delayWords.headingIssues)+'</legend>'+
+      '<label><span>'+esc(delayWords.asOf)+'</span>'+
+      '<input id="tnaDelayAsOf" type="date" aria-required="true"></label>'+
+      '<label class="tna-wide tna-cpm-checkbox"><input id="tnaDelayManagement" type="checkbox">'+
+      '<span>'+esc(delayWords.consent)+'</span></label>'+
+      '<p class="tna-note">'+esc(delayWords.consentNotAccess)+'</p></fieldset>';
     openDialog('Reports',
       '<div class="tna-form-grid">'+
       '<label><span>Report type</span><select id="tnaReportType">'+reportOptions()+'</select></label>'+
       '<label><span>Language</span><input readonly value="'+esc(state.language)+'"></label>'+
       '<label id="tnaReportAsOfWrap" hidden><span>'+esc(dailyWords.asOf)+'</span>'+
-      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+weeklyControls+'</div>'+
+      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+weeklyControls+delayControls+'</div>'+
       '<p id="tnaReportGate" role="status" aria-live="polite" class="tna-note"></p>'+
       '<div class="menu-grid">'+
       '<button class="tna-btn" type="button" data-report-action="preview">Preview report</button>'+
@@ -709,6 +781,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const reviewWrap=document.getElementById('tnaReportAsOfWrap');
     const criticalWrap=document.getElementById('tnaCriticalReviewWrap');
     const weeklyWrap=document.getElementById('tnaWeeklyReviewWrap');
+    const delayWrap=document.getElementById('tnaDelayReviewWrap');
     const gate=document.getElementById('tnaReportGate');
     const criticalReview=()=>{
       const value=name=>criticalWrap.querySelector('[name="'+name+'"]')?.value||'';
@@ -734,16 +807,23 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       return {weekStart:value('tnaReportWeekStart'),weekEnd:value('tnaReportWeekEnd'),
         reviewDate:value('tnaReportReviewDate'),recoveryConfirmations};
     };
+    const delayReview=()=>({
+      asOfDate:delayWrap.querySelector('#tnaDelayAsOf')?.value||'',
+      managementConfirmed:!!delayWrap.querySelector('#tnaDelayManagement')?.checked
+    });
     const currentModel=()=>reportModel(type.value,
       type.value==='R03'?{asOfDate:review.value}:
       type.value==='R04'?{criticalReview:criticalReview()}:
-      type.value==='R05'?weeklyReview():{});
+      type.value==='R05'?weeklyReview():
+      type.value==='R06'?delayReview():{});
     const update=()=>{
       reviewWrap.hidden=type.value!=='R03';
       criticalWrap.hidden=type.value!=='R04';
       weeklyWrap.hidden=type.value!=='R05';
+      delayWrap.hidden=type.value!=='R06';
       const model=currentModel();
-      gate.textContent=model.factoryDaily&&!model.factoryDaily.ready?model.factoryDaily.labels.selectDate:
+      gate.textContent=model.delayRecovery&&!model.delayRecovery.ready?model.delayRecovery.labels.selectReview:
+        model.factoryDaily&&!model.factoryDaily.ready?model.factoryDaily.labels.selectDate:
         model.weeklyTna&&!model.weeklyTna.ready?model.weeklyTna.warnings.filter(w=>w===model.weeklyTna.labels.selectDates||w===model.weeklyTna.labels.badRecovery).join(' · '):
         model.criticalPath&&!model.criticalPath.ready?
           [...model.criticalPath.missingInputs,...model.criticalPath.unsupported].join(' · '):'';
@@ -762,12 +842,17 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       control.addEventListener('change',update);
       if(control.type!=='checkbox')control.addEventListener('input',update);
     });
+    delayWrap.querySelectorAll('input').forEach(control=>{
+      control.addEventListener('change',update);
+      if(control.type!=='checkbox')control.addEventListener('input',update);
+    });
     document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{
       const model=currentModel();
-      // R03, R04 and R05 may not export/print a missing source selection.
+      // R03-R06 never export, print or share without reviewed date/consent.
       if((model.factoryDaily&&!model.factoryDaily.ready)||
         (model.criticalPath&&!model.criticalPath.ready)||
-        (model.weeklyTna&&!model.weeklyTna.ready))return update();
+        (model.weeklyTna&&!model.weeklyTna.ready)||
+        (model.delayRecovery&&!model.delayRecovery.ready))return update();
       if(btn.dataset.reportAction==='preview')return update();
       if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}
       if(btn.dataset.reportAction==='share')return openDialog('Share fallback',
