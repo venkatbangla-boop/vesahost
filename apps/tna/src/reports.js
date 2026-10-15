@@ -256,6 +256,23 @@
       invalid:'தவறான source தேதியால் வேலை காலத்தை நிர்ணயிக்க முடியாது.',
       completedToday:'இன்று முடிந்தது (source பதிவு)'}
   });
+  // Presentation-only status translations. Stable status IDs stay in records
+  // and generic report.tasks for all existing report consumers.
+  const DAILY_STATUS=Object.freeze({
+    en:{'not-started':'Not started','in-progress':'In progress',submitted:'Submitted',
+      'awaiting-approval':'Awaiting approval',approved:'Approved (recorded)',rejected:'Rejected',
+      blocked:'Blocked',completed:'Completed (recorded)',waived:'Waived','not-applicable':'Not applicable'},
+    bn:{'not-started':'শুরু হয়নি','in-progress':'চলছে',submitted:'জমা হয়েছে',
+      'awaiting-approval':'অনুমোদনের অপেক্ষা',approved:'অনুমোদিত (রেকর্ড)',rejected:'বাতিল',
+      blocked:'আটকে আছে',completed:'সম্পন্ন (রেকর্ড)',waived:'ছাড়','not-applicable':'প্রযোজ্য নয়'},
+    hi:{'not-started':'शुरू नहीं','in-progress':'काम चल रहा है',submitted:'जमा',
+      'awaiting-approval':'अनुमोदन लंबित',approved:'अनुमोदित (दर्ज)',rejected:'अस्वीकृत',
+      blocked:'रुका हुआ',completed:'पूरा (दर्ज)',waived:'छूट','not-applicable':'लागू नहीं'},
+    ta:{'not-started':'தொடங்கவில்லை','in-progress':'நடக்கிறது',submitted:'சமர்ப்பிக்கப்பட்டது',
+      'awaiting-approval':'Approval காத்திருக்கிறது',approved:'Approved (பதிவு)',
+      rejected:'நிராகரிக்கப்பட்டது',blocked:'தடை',completed:'முடிந்தது (பதிவு)',
+      waived:'விலக்கு','not-applicable':'பொருந்தாது'}
+  });
   const dailyDay=value=>{
     if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;
     const date=new Date(value+'T00:00:00Z');
@@ -291,7 +308,9 @@
       if(!owner)missingOwnerCount+=1;
       const row={
         group:window,ref:String(task.templateRef||''),activity:String(task.title||''),
-        department:owner||null,status,waiting:String(task.waitingFor||'')||null,
+        department:owner||null,status,
+        statusDisplay:DAILY_STATUS[language][status]||labels.unknown,
+        waiting:String(task.waitingFor||'')||null,
         original:original===null?null:dates.baselineFinish,
         revised:revised===null?null:dates.currentTargetFinish,
         forecast:dailyDay(dates.forecastFinish)===null?null:dates.forecastFinish,
