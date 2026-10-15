@@ -33,7 +33,7 @@ for (const lang of ['en', 'bn', 'hi', 'ta']) {
     assert(model.schema === 'VESA-TNA-REPORT-1', `G07 ${lang} ${item.id} should use the report schema.`);
     assert(model.generatedLabel && model.timezone === 'Asia/Dhaka', `G07 ${lang} ${item.id} should preserve generated date/timezone metadata.`);
     assert(model.order.buyer === 'Buyer Report' && model.order.style === 'STYLE-RPT', `G07 ${lang} ${item.id} must not translate typed buyer/style values.`);
-    assert(model.tasks.length === plan.tasks.length, `G07 ${lang} ${item.id} report model should include every activity.`);
+    assert(item.id === 'R02' ? model.tasks.length <= plan.tasks.length && !!model.buyerTna : model.tasks.length === plan.tasks.length, `G07 ${lang} ${item.id} must respect its approved audience scope.`);
     assert(model.labels.noFabrication && model.labels.shareFallback && model.labels.printFallback, `G07 ${lang} ${item.id} should include report fallback notes.`);
     assert(model.tasks.every(task => ['not-started','in-progress','blocked','submitted','approved','rejected','completed','waived','not-applicable'].includes(task.status)), `G07 ${lang} ${item.id} must preserve stable status IDs.`);
     const jsonExport = JSON.stringify(model, null, 2);
@@ -65,9 +65,9 @@ for (const model of [bnModel, taModel]) {
 }
 
 for (const fragment of [
-  './assets/tna.css?v=0.11.2',
-  './src/reports.js?v=0.7.3',
-  './src/storage.js?v=0.11.1',
+  './assets/tna.css?v=0.11.3',
+  './src/reports.js?v=0.8.0',
+  './src/storage.js?v=0.11.2',
   './src/bootstrap.js',
   "'./apps/tna/src/reports.js'",
   'const reports=globalThis.VesaTnaReports',
