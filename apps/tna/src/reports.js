@@ -290,7 +290,7 @@
     let missingOwnerCount=0,invalidCount=0;
     for(const task of Array.isArray(plan?.tasks)?plan.tasks:[]){
       if(task?.applicability==='not-applicable')continue;
-      const status=String(task?.status||'not-started'),closed=DAILY_CLOSED.has(status);
+      const status=String(task?.status||'needs-information'),closed=DAILY_CLOSED.has(status);
       const dates=task?.dates||{},original=dailyDay(dates.baselineFinish);
       const revised=dailyDay(dates.currentTargetFinish),actual=dailyDay(dates.actualFinish);
       // An invalid explicit revised date is NOT silently replaced by the older plan.
