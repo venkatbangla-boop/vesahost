@@ -115,7 +115,7 @@ assert(rows[1].dependencies.includes(amended.plan.tasks[0].templateRef),'Predece
 assert(!JSON.stringify(report).includes('Restricted internal follow-up text'),'R01 export must not disclose internal revision notes.');
 assert(JSON.stringify(frozen.plan.baselineSnapshots)===JSON.stringify(amended.plan.baselineSnapshots),'R01 projection cannot rewrite baseline.');
 const xlsx=XLSX.read(storage.exportReportWorkbook(report),{type:'buffer',cellNF:true});
-assert.deepEqual(xlsx.SheetNames,['Report Summary','Order Summary','Report Activities','Report Notes','Master TNA'],'R01 adds a master worksheet without removing existing exports.');
+assert(JSON.stringify(xlsx.SheetNames)===JSON.stringify(['Report Summary','Order Summary','Report Activities','Report Notes','Master TNA']),'R01 adds a master worksheet without removing existing exports.');
 const worksheet=xlsx.Sheets['Master TNA'];
 const grid=XLSX.utils.sheet_to_json(worksheet,{header:1,raw:false});
 assert(grid.length===rows.length+1,'Master sheet needs every activity plus exact headers.');
