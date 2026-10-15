@@ -101,6 +101,28 @@
     }
     return mapping;
   }
+
+  /**
+   * Header location is a suggestion only. Show the user the proposed sheet
+   * and header and require a conscious review; never import automatically.
+   */
+  function suggestHeaderRow(snapshot,sheetName){
+    const sheet=snapshot?.sheets?.[sheetName];
+    if(!sheet)return {row:1,score:0};
+    let best={row:1,score:0};
+    for(let i=0;i<Math.min(sheet.rows.length,30);i++){
+      const headers=(sheet.rows[i]||[]).map(cellString);
+      const map=suggestMapping(headers);
+      const score=FIELD_IDS.reduce((count,id)=>count+(map[id]>=0?(REQUIRED.has(id)?3:1):0),0);
+      if(score>best.score)best={row:i+1,score};
+    }
+    return best;
+  }
+  function suggestWorksheet(snapshot){
+    if(!snapshot?.sheetNames?.length)throw Error('Excel has no worksheet to review.');
+    return snapshot.sheetNames.map(name=>({...suggestHeaderRow(snapshot,name),name}))
+      .sort((a,b)=>b.score-a.score)[0];
+  }
   function parseWorkbook(input,fileName=''){
     if(!/\.xlsx$/i.test(String(fileName)))throw Error('Choose a non-macro .xlsx workbook. Other formats are preview-only.');
     if(!XLSX)throw Error('The local Excel reader is missing.');
@@ -226,6 +248,6 @@
   }
   return Object.freeze({
     FIELD_IDS,REQUIRED,DATE_FIELDS,NUMBER_FIELDS,ALIASES,LOCALES,
-    parseWorkbook,describe,review,createNewDraft,parseDate
+    parseWorkbook,suggestHeaderRow,suggestWorksheet,describe,review,createNewDraft,parseDate
   });
 });
