@@ -107,6 +107,48 @@
     const rows=breakdown.map(row=>`<div role="row"><span>${esc(row.color)}</span><span>${esc(row.size)}</span><span>${esc(row.quantity)} ${esc(order.unit||'pcs')}</span></div>`).join('');
     return `<section aria-label="Order master"><h3>Order master</h3><div class="tna-report-grid"><span>Market: ${esc(order.destinationMarket||'Needs Information')}</span><span>Loading port: ${esc(order.portOfLoading||'Needs Information')}</span><span>Discharge port: ${esc(order.portOfDischarge||'Needs Information')}</span><span>Terms: ${esc(order.incoterm||'Needs Information')}</span><span>Shipment: ${esc(order.shipmentMethod||'Needs Information')}</span><span>Size range: ${esc(order.styles?.[0]?.sizeRange||'Needs Information')}</span><span>Required ETD: ${esc(commitments.buyerRequiredETD||'Needs Information')}</span><span>Required ETA: ${esc(commitments.buyerRequiredETA||'Needs Information')}</span><span>Destination date: ${esc(commitments.destinationRequiredDate||'Needs Information')}</span></div>${rows?`<div class="tna-task-table tna-order-breakdown" role="table" aria-label="Color and size breakdown"><div role="row"><b>Color</b><b>Size</b><b>Quantity</b></div>${rows}</div>`:'<p class="tna-note">Color / size breakdown is Needs Information.</p>'}</section>`;
   }
+  /**
+   * Read-only garment activity columns. Owns no plan mutations, saved records or
+   * approval decisions; all values come from existing TNA domain sources.
+   */
+  class GarmentTnaActivityView {
+    /** Compare civil finish dates only, never guessed calendar dates or working-day rules. */
+    static lateCalendarDays(task,language){
+      const target=task.dates?.currentTargetFinish||task.dates?.baselineFinish;
+      const actual=task.dates?.actualFinish;
+      const observed=actual||task.dates?.forecastFinish;
+      const words={
+        en:{missing:'Needs dates',actual:'actual',forecast:'forecast'},
+        bn:{missing:'তারিখ প্রয়োজন',actual:'বাস্তব',forecast:'পূর্বাভাস'},
+        hi:{missing:'तारीख चाहिए',actual:'वास्तविक',forecast:'पूर्वानुमान'},
+        ta:{missing:'தேதிகள் தேவை',actual:'நிகழ்ந்தது',forecast:'எதிர்பார்ப்பு'}
+      }[language]||{missing:'Needs dates',actual:'actual',forecast:'forecast'};
+      if(!target||!observed||!scheduling?.toDay||!scheduling?.fromDay)return words.missing;
+      try{
+        const a=scheduling.toDay(target),b=scheduling.toDay(observed);
+        if(scheduling.fromDay(a)!==target||scheduling.fromDay(b)!==observed)return words.missing;
+        return String(Math.max(0,b-a))+' ('+words[actual?'actual':'forecast']+')';
+      }catch{return words.missing;}
+    }
+    /** Show only approval instances explicitly linked to this task and their recorded reviewers. */
+    static approvalSource(plan,task,language){
+      const linked=(plan.approvals||[]).filter(approval=>Array.isArray(approval.requiredForTaskIds)&&approval.requiredForTaskIds.includes(task.taskId));
+      if(!linked.length)return ({en:'Needs Information',bn:'তথ্য প্রয়োজন',hi:'जानकारी चाहिए',ta:'தகவல் தேவை'})[language]||'Needs Information';
+      return linked.map(approval=>{
+        const decision=operations?.approvalState?.(approval)?.status||'needs-information';
+        const requested=approval.partyRequiredToApprove||'Party not recorded';
+        const reviewer=approval.decidedBy||approval.authorizedReviewerId||'Reviewer not recorded';
+        const evidence=approval.evidenceRef||'Evidence missing';
+        return [requested,decision,reviewer,evidence].join(' · ');
+      }).join(' | ');
+    }
+    /** Display the last actual status-change reason for this task, not an invented remark. */
+    static recordedNote(plan,task){
+      const events=plan.revisionEvents||[];
+      const note=events.slice().reverse().find(event=>event.details?.taskId===task.taskId&&typeof event.details.reason==='string'&&event.details.reason.trim());
+      return note?.details.reason||'—';
+    }
+  }
   function planPanel(plan){if(!plan)return `<div class="tna-panel"><h2>${esc(text('templateLibrary'))}</h2><p>${esc(text('notSaved'))}</p><p>${Object.values(domain?.TEMPLATE_PROFILES||{}).map(t=>esc(t.name)).join(' · ')}</p></div>`;
     const warnings=plan.validation?.warnings||[];const errors=plan.validation?.errors||[];const unknown=plan.unknownFields||[];const savedNote=plan.mode==='practice'?'Practice example is isolated from real production records and cannot be saved as a production TNA.':currentPlanSaved(plan)?'Saved locally in this browser.':'Draft is not saved yet. Use Save TNA to keep it in this browser.';
     const stageCounts=plan.tasks.reduce((acc,task)=>{acc[task.stageCode]=(acc[task.stageCode]||0)+1;return acc},{});
@@ -114,7 +156,7 @@
       <div class="tna-metrics"><b>${plan.tasks.length}</b><span>${esc(text('tasks'))}</span><b>${plan.baselineSnapshots.length}</b><span>${esc(text('baseline'))}</span><b>${unknown.length+warnings.length+errors.length}</b><span>${esc(text('validation'))}</span></div>
       <p class="tna-note">${esc(savedNote)}</p>
       ${orderMasterPanel(plan)}
-      <section class="tna-master-activities" aria-label="Garment TNA activity master sheet"><h3>${esc(({en:'Garment TNA — Activity Follow-up Sheet',bn:'গার্মেন্টস TNA — কার্যক্রম ফলো-আপ',hi:'गारमेंट TNA — कार्य फॉलो-अप',ta:'ஆடை TNA — செயல்பாடு தொடர்ச்சி'})[state.language])}</h3><p class="tna-note">${esc(({en:'All activities appear below. Missing dates or approval evidence remain unconfirmed.',bn:'সব কাজ নিচে দেখানো হয়েছে। অনুপস্থিত তারিখ বা অনুমোদন নিশ্চিত নয়।',hi:'सभी कार्य नीचे हैं। अनुपलब्ध तारीख या अनुमोदन अपुष्ट है।',ta:'அனைத்து செயல்களும் கீழே உள்ளன. இல்லாத தேதிகள் அல்லது ஒப்புதல்கள் உறுதிப்படுத்தப்படவில்லை.'})[state.language])}</p><div class="tna-sheet-scroll"><div class="tna-task-table tna-activity-table" role="table" aria-label="Editable garment TNA activity sheet"><div role="row" class="tna-activity-heading">${(({en:['Ref','Activity','Responsible','Target finish','Forecast finish','Actual finish','Status','Delay reason','Follow up'],bn:['নং','কাজ','দায়িত্ব','লক্ষ্য সমাপ্তি','পূর্বাভাস সমাপ্তি','বাস্তব সমাপ্তি','অবস্থা','বিলম্বের কারণ','ফলো-আপ'],hi:['क्रम','कार्य','जिम्मेदार','लक्षित समाप्ति','अनुमानित समाप्ति','वास्तविक समाप्ति','स्थिति','देरी का कारण','फॉलो-अप'],ta:['எண்','செயல்பாடு','பொறுப்பு','இலக்கு முடிவு','எதிர்பார்க்கும் முடிவு','உண்மை முடிவு','நிலை','தாமதக் காரணம்','தொடர்ச்சி']})[state.language]).map(label=>`<b role="columnheader">${esc(label)}</b>`).join('')}</div>${plan.tasks.map(task=>`<div role="row"><span>${esc(task.templateRef)}</span><span>${esc(task.title)}</span><span>${esc(task.ownerParty||'—')}</span><span>${esc(task.dates?.currentTargetFinish||task.dates?.baselineFinish||'—')}</span><span>${esc(task.dates?.forecastFinish||'—')}</span><span>${esc(task.dates?.actualFinish||'—')}</span><span>${esc(task.status||'—')}</span><span>${esc(task.delayReason||'—')}</span><span><button class="tna-mini-btn" type="button" data-edit-task="${esc(task.taskId)}" aria-label="Edit ${esc(task.title)}">${esc(({en:'Edit',bn:'সম্পাদনা',hi:'संपादित करें',ta:'திருத்து'})[state.language])}</button></span></div>`).join('')}</div></div></section>
+      <section class="tna-master-activities" aria-label="Garment TNA activity master sheet"><h3>${esc(({en:'Garment TNA — Activity Follow-up Sheet',bn:'গার্মেন্টস TNA — কার্যক্রম ফলো-আপ',hi:'गारमेंट TNA — कार्य फॉलो-अप',ta:'ஆடை TNA — செயல்பாடு தொடர்ச்சி'})[state.language])}</h3><p class="tna-note">${esc(({en:'All activities appear below. Missing dates or approval evidence remain unconfirmed.',bn:'সব কাজ নিচে দেখানো হয়েছে। অনুপস্থিত তারিখ বা অনুমোদন নিশ্চিত নয়।',hi:'सभी कार्य नीचे हैं। अनुपलब्ध तारीख या अनुमोदन अपुष्ट है।',ta:'அனைத்து செயல்களும் கீழே உள்ளன. இல்லாத தேதிகள் அல்லது ஒப்புதல்கள் உறுதிப்படுத்தப்படவில்லை.'})[state.language])}</p><div class="tna-sheet-scroll"><div class="tna-task-table tna-activity-table" role="table" aria-label="Editable garment TNA activity sheet"><div role="row" class="tna-activity-heading">${(({en:['Ref','Activity','Responsible','Target finish','Forecast finish','Actual finish','Calendar days late','Status','Approval / source','Recorded note','Delay reason','Follow up'],bn:['নং','কাজ','দায়িত্ব','লক্ষ্য সমাপ্তি','পূর্বাভাস সমাপ্তি','বাস্তব সমাপ্তি','বিলম্ব (দিন)','অবস্থা','অনুমোদন / সূত্র','নথিবদ্ধ মন্তব্য','বিলম্বের কারণ','ফলো-আপ'],hi:['क्रम','कार्य','जिम्मेदार','लक्षित समाप्ति','अनुमानित समाप्ति','वास्तविक समाप्ति','देरी (दिन)','स्थिति','अनुमोदन / स्रोत','दर्ज टिप्पणी','देरी का कारण','फॉलो-अप'],ta:['எண்','செயல்பாடு','பொறுப்பு','இலக்கு முடிவு','எதிர்பார்க்கும் முடிவு','உண்மை முடிவு','தாமத நாட்கள்','நிலை','ஒப்புதல் / ஆதாரம்','பதிந்த குறிப்பு','தாமதக் காரணம்','தொடர்ச்சி']})[state.language]).map(label=>`<b role="columnheader">${esc(label)}</b>`).join('')}</div>${plan.tasks.map(task=>`<div role="row"><span role="cell">${esc(task.templateRef)}</span><span role="cell">${esc(task.title)}</span><span role="cell">${esc(task.ownerParty||'—')}</span><span role="cell">${esc(task.dates?.currentTargetFinish||task.dates?.baselineFinish||'—')}</span><span role="cell">${esc(task.dates?.forecastFinish||'—')}</span><span role="cell">${esc(task.dates?.actualFinish||'—')}</span><span role="cell">${esc(GarmentTnaActivityView.lateCalendarDays(task,state.language))}</span><span role="cell">${esc(task.status||'—')}</span><span role="cell">${esc(GarmentTnaActivityView.approvalSource(plan,task,state.language))}</span><span role="cell">${esc(GarmentTnaActivityView.recordedNote(plan,task))}</span><span role="cell">${esc(task.delayReason||'—')}</span><span role="cell"><button class="tna-mini-btn" type="button" data-edit-task="${esc(task.taskId)}" aria-label="Edit ${esc(task.title)}">${esc(({en:'Edit',bn:'সম্পাদনা',hi:'संपादित करें',ta:'திருத்து'})[state.language])}</button></span></div>`).join('')}</div></div></section>
       ${unknown.length?`<h3>${esc(text('unknown'))}</h3><ul>${unknown.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
       ${errors.length?`<h3>Errors</h3><ul>${errors.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
       ${warnings.length?`<h3>Warnings</h3><ul>${warnings.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
