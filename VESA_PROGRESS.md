@@ -2,6 +2,14 @@
 
 ## Current Work portfolio queue and evidence-based resumption (2026-10-15)
 
+### TNA rework branch checkpoint — 2026-10-15
+
+**Current application:** TNA 360 Garment Merchandising Rework — **ACTIVE (audit completed; implementation CONDITIONAL)**. Work branch `feature/tna-merchandising-rework`, based on `main`; audit documentation commit `2d8d4f5724429bba105ecfec9a1a3d1068cc82c7`. Direct GitHub inspection confirmed `apps/tna/src/bootstrap.js` places a 12-activity edit excerpt below calculations, while workspace rows are limited to 24; the source-backed scheduling and record owners remain unchanged. Scope and rollback are recorded in `docs/tna/GARMENT_MERCHANDISING_REWORK_QUEUE.md`.
+
+**Tests:** Not run for this new rework; checkout/browser runner unavailable. This commit documents audit evidence only and must not be counted as verified feature development or DEMO LIVE. Existing Costing personal demo status and earlier passing CI evidence are unchanged. **NEXT ACTION:** inspect TNA-specific styles and test entrypoints, apply a reversible sheet-first presentation patch, run real browser and TNA/PPM/AQL regressions, then advance the tracker with exact evidence. **Next queue:** Packing & Container 360 after TNA rework acceptance or a genuine blocking dependency.
+
+
+
 **Owner demo-release decision and verified gate:** The owner explicitly requested that Costing 360 appear on `main` under Login → App Centre, as a **personal demo only**. Expanded GitHub Actions [run 38620428421](https://github.com/venkatbangla-boop/vesahost/actions/runs/38620428421) **PASS** for the Costing calculation/Excel/save/report/offline path, PPM/AQL/TNA baseline checks, existing-app route and full VESA shell/browser regression. `service-worker.js` is now versioned `vesa-v69-costing-demo` to prevent stale catalogue assets; no PPM/AQL/TNA domain code or historical gate percentage was changed. **GitHub Pages remains unsuitable for commercial SaaS/live business data; browser-local login is not server authentication.** **Public deployment: `DEMO LIVE` verified.** [Pages run 38620818355](https://github.com/venkatbangla-boop/vesahost/actions/runs/38620818355) and [public exact-byte smoke 38621067300](https://github.com/venkatbangla-boop/vesahost/actions/runs/38621067300) finished SUCCESS. Public Login, App Centre, Costing HTML/catalogue/service-worker bytes matched checked-out main; AQL/PPM/TNA public routes also returned success. Demo-only scope and commercial-hosting restrictions still apply.
 
 
@@ -10,7 +18,7 @@ The following is the **approved execution priority**, not a count of completed a
 | # | Application | Work-queue status | Evidence / next dependency |
 |---|---|---|---|
 | 1 | Costing 360 | DEMO LIVE (non-commercial personal showcase only) | [Public Costing demo](https://vesaent.com/apps/costing/), [source CI PASS 38620428421](https://github.com/venkatbangla-boop/vesahost/actions/runs/38620428421), [live bytes PASS 38621067300](https://github.com/venkatbangla-boop/vesahost/actions/runs/38621067300); real business/SaaS use not approved |
-| 2 | TNA 360 Garment Merchandising Rework | NOT STARTED (next development) | Approved request at `docs/tna/GARMENT_MERCHANDISING_REWORK_QUEUE.md` on main; existing TNA core and saved records must be preserved |
+| 2 | TNA 360 Garment Merchandising Rework | ACTIVE — audit only; implementation CONDITIONAL | Approved request at `docs/tna/GARMENT_MERCHANDISING_REWORK_QUEUE.md` on main; existing TNA core and saved records must be preserved |
 | 3 | Packing & Container 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
 | 4 | Order & Commission 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
 | 5 | Tech Pack & Spec 360 | NOT STARTED / blueprint verification pending | Inspect approved original roadmap and relevant blueprint before implementation |
