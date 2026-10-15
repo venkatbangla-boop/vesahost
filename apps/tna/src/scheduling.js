@@ -41,12 +41,30 @@
     if(primary.calendarId&&!calendars.has(primary.calendarId))calendars.set(primary.calendarId,primary);
     return {primary,forTask(task){return task?.calendarId?calendars.get(task.calendarId)||null:primary;},revisions:[...calendars.values()].map(calendar=>calendar.revision||0)};
   }
+  /**
+   * Count working dates on the open-start/closed-end civil-date interval.
+   * A contractual endpoint may fall on a nonworking date. Walking only from
+   * working day to working day can skip that endpoint forever; iterate civil
+   * dates instead and count only the explicitly configured working dates.
+   * Preserve signed weekday-to-weekday results and calendar-day basis.
+   */
   function workdayDifference(start,end,calendar=DEFAULT_CALENDAR,basis='working'){
-    assertDate(start);assertDate(end);if(start===end)return 0;
+    assertDate(start);assertDate(end);
+    if(start===end)return 0;
     if(basis==='calendar')return toDay(end)-toDay(start);
-    const dir=compareDate(start,end)<0?1:-1;let current=start,count=0;
-    while(current!==end){current=shiftDate(current,dir,calendar,'working');count+=dir;}
-    return count;
+    if(basis!=='working')throw new Error('Workday difference requires working or calendar basis.');
+    const cal=normalizeCalendar(calendar);
+    if(!Array.isArray(cal.workingWeek)||!cal.workingWeek.length||
+      cal.workingWeek.some(day=>!Number.isInteger(day)||day<0||day>6))
+      throw new Error('Workday difference requires a valid nonempty working week.');
+    const dir=compareDate(start,end)<0?1:-1;
+    const first=dir>0?toDay(start):toDay(end);
+    const last=dir>0?toDay(end):toDay(start);
+    let count=0;
+    for(let day=first+1;day<=last;day++){
+      if(isWorkingDate(fromDay(day),cal))count++;
+    }
+    return dir*count;
   }
   function validateGraph(tasks=[],edges=[]){
     const errors=[],warnings=[],ids=new Set(tasks.map(t=>t.taskId));

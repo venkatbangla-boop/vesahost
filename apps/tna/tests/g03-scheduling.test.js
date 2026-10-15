@@ -47,6 +47,35 @@ assert(!invalid.ok && invalid.errors.some(error => error.includes('itself')), 'G
 const missing = scheduling.schedule([{ taskId: 'X', durationUnits: null, status: 'not-started' }], [], { calendar: cal, startDate: '2026-10-12' });
 assert(missing.validity === 'incomplete' && missing.missingInputs.includes('duration:X'), 'GPH-06 missing duration should be incomplete, not guessed.');
 
+// GMR-16: buyer deadlines can land on a weekend; calendar arithmetic
+// must terminate without rolling signed contractual targets or baselines.
+const strict = require('node:assert/strict');
+strict.equal(scheduling.workdayDifference('2026-10-16', '2026-10-18', cal, 'working'), 0,
+  'Friday-to-Sunday has zero intervening working days.');
+strict.equal(scheduling.workdayDifference('2026-10-18', '2026-10-19', cal, 'working'), 1,
+  'Sunday-to-Monday is exactly one working day.');
+strict.equal(scheduling.workdayDifference('2026-10-19', '2026-10-18', cal, 'working'), -1,
+  'The reverse deadline comparison retains its sign.');
+strict.equal(scheduling.workdayDifference('2026-10-16', '2026-10-19', cal, 'working'), 1,
+  'Friday-to-Monday remains one working day as before.');
+strict.equal(scheduling.workdayDifference('2026-10-16', '2026-10-18', cal, 'calendar'), 2,
+  'Calendar-day difference must still count weekend days.');
+strict.equal(scheduling.workdayDifference('2026-10-14', '2026-10-16', holidayCal, 'working'), 1,
+  'Declared holiday must never be counted as a working day.');
+strict.throws(()=>scheduling.workdayDifference('2026-10-12','2026-10-15',
+  {...cal,workingWeek:[]},'working'),/nonempty working week/i,
+  'Empty workweek must not be misrepresented as zero float.');
+const weekendDue=scheduling.schedule(tasks,edges,{
+  calendar:cal,startDate:'2026-10-12',requiredDate:'2026-10-18'
+});
+strict.equal(weekendDue.validity,'valid','Weekend buyer target remains a valid contractual date.');
+strict.equal(weekendDue.project.forecastDate,'2026-10-19',
+  'The forecast stays on the computed Monday without rewriting buyer target.');
+strict.equal(weekendDue.project.requiredDate,'2026-10-18',
+  'Buyer Sunday deadline stays unchanged in report provenance.');
+strict.equal(weekendDue.project.workingDaysEarlyOrLate,1,
+  'The Monday forecast is one factory working day late against Sunday delivery.');
+
 const mixed = [
   { taskId: 'S', durationUnits: 2, durationBasis: 'working', status: 'not-started' },
   { taskId: 'SS', durationUnits: 1, durationBasis: 'working', status: 'not-started' },
