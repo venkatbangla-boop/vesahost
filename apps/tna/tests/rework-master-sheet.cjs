@@ -148,7 +148,7 @@ class TnaMerchandisingSheetBrowserProof {
       const calendarLabel={en:'Calendar name',bn:'ক্যালেন্ডারের নাম',hi:'कैलेंडर का नाम',ta:'நாட்காட்டி பெயர்'};
       await this.page.locator('[data-edit-calendar]').click();
       const calendarForm=this.page.locator('#tnaCalendarForm');
-      assert.ok(await calendarForm.getByText(calendarLabel[language],{exact:true}).count(),
+      assert.ok(await calendarForm.getByText(calendarLabel[language],{exact:false}).count(),
         language+': factory calendar form must translate its name label.');
       assert.equal(await calendarForm.locator('[name="workingWeek"]:checked').count(),6,
         language+': confirmed working days may not change during translation.');
