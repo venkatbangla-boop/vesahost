@@ -24,6 +24,11 @@ jobs:
     # Retain every test below. Only the scheduling gate changes.
     # Complete source CI evidence must match a deliberate [verify] checkpoint SHA.
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[verify]')) }}
+    # Duplicate GitHub webhook deliveries for the same checkpoint SHA must not
+    # run the entire Chromium suite twice. Skipped normal commits never enter.
+    concurrency:
+      group: tna-verified-checkpoint-${{ github.ref }}-${{ github.sha }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
