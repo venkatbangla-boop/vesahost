@@ -83,6 +83,7 @@ class TnaBuyerMilestoneDisclosureProof {
       assert.equal(model.order.style,'BUYER-R02');
       assert.equal(model.order.po,'PO-R02');
       assert.equal(model.order.quantity,2400);
+      assert.equal(buyer.labels.missingLegend.includes('date is not entered'),true,'Buyer print must explain compact missing dates.');
       assert.equal(model.order.requiredExFactory,'2026-12-20');
       assert.equal(buyer.forecastExFactory,'2026-12-22');
       assert.equal(buyer.actualExFactory,'2026-12-19');
@@ -94,7 +95,7 @@ class TnaBuyerMilestoneDisclosureProof {
         assert(!refs.has(unwanted),'Internal commercial milestone must be excluded: '+unwanted);
       }
       for(const item of buyer.rows){
-        assert(item.title&&item.ref&&item.targetVerification===buyer.labels.unverified);
+        assert(item.title&&item.ref&&item.targetVerification===buyer.labels.shortVerification);
         assert(!Object.prototype.hasOwnProperty.call(item,'proofRefs'),'No raw proof IDs allowed.');
         assert(!Object.prototype.hasOwnProperty.call(item,'ownerParty'),'No raw internal party names allowed.');
       }
@@ -104,7 +105,7 @@ class TnaBuyerMilestoneDisclosureProof {
       assert.equal(fit.forecast,'2026-11-23','Only a real entered forecast may display.');
       assert.equal(fit.actual,null,'Approval cannot create an actual finish date.');
       assert(fit.explanation.includes('5 calendar days'));
-      assert(fit.statusLabel.includes('locally')&&fit.targetVerification.includes('not independently'),
+      assert(fit.statusLabel.includes('locally')&&fit.targetVerification===buyer.labels.shortVerification,
         'Recorded local approval cannot be called externally verified.');
       const pending=buyer.requiredActions.find(row=>row.ref==='D14');
       assert(pending&&pending.action===buyer.labels.requested,'Pending buyer review must be clearly conditional.');

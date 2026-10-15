@@ -716,8 +716,8 @@
       const heads=w.cols.slice(0,10);
       const header='<thead><tr>'+heads.map(value=>'<th scope="col">'+esc(value)+'</th>').join('')+'</tr></thead>';
       const body=buyer.rows.map(row=>{
-        const cells=[row.ref,row.title,row.original||w.unknown,row.target||w.unknown,
-          row.forecast||w.unknown,row.actual||w.unknown,row.statusLabel,
+        const cells=[row.ref,row.title,row.original||'—',row.target||'—',
+          row.forecast||'—',row.actual||'—',row.statusLabel,
           row.buyerAction,row.explanation,row.targetVerification];
         return '<tr>'+cells.map(value=>'<td>'+esc(value)+'</td>').join('')+'</tr>';
       }).join('');
@@ -728,6 +728,7 @@
       return '<section class="tna-buyer-report" aria-label="'+esc(w.title)+'">'+
         '<p class="tna-buyer-review-note" role="note">'+esc(buyer.notice)+'</p>'+
         '<p class="tna-note">'+esc(buyer.locallyRecorded)+'</p>'+
+        '<p class="tna-note tna-buyer-date-legend">'+esc(w.missingLegend)+'</p>'+
         '<div class="tna-buyer-summary">'+
           '<span><strong>'+esc(w.required)+':</strong> '+esc(buyer.order.requiredExFactory)+'</span>'+
           '<span><strong>'+esc(w.cols[4]+':')+'</strong> '+esc(buyer.forecastExFactory||w.unknown)+'</span>'+
