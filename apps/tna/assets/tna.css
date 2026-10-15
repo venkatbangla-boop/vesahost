@@ -210,3 +210,31 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
  body.tna-printing-report .tna-report-production-table th,body.tna-printing-report .tna-report-production-table td{padding:4pt;white-space:normal;overflow-wrap:anywhere}
  body.tna-printing-report .tna-report-production-facts{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
+
+/* GMR-11 R08 commercial-only Material & LC report; within existing VESA dialog. */
+#tnaMaterialReviewWrap[hidden]{display:none!important}
+.tna-material-review{min-width:0;max-width:100%;box-sizing:border-box;border:1px solid var(--line,#d5deea);padding:12px;border-radius:12px}
+.tna-material-review legend{font-weight:800;padding:0 6px}
+.tna-material-review label{min-width:0;overflow-wrap:anywhere}
+.tna-material-review label:has(input[type=date]),.tna-material-review label:has(input[type=text]){display:grid;gap:5px;margin:9px 0}
+.tna-material-review input:not([type=checkbox]){max-width:100%;width:100%;min-height:44px;box-sizing:border-box}
+.tna-material-review input[type=checkbox]{width:18px;height:18px;min-height:18px;flex:none;margin-top:4px}
+.tna-report-material-lc{max-width:100%;min-width:0;margin:14px 0;overflow-wrap:anywhere}
+.tna-report-material-lc h3{margin:17px 0 9px;overflow-wrap:anywhere}
+.tna-report-material-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+.tna-report-material-facts span{padding:9px;border:1px solid var(--line,#d5deea);border-radius:9px;background:var(--look-surface,#eef3f9);overflow-wrap:anywhere}
+.tna-report-material-scroll{min-width:0;max-width:100%;overflow:auto;border:1px solid var(--line,#d5deea);border-radius:9px;margin:10px 0}
+.tna-report-material-table{min-width:660px;width:100%;border-collapse:collapse;table-layout:fixed;line-height:1.4;font-size:.78rem}
+.tna-report-material-table thead{display:table-header-group}
+.tna-report-material-table tr{break-inside:avoid}
+.tna-report-material-table th,.tna-report-material-table td{padding:7px;border:1px solid var(--line,#d5deea);text-align:start;vertical-align:top;white-space:normal;overflow-wrap:anywhere}
+.tna-report-material-table th{background:var(--look-surface,#eef3f9);font-weight:750}
+.tna-report-material-table th:first-child{width:18%}
+@media(max-width:700px){.tna-report-material-facts{grid-template-columns:1fr}}
+@media print{
+ body.tna-printing-report .tna-report-material-scroll{overflow:visible;border:0;max-width:100%}
+ body.tna-printing-report .tna-report-material-table{min-width:0;width:100%;table-layout:fixed;font-size:7pt}
+ body.tna-printing-report .tna-report-material-table th,body.tna-printing-report .tna-report-material-table td{padding:4pt;white-space:normal;overflow-wrap:anywhere}
+ body.tna-printing-report .tna-report-material-table thead{display:table-header-group}
+ body.tna-printing-report .tna-report-material-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

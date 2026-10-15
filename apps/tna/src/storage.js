@@ -69,6 +69,8 @@
       throw new Error(model.delayRecovery?.labels?.selectReview||'Review internal report access and select a valid date.');
     if(model.reportId==='R07'&&!model.productionStatus?.ready)
       throw new Error(model.productionStatus?.labels?.selectReview||'Choose authorized production report audience and valid date.');
+    if(model.reportId==='R08'&&!model.materialLcReport?.ready)
+      throw new Error(model.materialLcReport?.labels?.selectReview||'Select a commercial review date and authorization.');
     const workbook=XLSX.utils.book_new();
     const addSheet=(name,rows,widths,filter=false)=>{
       const sheet=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
@@ -368,6 +370,52 @@
         [txt(t.noAccess),txt(t.source)]);
       workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
       workbook.Sheets['Report Summary']['!cols']=[{wch:57},{wch:108}];
+    }
+    // R08: private report only from the gated, read-only material projection.
+    // Excel numbers and ISO dates retain real types, while LC evidence IDs,
+    // source remarks, account numbers and supplier prices never enter the model.
+    if(model.reportId==='R08'){
+      const report=model.materialLcReport,t=report.labels;
+      const value=x=>safeCell(x===null||x===undefined||x===''?t.missing:x);
+      const qty=x=>x===null||x===undefined?value(t.missing):numberCell(x);
+      const date=x=>x?dateCell(x):value(t.missing);
+      const yes=x=>value(x?'Yes (source-recorded)':'Not recorded');
+      const m=report.master;
+      const masterRows=[
+        [t.masterStatus,t.masterDate,t.masterEvidence,t.materialState],
+        [value(m.status),date(m.openedOn),yes(m.evidenceRecorded),value(m.state)],
+        [],[value(t.masterWarning)]
+      ];
+      addSheet('Master LC Review',masterRows,[29,22,35,102]);
+      const matRows=[[
+        t.ref,t.category,t.supplier,t.country,t.payment,t.masterRef,
+        t.required,t.unit,t.shortage,t.booking,t.application,t.opened,
+        t.b2bState,t.inHouse,t.qc,t.materialState,t.evidence
+      ],...(report.materials.length?report.materials.map(row=>[
+        value(row.ref),value(row.category),value(row.supplier),value(row.country),
+        value(row.payment),yes(row.masterLcAssociated),
+        qty(row.requiredQty),value(row.unit),qty(row.shortageQty),
+        date(row.booking),date(row.application),date(row.b2bOpened),
+        value(row.b2bState),date(row.inHouse),date(row.qcDate),
+        value([row.qcState,row.shortageState,row.readiness].join(' · ')),
+        yes(row.sourceEvidenceRecorded)
+      ]):[[value(t.noData)]])];
+      addSheet('Material Sources',matRows,[23,25,40,20,24,29,23,14,22,21,23,24,66,22,22,87,32],true);
+      const tasks=[[t.ref,t.task,t.status,t.original,t.current,t.forecast,t.actual],
+        ...(report.milestones.length?report.milestones.map(row=>[
+          value(row.ref),value(row.title),value(row.status),
+          date(row.original),date(row.current),date(row.forecast),date(row.actual)
+        ]):[[value(t.noTasks)]])];
+      addSheet('Sourcing Milestones',tasks,[16,52,24,22,22,23,23],true);
+      const summary=XLSX.utils.sheet_to_json(workbook.Sheets['Report Summary'],
+        {header:1,raw:true});
+      summary.push([value(t.asOf),date(report.asOfDate)],
+        [value(t.materials),numberCell(report.counts.materials)],
+        [value(t.shortagePositive),numberCell(report.counts.shortages)],
+        [value(t.qcPending),numberCell(report.counts.missingQc)],
+        [value(t.noAccess),value(t.masterWarning)]);
+      workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(summary,{dateNF:'yyyy-mm-dd'});
+      workbook.Sheets['Report Summary']['!cols']=[{wch:53},{wch:108}];
     }
     if(model.reportId==='R01'&&model.masterSheet){
       const l=model.masterSheet.labels||{};

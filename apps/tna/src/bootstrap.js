@@ -705,6 +705,56 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     html+='<p class="tna-note">'+esc(t.noAccess)+'</p></section>';
     return html;
   }
+  /**
+   * R08 is a commercial-only source review. Render ONLY the filtered report
+   * adapter, not plan materials/LC notes or raw evidence references. The
+   * confirmation input is a local disclosure acknowledgement, not a role ACL.
+   */
+  function materialLcReportPreview(data){
+    const t=data.labels,cell=value=>esc(value===null||value===undefined||value===''?t.missing:value);
+    let html='<section class="tna-report-material-lc" aria-label="'+esc(t.title)+'">';
+    if(!data.ready)return html+'<p role="status" class="tna-note">'+esc(t.selectReview)+'</p></section>';
+    html+='<p class="tna-note"><b>'+esc(t.asOf)+':</b> '+cell(data.asOfDate)+'</p>';
+    html+='<h3>'+esc(t.master)+'</h3>';
+    html+='<div class="tna-report-material-facts">'+[
+      [t.masterStatus,data.master.status],[t.masterDate,data.master.openedOn],
+      [t.masterEvidence,data.master.evidenceRecorded?'Yes (source-recorded)':'Not recorded'],
+      [t.materialState,data.master.state]
+    ].map(([key,val])=>'<span><b>'+esc(key)+':</b> '+cell(val)+'</span>').join('')+'</div>';
+    html+='<p class="tna-note">'+esc(t.masterWarning)+'</p>';
+    html+='<h3>'+esc(t.materials)+' · '+data.counts.materials+'</h3>';
+    if(!data.materials.length)html+='<p>'+esc(t.noData)+'</p>';
+    else{
+      const parts=[
+        {key:'sources',heads:[t.ref,t.category,t.supplier,t.country,t.payment,t.masterRef],
+         values:r=>[r.ref,r.category,r.supplier,r.country,r.payment,r.masterLcAssociated?'Yes (source-recorded)':'Not recorded']},
+        {key:'lc',heads:[t.ref,t.booking,t.application,t.opened,t.b2bState,t.evidence],
+         values:r=>[r.ref,r.booking,r.application,r.b2bOpened,r.b2bState,r.sourceEvidenceRecorded?'Yes (source-recorded)':'Not recorded']},
+        {key:'readiness',heads:[t.ref,t.required,t.unit,t.shortage,t.inHouse,t.qc,t.materialState],
+         values:r=>[r.ref,r.requiredQty,r.unit,r.shortageQty,r.inHouse,r.qcDate,
+           [r.qcState,r.shortageState,r.readiness].join(' · ')]}
+      ];
+      for(const part of parts){
+        html+='<div class="tna-report-material-scroll"><table class="tna-report-material-table" data-material-group="'+esc(part.key)+'"><thead><tr>'+
+          part.heads.map(x=>'<th scope="col">'+esc(x)+'</th>').join('')+'</tr></thead><tbody>';
+        html+=data.materials.map(r=>'<tr>'+part.values(r).map(v=>'<td>'+cell(v)+'</td>').join('')+'</tr>').join('');
+        html+='</tbody></table></div>';
+      }
+    }
+    html+='<h3>'+esc(t.taskHeading)+'</h3>';
+    if(!data.milestones.length)html+='<p>'+esc(t.noTasks)+'</p>';
+    else{
+      const heads=[t.ref,t.task,t.status,t.original,t.current,t.forecast,t.actual];
+      html+='<div class="tna-report-material-scroll"><table class="tna-report-material-table" data-material-milestones><thead><tr>'+
+        heads.map(x=>'<th scope="col">'+esc(x)+'</th>').join('')+'</tr></thead><tbody>';
+      html+=data.milestones.map(r=>'<tr>'+[
+        r.ref,r.title,r.status,r.original,r.current,r.forecast,r.actual
+      ].map(v=>'<td>'+cell(v)+'</td>').join('')+'</tr>').join('');
+      html+='</tbody></table></div>';
+    }
+    html+='<p class="tna-note">'+esc(t.noAutomatic)+' '+esc(t.notes)+' '+esc(t.noAccess)+'</p></section>';
+    return html;
+  }
   function reportPreviewHtml(model){
     const order=model.order;
     let html='<article class="tna-report-preview"><h2>'+esc(model.title)+'</h2>';
@@ -718,6 +768,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       [model.labels.required,order.requiredExFactory]
     ].map(([label,value])=>'<span>'+esc(label)+': '+esc(value)+'</span>').join('')+'</div>';
     if(model.criticalPath)html+=criticalReportPreview(model.criticalPath);
+    else if(model.materialLcReport)html+=materialLcReportPreview(model.materialLcReport);
     else if(model.productionStatus)html+=productionReportPreview(model.productionStatus);
     else if(model.delayRecovery)html+=delayReportPreview(model.delayRecovery);
     else if(model.weeklyTna)html+=weeklyReportPreview(model.weeklyTna);
@@ -740,6 +791,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const first=reports.catalogue(state.language)[0];
     const dailyWords=reportModel('R03').factoryDaily.labels;
     const cpWords=reportModel('R04').criticalPath.labels;
+    const materialWords=globalThis.VesaTnaMaterialLcReport?.WORDS?.[state.language]||
+      globalThis.VesaTnaMaterialLcReport?.WORDS?.en;
     const productionWords=globalThis.VesaTnaProductionStatusReport?.WORDS?.[state.language]||
       globalThis.VesaTnaProductionStatusReport?.WORDS?.en;
     const delayWords=globalThis.VesaTnaDelayRecoveryReport?.WORDS?.[state.language]||
@@ -829,12 +882,21 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       '<label><span>'+esc(productionWords.buyerReference)+'</span>'+
       '<input id="tnaProdBuyerRef" type="text" maxlength="180" autocomplete="off"></label></div>'+
       '<p class="tna-note">'+esc(productionWords.noAccess)+'</p></fieldset>';
+    const materialControls='<fieldset id="tnaMaterialReviewWrap" class="tna-wide tna-material-review" hidden>'+
+      '<legend>'+esc(materialWords.title)+'</legend>'+
+      '<label><span>'+esc(materialWords.asOf)+'</span>'+
+      '<input id="tnaMaterialAsOf" type="date" aria-required="true"></label>'+
+      '<label class="tna-wide tna-cpm-checkbox"><input id="tnaMaterialConsent" type="checkbox">'+
+      '<span>'+esc(materialWords.consent)+'</span></label>'+
+      '<label><span>'+esc(materialWords.accessRef)+'</span>'+
+      '<input id="tnaMaterialAuthorityRef" type="text" maxlength="180" autocomplete="off" aria-required="true"></label>'+
+      '<p class="tna-note">'+esc(materialWords.noAccess)+'</p></fieldset>';
     openDialog('Reports',
       '<div class="tna-form-grid">'+
       '<label><span>Report type</span><select id="tnaReportType">'+reportOptions()+'</select></label>'+
       '<label><span>Language</span><input readonly value="'+esc(state.language)+'"></label>'+
       '<label id="tnaReportAsOfWrap" hidden><span>'+esc(dailyWords.asOf)+'</span>'+
-      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+weeklyControls+delayControls+productionControls+'</div>'+
+      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+weeklyControls+delayControls+productionControls+materialControls+'</div>'+
       '<p id="tnaReportGate" role="status" aria-live="polite" class="tna-note"></p>'+
       '<div class="menu-grid">'+
       '<button class="tna-btn" type="button" data-report-action="preview">Preview report</button>'+
@@ -850,6 +912,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const weeklyWrap=document.getElementById('tnaWeeklyReviewWrap');
     const delayWrap=document.getElementById('tnaDelayReviewWrap');
     const productionWrap=document.getElementById('tnaProdReviewWrap');
+    const materialWrap=document.getElementById('tnaMaterialReviewWrap');
     const gate=document.getElementById('tnaReportGate');
     const criticalReview=()=>{
       const value=name=>criticalWrap.querySelector('[name="'+name+'"]')?.value||'';
@@ -886,23 +949,31 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       buyerShareConfirmed:!!productionWrap.querySelector('#tnaProdBuyerConsent')?.checked,
       authorizationRef:productionWrap.querySelector('#tnaProdBuyerRef')?.value||''
     });
+    const materialReview=()=>({
+      asOfDate:materialWrap.querySelector('#tnaMaterialAsOf')?.value||'',
+      commercialConfirmed:!!materialWrap.querySelector('#tnaMaterialConsent')?.checked,
+      commercialAuthorityRef:materialWrap.querySelector('#tnaMaterialAuthorityRef')?.value||''
+    });
     const currentModel=()=>reportModel(type.value,
       type.value==='R03'?{asOfDate:review.value}:
       type.value==='R04'?{criticalReview:criticalReview()}:
       type.value==='R05'?weeklyReview():
       type.value==='R06'?delayReview():
-      type.value==='R07'?productionReview():{});
+      type.value==='R07'?productionReview():
+      type.value==='R08'?materialReview():{});
     const update=()=>{
       reviewWrap.hidden=type.value!=='R03';
       criticalWrap.hidden=type.value!=='R04';
       weeklyWrap.hidden=type.value!=='R05';
       delayWrap.hidden=type.value!=='R06';
       productionWrap.hidden=type.value!=='R07';
+      materialWrap.hidden=type.value!=='R08';
       const prodMode=productionWrap.querySelector('#tnaProdMode')?.value||'';
       productionWrap.querySelector('#tnaProdInternalWrap').hidden=prodMode!=='internal';
       productionWrap.querySelector('#tnaProdBuyerWrap').hidden=prodMode!=='buyer';
       const model=currentModel();
-      gate.textContent=model.productionStatus&&!model.productionStatus.ready?model.productionStatus.warnings.join(' · '):
+      gate.textContent=model.materialLcReport&&!model.materialLcReport.ready?model.materialLcReport.labels.selectReview:
+        model.productionStatus&&!model.productionStatus.ready?model.productionStatus.warnings.join(' · '):
         model.delayRecovery&&!model.delayRecovery.ready?model.delayRecovery.labels.selectReview:
         model.factoryDaily&&!model.factoryDaily.ready?model.factoryDaily.labels.selectDate:
         model.weeklyTna&&!model.weeklyTna.ready?model.weeklyTna.warnings.filter(w=>w===model.weeklyTna.labels.selectDates||w===model.weeklyTna.labels.badRecovery).join(' · '):
@@ -931,14 +1002,19 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       control.addEventListener('change',update);
       if(control.type!=='checkbox'&&control.tagName!=='SELECT')control.addEventListener('input',update);
     });
+    materialWrap.querySelectorAll('input').forEach(control=>{
+      control.addEventListener('change',update);
+      if(control.type!=='checkbox')control.addEventListener('input',update);
+    });
     document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{
       const model=currentModel();
-      // R03-R07 never export, print or share without proper source review.
+      // R03-R08 never export, print or share without source review.
       if((model.factoryDaily&&!model.factoryDaily.ready)||
         (model.criticalPath&&!model.criticalPath.ready)||
         (model.weeklyTna&&!model.weeklyTna.ready)||
         (model.delayRecovery&&!model.delayRecovery.ready)||
-        (model.productionStatus&&!model.productionStatus.ready))return update();
+        (model.productionStatus&&!model.productionStatus.ready)||
+        (model.materialLcReport&&!model.materialLcReport.ready))return update();
       if(btn.dataset.reportAction==='preview')return update();
       if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}
       if(btn.dataset.reportAction==='share')return openDialog('Share fallback',

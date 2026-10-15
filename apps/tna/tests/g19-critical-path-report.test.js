@@ -196,7 +196,7 @@ test('R04 spreadsheet genuinely typed, source-escaped and identical to R04 model
  }
  assert.notEqual(JSON.stringify(p),before,'synthetic fixture was intentionally changed before report');
 });
-test('frozen R01/R02/R03 and R08-R12 report/shipment source and old saved copies remain compatible',()=>{
+test('frozen R01/R02/R03 and R09-R12 report/shipment source and old saved copies remain compatible',()=>{
  const p=fixture(),before=JSON.stringify(p);
  const simple={R01:['Report Summary','Order Summary','Report Activities','Master TNA','Report Notes'],
  R02:['Report Summary','Order Summary','Report Activities','Buyer Milestones','Buyer Actions','Report Notes'],
@@ -207,7 +207,7 @@ test('frozen R01/R02/R03 and R08-R12 report/shipment source and old saved copies
   assert.equal(m.criticalPath,undefined,id+' isolated');
   assert.deepEqual(XLSX.read(storage.exportReportWorkbook(m),{type:'buffer'}).SheetNames,simple[id]);
  }
- for(const id of reports.catalogue('en').map(x=>x.id).filter(x=>+x.slice(1)>=8)){
+ for(const id of reports.catalogue('en').map(x=>x.id).filter(x=>+x.slice(1)>=9)){
   const m=reports.buildReportModel(p,{reportId:id});
   assert.equal(m.criticalPath,undefined);
   assert.deepEqual(XLSX.read(storage.exportReportWorkbook(m),{type:'buffer'}).SheetNames,
