@@ -87,7 +87,10 @@ class TnaMerchandisingSheetBrowserProof {
   async verifyFactoryCalendar(){
     const card=this.page.locator('.tna-calendar-panel');
     await card.waitFor();
-    assert.ok((await card.innerText()).includes('Needs Information'),'Unconfigured factory calendar must never look confirmed.');
+    const missingByLanguage={en:'Needs Information',bn:'তথ্য প্রয়োজন',hi:'जानकारी चाहिए',ta:'தகவல் தேவை'};
+    const currentLanguage=await this.page.evaluate(()=>document.documentElement.lang);
+    assert.ok((await card.innerText()).includes(missingByLanguage[currentLanguage]||missingByLanguage.en),
+      'Unconfigured factory calendar must stay unknown in the selected language.');
     await card.locator('[data-edit-calendar]').click();
     const form=this.page.locator('#tnaCalendarForm');
     await form.waitFor({state:'visible'});
