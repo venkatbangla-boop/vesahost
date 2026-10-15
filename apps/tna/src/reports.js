@@ -286,8 +286,6 @@
     }
 
 
-  }
-
     /**
      * Build the complete R02 export model by allowlist rather than stripping
      * unsafe fields from the unrestricted general model afterwards. Internal
@@ -313,6 +311,7 @@
         source:{recordId:null,schemaVersion:null,mode:'buyer-review-export'}
       };
     }
+  }
 
   /**
    * Source-only R03 Factory Daily Action projection for internal departments.
