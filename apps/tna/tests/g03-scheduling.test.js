@@ -111,6 +111,51 @@ strict.equal(scheduling.workdayDifference('2026-10-16','2026-10-19',cal,'working
 strict.equal(scheduling.nextWorkingDate('2026-10-18',cal),'2026-10-19',
   'Valid weekend-next-working-date remains unchanged.');
 
+// GMR-18: malformed confirmed durations and predecessor lags must return
+// explicit invalid schedule/graph results, not NaN dates or uncaught errors.
+for(const invalidDuration of ['3',-1,1.5,NaN,Infinity,'unknown']){
+  const altered=tasks.map(task=>task.taskId==='B'?{...task,durationUnits:invalidDuration}:task);
+  const outcome=scheduling.schedule(altered,edges,{
+    calendar:cal,startDate:'2026-10-12',requiredDate:'2026-10-19'
+  });
+  strict.equal(outcome.validity,'invalid','Invalid duration should fail closed: '+String(invalidDuration));
+  strict.ok(outcome.errors.some(x=>x.includes('Duration must be a non-negative whole number')),
+    'Invalid duration should state the rule.');
+  strict.deepEqual(outcome.taskResults,{},'No partial forecast may be returned on invalid inputs.');
+}
+const unsupportedDurationBasis=scheduling.schedule(tasks.map(task=>
+  task.taskId==='B'?{...task,durationBasis:'hours'}:task),edges,{
+  calendar:cal,startDate:'2026-10-12'
+});
+strict.equal(unsupportedDurationBasis.validity,'invalid');
+strict.ok(unsupportedDurationBasis.errors.some(x=>x.includes('Unsupported duration basis')));
+for(const badLag of ['2',0.5,NaN,Infinity]){
+  const altered=edges.map(edge=>edge.edgeId==='AB'?{...edge,lagUnits:badLag}:edge);
+  const graph=scheduling.validateGraph(tasks,altered);
+  strict.equal(graph.ok,false,'Unreviewed lag must fail validation: '+String(badLag));
+  strict.ok(graph.errors.some(x=>x.includes('lag must be a whole number')));
+  const outcome=scheduling.schedule(tasks,altered,{calendar:cal,startDate:'2026-10-12'});
+  strict.equal(outcome.validity,'invalid','Invalid graph cannot be scheduled.');
+  strict.deepEqual(outcome.taskResults,{});
+}
+const badLagBasis=scheduling.validateGraph(tasks,edges.map(edge=>
+  edge.edgeId==='AB'?{...edge,lagBasis:'hours'}:edge));
+strict.equal(badLagBasis.ok,false);
+strict.ok(badLagBasis.errors.some(x=>x.includes('Unsupported dependency lag basis')));
+const missingLeadConfirmation=scheduling.validateGraph(tasks,edges.map(edge=>
+  edge.edgeId==='AB'?{...edge,lagUnits:-1,allowLead:false}:edge));
+strict.equal(missingLeadConfirmation.ok,false);
+strict.ok(missingLeadConfirmation.errors.some(x=>x.includes('Negative lead requires allowLead')));
+const approvedOverlap=scheduling.validateGraph(tasks,edges.map(edge=>
+  edge.edgeId==='AB'?{...edge,lagUnits:-1,allowLead:true}:edge));
+strict.equal(approvedOverlap.ok,true,'Explicitly permitted lead is preserved.');
+const nullDependency=scheduling.validateGraph(tasks,[...edges,null]);
+strict.equal(nullDependency.ok,false);
+strict.ok(nullDependency.errors.some(x=>x.includes('Invalid dependency entry')));
+strict.equal(scheduling.schedule(tasks,edges,{calendar:cal,startDate:'2026-10-12',
+  requiredDate:'2026-10-19'}).project.forecastDate,'2026-10-19',
+  'The accepted baseline FS graph still produces the same forecast.');
+
 const mixed = [
   { taskId: 'S', durationUnits: 2, durationBasis: 'working', status: 'not-started' },
   { taskId: 'SS', durationUnits: 1, durationBasis: 'working', status: 'not-started' },

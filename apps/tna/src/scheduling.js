@@ -98,17 +98,32 @@
     const errors=[],warnings=[],ids=new Set(tasks.map(t=>t.taskId));
     if(ids.size!==tasks.length)errors.push('Duplicate task IDs.');
     const seen=new Set();
+    // GMR-18: reject untyped/fractional dependencies at the graph boundary.
+    // The importer already emits whole-day lag and an explicit basis. Keep
+    // missing legacy lag as zero, but never silently convert malformed data.
     for(const edge of edges){
+      if(!edge||typeof edge!=='object'){
+        errors.push('Invalid dependency entry.');continue;
+      }
       if(!ids.has(edge.predecessorTaskId)||!ids.has(edge.successorTaskId))errors.push('Dependency references a missing task.');
       if(edge.predecessorTaskId===edge.successorTaskId)errors.push('Dependency cannot link a task to itself.');
       const key=[edge.predecessorTaskId,edge.successorTaskId,edge.relation||'FS'].join('|');
       if(seen.has(key))errors.push('Duplicate dependency: '+key);
       seen.add(key);
       if(!['FS','SS','FF','SF'].includes(edge.relation||'FS'))errors.push('Unsupported relation: '+edge.relation);
-      if((edge.lagUnits||0)<0&&!edge.allowLead)errors.push('Negative lead requires allowLead on dependency '+key+'.');
+      const lag=edge.lagUnits==null||edge.lagUnits===''?0:edge.lagUnits;
+      if(!Number.isInteger(lag))errors.push('Dependency lag must be a whole number of days: '+key+'.');
+      if(edge.lagBasis!=null&&edge.lagBasis!==''&&!['working','calendar'].includes(edge.lagBasis))
+        errors.push('Unsupported dependency lag basis: '+key+'.');
+      if(Number.isInteger(lag)&&lag<0&&edge.allowLead!==true)
+        errors.push('Negative lead requires allowLead on dependency '+key+'.');
     }
     const incoming=new Map(tasks.map(t=>[t.taskId,0])),outgoing=new Map(tasks.map(t=>[t.taskId,[]]));
-    edges.forEach(edge=>{incoming.set(edge.successorTaskId,(incoming.get(edge.successorTaskId)||0)+1);outgoing.get(edge.predecessorTaskId)?.push(edge);});
+    edges.forEach(edge=>{
+      if(!edge||!ids.has(edge.predecessorTaskId)||!ids.has(edge.successorTaskId))return;
+      incoming.set(edge.successorTaskId,(incoming.get(edge.successorTaskId)||0)+1);
+      outgoing.get(edge.predecessorTaskId)?.push(edge);
+    });
     const queue=tasks.filter(t=>incoming.get(t.taskId)===0).map(t=>t.taskId),order=[];
     while(queue.length){const id=queue.shift();order.push(id);for(const edge of outgoing.get(id)||[]){incoming.set(edge.successorTaskId,incoming.get(edge.successorTaskId)-1);if(incoming.get(edge.successorTaskId)===0)queue.push(edge.successorTaskId);}}
     if(order.length!==tasks.length)errors.push('Dependency graph contains a cycle.');
@@ -119,8 +134,16 @@
     const startDate=options.startDate||null,requiredDate=options.requiredDate||null,asOfDate=options.asOfDate||null;
     const errors=[],warnings=[],missingInputs=[];
     if(!startDate)missingInputs.push('startDate');
+    // Missing durations are unknown inputs. Explicitly malformed durations
+    // are INVALID; they must not reach date shifting as NaN/fractions or get
+    // rounded/coerced into an invented garment production schedule.
     for(const task of tasks){
-      if(task.durationUnits==null||task.durationUnits===''||task.durationUnits<0)missingInputs.push('duration:'+task.taskId);
+      if(task.durationUnits==null||task.durationUnits==='')missingInputs.push('duration:'+task.taskId);
+      else if(!Number.isInteger(task.durationUnits)||task.durationUnits<0)
+        errors.push('Duration must be a non-negative whole number of days: '+task.taskId+'.');
+      if(task.durationBasis!=null&&task.durationBasis!==''&&
+        !['working','calendar'].includes(task.durationBasis))
+        errors.push('Unsupported duration basis: '+task.taskId+'.');
       if(!calendars.forTask(task))missingInputs.push('calendar:'+task.taskId);
     }
     const graph=validateGraph(tasks,edges);
