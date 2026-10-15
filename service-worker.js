@@ -1,4 +1,4 @@
-const CACHE='vesa-v80-tna-gmr06-r03'
+const CACHE='vesa-v81-tna-gmr06-r03'
 const ASSETS=[
   './',
   './index.html',
