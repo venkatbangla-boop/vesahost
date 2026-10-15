@@ -20,6 +20,7 @@ on:
 # Source pushes still register a lightweight check, but the complete suite runs
 # only at an intentional review checkpoint ([verify]) or a manual dispatch.
 # Never interpret a skipped intermediate run as acceptance or as release proof.
+# Routine source pushes remain visible in GitHub history, but spend no full-test runner time.
 permissions:
   contents: read
 
