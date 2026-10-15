@@ -211,8 +211,8 @@ test('all four languages localize bounded R06; genuine workbook keeps typed Exce
 });
 test('untrusted management source strings are inert in Excel; portable saved copies and prior R01-R05 unchanged',()=>{
  const p=fixture('woven'),t=p.tasks.find(t=>t.templateRef==='D05');
- t.title=' \\t=HYPERLINK("https://bad.test","click")';
- t.delayReason=' \n+SUM(1,2)';t.recoveryAction='\\t@SUM(2,2)';
+ t.title=' \t=HYPERLINK("https://bad.test","click")';
+ t.delayReason=' \n+SUM(1,2)';t.recoveryAction='\t@SUM(2,2)';
  const prior=JSON.stringify(p),model=make(p);
  const book=XLSX.read(storage.exportReportWorkbook(model),{type:'buffer',cellFormula:true});
  const rows=XLSX.utils.sheet_to_json(book.Sheets['Delay Actions'],{header:1,raw:true});
