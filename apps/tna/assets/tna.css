@@ -182,3 +182,31 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
  body.tna-printing-report .tna-report-delay-table thead{display:table-header-group}
  body.tna-printing-report .tna-report-delay-facts{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
+
+/* GMR-10 R07: one VESA dialog; conditional buyer-safe/internal production. */
+#tnaProdReviewWrap[hidden],#tnaProdBuyerWrap[hidden],#tnaProdInternalWrap[hidden]{display:none!important}
+.tna-production-review{max-width:100%;min-width:0;box-sizing:border-box;border:1px solid var(--line,#d5deea);padding:12px;border-radius:12px}
+.tna-production-review legend{font-weight:800;padding:0 6px}
+.tna-production-review .tna-form-grid{max-width:100%;grid-template-columns:repeat(2,minmax(0,1fr))}
+.tna-production-review label{min-width:0;overflow-wrap:anywhere;max-width:100%}
+.tna-production-review input:not([type=checkbox]),.tna-production-review select{min-height:44px;max-width:100%;width:100%;box-sizing:border-box}
+.tna-production-review input[type=checkbox]{min-height:18px;height:18px;width:18px;flex:none;margin-top:4px}
+#tnaProdBuyerWrap,#tnaProdInternalWrap{margin:12px 0}
+.tna-report-production{max-width:100%;min-width:0;margin:14px 0;overflow-wrap:anywhere}
+.tna-report-production-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.tna-report-production-facts span{border:1px solid var(--line,#d5deea);background:var(--look-surface,#eef3f9);padding:9px;border-radius:8px;overflow-wrap:anywhere}
+.tna-report-production-scroll{max-width:100%;min-width:0;overflow:auto;border:1px solid var(--line,#d5deea);border-radius:8px;margin:12px 0}
+.tna-report-production-table{min-width:630px;width:100%;table-layout:fixed;border-collapse:collapse;font-size:.78rem;line-height:1.4}
+.tna-report-production-table thead{display:table-header-group}
+.tna-report-production-table th,.tna-report-production-table td{border:1px solid var(--line,#d5deea);padding:7px;vertical-align:top;text-align:start;overflow-wrap:anywhere;white-space:normal}
+.tna-report-production-table th{background:var(--look-surface,#eef3f9);font-weight:750}
+.tna-report-production-table tr{break-inside:avoid}
+.tna-report-production-table th:first-child{width:21%}
+@media(max-width:700px){.tna-production-review .tna-form-grid,.tna-report-production-facts{grid-template-columns:1fr}}
+@media print{
+ body.tna-printing-report .tna-report-production-scroll{max-width:100%;overflow:visible;border:0}
+ body.tna-printing-report .tna-report-production-table{min-width:0;width:100%;font-size:7.1pt;table-layout:fixed}
+ body.tna-printing-report .tna-report-production-table thead{display:table-header-group}
+ body.tna-printing-report .tna-report-production-table th,body.tna-printing-report .tna-report-production-table td{padding:4pt;white-space:normal;overflow-wrap:anywhere}
+ body.tna-printing-report .tna-report-production-facts{grid-template-columns:repeat(3,minmax(0,1fr))}
+}

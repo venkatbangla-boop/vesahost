@@ -5,6 +5,7 @@
   const criticalReport=root.VesaTnaCriticalPath||(typeof require==='function'?require('./critical-path-report.js'):null);
   const weeklyReport=root.VesaTnaWeeklyReport||(typeof require==='function'?require('./weekly-report.js'):null);
   const delayReport=root.VesaTnaDelayRecoveryReport||(typeof require==='function'?require('./delay-recovery-report.js'):null);
+  const productionReport=root.VesaTnaProductionStatusReport||(typeof require==='function'?require('./production-status-report.js'):null);
   const REPORT_TYPES=[
     ['R01','masterTna','factoryAgent','Order, stages, activities, dates, owners, status, dependencies and revision.'],
     ['R02','buyerTna','buyerBrand','Buyer-facing milestones, required buyer actions, forecast and verified targets.'],
@@ -358,11 +359,19 @@
     const delay=report[0]==='R06'?delayReport?.project(plan,{
       language:l,asOfDate:options.asOfDate,managementConfirmed:options.managementConfirmed
     }):null;
+    const production=report[0]==='R07'?productionReport?.project(plan,{
+      language:l,asOfDate:options.asOfDate,mode:options.productionAudience,
+      internalConfirmed:options.internalConfirmed,
+      buyerShareConfirmed:options.buyerShareConfirmed,
+      authorizationRef:options.authorizationRef
+    }):null;
     const order=orderContext(plan);
     if(buyer||weekly)order.factory=buyer?.labels.unknown||weekly.labels.unknown; // no internal factory identity
-    if(delay&&!delay.ready){
+    if(production?.mode==='buyer')order.factory=production.labels.unknown;
+    if((delay&&!delay.ready)||(production&&!production.ready)){
+      const missing=delay?.labels?.unknown||production?.labels?.unknown||'Needs Information';
       for(const key of ['buyer','factory','style','po','quantity','requiredExFactory'])
-        order[key]=delay.labels.unknown;
+        order[key]=missing;
       order.unit='';
     }
     const tasks=critical?critical.rows.map(row=>({ref:row.ref,title:row.title,owner:row.owner||'',
@@ -376,21 +385,26 @@
       ref:row.ref,title:row.title,owner:row.owner||'',status:row.status,
       baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',
       actual:row.actual||'',risk:'needs-information'
+    })):production?production.stages.map(row=>({
+      ref:row.endRef,title:row.title,owner:'',status:row.statusId,
+      baseline:row.original||'',current:row.revised||'',forecast:row.forecast||'',
+      actual:row.actualFinish||'',risk:'needs-information'
     })):buyer?buyer.milestones.map(row=>({
       ref:row.ref,title:row.title,owner:'',status:row.statusId,
       baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',
       actual:row.actual||'',risk:'needs-information'
     })):taskRows(plan);
     return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),
-      language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),
+      language:l,languageName:I18N[l].languageName,audience:production?(production.mode==='buyer'?production.labels.buyer:production.mode==='internal'?production.labels.internal:production.labels.choose):audienceFor(report,l),
       generatedAt,generatedLabel:formatDateTime(generatedAt,l),
       timezone:options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local',
       revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,
       headings:I18N[l].headings,labels:I18N[l].labels,order,tasks,
-      warnings:critical?[...critical.missingInputs,...critical.unsupported,...critical.warnings]:weekly?weekly.warnings:delay?delay.warnings:daily?daily.warnings:buyer?buyer.gaps:warnings(plan),
+      warnings:critical?[...critical.missingInputs,...critical.unsupported,...critical.warnings]:weekly?weekly.warnings:delay?delay.warnings:production?production.warnings:daily?daily.warnings:buyer?buyer.gaps:warnings(plan),
       notes:[I18N[l].labels.noFabrication,...(buyer?[buyer.sourceDisclosure]:[]),
         ...(weekly?[weekly.labels.source,weekly.labels.recoveryNotice]:[]),
         ...(delay?[delay.labels.calendar,delay.labels.scenarioCaution,delay.labels.consentNotAccess]:[]),
+        ...(production?[production.labels.noLotAggregation,production.labels.noAccess]:[]),
         ...(critical?[critical.labels.model]:[]),
         I18N[l].labels.printFallback,I18N[l].labels.shareFallback],
       masterSheet:report[0]==='R01'?garmentMasterSheet(plan,l,options):null,
@@ -399,6 +413,7 @@
       ...(critical?{criticalPath:critical}:{}),
       ...(weekly?{weeklyTna:weekly}:{}),
       ...(delay?{delayRecovery:delay}:{}),
+      ...(production?{productionStatus:production}:{}),
       source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}};
   }
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}

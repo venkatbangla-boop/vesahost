@@ -658,6 +658,53 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     html+='<p class="tna-note">'+esc(t.noInfo)+' '+esc(t.consentNotAccess)+'</p></section>';
     return html;
   }
+  /**
+   * GMR-10 R07. Reads ONLY the audience-filtered report adapter, never raw
+   * operation/quantity source. The consent dialog is the current VESA report
+   * dialog, not a new header or a claim of secure server-side buyer access.
+   */
+  function productionReportPreview(data){
+    const t=data.labels,cell=value=>esc(value===null||value===undefined||value===''?t.unknown:value);
+    let html='<section class="tna-report-production" aria-label="'+esc(t.stage)+'">';
+    if(!data.ready)return html+'<p class="tna-note" role="status">'+esc(data.warnings.join(' · '))+'</p></section>';
+    html+='<div class="tna-report-production-facts">'+[
+      [t.asOf,data.asOfDate],[t.audience,data.mode==='buyer'?t.buyer:t.internal],
+      [t.stage,data.counts.stages],[t.noSource,data.counts.missingQuantity],
+      [t.missingRate,data.counts.missingRate]
+    ].map(([key,value])=>'<span><b>'+esc(key)+':</b> '+cell(value)+'</span>').join('')+'</div>';
+    html+='<p class="tna-note">'+esc(t.source)+' '+esc(t.noBalance)+' '+esc(t.noLotAggregation)+'</p>';
+    const views=[
+      {head:[t.stage,t.status,t.original,t.current,t.sourceForecast,t.start,t.actual],
+       values:r=>[r.title,r.status,r.original,r.revised,r.forecast,r.actualStart,r.actualFinish]},
+      {head:[t.stage,t.required,t.completed,t.remaining,t.unit,t.rate,t.days,t.projected],
+       values:r=>[r.title,r.required,r.completed,r.remaining,r.unit,r.rate,r.days,r.projectedFinish]}
+    ];
+    for(const [ix,view] of views.entries()){
+      html+='<div class="tna-report-production-scroll"><table class="tna-report-production-table" data-production-part="'+(ix+1)+'"><thead><tr>'+
+        view.head.map(x=>'<th scope="col">'+esc(x)+'</th>').join('')+'</tr></thead><tbody>';
+      html+=data.stages.map(row=>'<tr data-production-stage="'+esc(row.key)+'">'+
+        view.values(row).map(value=>'<td>'+cell(value)+'</td>').join('')+'</tr>').join('');
+      html+='</tbody></table></div>';
+    }
+    html+='<p class="tna-note">'+esc(t.noRate)+' '+esc(t.notActual)+'</p>';
+    if(data.mode==='internal'){
+      html+='<h3>'+esc(t.operation)+'</h3><p class="tna-note">'+esc(t.internalOnly)+'</p>';
+      if(!data.operations.length)html+='<p>'+esc(t.noSource)+'</p>';
+      else{
+        const heads=[t.operation,t.stage,t.lot,t.qtyInput,t.qtyDone,t.rejected,
+          t.reworked,t.wip,t.unaccounted,t.unit];
+        html+='<div class="tna-report-production-scroll"><table class="tna-report-production-table" data-production-operations><thead><tr>'+
+          heads.map(x=>'<th scope="col">'+esc(x)+'</th>').join('')+'</tr></thead><tbody>';
+        html+=data.operations.map(row=>'<tr>'+[
+          row.ref,row.stage,row.lot,row.input,row.completed,row.rejected,
+          row.reworked,row.wip,row.unaccounted,row.unit
+        ].map(x=>'<td>'+cell(x)+'</td>').join('')+'</tr>').join('');
+        html+='</tbody></table></div>';
+      }
+    }else html+='<p class="tna-note">'+esc(t.buyerOnly)+'</p>';
+    html+='<p class="tna-note">'+esc(t.noAccess)+'</p></section>';
+    return html;
+  }
   function reportPreviewHtml(model){
     const order=model.order;
     let html='<article class="tna-report-preview"><h2>'+esc(model.title)+'</h2>';
@@ -665,12 +712,13 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     html+='<p>'+esc(model.labels.generated)+': '+esc(model.generatedLabel)+' · '+esc(model.labels.timezone)+': '+esc(model.timezone)+' · '+esc(model.labels.revision)+': '+esc(model.revision)+'</p>';
     html+='<h3>'+esc(model.headings.order)+'</h3><div class="tna-report-grid">';
     html+=[
-      [model.labels.buyer,order.buyer],...(model.buyerTna||model.weeklyTna?[]:[[model.labels.factory,order.factory]]),
+      [model.labels.buyer,order.buyer],...(model.buyerTna||model.weeklyTna||model.productionStatus?.mode==='buyer'?[]:[[model.labels.factory,order.factory]]),
       [model.labels.style,order.style],[model.labels.po,order.po],
       [model.labels.quantity,String(order.quantity)+' '+String(order.unit)],
       [model.labels.required,order.requiredExFactory]
     ].map(([label,value])=>'<span>'+esc(label)+': '+esc(value)+'</span>').join('')+'</div>';
     if(model.criticalPath)html+=criticalReportPreview(model.criticalPath);
+    else if(model.productionStatus)html+=productionReportPreview(model.productionStatus);
     else if(model.delayRecovery)html+=delayReportPreview(model.delayRecovery);
     else if(model.weeklyTna)html+=weeklyReportPreview(model.weeklyTna);
     else if(model.factoryDaily)html+=dailyReportPreview(model.factoryDaily);
@@ -692,6 +740,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const first=reports.catalogue(state.language)[0];
     const dailyWords=reportModel('R03').factoryDaily.labels;
     const cpWords=reportModel('R04').criticalPath.labels;
+    const productionWords=globalThis.VesaTnaProductionStatusReport?.WORDS?.[state.language]||
+      globalThis.VesaTnaProductionStatusReport?.WORDS?.en;
     const delayWords=globalThis.VesaTnaDelayRecoveryReport?.WORDS?.[state.language]||
       globalThis.VesaTnaDelayRecoveryReport?.WORDS?.en;
     const weekWords=globalThis.VesaTnaWeeklyReport?.WORDS?.[state.language]||
@@ -762,12 +812,29 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       '<label class="tna-wide tna-cpm-checkbox"><input id="tnaDelayManagement" type="checkbox">'+
       '<span>'+esc(delayWords.consent)+'</span></label>'+
       '<p class="tna-note">'+esc(delayWords.consentNotAccess)+'</p></fieldset>';
+    const productionControls='<fieldset id="tnaProdReviewWrap" class="tna-wide tna-production-review" hidden>'+
+      '<legend>'+esc(productionWords.stage)+'</legend>'+
+      '<div class="tna-form-grid">'+
+      '<label><span>'+esc(productionWords.asOf)+'</span>'+
+      '<input id="tnaProdAsOf" type="date" aria-required="true"></label>'+
+      '<label><span>'+esc(productionWords.audience)+'</span><select id="tnaProdMode">'+
+      optionsHtml([['',productionWords.choose],['internal',productionWords.internal],['buyer',productionWords.buyer]])+
+      '</select></label></div>'+
+      '<div id="tnaProdInternalWrap" hidden><label class="tna-wide tna-cpm-checkbox">'+
+      '<input id="tnaProdInternalConsent" type="checkbox"><span>'+
+      esc(productionWords.internalConsent)+'</span></label></div>'+
+      '<div id="tnaProdBuyerWrap" hidden><label class="tna-wide tna-cpm-checkbox">'+
+      '<input id="tnaProdBuyerConsent" type="checkbox"><span>'+
+      esc(productionWords.buyerConsent)+'</span></label>'+
+      '<label><span>'+esc(productionWords.buyerReference)+'</span>'+
+      '<input id="tnaProdBuyerRef" type="text" maxlength="180" autocomplete="off"></label></div>'+
+      '<p class="tna-note">'+esc(productionWords.noAccess)+'</p></fieldset>';
     openDialog('Reports',
       '<div class="tna-form-grid">'+
       '<label><span>Report type</span><select id="tnaReportType">'+reportOptions()+'</select></label>'+
       '<label><span>Language</span><input readonly value="'+esc(state.language)+'"></label>'+
       '<label id="tnaReportAsOfWrap" hidden><span>'+esc(dailyWords.asOf)+'</span>'+
-      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+weeklyControls+delayControls+'</div>'+
+      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+weeklyControls+delayControls+productionControls+'</div>'+
       '<p id="tnaReportGate" role="status" aria-live="polite" class="tna-note"></p>'+
       '<div class="menu-grid">'+
       '<button class="tna-btn" type="button" data-report-action="preview">Preview report</button>'+
@@ -782,6 +849,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const criticalWrap=document.getElementById('tnaCriticalReviewWrap');
     const weeklyWrap=document.getElementById('tnaWeeklyReviewWrap');
     const delayWrap=document.getElementById('tnaDelayReviewWrap');
+    const productionWrap=document.getElementById('tnaProdReviewWrap');
     const gate=document.getElementById('tnaReportGate');
     const criticalReview=()=>{
       const value=name=>criticalWrap.querySelector('[name="'+name+'"]')?.value||'';
@@ -811,18 +879,31 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       asOfDate:delayWrap.querySelector('#tnaDelayAsOf')?.value||'',
       managementConfirmed:!!delayWrap.querySelector('#tnaDelayManagement')?.checked
     });
+    const productionReview=()=>({
+      asOfDate:productionWrap.querySelector('#tnaProdAsOf')?.value||'',
+      productionAudience:productionWrap.querySelector('#tnaProdMode')?.value||'',
+      internalConfirmed:!!productionWrap.querySelector('#tnaProdInternalConsent')?.checked,
+      buyerShareConfirmed:!!productionWrap.querySelector('#tnaProdBuyerConsent')?.checked,
+      authorizationRef:productionWrap.querySelector('#tnaProdBuyerRef')?.value||''
+    });
     const currentModel=()=>reportModel(type.value,
       type.value==='R03'?{asOfDate:review.value}:
       type.value==='R04'?{criticalReview:criticalReview()}:
       type.value==='R05'?weeklyReview():
-      type.value==='R06'?delayReview():{});
+      type.value==='R06'?delayReview():
+      type.value==='R07'?productionReview():{});
     const update=()=>{
       reviewWrap.hidden=type.value!=='R03';
       criticalWrap.hidden=type.value!=='R04';
       weeklyWrap.hidden=type.value!=='R05';
       delayWrap.hidden=type.value!=='R06';
+      productionWrap.hidden=type.value!=='R07';
+      const prodMode=productionWrap.querySelector('#tnaProdMode')?.value||'';
+      productionWrap.querySelector('#tnaProdInternalWrap').hidden=prodMode!=='internal';
+      productionWrap.querySelector('#tnaProdBuyerWrap').hidden=prodMode!=='buyer';
       const model=currentModel();
-      gate.textContent=model.delayRecovery&&!model.delayRecovery.ready?model.delayRecovery.labels.selectReview:
+      gate.textContent=model.productionStatus&&!model.productionStatus.ready?model.productionStatus.warnings.join(' · '):
+        model.delayRecovery&&!model.delayRecovery.ready?model.delayRecovery.labels.selectReview:
         model.factoryDaily&&!model.factoryDaily.ready?model.factoryDaily.labels.selectDate:
         model.weeklyTna&&!model.weeklyTna.ready?model.weeklyTna.warnings.filter(w=>w===model.weeklyTna.labels.selectDates||w===model.weeklyTna.labels.badRecovery).join(' · '):
         model.criticalPath&&!model.criticalPath.ready?
@@ -846,13 +927,18 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       control.addEventListener('change',update);
       if(control.type!=='checkbox')control.addEventListener('input',update);
     });
+    productionWrap.querySelectorAll('input,select').forEach(control=>{
+      control.addEventListener('change',update);
+      if(control.type!=='checkbox'&&control.tagName!=='SELECT')control.addEventListener('input',update);
+    });
     document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{
       const model=currentModel();
-      // R03-R06 never export, print or share without reviewed date/consent.
+      // R03-R07 never export, print or share without proper source review.
       if((model.factoryDaily&&!model.factoryDaily.ready)||
         (model.criticalPath&&!model.criticalPath.ready)||
         (model.weeklyTna&&!model.weeklyTna.ready)||
-        (model.delayRecovery&&!model.delayRecovery.ready))return update();
+        (model.delayRecovery&&!model.delayRecovery.ready)||
+        (model.productionStatus&&!model.productionStatus.ready))return update();
       if(btn.dataset.reportAction==='preview')return update();
       if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}
       if(btn.dataset.reportAction==='share')return openDialog('Share fallback',

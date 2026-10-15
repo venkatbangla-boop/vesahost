@@ -164,7 +164,7 @@ test('buyer-facing order identity is formula-escaped in real workbook without co
  for(const sheet of Object.values(workbook.Sheets))
   for(const cell of Object.values(sheet))assert.equal(cell.f,undefined);
 });
-test('R01 remains full factory master and R07-R12 remain prior generic report models/workbooks',()=>{
+test('R01 remains full factory master and R08-R12 remain prior generic report models/workbooks',()=>{
  const plan=fixture('woven');
  const r01=reports.buildReportModel(plan,{reportId:'R01',language:'en'});
  assert.equal(r01.buyerTna,undefined);
@@ -174,7 +174,7 @@ test('R01 remains full factory master and R07-R12 remain prior generic report mo
  const r01Workbook=XLSX.read(storage.exportReportWorkbook(r01),{type:'buffer'});
  assert.deepEqual(r01Workbook.SheetNames,
   ['Report Summary','Order Summary','Report Activities','Master TNA','Report Notes']);
- for(const id of reports.catalogue('en').map(x=>x.id).filter(id=>!['R01','R02','R03','R04','R05','R06'].includes(id))){
+ for(const id of reports.catalogue('en').map(x=>x.id).filter(id=>!['R01','R02','R03','R04','R05','R06','R07'].includes(id))){
   const m=reports.buildReportModel(plan,{reportId:id});
   assert.equal(m.buyerTna,undefined,id);
   assert.equal(m.tasks.length,plan.tasks.length,id);

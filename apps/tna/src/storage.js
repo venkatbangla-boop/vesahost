@@ -67,6 +67,8 @@
       throw new Error(model.weeklyTna?.labels?.selectDates||'Select the weekly report dates before downloading.');
     if(model.reportId==='R06'&&!model.delayRecovery?.ready)
       throw new Error(model.delayRecovery?.labels?.selectReview||'Review internal report access and select a valid date.');
+    if(model.reportId==='R07'&&!model.productionStatus?.ready)
+      throw new Error(model.productionStatus?.labels?.selectReview||'Choose authorized production report audience and valid date.');
     const workbook=XLSX.utils.book_new();
     const addSheet=(name,rows,widths,filter=false)=>{
       const sheet=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
@@ -324,6 +326,48 @@
         [val(t.consentNotAccess),val(t.source)]);
       workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(summaryRows,{dateNF:'yyyy-mm-dd'});
       workbook.Sheets['Report Summary']['!cols']=[{wch:55},{wch:106}];
+    }
+    // R07 source-only production report. Typed quantities/dates are taken ONLY
+    // from its audience-filtered projection. No plan, factory notes, commercial
+    // source, private evidence or unaudited aggregate is read by this exporter.
+    if(model.reportId==='R07'){
+      const p=model.productionStatus,t=p.labels;
+      const txt=value=>safeCell(value===null||value===undefined||value===''?t.unknown:value);
+      const num=value=>value===null||value===undefined?txt(t.unknown):numberCell(value);
+      const date=value=>value?dateCell(value):txt(t.unknown);
+      const stages=[[t.stage,t.ref,t.status,t.original,t.current,t.sourceForecast,
+        t.start,t.actual,t.required,t.completed,t.remaining,t.unit,t.rate,t.days,t.projected],
+        ...p.stages.map(item=>[
+          txt(item.title),txt(item.endRef),txt(item.status),date(item.original),
+          date(item.revised),date(item.forecast),date(item.actualStart),
+          date(item.actualFinish),num(item.required),num(item.completed),
+          num(item.remaining),txt(item.unit),num(item.rate),num(item.days),
+          date(item.projectedFinish)
+        ])];
+      addSheet('Production Stages',stages,[26,16,24,20,20,23,20,20,19,19,19,13,22,25,23],true);
+      const events=[[t.stage,t.ref,t.milestone,t.actual],
+        ...p.milestones.map(item=>[txt(item.stage),txt(item.ref),
+          txt(item.kind==='start'?t.start:t.actual),date(item.date)])];
+      addSheet('Production Events',events,[30,18,32,22],true);
+      if(p.mode==='internal'){
+        const operationRows=[[t.operation,t.stage,t.lot,t.qtyInput,t.qtyDone,
+          t.rejected,t.reworked,t.wip,t.unaccounted,t.unit,t.quantityState],
+          ...(p.operations.length?p.operations.map(op=>[
+            txt(op.ref),txt(op.stage),txt(op.lot),num(op.input),
+            num(op.completed),num(op.rejected),num(op.reworked),num(op.wip),
+            num(op.unaccounted),txt(op.unit),txt(op.sourceState)
+          ]):[[txt(t.noSource)]])];
+        addSheet('Operation Snapshots',operationRows,[31,28,23,17,17,17,17,17,22,14,64],true);
+      }
+      const rows=XLSX.utils.sheet_to_json(workbook.Sheets['Report Summary'],
+        {header:1,raw:true});
+      rows.push([txt(t.asOf),date(p.asOfDate)],[txt(t.audience),txt(model.audience)],
+        [txt(t.stage),numberCell(p.counts.stages)],
+        [txt(t.noSource),numberCell(p.counts.missingQuantity)],
+        [txt(t.missingRate),numberCell(p.counts.missingRate)],
+        [txt(t.noAccess),txt(t.source)]);
+      workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
+      workbook.Sheets['Report Summary']['!cols']=[{wch:57},{wch:108}];
     }
     if(model.reportId==='R01'&&model.masterSheet){
       const l=model.masterSheet.labels||{};

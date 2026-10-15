@@ -78,7 +78,7 @@ test('approved audience boundaries: R02-R12 omit internal garment/LC master proj
       assert.throws(()=>storage.exportReportWorkbook(notReady),/Critical|review|source|CPM|R04/i);
       continue;
     }
-    const model=reports.buildReportModel(plan,{reportId:id,language:'en',asOfDate:id==='R03'?'2026-10-15':undefined,...(id==='R05'?{weekStart:'2026-10-12',weekEnd:'2026-10-18',reviewDate:'2026-10-15'}:{}),...(id==='R06'?{asOfDate:'2026-10-15',managementConfirmed:true}:{}),generatedAt:'2026-10-15T08:00:00.000Z'});
+    const model=reports.buildReportModel(plan,{reportId:id,language:'en',asOfDate:id==='R03'?'2026-10-15':undefined,...(id==='R05'?{weekStart:'2026-10-12',weekEnd:'2026-10-18',reviewDate:'2026-10-15'}:{}),...(id==='R06'?{asOfDate:'2026-10-15',managementConfirmed:true}:{}),...(id==='R07'?{asOfDate:'2026-10-15',productionAudience:'internal',internalConfirmed:true}:{}),generatedAt:'2026-10-15T08:00:00.000Z'});
     assert.equal(model.masterSheet,null,id+' must not gain internal master sheet');
     assert.ok(!JSON.stringify(model).includes('SOURCE-MASTER-LC-15'));
     const workbook=XLSX.read(storage.exportReportWorkbook(model),{type:'buffer'});
@@ -87,6 +87,7 @@ test('approved audience boundaries: R02-R12 omit internal garment/LC master proj
         id==='R03'?['Report Summary','Order Summary','Report Activities','Factory Daily Actions','Missing Action Dates','Report Notes']:
         id==='R05'?['Report Summary','Order Summary','Report Activities','Weekly TNA','Confirmed Recovery','Report Notes']:
         id==='R06'?['Report Summary','Order Summary','Report Activities','Delay Actions','Delay Follow-up','Dependency Links','Recovery Scenarios','Approval Records','Report Notes']:
+        id==='R07'?['Report Summary','Order Summary','Report Activities','Production Stages','Production Events','Operation Snapshots','Report Notes']:
         ['Report Summary','Order Summary','Report Activities','Report Notes'],id+' approved audience workbook shape');
   }
 });
