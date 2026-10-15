@@ -65,7 +65,7 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
-      - name: Real Chromium Excel order/activity/dependency import, local saved-copy and app route proof
+      - name: Real Chromium one-time Excel activity import, save/reopen, and cross-app route proof
         run: |
           export CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
           mkdir -p output/playwright
