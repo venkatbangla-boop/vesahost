@@ -103,6 +103,33 @@
         task.baseline,task.current,task.forecast,task.actual,task.risk].map(safeCell))
     ];
     addSheet('Report Activities',taskRows,[10,48,22,18,14,14,14,14,20],true);
+
+    // R02 is constructed solely from the sanitized buyer-facing model.
+    // Never read source OrderPlan here: hidden LC, costing and internal details
+    // cannot be inferred from a user-facing worksheet.
+    if(model.reportId==='R02'){
+      if(!model.buyerTna||!Array.isArray(model.buyerTna.milestones)||
+        !Array.isArray(model.buyerTna.actions)||!model.buyerTna.labels)
+        throw new Error('Buyer report must be reviewed before Excel download.');
+      const buyer=model.buyerTna,l=buyer.labels;
+      const show=value=>value==null||value===''?l.unknown:safeCell(value);
+      const rows=[[l.ref,l.milestone,l.original,l.current,l.forecast,l.actual,
+        l.status,l.action,l.verification],
+        ...buyer.milestones.map(row=>[
+          safeCell(row.ref),safeCell(row.title),dateCell(row.original),
+          dateCell(row.current),dateCell(row.forecast),dateCell(row.actual),
+          safeCell(row.status),show(row.buyerAction),safeCell(row.verification)
+        ])];
+      addSheet('Buyer Milestones',rows,[12,45,18,18,18,18,28,45,52],true);
+      const actions=[[l.ref,l.milestone,l.action,l.current],
+        ...buyer.actions.map(row=>[safeCell(row.ref),safeCell(row.title),
+          safeCell(row.request),dateCell(row.target)])];
+      if(!buyer.actions.length)actions.push([l.unknown,safeCell(l.noActions),l.unknown,l.unknown]);
+      actions.push([], [l.requested,dateCell(buyer.requestedExFactory)],
+        [l.confirmed,show(buyer.buyerConfirmedTarget)]);
+      addSheet('Buyer Actions',actions,[24,44,51,25]);
+    }
+
     if(model.reportId==='R01'&&model.masterSheet){
       const l=model.masterSheet.labels||{};
       const h=[l.stage||'Section',l.activity||'Activity',l.owner||'Responsible party',
