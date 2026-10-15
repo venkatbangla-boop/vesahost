@@ -66,6 +66,7 @@ class TnaMerchandisingSheetBrowserProof {
     await this.page.locator('#tnaDialog .tna-dialog-head button').click();
     await this.page.locator('.tna-master-activities').waitFor();
     const stored=await this.page.evaluate(()=>JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan);
+    this.templateId=templateId;
     assert.equal(stored.templateId,templateId,'Most recent plan must be the selected garment profile');
     assert.equal(await this.page.locator('.tna-master-activities [data-edit-task]').count(),stored.tasks.length,'Every garment activity requires an accessible edit action');
     assert.equal(await this.page.locator('.tna-master-activities [role="row"]').count(),stored.tasks.length+1,'One header and every task row must render');
@@ -102,6 +103,11 @@ class TnaMerchandisingSheetBrowserProof {
       });
       assert.ok(geometry.pageWidth<=geometry.viewport+1,width+': page must not overflow horizontally');
       if(width===390)assert.ok(geometry.scrollWidth>geometry.clientWidth,'Mobile nine-column sheet must allow internal horizontal scrolling');
+      // Screenshots contain synthetic order values only; they are CI evidence, not public deployment.
+      const folder=path.join(this.root,'output','playwright');
+      fs.mkdirSync(folder,{recursive:true});
+      await this.page.locator('.tna-master-activities h3').scrollIntoViewIfNeeded();
+      await this.page.screenshot({path:path.join(folder,'tna-rework-'+this.templateId+'-'+width+'.png')});
     }
   }
 
