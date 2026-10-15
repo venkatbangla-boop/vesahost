@@ -412,7 +412,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
   function openSavedCopyDialog(){openDialog(text('savedCopy'),`<p>Paste a VESA TNA saved copy below, or choose the saved copy from your computer.</p><label class="tna-wide"><span>Saved copy contents</span><textarea id="tnaSavedCopyText" rows="8" placeholder="Paste the saved copy here"></textarea></label><input id="tnaSavedCopyFile" type="file" accept=".json,.tna,application/json"><div class="menu-grid"><button class="tna-btn" type="button" data-import-copy="paste">Open pasted copy</button><button class="tna-btn secondary" type="button" data-import-copy="file">Open selected file</button></div><p class="tna-note">The copy is checked for the correct VESA TNA format, size and integrity before it is saved locally. Your current order stays open if the check fails.</p>`);document.querySelector('[data-import-copy="paste"]').onclick=()=>importSavedCopyText(document.getElementById('tnaSavedCopyText').value);document.querySelector('[data-import-copy="file"]').onclick=()=>{const file=document.getElementById('tnaSavedCopyFile').files?.[0];if(!file)return openDialog(text('savedCopy'),'<p>Select a VESA TNA saved copy first.</p>');const reader=new FileReader();reader.onload=()=>importSavedCopyText(String(reader.result||''));reader.onerror=()=>openDialog(text('savedCopy'),'<p>The selected file could not be read. Choose the original saved copy and try again.</p>');reader.readAsText(file);};}
   function importSavedCopyText(value){try{const plan=storage.importCopy(value);state.currentPlan=plan;const saved=storage.savePlan(plan,userKey());render();openDialog(text('savedCopy'),`<p>Saved copy opened and saved locally.</p><p><b>${esc(saved.style||'Untitled TNA')}</b> · ${esc(saved.po||'PO unknown')}</p>`);}catch(error){openDialog(text('savedCopy'),`<p>${esc(error.message)}</p>`);}}
   function reportOptions(){return reports.catalogue(state.language).map(item=>`<option value="${esc(item.id)}">${esc(item.id)} · ${esc(item.title)} · ${esc(item.audience)}</option>`).join('')}
-  function reportModel(reportId){return reports.buildReportModel(state.currentPlan,{reportId,language:state.language,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone})}
+  function reportModel(reportId,extra={}){return reports.buildReportModel(state.currentPlan,{reportId,language:state.language,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,...extra})}
   function markReportPrint(){document.body.classList.add('tna-printing-report');const clear=()=>document.body.classList.remove('tna-printing-report');window.addEventListener('afterprint',clear,{once:true});setTimeout(clear,2000);}
 
   /**
@@ -487,6 +487,38 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       '<span>'+esc(t.confirmed)+': '+cell(data.buyerConfirmedTarget)+'</span></div></section>';
     return html;
   }
+  // R03 local factory-only report. No guessed review date and no plan writes.
+  function dailyReportPreview(data){
+    const t=data.labels,show=value=>esc(value==null||value===''?t.unknown:value);
+    let html='<section class="tna-report-daily" aria-label="'+esc(t.activity)+'">';
+    if(!data.ready)return html+'<p role="status" class="tna-note">'+esc(t.selectDate)+'</p></section>';
+    html+='<h3>'+esc(t.asOf)+': '+show(data.asOfDate)+'</h3>';
+    html+='<p class="tna-note">'+esc(t.source)+' '+esc(t.calendar)+'</p>';
+    for(const key of ['overdue','today','nextSeven','needsDate']){
+      const rows=data.sections[key]||[];
+      html+='<section class="tna-report-daily-section" data-daily-group="'+esc(key)+'">';
+      html+='<h3>'+esc(t[key])+' · '+rows.length+'</h3>';
+      if(!rows.length)html+='<p>'+esc(t.noActions)+'</p>';
+      else{
+        const parts=[
+          {head:[t.ref,t.activity,t.department,t.target,t.original,t.revised,t.forecast,t.actual],
+            values:row=>[row.ref,row.activity,row.department,row.due,row.original,row.revised,row.forecast,row.actual]},
+          {head:[t.ref,t.status,t.waiting,t.reason,t.followup,t.recovery,t.proof],
+            values:row=>[row.ref,row.status,row.waiting,row.reason,row.followup,row.recovery,row.proof]}
+        ];
+        for(const [index,part] of parts.entries()){
+          html+='<div class="tna-report-daily-scroll"><table class="tna-report-daily-table" data-daily-part="'+(index+1)+'"><thead><tr>'+
+            part.head.map(h=>'<th scope="col">'+esc(h)+'</th>').join('')+'</tr></thead><tbody>';
+          html+=rows.map(row=>'<tr>'+part.values(row).map(value=>'<td>'+show(value)+'</td>').join('')+'</tr>').join('');
+          html+='</tbody></table></div>';
+        }
+      }
+      html+='</section>';
+    }
+    html+='<p class="tna-note">'+esc(t.dueMeaning)+'</p>';
+    html+='</section>';
+    return html;
+  }
   function reportPreviewHtml(model){
     const order=model.order;
     let html='<article class="tna-report-preview"><h2>'+esc(model.title)+'</h2>';
@@ -499,7 +531,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       [model.labels.quantity,String(order.quantity)+' '+String(order.unit)],
       [model.labels.required,order.requiredExFactory]
     ].map(([label,value])=>'<span>'+esc(label)+': '+esc(value)+'</span>').join('')+'</div>';
-    if(model.buyerTna)html+=buyerReportPreview(model.buyerTna);
+    if(model.factoryDaily)html+=dailyReportPreview(model.factoryDaily);
+    else if(model.buyerTna)html+=buyerReportPreview(model.buyerTna);
     else if(model.masterSheet)html+=masterReportPreview(model);
     else{
       html+='<h3>'+esc(model.headings.tasks)+'</h3><div class="tna-task-table tna-report-table" role="table" aria-label="TNA report activity preview">';
@@ -510,7 +543,69 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     html+='<p class="tna-note">'+esc(model.notes.join(' '))+'</p></article>';
     return html;
   }
-  function openReportPanel(action='Prepare Report'){if(!reports)return openDialog('Reports','<p>Reports are temporarily unavailable. Keep the order open and try again.</p>');if(!state.currentPlan)return openDialog('Reports','<p>Create or open a TNA before preparing reports.</p>');if(state.currentPlan.mode==='practice')return openDialog('Reports','<p>Practice example reports are preview-only and cannot be used as business evidence.</p>');const first=reports.catalogue(state.language)[0];openDialog('Reports',`<div class="tna-form-grid"><label><span>Report type</span><select id="tnaReportType">${reportOptions()}</select></label><label><span>Language</span><input readonly value="${esc(state.language)}"></label></div><div class="menu-grid"><button class="tna-btn" type="button" data-report-action="preview">Preview report</button><button class="tna-btn secondary" type="button" data-report-action="download">Download report data</button><button class="tna-btn secondary" type="button" data-report-action="excel">Download report Excel</button><button class="tna-btn secondary" type="button" data-report-action="print">Print report</button><button class="tna-btn secondary" type="button" data-report-action="share">Share fallback</button></div><div id="tnaReportPreview">${reportPreviewHtml(reportModel(first.id))}</div>`);const update=()=>{document.getElementById('tnaReportPreview').innerHTML=reportPreviewHtml(reportModel(document.getElementById('tnaReportType').value));};document.getElementById('tnaReportType').onchange=update;document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{const model=reportModel(document.getElementById('tnaReportType').value);if(btn.dataset.reportAction==='preview')return update();if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}if(btn.dataset.reportAction==='share')return openDialog('Share fallback',`<p>${esc(model.labels.shareFallback)}</p><p>A shared link is unavailable in local mode. Download the report and share it through an approved channel.</p>`);if(btn.dataset.reportAction==='excel'){try{const data=storage.exportReportWorkbook(model);const blob=new Blob([data],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`vesa-tna-${model.reportId}-${model.order.style}.xlsx`.replace(/[^a-z0-9_.-]+/gi,'-');document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);return;}catch(error){return openDialog('Download report Excel',`<p>${esc(error.message)}</p>`);}}const blob=new Blob([JSON.stringify(model,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`vesa-tna-${model.reportId}-${model.order.style}.json`.replace(/[^a-z0-9_.-]+/gi,'-');document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);});}
+  function openReportPanel(action='Prepare Report'){
+    if(!reports)return openDialog('Reports','<p>Reports are temporarily unavailable. Keep the order open and try again.</p>');
+    if(!state.currentPlan)return openDialog('Reports','<p>Create or open a TNA before preparing reports.</p>');
+    if(state.currentPlan.mode==='practice')return openDialog('Reports','<p>Practice example reports are preview-only and cannot be used as business evidence.</p>');
+    const first=reports.catalogue(state.language)[0];
+    const dailyWords=reportModel('R03').factoryDaily.labels;
+    openDialog('Reports',
+      '<div class="tna-form-grid">'+
+      '<label><span>Report type</span><select id="tnaReportType">'+reportOptions()+'</select></label>'+
+      '<label><span>Language</span><input readonly value="'+esc(state.language)+'"></label>'+
+      '<label id="tnaReportAsOfWrap" hidden><span>'+esc(dailyWords.asOf)+'</span>'+
+        '<input id="tnaReportAsOf" type="date" aria-required="true"></label></div>'+
+      '<p id="tnaReportGate" role="status" aria-live="polite" class="tna-note"></p>'+
+      '<div class="menu-grid">'+
+      '<button class="tna-btn" type="button" data-report-action="preview">Preview report</button>'+
+      '<button class="tna-btn secondary" type="button" data-report-action="download">Download report data</button>'+
+      '<button class="tna-btn secondary" type="button" data-report-action="excel">Download report Excel</button>'+
+      '<button class="tna-btn secondary" type="button" data-report-action="print">Print report</button>'+
+      '<button class="tna-btn secondary" type="button" data-report-action="share">Share fallback</button></div>'+
+      '<div id="tnaReportPreview">'+reportPreviewHtml(reportModel(first.id))+'</div>');
+    const type=document.getElementById('tnaReportType');
+    const review=document.getElementById('tnaReportAsOf');
+    const reviewWrap=document.getElementById('tnaReportAsOfWrap');
+    const gate=document.getElementById('tnaReportGate');
+    const currentModel=()=>reportModel(type.value,type.value==='R03'?{asOfDate:review.value}:{});
+    const update=()=>{
+      reviewWrap.hidden=type.value!=='R03';
+      const model=currentModel();
+      gate.textContent=model.factoryDaily&&!model.factoryDaily.ready?model.factoryDaily.labels.selectDate:'';
+      document.getElementById('tnaReportPreview').innerHTML=reportPreviewHtml(model);
+      return model;
+    };
+    type.onchange=update;
+    review.onchange=update;
+    review.oninput=update;
+    document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{
+      const model=currentModel();
+      // All R03 exports, print and share are blocked until a valid explicit date.
+      if(model.factoryDaily&&!model.factoryDaily.ready)return update();
+      if(btn.dataset.reportAction==='preview')return update();
+      if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}
+      if(btn.dataset.reportAction==='share')return openDialog('Share fallback',
+        '<p>'+esc(model.labels.shareFallback)+'</p>'+
+        '<p>A shared link is unavailable in local mode. Download the report and share it through an approved channel.</p>');
+      if(btn.dataset.reportAction==='excel'){
+        try{
+          const data=storage.exportReportWorkbook(model);
+          const blob=new Blob([data],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+          const url=URL.createObjectURL(blob),link=document.createElement('a');
+          link.href=url;
+          link.download=('vesa-tna-'+model.reportId+'-'+model.order.style+'.xlsx').replace(/[^a-z0-9_.-]+/gi,'-');
+          document.body.appendChild(link);link.click();link.remove();
+          setTimeout(()=>URL.revokeObjectURL(url),1000);return;
+        }catch(error){return openDialog('Download report Excel','<p>'+esc(error.message)+'</p>');}
+      }
+      const blob=new Blob([JSON.stringify(model,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob),link=document.createElement('a');
+      link.href=url;
+      link.download=('vesa-tna-'+model.reportId+'-'+model.order.style+'.json').replace(/[^a-z0-9_.-]+/gi,'-');
+      document.body.appendChild(link);link.click();link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    });
+  }
   // Excel selection is short-lived, in-memory and isolated from saved TNA
   // records. This first reviewed import supports order-level rows only.
   function importWords(){
