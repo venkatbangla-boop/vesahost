@@ -13,6 +13,10 @@ on:
       - 'apps/tna/tests/**'
       - 'apps/tna/index.html'
 
+concurrency:
+  group: tna-merchandising-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -72,8 +76,8 @@ jobs:
           node apps/tna/tests/g11-unified-shell-browser.cjs
           node apps/tna/tests/g11-route-regression.cjs
           node tests/vesa-shared-shell-matrix.cjs
-      - name: Save synthetic screenshots on failure only
-        if: failure()
+      - name: Retain synthetic viewport screenshots for visual review
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: tna-rework-synthetic-browser-screens
