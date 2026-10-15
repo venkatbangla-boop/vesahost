@@ -78,7 +78,7 @@ test('approved audience boundaries: R02-R12 omit internal garment/LC master proj
       assert.throws(()=>storage.exportReportWorkbook(notReady),/Critical|review|source|CPM|R04/i);
       continue;
     }
-    const model=reports.buildReportModel(plan,{reportId:id,language:'en',asOfDate:id==='R03'?'2026-10-15':undefined,...(id==='R05'?{weekStart:'2026-10-12',weekEnd:'2026-10-18',reviewDate:'2026-10-15'}:{}),...(id==='R06'?{asOfDate:'2026-10-15',managementConfirmed:true}:{}),...(id==='R07'?{asOfDate:'2026-10-15',productionAudience:'internal',internalConfirmed:true}:{}),...(id==='R08'?{asOfDate:'2026-10-15',commercialConfirmed:true,commercialAuthorityRef:'REVIEWED-COMMERCIAL-AUTHORITY'}:{}),...(id==='R09'?{asOfDate:'2026-10-15',qualityConfirmed:true,qualityAuthorityRef:'REVIEWED-QUALITY-AUTHORITY'}:{}),...(id==='R10'?{asOfDate:'2026-10-15',managementConfirmed:true,portfolioAuthorityRef:'REVIEWED-MANAGEMENT-AUTHORITY',portfolioSelectedIds:[plan.recordId],portfolioPlans:[plan]}:{}),generatedAt:'2026-10-15T08:00:00.000Z'});
+    const model=reports.buildReportModel(plan,{reportId:id,language:'en',asOfDate:id==='R03'?'2026-10-15':undefined,...(id==='R05'?{weekStart:'2026-10-12',weekEnd:'2026-10-18',reviewDate:'2026-10-15'}:{}),...(id==='R06'?{asOfDate:'2026-10-15',managementConfirmed:true}:{}),...(id==='R07'?{asOfDate:'2026-10-15',productionAudience:'internal',internalConfirmed:true}:{}),...(id==='R08'?{asOfDate:'2026-10-15',commercialConfirmed:true,commercialAuthorityRef:'REVIEWED-COMMERCIAL-AUTHORITY'}:{}),...(id==='R09'?{asOfDate:'2026-10-15',qualityConfirmed:true,qualityAuthorityRef:'REVIEWED-QUALITY-AUTHORITY'}:{}),...(id==='R10'?{asOfDate:'2026-10-15',managementConfirmed:true,portfolioAuthorityRef:'REVIEWED-MANAGEMENT-AUTHORITY',portfolioSelectedIds:[plan.recordId],portfolioPlans:[plan]}:{}),...(id==='R11'?{approvalAsOfDate:'2026-10-15',approvalAudience:'factory',approvalFactoryConsent:true,approvalAuthorityRef:'REVIEWED-FACTORY-AUTHORITY'}:{}),generatedAt:'2026-10-15T08:00:00.000Z'});
     assert.equal(model.masterSheet,null,id+' must not gain internal master sheet');
     assert.ok(!JSON.stringify(model).includes('SOURCE-MASTER-LC-15'));
     const workbook=XLSX.read(storage.exportReportWorkbook(model),{type:'buffer'});
@@ -91,6 +91,7 @@ test('approved audience boundaries: R02-R12 omit internal garment/LC master proj
         id==='R08'?['Report Summary','Order Summary','Report Activities','Master LC Review','Material Sources','Sourcing Milestones','Report Notes']:
         id==='R09'?['Report Summary','Order Summary','Report Activities','Shipment Lots','PO Allocations','Shipping Milestones','PPM AQL References','Report Notes']:
         id==='R10'?['Report Summary','Order Summary','Report Activities','Portfolio Orders','Portfolio Follow-ups','Portfolio Groups','Report Notes']:
+        id==='R11'?['Report Summary','Order Summary','Report Activities','Approval Decisions','Resubmission Entries','Recorded Task Revisions','Pending Approvals','Report Notes']:
         ['Report Summary','Order Summary','Report Activities','Report Notes'],id+' approved audience workbook shape');
   }
 });

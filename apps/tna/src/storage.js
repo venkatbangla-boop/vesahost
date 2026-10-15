@@ -108,6 +108,7 @@
       throw new Error(model.materialLcReport?.labels?.selectReview||'Select a commercial review date and authorization.');
     if(model.reportId==='R09'&&!model.shipmentReadiness?.ready)throw new Error(model.shipmentReadiness?.labels?.selectReview||'Review restricted shipment information first.');
     if(model.reportId==='R10'&&!model.portfolioReport?.ready)throw new Error(model.portfolioReport?.labels?.select||'Select and review saved portfolio orders first.');
+    if(model.reportId==='R11'&&!model.approvalHistory?.ready)throw new Error(model.approvalHistory?.labels?.selectReview||'Choose authorized approval audience and review date before download.');
     const workbook=XLSX.utils.book_new();
     const addSheet=(name,rows,widths,filter=false)=>{
       const sheet=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
@@ -496,6 +497,41 @@
         [v(t.waiting),numberCell(p.summary.waitingApprovalOrders)]);
       workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(old,{dateNF:'yyyy-mm-dd'});
       workbook.Sheets['Report Summary']['!cols']=[{wch:36},{wch:102}];
+    }
+    // R11 XLSX is entirely projected from the already sanitized and gated
+    // buyer/factory view, NEVER a raw approval or revision event. Keep civil
+    // dates as typed Excel dates; omit private document IDs and comments.
+    if(model.reportId==='R11'){
+      const h=model.approvalHistory,t=h.labels;
+      const v=x=>safeCell(x===null||x===undefined||x===''?t.missing:x);
+      const d=x=>x?dateCell(x):v(t.missing);
+      const b=x=>v(x?t.yes:t.no);
+      const n=x=>x===null?v(t.missing):numberCell(x);
+      addSheet('Approval Decisions',[[t.item,t.linked,t.revision,t.submitted,t.received,
+        t.decision,t.response,t.assessed,t.authorityRecorded,t.evidenceRecorded],
+        ...h.records.map(r=>[v(r.title),v(r.refs),n(r.revision),d(r.submitted),
+          d(r.received),d(r.decision),v(r.response),v(r.assessment),
+          b(r.authorityRecorded),b(r.evidenceRecorded)])],
+        [51,34,18,22,22,22,35,40,30,30],true);
+      addSheet('Resubmission Entries',[[t.item,t.seq,t.submitted,t.received,t.decision,
+        t.response,t.assessed,t.authorityRecorded,t.evidenceRecorded],
+        ...h.rounds.map(r=>[v(r.title),numberCell(r.sequencePosition),d(r.submitted),
+          d(r.received),d(r.decision),v(r.response),v(r.assessment),
+          b(r.authorityRecorded),b(r.evidenceRecorded)])],
+        [51,20,22,22,22,35,40,30,30],true);
+      addSheet('Recorded Task Revisions',[[t.ref,t.item,t.revision,t.eventDate,
+        t.status,t.event],...h.revisions.map(r=>[v(r.ref),v(r.title),
+        n(r.revision),d(r.loggedAt),v(r.sourceStatus),v(r.event)])],
+        [18,51,18,26,34,48],true);
+      addSheet('Pending Approvals',[[t.ref,t.item,t.status],
+        ...h.pending.map(r=>[v(r.ref),v(r.title),v(r.status)])],
+        [18,51,34],true);
+      const summary=XLSX.utils.sheet_to_json(workbook.Sheets['Report Summary'],{header:1,raw:true});
+      summary.push([v(t.reviewAsOf),d(h.asOfDate)],[v(t.audience),v(h.mode==='buyer'?t.buyer:t.factory)],
+        [v(t.records),numberCell(h.counts.records)],[v(t.rounds),numberCell(h.counts.roundEntries)],
+        [v(t.revisions),numberCell(h.counts.revisions)],[v(t.pending),numberCell(h.counts.pending)]);
+      workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(summary,{dateNF:'yyyy-mm-dd'});
+      workbook.Sheets['Report Summary']['!cols']=[{wch:36},{wch:110}];
     }
     if(model.reportId==='R01'&&model.masterSheet){
       const l=model.masterSheet.labels||{};

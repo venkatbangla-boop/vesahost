@@ -270,3 +270,17 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
 .tna-report-portfolio-table thead{display:table-header-group}
 .tna-report-portfolio-table tr{break-inside:avoid}
 @media print{body.tna-printing-report .tna-report-portfolio-scroll{overflow:visible;border:0;max-width:100%}body.tna-printing-report .tna-report-portfolio-table{min-width:0;width:100%;font-size:7pt}body.tna-printing-report .tna-report-portfolio-table th,body.tna-printing-report .tna-report-portfolio-table td{padding:4pt}body.tna-printing-report .tna-report-portfolio-table thead{display:table-header-group}}
+
+/* GMR-14 R11: screened approval history reuses the shared VESA report dialog. */
+#tnaApprovalReviewWrap[hidden],#tnaApprovalBuyerConsentWrap[hidden],#tnaApprovalFactoryConsentWrap[hidden]{display:none!important}
+.tna-approval-review{min-width:0;max-width:100%;border:1px solid var(--line,#d5deea);padding:12px;border-radius:12px;box-sizing:border-box}
+.tna-approval-review>label{display:grid;gap:5px;margin:8px 0;max-width:100%;overflow-wrap:anywhere}
+.tna-approval-review input:not([type=checkbox]),.tna-approval-review select{width:100%;min-height:44px;max-width:100%;box-sizing:border-box}
+.tna-approval-review input[type=checkbox]{width:18px;height:18px;min-height:18px}
+.tna-report-approval{max-width:100%;min-width:0;margin:14px 0;overflow-wrap:anywhere}
+.tna-report-approval-scroll{max-width:100%;min-width:0;overflow:auto;margin:10px 0;border:1px solid var(--line,#d5deea);border-radius:8px}
+.tna-report-approval-table{width:100%;min-width:620px;border-collapse:collapse;table-layout:fixed;font-size:.78rem}
+.tna-report-approval-table th,.tna-report-approval-table td{border:1px solid var(--line,#d5deea);padding:7px;text-align:start;vertical-align:top;overflow-wrap:anywhere}
+.tna-report-approval-table thead{display:table-header-group}
+.tna-report-approval-table tr{break-inside:avoid}
+@media print{body.tna-printing-report .tna-report-approval-scroll{overflow:visible;border:0}body.tna-printing-report .tna-report-approval-table{min-width:0;width:100%;font-size:7pt}body.tna-printing-report .tna-report-approval-table th,body.tna-printing-report .tna-report-approval-table td{padding:4pt}}
