@@ -56,7 +56,7 @@
     }
   };
 
-  const state={dialog:null,language:'en',currentPlan:null,workspaceFilter:{owner:null,stage:null},workspaceView:'timeline',portfolioFilter:{buyer:null,factory:null,po:null},merchandisingFilter:'all',merchandisingAsOf:'',merchandisingRecordId:null,scenarioDraft:null,scenarioPreview:null};
+  const state={dialog:null,language:'en',currentPlan:null,workspaceFilter:{owner:null,stage:null},workspaceView:'timeline',portfolioFilter:{buyer:null,factory:null,po:null},merchandisingFilter:'all',merchandisingAsOf:'',merchandisingRecordId:null,scenarioDraft:null,scenarioPreview:null,importSession:null};
   const domain=globalThis.VesaTnaDomain;
   const scheduling=globalThis.VesaTnaScheduling;
   const operations=globalThis.VesaTnaOperations;
@@ -478,7 +478,168 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     return html;
   }
   function openReportPanel(action='Prepare Report'){if(!reports)return openDialog('Reports','<p>Reports are temporarily unavailable. Keep the order open and try again.</p>');if(!state.currentPlan)return openDialog('Reports','<p>Create or open a TNA before preparing reports.</p>');if(state.currentPlan.mode==='practice')return openDialog('Reports','<p>Practice example reports are preview-only and cannot be used as business evidence.</p>');const first=reports.catalogue(state.language)[0];openDialog('Reports',`<div class="tna-form-grid"><label><span>Report type</span><select id="tnaReportType">${reportOptions()}</select></label><label><span>Language</span><input readonly value="${esc(state.language)}"></label></div><div class="menu-grid"><button class="tna-btn" type="button" data-report-action="preview">Preview report</button><button class="tna-btn secondary" type="button" data-report-action="download">Download report data</button><button class="tna-btn secondary" type="button" data-report-action="excel">Download report Excel</button><button class="tna-btn secondary" type="button" data-report-action="print">Print report</button><button class="tna-btn secondary" type="button" data-report-action="share">Share fallback</button></div><div id="tnaReportPreview">${reportPreviewHtml(reportModel(first.id))}</div>`);const update=()=>{document.getElementById('tnaReportPreview').innerHTML=reportPreviewHtml(reportModel(document.getElementById('tnaReportType').value));};document.getElementById('tnaReportType').onchange=update;document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{const model=reportModel(document.getElementById('tnaReportType').value);if(btn.dataset.reportAction==='preview')return update();if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}if(btn.dataset.reportAction==='share')return openDialog('Share fallback',`<p>${esc(model.labels.shareFallback)}</p><p>A shared link is unavailable in local mode. Download the report and share it through an approved channel.</p>`);if(btn.dataset.reportAction==='excel'){try{const data=storage.exportReportWorkbook(model);const blob=new Blob([data],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`vesa-tna-${model.reportId}-${model.order.style}.xlsx`.replace(/[^a-z0-9_.-]+/gi,'-');document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);return;}catch(error){return openDialog('Download report Excel',`<p>${esc(error.message)}</p>`);}}const blob=new Blob([JSON.stringify(model,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`vesa-tna-${model.reportId}-${model.order.style}.json`.replace(/[^a-z0-9_.-]+/gi,'-');document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);});}
-  function openImportPreview(){openDialog('Import Excel TNA',`<p>${esc(text('xlsxBlocked'))}</p><input id="tnaWorkbookFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv,.tsv,text/csv,text/tab-separated-values"><label class="tna-wide"><span>Pasted table preview</span><textarea id="tnaImportText" rows="8" placeholder="Buyer,Factory,Style,PO,Quantity,Buyer Required Ex-Factory"></textarea></label><div class="menu-grid"><button class="tna-btn" type="button" data-import-preview="text">Preview pasted text</button><button class="tna-btn secondary" type="button" data-import-preview="file">Preview selected file</button></div><div id="tnaImportPreviewResult"></div>`);document.querySelector('[data-import-preview="text"]').onclick=()=>renderImportPreview(storage.importPreview(document.getElementById('tnaImportText').value));document.querySelector('[data-import-preview="file"]').onclick=()=>{const file=document.getElementById('tnaWorkbookFile').files?.[0];if(!file)return renderImportError('Select an Excel workbook or pasted table first.');const lower=file.name.toLowerCase();const reader=new FileReader();reader.onerror=()=>renderImportError('The selected file could not be read. Choose the original file and try again.');if(lower.endsWith('.xlsx')){reader.onload=()=>{try{renderImportPreview(storage.importWorkbookPreview(reader.result,file.name));}catch(error){renderImportError(error.message);}};reader.readAsArrayBuffer(file);return;}if(lower.endsWith('.xlsm'))return renderImportError('Excel workbooks with macros are not accepted. Save a clean workbook without macros and try again.');reader.onload=()=>{try{renderImportPreview(storage.importPreview(String(reader.result||'')));}catch(error){renderImportError(error.message);}};reader.readAsText(file);};}
+  // Excel selection is short-lived, in-memory and isolated from saved TNA
+  // records. This first reviewed import supports order-level rows only.
+  function importWords(){
+    const langs=globalThis.VesaTnaImportReview?.LOCALES||{};
+    return langs[state.language]||langs.en||{};
+  }
+  function importReviewError(message){
+    const node=document.getElementById('tnaImportReviewFeedback')||document.getElementById('tnaImportPreviewResult');
+    if(node)node.textContent=String(message||'Review could not be completed.');
+  }
+  function startExcelReview(file,bytes){
+    try{
+      const importer=globalThis.VesaTnaImportReview;
+      if(!importer?.parseWorkbook)throw Error('Excel review is unavailable. The selected file was not saved.');
+      const snapshot=importer.parseWorkbook(bytes,file.name);
+      state.importSession={snapshot,settings:{
+        sheetName:snapshot.sheetNames[0],headerRow:1,recordRow:2,dateFormat:'iso',
+        basis:'calendar',templateId:'knit',mapping:null
+      },reviewed:null};
+      renderWorkbookMapping();
+    }catch(error){state.importSession=null;importReviewError(error.message);}
+  }
+  function renderWorkbookMapping(){
+    const session=state.importSession,importer=globalThis.VesaTnaImportReview,t=importWords();
+    const rootNode=document.getElementById('tnaImportPreviewResult');
+    if(!rootNode||!session||!importer)return;
+    const setting=session.settings,snap=session.snapshot;
+    let details;
+    try{details=importer.describe(snap,setting.sheetName,setting.headerRow);}
+    catch(error){importReviewError(error.message);return;}
+    if(!setting.mapping)setting.mapping={...details.mapping};
+    if(!details.dataRows.some(row=>row.line===Number(setting.recordRow)))
+      setting.recordRow=details.dataRows[0]?.line||'';
+    const htmlOptions=(items,current)=>items.map(([v,label])=>
+      '<option value="'+esc(v)+'" '+(String(v)===String(current)?'selected':'')+'>'+esc(label)+'</option>').join('');
+    const mapFields=importer.FIELD_IDS.map(id=>{
+      const choices=[[-1,t.missing||'Not mapped'],...details.headers.map((value,index)=>
+        [index,(index+1)+': '+(value||'Unnamed column')])];
+      return '<label><span>'+esc(id.replace(/([A-Z])/g,' $1'))+'</span><select name="map-'+esc(id)+'">'+
+        htmlOptions(choices,setting.mapping[id]??-1)+'</select></label>';
+    }).join('');
+    const allRows=details.dataRows.map(item=>[item.line,'Row '+item.line+' · '+item.values.slice(0,6).join(' | ').slice(0,115)]);
+    const preview=details.dataRows.slice(0,4).map(item=>
+      '<tr><th scope="row">'+esc(item.line)+'</th><td>'+item.values.map(x=>esc(String(x??''))).join(' | ')+'</td></tr>').join('');
+    rootNode.innerHTML='<form id="tnaWorkbookMapping" class="tna-import-stage">'+
+      '<h3>'+esc(t.title)+'</h3>'+
+      '<p class="tna-note">'+esc(t.warning)+'</p>'+
+      '<div class="tna-form-grid">'+
+      selectField('sheetName',t.sheet,snap.sheetNames.map(name=>[name,name]),setting.sheetName)+
+      field('headerRow',t.header,'number',setting.headerRow,true)+
+      selectField('recordRow',t.dataRow,allRows,setting.recordRow)+
+      selectField('dateFormat',t.date,[['iso','YYYY-MM-DD'],['dmy','DD/MM/YYYY'],['mdy','MM/DD/YYYY'],['excel','Excel number/date serial']],setting.dateFormat)+
+      selectField('basis',t.basis,[['calendar','Calendar days'],['working','Working days (calendar unverified)']],setting.basis)+
+      selectField('templateId',t.profile,Object.values(domain.TEMPLATE_PROFILES).map(v=>[v.id,v.name]),setting.templateId)+
+      '</div><h4>'+esc(t.map)+'</h4><div class="tna-form-grid">'+mapFields+'</div>'+
+      '<div class="tna-import-row-preview" tabindex="0"><table><thead><tr><th>Row</th><th>Workbook cells (preview only)</th></tr></thead><tbody>'+
+      (preview||'<tr><td colspan="2">No order rows were found.</td></tr>')+'</tbody></table></div>'+
+      '<p class="tna-note">'+esc(t.noOverwrite)+'</p><p class="tna-note">'+
+      'Other sheets/activities are not merged and no baseline is approved.</p>'+
+      '<button type="submit" class="tna-btn">'+esc(t.review)+'</button></form>'+
+      '<div id="tnaWorkbookDecision"></div><p id="tnaImportReviewFeedback" role="alert" aria-live="polite"></p>';
+    const form=document.getElementById('tnaWorkbookMapping');
+    const collect=()=>{
+      const data=Object.fromEntries(new FormData(form).entries()),mapping={};
+      for(const fieldId of importer.FIELD_IDS)mapping[fieldId]=Number(data['map-'+fieldId]);
+      return {sheetName:data.sheetName,headerRow:Number(data.headerRow),recordRow:Number(data.recordRow),
+        dateFormat:data.dateFormat,basis:data.basis,templateId:data.templateId,mapping};
+    };
+    form.onchange=event=>{
+      session.settings=collect();
+      session.reviewed=null;
+      document.getElementById('tnaWorkbookDecision').innerHTML='';
+      if(['sheetName','headerRow'].includes(event.target.name)){
+        session.settings.mapping=null;session.settings.recordRow='';
+        renderWorkbookMapping();
+      }
+    };
+    form.onsubmit=event=>{
+      event.preventDefault();
+      session.settings=collect();
+      const plans=readSavedPlans(readRecords());
+      const checked=importer.review(snap,session.settings,plans);
+      session.reviewed=checked;
+      const errors=checked.errors.map(e=>'<li>'+esc(e)+'</li>').join('');
+      const warnings=checked.warnings.map(w=>'<li>'+esc(w)+'</li>').join('');
+      const summary=checked.ready?[
+        ['Buyer',checked.proposal.buyerName],['Factory',checked.proposal.factoryName],
+        ['Style',checked.proposal.styleNo],['PO',checked.proposal.poNumber],
+        ['Quantity',checked.proposal.totalQty],['Ex-factory',checked.proposal.buyerRequiredExFactory],
+        ['Template',checked.proposal.templateId],['Lead-time basis',checked.proposal.leadTimeBasis]
+      ].map(item=>'<p><b>'+esc(item[0])+':</b> '+esc(item[1])+'</p>').join(''):'';
+      const consent=checked.ready?'<label><input type="checkbox" id="tnaWorkbookConsent"> '+esc(t.consent)+'</label>'+
+        (checked.duplicate?'<label><input type="checkbox" id="tnaWorkbookDuplicateConsent"> '+esc(t.duplicateConsent)+'</label>':'')+
+        '<button type="button" class="tna-btn" id="tnaWorkbookConfirm">'+esc(t.confirm)+'</button>':'';
+      const node=document.getElementById('tnaWorkbookDecision');
+      node.innerHTML='<h4>Review result</h4>'+summary+
+        (errors?'<ul class="tna-import-errors">'+errors+'</ul>':'')+
+        (warnings?'<ul class="tna-import-warnings">'+warnings+'</ul>':'')+consent;
+      const button=document.getElementById('tnaWorkbookConfirm');
+      if(button)button.onclick=()=>{
+        if(!document.getElementById('tnaWorkbookConsent')?.checked)
+          return importReviewError('Review the source and check the confirmation before creating the new draft.');
+        if(checked.duplicate&&!document.getElementById('tnaWorkbookDuplicateConsent')?.checked)
+          return importReviewError('Confirm that the matching existing order must remain separate.');
+        try{
+          // Re-review at confirmation so a changed local record cannot turn a
+          // duplicate into a silent merge. No existing record is ever edited.
+          const fresh=importer.review(snap,session.settings,readSavedPlans(readRecords()));
+          if(!fresh.ready)throw Error(fresh.errors.join('; '));
+          if(fresh.duplicate&&!document.getElementById('tnaWorkbookDuplicateConsent')?.checked)
+            throw Error('Matching existing order requires separate acknowledgement.');
+          const draft=importer.createNewDraft(fresh,{ownerUserId:userKey()});
+          if(readRecords().some(row=>row.recordId===draft.recordId))throw Error('New record ID conflicts with an existing saved order.');
+          // savePlan is the only persistent write: a new stable ID is required.
+          const saved=storage.savePlan(draft,userKey());
+          try{storage.autosave(draft,userKey());}catch(error){
+            // An autosave failure does not erase the already saved new record.
+            state.currentPlan=draft;state.importSession=null;render();
+            return openDialog('New TNA saved',
+              '<p>New draft saved locally, but automatic recovery could not be refreshed. Download a Saved Copy before leaving.</p>');
+          }
+          state.currentPlan=draft;
+          state.importSession=null;
+          state.dialog.close();
+          render();
+          openDialog('New TNA created',
+            '<p>A separate, unsigned TNA draft was saved locally. Existing orders were not replaced.</p>'+
+            '<p><b>'+esc(saved.style||'New style')+'</b> · '+esc(saved.po||'New PO')+'</p>'+
+            '<p>Activity/dependency rows from the workbook were not imported. Review the task sheet and download a saved copy.</p>');
+        }catch(error){importReviewError(error.message);}
+      };
+    };
+  }
+  function openImportPreview(){
+    state.importSession=null;
+    openDialog('Import Excel TNA',
+      '<p>Choose a local Excel workbook. Review the sheet, headers, dates and order details before creating a separate draft.</p>'+
+      '<input id="tnaWorkbookFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv,.tsv,text/csv,text/tab-separated-values">'+
+      '<label class="tna-wide"><span>Pasted table preview (not importable yet)</span>'+
+      '<textarea id="tnaImportText" rows="6" placeholder="Buyer,Factory,Style,PO,Quantity,Buyer Required Ex-Factory"></textarea></label>'+
+      '<div class="menu-grid"><button class="tna-btn" type="button" data-import-preview="text">Preview pasted text</button>'+
+      '<button class="tna-btn secondary" type="button" data-import-preview="file">Review selected file</button></div>'+
+      '<div id="tnaImportPreviewResult"></div>');
+    document.querySelector('[data-import-preview="text"]').onclick=()=>{
+      state.importSession=null;
+      try{renderImportPreview(storage.importPreview(document.getElementById('tnaImportText').value));}
+      catch(error){renderImportError(error.message);}
+    };
+    document.querySelector('[data-import-preview="file"]').onclick=()=>{
+      const file=document.getElementById('tnaWorkbookFile').files?.[0];
+      if(!file)return renderImportError('Choose an Excel workbook first.');
+      const lower=file.name.toLowerCase();
+      if(!lower.endsWith('.xlsx')){
+        if(lower.endsWith('.xlsm'))return renderImportError('Files with macros are not allowed. Save as a clean .xlsx file.');
+        return renderImportError('Text files can only be previewed here. Choose a .xlsx workbook to create a reviewed new draft.');
+      }
+      const reader=new FileReader();
+      reader.onerror=()=>renderImportError('This local Excel workbook could not be read.');
+      reader.onload=()=>startExcelReview(file,reader.result);
+      reader.readAsArrayBuffer(file);
+    };
+  }
   function renderImportPreview(preview){document.getElementById('tnaImportPreviewResult').innerHTML=`<h3>${esc(text('importPreview'))}</h3>${preview.workbook?`<p>Workbook sheet: ${esc(preview.workbook.sheetName)} · rows: ${esc(preview.workbook.rowCount)} · parser: ${esc(preview.workbook.parser)}</p>`:''}<p>Headers: ${esc(preview.headers.join(' · ')||'none')}</p><p>Rows previewed: ${esc(preview.rows.length)}</p>${preview.warnings.length?`<ul>${preview.warnings.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:'<p>No import warnings found in the preview.</p>'}<p class="tna-note">Preview only. Creating or updating production TNAs from spreadsheets requires a reviewed mapping step and does not overwrite existing TNA records.</p>`;}
   function renderImportError(message){document.getElementById('tnaImportPreviewResult').innerHTML=`<p>${esc(message)}</p>`;}
   function saveNow(){if(!state.currentPlan)return openDialog('Save TNA','<p>Create or open a TNA draft before saving.</p>');if(state.currentPlan.mode==='practice')return openDialog('Save TNA','<p>Practice example is isolated and cannot be saved into real production records.</p>');try{const saved=storage.savePlan(state.currentPlan,userKey());render();openDialog('Save TNA',`<p>Saved locally in this browser.</p><p><b>${esc(saved.style||'Untitled TNA')}</b> · ${esc(saved.po||'PO unknown')}</p>`);}catch(error){openDialog('Save TNA',`<p>${esc(error.message)}</p>`);}}
