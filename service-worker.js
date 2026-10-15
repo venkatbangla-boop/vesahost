@@ -1,4 +1,4 @@
-const CACHE='vesa-v81-tna-gmr06-r03'
+const CACHE='vesa-v82-tna-gmr07-r04'
 const ASSETS=[
   './',
   './index.html',
@@ -17,6 +17,7 @@ const ASSETS=[
   './apps/tna/assets/import-review.css?v=0.1.2',
   './apps/tna/src/domain.js',
   './apps/tna/src/scheduling.js',
+  './apps/tna/src/critical-path-report.js?v=0.1.0',
   './apps/tna/src/operations.js',
   './apps/tna/vendor/xlsx.full.min.js',
   './apps/tna/vendor/xlsx.LICENSE.txt',
