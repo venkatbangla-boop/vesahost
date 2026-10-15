@@ -110,6 +110,8 @@ async function run(){
     await pdfViewer.waitForTimeout(1000);
     await pdfViewer.screenshot({path:path.join(output,'tna-g11-pdf-viewer-last-page.png')});
     await pdfViewer.close();
+    // Restore screen media before selecting a new report: print CSS hides inputs.
+    await page.emulateMedia({media:'screen'});
     // R03 has a distinct departmental report; the same loaded legacy plan remains untouched.
     await page.locator('#tnaReportType').selectOption('R03');
     await page.locator('.tna-factory-daily-preview').waitFor();
