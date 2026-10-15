@@ -40,6 +40,13 @@ Branch `feature/tna-merchandising-rework`, implementation SHAs `38d62acc5` and `
 
 **NEXT ACTION:** Directly audit `apps/tna/src/bootstrap.js` `openTaskEdit()`, `apps/tna/src/domain.js` task update/revision logic, `apps/tna/src/storage.js` saved-copy migration, and sheet/Excel report consumers. Design the smallest domain-validated editable target/forecast/owner/remark follow-up flow while **never overwriting baseline or turning task evidence into unapproved buyer/local-office approval**. Add knit/woven regressions and then run CI. The next portfolio application remains Packing & Container 360 after TNA rework acceptance or genuine independent blocker.
 
+
+### TNA Garment Rework — verified follow-up update, 2026-10-15
+
+**Application:** ACTIVE (the follow-up-editor slice is DEVELOPMENT VERIFIED, whole rework not accepted). **Branch:** `feature/tna-merchandising-rework`. **Exact tested SHA:** `b2616f102ce8a272eb90a039c04bc597f0f10faf`. **CI:** [38751663266](https://github.com/venkatbangla-boop/vesahost/actions/runs/38751663266) SUCCESS. Real tests: syntax, G02/G03/G05/G06/G07, migration/revision history, Excel R01 owner/current/forecast parity, knit/woven Chromium form and save/reopen/copy, EN/BN/HI/TA labels, responsive 390/1280, TNA platform routing, PPM 168 baseline, AQL sampling/baselines and shared-shell matrix. Interim failed [run 38750629944](https://github.com/venkatbangla-boop/vesahost/actions/runs/38750629944) identified a test snapshot referencing a stale named record rather than a pending autosave; revised test passed. Human UAT, actual factory workbook desktop reader, assistive-technology and full historical 95-command matrix remain unverified. Frozen TNA schema, calculation engines, baselines, actuals, approval sources, PPM/AQL rules and `main` untouched.
+
+**NEXT ACTION (ONE):** fix the existing TNA Status Edit named-record persistence inconsistency found by the genuine browser test, while preserving status/approval transitions and local autosave; prove reopened named record and backup compatibility on real Chromium. Note export permissions to buyer vs internal audiences still require an explicit report visibility rule; do not invent it. After TNA acceptance, next app Packing & Container 360.
+
 ## A. Current execution snapshot — initial handover
 
 
