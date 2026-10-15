@@ -203,8 +203,9 @@ test('invalid/unsupported quantity, dates, rate or units fail closed without inv
  assert.equal(make(p).productionStatus.stages[0].projectedFinish,null);
 });
 test('four languages: dated, numeric XLSX; no injection formulas; buyers never get operation worksheet',()=>{
- const p=fixture('knit'),before=JSON.stringify(p);
+ const p=fixture('knit');
  const cut=p.operations[0];cut.operationId=' \t=HYPERLINK("https://bad.invalid","op")';
+ const before=JSON.stringify(p);
  for(const lang of ['en','bn','hi','ta']){
   const m=make(p,{language:lang}),d=m.productionStatus;
   assert.equal(d.ready,true);
