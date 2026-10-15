@@ -63,7 +63,7 @@ const taModel = reports.buildReportModel(plan, { reportId: 'R12', language: 'ta'
 assert(taModel.reportId === 'R12' && taModel.source.recordId === null && !taModel.scenarioComparison?.ready, 'G07 R12 must withhold source identity and data before planner review.');
 assert(bnModel.labels.noFabrication.includes('Needs Information'), 'G07 reports must include no-fabrication note.');
 
-assert.throws(()=>storage.exportReportWorkbook(taModel),/Scenario|options|date|Review|தேர்வு/i,
+require('node:assert/strict').throws(()=>storage.exportReportWorkbook(taModel),/Scenario|options|date|Review|தேர்வு/i,
   'G07 R12 unreviewed reports must not export source order fields.');
 for (const model of [bnModel]) {
   const workbookBuffer = storage.exportReportWorkbook(model);
