@@ -40,6 +40,121 @@
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
 
+
+  /**
+   * GMR-05 R02 buyer projection: explicit outward-facing ref allowlist.
+   * NEVER copy source title/owner/notes/proof IDs, finance/LC/commercial data,
+   * generic validation errors or unapproved custom source rows to a buyer.
+   */
+  const BUYER_REFS=Object.freeze({
+    O05:['PO received','PO পাওয়া','PO प्राप्त हुआ','PO பெறப்பட்டது'],
+    O11:['Delivery target review','ডেলিভারি লক্ষ্য যাচাই','डिलीवरी लक्ष्य समीक्षा','Delivery தேதி மதிப்பாய்வு'],
+    D03:['Development sample submitted','ডেভেলপমেন্ট স্যাম্পল জমা','डेवलपमेंट सैंपल जमा','Development sample சமர்ப்பிப்பு'],
+    D04:['Development sample comments','স্যাম্পল মন্তব্য','सैंपल टिप्पणियाँ','Development sample கருத்துகள்'],
+    D05:['Fit sample submitted','ফিট স্যাম্পল জমা','फिट सैंपल जमा','Fit sample சமர்ப்பிப்பு'],
+    D06:['Fit comments received','ফিট মন্তব্য পাওয়া','फिट टिप्पणियाँ मिलीं','Fit கருத்துகள் வந்தன'],
+    D08:['Fit approval','ফিট অনুমোদন','फिट अनुमोदन','Fit approval'],
+    D10:['Size-set sample submitted','সাইজ সেট স্যাম্পল জমা','साइज सेट सैंपल जमा','Size-set sample சமர்ப்பிப்பு'],
+    D11:['Size-set decision','সাইজ সেট সিদ্ধান্ত','साइज सेट निर्णय','Size-set முடிவு'],
+    D13:['PP sample submitted','PP স্যাম্পল জমা','PP सैंपल जमा','PP sample சமர்ப்பிப்பு'],
+    D14:['PP sample decision','PP স্যাম্পল সিদ্ধান্ত','PP सैंपल निर्णय','PP sample முடிவு'],
+    D15:['Artwork submitted','আর্টওয়ার্ক জমা','आर्टवर्क जमा','Artwork சமர்ப்பிப்பு'],
+    D16:['Artwork decision','আর্টওয়ার্ক সিদ্ধান্ত','आर्टवर्क निर्णय','Artwork முடிவு'],
+    D18:['Decoration approval','ডেকোরেশন অনুমোদন','डेकोरेशन अनुमोदन','Decoration approval'],
+    D20:['Wash standard decision','ওয়াশ স্ট্যান্ডার্ড সিদ্ধান্ত','वॉश मानक निर्णय','Wash standard முடிவு'],
+    FA03:['Lab dip submitted','ল্যাব ডিপ জমা','लैब डिप जमा','Lab dip சமர்ப்பிப்பு'],
+    FA04:['Lab dip comments','ল্যাব ডিপ মন্তব্য','लैब डिप टिप्पणियाँ','Lab dip கருத்துகள்'],
+    FA05:['Lab dip approval','ল্যাব ডিপ অনুমোদন','लैब डिप अनुमोदन','Lab dip approval'],
+    FA06:['Fabric hand-feel approval','ফ্যাব্রিক হ্যান্ডফিল অনুমোদন','फैब्रिक हैंडफील अनुमोदन','Fabric hand-feel approval'],
+    FA09:['Printed fabric decision','প্রিন্টেড ফ্যাব্রিক সিদ্ধান্ত','प्रिंटेड फैब्रिक निर्णय','Printed fabric முடிவு'],
+    TR02:['Trim artwork confirmation','ট্রিম আর্টওয়ার্ক নিশ্চয়তা','ट्रिम आर्टवर्क पुष्टि','Trim artwork உறுதி'],
+    TR04:['Trims approval','ট্রিম অনুমোদন','ट्रिम अनुमोदन','Trims approval'],
+    Q07:['Final inspection performed','ফাইনাল ইন্সপেকশন সম্পন্ন','फाइनल निरीक्षण पूरा','Final inspection நடந்தது'],
+    Q08:['Final inspection decision','ফাইনাল ইন্সপেকশন সিদ্ধান্ত','फाइनल निरीक्षण निर्णय','Final inspection முடிவு'],
+    PK04:['Packing completed','প্যাকিং সম্পন্ন','पैकिंग पूरी','Packing முடிந்தது'],
+    S04:['Ex-factory handover','এক্স-ফ্যাক্টরি হস্তান্তর','एक्स-फैक्ट्री हैंडओवर','Ex-factory ஒப்படைப்பு'],
+    S06:['Shipment ETD','শিপমেন্ট ETD','शिपमेंट ETD','Shipment ETD'],
+    S07:['Destination ETA','গন্তব্য ETA','गंतव्य ETA','Destination ETA']
+  });
+  const BUYER_WORDS=Object.freeze({
+    en:{milestones:'Buyer milestones',actions:'Buyer actions',ref:'Ref',milestone:'Milestone',original:'Original',
+      current:'Revised',forecast:'Forecast',actual:'Actual',status:'Source-reported status',
+      action:'Action requested',verification:'Source check',confirmed:'Buyer-confirmed target',
+      requested:'Required ex-factory',unknown:'Needs Information',followup:'Buyer response requested (source-reported)',
+      recorded:'Source reference recorded; not independently verified',unverified:'Source-reported; not independently verified',
+      noActions:'No buyer follow-up is explicitly recorded.',noMilestones:'No buyer-facing milestones recorded.',
+      noForecast:'No forecast from a confirmed scheduling source.',noTarget:'Buyer-approved target has not been independently verified.',
+      disclosure:'Review this source-reported TNA with the buyer; no approval or date is independently authenticated.'},
+    bn:{milestones:'বায়ার মাইলস্টোন',actions:'বায়ারের কাজ',ref:'রেফারেন্স',milestone:'মাইলস্টোন',original:'মূল',
+      current:'সংশোধিত',forecast:'পূর্বাভাস',actual:'বাস্তব',status:'উৎস অনুযায়ী অবস্থা',
+      action:'প্রয়োজনীয় পদক্ষেপ',verification:'উৎস যাচাই',confirmed:'বায়ার নিশ্চিত লক্ষ্য',
+      requested:'প্রয়োজনীয় এক্স-ফ্যাক্টরি',unknown:'তথ্য প্রয়োজন',followup:'বায়ারের জবাব প্রয়োজন (উৎস অনুযায়ী)',
+      recorded:'উৎসের রেফারেন্স আছে; স্বাধীন যাচাই হয়নি',unverified:'উৎস অনুযায়ী; স্বাধীন যাচাই হয়নি',
+      noActions:'বায়ারের কোনো ফলো-আপ স্পষ্টভাবে নথিভুক্ত নেই।',noMilestones:'বায়ারের মাইলস্টোন নেই।',
+      noForecast:'নিশ্চিত শিডিউল থেকে পূর্বাভাস নেই।',noTarget:'বায়ার অনুমোদিত লক্ষ্য স্বাধীনভাবে যাচাই হয়নি।',
+      disclosure:'বায়ারের সঙ্গে যাচাই করুন; অনুমোদন বা তারিখ স্বাধীনভাবে প্রমাণিত নয়।'},
+    hi:{milestones:'बायर माइलस्टोन',actions:'बायर कार्रवाई',ref:'रेफरेंस',milestone:'माइलस्टोन',original:'मूल',
+      current:'संशोधित',forecast:'पूर्वानुमान',actual:'वास्तविक',status:'स्रोत-दर्ज स्थिति',
+      action:'आवश्यक कार्रवाई',verification:'स्रोत जाँच',confirmed:'बायर-पुष्ट लक्ष्य',
+      requested:'आवश्यक एक्स-फैक्ट्री',unknown:'जानकारी चाहिए',followup:'बायर जवाब चाहिए (स्रोत-दर्ज)',
+      recorded:'स्रोत रेफरेंस है; स्वतंत्र पुष्टि नहीं',unverified:'स्रोत में दर्ज; स्वतंत्र पुष्टि नहीं',
+      noActions:'बायर फॉलो-अप स्पष्ट दर्ज नहीं है।',noMilestones:'बायर माइलस्टोन दर्ज नहीं हैं।',
+      noForecast:'पुष्ट शेड्यूल का पूर्वानुमान नहीं है।',noTarget:'बायर-स्वीकृत लक्ष्य स्वतंत्र रूप से सत्यापित नहीं है।',
+      disclosure:'बायर से जाँचें; तारीख या अनुमोदन का स्वतंत्र सत्यापन नहीं हुआ।'},
+    ta:{milestones:'Buyer milestones',actions:'Buyer செயல்கள்',ref:'Ref',milestone:'Milestone',original:'முதல் திட்டம்',
+      current:'திருத்திய தேதி',forecast:'Forecast',actual:'Actual',status:'Source பதிவான நிலை',
+      action:'தேவையான செயல்',verification:'Source சரிபார்ப்பு',confirmed:'Buyer உறுதிசெய்த இலக்கு',
+      requested:'Required ex-factory',unknown:'தகவல் தேவை',followup:'Buyer பதில் தேவை (source பதிவு)',
+      recorded:'Source reference உள்ளது; தனியாகச் சரிபார்க்கவில்லை',unverified:'Source பதிவு; தனியாகச் சரிபார்க்கவில்லை',
+      noActions:'Buyer follow-up தெளிவாகப் பதிவு செய்யப்படவில்லை.',noMilestones:'Buyer milestones பதிவு இல்லை.',
+      noForecast:'உறுதிசெய்த schedule-ல் Forecast கிடைக்கவில்லை.',noTarget:'Buyer-approved target தனியாக verify செய்யப்படவில்லை.',
+      disclosure:'Buyer-உடன் உறுதிசெய்யவும்; approval அல்லது date தனியாக verify செய்யப்படவில்லை.'}
+  });
+  const BUYER_STATUS=Object.freeze({
+    'not-started':['Not started','শুরু হয়নি','शुरू नहीं','தொடங்கவில்லை'],
+    'in-progress':['In progress','চলছে','चल रहा','நடக்கிறது'],
+    submitted:['Submitted','জমা হয়েছে','जमा हुआ','சமர்ப்பிக்கப்பட்டது'],
+    'awaiting-approval':['Awaiting decision','সিদ্ধান্তের অপেক্ষা','निर्णय की प्रतीक्षा','முடிவு காத்திருக்கிறது'],
+    approved:['Approved (reported)','অনুমোদিত (উৎস অনুযায়ী)','अनुमोदित (दर्ज)','Approved (பதிவு)'],
+    rejected:['Rejected (reported)','বাতিল (উৎস অনুযায়ী)','अस्वीकृत (दर्ज)','Rejected (பதிவு)'],
+    blocked:['Blocked','আটকে আছে','रुका हुआ','தடை'],
+    completed:['Completed (reported)','সম্পন্ন (উৎস অনুযায়ী)','पूरा (दर्ज)','Completed (பதிவு)'],
+    waived:['Waived (reported)','ছাড় (উৎস অনুযায়ী)','छूट (दर्ज)','Waived (பதிவு)'],
+    'not-applicable':['Not applicable','প্রযোজ্য নয়','लागू नहीं','பொருந்தாது']
+  });
+  function validBuyerDay(value){
+    if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;
+    const dt=new Date(value+'T00:00:00Z');
+    return !Number.isNaN(dt.getTime())&&dt.toISOString().slice(0,10)===value?value:null;
+  }
+  function buyerProjection(plan,language){
+    const words=BUYER_WORDS[language],i=langIndex[language],milestones=[],actions=[],used=new Set();
+    for(const task of Array.isArray(plan?.tasks)?plan.tasks:[]){
+      const ref=String(task?.templateRef||'');
+      if(!Object.hasOwn(BUYER_REFS,ref)||used.has(ref))continue;
+      used.add(ref);
+      if(task.applicability==='not-applicable')continue;
+      const d=task.dates||{},key=Object.hasOwn(BUYER_STATUS,task.status)?task.status:'not-started';
+      const proofRecorded=Array.isArray(task.proofRefs)&&task.proofRefs.some(p=>typeof p==='string'&&p.trim());
+      const needsBuyer=task.waitingFor==='buyer'&&!['completed','approved','waived','not-applicable'].includes(key);
+      const row={ref,title:BUYER_REFS[ref][i],original:validBuyerDay(d.baselineFinish),
+        current:validBuyerDay(d.currentTargetFinish),forecast:validBuyerDay(d.forecastFinish),
+        actual:validBuyerDay(d.actualFinish),status:BUYER_STATUS[key][i],
+        verification:proofRecorded?words.recorded:words.unverified,
+        buyerAction:needsBuyer?words.followup:null};
+      milestones.push(row);
+      if(needsBuyer)actions.push({ref,title:row.title,request:words.followup,target:row.current||row.original});
+    }
+    const gaps=[];
+    if(!milestones.length)gaps.push(words.noMilestones);
+    if(!actions.length)gaps.push(words.noActions);
+    if(!milestones.some(row=>row.forecast))gaps.push(words.noForecast);
+    gaps.push(words.noTarget); // Local baseline/owner is NOT a verified buyer approval.
+    return {labels:words,milestones,actions,gaps,sourceDisclosure:words.disclosure,
+      requestedExFactory:validBuyerDay(plan?.commitments?.buyerRequiredExFactory),
+      buyerConfirmedTarget:null};
+  }
+
   /**
    * R01 source-owned garment table. Use the same pure master-sheet projection
    * as the onscreen planner to prevent silent date/row discrepancies. Never
@@ -80,7 +195,30 @@
       evidenceStatus:'Source references are user-entered and not independently verified.'
     };
   }
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone:options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local',revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),warnings:warnings(plan),notes:[I18N[l].labels.noFabrication,I18N[l].labels.printFallback,I18N[l].labels.shareFallback],masterSheet:report[0]==='R01'?garmentMasterSheet(plan,l,options):null,source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+  function buildReportModel(plan,options={}){
+    const l=lang(options.language),report=reportType(options.reportId||'R01');
+    const generatedAt=options.generatedAt||new Date().toISOString();
+    const buyer=report[0]==='R02'?buyerProjection(plan,l):null;
+    const order=orderContext(plan);
+    if(buyer)order.factory=buyer.labels.unknown; // no internal factory identity on buyer exports
+    const tasks=buyer?buyer.milestones.map(row=>({
+      ref:row.ref,title:row.title,owner:'',status:row.status,
+      baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',
+      actual:row.actual||'',risk:'needs-information'
+    })):taskRows(plan);
+    return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),
+      language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),
+      generatedAt,generatedLabel:formatDateTime(generatedAt,l),
+      timezone:options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local',
+      revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,
+      headings:I18N[l].headings,labels:I18N[l].labels,order,tasks,
+      warnings:buyer?buyer.gaps:warnings(plan),
+      notes:[I18N[l].labels.noFabrication,...(buyer?[buyer.sourceDisclosure]:[]),
+        I18N[l].labels.printFallback,I18N[l].labels.shareFallback],
+      masterSheet:report[0]==='R01'?garmentMasterSheet(plan,l,options):null,
+      ...(buyer?{buyerTna:buyer}:{}),
+      source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}};
+  }
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
