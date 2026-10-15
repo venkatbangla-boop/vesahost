@@ -35,6 +35,16 @@ for(const key of ['recordId','createdAt','updatedAt','revision','commitments','t
   assert.deepEqual(imported[key],legacySnapshot[key],`G11 migration must preserve ${key}.`);
 }
 
+const migratedFollowup=domain.updateTaskFollowup(imported,imported.tasks[0].taskId,{
+  ownerParty:'Local Merchandising',currentTargetFinish:'2026-11-25',forecastFinish:'2026-11-29',note:'Recorded after legacy copy recovery'
+},{actorId:'qa@vesaent.com'});
+assert.equal(migratedFollowup.ok,true,'Old saved copies must support the new follow-up editor.');
+assert.deepEqual(migratedFollowup.plan.baselineSnapshots,imported.baselineSnapshots,'Legacy baseline must remain frozen.');
+assert.deepEqual(migratedFollowup.plan.tasks[0].proofRefs,imported.tasks[0].proofRefs,'Legacy proof references must survive.');
+const migratedPortable=storage.importCopy(storage.exportCopy(migratedFollowup.plan));
+assert.equal(migratedPortable.tasks[0].ownerParty,'Local Merchandising');
+assert.equal(migratedPortable.revisionEvents.at(-1).details.reason,'Recorded after legacy copy recovery');
+
 const user='migration-user';
 const recordKey=`vesa.tna360.records.${user}`;
 localStorage.setItem(recordKey,JSON.stringify({storageVersion:storage.STORAGE_VERSION,records:[{recordId:legacy.recordId,updatedAt:'2026-10-03T00:00:00.000Z',buyer:legacy.order.buyerName,style:legacy.order.styles[0].styleNo,po:legacy.order.poNumbers[0],plan:legacy}]}));

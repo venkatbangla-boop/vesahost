@@ -92,6 +92,10 @@ class TnaMerchandisingSheetBrowserProof {
       await this.page.keyboard.press('Escape');
       await settings.waitFor({state:'hidden'});
       assert.ok(await this.page.locator('.tna-activity-heading').getByText(label,{exact:true}).count(),language+': translated target column must render');
+      const names={en:'Responsible party',bn:'দায়িত্বপ্রাপ্ত পক্ষ',hi:'जिम्मेदार पक्ष',ta:'பொறுப்பான தரப்பு'};
+      await this.page.locator('.tna-master-activities [data-edit-task]').first().click();
+      assert.ok(await this.page.locator('#tnaFollowupEdit').getByText(names[language],{exact:false}).count(),language+': follow-up editor label must match selected language');
+      await this.page.locator('#tnaDialog .tna-dialog-head button').click();
     }
     assert.equal(await this.page.evaluate(()=>localStorage.getItem('vesa.tna360.records.qa-vesaent-com')),before,'Language changes must not change any saved TNA record');
   }
