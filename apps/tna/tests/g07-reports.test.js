@@ -142,7 +142,7 @@ assert(cleanXlsx.Sheets['Master TNA'].C2.t==='s'&&cleanXlsx.Sheets['Master TNA']
 assert(bootstrap.includes('class TnaMasterPrintView'),'R01 print view must have a dedicated presentation owner.');
 assert(bootstrap.includes('TnaMasterPrintView.render(model)'),'R01 print table must appear inside the real report preview.');
 assert(css.includes('.tna-report-master-table thead{display:table-header-group'),'Printed Master TNA table must repeat the header.');
-for(const literal of ['Original baseline','Current target','Forecast','Actual','Predecessor']){
+for(const literal of ['Original baseline','Current target','Forecast','Actual','Depends on']){
   assert(bootstrap.includes(literal),'Garment Master TNA preview missing a required date/dependency label: '+literal);
 }
 console.log('TNA G07 report language checks passed');
