@@ -41,6 +41,19 @@
 
 ---
 
+
+## GMR-04A — checked Excel order-row new-draft workflow, 2026-10-15
+
+**Verified:** [real GitHub Actions #38679689378](https://github.com/venkatbangla-boop/vesahost/actions/runs/38679689378), source/test SHA `b088ea79e4fe273c4d23b9bd8af949e034046748`, **SUCCESS**. The job ran 33/33 Node direct checks and genuine Chromium read/preview/map/confirm/duplicate/save/reload flows, plus frozen TNA/PPM/AQL and shared-shell tests. Source data remained unchanged after opening an import preview, and old saved plan unchanged after new imported plan was saved. This is **DEVELOPMENT VERIFIED** only for a **single selected workbook order-row** import.
+
+**Scope:** Local .xlsx uploads only, source size/sheet/row/column bounds, whole-sheet formula rejection, no macro execution, explicit sheet/header/data-row selection, field mappings, civil date source notation (ISO/DMY/MDY/Excel serial) plus lead-time working/calendar basis and approved garment template. Header suggestions are review prompts, not trusted automatic mapping; users can edit them. Duplicate order identity gets an extra consent step and never merges/overwrites old orders. The domain builds an unsigned distinct 1.1.0 draft with default blank template activity dates/status, user-review audit provenance and no file storage; previous TNA saved-copy readers and scheduled calculations are unchanged. UI explicitly warns other order rows, activity approvals and predecessor/dependency rows are **NOT** imported. English/Bengali/Hindi/Tamil localize key import-field labels.
+
+**Files owned:** `apps/tna/src/import-review.js` (new pure workbook reader/validator), `apps/tna/assets/import-review.css` (new scoped responsive fields), bootstrap (in-memory review + explicit confirmation to existing `storage.savePlan`), index asset links, root service-worker asset inventory, `g14-reviewed-excel-import.test.js`, `g14-reviewed-excel-import-browser.cjs`, existing CI step. **Not changed:** TNA domain/scheduling/storage/report contracts, PPM, AQL, public main/Costing, local record schemas.
+
+**Remaining required scope:** GMR-04B — full workbook activity/date/status/dependency import with user-reviewed match/merge into a **new** TNA draft, unrecognized/missing task mapping, rejection of cycles/formulas/unsupported approvals and baseline changes. GMR-04A does **not** certify this. Source acceptance and full human UAT are still pending. See original `docs/tna/06_EXECUTION_TRACKER.md` for the single authoritative checklist and precise NEXT ACTION.
+
+---
+
 ## Practical screen / data ownership
 
 On opening a local order, one full, familiar garment **Time & Action Master Sheet** appears before secondary Home cards and advanced dashboards. Existing single VESA shared header and File/Edit/View/Tools/Help menus remain authoritative. The sheet uses one row per actual `plan.tasks[]` member (no first-12 sample or fake task), in the original library's stable activity order, for knit and woven.
