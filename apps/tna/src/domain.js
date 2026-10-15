@@ -250,6 +250,42 @@
     next.revisionEvents.push({eventId:makeId('revision'),eventType:'task-status-changed',revision:next.revision,actorId:task.lastChangedBy,createdAt:task.lastChangedAt,details:{taskId,nextStatus,reason:clean(context.reason)}});
     return {ok:true,plan:next};
   }
+  /**
+   * Owns auditable task follow-up updates without changing baseline, status,
+   * approval evidence, scheduling rules or original saved-record schema.
+   * Access through the domain API; returns a new plan or a validation error.
+   */
+  class TnaTaskFollowup {
+    static update(plan,taskId,changes={},context={}){
+      if(!plan||plan.schemaVersion!==SCHEMA_VERSION||!Array.isArray(plan.tasks))return {ok:false,error:'Unsupported TNA plan.'};
+      const original=plan.tasks.find(task=>task.taskId===taskId);
+      if(!original)return {ok:false,error:'Task not found.'};
+      if(!changes||typeof changes!=='object'||Array.isArray(changes))return {ok:false,error:'Invalid follow-up fields.'};
+      const rawOwner=changes.ownerParty===undefined?original.ownerParty:changes.ownerParty;
+      if(typeof rawOwner!=='string')return {ok:false,error:'Responsible party must be text.'};
+      const owner=clean(rawOwner),reason=typeof changes.note==='string'?clean(changes.note):'';
+      if(!owner||owner.length>120||owner.indexOf('\n')>=0)return {ok:false,error:'Enter a responsible party (maximum 120 characters).'};
+      if(!reason||reason.length>800)return {ok:false,error:'Enter a follow-up note (maximum 800 characters).'};
+      const dates={};
+      for(const key of ['currentTargetFinish','forecastFinish']){
+        const raw=Object.prototype.hasOwnProperty.call(changes,key)?changes[key]:original.dates[key];
+        if(raw!==null&&typeof raw!=='string')return {ok:false,error:key+' must be a date or blank.'};
+        const date=clean(raw)||null;
+        if(date&&!validDateOnly(date))return {ok:false,error:key+' needs a real YYYY-MM-DD date.'};
+        dates[key]=date;
+      }
+      const next=clone(plan),task=next.tasks.find(item=>item.taskId===taskId);
+      const previous={ownerParty:task.ownerParty,currentTargetFinish:task.dates.currentTargetFinish,forecastFinish:task.dates.forecastFinish};
+      task.ownerParty=owner;task.dates.currentTargetFinish=dates.currentTargetFinish;task.dates.forecastFinish=dates.forecastFinish;
+      const validation=validatePlan(next);
+      if(!validation.ok)return {ok:false,error:validation.errors.join('; ')};
+      const actorId=clean(context.actorId)||next.ownerUserId||'local-browser-user',timestamp=now();
+      task.lastChangedBy=actorId;task.lastChangedAt=timestamp;next.updatedAt=timestamp;next.validation=validation;
+      next.revisionEvents.push({eventId:makeId('revision'),eventType:'task-followup-updated',revision:next.revision,actorId,createdAt:timestamp,details:{taskId,reason,previous,current:{ownerParty:owner,...dates}}});
+      next.auditEvents.push({eventId:makeId('audit'),eventType:'task-followup-updated',actorId,createdAt:timestamp,details:{taskId}});
+      return {ok:true,plan:next};
+    }
+  }
   function addCustomTask(plan,input={},context={}){
     const title=clean(input.title);
     if(!title)return {ok:false,error:'Custom activity requires a title.'};
@@ -353,7 +389,7 @@
     if(!next.validation.ok)return {ok:false,error:next.validation.errors.join(' '),errors:next.validation.errors};
     return {ok:true,plan:next,lot,warnings:next.validation.warnings};
   }
-  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,normalizeColorSizeBreakdown,createPlan,validatePlan,freezeBaseline,updateTaskStatus,addCustomTask,addCapacityEntry,addShipmentLot};
+  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,normalizeColorSizeBreakdown,createPlan,validatePlan,freezeBaseline,updateTaskStatus,updateTaskFollowup:TnaTaskFollowup.update,addCustomTask,addCapacityEntry,addShipmentLot};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaDomain=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

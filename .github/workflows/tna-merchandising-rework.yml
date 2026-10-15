@@ -8,7 +8,7 @@ on:
       - feature/tna-merchandising-rework
     paths:
       - '.github/workflows/tna-merchandising-rework.yml'
-      - 'apps/tna/src/bootstrap.js'
+      - 'apps/tna/src/**'
       - 'apps/tna/assets/tna.css'
       - 'apps/tna/tests/**'
       - 'apps/tna/index.html'

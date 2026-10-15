@@ -74,4 +74,22 @@ assert(added.templateRef.startsWith('CUSTOM'), 'Custom task should keep an audit
 assert(added.stageCode === 'TR', 'Custom task should preserve selected stage.');
 assert(custom.plan.revisionEvents.some(event => event.eventType === 'custom-task-added'), 'Custom task should append revision history.');
 
+const followup=domain.updateTaskFollowup(baseline.plan,baseline.plan.tasks[0].taskId,{ownerParty:'Local Office',currentTargetFinish:'2026-11-04',forecastFinish:'2026-11-09',note:'Revised plan confirmed'},{actorId:'qa-user'});
+assert(followup.ok,'Follow-up should accept a real owner, note and ISO dates.');
+assert(followup.plan.tasks[0].ownerParty==='Local Office','Owner must update.');
+assert(followup.plan.tasks[0].dates.currentTargetFinish==='2026-11-04','Target date must update.');
+assert(followup.plan.tasks[0].dates.forecastFinish==='2026-11-09','Forecast date must update.');
+assert(followup.plan.tasks[0].status===baseline.plan.tasks[0].status,'Task status must stay unchanged.');
+assert(JSON.stringify(followup.plan.baselineSnapshots)===JSON.stringify(baseline.plan.baselineSnapshots),'Baseline immutable.');
+const originalFollowup=JSON.stringify(followup.plan);
+for(const bad of [{ownerParty:' ',note:'Bad owner'},{forecastFinish:'2026-02-30',note:'Bad date'},{note:' '},{note:'x'.repeat(801)}]){
+  const result=domain.updateTaskFollowup(followup.plan,followup.plan.tasks[0].taskId,bad);
+  assert(!result.ok,'Missing owner, bad ISO date, blank or excessive note must fail.');
+}
+assert(JSON.stringify(followup.plan)===originalFollowup,'Failed edits cannot mutate stored plan.');
+assert(followup.plan.revisionEvents.at(-1).details.reason==='Revised plan confirmed','Note must be part of real task history.');
+assert(followup.plan.auditEvents.at(-1).eventType==='task-followup-updated','Audit history must record the update.');
+const resetDates=domain.updateTaskFollowup(followup.plan,followup.plan.tasks[0].taskId,{currentTargetFinish:'',forecastFinish:'',note:'Dates are unconfirmed'});
+assert(resetDates.ok&&resetDates.plan.tasks[0].dates.currentTargetFinish===null&&resetDates.plan.tasks[0].dates.forecastFinish===null,'Blank dates must remain unknown.');
+
 console.log('TNA G02 domain checks passed');
