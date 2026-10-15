@@ -61,6 +61,8 @@
     if(!model||model.schema!=='VESA-TNA-REPORT-1')throw new Error('Unsupported TNA report model.');
     if(model.reportId==='R03'&&!model.factoryDaily?.ready)
       throw new Error(model.factoryDaily?.labels?.selectDate||'Select a valid review date before downloading this report.');
+    if(model.reportId==='R04'&&!model.criticalPath?.ready)
+      throw new Error(model.criticalPath?.labels?.controls||'Review the critical-path source assumptions before downloading.');
     const workbook=XLSX.utils.book_new();
     const addSheet=(name,rows,widths,filter=false)=>{
       const sheet=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
@@ -168,6 +170,54 @@
         [txt(labels.missingOwner),numberCell(daily.missingOwnerCount)]);
       workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(XLSXRows,{dateNF:'yyyy-mm-dd'});
       workbook.Sheets['Report Summary']['!cols']=[{wch:27},{wch:96}];
+    }
+    // R04: source-reviewed, single-calendar FS/0 CPM projection only.
+    // Never recompute schedule inside the serializer, and never export
+    // fabricated float, anchors or gate release.
+    if(model.reportId==='R04'){
+      const cpm=model.criticalPath,t=cpm.labels;
+      const cell=value=>safeCell(value==null||value===''?t.unknown:value);
+      const headings=[t.ref,t.task,t.owner,t.status,t.es,t.ef,t.ls,t.lf,t.tf,t.ff,t.driver];
+      const actionRows=[headings,...cpm.rows.map(row=>[
+        cell(row.ref),cell(row.title),cell(row.owner),cell(row.status),
+        dateCell(row.earlyStart),dateCell(row.earlyFinish),
+        dateCell(row.lateStart),dateCell(row.lateFinish),
+        numberCell(row.totalFloat),numberCell(row.freeFloat),
+        cell(row.drivesExFactory?t.yes:t.no)
+      ])];
+      addSheet('Critical Path',actionRows,[13,57,26,21,18,18,18,18,18,18,22],true);
+      const edges=[['Predecessor','Successor','Relation','Lag (workdays)'],
+        ...cpm.dependencies.map(edge=>[
+          cell(edge.from),cell(edge.to),cell(edge.relation),numberCell(edge.lagUnits)
+        ])];
+      addSheet('Predecessor Links',edges,[20,20,14,23],true);
+      const gateRows=[[t.ref,t.task,t.status,t.reason],
+        ...(cpm.gateIssues.length?cpm.gateIssues.map(item=>[
+          cell(item.ref),cell(item.title),cell(item.status),cell(item.reason)
+        ]):[[cell(t.none),'','','']])];
+      addSheet('Gate Issues',gateRows,[14,56,22,69],true);
+      const facts=[
+        [t.start,dateCell(cpm.startDate)],
+        [t.source,cell(cpm.startSource)],
+        [t.required,dateCell(cpm.requiredDate)],
+        [t.forecast,dateCell(cpm.forecastDate)],
+        [t.margin,numberCell(cpm.bufferWorkdays)],
+        [t.week,cell(cpm.workingWeek)],
+        [t.exceptions,cell(cpm.exceptionDates.join(', ')||t.none)],
+        [t.headingDrivers,cell(cpm.criticalChains.map(chain=>chain.join(' → ')).join(' ; ')||t.unknown)],
+        [t.version,cell(cpm.engineVersion)+' / '+numberCell(cpm.inputRevision)],
+        [t.model,cell(cpm.confidence)],
+        [t.notProduction,cell(t.sourceCheck)]
+      ];
+      addSheet('CPM Review',facts,[40,104]);
+      const metaSheet=workbook.Sheets['Report Summary'];
+      const metaRows=XLSX.utils.sheet_to_json(metaSheet,{header:1,raw:true});
+      metaRows.push([cell(t.required),dateCell(cpm.requiredDate)],
+        [cell(t.forecast),dateCell(cpm.forecastDate)],
+        [cell(t.margin),numberCell(cpm.bufferWorkdays)],
+        [cell(t.week),cell(cpm.workingWeek)]);
+      workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(metaRows,{dateNF:'yyyy-mm-dd'});
+      workbook.Sheets['Report Summary']['!cols']=[{wch:28},{wch:98}];
     }
     if(model.reportId==='R01'&&model.masterSheet){
       const l=model.masterSheet.labels||{};
