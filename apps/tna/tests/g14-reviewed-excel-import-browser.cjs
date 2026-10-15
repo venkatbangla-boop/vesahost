@@ -67,7 +67,7 @@ async function run(){
    await page.locator('[data-vesa-menu=File]').click();
    await page.locator('[data-menu-action="Import Excel TNA"]').click();
    await page.locator('#tnaWorkbookFile').setInputFiles({name:'woven-source.xlsx',
-     mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:workbook()});
+     mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:Buffer.from(workbook())});
    await page.locator('[data-import-preview=file]').click();
    await page.locator('#tnaWorkbookMapping').waitFor({state:'visible'});
    await page.locator('#tnaWorkbookMapping [name=sheetName]').selectOption('Orders');
