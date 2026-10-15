@@ -85,6 +85,7 @@ jobs:
           node apps/tna/tests/g21-delay-recovery-report-browser.cjs
           node apps/tna/tests/g22-production-status-report-browser.cjs
           node apps/tna/tests/g23-material-lc-report-browser.cjs
+          node apps/tna/tests/g24-shipment-readiness-report-browser.cjs
           node apps/tna/tests/g12-merchandising-edits-browser.cjs
           node apps/tna/tests/g11-artifact-viewers.cjs
           node apps/tna/tests/g11-f06-order-master.cjs
