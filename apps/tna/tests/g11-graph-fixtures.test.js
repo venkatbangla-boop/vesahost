@@ -63,4 +63,48 @@ assert.equal(mixed.taskResults.SUP.earlyFinish, '2026-10-14', 'GPH-09 supplier p
 assert.equal(mixed.taskResults.JOIN.earlyStart, '2026-10-15', 'GPH-09 multi-predecessor join must use the latest feasible handoff on its own calendar.');
 assert.deepEqual(mixed.taskResults.JOIN.blockingPredecessors, ['SUP', 'FACTORY'], 'GPH-09 must retain both predecessor identities.');
 
+
+// GMR-19: a long predecessor of SS/SF can outlast its short successor.
+// Project forecast must take the LAST actual task finish rather than only
+// terminal nodes. Reverse bounds must use start -> inclusive finish once.
+for (const relation of ['SS','SF']) {
+  const source=[task('LONG',5),task('SHORT',1)];
+  const link=[edge('LONG','SHORT',relation,0)];
+  const before=JSON.stringify({source,link});
+  const network=scheduling.schedule(source,link,{calendars:[cal],calendar:cal,
+    startDate:'2026-10-12',requiredDate:'2026-10-16'});
+  assert.equal(network.validity,'valid',relation+' is a supported precedence');
+  assert.equal(network.taskResults.LONG.earlyFinish,'2026-10-16');
+  assert.equal(network.taskResults.SHORT.earlyFinish,'2026-10-12');
+  assert.equal(network.project.forecastDate,'2026-10-16',
+    relation+' cannot hide unfinished predecessor work behind a short successor');
+  assert.equal(network.taskResults.LONG.lateStart,'2026-10-12',
+    relation+' predecessor must finish by the buyer-selected endpoint');
+  assert.equal(network.taskResults.LONG.floatDays,0);
+  assert.equal(network.taskResults.LONG.isCritical,true);
+  assert.equal(network.taskResults.SHORT.floatDays,4);
+  assert.deepEqual(network.project.criticalPaths,[['LONG']]);
+  assert.equal(JSON.stringify({source,link}),before,'Never mutate source network');
+  const missed=scheduling.schedule(source,link,{calendars:[cal],calendar:cal,
+    startDate:'2026-10-12',requiredDate:'2026-10-14'});
+  assert.equal(missed.project.forecastDate,'2026-10-16');
+  assert.equal(missed.project.workingDaysEarlyOrLate,2);
+  assert.equal(missed.taskResults.LONG.floatDays,-2);
+  assert.equal(missed.constraintViolations[0].type,'required-date-miss');
+}
+for(const relation of ['SS','SF']){
+  const network=scheduling.schedule([task('ROOT',2),task('SUCCESSOR',1)],
+    [edge('ROOT','SUCCESSOR',relation,1)],
+    {calendars:[cal],calendar:cal,startDate:'2026-10-12',requiredDate:'2026-10-16'});
+  assert.equal(network.taskResults.ROOT.lateStart,'2026-10-15',
+    relation+'+1 predecessor latest start is Thursday, not Wednesday');
+  assert.equal(network.taskResults.ROOT.lateFinish,'2026-10-16');
+  assert.equal(network.taskResults.ROOT.floatDays,3,
+    relation+'+1 source task has three working days of contractual slack');
+}
+assert.equal(diamond.project.forecastDate,'2026-10-19',
+  'The original accepted FS diamond milestone forecast must not drift.');
+assert.equal(diamond.taskResults.C.floatDays,1,
+  'The original FS routing float must stay one working day.');
+
 console.log('TNA G11 GPH-01-GPH-09 fixtures passed: graph rejection, relations/lead, critical routes, deadline conflict, missing inputs, milestones, overdue and mixed calendars');

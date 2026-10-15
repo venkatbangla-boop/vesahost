@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  const ENGINE_VERSION='TNA360-SCHEDULE-0.4.0';
+  const ENGINE_VERSION='TNA360-SCHEDULE-0.4.1';
   const MS_PER_DAY=86400000;
   const DEFAULT_CALENDAR={calendarId:'default',name:'Default Monday-Friday',workingWeek:[1,2,3,4,5],holidays:[],shutdowns:[],revision:0};
   const pad=n=>String(n).padStart(2,'0');
@@ -167,19 +167,24 @@
       const earlyStart=maxDate(candidates),earlyFinish=finishFromStart(earlyStart,duration,taskCalendar,basis);
       result[id]={taskId:id,earlyStart,earlyFinish,blockingPredecessors:incoming.get(id).map(e=>e.predecessorTaskId),explanation:[`Earliest dates calculated from ${incoming.get(id).length||'project'} predecessor(s).`]};
     }
-    const terminalIds=tasks.filter(t=>!outgoing.get(t.taskId).length).map(t=>t.taskId);
-    const forecastDate=maxDate(terminalIds.map(id=>result[id].earlyFinish));
+    // SS and SF may let a predecessor finish AFTER its successor. The
+    // contractual project endpoint therefore constrains every task, not
+    // only graph-terminal tasks. FS-only networks remain unchanged.
+    const forecastDate=maxDate(tasks.map(task=>result[task.taskId].earlyFinish));
     const endDate=requiredDate||forecastDate;
     for(const id of graph.order.slice().reverse()){
-      const task=byId.get(id),taskCalendar=calendars.forTask(task),basis=task.durationBasis||'working',duration=Number(task.durationUnits||0),constraints=[];
-      if(!outgoing.get(id).length)constraints.push(endDate);
+      const task=byId.get(id),taskCalendar=calendars.forTask(task),basis=task.durationBasis||'working',duration=Number(task.durationUnits||0),constraints=[endDate];
       for(const edge of outgoing.get(id)){
         const succ=result[edge.successorTaskId],lag=edge.lagUnits||0,relation=edge.relation||'FS';
         const sameDayMilestone=Number(task.durationUnits)===0&&task.milestoneEvent==='start-of-day';
         if(relation==='FS')constraints.push(shiftDate(succ.lateStart,-lag-(sameDayMilestone?0:1),taskCalendar,edge.lagBasis||basis));
-        if(relation==='SS')constraints.push(startFromFinish(shiftDate(succ.lateStart,-lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
+        // SS constrains the predecessor's latest START, not its finish.
+        // Convert that allowed START to its actual inclusive finish once.
+        if(relation==='SS')constraints.push(finishFromStart(shiftDate(succ.lateStart,-lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
         if(relation==='FF')constraints.push(shiftDate(succ.lateFinish,-lag,taskCalendar,edge.lagBasis||basis));
-        if(relation==='SF')constraints.push(startFromFinish(shiftDate(succ.lateFinish,-lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
+        // SF constrains predecessor START from successor FINISH. The
+        // inverse is finishFromStart; startFromFinish double-subtracts.
+        if(relation==='SF')constraints.push(finishFromStart(shiftDate(succ.lateFinish,-lag,taskCalendar,edge.lagBasis||basis),duration,taskCalendar,basis));
       }
       const lateFinish=minDate(constraints),lateStart=startFromFinish(lateFinish,duration,taskCalendar,basis);
       const totalFloat=workdayDifference(result[id].earlyStart,lateStart,taskCalendar,basis);
