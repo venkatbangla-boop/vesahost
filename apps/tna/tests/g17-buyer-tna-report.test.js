@@ -97,7 +97,7 @@ test('R02 only includes canonical buyer milestones, explicit buyer actions, no s
    assert.ok(fit.buyerAction);
    assert.ok(fit.verification.includes(model.buyerTna.labels.recorded));
    const approved=model.buyerTna.milestones.find(row=>row.ref==='D14');
-   if(approved)assert.match(approved.status,/reported|রেকর্ড|दर्ज|பதிவு/i);
+   if(approved)assert.match(approved.status,/reported|উৎস|दर्ज|பதிவு/i);
    assert.ok(model.warnings.some(w=>w===model.buyerTna.labels.noTarget));
    assert.equal(model.tasks.length,model.buyerTna.milestones.length);
    assert.ok(model.tasks.every(t=>!t.owner&&t.risk==='needs-information'));
