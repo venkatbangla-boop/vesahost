@@ -231,8 +231,10 @@
   function applyToNewDraft(plan,reviewed,context={}){
     if(!reviewed?.ready||!Array.isArray(reviewed.rows)||!reviewed.rows.length)throw Error('Reviewed activity rows are required.');
     if(!plan||plan.recordStatus!=='draft'||plan.templateId!==reviewed.templateId||
-      plan.baselineSnapshots?.length||plan.revision!==0||plan.mode==='practice')
-      throw Error('Excel activities may be applied only to a new, unsigned matching TNA draft.');
+      plan.baselineSnapshots?.length||plan.revision!==0||plan.mode==='practice'||
+      !plan.auditEvents?.some(e=>e.eventType==='reviewed-workbook-new-draft')||
+      plan.auditEvents.some(e=>e.eventType==='reviewed-workbook-activities-new-draft'))
+      throw Error('Excel activities may be applied only once to a new, unsigned matching TNA draft.');
     const next=JSON.parse(JSON.stringify(plan)),refToTask=new Map(next.tasks.map(t=>[ID(t.templateRef),t]));
     const sourceToTask=new Map();
     for(const row of reviewed.rows){
