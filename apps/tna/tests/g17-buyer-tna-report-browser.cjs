@@ -134,6 +134,8 @@ async function run(){
   await page.pdf({path:pdfPath,printBackground:true,landscape:true,preferCSSPageSize:true});
   await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
   await page.emulateMedia({media:'screen'}); // Restore interactive controls after PDF proof.
+  assert.equal(await page.locator('#tnaReportType').isVisible(),true,
+    'report controls become interactive again after print proof');
   const pdf=fs.readFileSync(pdfPath);
   assert.equal(pdf.subarray(0,5).toString(),'%PDF-');
   const pages=(pdf.toString('latin1').match(/\/Type\s*\/Page\b/g)||[]).length;
