@@ -53,7 +53,7 @@ jobs:
           node --check apps/tna/src/activity-import.js
           node --check apps/tna/src/bootstrap.js
           node --check service-worker.js
-          node --test apps/tna/tests/g11-merchandising-sheet.test.js apps/tna/tests/g12-merchandising-edits.test.js apps/tna/tests/g13-merchandising-report-parity.test.js apps/tna/tests/g14-reviewed-excel-import.test.js apps/tna/tests/g15-activity-import.test.js apps/tna/tests/g16-advanced-activity-import.test.js apps/tna/tests/g17-buyer-tna-report.test.js apps/tna/tests/g18-factory-daily-report.test.js apps/tna/tests/g19-critical-path-report.test.js apps/tna/tests/g20-weekly-tna-report.test.js apps/tna/tests/g21-delay-recovery-report.test.js apps/tna/tests/g22-production-status-report.test.js apps/tna/tests/g23-material-lc-report.test.js
+          node --test apps/tna/tests/g11-merchandising-sheet.test.js apps/tna/tests/g12-merchandising-edits.test.js apps/tna/tests/g13-merchandising-report-parity.test.js apps/tna/tests/g14-reviewed-excel-import.test.js apps/tna/tests/g15-activity-import.test.js apps/tna/tests/g16-advanced-activity-import.test.js apps/tna/tests/g17-buyer-tna-report.test.js apps/tna/tests/g18-factory-daily-report.test.js apps/tna/tests/g19-critical-path-report.test.js apps/tna/tests/g20-weekly-tna-report.test.js apps/tna/tests/g21-delay-recovery-report.test.js apps/tna/tests/g22-production-status-report.test.js apps/tna/tests/g23-material-lc-report.test.js apps/tna/tests/g24-shipment-readiness-report.test.js
       - name: Preserve existing TNA calculations, records and PPM/AQL rules
         run: |
           node apps/tna/tests/g01-shell.test.js

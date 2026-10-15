@@ -7,6 +7,7 @@
   const delayReport=root.VesaTnaDelayRecoveryReport||(typeof require==='function'?require('./delay-recovery-report.js'):null);
   const productionReport=root.VesaTnaProductionStatusReport||(typeof require==='function'?require('./production-status-report.js'):null);
   const materialReport=root.VesaTnaMaterialLcReport||(typeof require==='function'?require('./material-lc-report.js'):null);
+  const shipmentReport=root.VesaTnaShipmentReadinessReport||(typeof require==='function'?require('./shipment-readiness-report.js'):null);
   const REPORT_TYPES=[
     ['R01','masterTna','factoryAgent','Order, stages, activities, dates, owners, status, dependencies and revision.'],
     ['R02','buyerTna','buyerBrand','Buyer-facing milestones, required buyer actions, forecast and verified targets.'],
@@ -370,11 +371,12 @@
       language:l,asOfDate:options.asOfDate,commercialConfirmed:options.commercialConfirmed,
       authorityRef:options.commercialAuthorityRef
     }):null;
+    const shipment=report[0]==='R09'?shipmentReport?.project(plan,{language:l,asOfDate:options.asOfDate,qualityConfirmed:options.qualityConfirmed,authorityRef:options.qualityAuthorityRef}):null;
     const order=orderContext(plan);
     if(buyer||weekly)order.factory=buyer?.labels.unknown||weekly.labels.unknown; // no internal factory identity
     if(production?.mode==='buyer')order.factory=production.labels.unknown;
-    if((delay&&!delay.ready)||(production&&!production.ready)||(materialLc&&!materialLc.ready)){
-      const missing=delay?.labels?.unknown||production?.labels?.unknown||materialLc?.labels?.missing||'Needs Information';
+    if((delay&&!delay.ready)||(production&&!production.ready)||(materialLc&&!materialLc.ready)||(shipment&&!shipment.ready)){
+      const missing=delay?.labels?.unknown||production?.labels?.unknown||materialLc?.labels?.missing||shipment?.labels?.missing||'Needs Information';
       for(const key of ['buyer','factory','style','po','quantity','requiredExFactory'])
         order[key]=missing;
       order.unit='';
@@ -398,7 +400,7 @@
       ref:row.ref,title:row.title,owner:'',status:row.status,
       baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',
       actual:row.actual||'',risk:'needs-information'
-    })):buyer?buyer.milestones.map(row=>({
+    })):shipment?shipment.milestones.map(row=>({ref:row.ref,title:row.title,owner:'',status:row.status,baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',actual:row.actual||'',risk:'needs-information'})):buyer?buyer.milestones.map(row=>({
       ref:row.ref,title:row.title,owner:'',status:row.statusId,
       baseline:row.original||'',current:row.current||'',forecast:row.forecast||'',
       actual:row.actual||'',risk:'needs-information'
@@ -409,12 +411,13 @@
       timezone:options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local',
       revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,
       headings:I18N[l].headings,labels:I18N[l].labels,order,tasks,
-      warnings:critical?[...critical.missingInputs,...critical.unsupported,...critical.warnings]:weekly?weekly.warnings:delay?delay.warnings:production?production.warnings:materialLc?materialLc.warnings:daily?daily.warnings:buyer?buyer.gaps:warnings(plan),
+      warnings:critical?[...critical.missingInputs,...critical.unsupported,...critical.warnings]:weekly?weekly.warnings:delay?delay.warnings:production?production.warnings:materialLc?materialLc.warnings:shipment?shipment.warnings:daily?daily.warnings:buyer?buyer.gaps:warnings(plan),
       notes:[I18N[l].labels.noFabrication,...(buyer?[buyer.sourceDisclosure]:[]),
         ...(weekly?[weekly.labels.source,weekly.labels.recoveryNotice]:[]),
         ...(delay?[delay.labels.calendar,delay.labels.scenarioCaution,delay.labels.consentNotAccess]:[]),
         ...(production?[production.labels.noLotAggregation,production.labels.noAccess]:[]),
         ...(materialLc?[materialLc.labels.masterWarning,materialLc.labels.noAutomatic,materialLc.labels.noAccess]:[]),
+        ...(shipment?[shipment.labels.noClearance,shipment.labels.noDispatch,shipment.labels.noAccess]:[]),
         ...(critical?[critical.labels.model]:[]),
         I18N[l].labels.printFallback,I18N[l].labels.shareFallback],
       masterSheet:report[0]==='R01'?garmentMasterSheet(plan,l,options):null,
@@ -425,6 +428,7 @@
       ...(delay?{delayRecovery:delay}:{}),
       ...(production?{productionStatus:production}:{}),
       ...(materialLc?{materialLcReport:materialLc}:{}),
+      ...(shipment?{shipmentReadiness:shipment}:{}),
       source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}};
   }
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}

@@ -238,3 +238,17 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
  body.tna-printing-report .tna-report-material-table thead{display:table-header-group}
  body.tna-printing-report .tna-report-material-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* GMR-12 R09: quality/shipping report within existing VESA dialog. */
+#tnaShipmentReviewWrap[hidden]{display:none!important}
+.tna-shipment-review{min-width:0;max-width:100%;box-sizing:border-box;border:1px solid var(--line,#d5deea);padding:12px;border-radius:12px}
+.tna-shipment-review label{display:grid;gap:5px;margin:8px 0;overflow-wrap:anywhere}
+.tna-shipment-review input:not([type=checkbox]){width:100%;min-height:44px;max-width:100%;box-sizing:border-box}
+.tna-shipment-review input[type=checkbox]{width:18px;height:18px;min-height:18px}
+.tna-report-shipment{max-width:100%;min-width:0;margin:14px 0;overflow-wrap:anywhere}
+.tna-report-shipment-scroll{max-width:100%;min-width:0;overflow:auto;margin:10px 0;border:1px solid var(--line,#d5deea);border-radius:8px}
+.tna-report-shipment-table{width:100%;min-width:640px;table-layout:fixed;border-collapse:collapse;font-size:.78rem}
+.tna-report-shipment-table th,.tna-report-shipment-table td{padding:7px;border:1px solid var(--line,#d5deea);text-align:start;overflow-wrap:anywhere;vertical-align:top}
+.tna-report-shipment-table thead{display:table-header-group}
+.tna-report-shipment-table tr{break-inside:avoid}
+@media print{body.tna-printing-report .tna-report-shipment-scroll{overflow:visible;border:0}body.tna-printing-report .tna-report-shipment-table{min-width:0;width:100%;font-size:7pt}body.tna-printing-report .tna-report-shipment-table th,body.tna-printing-report .tna-report-shipment-table td{padding:4pt;overflow-wrap:anywhere}body.tna-printing-report .tna-report-shipment-table thead{display:table-header-group}}

@@ -71,6 +71,7 @@
       throw new Error(model.productionStatus?.labels?.selectReview||'Choose authorized production report audience and valid date.');
     if(model.reportId==='R08'&&!model.materialLcReport?.ready)
       throw new Error(model.materialLcReport?.labels?.selectReview||'Select a commercial review date and authorization.');
+    if(model.reportId==='R09'&&!model.shipmentReadiness?.ready)throw new Error(model.shipmentReadiness?.labels?.selectReview||'Review restricted shipment information first.');
     const workbook=XLSX.utils.book_new();
     const addSheet=(name,rows,widths,filter=false)=>{
       const sheet=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
@@ -416,6 +417,19 @@
         [value(t.noAccess),value(t.masterWarning)]);
       workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(summary,{dateNF:'yyyy-mm-dd'});
       workbook.Sheets['Report Summary']['!cols']=[{wch:53},{wch:108}];
+    }
+    if(model.reportId==='R09'){
+      const s=model.shipmentReadiness,t=s.labels;
+      const val=v=>safeCell(v==null||v===''?t.missing:v);
+      const qty=v=>v===null?val(t.missing):numberCell(v);
+      const date=v=>v?dateCell(v):val(t.missing);
+      addSheet('Shipment Lots',[[t.ref,t.planned,t.packed,t.passed,t.shipped,t.unit,t.requested,t.current,t.forecast,t.actual,t.etd,t.eta,t.booking,t.inspection],...s.lots.map(x=>[val(x.ref),qty(x.planned),qty(x.packed),qty(x.passed),qty(x.shipped),val(x.unit),date(x.requested),date(x.current),date(x.forecast),date(x.actual),date(x.etd),date(x.eta),val(x.bookingRecorded?t.yes:t.no),val(x.inspectionRecorded?t.yes:t.no)])],[24,16,16,16,16,14,22,22,22,22,22,22,34,34],true);
+      addSheet('PO Allocations',[[t.ref,t.po,t.qty],...(s.allocations.length?s.allocations.map(x=>[val(x.lot),val(x.po),qty(x.qty)]):[[val(t.noLots)]])],[30,36,22],true);
+      addSheet('Shipping Milestones',[[t.ref,t.status,t.original,t.current,t.forecast,t.sourceActual],...s.milestones.map(x=>[val(x.ref),val(x.status),date(x.original),date(x.current),date(x.forecast),date(x.actual)])],[18,28,22,22,22,22],true);
+      addSheet('PPM AQL References',[[t.app,t.decision],...(s.links.length?s.links.map(x=>[val(x.app),val(x.recordedStatus)]):[[val(t.noLinks)]])],[32,39],true);
+      const summaryRows=XLSX.utils.sheet_to_json(workbook.Sheets['Report Summary'],{header:1,raw:true});
+      summaryRows.push([val(t.asOf),date(s.asOfDate)],[val(t.summary),val(s.summary?JSON.stringify(s.summary):t.noSummary)]);
+      workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(summaryRows,{dateNF:'yyyy-mm-dd'});
     }
     if(model.reportId==='R01'&&model.masterSheet){
       const l=model.masterSheet.labels||{};
