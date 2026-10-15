@@ -39,7 +39,14 @@
     orderConfirmedOn:['order confirmed','order confirmation date','order confirmed on'],
     buyerRequiredETD:['etd','required etd','buyer required etd']
   });
+  const FIELD_LABELS=Object.freeze({
+    buyerName:'Buyer',factoryName:'Factory',styleNo:'Style',poNumber:'PO / Order',
+    totalQty:'Order quantity',buyerRequiredExFactory:'Required ex-factory',
+    fabricSpec:'Fabric details',fabricWeightGsm:'Fabric GSM',
+    orderConfirmedOn:'Order confirmed on',buyerRequiredETD:'Required ETD'
+  });
   const EN=Object.freeze({
+    fields:FIELD_LABELS,
     title:'Review Excel before creating a new TNA',sheet:'Worksheet',header:'Header row',
     dataRow:'Order data row',date:'Date format',basis:'Lead-time basis',profile:'Garment template',
     map:'Match Excel columns',review:'Review proposed draft',confirm:'Create NEW local TNA draft',
@@ -52,9 +59,30 @@
   });
   const LOCALES=Object.freeze({
     en:EN,
-    bn:{...EN,title:'নতুন TNA তৈরির আগে Excel যাচাই',sheet:'ওয়ার্কশিট',header:'হেডার সারি',dataRow:'অর্ডার সারি',date:'তারিখের ফরম্যাট',basis:'লিড টাইম গণনা',profile:'পোশাকের ধরন',map:'Excel কলাম মিলিয়ে দেখুন',review:'নতুন ড্রাফট যাচাই',confirm:'নতুন TNA ড্রাফট তৈরি',consent:'কলাম, তারিখ, নথি ও বাদ পড়া কাজ যাচাই করেছি।',duplicateConsent:'একই অর্ডার আছে; তবুও আলাদা ড্রাফট তৈরি করুন।'},
-    hi:{...EN,title:'नया TNA बनाने से पहले Excel जाँचें',sheet:'वर्कशीट',header:'हेडर पंक्ति',dataRow:'ऑर्डर पंक्ति',date:'तारीख का फ़ॉर्मेट',basis:'लीड टाइम आधार',profile:'गारमेंट प्रकार',map:'Excel कॉलम मिलाएँ',review:'नया ड्राफ्ट जाँचें',confirm:'नया TNA ड्राफ्ट बनाएँ',consent:'कॉलम, तारीख, स्रोत और बची गतिविधियाँ जाँच ली हैं।',duplicateConsent:'मिलता-जुलता ऑर्डर है, अलग ड्राफ्ट बनाना है।'},
-    ta:{...EN,title:'புதிய TNA-க்கு முன் Excel சரிபார்ப்பு',sheet:'Worksheet',header:'Heading வரிசை',dataRow:'Order வரிசை',date:'தேதி முறை',basis:'Lead-time முறை',profile:'Garment வகை',map:'Excel columns பொருத்துக',review:'Draft சரிபார்க்க',confirm:'புதிய TNA draft உருவாக்க',consent:'Columns, dates, source, மீதமுள்ள activities சரிபார்த்தேன்.',duplicateConsent:'இந்த order ஏற்கனவே உள்ளது; தனிப் draft உருவாக்க ஒப்புக்கொள்கிறேன்.'}
+    bn:{...EN,fields:{buyerName:'বায়ার',factoryName:'ফ্যাক্টরি',styleNo:'স্টাইল',poNumber:'PO / অর্ডার',
+      totalQty:'অর্ডারের পরিমাণ',buyerRequiredExFactory:'এক্স-ফ্যাক্টরি তারিখ',fabricSpec:'কাপড়ের বিবরণ',
+      fabricWeightGsm:'GSM',orderConfirmedOn:'অর্ডার নিশ্চিত হওয়ার তারিখ',buyerRequiredETD:'নির্ধারিত ETD'},
+      warning:'শুধু নির্বাচিত অর্ডার সারি নতুন ড্রাফটে আসবে। অন্য সারি, অনুমোদন, কাজ ও পূর্ববর্তী কাজের সম্পর্ক এখন আমদানি হবে না।',
+      noOverwrite:'পুরোনো TNA বদলানো হবে না। নতুন ড্রাফটের আলাদা নম্বর থাকবে; পুরোনো পরিকল্পনা অনুমোদিত নয়।',
+      duplicate:'একই বায়ার, ফ্যাক্টরি, PO ও স্টাইলের TNA আগে থেকেই আছে। নতুনটি আলাদা ড্রাফট হবে।',
+      rows:'ওয়ার্কশিটে কাজের সারি',missing:'তথ্য প্রয়োজন',
+      title:'নতুন TNA তৈরির আগে Excel যাচাই',sheet:'ওয়ার্কশিট',header:'হেডার সারি',dataRow:'অর্ডার সারি',date:'তারিখের ফরম্যাট',basis:'লিড টাইম গণনা',profile:'পোশাকের ধরন',map:'Excel কলাম মিলিয়ে দেখুন',review:'নতুন ড্রাফট যাচাই',confirm:'নতুন TNA ড্রাফট তৈরি',consent:'কলাম, তারিখ, নথি ও বাদ পড়া কাজ যাচাই করেছি।',duplicateConsent:'একই অর্ডার আছে; তবুও আলাদা ড্রাফট তৈরি করুন।'},
+    hi:{...EN,fields:{buyerName:'बायर',factoryName:'फैक्ट्री',styleNo:'स्टाइल',poNumber:'PO / ऑर्डर',
+      totalQty:'ऑर्डर मात्रा',buyerRequiredExFactory:'एक्स-फैक्ट्री तारीख',fabricSpec:'फैब्रिक विवरण',
+      fabricWeightGsm:'GSM',orderConfirmedOn:'ऑर्डर पुष्टि की तारीख',buyerRequiredETD:'तय ETD'},
+      warning:'केवल चुनी गई ऑर्डर पंक्ति नया ड्राफ्ट बनेगी। अन्य पंक्तियाँ, अप्रूवल, गतिविधियाँ और निर्भरता अभी आयात नहीं होंगे।',
+      noOverwrite:'पुराने TNA को बदला नहीं जाएगा; अलग ID वाला नया ड्राफ्ट बनेगा।',
+      duplicate:'इस बायर, फैक्ट्री, PO और स्टाइल का TNA पहले से है; नया अलग रहेगा।',
+      rows:'वर्कशीट की पंक्तियाँ',missing:'जानकारी चाहिए',
+      title:'नया TNA बनाने से पहले Excel जाँचें',sheet:'वर्कशीट',header:'हेडर पंक्ति',dataRow:'ऑर्डर पंक्ति',date:'तारीख का फ़ॉर्मेट',basis:'लीड टाइम आधार',profile:'गारमेंट प्रकार',map:'Excel कॉलम मिलाएँ',review:'नया ड्राफ्ट जाँचें',confirm:'नया TNA ड्राफ्ट बनाएँ',consent:'कॉलम, तारीख, स्रोत और बची गतिविधियाँ जाँच ली हैं।',duplicateConsent:'मिलता-जुलता ऑर्डर है, अलग ड्राफ्ट बनाना है।'},
+    ta:{...EN,fields:{buyerName:'Buyer',factoryName:'Factory',styleNo:'Style',poNumber:'PO / Order',
+      totalQty:'Order அளவு',buyerRequiredExFactory:'Ex-factory தேதி',fabricSpec:'Fabric விவரம்',
+      fabricWeightGsm:'GSM',orderConfirmedOn:'Order உறுதி தேதி',buyerRequiredETD:'ETD தேதி'},
+      warning:'தேர்ந்தெடுத்த Order row மட்டும் புதிய draft-க்கு வரும். மற்ற rows, approvals, activities, dependencies இப்போது import ஆகாது.',
+      noOverwrite:'பழைய TNA மாறாது; புதிய draft தனி ID-யுடன் உருவாகும்.',
+      duplicate:'இதே Buyer, Factory, PO, Style-க்கு ஏற்கனவே TNA உள்ளது. புதியது தனி draft ஆகும்.',
+      rows:'Worksheet வரிசைகள்',missing:'தகவல் தேவை',
+      title:'புதிய TNA-க்கு முன் Excel சரிபார்ப்பு',sheet:'Worksheet',header:'Heading வரிசை',dataRow:'Order வரிசை',date:'தேதி முறை',basis:'Lead-time முறை',profile:'Garment வகை',map:'Excel columns பொருத்துக',review:'Draft சரிபார்க்க',confirm:'புதிய TNA draft உருவாக்க',consent:'Columns, dates, source, மீதமுள்ள activities சரிபார்த்தேன்.',duplicateConsent:'இந்த order ஏற்கனவே உள்ளது; தனிப் draft உருவாக்க ஒப்புக்கொள்கிறேன்.'}
   });
   const cleanHeader=s=>String(s??'').trim().toLowerCase().replace(/[_\-\/]+/g,' ').replace(/\s+/g,' ');
   const cellString=v=>String(v??'').trim();
