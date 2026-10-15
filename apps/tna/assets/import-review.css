@@ -1,0 +1,19 @@
+/* GMR-04A reviewed workbook mapping. Domain shell remains the VESA shared owner. */
+.tna-import-stage{max-width:100%;min-width:0}
+.tna-import-stage h3,.tna-import-stage h4{line-height:1.3}
+.tna-import-stage .tna-form-grid{align-items:end}
+.tna-import-stage select,.tna-import-stage input{min-height:44px;width:100%;max-width:100%;box-sizing:border-box}
+.tna-import-row-preview{max-width:100%;overflow-x:auto;border:1px solid var(--line,#d8e0eb);border-radius:8px;margin:12px 0;padding:0}
+.tna-import-row-preview table{width:100%;border-collapse:collapse;min-width:520px;table-layout:fixed;font-size:.83rem}
+.tna-import-row-preview th,.tna-import-row-preview td{border-bottom:1px solid var(--line,#d8e0eb);padding:8px;vertical-align:top;text-align:left;overflow-wrap:anywhere}
+.tna-import-row-preview th:first-child,.tna-import-row-preview td:first-child{width:55px}
+.tna-import-errors,.tna-import-warnings{padding:10px 14px 10px 30px;border:1px solid var(--line,#d8e0eb);border-radius:8px}
+.tna-import-errors{border-left:4px solid #c3322a}
+.tna-import-warnings{border-left:4px solid #c48b1b}
+#tnaWorkbookDecision{max-width:100%;overflow-wrap:anywhere}
+#tnaWorkbookDecision label{display:flex;align-items:flex-start;gap:8px;margin:12px 0;font-weight:650}
+#tnaWorkbookDecision input[type=checkbox]{width:22px;height:22px;min-width:22px}
+#tnaWorkbookDecision button{min-height:44px}
+#tnaImportReviewFeedback:not(:empty){border-left:4px solid #c3322a;background:var(--look-surface,#f3f5f8);padding:10px 12px}
+@media(max-width:600px){.tna-import-stage .tna-form-grid{display:grid;grid-template-columns:1fr}}
+@media print{.tna-import-stage{display:none!important}}
