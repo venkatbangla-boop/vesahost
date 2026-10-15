@@ -100,6 +100,8 @@ test('R02 only includes canonical buyer milestones, explicit buyer actions, no s
    if(approved)assert.match(approved.status,/reported|উৎস|दर्ज|பதிவு/i);
    assert.ok(model.warnings.some(w=>w===model.buyerTna.labels.noTarget));
    assert.equal(model.tasks.length,model.buyerTna.milestones.length);
+   assert.ok(model.tasks.every(task=>['not-started','in-progress','submitted','awaiting-approval','approved','rejected','blocked','completed','waived','not-applicable'].includes(task.status)),
+     'backward-compatible report task status IDs must not be replaced by display translations');
    assert.ok(model.tasks.every(t=>!t.owner&&t.risk==='needs-information'));
    checkNoDisclosure(model,profile+' '+lang+' JSON');
    assert.equal(JSON.stringify(plan),before,'pure buyer projection cannot mutate stored TNA');
