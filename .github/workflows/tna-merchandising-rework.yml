@@ -1,0 +1,81 @@
+# Development-only evidence for TNA merchandising rework.
+# Runs on GitHub Free standard runners; no deployment, secrets or customer data.
+name: VESA TNA merchandising rework verification
+
+on:
+  push:
+    branches:
+      - feature/tna-merchandising-rework
+    paths:
+      - '.github/workflows/tna-merchandising-rework.yml'
+      - 'apps/tna/src/bootstrap.js'
+      - 'apps/tna/assets/tna.css'
+      - 'apps/tna/tests/**'
+      - 'apps/tna/index.html'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-tna-rework:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact development commit (never main)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Use Node.js 22 for existing browser-first source
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prove actual JavaScript parser acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in apps/tna/src/*.js apps/tna/tests/*.js apps/tna/tests/*.cjs; do
+            node --check "$file"
+          done
+          node --check js/vesa-workspace-shell.js
+          node --check service-worker.js
+      - name: Run source, scheduling, saved-copy and sibling calculation contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g03-scheduling.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/tna/tests/g06-workspace.test.js
+          node apps/tna/tests/g07-reports.test.js
+          node apps/tna/tests/g11-garment-scenarios.test.js
+          node apps/tna/tests/g11-saved-copy-migration.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          git diff --check origin/main...HEAD
+      - name: Install free Chromium and Playwright
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Exercise actual knit/woven master sheet, languages and edit/save
+        run: node apps/tna/tests/rework-master-sheet.cjs
+      - name: Run existing TNA order, localization, and shared-browser regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/tna/tests/g11-f06-order-master.cjs
+          node apps/tna/tests/g11-localization-accessibility.cjs
+          node apps/tna/tests/g11-unified-shell-browser.cjs
+          node apps/tna/tests/g11-route-regression.cjs
+          node tests/vesa-shared-shell-matrix.cjs
+      - name: Save synthetic screenshots on failure only
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tna-rework-synthetic-browser-screens
+          path: output/playwright/
+          if-no-files-found: ignore
