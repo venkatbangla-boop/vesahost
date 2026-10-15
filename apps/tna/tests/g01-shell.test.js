@@ -22,6 +22,10 @@ assert(index.includes('/js/preferences.js'), 'TNA route must load shared prefere
 assert(index.includes('src/domain.js'), 'TNA route must load its domain model before the UI bootstrap.');
 assert(index.includes('src/scheduling.js'), 'TNA route must load its scheduling engine before the UI bootstrap.');
 assert(index.includes('src/operations.js'), 'TNA route must load its operational engines before the UI bootstrap.');
+const scenarioEngineIndex = index.indexOf('src/scenarios.js');
+const scenarioReportIndex = index.indexOf('src/scenario-comparison-report.js');
+assert(scenarioEngineIndex > index.indexOf('src/operations.js') && scenarioReportIndex > scenarioEngineIndex && scenarioReportIndex < index.indexOf('src/reports.js'),
+  'R12 browser bundle must load the scenario engine after operations but before the scenario-comparison/report adapters.');
 assert(index.includes('vendor/xlsx.full.min.js'), 'TNA route must load the local Excel parser before storage.');
 assert(index.includes('src/storage.js'), 'TNA route must load its storage adapter before the UI bootstrap.');
 assert(index.includes('src/bootstrap.js'), 'TNA route must load its bootstrap module.');
