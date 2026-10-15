@@ -83,9 +83,9 @@ async function run(){
   const preview=page.locator('#tnaReportPreview .tna-report-preview');
   await preview.waitFor({state:'visible'});
   assert.equal(await preview.locator('.tna-report-buyer-table').count(),3,'two milestone and one buyer action table');
-  assert.equal(await preview.locator('[data-buyer-part="1"] tbody tr').count(),
-    original.records[0].plan.tasks.filter(t=>t.templateRef==='D08').length+
-    (await preview.locator('[data-buyer-part="1"] tbody tr').count())-1,'safe data count');
+  const firstCount=await preview.locator('[data-buyer-part="1"] tbody tr').count();
+  assert.ok(firstCount>12&&firstCount<original.records[0].plan.tasks.length,
+    'buyer-safe view contains a bounded milestone subset, not every internal task');
   const previewText=await preview.innerText();
   assert.match(previewText,/Buyer milestones/);
   assert.match(previewText,/Buyer actions/);
