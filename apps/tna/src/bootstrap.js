@@ -497,7 +497,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       const suggestedActivity=globalThis.VesaTnaActivityImport?.suggestSheet(snapshot,suggested.name);
       state.importSession={snapshot,activitySettings:{enabled:false,sheetName:suggestedActivity?.name||suggested.name,
         headerRow:suggestedActivity?.headerRow||1,dateFormat:'iso',durationBasis:'working',
-        fsZeroConfirmed:false,mapping:null,rowBindings:{}},settings:{
+        fsZeroConfirmed:false,advancedLinksConfirmed:false,mapping:null,rowBindings:{}},settings:{
         sheetName:suggested.name,headerRow:suggested.row,recordRow:suggested.row+1,dateFormat:'iso',
         basis:'calendar',templateId:'knit',mapping:null
       },reviewed:null};
@@ -553,6 +553,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
         selectField('activityDurationBasis',at.basis,[['working','Working days; factory calendar unverified'],['calendar','Calendar days']],activitySettings.durationBasis)+
         '</div>'+activityFields+
         '<label><input type="checkbox" name="fsZeroConfirmed" '+(activitySettings.fsZeroConfirmed?'checked':'')+'> '+esc(at.dependency)+'</label>'+
+        '<label><input type="checkbox" name="advancedLinksConfirmed" '+(activitySettings.advancedLinksConfirmed?'checked':'')+'> '+esc(at.advanced)+'</label>'+
+        '<p class="tna-note">'+esc(at.format)+'</p>'+
         '<p class="tna-note">'+esc(at.tip)+'</p>';
     }
     rootNode.innerHTML='<form id="tnaWorkbookMapping" class="tna-import-stage">'+
@@ -591,7 +593,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
         headerRow:Number(data.get('activityHeaderRow')||prior.headerRow),
         dateFormat:String(data.get('activityDateFormat')||prior.dateFormat),
         durationBasis:String(data.get('activityDurationBasis')||prior.durationBasis),
-        fsZeroConfirmed:data.has('fsZeroConfirmed'),
+        fsZeroConfirmed:data.has('fsZeroConfirmed'),advancedLinksConfirmed:data.has('advancedLinksConfirmed'),
         mapping:hasActivityControls?activityMap:prior.mapping,rowBindings:{...prior.rowBindings}};
     };
     form.onchange=event=>{
@@ -626,20 +628,27 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       const activeReady=!session.activitySettings.enabled||!!activityCheck?.ready;
       const complete=checked.ready&&activeReady;
       const activityRows=activityCheck?.rows||[];
+      const edgeTitle=activityCheck?.advancedEdgeCount?
+        activityCheck.edgeCount+' '+at.links:activityCheck?.edgeCount+' FS/0 links';
+      const edgeDetails=activityCheck?.edges?.length?'<div class="tna-import-row-preview" tabindex="0"><table><thead><tr><th>Successor</th><th>'+esc(at.links)+'</th></tr></thead><tbody>'+
+        activityCheck.edges.map(edge=>'<tr><td>'+esc(edge.target)+'</td><td>'+esc(edge.source)+' → '+esc(edge.relation)+' / '+esc(edge.lagUnits)+' '+esc(edge.lagBasis)+(edge.allowLead?' (reviewed lead)':'')+'</td></tr>').join('')+
+        '</tbody></table></div>':'';
       const activitySummary=activityCheck?'<section aria-label="Reviewed Excel activities"><h4>'+esc(at.preview)+
-        ' · '+activityRows.length+' · '+esc(activityCheck.edgeCount)+' FS/0 links</h4>'+
+        ' · '+activityRows.length+' · '+esc(edgeTitle)+'</h4>'+
         '<div class="tna-import-row-preview" tabindex="0"><table><thead><tr><th>Row</th><th>Source ref / Mapped task / Dates / Status / Predecessors</th></tr></thead><tbody>'+
         activityRows.map(row=>'<tr><th scope="row">'+esc(row.line)+'</th><td>'+esc(row.sourceKey)+' → '+esc(row.targetRef||at.missing)+
           ' · '+esc(row.title)+' · '+esc(row.dates.plannedFinish||t.missing)+' / '+esc(row.dates.revisedFinish||t.missing)+
           ' / '+esc(row.dates.actualFinish||t.missing)+' · '+esc(row.status)+' · '+esc(row.predecessors.join(', ')||'No predecessor')+
           '</td></tr>').join('')+'</tbody></table></div>'+
+        edgeDetails+
+        (activityCheck.customRows?.length?'<p class="tna-note">'+esc(at.customCount)+': '+esc(activityCheck.customRows.length)+'. Review their sourced Stage and Task Kind.</p>':'')+
         (activityCheck.missingTemplateRefs?.length?'<p class="tna-note">'+esc(activityCheck.missingTemplateRefs.length)+
           ' template tasks have no Excel source and remain unstarted/unscheduled.</p>':'')+
         '</section>':'';
       const unmatchedHtml=activityCheck?.unmatched?.length?'<div class="tna-form-grid">'+
         activityCheck.unmatched.map(row=>{
           const plan=domain.createPlan(checked.proposal,{ownerUserId:'preview'});
-          const options=[['',at.missing],...plan.tasks.map(task=>[task.templateRef,task.templateRef+' · '+task.title])];
+          const options=[['',at.missing],['__CUSTOM__',at.custom],...plan.tasks.map(task=>[task.templateRef,task.templateRef+' · '+task.title])];
           return '<label>'+esc(at.bind)+' · '+esc(row.line)+' '+esc(row.sourceKey)+' '+esc(row.title)+
             '<select data-activity-bind-line="'+esc(row.line)+'">'+htmlOptions(options,session.activitySettings.rowBindings[row.line]||'')+
             '</select></label>';
@@ -703,7 +712,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
           openDialog('New TNA created',
             '<p>A separate, unsigned TNA draft was saved locally. Existing orders were not replaced.</p>'+
             '<p><b>'+esc(saved.style||'New style')+'</b> · '+esc(saved.po||'New PO')+'</p>'+
-            (session.activitySettings.enabled?'<p>Reviewed Excel activities and FS/0 predecessors are included. Other template tasks remain unverified.</p>':
+            (session.activitySettings.enabled?'<p>Reviewed Excel activities and explicitly selected predecessor relations are included. Other template tasks remain unverified; source references and calendars require business review.</p>':
               '<p>Activity/dependency rows were not imported (Order-only). Review the task sheet.</p>')+
             '<p>Download a saved copy before leaving this device.</p>');
         }catch(error){importReviewError(error.message);}
