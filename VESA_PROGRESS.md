@@ -1,5 +1,16 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+### 2026-10-15 — R03 Factory Daily Action report: DEVELOPMENT VERIFIED (targeted slice)
+
+**Exact verified source:** `33f72b5a42be98c9019b5ed5a3ae0fce32d5f1de` on `feature/tna-merchandising-rework`; real [GitHub Actions 38774554292](https://github.com/venkatbangla-boop/vesahost/actions/runs/38774554292) **SUCCESS**. An atomic R03 patch adds a departmental due-action projection to `reports.js`, a conditional **Factory Daily Action** XLSX worksheet in `storage.js`, a grouped print/preview in `bootstrap.js` and TNA-only CSS, plus deterministically tested knit fixtures and Chromium browser artifact checks. Existing four XLSX worksheets, R01 Master TNA, R02 buyer report, all remaining R04–R12 compact report outputs, schema, baseline, approvals, PPM/AQL domain rules and VESA shared shell are unchanged.
+
+**Real proof:** strict timezone-aware as-of day (Asia/Dhaka and UTC), current target vs recorded baseline due-date source, overdue/today/next seven **calendar** days, missing/invalid dates (never invented overdue), later action count (outside the printed daily window but retained in XLSX), completed/approved/waived exclusions, recorded task owner, delay reason, internal follow-up note and evidence references, Excel type/format and formula-injection escaping, four-language labels and buyer R02 note isolation. Existing local TNA/PPM/AQL source/regression/route/mobile shell passed. Real Chromium generated/loaded an R03 Excel workbook and multi-page PDF with no horizontal clipping; see run logs and saved [synthetic artifact](https://github.com/venkatbangla-boop/vesahost/actions/runs/38774554292). Preserve failed [run 38774114408](https://github.com/venkatbangla-boop/vesahost/actions/runs/38774114408) (test expected untrimmed evidence IDs) and [run 38774220594](https://github.com/venkatbangla-boop/vesahost/actions/runs/38774220594) (browser test failed to restore screen media after R01 print). Both test expectations were corrected; final complete run passed.
+
+**Verdict:** **DEVELOPMENT VERIFIED for R03 only; full garment-merchandising TNA rework remains ACTIVE, not DEMO LIVE**. Human merchandiser UAT, device/font rendering, R02 buyer-specific output, R04–R12 full report semantics, reviewed Excel import mappings, security/recipient permissions and complete whole-app acceptance remain open. Do not imply internal R03 reports have enforceable server-side access on GitHub Pages.
+
+**NEXT ACTION:** Audit R04 Critical Path report against the already-verified scheduling/CPM model. Implement source-backed controlling chains/float and feasibility warnings ONLY when real dates and calendar inputs support the answer; otherwise Needs Information. Keep R02/R05–R12 unapproved until their separate specs/tests pass. Next portfolio application after TNA acceptance: **Packing & Container 360**.
+
+
 ## Current Work portfolio queue and evidence-based resumption (2026-10-15)
 
 ### 2026-10-15 — R01 garment Master TNA print view DEVELOPMENT VERIFIED
