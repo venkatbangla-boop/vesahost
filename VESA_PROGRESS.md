@@ -2,6 +2,18 @@
 
 ## Current Work portfolio queue and evidence-based resumption (2026-10-15)
 
+### 2026-10-15 — TNA master-sheet slices 1–2 VERIFIED BY REAL CI (not release)
+
+**Source/test SHA:** `679f07c60ff33af6a39b9aaa54561a6a8130a23b`. **GitHub Actions:** [run 38744121241](https://github.com/venkatbangla-boop/vesahost/actions/runs/38744121241), **SUCCESS** on the exact feature-branch checkout, Playwright Chromium and Node 22. The preceding [run 38743685771](https://github.com/venkatbangla-boop/vesahost/actions/runs/38743685771) failed exclusively at `git diff --check` for one trailing space in prior documentation; that byte was removed by `88fe4cff5d138e9d24f5f81225864b0d07efe169`, followed by a clean full rerun. Preserve the earlier failure record.
+
+**Observed genuine PASS:** JavaScript parser checks of TNA source/tests and shared shell, TNA G02/G03/G05/G06/G07, representative knit/woven/denim scenarios, old-format saved-copy migration, PPM 168 checkpoint baseline, AQL 24 baseline cases + sampling policy, VESA shell, and branch whitespace proof. New synthetic Playwright test covered full activity rows, all four languages, entered target/forecast/actual dates, responsive 390/1280 scroll containment, last-activity edit and autosave/reopen, no external network. Existing browser F06 order master, localization/keyboard/200%-zoom/timezone matrix, seven-width unified TNA shell, routes and six PPM/AQL/TNA shell probes PASS. See actual job logs, not the earlier source-only assertions.
+
+**Verdict for already-implemented sheet-first slices 1–2:** **DEVELOPMENT VERIFIED (automated scope only)**. This does NOT accept the entire TNA garment rework, human merchandiser UAT, native Excel-reader or physical accessibility review, and is NOT DEMO LIVE or an authorized production push. No TNA core schema/date/scheduling, PPM/AQL engines, shared shell, root main, saved records or public route changed.
+
+**NEXT ACTION:** add a separately verifiable, read-only source-backed Approval/Evidence, Delay Days and Recorded Note view to the garment sheet; unknown authority or missing dates must remain explicit; run exact-branch tests again before gate acceptance. Next portfolio application remains Packing & Container 360.
+
+
+
 
 ### 2026-10-15 — TNA rework accuracy correction (CONDITIONAL)
 
