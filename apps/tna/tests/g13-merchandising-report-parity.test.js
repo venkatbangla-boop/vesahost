@@ -77,7 +77,8 @@ test('approved audience boundaries: R02-R12 omit internal garment/LC master proj
     assert.ok(!JSON.stringify(model).includes('SOURCE-MASTER-LC-15'));
     const workbook=XLSX.read(storage.exportReportWorkbook(model),{type:'buffer'});
     assert.deepEqual(workbook.SheetNames,
-      ['Report Summary','Order Summary','Report Activities','Report Notes'],id+' unchanged report shape');
+      id==='R02'?['Report Summary','Order Summary','Report Activities','Buyer Milestones','Buyer Actions','Report Notes']:
+        ['Report Summary','Order Summary','Report Activities','Report Notes'],id+' approved audience workbook shape');
   }
 });
 test('Bengali, Hindi and Tamil report workbook headers localize but never mutate buyer/style or date sources',()=>{
