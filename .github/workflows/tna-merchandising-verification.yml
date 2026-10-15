@@ -41,6 +41,7 @@ jobs:
       - name: Syntax, safe workbook mapping and non-mutating garment projections
         run: |
           node --check apps/tna/src/reports.js
+          node --check apps/tna/src/critical-path-report.js
           node --check apps/tna/src/storage.js
           node --check apps/tna/src/domain.js
           node --check apps/tna/src/merchandising-sheet.js
@@ -48,7 +49,7 @@ jobs:
           node --check apps/tna/src/activity-import.js
           node --check apps/tna/src/bootstrap.js
           node --check service-worker.js
-          node --test apps/tna/tests/g11-merchandising-sheet.test.js apps/tna/tests/g12-merchandising-edits.test.js apps/tna/tests/g13-merchandising-report-parity.test.js apps/tna/tests/g14-reviewed-excel-import.test.js apps/tna/tests/g15-activity-import.test.js apps/tna/tests/g16-advanced-activity-import.test.js apps/tna/tests/g17-buyer-tna-report.test.js apps/tna/tests/g18-factory-daily-report.test.js
+          node --test apps/tna/tests/g11-merchandising-sheet.test.js apps/tna/tests/g12-merchandising-edits.test.js apps/tna/tests/g13-merchandising-report-parity.test.js apps/tna/tests/g14-reviewed-excel-import.test.js apps/tna/tests/g15-activity-import.test.js apps/tna/tests/g16-advanced-activity-import.test.js apps/tna/tests/g17-buyer-tna-report.test.js apps/tna/tests/g18-factory-daily-report.test.js apps/tna/tests/g19-critical-path-report.test.js
       - name: Preserve existing TNA calculations, records and PPM/AQL rules
         run: |
           node apps/tna/tests/g01-shell.test.js
@@ -65,7 +66,7 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
-      - name: Chromium R03 localized Excel data gaps and print with full TNA PPM AQL regression
+      - name: Chromium R04 reviewed critical path Excel PDF and complete TNA PPM AQL regression
         run: |
           export CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
           mkdir -p output/playwright
@@ -75,6 +76,7 @@ jobs:
           node apps/tna/tests/g16-advanced-activity-import-browser.cjs
           node apps/tna/tests/g17-buyer-tna-report-browser.cjs
           node apps/tna/tests/g18-factory-daily-report-browser.cjs
+          node apps/tna/tests/g19-critical-path-report-browser.cjs
           node apps/tna/tests/g12-merchandising-edits-browser.cjs
           node apps/tna/tests/g11-artifact-viewers.cjs
           node apps/tna/tests/g11-f06-order-master.cjs
