@@ -70,3 +70,25 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
  body.tna-printing-report .tna-report-buyer-table thead{display:table-header-group}
  body.tna-printing-report .tna-report-buyer{break-inside:auto}
 }
+
+/* GMR-06 R03: factory action sections inside existing VESA Report dialog. */
+#tnaReportAsOfWrap[hidden]{display:none!important}
+#tnaReportAsOf{min-height:44px;max-width:100%}
+#tnaReportGate:empty{display:none}
+.tna-report-daily{min-width:0;max-width:100%;margin:16px 0}
+.tna-report-daily-section{margin:14px 0;break-inside:auto}
+.tna-report-daily-section h3{margin:12px 0 8px}
+.tna-report-daily-scroll{max-width:100%;overflow:auto;margin:10px 0;border:1px solid var(--line,#d5deea);border-radius:8px}
+.tna-report-daily-table{width:100%;min-width:650px;table-layout:fixed;border-collapse:collapse;line-height:1.4;font-size:.78rem}
+.tna-report-daily-table thead{display:table-header-group}
+.tna-report-daily-table th,.tna-report-daily-table td{border:1px solid var(--line,#d5deea);padding:7px;vertical-align:top;text-align:start;overflow-wrap:anywhere;white-space:normal}
+.tna-report-daily-table th{background:var(--look-surface,#eef3f9);font-weight:750}
+.tna-report-daily-table tr{break-inside:avoid}
+.tna-report-daily-table th:nth-child(2){width:24%}
+@media print{
+ body.tna-printing-report .tna-report-daily-scroll{overflow:visible;border:0;max-width:100%}
+ body.tna-printing-report .tna-report-daily-table{min-width:0;width:100%;font-size:7.2pt;table-layout:fixed}
+ body.tna-printing-report .tna-report-daily-table th,body.tna-printing-report .tna-report-daily-table td{padding:4pt;white-space:normal;overflow-wrap:anywhere}
+ body.tna-printing-report .tna-report-daily-table thead{display:table-header-group}
+ body.tna-printing-report .tna-report-daily-section{break-inside:auto}
+}
