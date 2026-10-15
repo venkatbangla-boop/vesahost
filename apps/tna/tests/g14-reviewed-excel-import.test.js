@@ -59,6 +59,8 @@ test('user chooses a worksheet, header row, data row and woven template explicit
  const second=['Factory Two','PO-200',800,'SHIRT-B','Buyer B','21/11/2026'];
  XLSX.utils.book_append_sheet(workbook,XLSX.utils.aoa_to_sheet([reordered,columns,first,second]),'Purchase Orders');
  const snap=importer.parseWorkbook(XLSX.write(workbook,{type:'buffer',bookType:'xlsx'}),'woven-orders.xlsx');
+ assert.deepEqual(importer.suggestWorksheet(snap),{row:2,score:18,name:'Purchase Orders'});
+ assert.equal(importer.suggestHeaderRow(snap,'Readme').row,1);
  const out=review(snap,'Purchase Orders',{headerRow:2,recordRow:4,dateFormat:'dmy',basis:'working',templateId:'woven'});
  assert.equal(out.ready,true,out.errors.join(' '));
  assert.equal(out.proposal.styleNo,'SHIRT-B');
