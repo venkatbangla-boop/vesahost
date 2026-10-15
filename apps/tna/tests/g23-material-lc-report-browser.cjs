@@ -17,7 +17,7 @@ const SECRETS=['PRIVATE-LC-DOCUMENT-PROOF','PRIVATE-B2B-APPLICATION-PROOF',
 function fixture(){
  const p=domain.createPlan({templateId:'woven',buyerName:'R08 BROWSER BUYER',
   factoryName:'R08 SOURCE FACTORY',styleNo:'R08-WOVEN',poNumber:'R08-PO',
-  totalQty:2400,buyerRequiredExFactory:'2026-12-20'},
+  totalQty:2400,fabricPayment:'b2b-lc',trimPayment:'b2b-lc',buyerRequiredExFactory:'2026-12-20'},
   {ownerUserId:session.userKey});
  p.commitments.masterLcStatus='opened';
  p.commitments.masterLcOpenedOn='2026-10-10';

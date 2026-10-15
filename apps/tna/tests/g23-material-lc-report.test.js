@@ -18,7 +18,7 @@ const options={reportId:'R08',language:'en',asOfDate:DATE,commercialConfirmed:tr
 function fixture(profile='knit'){
  const p=domain.createPlan({templateId:profile,buyerName:'R08 SYNTHETIC BUYER',
   factoryName:'R08 COMMERCIAL FACTORY',styleNo:'R08-STYLE',poNumber:'R08-PO',
-  totalQty:2400,buyerRequiredExFactory:'2026-12-20'}, {ownerUserId:'r08-qa'});
+  totalQty:2400,fabricPayment:'b2b-lc',trimPayment:'b2b-lc',buyerRequiredExFactory:'2026-12-20'}, {ownerUserId:'r08-qa'});
  p.commitments.masterLcStatus='opened';
  p.commitments.masterLcOpenedOn='2026-10-10';
  p.commitments.masterLcProofRef=SECRETS[0];
