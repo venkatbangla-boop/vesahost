@@ -53,12 +53,13 @@ class TnaMerchandisingSheetBrowserProof {
     await this.page.evaluate(id=>{
       const draft=VesaTnaDomain.createPlan({templateId:id,buyerName:'Synthetic Buyer',factoryName:'Synthetic Factory',styleNo:'STYLE-'+id.toUpperCase(),poNumber:'PO-'+id.toUpperCase(),totalQty:2000,orderConfirmedOn:'2026-10-01',buyerRequiredExFactory:'2026-12-15'},{ownerUserId:'qa-vesaent-com'});
       const first=draft.tasks[0];
-      const completed=VesaTnaDomain.updateTaskStatus(draft,first.taskId,'completed',{actualDate:'2026-10-22',actorId:'qa-vesaent-com'});
+      const completed=VesaTnaDomain.updateTaskStatus(draft,first.taskId,'completed',{actualDate:'2026-10-22',actorId:'qa-vesaent-com',reason:'Synthetic status note'});
       if(!completed.ok)throw new Error(completed.error);
       const plan=completed.plan;
       plan.tasks[0].dates.currentTargetFinish='2026-10-18';
       plan.tasks[0].dates.forecastFinish='2026-10-21';
       plan.tasks[0].delayReason='Synthetic supplier hold';
+      plan.approvals.push({approvalId:'SYN-'+id,requiredForTaskIds:[first.taskId],partyRequiredToApprove:'Bangladesh local office',responseStatus:'approved',decidedBy:'Synthetic BD reviewer',evidenceRef:'SYN-EVID-'+id});
       VesaTnaStorage.savePlan(plan,'qa-vesaent-com');
     },templateId);
     await this.page.reload({waitUntil:'domcontentloaded'});
@@ -70,9 +71,11 @@ class TnaMerchandisingSheetBrowserProof {
     assert.equal(stored.templateId,templateId,'Most recent plan must be the selected garment profile');
     assert.equal(await this.page.locator('.tna-master-activities [data-edit-task]').count(),stored.tasks.length,'Every garment activity requires an accessible edit action');
     assert.equal(await this.page.locator('.tna-master-activities [role="row"]').count(),stored.tasks.length+1,'One header and every task row must render');
-    assert.equal(await this.page.locator('.tna-activity-heading [role="columnheader"]').count(),9,'Nine truthful business columns must remain visible to assistive technology');
+    assert.equal(await this.page.locator('.tna-activity-heading [role="columnheader"]').count(),12,'Twelve truthful business columns must remain visible to assistive technology');
     const firstRow=await this.page.locator('.tna-master-activities [role="row"]').nth(1).innerText();
-    for(const value of ['2026-10-18','2026-10-21','2026-10-22','Synthetic supplier hold'])assert.ok(firstRow.includes(value),'Stored field missing from first task row: '+value);
+    for(const value of ['2026-10-18','2026-10-21','2026-10-22','4 (','Bangladesh local office','Synthetic BD reviewer','SYN-EVID-'+templateId,'Synthetic status note','Synthetic supplier hold'])assert.ok(firstRow.includes(value),'Stored field missing from first task row: '+value);
+    const unrelatedRow=await this.page.locator('.tna-master-activities [role="row"]').nth(2).innerText();
+    assert.ok(!unrelatedRow.includes('Bangladesh local office'),'Approval authority must not spread to an unlinked task');
     return stored;
   }
 
