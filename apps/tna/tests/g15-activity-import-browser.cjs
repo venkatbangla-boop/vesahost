@@ -75,7 +75,8 @@ async function run(){
     await page.locator('[name=fsZeroConfirmed]').check();
     await page.locator('#tnaWorkbookMapping button[type=submit]').click();
     assert.equal(await page.locator('#tnaWorkbookDecision [data-activity-bind-line]').count(),0,'all source refs matched');
-    assert.equal(await page.locator('#tnaWorkbookDecision .tna-import-row-preview tbody tr').count(),3);
+    assert.equal(await page.locator('#tnaWorkbookDecision section[aria-label="Reviewed Excel activities"] .tna-import-row-preview').first().locator('tbody tr').count(),3,
+      'count the activity grid only; the separate reviewed predecessor grid is expected');
     assert.match(await page.locator('#tnaWorkbookDecision').innerText(),/2 FS\/0 links/);
     assert.equal(await page.locator('#tnaWorkbookActivityConsent').count(),1);
     assert.equal(await page.locator('#tnaWorkbookDuplicateConsent').count(),0);
