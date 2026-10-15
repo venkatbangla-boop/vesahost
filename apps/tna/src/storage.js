@@ -59,6 +59,8 @@
     const XLSX=xlsxLib();
     if(!XLSX)throw new Error('Excel workbook parser is not bundled.');
     if(!model||model.schema!=='VESA-TNA-REPORT-1')throw new Error('Unsupported TNA report model.');
+    if(model.reportId==='R03'&&!model.factoryDaily?.ready)
+      throw new Error(model.factoryDaily?.labels?.selectDate||'Select a valid review date before downloading this report.');
     const workbook=XLSX.utils.book_new();
     const addSheet=(name,rows,widths,filter=false)=>{
       const sheet=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
@@ -130,6 +132,42 @@
       addSheet('Buyer Actions',actions,[24,44,51,25]);
     }
 
+    // R03 read-only factory operational audience; dates remain genuine typed
+    // Excel calendar dates and all source text remains formula-escaped.
+    if(model.reportId==='R03'){
+      const daily=model.factoryDaily,labels=daily.labels;
+      const txt=value=>safeCell(value==null||value===''?labels.unknown:value);
+      const windows=['overdue','today','nextSeven'];
+      const headers=[labels.group,labels.ref,labels.activity,labels.department,
+        labels.target,labels.original,labels.revised,labels.forecast,labels.actual,
+        labels.status,labels.waiting,labels.reason,labels.followup,labels.recovery,labels.proof];
+      const rowCells=row=>[
+        txt(labels[row.group]),txt(row.ref),txt(row.activity),txt(row.department),
+        dateCell(row.due),dateCell(row.original),dateCell(row.revised),
+        dateCell(row.forecast),dateCell(row.actual),txt(row.status),txt(row.waiting),
+        txt(row.reason),txt(row.followup),txt(row.recovery),txt(row.proof)
+      ];
+      const actions=[headers];
+      for(const window of windows){
+        const items=daily.sections[window];
+        if(items.length)actions.push(...items.map(rowCells));
+        else actions.push([txt(labels[window]),txt(labels.noActions)]);
+      }
+      addSheet('Factory Daily Actions',actions,
+        [20,14,53,25,18,18,18,18,18,21,21,54,54,54,39],true);
+      const dateGaps=[headers,...daily.sections.needsDate.map(rowCells)];
+      if(!daily.sections.needsDate.length)dateGaps.push([txt(labels.needsDate),txt(labels.noActions)]);
+      addSheet('Missing Action Dates',dateGaps,
+        [25,14,53,25,18,18,18,18,18,21,21,54,54,54,39],true);
+      // Append as-of review date after static report identity fields.
+      const summary=workbook.Sheets['Report Summary'];
+      const XLSXRows=XLSX.utils.sheet_to_json(summary,{header:1,raw:true});
+      XLSXRows.push([txt(labels.asOf),dateCell(daily.asOfDate)],
+        [txt(labels.count),numberCell(daily.undatedCount)],
+        [txt(labels.missingOwner),numberCell(daily.missingOwnerCount)]);
+      workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(XLSXRows,{dateNF:'yyyy-mm-dd'});
+      workbook.Sheets['Report Summary']['!cols']=[{wch:27},{wch:96}];
+    }
     if(model.reportId==='R01'&&model.masterSheet){
       const l=model.masterSheet.labels||{};
       const h=[l.stage||'Section',l.activity||'Activity',l.owner||'Responsible party',
