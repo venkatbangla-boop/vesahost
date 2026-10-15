@@ -33,7 +33,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Syntax and non-mutating garments projection
+      - name: Syntax, safe workbook mapping and non-mutating garment projections
         run: |
           node --check apps/tna/src/reports.js
           node --check apps/tna/src/storage.js
