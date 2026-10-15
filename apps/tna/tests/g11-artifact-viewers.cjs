@@ -56,6 +56,12 @@ async function run(){
     await openTools(page);
     await page.locator('[data-menu-action="Prepare Report"]').click();
     await page.locator('.tna-report-preview').waitFor();
+    const printedHeaders=await page.locator('.tna-report-master-table thead th').allTextContents();
+    for(const header of ['Original baseline','Current target','Forecast','Actual','Depends on']){
+      assert(printedHeaders.includes(header),'R01 print preview must retain source-backed column: '+header);
+    }
+    assert.equal(await page.locator('.tna-report-master-table tbody tr').count(),stored.records[0].plan.tasks.length,'Printable Master TNA must include every activity.');
+    assert.ok(await page.locator('.tna-report-master-legend').isVisible(),'Print preview must explain unknown date values.');
     const previewGeometry=await page.locator('.tna-report-preview').evaluate(preview=>({scrollWidth:preview.scrollWidth,clientWidth:preview.clientWidth,rows:[...preview.querySelectorAll('[role="row"]')].map(row=>({scrollWidth:row.scrollWidth,clientWidth:row.clientWidth}))}));
     assert.ok(previewGeometry.scrollWidth<=previewGeometry.clientWidth+1,'Report preview must not clip horizontally.');
     assert.ok(previewGeometry.rows.every(row=>row.scrollWidth<=row.clientWidth+1),'Report rows must not clip horizontally.');
@@ -77,6 +83,14 @@ async function run(){
 
     await page.emulateMedia({media:'print'});
     await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const printLayout=await page.locator('.tna-report-master-table').evaluate(table=>{
+      const parent=table.parentElement;
+      return {tableWidth:table.getBoundingClientRect().width,containerWidth:parent.getBoundingClientRect().width,
+        headerDisplay:getComputedStyle(table.tHead).display};
+    });
+    assert.ok(printLayout.tableWidth<=printLayout.containerWidth+1,'Printed Master TNA table must fit the page width.');
+    assert.equal(printLayout.headerDisplay,'table-header-group','Master TNA headers must repeat on printed pages.');
+
     const pdfPath=path.join(output,'tna-g11-report-viewer.pdf');
     await page.pdf({path:pdfPath,printBackground:true,preferCSSPageSize:true,landscape:true});
     await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));

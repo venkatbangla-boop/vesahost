@@ -53,3 +53,21 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
   .tna-sheet-scroll .tna-activity-table .tna-sheet-cell-label{display:block;color:var(--muted,#526176);font-size:11px;letter-spacing:.02em;font-weight:800}
   .tna-sheet-scroll .tna-activity-table [role=cell]:last-child .tna-mini-btn{min-height:42px;width:100%}
 }
+
+/* R01 garment Master TNA: a readable table on screen and repeated headers in print. */
+.tna-master-print{max-width:100%;min-width:0}
+.tna-report-master-legend{font-size:12px;color:var(--muted,#526176);margin:6px 0 12px}
+.tna-report-master-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.tna-report-master-table{width:100%;min-width:950px;table-layout:fixed;border-collapse:collapse;line-height:1.3}
+.tna-report-master-table th,.tna-report-master-table td{padding:6px;border:1px solid var(--line,#d5deea);vertical-align:top;overflow-wrap:anywhere;white-space:normal}
+.tna-report-master-table th{font-size:11px;font-weight:800;text-align:left;background:var(--look-surface,#eef3f9)}
+.tna-report-master-table td{font-size:11px}
+.tna-report-master-ref small{display:block;font-size:10px;color:var(--muted,#526176);font-weight:500}
+@media print{
+  body.tna-printing-report .tna-report-master-scroll{overflow:visible!important;max-width:100%!important}
+  body.tna-printing-report .tna-report-master-table{min-width:0!important;width:100%!important;table-layout:fixed!important;border-collapse:collapse!important;font-size:7pt!important}
+  body.tna-printing-report .tna-report-master-table thead{display:table-header-group!important}
+  body.tna-printing-report .tna-report-master-table tr{break-inside:avoid!important;page-break-inside:avoid!important}
+  body.tna-printing-report .tna-report-master-table th,body.tna-printing-report .tna-report-master-table td{padding:2px 3px!important;font-size:7pt!important;line-height:1.2!important;color:#111!important;background:#fff!important;border:1px solid #999!important;overflow-wrap:anywhere!important}
+  body.tna-printing-report .tna-report-master-ref small{font-size:6pt!important;color:#333!important}
+}
