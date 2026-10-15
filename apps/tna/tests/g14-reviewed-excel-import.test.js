@@ -131,6 +131,17 @@ test('duplicate order identity requires separate explicit consent; never mutates
  assert.notEqual(p.recordId,original.recordId);
  assert.equal(JSON.stringify(original),before);
 });
+test('duplicate warnings work on read-only saved summaries without loading or modifying an old plan',()=>{
+ const snap=importer.parseWorkbook(fixture([headers,baseRow]),'summary.xlsx');
+ const summaries=[{recordId:'older-id',buyer:'SYNTHETIC BUYER',style:'KNIT-SRC-001',po:'PO-001'}];
+ const before=JSON.stringify(summaries);
+ const out=review(snap,'Orders',{existingPlans:summaries});
+ assert.equal(out.ready,true,out.errors.join('; '));
+ assert.equal(out.duplicate,true);
+ assert.ok(out.warnings.some(w=>w.includes('Stored summary lacks factory details')));
+ assert.equal(JSON.stringify(summaries),before,'duplicate detection is read-only');
+});
+
 test('macro and unsupported extensions, huge files, unsupported mappings reject before writes',()=>{
  const book=fixture([headers,baseRow]);
  for(const extension of ['.xlsm','.xls','.csv','.html'])assert.throws(
