@@ -17,11 +17,17 @@ on:
       - 'assets/vesa-logo-black.png'
   workflow_dispatch:
 
+# Source pushes still register a lightweight check, but the complete suite runs
+# only at an intentional review checkpoint ([verify]) or a manual dispatch.
+# Never interpret a skipped intermediate run as acceptance or as release proof.
 permissions:
   contents: read
 
 jobs:
   costing-real-checkout:
+    # Retain every test below. Only the scheduling gate changes.
+    # Complete source CI evidence must match a deliberate [verify] checkpoint SHA.
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[verify]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
