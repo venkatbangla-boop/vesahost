@@ -1,5 +1,6 @@
 /**
- * GMR-04B real Chromium E2E. Uses the real checkout, bundled XLSX and
+ * GMR-04B real Chromium E2E. The activity table count is scoped separately
+ * from the new GMR-04C reviewed predecessor detail grid. Bundled XLSX and
  * authenticated local browser. Only synthetic garment-business test inputs.
  */
 'use strict';
