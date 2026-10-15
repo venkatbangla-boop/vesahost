@@ -1,5 +1,16 @@
 # VESA Costing 360 - Build / Acceptance Log
 
+## Branch CI notification-reduction checkpoint — 2026-10-15
+
+**Accepted CI scheduling change only:** On `feature/costing-360`, `.github/workflows/costing-360-verification.yml` now runs the original full suite only for a source/workflow push marked `[verify]` in the final commit message, or supported manual dispatch. All existing financial calculations, browser no-margin/import/Excel/reports, PPM/AQL/TNA and shell regression tests are unchanged. The **public Costing demo on `main` is unchanged**; this CI policy is feature-branch-only.
+
+**Real evidence:** deliberate `[verify]` commit `ca10f993b9a89282779d39160fce0b4f2ae4b417` → [Actions run 38678047770](https://github.com/venkatbangla-boop/vesahost/actions/runs/38678047770) **SUCCESS**, actual checkout and all job steps green. A subsequent comment-only unmarked workflow commit `df40d2b09aaf52a083331b26e69b85504c790361` → [run 38678156587](https://github.com/venkatbangla-boop/vesahost/actions/runs/38678156587) **SKIPPED**, proving intermediate commits do not consume the heavy job. A skipped run is **not** accepted test evidence. The account's Github Actions email settings were not changed.
+
+**Next source patch requirement:** When reopening Costing development, add `[verify]` to the **final** path-matching source/test/workflow commit and inspect its actual GitHub Action verdict before acceptance. If no matching path is committed, a marked docs-only push will not run the workflow because the existing path filters remain in force. Rollback is a normal revert of the conditional-job workflow commits on the feature branch. No data reset, source edit or main merge required.
+
+---
+
+
 
 ## LIVE DEMO ACCEPTED — 2026-10-15 (Bangladesh time)
 
