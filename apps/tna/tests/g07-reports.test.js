@@ -36,6 +36,7 @@ for (const lang of ['en', 'bn', 'hi', 'ta']) {
       ...(item.id==='R09'?{asOfDate:'2026-10-10',qualityConfirmed:true,qualityAuthorityRef:'REVIEWED-QUALITY-AUTHORITY'}:{}),
       ...(item.id==='R10'?{asOfDate:'2026-10-10',managementConfirmed:true,portfolioAuthorityRef:'REVIEWED-MANAGEMENT-AUTHORITY',portfolioSelectedIds:[plan.recordId],portfolioPlans:[plan]}:{}),
       ...(item.id==='R11'?{approvalAsOfDate:'2026-10-10',approvalAudience:'factory',approvalFactoryConsent:true,approvalAuthorityRef:'REVIEWED-FACTORY-AUTHORITY'}:{}),
+      ...(item.id==='R12'?{scenarioAsOfDate:'2026-10-15',scenarioPlannerConsent:true,scenarioCalendarReviewed:true,scenarioAuthorityRef:'REVIEWED-PLANNER-SOURCE',scenarioTaskA:plan.tasks.find(t=>t.durationUnits>0).taskId,scenarioDurationA:'1',scenarioTaskB:plan.tasks.find(t=>t.durationUnits>0).taskId,scenarioDurationB:'2'}:{}),
       criticalReview:item.id==='R04'?{startAnchor:'orderConfirmedOn',weekKey:'mon-fri',exceptionDates:'',calendarConfirmed:true,
         durationsReviewed:true,dependenciesReviewed:true,endpointReviewed:true}:undefined,
       language: lang, generatedAt: '2026-10-10T07:10:00.000Z', timezone: 'Asia/Dhaka' });
@@ -43,7 +44,7 @@ for (const lang of ['en', 'bn', 'hi', 'ta']) {
     assert(model.schema === 'VESA-TNA-REPORT-1', `G07 ${lang} ${item.id} should use the report schema.`);
     assert(model.generatedLabel && model.timezone === 'Asia/Dhaka', `G07 ${lang} ${item.id} should preserve generated date/timezone metadata.`);
     assert(item.id==='R10'?model.order.style==='Portfolio'&&model.portfolioReport?.ready:model.order.buyer === 'Buyer Report' && model.order.style === 'STYLE-RPT', `G07 ${lang} ${item.id} must not translate typed buyer/style values.`);
-    assert(item.id === 'R02' ? model.tasks.length <= plan.tasks.length && !!model.buyerTna : item.id==='R03' ? model.tasks.length <= plan.tasks.length && !!model.factoryDaily?.ready : item.id==='R04' ? model.tasks.length <= plan.tasks.length && !!model.criticalPath?.ready : item.id==='R05' ? model.tasks.length <= plan.tasks.length && !!model.weeklyTna?.ready : item.id==='R06' ? model.tasks.length <= plan.tasks.length && !!model.delayRecovery?.ready : item.id==='R07' ? model.tasks.length <= plan.tasks.length && !!model.productionStatus?.ready : item.id==='R08' ? model.tasks.length <= plan.tasks.length && !!model.materialLcReport?.ready : item.id==='R09' ? model.tasks.length <= plan.tasks.length && !!model.shipmentReadiness?.ready : item.id==='R10' ? model.tasks.length <= plan.tasks.length && !!model.portfolioReport?.ready : item.id==='R11' ? model.tasks.length <= plan.tasks.length && !!model.approvalHistory?.ready : model.tasks.length === plan.tasks.length, `G07 ${lang} ${item.id} must respect its approved audience scope.`);
+    assert(item.id === 'R02' ? model.tasks.length <= plan.tasks.length && !!model.buyerTna : item.id==='R03' ? model.tasks.length <= plan.tasks.length && !!model.factoryDaily?.ready : item.id==='R04' ? model.tasks.length <= plan.tasks.length && !!model.criticalPath?.ready : item.id==='R05' ? model.tasks.length <= plan.tasks.length && !!model.weeklyTna?.ready : item.id==='R06' ? model.tasks.length <= plan.tasks.length && !!model.delayRecovery?.ready : item.id==='R07' ? model.tasks.length <= plan.tasks.length && !!model.productionStatus?.ready : item.id==='R08' ? model.tasks.length <= plan.tasks.length && !!model.materialLcReport?.ready : item.id==='R09' ? model.tasks.length <= plan.tasks.length && !!model.shipmentReadiness?.ready : item.id==='R10' ? model.tasks.length <= plan.tasks.length && !!model.portfolioReport?.ready : item.id==='R11' ? model.tasks.length <= plan.tasks.length && !!model.approvalHistory?.ready : item.id==='R12' ? model.tasks.length===0 && !!model.scenarioComparison?.ready : model.tasks.length === plan.tasks.length, `G07 ${lang} ${item.id} must respect its approved audience scope.`);
     assert(model.labels.noFabrication && model.labels.shareFallback && model.labels.printFallback, `G07 ${lang} ${item.id} should include report fallback notes.`);
     assert(model.tasks.every(task => ['not-started','in-progress','blocked','submitted','approved','rejected','completed','waived','not-applicable'].includes(task.status)), `G07 ${lang} ${item.id} must preserve stable status IDs.`);
     const jsonExport = JSON.stringify(model, null, 2);
@@ -59,7 +60,7 @@ assert(JSON.stringify(plan) === before, 'G07 report generation must not mutate t
 
 const bnModel = reports.buildReportModel(plan, { reportId: 'R01', language: 'bn', generatedAt: '2026-10-10T07:10:00.000Z', timezone: 'Asia/Dhaka' });
 const taModel = reports.buildReportModel(plan, { reportId: 'R12', language: 'ta', generatedAt: '2026-10-10T07:10:00.000Z', timezone: 'Asia/Dhaka' });
-assert(taModel.reportId === 'R12' && taModel.source.recordId === plan.recordId, 'G07 R12 report model should keep source identity.');
+assert(taModel.reportId === 'R12' && taModel.source.recordId === null && !taModel.scenarioComparison?.ready, 'G07 R12 must withhold source identity and data before planner review.');
 assert(bnModel.labels.noFabrication.includes('Needs Information'), 'G07 reports must include no-fabrication note.');
 
 for (const model of [bnModel, taModel]) {
@@ -75,9 +76,9 @@ for (const model of [bnModel, taModel]) {
 }
 
 for (const fragment of [
-  './assets/tna.css?v=0.14.0',
-  './src/reports.js?v=0.17.0',
-  './src/storage.js?v=0.19.0',
+  './assets/tna.css?v=0.15.0',
+  './src/reports.js?v=0.18.0',
+  './src/storage.js?v=0.20.0',
   './src/bootstrap.js',
   "'./apps/tna/src/reports.js'",
   'const reports=globalThis.VesaTnaReports',

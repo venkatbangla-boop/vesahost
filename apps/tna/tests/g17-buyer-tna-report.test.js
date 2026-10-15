@@ -164,7 +164,7 @@ test('buyer-facing order identity is formula-escaped in real workbook without co
  for(const sheet of Object.values(workbook.Sheets))
   for(const cell of Object.values(sheet))assert.equal(cell.f,undefined);
 });
-test('R01 remains full factory master and R12 remains prior generic report model/workbook',()=>{
+test('R01 remains full factory master and R12 remains separately gated and R01 factory master unchanged',()=>{
  const plan=fixture('woven');
  const r01=reports.buildReportModel(plan,{reportId:'R01',language:'en'});
  assert.equal(r01.buyerTna,undefined);
@@ -174,13 +174,11 @@ test('R01 remains full factory master and R12 remains prior generic report model
  const r01Workbook=XLSX.read(storage.exportReportWorkbook(r01),{type:'buffer'});
  assert.deepEqual(r01Workbook.SheetNames,
   ['Report Summary','Order Summary','Report Activities','Master TNA','Report Notes']);
- for(const id of reports.catalogue('en').map(x=>x.id).filter(id=>!['R01','R02','R03','R04','R05','R06','R07','R08','R09','R10','R11'].includes(id))){
-  const m=reports.buildReportModel(plan,{reportId:id});
-  assert.equal(m.buyerTna,undefined,id);
-  assert.equal(m.tasks.length,plan.tasks.length,id);
-  const w=XLSX.read(storage.exportReportWorkbook(m),{type:'buffer'});
-  assert.deepEqual(w.SheetNames,['Report Summary','Order Summary','Report Activities','Report Notes'],id);
- }
+ const r12=reports.buildReportModel(plan,{reportId:'R12'});
+ assert.equal(r12.scenarioComparison.ready,false);
+ assert.equal(r12.buyerTna,undefined);
+ assert.deepEqual(r12.tasks,[]);
+ assert.throws(()=>storage.exportReportWorkbook(r12),/Review|scenario|options|date/i);
 });
 test('buyer report preview is structurally isolated from internal R01 HTML and print has repeated headings',()=>{
  const root=path.resolve(__dirname,'../../..');

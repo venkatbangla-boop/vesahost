@@ -284,3 +284,17 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
 .tna-report-approval-table thead{display:table-header-group}
 .tna-report-approval-table tr{break-inside:avoid}
 @media print{body.tna-printing-report .tna-report-approval-scroll{overflow:visible;border:0}body.tna-printing-report .tna-report-approval-table{min-width:0;width:100%;font-size:7pt}body.tna-printing-report .tna-report-approval-table th,body.tna-printing-report .tna-report-approval-table td{padding:4pt}}
+
+/* GMR-15 R12: source-only scenario comparison in unified VESA report dialog. */
+#tnaScenarioReviewWrap[hidden]{display:none!important}
+.tna-scenario-review{min-width:0;max-width:100%;box-sizing:border-box;border:1px solid var(--line,#d5deea);padding:12px;border-radius:12px}
+.tna-scenario-review>label{display:grid;gap:5px;margin:9px 0;max-width:100%;overflow-wrap:anywhere}
+.tna-scenario-review input:not([type=checkbox]),.tna-scenario-review select{width:100%;max-width:100%;min-height:44px;box-sizing:border-box}
+.tna-scenario-review input[type=checkbox]{width:18px;height:18px;min-height:18px}
+.tna-report-scenario{max-width:100%;min-width:0;overflow-wrap:anywhere;margin:14px 0}
+.tna-report-scenario-scroll{max-width:100%;min-width:0;overflow:auto;margin:10px 0;border:1px solid var(--line,#d5deea);border-radius:8px}
+.tna-report-scenario-table{min-width:620px;width:100%;table-layout:fixed;border-collapse:collapse;font-size:.78rem}
+.tna-report-scenario-table th,.tna-report-scenario-table td{padding:7px;border:1px solid var(--line,#d5deea);text-align:start;vertical-align:top;overflow-wrap:anywhere}
+.tna-report-scenario-table thead{display:table-header-group}
+.tna-report-scenario-table tr{break-inside:avoid}
+@media print{body.tna-printing-report .tna-report-scenario-scroll{overflow:visible;border:0}body.tna-printing-report .tna-report-scenario-table{min-width:0;width:100%;font-size:7pt}body.tna-printing-report .tna-report-scenario-table th,body.tna-printing-report .tna-report-scenario-table td{padding:4pt}}

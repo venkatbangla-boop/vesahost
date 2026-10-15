@@ -1,4 +1,4 @@
-const CACHE='vesa-v90-tna-gmr14-r11'
+const CACHE='vesa-v91-tna-gmr15-r12'
 const ASSETS=[
   './',
   './index.html',
@@ -25,6 +25,7 @@ const ASSETS=[
   './apps/tna/src/shipment-readiness-report.js?v=0.1.0',
   './apps/tna/src/portfolio-report.js?v=0.1.0',
   './apps/tna/src/approval-history-report.js?v=0.1.0',
+  './apps/tna/src/scenario-comparison-report.js?v=0.1.0',
   './apps/tna/src/operations.js',
   './apps/tna/vendor/xlsx.full.min.js',
   './apps/tna/vendor/xlsx.LICENSE.txt',

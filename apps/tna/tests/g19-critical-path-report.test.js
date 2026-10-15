@@ -196,7 +196,7 @@ test('R04 spreadsheet genuinely typed, source-escaped and identical to R04 model
  }
  assert.notEqual(JSON.stringify(p),before,'synthetic fixture was intentionally changed before report');
 });
-test('frozen R01/R02/R03 and R12 report/shipment source and old saved copies remain compatible',()=>{
+test('frozen R01/R02/R03 and R12 gated report/shipment source and old saved copies remain compatible',()=>{
  const p=fixture(),before=JSON.stringify(p);
  const simple={R01:['Report Summary','Order Summary','Report Activities','Master TNA','Report Notes'],
  R02:['Report Summary','Order Summary','Report Activities','Buyer Milestones','Buyer Actions','Report Notes'],
@@ -207,12 +207,11 @@ test('frozen R01/R02/R03 and R12 report/shipment source and old saved copies rem
   assert.equal(m.criticalPath,undefined,id+' isolated');
   assert.deepEqual(XLSX.read(storage.exportReportWorkbook(m),{type:'buffer'}).SheetNames,simple[id]);
  }
- for(const id of reports.catalogue('en').map(x=>x.id).filter(x=>+x.slice(1)>=12)){
-  const m=reports.buildReportModel(p,{reportId:id});
-  assert.equal(m.criticalPath,undefined);
-  assert.deepEqual(XLSX.read(storage.exportReportWorkbook(m),{type:'buffer'}).SheetNames,
-   ['Report Summary','Order Summary','Report Activities','Report Notes']);
- }
+ const r12=reports.buildReportModel(p,{reportId:'R12'});
+ assert.equal(r12.criticalPath,undefined);
+ assert.equal(r12.scenarioComparison.ready,false);
+ assert.deepEqual(r12.tasks,[]);
+ assert.throws(()=>storage.exportReportWorkbook(r12),/Review|scenario|options|date/i);
  const old=domain.createPlan({templateId:'knit',buyerName:'OLD BUYER',factoryName:'OLD FACTORY',
   styleNo:'OLD-STYLE',poNumber:'OLD-PO',totalQty:100,buyerRequiredExFactory:'2026-12-31'});
  assert.deepEqual(storage.importCopy(storage.exportCopy(old)),old);

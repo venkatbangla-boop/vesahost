@@ -832,6 +832,35 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     html+='<p class="tna-note">'+esc(t.noRoundProof)+' '+esc(t.noEventProof)+' '+esc(t.noClearance)+'</p></section>';
     return html;
   }
+  /**
+   * R12 displays only sanitized, same-revision, read-only alternatives.
+   * No private source comments, actors, LC, proof refs or costs are consumed.
+   */
+  function scenarioComparisonPreview(data){
+    const t=data.labels,cell=x=>esc(x===null||x===undefined||x===''?t.unknown:x);
+    let html='<section class="tna-report-scenario" aria-label="'+esc(t.title)+'">';
+    if(!data.ready)return html+'<p role="status">'+esc(t.select)+'</p></section>';
+    const table=(part,heads,rows)=>'<div class="tna-report-scenario-scroll"><table class="tna-report-scenario-table" data-scenario-report-part="'+esc(part)+'"><thead><tr>'+
+      heads.map(x=>'<th scope="col">'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+
+      rows.map(row=>'<tr>'+row.map(x=>'<td>'+cell(x)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+    const base=data.base,a=data.alternatives[0],b=data.alternatives[1];
+    html+='<p>'+esc(t.asOf)+': '+cell(data.asOfDate)+'</p><h3>'+esc(t.heading)+'</h3>';
+    html+=table('forecasts',[t.task,t.revision,t.required,t.forecast,t.gain,t.conflicts,t.status],[
+      [t.base,base.revision,base.required,base.forecast,null,null,t.sourceOnly],
+      [t.a,a.baseRevision,base.required,a.forecast,a.gained,a.conflicts,a.status],
+      [t.b,b.baseRevision,base.required,b.forecast,b.gained,b.conflicts,b.status]]);
+    html+='<h3>'+esc(t.inputs)+'</h3>'+table('inputs',[t.task,t.ref,t.initial,t.changed,t.units],[
+      [t.a,a.task,a.baseDuration,a.optionDuration,a.basis],[t.b,b.task,b.baseDuration,b.optionDuration,b.basis]]);
+    html+='<h3>'+esc(t.paths)+'</h3>'+table('paths',[t.task,t.critical,t.changedCritical,t.paths],[
+      [t.a,a.baseCriticalRefs.join(', ')||t.unknown,a.changedCriticalRefs.join(', ')||t.unknown,a.criticalRefs.join(', ')||t.unknown],
+      [t.b,b.baseCriticalRefs.join(', ')||t.unknown,b.changedCriticalRefs.join(', ')||t.unknown,b.criticalRefs.join(', ')||t.unknown]]);
+    html+='<h3>'+esc(t.recorded)+'</h3>';
+    html+=data.history.length?table('history',[t.recorded,t.sourceRev,t.appliedRev,t.recordedOn,t.local],
+      data.history.map(x=>[x.position,x.baseRevision,x.appliedRevision,x.appliedOn,t.local])):
+      '<p>'+esc(t.none)+'</p>';
+    html+='<p class="tna-note">'+esc(t.sameBase)+' '+esc(t.noProof)+' '+esc(t.noMutation)+'</p></section>';
+    return html;
+  }
   function reportPreviewHtml(model){
     const order=model.order;
     let html='<article class="tna-report-preview"><h2>'+esc(model.title)+'</h2>';
@@ -844,7 +873,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       [model.labels.quantity,String(order.quantity)+' '+String(order.unit)],
       [model.labels.required,order.requiredExFactory]
     ].map(([label,value])=>'<span>'+esc(label)+': '+esc(value)+'</span>').join('')+'</div>';
-    if(model.approvalHistory)html+=approvalHistoryPreview(model.approvalHistory);
+    if(model.scenarioComparison)html+=scenarioComparisonPreview(model.scenarioComparison);
+    else if(model.approvalHistory)html+=approvalHistoryPreview(model.approvalHistory);
     else if(model.portfolioReport)html+=portfolioReportPreview(model.portfolioReport);
     else if(model.shipmentReadiness)html+=shipmentReadinessPreview(model.shipmentReadiness);
     else if(model.criticalPath)html+=criticalReportPreview(model.criticalPath);
@@ -873,6 +903,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const first=reports.catalogue(state.language).find(x=>x.id===(action==='Portfolio Report'||portfolioOnly?'R10':'R01'));
     const portfolioWords=globalThis.VesaTnaPortfolioReport?.WORDS?.[state.language]||globalThis.VesaTnaPortfolioReport?.WORDS?.en;
     const approvalWords=globalThis.VesaTnaApprovalHistoryReport?.WORDS?.[state.language]||globalThis.VesaTnaApprovalHistoryReport?.WORDS?.en;
+    const scenarioWords=globalThis.VesaTnaScenarioComparisonReport?.WORDS?.[state.language]||globalThis.VesaTnaScenarioComparisonReport?.WORDS?.en;
     const dailyWords=reportModel('R03').factoryDaily.labels;
     const cpWords=reportModel('R04').criticalPath.labels;
     const shipmentWords=globalThis.VesaTnaShipmentReadinessReport?.WORDS?.[state.language]||globalThis.VesaTnaShipmentReadinessReport?.WORDS?.en;
@@ -999,12 +1030,30 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       '<label><span>'+esc(approvalWords.authority)+'</span>'+
       '<input id="tnaApprovalAuthority" type="text" maxlength="180" autocomplete="off" aria-required="true"></label>'+
       '<p class="tna-note">'+esc(approvalWords.noPermission)+' '+esc(approvalWords.noPrivacy)+'</p></fieldset>';
+    const scenarioCandidates=(state.currentPlan?.tasks||[]).filter(task=>
+      task?.taskId&&task?.templateRef&&task?.applicability!=='not-applicable'&&
+      Number.isInteger(task.durationUnits)&&task.durationUnits>=0);
+    const scenarioNames=new Map((domain?.ACTIVITY_LIBRARY||[]).map(item=>[item.templateRef,item.title]));
+    const scenarioOptions='<option value="">'+esc(scenarioWords.unknown)+'</option>'+
+      scenarioCandidates.map(task=>'<option value="'+esc(task.taskId)+'">'+
+        esc(task.templateRef+' · '+(scenarioNames.get(task.templateRef)||task.templateRef))+'</option>').join('');
+    const scenarioControls='<fieldset id="tnaScenarioReviewWrap" class="tna-wide tna-scenario-review" hidden><legend>'+esc(scenarioWords.title)+'</legend>'+
+      '<p class="tna-note">'+esc(scenarioWords.sameBase)+' '+esc(scenarioWords.asOfCaution)+'</p>'+
+      '<label><span>'+esc(scenarioWords.asOf)+'</span><input id="tnaScenarioReviewAsOf" type="date" aria-required="true"></label>'+
+      '<label class="tna-wide tna-cpm-checkbox"><input id="tnaScenarioPlannerConsent" type="checkbox"><span>'+esc(scenarioWords.consent)+'</span></label>'+
+      '<label class="tna-wide tna-cpm-checkbox"><input id="tnaScenarioCalendarReviewed" type="checkbox"><span>'+esc(scenarioWords.calendar)+'</span></label>'+
+      '<label><span>'+esc(scenarioWords.authority)+'</span><input id="tnaScenarioAuthority" type="text" maxlength="180" autocomplete="off" aria-required="true"></label>'+
+      '<label><span>'+esc(scenarioWords.activityA)+'</span><select id="tnaScenarioTaskA">'+scenarioOptions+'</select></label>'+
+      '<label><span>'+esc(scenarioWords.durationA)+'</span><input id="tnaScenarioDurationA" type="number" inputmode="numeric" min="0" max="3650" step="1" placeholder="'+esc(scenarioWords.unknown)+'"></label>'+
+      '<label><span>'+esc(scenarioWords.activityB)+'</span><select id="tnaScenarioTaskB">'+scenarioOptions+'</select></label>'+
+      '<label><span>'+esc(scenarioWords.durationB)+'</span><input id="tnaScenarioDurationB" type="number" inputmode="numeric" min="0" max="3650" step="1" placeholder="'+esc(scenarioWords.unknown)+'"></label>'+
+      '<p class="tna-note">'+esc(scenarioWords.noAccess)+' '+esc(scenarioWords.calendarUnconfigured)+'</p></fieldset>';
     openDialog('Reports',
       '<div class="tna-form-grid">'+
       '<label><span>Report type</span><select id="tnaReportType">'+(portfolioOnly?'<option value="R10">R10 · '+esc(first.title)+'</option>':reportOptions())+'</select></label>'+
       '<label><span>Language</span><input readonly value="'+esc(state.language)+'"></label>'+
       '<label id="tnaReportAsOfWrap" hidden><span>'+esc(dailyWords.asOf)+'</span>'+
-      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+weeklyControls+delayControls+productionControls+materialControls+shipmentControls+portfolioControls+approvalControls+'</div>'+
+      '<input id="tnaReportAsOf" type="date" aria-required="true"></label>'+criticalControls+weeklyControls+delayControls+productionControls+materialControls+shipmentControls+portfolioControls+approvalControls+scenarioControls+'</div>'+
       '<p id="tnaReportGate" role="status" aria-live="polite" class="tna-note"></p>'+
       '<div class="menu-grid">'+
       '<button class="tna-btn" type="button" data-report-action="preview">Preview report</button>'+
@@ -1025,6 +1074,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const shipmentWrap=document.getElementById('tnaShipmentReviewWrap');
     const portfolioWrap=document.getElementById('tnaPortfolioReviewWrap');
     const approvalWrap=document.getElementById('tnaApprovalReviewWrap');
+    const scenarioWrap=document.getElementById('tnaScenarioReviewWrap');
     const gate=document.getElementById('tnaReportGate');
     const criticalReview=()=>{
       const value=name=>criticalWrap.querySelector('[name="'+name+'"]')?.value||'';
@@ -1086,6 +1136,16 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       approvalFactoryConsent:!!approvalWrap.querySelector('#tnaApprovalFactoryConsent')?.checked,
       approvalAuthorityRef:approvalWrap.querySelector('#tnaApprovalAuthority')?.value||''
     });
+    const scenarioReview=()=>({
+      scenarioAsOfDate:scenarioWrap.querySelector('#tnaScenarioReviewAsOf')?.value||'',
+      scenarioPlannerConsent:!!scenarioWrap.querySelector('#tnaScenarioPlannerConsent')?.checked,
+      scenarioCalendarReviewed:!!scenarioWrap.querySelector('#tnaScenarioCalendarReviewed')?.checked,
+      scenarioAuthorityRef:scenarioWrap.querySelector('#tnaScenarioAuthority')?.value||'',
+      scenarioTaskA:scenarioWrap.querySelector('#tnaScenarioTaskA')?.value||'',
+      scenarioDurationA:scenarioWrap.querySelector('#tnaScenarioDurationA')?.value||'',
+      scenarioTaskB:scenarioWrap.querySelector('#tnaScenarioTaskB')?.value||'',
+      scenarioDurationB:scenarioWrap.querySelector('#tnaScenarioDurationB')?.value||''
+    });
     const currentModel=()=>reportModel(type.value,
       type.value==='R03'?{asOfDate:review.value}:
       type.value==='R04'?{criticalReview:criticalReview()}:
@@ -1095,7 +1155,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       type.value==='R08'?materialReview():
       type.value==='R09'?shipmentReview():
       type.value==='R10'?portfolioReview():
-      type.value==='R11'?approvalReview():{});
+      type.value==='R11'?approvalReview():
+      type.value==='R12'?scenarioReview():{});
     const update=()=>{
       reviewWrap.hidden=type.value!=='R03';
       criticalWrap.hidden=type.value!=='R04';
@@ -1106,6 +1167,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       shipmentWrap.hidden=type.value!=='R09';
       portfolioWrap.hidden=type.value!=='R10';
       approvalWrap.hidden=type.value!=='R11';
+      scenarioWrap.hidden=type.value!=='R12';
       const approvalAudience=approvalWrap.querySelector('#tnaApprovalAudience')?.value||'';
       approvalWrap.querySelector('#tnaApprovalBuyerConsentWrap').hidden=approvalAudience!=='buyer';
       approvalWrap.querySelector('#tnaApprovalFactoryConsentWrap').hidden=approvalAudience!=='factory';
@@ -1113,7 +1175,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       productionWrap.querySelector('#tnaProdInternalWrap').hidden=prodMode!=='internal';
       productionWrap.querySelector('#tnaProdBuyerWrap').hidden=prodMode!=='buyer';
       const model=currentModel();
-      gate.textContent=model.approvalHistory&&!model.approvalHistory.ready?model.approvalHistory.labels.selectReview:
+      gate.textContent=model.scenarioComparison&&!model.scenarioComparison.ready?model.scenarioComparison.warnings[0]:
+        model.approvalHistory&&!model.approvalHistory.ready?model.approvalHistory.labels.selectReview:
         model.portfolioReport&&!model.portfolioReport.ready?model.portfolioReport.warnings[0]:
         model.shipmentReadiness&&!model.shipmentReadiness.ready?model.shipmentReadiness.labels.selectReview:
         model.materialLcReport&&!model.materialLcReport.ready?model.materialLcReport.labels.selectReview:
@@ -1153,6 +1216,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     shipmentWrap.querySelectorAll('input').forEach(control=>{control.addEventListener('change',update);if(control.type!=='checkbox')control.addEventListener('input',update);});
     portfolioWrap.querySelectorAll('input').forEach(control=>{control.addEventListener('change',update);if(control.type!=='checkbox')control.addEventListener('input',update);});
     approvalWrap.querySelectorAll('input,select').forEach(control=>{control.addEventListener('change',update);if(control.type!=='checkbox'&&control.tagName!=='SELECT')control.addEventListener('input',update);});
+    scenarioWrap.querySelectorAll('input,select').forEach(control=>{control.addEventListener('change',update);if(control.type!=='checkbox'&&control.tagName!=='SELECT')control.addEventListener('input',update);});
     update();
     document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{
       const model=currentModel();
@@ -1165,7 +1229,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
         (model.materialLcReport&&!model.materialLcReport.ready)||
         (model.shipmentReadiness&&!model.shipmentReadiness.ready)||
         (model.portfolioReport&&!model.portfolioReport.ready)||
-        (model.approvalHistory&&!model.approvalHistory.ready))return update();
+        (model.approvalHistory&&!model.approvalHistory.ready)||
+        (model.scenarioComparison&&!model.scenarioComparison.ready))return update();
       if(btn.dataset.reportAction==='preview')return update();
       if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}
       if(btn.dataset.reportAction==='share')return openDialog('Share fallback',

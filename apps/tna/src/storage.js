@@ -109,6 +109,7 @@
     if(model.reportId==='R09'&&!model.shipmentReadiness?.ready)throw new Error(model.shipmentReadiness?.labels?.selectReview||'Review restricted shipment information first.');
     if(model.reportId==='R10'&&!model.portfolioReport?.ready)throw new Error(model.portfolioReport?.labels?.select||'Select and review saved portfolio orders first.');
     if(model.reportId==='R11'&&!model.approvalHistory?.ready)throw new Error(model.approvalHistory?.labels?.selectReview||'Choose authorized approval audience and review date before download.');
+    if(model.reportId==='R12'&&!model.scenarioComparison?.ready)throw new Error(model.scenarioComparison?.labels?.select||'Review both scenario options before downloading.');
     const workbook=XLSX.utils.book_new();
     const addSheet=(name,rows,widths,filter=false)=>{
       const sheet=XLSX.utils.aoa_to_sheet(rows,{dateNF:'yyyy-mm-dd'});
@@ -532,6 +533,44 @@
         [v(t.revisions),numberCell(h.counts.revisions)],[v(t.pending),numberCell(h.counts.pending)]);
       workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(summary,{dateNF:'yyyy-mm-dd'});
       workbook.Sheets['Report Summary']['!cols']=[{wch:36},{wch:110}];
+    }
+    // R12 workbook consumes only the immutable, sanitized current-revision
+    // scenario comparison. No full OrderPlan, private change reason, or actor ID.
+    if(model.reportId==='R12'){
+      const r=model.scenarioComparison,t=r.labels;
+      const val=x=>safeCell(x===null||x===undefined||x===''?t.unknown:x);
+      const number=x=>x===null?val(t.unknown):numberCell(x);
+      const date=x=>x?dateCell(x):val(t.unknown);
+      const base=r.base,a=r.alternatives[0],b=r.alternatives[1];
+      addSheet('Scenario Overview',[[t.context||t.heading,t.base,t.a,t.b],
+        [t.revision,number(base.revision),number(a.baseRevision),number(b.baseRevision)],
+        [t.original,number(base.baselineSnapshots),val(t.noMutation),val(t.noMutation)],
+        [t.required,date(base.required),date(base.required),date(base.required)],
+        [t.forecast,date(base.forecast),date(a.forecast),date(b.forecast)],
+        [t.gain,val(t.unknown),number(a.gained),number(b.gained)],
+        [t.conflicts,val(t.unknown),number(a.conflicts),number(b.conflicts)],
+        [t.status,val(t.sourceOnly),val(a.status),val(b.status)]],
+        [42,45,45,45],true);
+      addSheet('Scenario Inputs',[[t.task,t.ref,t.initial,t.changed,t.units,t.sourceRev||t.revision],
+        [val(t.a),val(a.task),number(a.baseDuration),number(a.optionDuration),val(a.basis),number(a.baseRevision)],
+        [val(t.b),val(b.task),number(b.baseDuration),number(b.optionDuration),val(b.basis),number(b.baseRevision)]],
+        [24,22,22,22,35,22],true);
+      addSheet('Critical Path Changes',[[t.task,t.critical,t.changedCritical,t.paths],
+        [val(t.a),val(a.baseCriticalRefs.join(', ')||t.unknown),
+          val(a.changedCriticalRefs.join(', ')||t.unknown),val(a.criticalRefs.join(', ')||t.unknown)],
+        [val(t.b),val(b.baseCriticalRefs.join(', ')||t.unknown),
+          val(b.changedCriticalRefs.join(', ')||t.unknown),val(b.criticalRefs.join(', ')||t.unknown)]],
+        [22,90,90,90],true);
+      addSheet('Applied Scenario History',[[t.seq||t.recorded,t.sourceRev,t.appliedRev,t.recordedOn,t.local],
+        ...(r.history.length?r.history.map(x=>[numberCell(x.position),number(x.baseRevision),
+          number(x.appliedRevision),date(x.appliedOn),val(t.local)]):[[val(t.none)]])],
+        [35,28,28,27,64],true);
+      const old=XLSX.utils.sheet_to_json(workbook.Sheets['Report Summary'],{header:1,raw:true});
+      old.push([val(t.asOf),date(r.asOfDate)],[val(t.revision),number(base.revision)],
+        [val(t.heading),val(t.sameBase)],[val(t.recorded),numberCell(r.history.length)],
+        [val(t.noProof),val(t.noAccess)]);
+      workbook.Sheets['Report Summary']=XLSX.utils.aoa_to_sheet(old,{dateNF:'yyyy-mm-dd'});
+      workbook.Sheets['Report Summary']['!cols']=[{wch:44},{wch:104}];
     }
     if(model.reportId==='R01'&&model.masterSheet){
       const l=model.masterSheet.labels||{};
