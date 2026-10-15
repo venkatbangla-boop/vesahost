@@ -72,12 +72,13 @@ test('approved audience boundaries: R02-R12 omit internal garment/LC master proj
   const plan=example('knit');
   for(const {id} of reports.catalogue('en')){
     if(id==='R01')continue;
-    const model=reports.buildReportModel(plan,{reportId:id,language:'en',generatedAt:'2026-10-15T08:00:00.000Z'});
+    const model=reports.buildReportModel(plan,{reportId:id,language:'en',asOfDate:id==='R03'?'2026-10-15':undefined,generatedAt:'2026-10-15T08:00:00.000Z'});
     assert.equal(model.masterSheet,null,id+' must not gain internal master sheet');
     assert.ok(!JSON.stringify(model).includes('SOURCE-MASTER-LC-15'));
     const workbook=XLSX.read(storage.exportReportWorkbook(model),{type:'buffer'});
     assert.deepEqual(workbook.SheetNames,
       id==='R02'?['Report Summary','Order Summary','Report Activities','Buyer Milestones','Buyer Actions','Report Notes']:
+        id==='R03'?['Report Summary','Order Summary','Report Activities','Factory Daily Actions','Missing Action Dates','Report Notes']:
         ['Report Summary','Order Summary','Report Activities','Report Notes'],id+' approved audience workbook shape');
   }
 });
