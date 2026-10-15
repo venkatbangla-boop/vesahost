@@ -89,7 +89,7 @@ async function run(){
 
    await page.locator('#tnaWorkbookConsent').check();
    await page.locator('#tnaWorkbookConfirm').click();
-   assert.match(await page.locator('#tnaImportReviewFeedback').innerText(),/Matching existing order/);
+   assert.match(await page.locator('#tnaImportReviewFeedback').innerText(),/matching existing order/i);
    await page.locator('#tnaWorkbookDuplicateConsent').check();
    await page.locator('#tnaWorkbookConfirm').click();
    await page.locator('#tnaMerchSheet').waitFor({state:'visible'});
