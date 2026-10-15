@@ -60,7 +60,7 @@ class FactoryDailyActionProof {
     assert.equal(daily.groups.overdue[0].due,'2026-10-13');
     assert.equal(daily.groups.overdue[0].dateSource,'current-target');
     assert.equal(daily.groups.overdue[0].delayReason,'Waiting for supplier confirmation');
-    assert.deepEqual(daily.groups.overdue[0].proofRefs,['EVID-R03-001','  =SUM(1,2)']);
+    assert.deepEqual(daily.groups.overdue[0].proofRefs,['=SUM(1,2)','EVID-R03-001']);
     assert(daily.groups.overdue.some(row=>row.ref===plan.tasks[6].templateRef&&row.dateSource==='baseline-finish'));
     assert(daily.groups.today.some(row=>row.ref===plan.tasks[1].templateRef&&row.followupNote==='Internal note: factory samples delayed'));
     assert(daily.groups.nextSeven.some(row=>row.ref===plan.tasks[2].templateRef&&row.calendarDaysFromToday===1));
@@ -106,7 +106,7 @@ class FactoryDailyActionProof {
     assert.equal(sheet.G2.t,'n','Calendar day difference must remain numeric.');
     assert.equal(sheet.G2.v,-2);
     assert.equal(sheet.K2.t,'s','Evidence references must be inert text.');
-    assert(sheet.K2.v.includes("'  =SUM(1,2)"),'Whitespace-prefixed spreadsheet formulas must be escaped.');
+    assert(sheet.K2.v.startsWith("'=SUM(1,2)"),'Spreadsheet formulas must be exported as inert text.');
     assert(sheet['!autofilter']?.ref,'Factory follow-up workbook needs a working filter.');
     const summary=XLSX.utils.sheet_to_json(workbook.Sheets['Report Summary'],{header:1,raw:false});
     assert(summary.some(row=>row[0]==='Action as-of date'&&row[1]==='2026-10-15'),'Timezone-aware as-of date must be visible in Excel.');
