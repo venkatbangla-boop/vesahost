@@ -246,13 +246,20 @@
     if(details.unrecognized.length)warnings.push('Unmapped columns: '+details.unrecognized.map(x=>x.name).join(', '));
     warnings.push('Activities, statuses, approvals and predecessor links are NOT imported in this order-only review.');
     const canon=v=>cellString(v).toLowerCase().replace(/\s+/g,' ');
-    const duplicate=Array.isArray(existingPlans)&&existingPlans.some(p=>
-      canon(p?.order?.buyerName)===canon(input.buyerName)&&
+    // Storage summaries intentionally omit factory and are safe to inspect
+    // without reopening/migrating any historical business record.
+    const matchFull=p=>canon(p?.order?.buyerName)===canon(input.buyerName)&&
       canon(p?.order?.factoryName)===canon(input.factoryName)&&
       canon(p?.order?.styles?.[0]?.styleNo)===canon(input.styleNo)&&
-      canon(p?.order?.poNumbers?.[0])===canon(input.poNumber)
-    );
-    if(duplicate)warnings.push('Matching buyer + factory + style + PO already exists; this can only be a separate draft.');
+      canon(p?.order?.poNumbers?.[0])===canon(input.poNumber);
+    const matchSummary=p=>!p?.order&&canon(p?.buyer)===canon(input.buyerName)&&
+      canon(p?.style)===canon(input.styleNo)&&canon(p?.po)===canon(input.poNumber);
+    const matches=Array.isArray(existingPlans)?existingPlans:[];
+    const duplicate=matches.some(p=>matchFull(p)||matchSummary(p));
+    const duplicateNeedsFactoryReview=matches.some(matchSummary);
+    if(duplicate)warnings.push(duplicateNeedsFactoryReview
+      ?'Matching buyer + style + PO exists. Stored summary lacks factory details; review before creating a separate draft.'
+      :'Matching buyer + factory + style + PO already exists; this can only be a separate draft.');
     const ready=!errors.length;
     const proposal=ready?{
       ...input,leadTimeBasis:settings.basis,templateId:settings.templateId,
