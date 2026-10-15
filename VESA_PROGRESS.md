@@ -1,5 +1,19 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+
+## GitHub Actions failure-email policy — owner preference pending (2026-10-15)
+
+**Cause confirmed:** GitHub automatically sent the user's GitHub Actions run-failure emails for individual verification attempts (e.g. source SHAs `9367558`, `364131e`, `0c92a3b`). These are historical failed checks superseded by GMR-04A [successful run 38679689378](https://github.com/venkatbangla-boop/vesahost/actions/runs/38679689378) at `b088ea79e4fe273c4d23b9bd8af949e034046748`. Local VS Code test failures do not by themselves generate GitHub Actions emails, whereas sending an early `[verify]` commit to GitHub did. The workflow checkpoint gating reduces automatic CI jobs but **cannot turn off GitHub's account-level email preference**.
+
+**Actual notification OFF instruction:** The **owner** must open https://github.com/settings/notifications on their signed-in GitHub account, go to **System → Actions**, choose **Don't notify**, then **Save**. This is the officially supported Actions notification control: https://docs.github.com/en/subscriptions-and-notifications/how-tos/managing-github-actions-notifications. Do **not** choose `Email` or `Only notify for failed workflows`. The current repository connector cannot change personal GitHub notification preferences; **owner setting NOT CHANGED / awaiting confirmation**, and no claim that all future emails are already disabled is authorized. Other repository/security/conversation emails are separate preferences; do not mute all GitHub email unnecessarily.
+
+**Permanent engineering behavior:** Keep the existing `[verify]` job gate and full TNA/Costing/AQL/PPM tests. Prefer actual local/Work-checkout Node, syntax and browser tests *before* the single final, path-matching `[verify]` checkpoint for a coherent patch group. Avoid using repeated `[verify]` commits as an interactive debugger while simple checks are possible. If no local checkout/browser execution is available, disclose that limitation, push an explicitly conditional patch only after static review, and never count `SKIPPED` or `FAILURE` as `PASS`. Fix true failures and re-run proper CI when needed. **Never use `continue-on-error`, fake-green checks, removal of test triggers or disabled tests to suppress emails.** GitHub run statuses stay visible in Actions after email is turned off.
+
+**Exact scope:** Documentation clarification only; no application source, tests, workflow YAML, notification preference, `main` or public demo changed. TNA GMR-04A remains DEVELOPMENT VERIFIED; NEXT = **GMR-04B complete reviewed Excel activity/dependency import into a NEW draft**, then reports/human acceptance.
+
+---
+
+
 ## Current Work portfolio queue and evidence-based resumption (2026-10-15)
 
 
