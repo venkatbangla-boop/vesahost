@@ -561,7 +561,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     form.onsubmit=event=>{
       event.preventDefault();
       session.settings=collect();
-      const plans=readSavedPlans(readRecords());
+      const plans=readRecords();
       const checked=importer.review(snap,session.settings,plans);
       session.reviewed=checked;
       const errors=checked.errors.map(e=>'<li>'+esc(e)+'</li>').join('');
@@ -588,7 +588,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
         try{
           // Re-review at confirmation so a changed local record cannot turn a
           // duplicate into a silent merge. No existing record is ever edited.
-          const fresh=importer.review(snap,session.settings,readSavedPlans(readRecords()));
+          const fresh=importer.review(snap,session.settings,readRecords());
           if(!fresh.ready)throw Error(fresh.errors.join('; '));
           if(fresh.duplicate&&!document.getElementById('tnaWorkbookDuplicateConsent')?.checked)
             throw Error('Matching existing order requires separate acknowledgement.');
