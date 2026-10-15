@@ -84,8 +84,8 @@ test('separate overdue, today, next seven days and unscheduled rows use only sou
   assert.ok(d.warnings.some(w=>w.includes('invalid source date')));
   assert.ok(d.missingOwnerCount>=1);
   assert.ok(d.counts.needsDate>=1);
-  assert.deepEqual(d.rows,d.sections.overdue.concat(d.sections.today,d.sections.nextSeven,d.sections.needsDate)
-    .sort(()=>0)===null?[]:d.rows,'model rows remain deterministic');
+  assert.deepEqual(d.rows,[...d.sections.overdue,...d.sections.today,...d.sections.nextSeven,
+    ...d.sections.needsDate],'group order is stable and source-only');
   const late=d.sections.overdue.find(x=>x.ref==='O01');
   assert.equal(late.due,'2026-10-14');
   assert.equal(late.original,'2026-10-13');
@@ -170,6 +170,9 @@ test('R01 factory, R02 buyer, R04-R12 and portable storage stay unchanged',()=>{
   assert.deepEqual(XLSX.read(storage.exportReportWorkbook(m),{type:'buffer'}).SheetNames,
     ['Report Summary','Order Summary','Report Activities','Report Notes'],id);
  }
- assert.deepEqual(storage.importCopy(storage.exportCopy(p)),p,'old record version remains portable');
+ const oldPlan=domain.createPlan({templateId:'knit',buyerName:'PORTABLE BUYER',factoryName:'PORTABLE FACTORY',
+   styleNo:'OLD-STYLE',poNumber:'OLD-PO',totalQty:100,buyerRequiredExFactory:'2026-12-20'});
+ assert.deepEqual(storage.importCopy(storage.exportCopy(oldPlan)),oldPlan,
+   'previously valid saved copies remain portable');
  assert.equal(JSON.stringify(p),old);
 });
