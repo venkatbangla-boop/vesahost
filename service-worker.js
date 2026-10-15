@@ -1,4 +1,4 @@
-const CACHE='vesa-v76-tna-gmr04b'
+const CACHE='vesa-v77-tna-gmr04c'
 const ASSETS=[
   './',
   './index.html',
@@ -14,7 +14,7 @@ const ASSETS=[
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
   './apps/tna/assets/merchandising-sheet.css?v=0.1.1',
-  './apps/tna/assets/import-review.css?v=0.1.1',
+  './apps/tna/assets/import-review.css?v=0.1.2',
   './apps/tna/src/domain.js',
   './apps/tna/src/scheduling.js',
   './apps/tna/src/operations.js',
@@ -29,7 +29,7 @@ const ASSETS=[
   './apps/tna/src/remote-api.js',
   './apps/tna/src/merchandising-sheet.js?v=0.2.0',
   './apps/tna/src/import-review.js?v=0.1.0',
-  './apps/tna/src/activity-import.js?v=0.1.2',
+  './apps/tna/src/activity-import.js?v=0.2.0',
   './apps/tna/src/bootstrap.js',
   './admin/',
   './admin/index.html',
