@@ -135,6 +135,9 @@ class TnaMerchandisingSheetBrowserProof {
     assert.ok(lastRow.includes('2026-11-30'),'Last activity edit must be reflected in the visible sheet');
     const recovered=await this.page.evaluate(()=>JSON.parse(localStorage.getItem('vesa.tna360.autosave.qa-vesaent-com')).plan);
     assert.equal(recovered.tasks.at(-1).dates.actualFinish,'2026-11-30','Existing autosave must preserve last activity edit');
+    const named=await this.page.evaluate(()=>JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan);
+    assert.equal(named.tasks.at(-1).dates.actualFinish,'2026-11-30','Existing saved order must retain status edit without a second Save Now.');
+    assert.equal(named.tasks.at(-1).status,'completed','Named record must also preserve the status transition.');
     assert.equal(recovered.tasks[0].dates.currentTargetFinish,'2026-10-18','Editing another task must not overwrite original target finish');
   }
 
