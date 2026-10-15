@@ -557,7 +557,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     }
     rootNode.innerHTML='<form id="tnaWorkbookMapping" class="tna-import-stage">'+
       '<h3>'+esc(t.title)+'</h3>'+
-      '<p class="tna-note">'+esc(t.warning)+'</p>'+ 
+      '<p class="tna-note">'+esc(activitySettings?.enabled?'Review both the order row and all activity/dependency rows before creating a NEW draft.':t.warning)+'</p>'+ 
       '<p class="tna-note">'+esc(t.rows)+': '+details.dataRows.length+'</p>'+
       '<div class="tna-form-grid">'+
       selectField('sheetName',t.sheet,snap.sheetNames.map(name=>[name,name]),setting.sheetName)+
@@ -585,13 +585,14 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const collectActivity=()=>{
       const data=new FormData(form),prior=session.activitySettings,activityMap={};
       for(const id of activityImport?.FIELD_IDS||[])activityMap[id]=Number(data.get('activity-map-'+id)??prior.mapping?.[id]??-1);
+      const hasActivityControls=!!form.querySelector('[name="activity-map-activityRef"]');
       return {enabled:data.has('includeActivities'),
         sheetName:String(data.get('activitySheetName')||prior.sheetName),
         headerRow:Number(data.get('activityHeaderRow')||prior.headerRow),
         dateFormat:String(data.get('activityDateFormat')||prior.dateFormat),
         durationBasis:String(data.get('activityDurationBasis')||prior.durationBasis),
         fsZeroConfirmed:data.has('fsZeroConfirmed'),
-        mapping:activityMap,rowBindings:{...prior.rowBindings}};
+        mapping:hasActivityControls?activityMap:prior.mapping,rowBindings:{...prior.rowBindings}};
     };
     form.onchange=event=>{
       session.settings=collect();
