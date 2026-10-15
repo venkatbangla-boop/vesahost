@@ -137,14 +137,15 @@
     if(model.reportId==='R03'){
       const daily=model.factoryDaily,labels=daily.labels;
       const txt=value=>safeCell(value==null||value===''?labels.unknown:value);
+      const typedDate=value=>value==null||value===''?txt(labels.unknown):dateCell(value);
       const windows=['overdue','today','nextSeven'];
       const headers=[labels.group,labels.ref,labels.activity,labels.department,
         labels.target,labels.original,labels.revised,labels.forecast,labels.actual,
         labels.status,labels.waiting,labels.reason,labels.followup,labels.recovery,labels.proof];
       const rowCells=row=>[
         txt(labels[row.group]),txt(row.ref),txt(row.activity),txt(row.department),
-        dateCell(row.due),dateCell(row.original),dateCell(row.revised),
-        dateCell(row.forecast),dateCell(row.actual),txt(row.statusDisplay),txt(row.waiting),
+        typedDate(row.due),typedDate(row.original),typedDate(row.revised),
+        typedDate(row.forecast),typedDate(row.actual),txt(row.statusDisplay),txt(row.waiting),
         txt(row.reason),txt(row.followup),txt(row.recovery),txt(row.proof)
       ];
       const actions=[headers];
