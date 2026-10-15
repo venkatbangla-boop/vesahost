@@ -52,6 +52,7 @@ jobs:
           node apps/tna/tests/g05-storage.test.js
           node apps/tna/tests/g06-workspace.test.js
           node apps/tna/tests/g07-reports.test.js
+          node apps/tna/tests/r02-buyer-milestones.test.js
           node apps/tna/tests/r03-factory-daily.test.js
           node apps/tna/tests/r04-critical-path.test.js
           node apps/tna/tests/g11-garment-scenarios.test.js

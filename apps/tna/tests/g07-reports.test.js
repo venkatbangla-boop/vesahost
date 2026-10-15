@@ -33,9 +33,16 @@ for (const lang of ['en', 'bn', 'hi', 'ta']) {
     assert(model.schema === 'VESA-TNA-REPORT-1', `G07 ${lang} ${item.id} should use the report schema.`);
     assert(model.generatedLabel && model.timezone === 'Asia/Dhaka', `G07 ${lang} ${item.id} should preserve generated date/timezone metadata.`);
     assert(model.order.buyer === 'Buyer Report' && model.order.style === 'STYLE-RPT', `G07 ${lang} ${item.id} must not translate typed buyer/style values.`);
-    assert(model.tasks.length === plan.tasks.length, `G07 ${lang} ${item.id} report model should include every activity.`);
+    if(item.id==='R02'){
+      assert(model.tasks.length>0&&model.tasks.length<plan.tasks.length,
+        'G07 R02 must include a curated buyer-safe milestone subset, not every internal activity.');
+      assert(model.buyerTna?.schema==='VESA-TNA-BUYER-1','G07 buyer model needs a typed disclosure boundary.');
+      assert(model.order.factory===model.buyerTna.labels.notShared,'G07 buyer model must hide factory identity.');
+    }else assert(model.tasks.length===plan.tasks.length,
+      `G07 ${lang} ${item.id} non-buyer reports must retain the activity count.`);
     assert(model.labels.noFabrication && model.labels.shareFallback && model.labels.printFallback, `G07 ${lang} ${item.id} should include report fallback notes.`);
-    assert(model.tasks.every(task => ['not-started','in-progress','blocked','submitted','approved','rejected','completed','waived','not-applicable'].includes(task.status)), `G07 ${lang} ${item.id} must preserve stable status IDs.`);
+    if(item.id!=='R02')assert(model.tasks.every(task => ['not-started','in-progress','blocked','submitted','approved','rejected','completed','waived','not-applicable'].includes(task.status)), `G07 ${lang} ${item.id} must preserve stable status IDs.`);
+    else assert(model.tasks.every(task=>task.status.includes('local')||task.status.length>3), 'G07 R02 must use qualified public-status descriptions.');
     const jsonExport = JSON.stringify(model, null, 2);
     assert(jsonExport.includes(item.id) && jsonExport.includes('Buyer Report') && jsonExport.includes('STYLE-RPT'), `G07 ${lang} ${item.id} JSON export should preserve report and order identity.`);
     const workbook = XLSX.read(storage.exportReportWorkbook(model), { type: 'buffer', cellStyles: true });
@@ -71,6 +78,8 @@ for (const fragment of [
   './src/bootstrap.js',
   "'./apps/tna/src/reports.js'",
   'const reports=globalThis.VesaTnaReports',
+  'class TnaBuyerPrintView',
+  "model.reportId==='R02'?TnaBuyerPrintView.render(model)",
   'function openReportPanel',
   'markReportPrint',
   'Download report data',
@@ -78,6 +87,7 @@ for (const fragment of [
   'Print report',
   'Share fallback',
   'A shared link is unavailable in local mode.',
+  '.tna-buyer-milestone-table',
   '.tna-report-preview',
   '@media print',
   '@page',

@@ -154,6 +154,77 @@ async function run(){
     assert(opened,'Chromium viewer must open the R03 multi-page PDF.');
     await dailyViewer.close();
     console.log('TNA R03 Chromium daily report passed: group rows, real Excel, printable PDF, no clipping.');
+    // Browser R02 proof: download bytes must contain only vetted buyer milestones.
+    // This is an explicit local preview, NOT authorization to send to any buyer.
+    await page.emulateMedia({media:'screen'});
+    await page.locator('#tnaReportType').selectOption('R02');
+    await page.locator('.tna-buyer-report').waitFor();
+    const buyerHeaders=await page.locator('.tna-buyer-milestone-table thead th').allTextContents();
+    for(const heading of ['Buyer milestone','Current target','Forecast','Buyer response','Target verification']){
+      assert(buyerHeaders.includes(heading),'R02 buyer report must identify '+heading);
+    }
+    const buyerRowCount=await page.locator('.tna-buyer-milestone-table tbody tr').count();
+    assert(buyerRowCount>10&&buyerRowCount<stored.records[0].plan.tasks.length,
+      'R02 must expose a curated, source-backed buyer milestone subset, not internal operations.');
+    assert.ok(await page.locator('.tna-buyer-review-note').isVisible(),
+      'Manual recipient review warning is mandatory on buyer print.');
+    const buyerPreview=await page.locator('.tna-report-preview').innerText();
+    assert(!buyerPreview.includes('Synthetic Migration Factory'),
+      'Buyer report must not display source factory identity.');
+    assert(buyerPreview.includes('Not included in buyer report'),
+      'R02 order summary must explain omission of factory data.');
+    const buyerDataPromise=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const buyerData=await buyerDataPromise;
+    const buyerJsonPath=path.join(output,'tna-r02-buyer-milestones-viewer.json');
+    await buyerData.saveAs(buyerJsonPath);
+    const buyerModel=JSON.parse(fs.readFileSync(buyerJsonPath,'utf8'));
+    assert.equal(buyerModel.buyerTna.schema,'VESA-TNA-BUYER-1');
+    assert.equal(buyerModel.source.recordId,null,'Buyer JSON must not disclose local record UUID.');
+    assert.equal(buyerModel.tasks.length,buyerRowCount);
+    assert(!JSON.stringify(buyerModel).includes('Synthetic Migration Factory'),
+      'Buyer report data download cannot bypass the privacy projection.');
+    const buyerExcelPromise=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const buyerExcel=await buyerExcelPromise;
+    const buyerXlsxPath=path.join(output,'tna-r02-buyer-milestones-viewer.xlsx');
+    await buyerExcel.saveAs(buyerXlsxPath);
+    const buyerWorkbook=XLSX.read(fs.readFileSync(buyerXlsxPath),{type:'buffer',cellStyles:true});
+    assert.deepEqual(buyerWorkbook.SheetNames,
+      ['Report Summary','Order Summary','Report Activities','Report Notes','Buyer Milestones'],
+      'R02 downloaded workbook must contain only the four sanitized common sheets and buyer milestones.');
+    const buyerRows=XLSX.utils.sheet_to_json(buyerWorkbook.Sheets['Buyer Milestones'],{header:1,raw:false});
+    assert.equal(buyerRows.length,buyerRowCount+1);
+    assert(!JSON.stringify(buyerWorkbook.Sheets).includes('Synthetic Migration Factory'),
+      'Buyer XLSX download cannot disclose factory identity.');
+    await page.emulateMedia({media:'print'});
+    await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const buyerPrintLayout=await page.locator('.tna-buyer-milestone-table').evaluate(table=>({
+      tableWidth:table.getBoundingClientRect().width,
+      containerWidth:table.parentElement.getBoundingClientRect().width,
+      headers:getComputedStyle(table.tHead).display
+    }));
+    assert(buyerPrintLayout.tableWidth<=buyerPrintLayout.containerWidth+1,
+      'R02 print must fit the page container.');
+    assert.equal(buyerPrintLayout.headers,'table-header-group',
+      'Buyer milestone headers must repeat when printing long garment TNAs.');
+    const buyerPdfPath=path.join(output,'tna-r02-buyer-milestones-viewer.pdf');
+    await page.pdf({path:buyerPdfPath,printBackground:true,preferCSSPageSize:true,landscape:true});
+    await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    const buyerPdf=fs.readFileSync(buyerPdfPath);
+    assert.equal(buyerPdf.subarray(0,5).toString(),'%PDF-','R02 must generate real Chromium PDF bytes.');
+    const buyerPages=(buyerPdf.toString('latin1').match(/\/Type\s*\/Page\b/g)||[]).length;
+    assert(buyerPages>=1,'R02 PDF needs at least one actual printable page.');
+    const buyerViewer=await context.newPage();
+    await buyerViewer.goto(pathToFileURL(buyerPdfPath).href,{waitUntil:'load'});
+    await buyerViewer.screenshot({path:path.join(output,'tna-r02-buyer-pdf-preview.png')});
+    const pdfOpened=await buyerViewer.evaluate(()=>location.href.startsWith('file:')||document.querySelectorAll('embed').length>0);
+    assert(pdfOpened,'Chromium PDF viewer must open the real buyer-safe PDF.');
+    await buyerViewer.close();
+    await page.emulateMedia({media:'screen'});
+    console.log('TNA R02 Chromium buyer report PASS: sanitized JSON/Excel, curated milestones, source privacy, buyer PDF '+buyerPages+' page(s), no clipping.');
+
+
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}

@@ -23,7 +23,7 @@
     ta:{languageName:'தமிழ்',headings:{order:'ஆர்டர் விவரம்',dates:'தேதி காலங்கள்',tasks:'செயல்பாடுகள்',warnings:'டேட்டா குறை / கவனம்',actions:'ரிப்போர்ட் செயல்கள்',meta:'ரிப்போர்ட் தகவல்'},labels:{brand:BRAND,generated:'உருவாக்கப்பட்டது',timezone:'டைம்சோன்',audience:'பார்வையாளர்',revision:'ரிவிஷன்',baseline:'பேஸ்லைன் snapshots',buyer:'Buyer',factory:'Factory',style:'Style',po:'PO',quantity:'Quantity',status:'Status',owner:'Owner',forecast:'Forecast',required:'Required ex-factory',noFabrication:'approval, date, quantity, rate அல்லது shipment result எதுவும் உருவாக்கிப் போடப்படவில்லை. காலியான source data Needs Information ஆகவே இருக்கும்.',shareFallback:'Supported browser action இல்லையெனில் native share கிடையாது; report download அல்லது print செய்யவும்.',printFallback:'Verified local route-க்கு browser print பயன்படுத்தவும். Licensed local PDF renderer verify ஆகும் வரை dedicated PDF conditional ஆகும்.'},reports:{}}
   };
   const titleTranslations={
-    masterTna:['Master TNA','মাস্টার TNA','मास्टर TNA','மாஸ்டர் TNA'],buyerTna:['Buyer TNA','Buyer TNA','Buyer TNA','Buyer TNA'],factoryDailyAction:['Factory Daily Action','ফ্যাক্টরি দৈনিক কাজ','फैक्ट्री दैनिक कार्य','தொழிற்சாலை தினசரி செயல்கள்'],criticalPath:['Critical Path','ক্রিটিকাল পাথ','क्रिटिकल पाथ','முக்கிய செயல்பாதை'],weeklyTna:['Weekly TNA','Weekly TNA','Weekly TNA','Weekly TNA'],delayRecovery:['Delay & Recovery','Delay & Recovery','Delay & Recovery','Delay & Recovery'],productionStatus:['Production Status','Production Status','Production Status','Production Status'],materialLc:['Material & LC','Material & LC','Material & LC','Material & LC'],shipmentReadiness:['Shipment Readiness','Shipment Readiness','Shipment Readiness','Shipment Readiness'],portfolioMultiPo:['Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO'],approvalHistory:['Approval History','Approval History','Approval History','Approval History'],scenarioComparison:['Scenario Comparison','Scenario Comparison','Scenario Comparison','Scenario Comparison']
+    masterTna:['Master TNA','মাস্টার TNA','मास्टर TNA','மாஸ்டர் TNA'],buyerTna:['Buyer TNA','ক্রেতার TNA','खरीदार TNA','Buyer TNA — வாங்குபவர் திட்டம்'],factoryDailyAction:['Factory Daily Action','ফ্যাক্টরি দৈনিক কাজ','फैक्ट्री दैनिक कार्य','தொழிற்சாலை தினசரி செயல்கள்'],criticalPath:['Critical Path','ক্রিটিকাল পাথ','क्रिटिकल पाथ','முக்கிய செயல்பாதை'],weeklyTna:['Weekly TNA','Weekly TNA','Weekly TNA','Weekly TNA'],delayRecovery:['Delay & Recovery','Delay & Recovery','Delay & Recovery','Delay & Recovery'],productionStatus:['Production Status','Production Status','Production Status','Production Status'],materialLc:['Material & LC','Material & LC','Material & LC','Material & LC'],shipmentReadiness:['Shipment Readiness','Shipment Readiness','Shipment Readiness','Shipment Readiness'],portfolioMultiPo:['Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO'],approvalHistory:['Approval History','Approval History','Approval History','Approval History'],scenarioComparison:['Scenario Comparison','Scenario Comparison','Scenario Comparison','Scenario Comparison']
   };
   const audienceTranslations={
     factoryAgent:['Factory + agent','Factory + agent','Factory + agent','Factory + agent'],buyerBrand:['Buyer / brand','Buyer / brand','Buyer / brand','Buyer / brand'],departments:['Departments','Departments','Departments','Departments'],management:['Management','Management','Management','Management'],buyerAgentFactory:['Buyer / agent / factory','Buyer / agent / factory','Buyer / agent / factory','Buyer / agent / factory'],productionBuyer:['Production / authorized buyer','Production / authorized buyer','Production / authorized buyer','Production / authorized buyer'],commercialSourcing:['Commercial / sourcing','Commercial / sourcing','Commercial / sourcing','Commercial / sourcing'],qualityShipping:['Quality / shipping','Quality / shipping','Quality / shipping','Quality / shipping'],managementAgent:['Management / agent','Management / agent','Management / agent','Management / agent'],buyerFactory:['Buyer / factory','Buyer / factory','Buyer / factory','Buyer / factory'],plannerManagement:['Planner / management','Planner / management','Planner / management','Planner / management']
@@ -77,6 +77,243 @@
     static asDate(value){return this.day(value)===null?null:value;}
 
   }
+  /**
+   * Pure, explicit buyer R02 disclosure boundary.
+   * Access only through buildReportModel(...,{reportId:'R02'}), never from raw
+   * saved copies. Inputs: existing milestone reference/status and typed dates.
+   * Outputs: allowlisted buyer-facing milestone data with safe explanations.
+   * Does not mutate records, reveal internal owners/free text/evidence IDs,
+   * grant external verification or authorize transmission to any recipient.
+   */
+  class TnaBuyerMilestoneProjection {
+    /**
+     * Frozen allowlist of public garment milestones, matched by stable template
+     * reference, not editable task title, owner or internal note. Context-specific
+     * tasks appear only if already present in the selected garment template.
+     * Tuple: reference, buyer-decision flag, EN, BN, HI, TA.
+     */
+    static definitions(){
+      return [
+        ['O05',false,'Purchase order received','ক্রয় আদেশ পাওয়া','खरीद आदेश प्राप्त','கொள்முதல் ஆணை பெறப்பட்டது'],
+        ['O11',true,'Required delivery date review','নির্ধারিত ডেলিভারি তারিখ পর্যালোচনা','आवश्यक डिलीवरी तारीख समीक्षा','தேவையான டெலிவரி தேதி பரிசீலனை'],
+        ['D03',false,'First sample submitted','প্রথম নমুনা জমা','पहला नमूना जमा','முதல் மாதிரி சமர்ப்பிப்பு'],
+        ['D04',true,'First sample comments','প্রথম নমুনার মন্তব্য','पहले नमूने की टिप्पणी','முதல் மாதிரி கருத்து'],
+        ['D05',false,'Fit sample submitted','ফিট নমুনা জমা','फिट नमूना जमा','ஃபிட் மாதிரி சமர்ப்பிப்பு'],
+        ['D06',true,'Fit sample comments','ফিট নমুনার মন্তব্য','फिट नमूने की टिप्पणी','ஃபிட் மாதிரி கருத்து'],
+        ['D08',true,'Fit approval','ফিট অনুমোদন','फिट अनुमोदन','ஃபிட் ஒப்புதல்'],
+        ['D10',false,'Size-set submitted','সাইজ সেট জমা','साइज सेट जमा','சைஸ் செட் சமர்ப்பிப்பு'],
+        ['D11',true,'Size-set response','সাইজ সেটের উত্তর','साइज सेट पर जवाब','சைஸ் செட் பதில்'],
+        ['D13',false,'Pre-production sample submitted','পিপি নমুনা জমা','पीपी नमूना जमा','PP மாதிரி சமர்ப்பிப்பு'],
+        ['D14',true,'Pre-production sample approval','পিপি নমুনার অনুমোদন','पीपी नमूना अनुमोदन','PP மாதிரி ஒப்புதல்'],
+        ['D15',false,'Packaging artwork submitted','প্যাকেজিং নকশা জমা','पैकेजिंग डिजाइन जमा','பேக்கிங் ஆர்ட்வொர்க் சமர்ப்பிப்பு'],
+        ['D16',true,'Packaging artwork approval','প্যাকেজিং নকশার অনুমোদন','पैकेजिंग डिजाइन अनुमोदन','பேக்கிங் ஆர்ட்வொர்க் ஒப்புதல்'],
+        ['D17',false,'Print/embroidery strike-off submitted','প্রিন্ট/এমব্রয়ডারি স্ট্রাইক-অফ জমা','प्रिंट/कढ़ाई स्ट्राइक-ऑफ जमा','பிரிண்ட்/எம்பிராய்டரி மாதிரி சமர்ப்பிப்பு'],
+        ['D18',true,'Print/embroidery approval','প্রিন্ট/এমব্রয়ডারি অনুমোদন','प्रिंट/कढ़ाई अनुमोदन','பிரிண்ட்/எம்பிராய்டரி ஒப்புதல்'],
+        ['D19',false,'Wash standard submitted','ওয়াশ মানদণ্ড জমা','वॉश मानक जमा','வாஷ் தர மாதிரி சமர்ப்பிப்பு'],
+        ['D20',true,'Wash standard approval','ওয়াশ মানদণ্ড অনুমোদন','वॉश मानक अनुमोदन','வாஷ் தர ஒப்புதல்'],
+        ['FA03',false,'Lab dip submitted','ল্যাব ডিপ জমা','लैब डिप जमा','லேப் டிப் சமர்ப்பிப்பு'],
+        ['FA04',true,'Lab dip comments','ল্যাব ডিপের মন্তব্য','लैब डिप की टिप्पणी','லேப் டிப் கருத்து'],
+        ['FA05',true,'Lab dip approval','ল্যাব ডিপ অনুমোদন','लैब डिप अनुमोदन','லேப் டிப் ஒப்புதல்'],
+        ['FA09',true,'Print/AOP color approval','প্রিন্ট/AOP রঙ অনুমোদন','प्रिंट/AOP रंग अनुमोदन','பிரிண்ட்/AOP நிற ஒப்புதல்'],
+        ['TR02',true,'Label/artwork text confirmation','লেবেল/নকশা লেখা নিশ্চিতকরণ','लेबल/डिजाइन पाठ पुष्टि','லேபிள்/ஆர்ட்வொர்க் எழுத்து உறுதி'],
+        ['TR04',true,'Trims approval','ট্রিম অনুমোদন','ट्रिम अनुमोदन','டிரிம்ஸ் ஒப்புதல்'],
+        ['Q06',false,'Final inspection booked','চূড়ান্ত পরিদর্শন বুকিং','अंतिम निरीक्षण बुकिंग','இறுதி ஆய்வு முன்பதிவு'],
+        ['Q08',false,'Final inspection decision recorded','চূড়ান্ত পরিদর্শনের সিদ্ধান্ত নথিভুক্ত','अंतिम निरीक्षण निर्णय दर्ज','இறுதி ஆய்வு முடிவு பதிவு'],
+        ['PK04',false,'Packing completed','প্যাকিং সম্পন্ন','पैकिंग पूरी','பேக்கிங் நிறைவு'],
+        ['S04',false,'Ex-factory handover','কারখানা থেকে পণ্য হস্তান্তর','एक्स-फैक्ट्री हैंडओवर','தொழிற்சாலையிலிருந்து சரக்கு ஒப்படைப்பு'],
+        ['S06',false,'Departure (ETD)','যাত্রা (ETD)','प्रस्थान (ETD)','புறப்பாடு (ETD)'],
+        ['S07',false,'Destination arrival (ETA)','গন্তব্যে আগমন (ETA)','गंतव्य आगमन (ETA)','சேரும் தேதி (ETA)']
+      ];
+    }
+
+
+    /**
+     * Only public report copy is localized. Buyer-entered order identifiers are
+     * never translated; confidential free-text reasons are not projected at all.
+     */
+    static labels(language){
+      const words={
+        en:{unknown:'Needs Information',notShared:'Not included in buyer report',title:'Buyer TNA — reviewed milestones',
+          cols:['Ref','Buyer milestone','Original plan','Current target','Forecast','Actual','Recorded status','Buyer response','Schedule explanation','Target verification'],
+          planned:'Buyer review planned; no submission confirmed',requested:'Buyer response requested in local record; confirm request',
+          recorded:'Buyer decision recorded locally; independently unverified',clarify:'Buyer clarification may be needed; confirm directly',
+          noAction:'Milestone update; no buyer decision recorded',unverified:'Buyer confirmation not independently verified',
+          noTarget:'Target date not entered',noForecast:'Forecast not entered',same:'Forecast equals entered target',later:'Forecast later than entered target by',earlier:'Forecast earlier than entered target by',days:'calendar days',
+          required:'Required ex-factory as locally entered',headline:'Milestone status is locally recorded, not a buyer decision',
+          review:'Review buyer identity, dates and authorized recipient before manually sending; this report does not authorize access or confirm approvals.',
+          gapTarget:'Buyer-required ex-factory date is missing or invalid',gapForecast:'Ex-factory forecast was not entered',gapApproval:'No independently verified buyer target or approval supplied',
+          gapMilestones:'Some buyer milestones have no recorded target/forecast',none:'No buyer milestones in this order'},
+        bn:{unknown:'তথ্য প্রয়োজন',notShared:'Buyer রিপোর্টে অন্তর্ভুক্ত নয়',title:'Buyer TNA — পর্যালোচিত মাইলস্টোন',
+          cols:['নং','ক্রেতার মাইলস্টোন','প্রথম পরিকল্পনা','বর্তমান লক্ষ্য','পূর্বাভাস','বাস্তব','নথিভুক্ত অবস্থা','ক্রেতার উত্তর','সময়ের ব্যাখ্যা','লক্ষ্য যাচাই'],
+          planned:'ক্রেতার পর্যালোচনা পরিকল্পিত; জমা নিশ্চিত নয়',requested:'স্থানীয় রেকর্ডে উত্তর চাওয়া হয়েছে; ক্রেতার সঙ্গে যাচাই করুন',
+          recorded:'সিদ্ধান্ত স্থানীয়ভাবে লেখা; স্বাধীনভাবে যাচাই হয়নি',clarify:'ক্রেতার ব্যাখ্যা প্রয়োজন হতে পারে; সরাসরি নিশ্চিত করুন',
+          noAction:'অগ্রগতির তথ্য; ক্রেতার সিদ্ধান্ত নেই',unverified:'ক্রেতার নিশ্চিতকরণ স্বাধীনভাবে যাচাই হয়নি',
+          noTarget:'লক্ষ্য তারিখ দেওয়া হয়নি',noForecast:'পূর্বাভাস দেওয়া হয়নি',same:'পূর্বাভাস ও লক্ষ্য এক',later:'লক্ষ্যের পরে পূর্বাভাস',earlier:'লক্ষ্যের আগে পূর্বাভাস',days:'ক্যালেন্ডার দিন',
+          required:'স্থানীয়ভাবে লেখা এক্স-ফ্যাক্টরি তারিখ',headline:'স্থানীয় অগ্রগতি তথ্য ক্রেতার সিদ্ধান্ত নয়',
+          review:'পাঠানোর আগে ক্রেতা, তারিখ এবং অনুমোদিত প্রাপক যাচাই করুন; রিপোর্ট অনুমোদন বা প্রবেশাধিকার দেয় না।',
+          gapTarget:'প্রয়োজনীয় এক্স-ফ্যাক্টরি তারিখ নেই বা ভুল',gapForecast:'এক্স-ফ্যাক্টরি পূর্বাভাস দেওয়া হয়নি',gapApproval:'ক্রেতার অনুমোদিত লক্ষ্য/সিদ্ধান্তের স্বাধীন প্রমাণ নেই',
+          gapMilestones:'কিছু মাইলস্টোনের লক্ষ্য/পূর্বাভাস নেই',none:'এই অর্ডারে ক্রেতার মাইলস্টোন নেই'},
+        hi:{unknown:'जानकारी चाहिए',notShared:'खरीदार रिपोर्ट में शामिल नहीं',title:'Buyer TNA — जाँचे गए माइलस्टोन',
+          cols:['क्रम','खरीदार माइलस्टोन','मूल योजना','वर्तमान लक्ष्य','पूर्वानुमान','वास्तविक','दर्ज स्थिति','खरीदार जवाब','समय का विवरण','लक्ष्य सत्यापन'],
+          planned:'खरीदार समीक्षा नियोजित; जमा करने की पुष्टि नहीं',requested:'स्थानीय रिकॉर्ड में जवाब अपेक्षित; खरीदार से पुष्टि करें',
+          recorded:'फैसला स्थानीय रूप से दर्ज; स्वतंत्र पुष्टि नहीं',clarify:'खरीदार से स्पष्टीकरण सीधे लें',
+          noAction:'प्रगति सूचना; खरीदार का फैसला दर्ज नहीं',unverified:'खरीदार की मंजूरी का स्वतंत्र सत्यापन नहीं',
+          noTarget:'लक्ष्य तारीख नहीं दी गई',noForecast:'पूर्वानुमान नहीं दिया गया',same:'पूर्वानुमान और लक्ष्य समान',later:'लक्ष्य से देरी का पूर्वानुमान',earlier:'लक्ष्य से पहले का पूर्वानुमान',days:'कैलेंडर दिन',
+          required:'स्थानीय रिकॉर्ड में आवश्यक एक्स-फैक्ट्री तारीख',headline:'स्थानीय दर्ज स्थिति खरीदार की मंजूरी नहीं है',
+          review:'भेजने से पहले खरीदार, तारीख और स्वीकृत प्राप्तकर्ता जाँचें; रिपोर्ट अनुमति या मंजूरी नहीं देती।',
+          gapTarget:'आवश्यक एक्स-फैक्ट्री तारीख अनुपलब्ध/गलत',gapForecast:'एक्स-फैक्ट्री पूर्वानुमान नहीं दिया गया',gapApproval:'खरीदार लक्ष्य/मंजूरी का स्वतंत्र प्रमाण नहीं है',
+          gapMilestones:'कुछ माइलस्टोन में लक्ष्य/पूर्वानुमान नहीं है',none:'इस ऑर्डर में खरीदार माइलस्टोन नहीं है'},
+        ta:{unknown:'தகவல் தேவை',notShared:'Buyer அறிக்கையில் சேர்க்கப்படவில்லை',title:'Buyer TNA — சரிபார்க்க வேண்டிய மைல்ஸ்டோன்கள்',
+          cols:['எண்','Buyer மைல்ஸ்டோன்','முதல் திட்டம்','தற்போதைய இலக்கு','எதிர்பார்ப்பு','நிகழ்ந்தது','பதிந்த நிலை','Buyer பதில்','தேதி விளக்கம்','இலக்கு உறுதி'],
+          planned:'Buyer பரிசீலனை திட்டமிடப்பட்டது; அனுப்பியது உறுதியாகவில்லை',requested:'உள்ளூர் பதிவில் Buyer பதில் எதிர்பார்க்கப்படுகிறது; உறுதிசெய்க',
+          recorded:'முடிவு உள்ளூரில் பதிந்துள்ளது; சுயாதீன உறுதி இல்லை',clarify:'Buyer விளக்கம் தேவைப்படலாம்; நேரடியாக உறுதிசெய்க',
+          noAction:'முன்னேற்ற தகவல்; Buyer முடிவு பதியப்படவில்லை',unverified:'Buyer ஒப்புதல் சுயாதீனமாக உறுதிசெய்யப்படவில்லை',
+          noTarget:'இலக்கு தேதி பதியப்படவில்லை',noForecast:'எதிர்பார்க்கும் தேதி பதியப்படவில்லை',same:'இலக்கும் எதிர்பார்ப்பும் ஒரே தேதி',later:'இலக்குக்குப் பின் எதிர்பார்ப்பு',earlier:'இலக்குக்கு முன் எதிர்பார்ப்பு',days:'காலண்டர் நாட்கள்',
+          required:'உள்ளூர் பதிவில் உள்ள எக்ஸ்-ஃபேக்டரி தேதி',headline:'உள்ளூரில் பதிந்த நிலை Buyer ஒப்புதல் அல்ல',
+          review:'அனுப்புவதற்கு முன் Buyer, தேதிகள் மற்றும் அனுமதிக்கப்பட்ட பெறுநரைச் சரிபார்க்கவும்; இந்த அறிக்கை அணுகல்/ஒப்புதல் அனுமதி வழங்காது.',
+          gapTarget:'தேவையான எக்ஸ்-ஃபேக்டரி தேதி இல்லை அல்லது தவறு',gapForecast:'எக்ஸ்-ஃபேக்டரி எதிர்பார்ப்பு தேதி இல்லை',gapApproval:'Buyer இலக்கு அல்லது ஒப்புதலின் சுயாதீன ஆதாரம் இல்லை',
+          gapMilestones:'சில மைல்ஸ்டோன்களுக்கு இலக்கு/எதிர்பார்ப்பு தேதி இல்லை',none:'இந்த ஆர்டரில் Buyer மைல்ஸ்டோன்கள் இல்லை'}
+      };
+      return words[language]||words.en;
+    }
+
+
+    /** Status values are deliberately described as local records, not buyer decisions. */
+    static statusLabel(status,language,words){
+      const states={
+        en:{'not-started':'Not started in local record','in-progress':'In progress (locally recorded)',
+          submitted:'Submitted (locally recorded)','awaiting-approval':'Response pending (locally recorded)',
+          rejected:'Rejection recorded locally',blocked:'Blocked (locally recorded)',
+          completed:'Completed (locally recorded)',waived:'Waiver recorded locally',
+          'not-applicable':'Not applicable (locally recorded)'},
+        bn:{'not-started':'স্থানীয় নথিতে শুরু হয়নি','in-progress':'চলছে (স্থানীয় নথি)',
+          submitted:'জমা হয়েছে (স্থানীয় নথি)','awaiting-approval':'উত্তর বাকি (স্থানীয় নথি)',
+          rejected:'প্রত্যাখ্যান স্থানীয় নথিতে',blocked:'আটকে আছে (স্থানীয় নথি)',
+          completed:'সম্পন্ন (স্থানীয় নথি)',waived:'ছাড় (স্থানীয় নথি)',
+          'not-applicable':'প্রযোজ্য নয় (স্থানীয় নথি)'},
+        hi:{'not-started':'स्थानीय रिकॉर्ड में शुरू नहीं','in-progress':'कार्य जारी (स्थानीय रिकॉर्ड)',
+          submitted:'जमा दर्ज (स्थानीय रिकॉर्ड)','awaiting-approval':'जवाब लंबित (स्थानीय रिकॉर्ड)',
+          rejected:'अस्वीकृति स्थानीय रिकॉर्ड में',blocked:'रुका हुआ (स्थानीय रिकॉर्ड)',
+          completed:'पूरा दर्ज (स्थानीय रिकॉर्ड)',waived:'छूट स्थानीय रिकॉर्ड में',
+          'not-applicable':'लागू नहीं (स्थानीय रिकॉर्ड)'},
+        ta:{'not-started':'உள்ளூர் பதிவில் தொடங்கவில்லை','in-progress':'நடைபெறுகிறது (உள்ளூர் பதிவு)',
+          submitted:'சமர்ப்பிப்பு பதிவானது','awaiting-approval':'பதில் நிலுவையில் உள்ளது (உள்ளூர் பதிவு)',
+          rejected:'நிராகரிப்பு உள்ளூரில் பதிந்துள்ளது',blocked:'தடைப்பட்டது (உள்ளூர் பதிவு)',
+          completed:'நிறைவடைந்தது (உள்ளூர் பதிவு)',waived:'விலக்கு உள்ளூரில் பதிந்துள்ளது',
+          'not-applicable':'பொருந்தாது (உள்ளூர் பதிவு)'}
+      };
+      return status==='approved'?words.recorded:(states[language]||states.en)[status]||words.unknown;
+    }
+
+    /** Exactly one locally recorded buyer action: never assert an actual request was delivered. */
+    static action(status,isBuyerDecision,words){
+      if(!isBuyerDecision)return words.noAction;
+      if(status==='submitted'||status==='awaiting-approval')return words.requested;
+      if(status==='approved'||status==='waived')return words.recorded;
+      if(status==='rejected'||status==='blocked')return words.clarify;
+      return words.planned;
+    }
+
+    /** Difference is civil-calendar days, never manufacturing working-day claims. */
+    static comparison(target,forecast,words){
+      if(!target)return words.noTarget;
+      if(!forecast)return words.noForecast;
+      const offset=TnaMasterReportProjection.day(forecast)-TnaMasterReportProjection.day(target);
+      if(offset===0)return words.same;
+      return (offset>0?words.later:words.earlier)+' '+Math.abs(offset)+' '+words.days;
+    }
+
+    /**
+     * Allowlist-bounded R02 projection, containing no arbitrary factory notes,
+     * customer/supplier prices, saved record IDs, approval proof strings or
+     * unreviewed validation warnings. No recipient authorization is inferred.
+     * Output is deterministic given the same saved plan and language.
+     */
+    static build(plan={},language='en'){
+      const words=TnaBuyerMilestoneProjection.labels(language),index=langIndex[language]??0;
+      const allowed=new Map(TnaBuyerMilestoneProjection.definitions().map(item=>[item[0],item]));
+      const snapshots=Array.isArray(plan.baselineSnapshots)?plan.baselineSnapshots:[];
+      const first=snapshots[0]||null;
+      const datesByTask=new Map((Array.isArray(first?.taskDates)?first.taskDates:[]).map(item=>[item.taskId,item.dates||{}]));
+      const rows=[];
+      for(const task of plan.tasks||[]){
+        const definition=allowed.get(task.templateRef);
+        if(!definition||!['milestone','gate'].includes(task.taskKind))continue;
+        const previous=datesByTask.get(task.taskId)||{};
+        const original=TnaMasterReportProjection.asDate(previous.currentTargetFinish||previous.baselineFinish);
+        const target=TnaMasterReportProjection.asDate(task.dates?.currentTargetFinish);
+        const forecast=TnaMasterReportProjection.asDate(task.dates?.forecastFinish);
+        const completed=task.status==='completed';
+        const actual=completed?TnaMasterReportProjection.asDate(task.dates?.actualFinish):null;
+        const status=typeof task.status==='string'?task.status:'not-started';
+        const buyerAction=TnaBuyerMilestoneProjection.action(status,definition[1],words);
+        rows.push({
+          ref:definition[0],title:definition[index+2],original,target,forecast,actual,
+          statusLabel:TnaBuyerMilestoneProjection.statusLabel(status,language,words),
+          buyerAction,explanation:TnaBuyerMilestoneProjection.comparison(target,forecast,words),
+          targetVerification:words.unverified,
+          actionPending:Boolean(definition[1]&&['submitted','awaiting-approval','rejected','blocked'].includes(status))
+        });
+      }
+      const request=TnaMasterReportProjection.asDate(plan.commitments?.buyerRequiredExFactory);
+      const shipment=rows.find(item=>item.ref==='S04');
+      const forecastExFactory=shipment?.forecast||null;
+      const actualExFactory=shipment?.actual||null;
+      const publicWarnings=[words.gapApproval];
+      if(!request)publicWarnings.push(words.gapTarget);
+      if(!forecastExFactory)publicWarnings.push(words.gapForecast);
+      if(rows.some(item=>!item.target||!item.forecast))publicWarnings.push(words.gapMilestones);
+      if(rows.length===0)publicWarnings.push(words.none);
+      const rawQuantity=plan.order?.totalQty;
+      const quantity=Number.isSafeInteger(rawQuantity)&&rawQuantity>0?rawQuantity:words.unknown;
+      const order={
+        buyer:typeof plan.order?.buyerName==='string'&&plan.order.buyerName.trim()?plan.order.buyerName:words.unknown,
+        factory:words.notShared,
+        style:typeof plan.order?.styles?.[0]?.styleNo==='string'&&plan.order.styles[0].styleNo.trim()?plan.order.styles[0].styleNo:words.unknown,
+        po:typeof plan.order?.poNumbers?.[0]==='string'&&plan.order.poNumbers[0].trim()?plan.order.poNumbers[0]:words.unknown,
+        quantity,unit:plan.order?.unit==='sets'?'sets':'pcs',
+        requiredExFactory:request||words.unknown
+      };
+      return {schema:'VESA-TNA-BUYER-1',audience:'buyer-preview-needs-recipient-review',
+        labels:words,order,rows,requiredActions:rows.filter(row=>row.actionPending).map(row=>({
+          ref:row.ref,title:row.title,action:row.buyerAction
+        })),forecastExFactory,actualExFactory,
+        verifiedTarget:null,targetVerification:words.unverified,
+        targetDateSource:words.required,
+        warnings:publicWarnings,
+        notice:words.review,
+        locallyRecorded:words.headline};
+    }
+
+
+  }
+
+    /**
+     * Build the complete R02 export model by allowlist rather than stripping
+     * unsafe fields from the unrestricted general model afterwards. Internal
+     * record IDs, factory name, raw warnings, notes, owners and evidence are
+     * never assigned to this model, even for JSON Download Report.
+     */
+    static report(plan,report,language,generatedAt,timezone){
+      const buyer=TnaBuyerMilestoneProjection.build(plan,language);
+      const shared=I18N[language],tasks=buyer.rows.map(row=>({
+        ref:row.ref,title:row.title,owner:row.actionPending?'Buyer review':'Milestone update',
+        status:row.statusLabel,baseline:row.original||'',current:row.target||'',
+        forecast:row.forecast||'',actual:row.actual||'',risk:buyer.labels.unverified
+      }));
+      return {
+        schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:'R02',
+        title:titleFor(report,language),language,languageName:shared.languageName,
+        audience:audienceFor(report,language),generatedAt,
+        generatedLabel:formatDateTime(generatedAt,language),timezone,
+        revision:plan?.revision??0,baselineSnapshots:Array.isArray(plan?.baselineSnapshots)?plan.baselineSnapshots.length:0,
+        headings:shared.headings,labels:shared.labels,order:buyer.order,tasks,
+        buyerTna:buyer,warnings:buyer.warnings.slice(),
+        notes:[shared.labels.noFabrication,buyer.notice,shared.labels.printFallback,shared.labels.shareFallback],
+        source:{recordId:null,schemaVersion:null,mode:'buyer-review-export'}
+      };
+    }
+
   /**
    * Source-only R03 Factory Daily Action projection for internal departments.
    * Access: buildReportModel(plan,{reportId:'R03',generatedAt,timezone,asOfDate}).
@@ -292,7 +529,7 @@
   function taskRows(plan={},limit=Infinity){return (plan.tasks||[]).slice(0,limit).map(task=>({ref:task.templateRef,title:task.title,owner:task.ownerParty,status:task.status,baseline:task.dates?.baselineFinish||'',current:task.dates?.currentTargetFinish||'',forecast:task.dates?.forecastFinish||'',actual:task.dates?.actualFinish||'',risk:task.riskStatus||'needs-information'}))}
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local';const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:warnings(plan),notes:[I18N[l].labels.noFabrication,I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local';if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:warnings(plan),notes:[I18N[l].labels.noFabrication,I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;

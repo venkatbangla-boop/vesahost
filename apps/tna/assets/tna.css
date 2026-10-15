@@ -137,3 +137,30 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
   body.tna-printing-report .tna-cpm-table td small{font-size:6pt!important;color:#333!important}
   body.tna-printing-report .tna-cpm-summary span{color:#111!important}
 }
+
+/* R02 buyer projection: a separate disclosure-safe table within the common VESA report shell. */
+.tna-buyer-report{max-width:100%;min-width:0}
+.tna-buyer-review-note{border:1px solid var(--line,#d5deea);border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.5;margin:12px 0;overflow-wrap:anywhere}
+.tna-buyer-summary{display:flex;flex-wrap:wrap;gap:8px 18px;margin:12px 0}
+.tna-buyer-summary span{font-size:12px;overflow-wrap:anywhere;max-width:100%}
+.tna-buyer-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.tna-buyer-milestone-table{width:100%;min-width:1170px;table-layout:fixed;border-collapse:collapse}
+.tna-buyer-milestone-table th,.tna-buyer-milestone-table td{padding:7px 6px;border:1px solid var(--line,#d5deea);font-size:11px;vertical-align:top;overflow-wrap:anywhere;white-space:normal;line-height:1.35}
+.tna-buyer-milestone-table th{background:var(--look-surface,#eef3f9);font-weight:800;text-align:left}
+.tna-buyer-milestone-table th:nth-child(1){width:6%}
+.tna-buyer-milestone-table th:nth-child(2){width:18%}
+.tna-buyer-milestone-table th:nth-child(n+3):nth-child(-n+6){width:8%}
+.tna-buyer-milestone-table th:nth-child(7){width:10%}
+.tna-buyer-milestone-table th:nth-child(8){width:17%}
+.tna-buyer-milestone-table th:nth-child(9){width:10%}
+.tna-buyer-milestone-table th:nth-child(10){width:7%}
+@media print{
+  body.tna-printing-report .tna-buyer-scroll{overflow:visible!important;max-width:100%!important}
+  body.tna-printing-report .tna-buyer-milestone-table{min-width:0!important;width:100%!important;table-layout:fixed!important}
+  body.tna-printing-report .tna-buyer-milestone-table thead{display:table-header-group!important}
+  body.tna-printing-report .tna-buyer-milestone-table tr{break-inside:avoid!important;page-break-inside:avoid!important}
+  body.tna-printing-report .tna-buyer-milestone-table th,
+  body.tna-printing-report .tna-buyer-milestone-table td{font-size:6.5pt!important;line-height:1.2!important;padding:3px!important;border:1px solid #999!important;background:#fff!important;color:#111!important;overflow-wrap:anywhere!important}
+  body.tna-printing-report .tna-buyer-review-note{font-size:8pt!important;border-color:#999!important;color:#111!important}
+  body.tna-printing-report .tna-buyer-summary span{color:#111!important}
+}
