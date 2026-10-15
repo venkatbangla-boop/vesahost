@@ -63,7 +63,9 @@ const taModel = reports.buildReportModel(plan, { reportId: 'R12', language: 'ta'
 assert(taModel.reportId === 'R12' && taModel.source.recordId === null && !taModel.scenarioComparison?.ready, 'G07 R12 must withhold source identity and data before planner review.');
 assert(bnModel.labels.noFabrication.includes('Needs Information'), 'G07 reports must include no-fabrication note.');
 
-for (const model of [bnModel, taModel]) {
+assert.throws(()=>storage.exportReportWorkbook(taModel),/Scenario|options|date|Review|தேர்வு/i,
+  'G07 R12 unreviewed reports must not export source order fields.');
+for (const model of [bnModel]) {
   const workbookBuffer = storage.exportReportWorkbook(model);
   const workbook = XLSX.read(workbookBuffer, { type: 'buffer', cellStyles: true });
   for (const sheet of ['Report Summary', 'Order Summary', 'Report Activities', 'Report Notes']) {
