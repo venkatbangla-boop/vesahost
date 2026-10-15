@@ -53,3 +53,20 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
  body.tna-printing-report .tna-report-master-facts{grid-template-columns:repeat(3,minmax(0,1fr));font-size:8pt}
  body.tna-printing-report .tna-report-master{break-inside:auto}
 }
+
+/* GMR-05 R02: source-filtered buyer report. One VESA dialog/header; no new shell. */
+.tna-report-buyer{max-width:100%;min-width:0;margin:16px 0}
+.tna-report-buyer .tna-report-buyer-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--line,#d5deea);border-radius:8px;margin:12px 0}
+.tna-report-buyer-table{width:100%;min-width:540px;table-layout:fixed;border-collapse:collapse;font-size:.81rem;line-height:1.45}
+.tna-report-buyer-table thead{display:table-header-group}
+.tna-report-buyer-table th,.tna-report-buyer-table td{padding:8px;border:1px solid var(--line,#d5deea);vertical-align:top;text-align:start;overflow-wrap:anywhere;white-space:normal}
+.tna-report-buyer-table th{background:var(--look-surface,#eef3f9);font-weight:750}
+.tna-report-buyer-table tr{break-inside:avoid}
+.tna-report-buyer-table th:nth-child(2){width:26%}
+@media print{
+ body.tna-printing-report .tna-report-buyer .tna-report-buyer-scroll{overflow:visible;border:0;max-width:100%}
+ body.tna-printing-report .tna-report-buyer-table{width:100%;min-width:0;font-size:7.5pt;table-layout:fixed}
+ body.tna-printing-report .tna-report-buyer-table th,body.tna-printing-report .tna-report-buyer-table td{padding:4pt;white-space:normal;overflow-wrap:anywhere}
+ body.tna-printing-report .tna-report-buyer-table thead{display:table-header-group}
+ body.tna-printing-report .tna-report-buyer{break-inside:auto}
+}
