@@ -77,7 +77,7 @@ async function run(){
    await page.locator('#tnaWorkbookMapping [name=basis]').selectOption('working');
    await page.locator('#tnaWorkbookMapping [name=templateId]').selectOption('woven');
    await page.locator('#tnaWorkbookMapping button[type=submit]').click();
-   assert.match(await page.locator('#tnaWorkbookDecision').innerText(),/Matching buyer \+ factory \+ style \+ PO already exists/);
+   assert.match(await page.locator('#tnaWorkbookDecision').innerText(),/Matching buyer \+ style \+ PO exists/);
    assert.match(await page.locator('#tnaWorkbookDecision').innerText(),/Activities, statuses, approvals and predecessor links are NOT imported/);
    assert.equal(await page.locator('#tnaWorkbookConsent').count(),1);
    await page.locator('#tnaWorkbookConfirm').click();
