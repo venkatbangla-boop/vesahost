@@ -110,6 +110,48 @@ async function run(){
     await pdfViewer.waitForTimeout(1000);
     await pdfViewer.screenshot({path:path.join(output,'tna-g11-pdf-viewer-last-page.png')});
     await pdfViewer.close();
+    // R03 has a distinct departmental report; the same loaded legacy plan remains untouched.
+    await page.locator('#tnaReportType').selectOption('R03');
+    await page.locator('.tna-factory-daily-preview').waitFor();
+    assert.equal(await page.locator('.tna-daily-report-table tbody tr').count(),stored.records[0].plan.tasks.length,
+      'R03 must show every open task with missing-date facts, not invent deadlines.');
+    assert.ok(await page.locator('.tna-daily-report-note').first().isVisible(),'The daily report must explain its as-of date.');
+    const r03Table=await page.locator('.tna-daily-scroll').first().evaluate(element=>{
+      return {container:element.clientWidth,scroll:element.scrollWidth};
+    });
+    assert(r03Table.scroll>=r03Table.container,'Wide daily follow-up tables must remain internally scrollable.');
+    const dailyDownload=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const dailyArtifact=await dailyDownload;
+    const dailyPath=path.join(output,'tna-r03-factory-daily-viewer.xlsx');
+    await dailyArtifact.saveAs(dailyPath);
+    const dailyWorkbook=XLSX.read(fs.readFileSync(dailyPath),{type:'buffer',cellStyles:true});
+    assert.deepEqual(dailyWorkbook.SheetNames,['Report Summary','Order Summary','Report Activities','Report Notes','Factory Daily Action']);
+    const dailyRows=XLSX.utils.sheet_to_json(dailyWorkbook.Sheets['Factory Daily Action'],{header:1,raw:false});
+    assert.equal(dailyRows.length,stored.records[0].plan.tasks.length+1,'R03 workbook preserves all open activities.');
+    assert(dailyRows[0].includes('Due finish')&&dailyRows[0].includes('Evidence refs'),'R03 must retain departmental evidence headings.');
+    await page.emulateMedia({media:'print'});
+    await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const dailyPrintGeometry=await page.locator('.tna-daily-report-table').first().evaluate(table=>({
+      tableWidth:table.getBoundingClientRect().width,parentWidth:table.parentElement.getBoundingClientRect().width,
+      headers:getComputedStyle(table.tHead).display
+    }));
+    assert(dailyPrintGeometry.tableWidth<=dailyPrintGeometry.parentWidth+1,'R03 printed daily table must fit page width.');
+    assert.equal(dailyPrintGeometry.headers,'table-header-group','R03 print must repeat table headers.');
+    const r03PdfPath=path.join(output,'tna-r03-daily-print-viewer.pdf');
+    await page.pdf({path:r03PdfPath,printBackground:true,preferCSSPageSize:true,landscape:true});
+    await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    const dailyPdf=fs.readFileSync(r03PdfPath);
+    assert.equal(dailyPdf.subarray(0,5).toString(),'%PDF-','R03 report must yield real browser print PDF.');
+    const dailyPages=(dailyPdf.toString('latin1').match(/\/Type\s*\/Page\b/g)||[]).length;
+    assert(dailyPages>=2,'R03 many-activity PDF must span multiple pages with repeatable headings.');
+    const dailyViewer=await context.newPage();
+    await dailyViewer.goto(pathToFileURL(r03PdfPath).href,{waitUntil:'load'});
+    await dailyViewer.screenshot({path:path.join(output,'tna-r03-factory-daily-print.png')});
+    const opened=await dailyViewer.evaluate(()=>location.href.startsWith('file:')||document.querySelectorAll('embed').length>0);
+    assert(opened,'Chromium viewer must open the R03 multi-page PDF.');
+    await dailyViewer.close();
+    console.log('TNA R03 Chromium daily report passed: group rows, real Excel, printable PDF, no clipping.');
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}

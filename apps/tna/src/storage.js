@@ -81,7 +81,50 @@
     }
 
   }
-  function exportReportWorkbook(model){const XLSX=xlsxLib();if(!XLSX)throw new Error('Excel workbook parser is not bundled.');if(!model||model.schema!=='VESA-TNA-REPORT-1')throw new Error('Unsupported TNA report model.');const workbook=XLSX.utils.book_new();const addSheet=(name,rows,widths,filter=false)=>{const sheet=XLSX.utils.aoa_to_sheet(rows);sheet['!cols']=widths.map(wch=>({wch}));if(filter&&sheet['!ref'])sheet['!autofilter']={ref:sheet['!ref']};XLSX.utils.book_append_sheet(workbook,sheet,name);};const meta=[['Brand',safeCell(model.brand)],['Report ID',safeCell(model.reportId)],['Title',safeCell(model.title)],['Audience',safeCell(model.audience)],['Language',safeCell(model.language)],['Generated',safeCell(model.generatedAt)],['Timezone',safeCell(model.timezone)],['Revision',model.revision],['No fabrication note',safeCell(model.labels?.noFabrication)]];addSheet('Report Summary',meta,[24,96]);const orderRows=[['Buyer','Factory','Style','PO','Quantity','Unit','Required Ex-Factory'],[model.order.buyer,model.order.factory,model.order.style,model.order.po,model.order.quantity,model.order.unit,model.order.requiredExFactory].map(safeCell)];addSheet('Order Summary',orderRows,[28,28,24,20,14,10,22],true);const taskRows=[['Ref','Activity','Owner','Status','Baseline','Current','Forecast','Actual','Risk'],...(model.tasks||[]).map(task=>[task.ref,task.title,task.owner,task.status,task.baseline,task.current,task.forecast,task.actual,task.risk].map(safeCell))];addSheet('Report Activities',taskRows,[10,48,22,18,14,14,14,14,20],true);const warningRows=[['Warnings / Data gaps'],...((model.warnings&&model.warnings.length?model.warnings:['No validation warnings in this local draft.']).map(item=>[safeCell(item)])),[],['Fallback notes'],...(model.notes||[]).map(item=>[safeCell(item)])];addSheet('Report Notes',warningRows,[110]);TnaMasterWorkbookWriter.append(XLSX,workbook,model);return XLSX.write(workbook,{type:'buffer',bookType:'xlsx'});}
+  /**
+   * R03-only Factory Daily Action Excel writer for authorized departments.
+   * Access: exportReportWorkbook(model), never direct buyer report generation.
+   * Consumes immutable R03 projection, writes typed due-date/offset cells and
+   * sanitized notes/evidence. Does not mutate or save a business plan.
+   * Missing dates remain explicitly unknown and R02 stays without this sheet.
+   */
+  class TnaFactoryDailyWorkbookWriter {
+    /** Keep untrusted spreadsheet text inert, including leading-space formulas. */
+    static safeText(value){
+      const raw=String(value??'');
+      return /^\s*[=+\-@]/.test(raw)?"'"+raw:safeCell(raw);
+    }
+
+    /** Append every open task in a clearly named bucket, never fabricating a date. */
+    static append(XLSX,workbook,model){
+      const daily=model.factoryDailyAction;
+      if(model.reportId!=='R03'||daily?.schema!=='VESA-TNA-DAILY-1')return;
+      const order=['overdue','today','nextSeven','needsInformation','later'];
+      const rows=[daily.labels.columns];
+      for(const group of order){
+        for(const item of daily.groups[group]||[]){
+          rows.push([
+            this.safeText(daily.labels.groups[group]),this.safeText(item.ref),
+            this.safeText(item.title),this.safeText(item.owner),
+            TnaMasterWorkbookWriter.dateValue(item.due),
+            this.safeText(daily.labels.source[item.dateSource]||daily.labels.missing),
+            item.calendarDaysFromToday===null?daily.labels.missing:item.calendarDaysFromToday,
+            this.safeText(item.status),this.safeText(item.delayReason||daily.labels.missing),
+            this.safeText(item.followupNote||daily.labels.missing),
+            this.safeText(item.proofRefs?.length?item.proofRefs.join(' · '):daily.labels.missing)
+          ]);
+        }
+      }
+      const sheet=XLSX.utils.aoa_to_sheet(rows);
+      sheet['!cols']=[25,12,48,24,18,24,22,20,35,48,46].map(wch=>({wch}));
+      if(sheet['!ref'])sheet['!autofilter']={ref:sheet['!ref']};
+      for(let row=2;row<=rows.length;row++)if(sheet['E'+row]?.t==='n')sheet['E'+row].z='yyyy-mm-dd';
+      XLSX.utils.book_append_sheet(workbook,sheet,'Factory Daily Action');
+    }
+
+  }
+
+  function exportReportWorkbook(model){const XLSX=xlsxLib();if(!XLSX)throw new Error('Excel workbook parser is not bundled.');if(!model||model.schema!=='VESA-TNA-REPORT-1')throw new Error('Unsupported TNA report model.');const workbook=XLSX.utils.book_new();const addSheet=(name,rows,widths,filter=false)=>{const sheet=XLSX.utils.aoa_to_sheet(rows);sheet['!cols']=widths.map(wch=>({wch}));if(filter&&sheet['!ref'])sheet['!autofilter']={ref:sheet['!ref']};XLSX.utils.book_append_sheet(workbook,sheet,name);};const meta=[['Brand',safeCell(model.brand)],['Report ID',safeCell(model.reportId)],['Title',safeCell(model.title)],['Audience',safeCell(model.audience)],['Language',safeCell(model.language)],['Generated',safeCell(model.generatedAt)],['Timezone',safeCell(model.timezone)],['Revision',model.revision],['No fabrication note',safeCell(model.labels?.noFabrication)]];if(model.reportId==='R03'&&model.factoryDailyAction){meta.push(['Action as-of date',safeCell(model.factoryDailyAction.asOfDate||'Needs Information')],['Due-date basis','7 calendar days; current target then recorded baseline']);}addSheet('Report Summary',meta,[24,96]);const orderRows=[['Buyer','Factory','Style','PO','Quantity','Unit','Required Ex-Factory'],[model.order.buyer,model.order.factory,model.order.style,model.order.po,model.order.quantity,model.order.unit,model.order.requiredExFactory].map(safeCell)];addSheet('Order Summary',orderRows,[28,28,24,20,14,10,22],true);const taskRows=[['Ref','Activity','Owner','Status','Baseline','Current','Forecast','Actual','Risk'],...(model.tasks||[]).map(task=>[task.ref,task.title,task.owner,task.status,task.baseline,task.current,task.forecast,task.actual,task.risk].map(safeCell))];addSheet('Report Activities',taskRows,[10,48,22,18,14,14,14,14,20],true);const warningRows=[['Warnings / Data gaps'],...((model.warnings&&model.warnings.length?model.warnings:['No validation warnings in this local draft.']).map(item=>[safeCell(item)])),[],['Fallback notes'],...(model.notes||[]).map(item=>[safeCell(item)])];addSheet('Report Notes',warningRows,[110]);TnaMasterWorkbookWriter.append(XLSX,workbook,model);TnaFactoryDailyWorkbookWriter.append(XLSX,workbook,model);return XLSX.write(workbook,{type:'buffer',bookType:'xlsx'});}
   const api={STORAGE_VERSION,FORMAT,MAX_BYTES,QUEUE_VERSION,QUEUE_MAX_ITEMS,QUEUE_MAX_BYTES,checksum,migratePlan,savePlan,listPlans,loadPlan,autosave,recoverAutosave,queueOfflineIntent,listOfflineIntents,updateOfflineIntent,reconcileOfflineIntent,exportCopy,importCopy,createHistory,pushHistory,undo,redo,importPreview,importWorkbookPreview,exportCsv,exportWorkbook,exportReportWorkbook,safeCell};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaStorage=api;

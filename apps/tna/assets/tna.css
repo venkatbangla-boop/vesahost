@@ -71,3 +71,33 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
   body.tna-printing-report .tna-report-master-table th,body.tna-printing-report .tna-report-master-table td{padding:2px 3px!important;font-size:7pt!important;line-height:1.2!important;color:#111!important;background:#fff!important;border:1px solid #999!important;overflow-wrap:anywhere!important}
   body.tna-printing-report .tna-report-master-ref small{font-size:6pt!important;color:#333!important}
 }
+
+/* R03 department-only Daily Action report: sourced priorities, not a forecast promise. */
+.tna-factory-daily-preview{max-width:100%;min-width:0}
+.tna-daily-report-note{font-size:12px;color:var(--muted,#526176);margin:8px 0 12px}
+.tna-daily-summary{display:flex;flex-wrap:wrap;gap:8px 16px;margin:10px 0}
+.tna-daily-summary span{font-size:12px}
+.tna-daily-section{break-inside:auto;margin:14px 0}
+.tna-daily-section h4{margin:10px 0 5px}
+.tna-daily-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.tna-daily-report-table{width:100%;min-width:780px;border-collapse:collapse;table-layout:fixed}
+.tna-daily-report-table th,.tna-daily-report-table td{border:1px solid var(--line,#d5deea);padding:6px;vertical-align:top;overflow-wrap:anywhere;white-space:normal;font-size:11px}
+.tna-daily-report-table th{font-weight:800;text-align:left;background:var(--look-surface,#eef3f9)}
+.tna-daily-report-table th:nth-child(1){width:26%}
+.tna-daily-report-table th:nth-child(2){width:14%}
+.tna-daily-report-table th:nth-child(3){width:14%}
+.tna-daily-report-table th:nth-child(4){width:9%}
+.tna-daily-report-table th:nth-child(5){width:13%}
+.tna-daily-report-table th:nth-child(6){width:24%}
+.tna-daily-report-table td small{display:block;font-size:10px;color:var(--muted,#526176)}
+.tna-daily-report-table td div+div{margin-top:4px}
+@media print{
+  body.tna-printing-report .tna-daily-scroll{overflow:visible!important;max-width:100%!important}
+  body.tna-printing-report .tna-daily-report-table{min-width:0!important;width:100%!important;table-layout:fixed!important}
+  body.tna-printing-report .tna-daily-report-table thead{display:table-header-group!important}
+  body.tna-printing-report .tna-daily-report-table tr{page-break-inside:avoid!important;break-inside:avoid!important}
+  body.tna-printing-report .tna-daily-report-table th,
+  body.tna-printing-report .tna-daily-report-table td{font-size:7pt!important;line-height:1.2!important;padding:2px 3px!important;border-color:#999!important;background:#fff!important;color:#111!important;overflow-wrap:anywhere!important}
+  body.tna-printing-report .tna-daily-report-table td small{font-size:6pt!important;color:#333!important}
+  body.tna-printing-report .tna-daily-summary span{color:#111!important}
+}
