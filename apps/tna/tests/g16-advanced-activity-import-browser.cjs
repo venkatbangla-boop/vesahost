@@ -72,7 +72,7 @@ async function run(){
   await page.locator('[data-vesa-menu=File]').click();
   await page.locator('[data-menu-action="Import Excel TNA"]').click();
   await page.locator('#tnaWorkbookFile').setInputFiles({
-   name:'gmr16-woven.xlsm.xlsx',
+   name:'gmr16-woven.xlsx',
    mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
    buffer:makeWorkbook()
   });
