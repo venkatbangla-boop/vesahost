@@ -67,10 +67,13 @@ async function run(){
     const workbookPath=path.join(output,'tna-g11-report-viewer.xlsx');
     await download.saveAs(workbookPath);
     const workbook=XLSX.read(fs.readFileSync(workbookPath),{type:'buffer',cellFormula:true,cellStyles:true});
-    assert.deepEqual(workbook.SheetNames,['Report Summary','Order Summary','Report Activities','Report Notes']);
+    assert.deepEqual(workbook.SheetNames,['Report Summary','Order Summary','Report Activities','Report Notes','Master TNA']);
     const activityRows=XLSX.utils.sheet_to_json(workbook.Sheets['Report Activities'],{header:1,raw:false});
     assert.equal(activityRows.length,stored.records[0].plan.tasks.length+1,'Excel report must contain every activity plus its header.');
     assert.ok(workbook.Sheets['Report Activities']['!cols'][1].wch>=40,'Excel report must retain a readable activity column width.');
+    const garmentRows=XLSX.utils.sheet_to_json(workbook.Sheets['Master TNA'],{header:1,raw:false});
+    assert.equal(garmentRows.length,stored.records[0].plan.tasks.length+1,'R01 master worksheet must contain every task, not a truncated sample.');
+    assert(garmentRows[0].includes('Predecessor refs'),'Master worksheet must include source-backed dependency column.');
 
     await page.emulateMedia({media:'print'});
     await page.evaluate(()=>document.body.classList.add('tna-printing-report'));

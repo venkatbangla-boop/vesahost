@@ -89,4 +89,54 @@ for (const fragment of [
 }
 assert(!bootstrap.includes('model.tasks.slice(0,10)'), 'G07 printable report preview must not silently truncate activities.');
 
+
+// R01 master worksheet: exact source-backed dates/dependencies, never internal notes.
+const fixture=domain.createPlan({
+  templateId:'woven',buyerName:'Report Buyer',factoryName:'Report Factory',styleNo:'R01-CHECK',
+  poNumber:'PO-R01',totalQty:900,orderConfirmedOn:'2026-10-15',buyerRequiredExFactory:'2026-12-20'
+},{ownerUserId:'synthetic-editor'});
+fixture.tasks[0].dates.currentTargetFinish='2026-11-04';
+const frozen=domain.freezeBaseline(fixture,{actorId:'synthetic-editor',reason:'Synthetic baseline'});
+assert(frozen.ok,'R01 Master TNA fixture must preserve a confirmed baseline.');
+const amended=domain.updateTaskFollowup(frozen.plan,frozen.plan.tasks[0].taskId,{
+  ownerParty:'Factory Merchandiser',currentTargetFinish:'2026-11-06',
+  forecastFinish:'2026-11-10',note:'Restricted internal follow-up text'
+},{actorId:'synthetic-editor'});
+assert(amended.ok,'R01 Master TNA follow-up fixture must validate.');
+const report=reports.buildReportModel(amended.plan,{reportId:'R01',language:'en'});
+const rows=report.masterTna?.rows||[];
+assert(rows.length===amended.plan.tasks.length,'R01 Master TNA must export every activity.');
+assert(rows[0].stage===amended.plan.tasks[0].stage,'Stage must come from the garment template.');
+assert(rows[0].baseline==='2026-11-04','Original baseline must come from immutable confirmed history.');
+assert(rows[0].target==='2026-11-06'&&rows[0].forecast==='2026-11-10','Current and forecast dates must remain separate.');
+assert(rows[0].calendarDaysLate===4&&rows[0].comparedTo==='forecast','Calendar delay must use source dates and a named basis.');
+assert(rows[0].owner==='Factory Merchandiser','Source owner must survive R01 projection.');
+assert(rows[1].dependencies.includes(amended.plan.tasks[0].templateRef),'Predecessor must come from the real dependency edges.');
+assert(!JSON.stringify(report).includes('Restricted internal follow-up text'),'R01 export must not disclose internal revision notes.');
+assert(JSON.stringify(frozen.plan.baselineSnapshots)===JSON.stringify(amended.plan.baselineSnapshots),'R01 projection cannot rewrite baseline.');
+const xlsx=XLSX.read(storage.exportReportWorkbook(report),{type:'buffer',cellNF:true});
+assert.deepEqual(xlsx.SheetNames,['Report Summary','Order Summary','Report Activities','Report Notes','Master TNA'],'R01 adds a master worksheet without removing existing exports.');
+const worksheet=xlsx.Sheets['Master TNA'];
+const grid=XLSX.utils.sheet_to_json(worksheet,{header:1,raw:false});
+assert(grid.length===rows.length+1,'Master sheet needs every activity plus exact headers.');
+assert(grid[0].includes('Original baseline')&&grid[0].includes('Predecessor refs'),'Merchandising fields must be identifiable.');
+assert(grid[1][3]==='Factory Merchandiser','Excel owner must match report.');
+assert(grid[1][4]==='2026-11-04'&&grid[1][5]==='2026-11-06'&&grid[1][6]==='2026-11-10','Excel dates must display exact civil values.');
+assert(worksheet.E2.t==='n'&&worksheet.F2.t==='n'&&worksheet.G2.t==='n','Excel actual dates must be typed numeric date cells, not arbitrary text.');
+assert(grid[1][8]==='4','Excel late calendar days must equal observed source difference.');
+assert(worksheet['!autofilter']?.ref,'Master worksheet must support normal merchandiser filtering.');
+const buyer=reports.buildReportModel(amended.plan,{reportId:'R02',language:'en'});
+assert(!buyer.masterTna,'Buyer report must not inherit factory Master TNA material.');
+assert(!XLSX.read(storage.exportReportWorkbook(buyer),{type:'buffer'}).SheetNames.includes('Master TNA'),'Buyer workbook must not expose R01 master sheet.');
+const unknownReport=reports.buildReportModel(plan,{reportId:'R01',language:'en'});
+assert(unknownReport.masterTna.rows[0].calendarDaysLate===null,'Absent date evidence cannot be reported as zero lateness.');
+const unknownFile=XLSX.read(storage.exportReportWorkbook(unknownReport),{type:'buffer'});
+assert(unknownFile.Sheets['Master TNA'].E2.v==='Needs Information','Missing baseline must remain visibly unknown in Excel.');
+const hostile=domain.createPlan({templateId:'knit',buyerName:'Report Buyer',factoryName:'Report Factory',styleNo:'CLEAN',poNumber:'CLEAN'});
+hostile.tasks[0].title='=HYPERLINK("https://not-executed.example","click")';
+const harmless=reports.buildReportModel(hostile,{reportId:'R01'});
+const cleanXlsx=XLSX.read(storage.exportReportWorkbook(harmless),{type:'buffer'});
+assert(cleanXlsx.Sheets['Master TNA'].C2.t==='s'&&cleanXlsx.Sheets['Master TNA'].C2.v.startsWith("'="),'Untrusted activity text must never become an Excel formula.');
+
+
 console.log('TNA G07 report language checks passed');

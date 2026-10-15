@@ -36,10 +36,51 @@
   function audienceFor(report,language){const key=report[2];return (audienceTranslations[key]||audienceTranslations.factoryAgent)[langIndex[language]]}
   function formatDateTime(value,language){try{return new Intl.DateTimeFormat(language==='bn'?'bn-BD':language==='hi'?'hi-IN':language==='ta'?'ta-IN':'en-US',{dateStyle:'medium',timeStyle:'short'}).format(new Date(value))}catch{return String(value||'')}}
   function orderContext(plan={}){return {buyer:plan.order?.buyerName||'Needs Information',factory:plan.order?.factoryName||'Needs Information',style:plan.order?.styles?.[0]?.styleNo||'Needs Information',po:plan.order?.poNumbers?.[0]||'Needs Information',quantity:plan.order?.totalQty??'Needs Information',unit:plan.order?.unit||'pcs',requiredExFactory:plan.commitments?.buyerRequiredExFactory||'Needs Information'}}
+  /**
+   * Read-only Master TNA business projection for the factory/agent R01 report.
+   * Takes a TNA plan and records real task dependencies and entered date facts.
+   * Never updates source plans, infers approvals, or exports internal free-text notes.
+   * All date differences are civil calendar days; absent inputs stay unknown.
+   */
+  class TnaMasterReportProjection {
+    /** A strict civil-date parser avoiding browser timezone or invalid-day coercion. */
+    static day(value){
+      if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;
+      const epoch=Date.parse(value+'T00:00:00Z');
+      return Number.isFinite(epoch)&&new Date(epoch).toISOString().slice(0,10)===value?Math.floor(epoch/86400000):null;
+    }
+
+    /** Project every task in stable order, keeping the first confirmed snapshot immutable. */
+    static rows(plan={}){
+      const tasks=plan.tasks||[],edges=plan.edges||[];
+      const frozen=plan.baselineSnapshots?.[0];
+      const baselineDates=new Map((frozen?.taskDates||[]).map(item=>[item.taskId,item.dates]));
+      const refs=new Map(tasks.map(task=>[task.taskId,task.templateRef||null]));
+      return tasks.map(task=>{
+        const dates=task.dates||{},original=baselineDates.get(task.taskId);
+        const baseline=this.asDate(original?.currentTargetFinish||original?.baselineFinish||null);
+        const target=this.asDate(dates.currentTargetFinish);
+        const forecast=this.asDate(dates.forecastFinish);
+        const actual=this.asDate(dates.actualFinish);
+        const anchor=target||baseline,observed=actual||forecast;
+        const start=this.day(anchor),end=this.day(observed);
+        const dependencies=edges.filter(edge=>edge.successorTaskId===task.taskId).map(edge=>refs.get(edge.predecessorTaskId)||'Needs Information');
+        return {stage:task.stage||'Needs Information',ref:task.templateRef||'—',
+          activity:task.title||'Needs Information',owner:task.ownerParty||'Needs Information',
+          baseline,target,forecast,actual,
+          calendarDaysLate:start===null||end===null?null:Math.max(0,end-start),
+          comparedTo:actual?'actual':forecast?'forecast':null,
+          status:task.status||'needs-information',dependencies:dependencies.join(', ')||'—'};
+      });
+    }
+    /** Empty or invalid source dates remain unknown, never converted to zero. */
+    static asDate(value){return this.day(value)===null?null:value;}
+
+  }
   function taskRows(plan={},limit=Infinity){return (plan.tasks||[]).slice(0,limit).map(task=>({ref:task.templateRef,title:task.title,owner:task.ownerParty,status:task.status,baseline:task.dates?.baselineFinish||'',current:task.dates?.currentTargetFinish||'',forecast:task.dates?.forecastFinish||'',actual:task.dates?.actualFinish||'',risk:task.riskStatus||'needs-information'}))}
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone:options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local',revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),warnings:warnings(plan),notes:[I18N[l].labels.noFabrication,I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone:options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local',revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),warnings:warnings(plan),notes:[I18N[l].labels.noFabrication,I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;

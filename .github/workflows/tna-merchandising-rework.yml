@@ -76,6 +76,8 @@ jobs:
           node apps/tna/tests/g11-unified-shell-browser.cjs
           node apps/tna/tests/g11-route-regression.cjs
           node tests/vesa-shared-shell-matrix.cjs
+      - name: Verify real exported Excel workbook and browser print artifact
+        run: node apps/tna/tests/g11-artifact-viewers.cjs
       - name: Retain synthetic viewport screenshots for visual review
         if: always()
         uses: actions/upload-artifact@v4
