@@ -53,7 +53,10 @@ async function run(){
  const context=await browser.newContext({viewport:{width:1280,height:860}});
  await context.addInitScript(({auth,records})=>{
    localStorage.setItem('vesa.appcentre.session.v1',JSON.stringify(auth));
-   localStorage.setItem('vesa.tna360.records.'+auth.userKey,JSON.stringify(records));
+   // The fixture is installed once. Reloads must use the real saved records;
+   // reseeding on every navigation would erase the very new draft under test.
+   if(!localStorage.getItem('vesa.tna360.records.'+auth.userKey))
+     localStorage.setItem('vesa.tna360.records.'+auth.userKey,JSON.stringify(records));
  },{auth:session,records:localBox(original)});
  const page=await context.newPage(),errors=[],external=[];
  page.on('pageerror',err=>errors.push(err.message));
