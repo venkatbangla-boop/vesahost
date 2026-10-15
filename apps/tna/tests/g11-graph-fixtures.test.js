@@ -107,4 +107,43 @@ assert.equal(diamond.project.forecastDate,'2026-10-19',
 assert.equal(diamond.taskResults.C.floatDays,1,
   'The original FS routing float must stay one working day.');
 
+
+// GMR-20: free float is relation-specific (FS/SS successor start;
+// FF/SF successor finish) and is limited by project float.
+const freeFloatCases=[
+  {relation:'FS',source:2,independent:4,expected:2},
+  {relation:'SS',source:2,independent:3,expected:3},
+  {relation:'FF',source:2,independent:3,expected:2},
+  {relation:'SF',source:2,independent:3,expected:3}
+];
+for(const c of freeFloatCases){
+  const source=[task('P',c.source),task('R',c.independent),task('Q',1)];
+  const links=[edge('P','Q',c.relation,0),edge('R','Q','FS',0)];
+  const original=JSON.stringify({source,links});
+  const forecast=scheduling.schedule(source,links,{calendar:cal,calendars:[cal],
+    startDate:'2026-10-12',requiredDate:'2026-10-16'});
+  assert.equal(forecast.validity,'valid');
+  assert.equal(forecast.taskResults.P.freeFloatDays,c.expected,
+    c.relation+' should have source-based free float with another path controlling Q');
+  assert.equal(JSON.stringify({source,links}),original,'Source graph must remain immutable');
+}
+const lagged=scheduling.schedule([task('P',2),task('Q',1)],
+  [edge('P','Q','FS',1)],{calendar:cal,calendars:[cal],
+    startDate:'2026-10-12',requiredDate:'2026-10-16'});
+assert.equal(lagged.taskResults.Q.earlyStart,'2026-10-15');
+assert.equal(lagged.taskResults.P.freeFloatDays,0,
+  'FS +1 lag is binding; do not invent one unused buffer day.');
+const bounded=scheduling.schedule([task('P',2),task('R',3),task('Q',1)],
+  [edge('P','Q','SS',0),edge('R','Q','FS',0)],{calendar:cal,calendars:[cal],
+    startDate:'2026-10-12'});
+assert.equal(bounded.taskResults.P.floatDays,2);
+assert.equal(bounded.taskResults.P.freeFloatDays,2,
+  'No committed due date: free float cannot exceed current project float.');
+assert.equal(diamond.taskResults.C.freeFloatDays,1,
+  'GPH-01 FS/zero source route free float remains one day.');
+assert.equal(mixed.taskResults.SUP.freeFloatDays,null,
+  'GPH-09 mixed supplier/factory calendar must not invent free-float precision.');
+assert(mixed.warnings.some(x=>x.includes('free float unavailable')),
+  'GPH-09 mixed source uncertainty must be explicit in warnings.');
+
 console.log('TNA G11 GPH-01-GPH-09 fixtures passed: graph rejection, relations/lead, critical routes, deadline conflict, missing inputs, milestones, overdue and mixed calendars');

@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  const ENGINE_VERSION='TNA360-SCHEDULE-0.4.1';
+  const ENGINE_VERSION='TNA360-SCHEDULE-0.4.2';
   const MS_PER_DAY=86400000;
   const DEFAULT_CALENDAR={calendarId:'default',name:'Default Monday-Friday',workingWeek:[1,2,3,4,5],holidays:[],shutdowns:[],revision:0};
   const pad=n=>String(n).padStart(2,'0');
@@ -172,6 +172,7 @@
     // only graph-terminal tasks. FS-only networks remain unchanged.
     const forecastDate=maxDate(tasks.map(task=>result[task.taskId].earlyFinish));
     const endDate=requiredDate||forecastDate;
+    let incompleteFreeFloat=false;
     for(const id of graph.order.slice().reverse()){
       const task=byId.get(id),taskCalendar=calendars.forTask(task),basis=task.durationBasis||'working',duration=Number(task.durationUnits||0),constraints=[endDate];
       for(const edge of outgoing.get(id)){
@@ -188,8 +189,39 @@
       }
       const lateFinish=minDate(constraints),lateStart=startFromFinish(lateFinish,duration,taskCalendar,basis);
       const totalFloat=workdayDifference(result[id].earlyStart,lateStart,taskCalendar,basis);
-      const successorStarts=outgoing.get(id).map(edge=>result[edge.successorTaskId].earlyStart);
-      const freeFloat=successorStarts.length?Math.max(0,workdayDifference(shiftDate(result[id].earlyFinish,1,taskCalendar,basis),minDate(successorStarts),taskCalendar,basis)):totalFloat;
+      // GMR-20: Free float is the largest delay of THIS predecessor in
+      // its own duration basis that changes no immediate successor's
+      // earliest constraint. FS/SS compare successor START; FF/SF compare
+      // successor FINISH. An FS lag is already included in the bound.
+      //
+      // A different successor calendar or mixed lag/duration basis needs
+      // generalized discrete constraint simulation; return null, never
+      // a plausible-looking but unverified number.
+      let freeFloat=totalFloat;
+      if(outgoing.get(id).length){
+        const slacks=[];
+        let supported=true;
+        for(const edge of outgoing.get(id)){
+          const successorTask=byId.get(edge.successorTaskId);
+          const successorCalendar=calendars.forTask(successorTask);
+          const relation=edge.relation||'FS',lag=edge.lagUnits||0;
+          const lagBasis=edge.lagBasis||basis,successorBasis=successorTask.durationBasis||'working';
+          const sameCalendar=taskCalendar.calendarId===successorCalendar.calendarId&&
+            JSON.stringify([taskCalendar.workingWeek,taskCalendar.holidays,taskCalendar.shutdowns])===
+            JSON.stringify([successorCalendar.workingWeek,successorCalendar.holidays,successorCalendar.shutdowns]);
+          if(!sameCalendar||lagBasis!==basis||successorBasis!==basis){
+            supported=false;break;
+          }
+          const sourceDate=(relation==='SS'||relation==='SF')?result[id].earlyStart:result[id].earlyFinish;
+          const successorDate=(relation==='FF'||relation==='SF')?result[edge.successorTaskId].earlyFinish:result[edge.successorTaskId].earlyStart;
+          const sameDayMilestone=Number(task.durationUnits)===0&&task.milestoneEvent==='start-of-day';
+          const effectiveLag=relation==='FS'?lag+(sameDayMilestone?0:1):lag;
+          const requiredBound=shiftDate(sourceDate,effectiveLag,taskCalendar,lagBasis);
+          slacks.push(workdayDifference(requiredBound,successorDate,taskCalendar,basis));
+        }
+        freeFloat=supported?Math.max(0,Math.min(totalFloat,...slacks)):null;
+        if(!supported)incompleteFreeFloat=true;
+      }
       const isCritical=totalFloat<=0;
       const isOverdue=asOfDate?compareDate(asOfDate,result[id].earlyFinish)>0&&!['completed','approved','waived','not-applicable'].includes(task.status):false;
       result[id]={...result[id],lateStart,lateFinish,floatDays:totalFloat,freeFloatDays:freeFloat,isCritical,isNearCritical:totalFloat>0&&totalFloat<=Number(options.nearCriticalDays||0),isOverdue,risk:totalFloat<0?'delayed':isOverdue?'delayed':isCritical?'at-risk':'on-track'};
@@ -200,6 +232,7 @@
       if(!criticalSuccessors.length)criticalPaths.push(nextPath);
       else for(const edge of criticalSuccessors.slice().reverse())traceStack.push({id:edge.successorTaskId,path:nextPath});
     }
+    if(incompleteFreeFloat)warnings.push('Mixed calendars or lag/duration bases: free float unavailable pending generalized CPM verification.');
     const workingDaysEarlyOrLate=requiredDate?workdayDifference(requiredDate,forecastDate,calendar,'working'):0;
     const constraintViolations=requiredDate&&workingDaysEarlyOrLate>0?[{type:'required-date-miss',requiredDate,forecastDate,workingDaysLate:workingDaysEarlyOrLate,explanation:`Forecast is ${workingDaysEarlyOrLate} working day(s) later than the required project endpoint.`}]:[];
     return {engineVersion:ENGINE_VERSION,validity:'valid',missingInputs,errors,warnings,constraintViolations,taskResults:result,project:{selectedDeadlineType:requiredDate?'requiredDate':'forecastDate',requiredDate:requiredDate||null,forecastDate,workingDaysEarlyOrLate,criticalPaths,scheduleConfidence:'deterministic'},generatedAt:new Date().toISOString(),calendarRevisions:calendars.revisions};
