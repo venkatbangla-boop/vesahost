@@ -40,6 +40,11 @@ for (const fragment of [
   'class TnaLocalEditPersistence',
   'TnaLocalEditPersistence.commit(result.plan,state.currentPlan)',
   'tnaStatusSaveError',
+  'class TnaFactoryCalendarEditor',
+  'TnaFactoryCalendarEditor.summary(plan,state.language)',
+  'data-edit-calendar',
+  'tnaCalendarForm',
+  'updateFactoryCalendar(state.currentPlan,values',
   'class GarmentTnaFollowupEditor',
   'tnaFollowupEdit',
   'GarmentTnaFollowupEditor.bind(taskId)',
@@ -71,16 +76,17 @@ for (const fragment of [
   assert(bootstrap.includes(fragment), `G06 workspace UI missing: ${fragment}`);
 }
 
-for (const fragment of ['.tna-workspace-grid', '.tna-dashboard-grid', '.tna-gantt', '.tna-timeline-table', '.tna-readiness-grid', '.tna-readiness-card', '.tna-readiness-list', '.tna-mini-btn', '.tna-activity-table', '.tna-sheet-scroll', '.tna-portfolio-table', '@media(max-width:1050px)', '@media(max-width:850px)', '@media(max-width:540px)']) {
+for (const fragment of ['.tna-workspace-grid', '.tna-dashboard-grid', '.tna-gantt', '.tna-timeline-table', '.tna-readiness-grid', '.tna-readiness-card', '.tna-readiness-list', '.tna-mini-btn', '.tna-activity-table', '.tna-sheet-scroll', '.tna-portfolio-table', '@media(max-width:1050px)', '@media(max-width:850px)', '.tna-calendar-editor .tna-calendar-days', '@media(max-width:540px)']) {
   assert(css.includes(fragment), `G06 responsive workspace CSS missing: ${fragment}`);
 }
 
 // The new complete follow-up sheet is primary; the original calculated timeline
 // remains an optional view. These assertions protect presentation ownership only.
 const orderMasterAt = bootstrap.indexOf('${orderMasterPanel(plan)}');
+const calendarAt = bootstrap.indexOf('${TnaFactoryCalendarEditor.summary(plan,state.language)}');
 const sheetAt = bootstrap.indexOf('class="tna-master-activities"');
 const schedulingAt = bootstrap.indexOf('${schedulePanel(plan)}');
-assert(orderMasterAt !== -1 && sheetAt > orderMasterAt && schedulingAt > sheetAt,
+assert(orderMasterAt !== -1 && calendarAt > orderMasterAt && sheetAt > calendarAt && schedulingAt > sheetAt,
   'Garment sheet must follow Order Master and precede specialist dashboards.');
 assert(!bootstrap.includes('plan.tasks.slice(0,12)'),
   'Activity edit access cannot silently exclude the remaining template tasks.');

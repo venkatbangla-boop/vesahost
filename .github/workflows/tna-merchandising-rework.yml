@@ -47,6 +47,7 @@ jobs:
         run: |
           set -euo pipefail
           node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/calendar-confirmation.test.js
           node apps/tna/tests/g03-scheduling.test.js
           node apps/tna/tests/g05-storage.test.js
           node apps/tna/tests/g06-workspace.test.js

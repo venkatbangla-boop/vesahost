@@ -286,6 +286,72 @@
       return {ok:true,plan:next};
     }
   }
+  /**
+   * Owns one manually confirmed default factory-calendar update in a local TNA.
+   * Access: VesaTnaDomain.updateFactoryCalendar(plan, fields, {actorId}).
+   * Input: explicitly selected weekday integers (0=Sun..6=Sat), reviewed
+   * holiday/shutdown ISO dates, IANA timezone and written source/change reason.
+   * Output: immutable {ok,plan} or {ok:false,error}; UI/storage saves the plan.
+   * Safety: does not edit tasks, baseline, approvals, financial values or
+   * any scheduling engine rule. "User-confirmed" is NOT external verification.
+   * A missing/invalid field fails without mutating the caller's record.
+   */
+  class TnaFactoryCalendar {
+    /** Require a bounded, explicit list of distinct real civil dates. */
+    static dates(value,label){
+      if(!Array.isArray(value)||value.length>366)return {error:label+' needs at most 366 dates.'};
+      const checked=[];
+      for(const raw of value){
+        if(typeof raw!=='string'||!validDateOnly(raw.trim()))return {error:label+' contains an invalid YYYY-MM-DD date.'};
+        checked.push(raw.trim());
+      }
+      if(new Set(checked).size!==checked.length)return {error:label+' contains duplicate dates.'};
+      return {dates:checked.sort()};
+    }
+    /** IANA timezone is recorded, not inferred from the browser or factory name. */
+    static zone(value){
+      if(typeof value!=='string'||!value.trim()||value.length>80)return false;
+      try{new Intl.DateTimeFormat('en-US',{timeZone:value.trim()});return true;}
+      catch{return false;}
+    }
+    /** Apply one consented, source-attributed and auditable calendar change. */
+    static update(plan,values={},context={}){
+      if(!plan||plan.schemaVersion!==SCHEMA_VERSION||!Array.isArray(plan.calendars))return {ok:false,error:'Unsupported TNA calendar plan.'};
+      if(!values||typeof values!=='object'||Array.isArray(values))return {ok:false,error:'Invalid factory calendar input.'};
+      const current=plan.calendars.find(item=>item.calendarId==='default');
+      if(!current)return {ok:false,error:'The order default calendar is missing.'};
+      if(values.confirmed!==true)return {ok:false,error:'Review and confirm the working calendar before saving.'};
+      const textField=(value,max)=>typeof value==='string'&&value.trim().length>0&&value.trim().length<=max&&!/[\r\n]/.test(value);
+      if(!textField(values.name,120))return {ok:false,error:'Enter a factory calendar name (up to 120 characters).'};
+      if(!textField(values.sourceReference,240))return {ok:false,error:'Enter the factory source or reference (up to 240 characters).'};
+      if(!textField(values.reason,800))return {ok:false,error:'Enter the reason for recording or changing the calendar.'};
+      if(!TnaFactoryCalendar.zone(values.timezone))return {ok:false,error:'Enter a valid IANA timezone, such as Asia/Dhaka.'};
+      const working=values.workingWeek;
+      if(!Array.isArray(working)||!working.length||working.length>7||working.some(day=>!Number.isInteger(day)||day<0||day>6)||new Set(working).size!==working.length)return {ok:false,error:'Choose at least one distinct factory working day (Sunday to Saturday).'};
+      const holiday=TnaFactoryCalendar.dates(values.holidays,'Holiday list'),shutdown=TnaFactoryCalendar.dates(values.shutdowns,'Shutdown list');
+      if(holiday.error||shutdown.error)return {ok:false,error:holiday.error||shutdown.error};
+      if(holiday.dates.some(date=>shutdown.dates.includes(date)))return {ok:false,error:'A date cannot be both a holiday and a shutdown; record it only once.'};
+      const next=clone(plan),actorId=clean(context.actorId)||next.ownerUserId||'local-browser-user',timestamp=now();
+      const former=next.calendars.find(item=>item.calendarId==='default');
+      const revision=Number.isSafeInteger(former.revision)&&former.revision>=0?former.revision+1:1;
+      const updated={...former,name:values.name.trim(),workingWeek:working.slice().sort((a,b)=>a-b),
+        weekendDays:[0,1,2,3,4,5,6].filter(day=>!working.includes(day)),
+        holidays:holiday.dates,shutdowns:shutdown.dates,timezone:values.timezone.trim(),
+        source:'user-confirmed',sourceReference:values.sourceReference.trim(),
+        confirmedAt:timestamp,confirmedBy:actorId,revision};
+      next.calendars=next.calendars.map(item=>item.calendarId==='default'?updated:item);
+      const validation=validatePlan(next);
+      if(!validation.ok)return {ok:false,error:validation.errors.join('; ')};
+      next.updatedAt=timestamp;next.validation=validation;
+      const details={calendarId:'default',reason:values.reason.trim(),sourceReference:updated.sourceReference,calendarRevision:revision,
+        previous:{source:former.source||null,revision:former.revision??null,workingWeek:former.workingWeek||null,holidays:former.holidays||[],shutdowns:former.shutdowns||[]},
+        current:{workingWeek:updated.workingWeek,holidays:updated.holidays,shutdowns:updated.shutdowns,timezone:updated.timezone}};
+      next.revisionEvents=[...(next.revisionEvents||[]),{eventId:makeId('revision'),eventType:'factory-calendar-confirmed',revision:next.revision,actorId,createdAt:timestamp,details}];
+      next.auditEvents=[...(next.auditEvents||[]),{eventId:makeId('audit'),eventType:'factory-calendar-confirmed',actorId,createdAt:timestamp,details:{calendarId:'default',calendarRevision:revision}}];
+      return {ok:true,plan:next};
+    }
+  }
+
   function addCustomTask(plan,input={},context={}){
     const title=clean(input.title);
     if(!title)return {ok:false,error:'Custom activity requires a title.'};
@@ -389,7 +455,7 @@
     if(!next.validation.ok)return {ok:false,error:next.validation.errors.join(' '),errors:next.validation.errors};
     return {ok:true,plan:next,lot,warnings:next.validation.warnings};
   }
-  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,normalizeColorSizeBreakdown,createPlan,validatePlan,freezeBaseline,updateTaskStatus,updateTaskFollowup:TnaTaskFollowup.update,addCustomTask,addCapacityEntry,addShipmentLot};
+  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,normalizeColorSizeBreakdown,createPlan,validatePlan,freezeBaseline,updateTaskStatus,updateTaskFollowup:TnaTaskFollowup.update,updateFactoryCalendar:TnaFactoryCalendar.update,addCustomTask,addCapacityEntry,addShipmentLot};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaDomain=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

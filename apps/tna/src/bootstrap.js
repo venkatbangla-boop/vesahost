@@ -22,7 +22,7 @@
     file:['New TNA','Open Saved TNA','Save Now','Make Another Copy','Download Saved Copy','Open Saved Copy','Import Excel TNA'],
     edit:['Undo','Redo','Edit Order','Add Activity','Edit Dependencies','Revise Target','Review Changes'],
     view:['Dashboard','TNA Planner','Timeline','Critical Path','Due Today','All Orders','Appearance / Language'],
-    tools:['Recalculate Dates','Check Missing Information','Production Capacity','Shipment Lots','Recovery Scenarios','Linked Records','Offline Work','Prepare Report','Download Report','Print Report','Share Report'],
+    tools:['Recalculate Dates','Factory Working Calendar','Check Missing Information','Production Capacity','Shipment Lots','Recovery Scenarios','Linked Records','Offline Work','Prepare Report','Download Report','Print Report','Share Report'],
     help:['How to Use','Glossary','Example','About','Data & Backup Help']
   };
   const HELP_TOPICS={
@@ -188,6 +188,7 @@
       <div class="tna-metrics"><b>${plan.tasks.length}</b><span>${esc(text('tasks'))}</span><b>${plan.baselineSnapshots.length}</b><span>${esc(text('baseline'))}</span><b>${unknown.length+warnings.length+errors.length}</b><span>${esc(text('validation'))}</span></div>
       <p class="tna-note">${esc(savedNote)}</p>
       ${orderMasterPanel(plan)}
+      ${TnaFactoryCalendarEditor.summary(plan,state.language)}
       <section class="tna-master-activities" aria-label="Garment TNA activity master sheet"><h3>${esc(({en:'Garment TNA — Activity Follow-up Sheet',bn:'গার্মেন্টস TNA — কার্যক্রম ফলো-আপ',hi:'गारमेंट TNA — कार्य फॉलो-अप',ta:'ஆடை TNA — செயல்பாடு தொடர்ச்சி'})[state.language])}</h3><p class="tna-note">${esc(({en:'All activities appear below. Missing dates or approval evidence remain unconfirmed.',bn:'সব কাজ নিচে দেখানো হয়েছে। অনুপস্থিত তারিখ বা অনুমোদন নিশ্চিত নয়।',hi:'सभी कार्य नीचे हैं। अनुपलब्ध तारीख या अनुमोदन अपुष्ट है।',ta:'அனைத்து செயல்களும் கீழே உள்ளன. இல்லாத தேதிகள் அல்லது ஒப்புதல்கள் உறுதிப்படுத்தப்படவில்லை.'})[state.language])}</p><div class="tna-sheet-scroll"><div class="tna-task-table tna-activity-table" role="table" aria-label="Editable garment TNA activity sheet"><div role="row" class="tna-activity-heading">${GarmentTnaActivityView.headers(state.language).map(label=>`<b role="columnheader">${esc(label)}</b>`).join('')}</div>${plan.tasks.map(task=>`<div role="row">${GarmentTnaActivityView.renderCells(plan,task,state.language)}</div>`).join('')}</div></div></section>
       ${unknown.length?`<h3>${esc(text('unknown'))}</h3><ul>${unknown.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
       ${errors.length?`<h3>Errors</h3><ul>${errors.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
@@ -247,10 +248,11 @@
     const scenarioForm=document.getElementById('tnaScenarioForm');if(scenarioForm)scenarioForm.onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());state.scenarioDraft={...data,durationUnits:Number(data.durationUnits),verifiedDailyOutput:data.verifiedDailyOutput};state.scenarioPreview=scenarios.previewScenario(state.currentPlan,{name:data.name,durationAdjustments:[{taskId:data.taskId,durationUnits:Number(data.durationUnits),reason:data.name}],capacity:data.verifiedDailyOutput?{plannedQty:state.currentPlan.order.totalQty,completedQty:0,verifiedDailyOutput:Number(data.verifiedDailyOutput)}:undefined},{actorId:userKey()});render();};
     root.querySelectorAll('[data-apply-scenario]').forEach(btn=>btn.onclick=openScenarioApply);
     root.querySelectorAll('[data-edit-task]').forEach(btn=>btn.onclick=()=>openTaskEdit(btn.dataset.editTask));
+    root.querySelectorAll('[data-edit-calendar]').forEach(btn=>btn.onclick=()=>TnaFactoryCalendarEditor.open());
   }
   function openDialog(title,body){document.getElementById('tnaDialogTitle').textContent=title;document.getElementById('tnaDialogBody').innerHTML=body;if(!state.dialog.open)state.dialog.showModal();}
   function openHelp(action){const id=String(action).replace(/^help-/,'');const topic=(HELP_TOPICS[state.language]||HELP_TOPICS.en)[id]||HELP_TOPICS.en[id];if(!topic)return;openDialog(topic.title,`<article data-help-topic="${esc(id)}"><p>${esc(topic.intro)}</p><ol>${topic.items.map(item=>`<li>${esc(item)}</li>`).join('')}</ol></article>`);}
-  function openMenu(name){const help=HELP_TOPICS[state.language]||HELP_TOPICS.en;const items=name==='help'?Object.entries(help).map(([id,item])=>({action:`help-${id}`,label:item.label})):(MENUS[name]||[]).map(item=>({action:item,label:item}));const note=name==='file'?'Save, reopen and protected backup are available here. Excel preview rejects macros and warns about formulas.':name==='help'?(help.how?.intro||HELP_TOPICS.en.how.intro):text('unavailable');openDialog(text('menuTitle')+' · '+text(name),`<div class="menu-grid">${items.map(item=>`<button class="tna-btn secondary" type="button" data-menu-action="${esc(item.action)}">${esc(item.label)}</button>`).join('')}</div><p class="tna-note">${esc(note)}</p>`);document.querySelectorAll('[data-menu-action]').forEach(btn=>btn.onclick=()=>{const action=btn.dataset.menuAction;if(action.startsWith('help-'))return openHelp(action);if(action==='New TNA')return openWizard('quick');if(action==='Open Saved TNA')return openSavedList();if(action==='Save Now')return saveNow();if(action==='Make Another Copy'||action==='Download Saved Copy')return downloadCopy();if(action==='Open Saved Copy')return openSavedCopyDialog();if(action==='Import Excel TNA')return openImportPreview();if(action==='Add Activity')return openCustomTask();if(action==='Production Capacity')return openCapacityEntry();if(action==='Shipment Lots')return openShipmentLotEntry();if(action==='Linked Records')return openLinkedRecords();if(action==='Recovery Scenarios'){document.getElementById('tnaScenarioForm')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return state.dialog?.close();}if(action==='Offline Work')return openOfflineWork();if(['Prepare Report','Download Report','Print Report','Share Report'].includes(action))return openReportPanel(action);return openDialog(action,`<p>${esc(text('unavailable'))}</p>`);});}
+  function openMenu(name){const help=HELP_TOPICS[state.language]||HELP_TOPICS.en;const items=name==='help'?Object.entries(help).map(([id,item])=>({action:`help-${id}`,label:item.label})):(MENUS[name]||[]).map(item=>({action:item,label:item==='Factory Working Calendar'?TnaFactoryCalendarEditor.copy(state.language).title:item}));const note=name==='file'?'Save, reopen and protected backup are available here. Excel preview rejects macros and warns about formulas.':name==='help'?(help.how?.intro||HELP_TOPICS.en.how.intro):text('unavailable');openDialog(text('menuTitle')+' · '+text(name),`<div class="menu-grid">${items.map(item=>`<button class="tna-btn secondary" type="button" data-menu-action="${esc(item.action)}">${esc(item.label)}</button>`).join('')}</div><p class="tna-note">${esc(note)}</p>`);document.querySelectorAll('[data-menu-action]').forEach(btn=>btn.onclick=()=>{const action=btn.dataset.menuAction;if(action.startsWith('help-'))return openHelp(action);if(action==='New TNA')return openWizard('quick');if(action==='Open Saved TNA')return openSavedList();if(action==='Save Now')return saveNow();if(action==='Make Another Copy'||action==='Download Saved Copy')return downloadCopy();if(action==='Open Saved Copy')return openSavedCopyDialog();if(action==='Import Excel TNA')return openImportPreview();if(action==='Factory Working Calendar')return TnaFactoryCalendarEditor.open();if(action==='Add Activity')return openCustomTask();if(action==='Production Capacity')return openCapacityEntry();if(action==='Shipment Lots')return openShipmentLotEntry();if(action==='Linked Records')return openLinkedRecords();if(action==='Recovery Scenarios'){document.getElementById('tnaScenarioForm')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return state.dialog?.close();}if(action==='Offline Work')return openOfflineWork();if(['Prepare Report','Download Report','Print Report','Share Report'].includes(action))return openReportPanel(action);return openDialog(action,`<p>${esc(text('unavailable'))}</p>`);});}
   function openAction(action){if(action==='new')return openWizard('quick');if(action==='practice')return createPractice();if(action==='save')return saveNow();if(action==='continue')return continueLast();if(action==='open'||action==='orders')return openSavedList();if(action==='copy')return openSavedCopyDialog();if(action==='download')return downloadCopy();openDialog(text(action)||action,`<p>${esc(text(action+'Text')||text('unavailable'))}</p><p class="tna-note">${esc(text('unavailable'))}</p>`);}
   function openWizard(mode){const isFull=mode==='full';const body=`<form class="tna-wizard" id="tnaWizard">
       <div class="tna-tabs"><button type="button" data-wizard-tab="quick" class="${mode==='quick'?'active':''}">${esc(text('quick'))}</button><button type="button" data-wizard-tab="full" class="${mode==='full'?'active':''}">${esc(text('full'))}</button><button type="button" data-wizard-tab="excel" class="${mode==='excel'?'active':''}">${esc(text('excel'))}</button></div>
@@ -365,6 +367,105 @@
       if(currentPlanSaved(previousPlan))storage.savePlan(nextPlan,userKey());
     }
   }
+  /**
+   * Owns one in-workspace factory working-calendar form in the shared VESA shell.
+   * Access: calendar card or Tools > Factory Working Calendar, never a new page.
+   * Reads the current plan; writes only via domain.updateFactoryCalendar and the
+   * established TnaLocalEditPersistence transaction. No cloud request or guessed
+   * weekdays/timezone. If validation or browser storage fails the dialog stays
+   * open and the in-memory plan is unchanged. Saved copies remain v1.1 compatible.
+   */
+  class TnaFactoryCalendarEditor {
+    /** The UI dictionary localizes labels only; factory-entered strings stay intact. */
+    static copy(language){
+      const words={
+        en:{title:'Factory Working Calendar',status:'Calendar status',missing:'Needs Information — factory calendar not entered',recorded:'Factory calendar recorded by local user (not independently verified)',change:'Review / Update Calendar',
+          description:'Enter the factory working days and non-working dates from a documented source. No default working week is assumed. A buyer delivery calculation must not treat unconfirmed calendar dates as verified.',
+          name:'Calendar name',zone:'IANA timezone',week:'Working days (choose all that apply)',holidays:'Holidays (one YYYY-MM-DD date per line)',shutdowns:'Factory shutdown dates (one YYYY-MM-DD per line)',
+          source:'Factory document or source reference',reason:'Reason for this entry / revision',confirm:'I have checked these calendar entries against the factory source.',
+          save:'Save Factory Calendar',sourceLabel:'Source',daysLabel:'Working days',zoneLabel:'Timezone',datesLabel:'Holidays / shutdowns',none:'None recorded',
+          failed:'Could not save this factory calendar in this browser. Check available storage and retry.',
+          days:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']},
+        bn:{title:'কারখানার কাজের ক্যালেন্ডার',status:'ক্যালেন্ডারের অবস্থা',missing:'তথ্য প্রয়োজন — কাজের ক্যালেন্ডার দেওয়া হয়নি',recorded:'স্থানীয় ব্যবহারকারীর দেওয়া ক্যালেন্ডার (স্বাধীনভাবে যাচাই করা হয়নি)',change:'ক্যালেন্ডার দেখুন / পরিবর্তন করুন',
+          description:'কারখানার নথি দেখে কাজের দিন এবং ছুটি লিখুন। কোনো সপ্তাহের দিন ধরে নেওয়া হয়নি। অযাচাইকৃত ক্যালেন্ডারকে নিশ্চিত ডেলিভারি তারিখ ধরা যাবে না।',
+          name:'ক্যালেন্ডারের নাম',zone:'IANA টাইমজোন',week:'কাজের দিনগুলি বাছুন',holidays:'ছুটির দিন (প্রতি লাইনে YYYY-MM-DD)',shutdowns:'কারখানা বন্ধের তারিখ (প্রতি লাইনে YYYY-MM-DD)',
+          source:'কারখানার নথি / উৎস',reason:'লেখার বা পরিবর্তনের কারণ',confirm:'কারখানার উৎস দেখে তথ্য যাচাই করেছি।',
+          save:'ক্যালেন্ডার সেভ করুন',sourceLabel:'উৎস',daysLabel:'কাজের দিন',zoneLabel:'টাইমজোন',datesLabel:'ছুটি / বন্ধ',none:'নথিভুক্ত নয়',
+          failed:'এই ব্রাউজারে সেভ হয়নি। স্টোরেজ দেখে আবার চেষ্টা করুন।',
+          days:['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার']},
+        hi:{title:'फैक्ट्री कार्य कैलेंडर',status:'कैलेंडर की स्थिति',missing:'जानकारी चाहिए — फैक्ट्री कैलेंडर दर्ज नहीं है',recorded:'स्थानीय उपयोगकर्ता का दर्ज कैलेंडर (स्वतंत्र सत्यापन नहीं हुआ)',change:'कैलेंडर देखें / बदलें',
+          description:'फैक्ट्री के दस्तावेज से कार्य-दिन, छुट्टियां और बंद तारीखें दर्ज करें। कोई सप्ताह तय नहीं माना गया है। अपुष्ट कैलेंडर से डिलीवरी का वादा न करें।',
+          name:'कैलेंडर का नाम',zone:'IANA समय क्षेत्र',week:'कार्य दिवस चुनें',holidays:'छुट्टियां (प्रत्येक पंक्ति YYYY-MM-DD)',shutdowns:'फैक्ट्री बंद तारीखें (प्रत्येक पंक्ति YYYY-MM-DD)',
+          source:'फैक्ट्री दस्तावेज / स्रोत',reason:'दर्ज या बदलने का कारण',confirm:'फैक्ट्री के स्रोत से यह जानकारी जांची है।',
+          save:'फैक्ट्री कैलेंडर सेव करें',sourceLabel:'स्रोत',daysLabel:'कार्य दिवस',zoneLabel:'समय क्षेत्र',datesLabel:'छुट्टियां / बंद',none:'दर्ज नहीं',
+          failed:'इस ब्राउज़र में सेव नहीं हुआ। स्टोरेज जांचकर दोबारा कोशिश करें।',
+          days:['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार']},
+        ta:{title:'தொழிற்சாலை வேலை நாட்காட்டி',status:'நாட்காட்டி நிலை',missing:'தகவல் தேவை — தொழிற்சாலை நாட்காட்டி பதியப்படவில்லை',recorded:'உள்ளூர் பயனர் பதிவு செய்த நாட்காட்டி (சுயாதீனமாகச் சரிபார்க்கப்படவில்லை)',change:'நாட்காட்டியைப் பார்க்க / மாற்ற',
+          description:'தொழிற்சாலை ஆவணத்தைப் பார்த்து வேலை நாட்கள், விடுமுறை மற்றும் மூடல் தேதிகளை உள்ளிடுங்கள். எந்த வாரநாட்களும் இயல்பாக நிரப்பப்படவில்லை. உறுதிசெய்யாத நாட்காட்டியைக் கொண்டு delivery வாக்குறுதி அளிக்கக் கூடாது.',
+          name:'நாட்காட்டி பெயர்',zone:'IANA நேர மண்டலம்',week:'வேலை நாட்களைத் தேர்ந்தெடுக்கவும்',holidays:'விடுமுறைகள் (வரிக்கு ஒரு YYYY-MM-DD)',shutdowns:'தொழிற்சாலை மூடல் தேதிகள் (வரிக்கு ஒரு YYYY-MM-DD)',
+          source:'தொழிற்சாலை ஆவண / ஆதாரக் குறிப்பு',reason:'பதிவு / மாற்றக் காரணம்',confirm:'தொழிற்சாலை ஆதாரத்தைப் பார்த்து விவரங்களைச் சரிபார்த்தேன்.',
+          save:'வேலை நாட்காட்டியைச் சேமி',sourceLabel:'ஆதாரம்',daysLabel:'வேலை நாட்கள்',zoneLabel:'நேர மண்டலம்',datesLabel:'விடுமுறை / மூடல்',none:'பதிவு இல்லை',
+          failed:'Browser-ல் சேமிக்க முடியவில்லை. Storage-ஐச் சரிபார்த்து மீண்டும் முயலவும்.',
+          days:['ஞாயிறு','திங்கள்','செவ்வாய்','புதன்','வியாழன்','வெள்ளி','சனி']}
+      };
+      return words[language]||words.en;
+    }
+
+    /** A small status panel near Order Master; display data only when user-entered. */
+    static summary(plan,language){
+      const w=this.copy(language);
+      const cal=plan.calendars?.find(item=>item.calendarId==='default');
+      const valid=cal?.source==='user-confirmed'&&Array.isArray(cal.workingWeek)&&cal.workingWeek.length>0;
+      const days=valid?cal.workingWeek.map(day=>w.days[day]).join(', '):w.none;
+      const dateCounts=valid?String(cal.holidays?.length||0)+' / '+String(cal.shutdowns?.length||0):w.none;
+      return '<section class="tna-panel tna-calendar-panel" aria-label="'+esc(w.title)+'">'+
+        '<h3>'+esc(w.title)+'</h3><p class="tna-note">'+esc(w.status)+': '+esc(valid?w.recorded:w.missing)+'</p>'+
+        (valid?'<p>'+esc(w.daysLabel)+': '+esc(days)+' · '+esc(w.zoneLabel)+': '+esc(cal.timezone||w.none)+'</p>'+
+          '<p>'+esc(w.datesLabel)+': '+esc(dateCounts)+' · '+esc(w.sourceLabel)+': '+esc(cal.sourceReference||w.none)+'</p>':'')+
+        '<button class="tna-btn secondary" type="button" data-edit-calendar>'+esc(w.change)+'</button></section>';
+    }
+
+    /** A reviewed, explicit factory calendar: unconfigured plans start with no checked days. */
+    static open(){
+      if(!state.currentPlan)return openDialog('Factory Working Calendar','<p>Create or open a TNA before entering factory working days.</p>');
+      if(state.currentPlan.mode==='practice')return openDialog('Factory Working Calendar','<p>Practice orders cannot be recorded as a confirmed factory calendar.</p>');
+      const w=this.copy(state.language),cal=state.currentPlan.calendars?.find(item=>item.calendarId==='default');
+      const entered=cal?.source==='user-confirmed';
+      const weekdays=[1,2,3,4,5,6,0].map(day=>'<label><input type="checkbox" name="workingWeek" value="'+day+'" '+(entered&&cal.workingWeek?.includes(day)?'checked':'')+'> '+esc(w.days[day])+'</label>').join('');
+      const holidays=entered?(cal.holidays||[]).join('\n'):'';
+      const shutdowns=entered?(cal.shutdowns||[]).join('\n'):'';
+      const body='<section class="tna-calendar-editor"><p class="tna-note">'+esc(w.description)+'</p>'+
+        '<form class="tna-wizard" id="tnaCalendarForm">'+
+        '<div class="tna-form-grid">'+field('name',w.name,'text',entered?cal.name||'':'',true)+
+        field('timezone',w.zone,'text',entered?cal.timezone||'':'',true)+
+        field('sourceReference',w.source,'text',entered?cal.sourceReference||'':'',true)+'</div>'+
+        '<fieldset class="tna-checks tna-calendar-days"><legend>'+esc(w.week)+'</legend>'+weekdays+'</fieldset>'+
+        '<label class="tna-wide"><span>'+esc(w.holidays)+'</span><textarea name="holidays" rows="3" placeholder="YYYY-MM-DD">'+esc(holidays)+'</textarea></label>'+
+        '<label class="tna-wide"><span>'+esc(w.shutdowns)+'</span><textarea name="shutdowns" rows="3" placeholder="YYYY-MM-DD">'+esc(shutdowns)+'</textarea></label>'+
+        '<label class="tna-wide"><span>'+esc(w.reason)+' *</span><textarea name="reason" rows="2" maxlength="800" required></textarea></label>'+
+        '<label class="tna-calendar-confirm"><input name="confirmed" type="checkbox" required> '+esc(w.confirm)+'</label>'+
+        '<p role="alert" data-tna-calendar-error></p><button class="tna-btn" type="submit">'+esc(w.save)+'</button>'+
+        '</form></section>';
+      openDialog(w.title,body);
+      const form=document.getElementById('tnaCalendarForm');
+      form.onsubmit=event=>{
+        event.preventDefault();
+        const input=Object.fromEntries(new FormData(form).entries());
+        const dates=value=>String(value||'').split(/[\r\n,]+/).map(item=>item.trim()).filter(Boolean);
+        const values={name:input.name,timezone:input.timezone,sourceReference:input.sourceReference,
+          workingWeek:[...form.querySelectorAll('input[name="workingWeek"]:checked')].map(node=>Number(node.value)),
+          holidays:dates(input.holidays),shutdowns:dates(input.shutdowns),reason:input.reason,
+          confirmed:form.querySelector('input[name="confirmed"]').checked};
+        const result=domain.updateFactoryCalendar(state.currentPlan,values,{actorId:userKey()});
+        const message=form.querySelector('[data-tna-calendar-error]');
+        if(!result.ok){message.textContent=result.error;return;}
+        try{TnaLocalEditPersistence.commit(result.plan,state.currentPlan);}
+        catch{message.textContent=w.failed;return;}
+        state.currentPlan=result.plan;state.dialog.close();render();
+      };
+    }
+  }
+
   class GarmentTnaFollowupEditor {
     static labels(language){
       const copy={

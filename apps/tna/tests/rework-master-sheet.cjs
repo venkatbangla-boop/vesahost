@@ -79,6 +79,55 @@ class TnaMerchandisingSheetBrowserProof {
     return stored;
   }
 
+  /**
+   * Real browser proof that the factory chooses days, date exceptions and a
+   * source rather than inheriting the engine's synthetic weekday defaults.
+   * Confirms named-save/reload/portable recovery for both garment templates.
+   */
+  async verifyFactoryCalendar(){
+    const card=this.page.locator('.tna-calendar-panel');
+    await card.waitFor();
+    assert.ok((await card.innerText()).includes('Needs Information'),'Unconfigured factory calendar must never look confirmed.');
+    await card.locator('[data-edit-calendar]').click();
+    const form=this.page.locator('#tnaCalendarForm');
+    await form.waitFor({state:'visible'});
+    assert.equal(await form.locator('[name="workingWeek"]:checked').count(),0,
+      'Unconfirmed calendar cannot silently preselect Monday-Friday.');
+    await form.locator('[name="name"]').fill('Synthetic '+this.templateId+' production calendar');
+    await form.locator('[name="timezone"]').fill('Asia/Dhaka');
+    await form.locator('[name="sourceReference"]').fill('Synthetic Calendar Document REV A');
+    await form.locator('[name="holidays"]').fill('2026-10-21\n2028-02-29');
+    await form.locator('[name="shutdowns"]').fill('2026-10-22');
+    await form.locator('[name="reason"]').fill('Factory documents reviewed for synthetic proof');
+    for(const day of [0,1,2,3,4,5])await form.locator('[name="workingWeek"][value="'+day+'"]').check();
+    await form.locator('[name="confirmed"]').check();
+    await form.locator('button[type="submit"]').click();
+    await this.page.locator('#tnaCalendarForm').waitFor({state:'detached'});
+    const named=await this.page.evaluate(()=>JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan);
+    const calendar=named.calendars.find(item=>item.calendarId==='default');
+    assert.equal(calendar.source,'user-confirmed','Saved order must record user source not invented factory verification.');
+    assert.equal(calendar.sourceReference,'Synthetic Calendar Document REV A');
+    assert.equal(calendar.timezone,'Asia/Dhaka');
+    assert.deepEqual(calendar.workingWeek,[0,1,2,3,4,5]);
+    assert.deepEqual(calendar.holidays,['2026-10-21','2028-02-29']);
+    assert.deepEqual(calendar.shutdowns,['2026-10-22']);
+    assert.equal(calendar.revision,1);
+    assert.equal(named.revisionEvents.at(-1).eventType,'factory-calendar-confirmed');
+    const roundTrip=await this.page.evaluate(()=>{
+      const saved=JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan;
+      const copy=VesaTnaStorage.importCopy(VesaTnaStorage.exportCopy(saved));
+      return {calendar:copy.calendars[0],baseline:copy.baselineSnapshots,approvals:copy.approvals};
+    });
+    assert.deepEqual(roundTrip.calendar,calendar,'Downloaded copy must retain the reviewed factory calendar.');
+    assert.deepEqual(roundTrip.baseline,named.baselineSnapshots,'Calendar input must not affect baseline.');
+    assert.deepEqual(roundTrip.approvals,named.approvals,'Calendar input must not invent buyer approvals.');
+    await this.page.reload({waitUntil:'domcontentloaded'});
+    await this.page.locator('[data-action="continue"]').click();
+    await this.page.locator('#tnaDialog .tna-dialog-head button').click();
+    assert.ok((await this.page.locator('.tna-calendar-panel').innerText()).includes('Synthetic Calendar Document REV A'),
+      'The named TNA calendar must survive a full browser restart.');
+  }
+
   /** Proves each supported language changes labels but never changes a saved business record. */
   async verifyLanguages() {
     const before=await this.page.evaluate(()=>localStorage.getItem('vesa.tna360.records.qa-vesaent-com'));
@@ -96,6 +145,15 @@ class TnaMerchandisingSheetBrowserProof {
       await this.page.locator('.tna-master-activities [data-edit-task]').first().click();
       assert.ok(await this.page.locator('#tnaFollowupEdit').getByText(names[language],{exact:false}).count(),language+': follow-up editor label must match selected language');
       await this.page.locator('#tnaDialog .tna-dialog-head button').click();
+      const calendarLabel={en:'Calendar name',bn:'ক্যালেন্ডারের নাম',hi:'कैलेंडर का नाम',ta:'நாட்காட்டி பெயர்'};
+      await this.page.locator('[data-edit-calendar]').click();
+      const calendarForm=this.page.locator('#tnaCalendarForm');
+      assert.ok(await calendarForm.getByText(calendarLabel[language],{exact:true}).count(),
+        language+': factory calendar form must translate its name label.');
+      assert.equal(await calendarForm.locator('[name="workingWeek"]:checked').count(),6,
+        language+': confirmed working days may not change during translation.');
+      await this.page.locator('#tnaDialog .tna-dialog-head button').click();
+
     }
     assert.equal(await this.page.evaluate(()=>localStorage.getItem('vesa.tna360.records.qa-vesaent-com')),before,'Language changes must not change any saved TNA record');
   }
@@ -190,11 +248,13 @@ class TnaMerchandisingSheetBrowserProof {
     try {
       await this.start();
       await this.openSyntheticOrder('knit');
+      await this.verifyFactoryCalendar();
       await this.verifyLanguages();
       await this.verifyResponsive();
       await this.verifyLastActivityEdit();
       await this.verifyFollowupEdit();
       await this.openSyntheticOrder('woven');
+      await this.verifyFactoryCalendar();
       await this.verifyResponsive();
       await this.verifyFollowupEdit();
       assert.deepEqual(this.errors,[],'No uncaught browser exceptions');
