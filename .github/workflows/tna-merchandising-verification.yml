@@ -65,7 +65,7 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
-      - name: Chromium R03 factory daily review-date Excel PDF and full TNA PPM AQL regression
+      - name: Chromium R03 localized Excel data gaps and print with full TNA PPM AQL regression
         run: |
           export CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
           mkdir -p output/playwright
