@@ -1,6 +1,22 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
 
+## CI notification-noise gate — verified October 15, 2026
+
+**Scope and authority:** This is a CI scheduling change, NOT GMR-04 completion, factory approval, schema migration or deployment. Only `.github/workflows/tna-merchandising-verification.yml` on the existing `feature/tna360-continuous` development branch changed. `feature/costing-360` had its corresponding workflow updated separately. No TNA source, calculators, signed baselines, report fixtures, browser records, PPM/AQL logic, `main`, domain or DNS changed.
+
+**File-level dependency:** GitHub `push` on a matching path → workflow event → `tna-garment-rework` conditional job → **all original Node/Playwright/PPM/AQL checks unmodified**. The condition allows `workflow_dispatch` or a final `push` commit whose message contains `[verify]`; an ordinary intermediate commit records the expected **SKIPPED** job, not a pass. `workflow_dispatch` on this feature-only YAML may not be available until a workflow file exists on the default branch; `[verify]` on an app/test/workflow path is the reliable development trigger.
+
+**Evidence and verdict:** Real GitHub [38678044093](https://github.com/venkatbangla-boop/vesahost/actions/runs/38678044093) **SUCCESS**, verified TNA checkpoint commit `82ced7391d83d15205953fa210760c466a8d2d20`. GitHub [38678152337](https://github.com/venkatbangla-boop/vesahost/actions/runs/38678152337) **SKIPPED**, harmless comment-only non-`[verify]` commit `11565401aa323685fe114b22df3651ddd0b76268`. Costing corresponding genuine full CI and skip proof logged in the `VESA_PROGRESS.md` governance line. **Verdict: accepted for CI checkpoint/noise policy only**. Do not count skip as verified and never merge an application unless actual tests passed at a known source SHA.
+
+**Risks / rollback:** A later engineer may forget the `[verify]` tag and incorrectly treat SKIPPED as accepted. The Work resume prompt explicitly requires a final `[verify]` commit matching `on.push.paths`, inspection of non-skipped CI and exact tracker evidence. Roll back the workflow-only commit(s) by normal safe revert on feature branch if governance requires automatic per-push regression again; no destructive storage operation is involved.
+
+**NEXT ACTION still GMR-04:** audit Excel workbook preview and source mapping; implement explicit date/header mapping, rejection and reviewed confirm into **a NEW DRAFT only**; run final `[verify]` checkout CI and continue the 17-app portfolio once accepted. Full rework remains `ACTIVE / CONDITIONAL` with human UAT pending, not TNA REWORK DEMO LIVE.
+
+---
+
+
+
 ## Latest GMR-03 R01 export parity checkpoint — 2026-10-15
 
 **Application status:** TNA Garment Merchandising Rework — **ACTIVE / CONDITIONAL**. GMR-01, GMR-02 and the **R01-only GMR-03 slice are DEVELOPMENT VERIFIED** on feature/tna360-continuous. This does NOT complete TNA rework, all 12 report audiences, human UAT or authorize merge/public demo release.
