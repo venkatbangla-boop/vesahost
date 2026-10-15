@@ -504,7 +504,7 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
           {head:[t.ref,t.activity,t.department,t.target,t.original,t.revised,t.forecast,t.actual],
             values:row=>[row.ref,row.activity,row.department,row.due,row.original,row.revised,row.forecast,row.actual]},
           {head:[t.ref,t.status,t.waiting,t.reason,t.followup,t.recovery,t.proof],
-            values:row=>[row.ref,row.status,row.waiting,row.reason,row.followup,row.recovery,row.proof]}
+            values:row=>[row.ref,row.statusDisplay,row.waiting,row.reason,row.followup,row.recovery,row.proof]}
         ];
         for(const [index,part] of parts.entries()){
           html+='<div class="tna-report-daily-scroll"><table class="tna-report-daily-table" data-daily-part="'+(index+1)+'"><thead><tr>'+
