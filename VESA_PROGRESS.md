@@ -1,5 +1,12 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## Current development checkpoint — GMR-12 R09 (2026-10-15)
+
+**ACTIVE / CONDITIONAL, not DEVELOPMENT VERIFIED or DEMO LIVE.** R09 shipment-readiness source implementation and five new Node checks committed at `984caa905e8e2aa072eccd53a24cffe2ebb00317`; [Actions #38715775503](https://github.com/venkatbangla-boop/vesahost/actions/runs/38715775503) was QUEUED at this checkpoint. Source-only lot quantities/PO allocations, restricted quality/shipping local consent and authority reference, distinct ex-factory/ETD/ETA, non-authoritative PPM/AQL source status, 4 languages, typed Excel, HTML print preview. No main deployment, no source schema/domain/PPM/AQL mutations. Previous R08 successful [Actions #38713026149](https://github.com/venkatbangla-boop/vesahost/actions/runs/38713026149) 97/97 remains the latest confirmed SUCCESS, not acceptance for R09.
+
+**NEXT ACTION:** Verify the R09 exact SHA CI outcome; if failing, repair and retest. Require fresh authenticated real Chromium R09 print/download/mobile and full PPM/AQL regressions before acceptance; then GMR-13 R10 Portfolio/Multi-PO. Do not deploy/mark DEMO LIVE without owner authorization. **Next portfolio app after TNA: Packing & Container 360.**
+
+
 ## Latest verified TNA checkpoint — GMR-11 R08 Material & LC (2026-10-15)
 
 **TNA overall ACTIVE / CONDITIONAL; GMR-11 R08 commercial/sourcing-only Material & LC report DEVELOPMENT VERIFIED, NOT DEMO LIVE.** Actual GitHub repository checkout [Actions #38713026149](https://github.com/venkatbangla-boop/vesahost/actions/runs/38713026149) at exact source/test SHA `75f24ad77c07776fa5d9cee9b5982fd84dbb9d3b` was **SUCCESS**: 97/97 Node tests PASS, zero failures. Authenticated Chromium R08 commercial date/source-reference/consent gate, distinct Master vs supplier B2B LC, source-recorded in-house/QC/shortage and supplier reporting, genuine typed Excel, JSON and Chromium print PDF, mobile, four languages, and immutable browser-local source records PASS. Prior R01-R07 reports, GMR-04A/B/C genuine knit/woven Excel import, PPM 168 checkpoints, AQL Ac/Re, unchanged TNA business engines/save copies and VESA Login/App Centre/Admin/unified shell at seven widths plus 200% zoom PASS.
