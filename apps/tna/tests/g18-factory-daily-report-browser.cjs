@@ -24,9 +24,9 @@ function syntheticPlan(){
  function set(ref,patch){
    const task=plan.tasks.find(t=>t.templateRef===ref);
    assert.ok(task,'source task '+ref);
-   const dates=patch.dates;
+   const dates=patch.dates,priorDates={...task.dates};
    Object.assign(task,patch);
-   if(dates)task.dates={...task.dates,...dates};
+   if(dates)task.dates={...priorDates,...dates};
  }
  set('O01',{status:'in-progress',ownerParty:'merchant',waitingFor:'factory',
    dates:{baselineFinish:'2026-10-11',currentTargetFinish:'2026-10-14'},
@@ -141,15 +141,16 @@ async function run(){
   assert.equal(late[14],'SOURCE-REF-14');
   const gaps=XLSX.utils.sheet_to_json(workbook.Sheets['Missing Action Dates'],{header:1,raw:true});
   assert.ok(gaps.some(row=>row[1]==='O02'));
-  await page.evaluate(()=>{window.__factoryPrintCalled=false;window.print=()=>{window.__factoryPrintCalled=true;};});
-  await page.locator('[data-report-action="print"]').click();
-  assert.equal(await page.evaluate(()=>window.__factoryPrintCalled),true,'existing Print Report invokes browser print');
   await page.emulateMedia({media:'print'});
   await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
   const pdfPath=path.join(output,'tna-g18-factory-daily.pdf');
   await page.pdf({path:pdfPath,printBackground:true,landscape:true,preferCSSPageSize:true});
   await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
   await page.emulateMedia({media:'screen'});
+  await page.evaluate(()=>{window.__factoryPrintCalled=false;window.print=()=>{window.__factoryPrintCalled=true;};});
+  await page.locator('[data-report-action="print"]').click();
+  assert.equal(await page.evaluate(()=>window.__factoryPrintCalled),true,'existing Print Report invokes browser print');
+  await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
   assert.equal(fs.readFileSync(pdfPath).subarray(0,5).toString(),'%PDF-');
   const pdfPages=(fs.readFileSync(pdfPath).toString('latin1').match(/\/Type\s*\/Page\b/g)||[]).length;
   assert.ok(pdfPages>=2,'complete factory actions are printable across pages');
