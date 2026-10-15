@@ -66,7 +66,7 @@ for (const model of [bnModel, taModel]) {
 
 for (const fragment of [
   './assets/tna.css?v=0.11.3',
-  './src/reports.js?v=0.8.0',
+  './src/reports.js?v=0.8.1',
   './src/storage.js?v=0.11.2',
   './src/bootstrap.js',
   "'./apps/tna/src/reports.js'",
