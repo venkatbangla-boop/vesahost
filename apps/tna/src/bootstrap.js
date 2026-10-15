@@ -494,7 +494,10 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       if(!importer?.parseWorkbook)throw Error('Excel review is unavailable. The selected file was not saved.');
       const snapshot=importer.parseWorkbook(bytes,file.name);
       const suggested=importer.suggestWorksheet(snapshot);
-      state.importSession={snapshot,settings:{
+      const suggestedActivity=globalThis.VesaTnaActivityImport?.suggestSheet(snapshot,suggested.name);
+      state.importSession={snapshot,activitySettings:{enabled:false,sheetName:suggestedActivity?.name||suggested.name,
+        headerRow:suggestedActivity?.headerRow||1,dateFormat:'iso',durationBasis:'working',
+        fsZeroConfirmed:false,mapping:null,rowBindings:{}},settings:{
         sheetName:suggested.name,headerRow:suggested.row,recordRow:suggested.row+1,dateFormat:'iso',
         basis:'calendar',templateId:'knit',mapping:null
       },reviewed:null};
@@ -503,6 +506,8 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
   }
   function renderWorkbookMapping(){
     const session=state.importSession,importer=globalThis.VesaTnaImportReview,t=importWords();
+    const activityImport=globalThis.VesaTnaActivityImport,at=activityImport?.LABELS?.[state.language]||activityImport?.LABELS?.en;
+    const activitySettings=session?.activitySettings;
     const rootNode=document.getElementById('tnaImportPreviewResult');
     if(!rootNode||!session||!importer)return;
     const setting=session.settings,snap=session.snapshot;
@@ -523,6 +528,33 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const allRows=details.dataRows.map(item=>[item.line,'Row '+item.line+' · '+item.values.slice(0,6).join(' | ').slice(0,115)]);
     const preview=details.dataRows.slice(0,4).map(item=>
       '<tr><th scope="row">'+esc(item.line)+'</th><td>'+item.values.map(x=>esc(String(x??''))).join(' | ')+'</td></tr>').join('');
+    // GMR-04B is explicitly opt-in. GMR-04A order-only imports continue
+    // unchanged unless the user selects an activity worksheet and mapping.
+    let activityFields='';
+    if(activityImport&&activitySettings?.enabled){
+      let activityDesc=null;
+      try{activityDesc=activityImport.describe(snap,activitySettings);}catch(error){
+        activityFields='<p role="alert">'+esc(error.message)+'</p>';
+      }
+      if(activityDesc){
+        if(!activitySettings.mapping)activitySettings.mapping={...activityDesc.mapping};
+        const mapCols=activityImport.FIELD_IDS.map(id=>{
+          const options=[[-1,at.missing],...activityDesc.info.headers.map((head,index)=>[index,(index+1)+': '+(head||'Unnamed')])];
+          return '<label><span>'+esc(id.replace(/([A-Z])/g,' $1'))+'</span><select name="activity-map-'+esc(id)+'">'+
+            htmlOptions(options,activitySettings.mapping[id]??-1)+'</select></label>';
+        }).join('');
+        activityFields='<h4>'+esc(at.mapping)+'</h4><div class="tna-form-grid">'+mapCols+'</div>'+
+          '<p class="tna-note">'+esc(at.count)+': '+activityDesc.info.dataRows.length+'</p>';
+      }
+      activityFields='<div class="tna-form-grid">'+
+        selectField('activitySheetName',at.sheet,snap.sheetNames.map(name=>[name,name]),activitySettings.sheetName)+
+        field('activityHeaderRow',at.header,'number',activitySettings.headerRow,true)+
+        selectField('activityDateFormat',at.date,[['iso','YYYY-MM-DD'],['dmy','DD/MM/YYYY'],['mdy','MM/DD/YYYY'],['excel','Excel date serial']],activitySettings.dateFormat)+
+        selectField('activityDurationBasis',at.basis,[['working','Working days; factory calendar unverified'],['calendar','Calendar days']],activitySettings.durationBasis)+
+        '</div>'+activityFields+
+        '<label><input type="checkbox" name="fsZeroConfirmed" '+(activitySettings.fsZeroConfirmed?'checked':'')+'> '+esc(at.dependency)+'</label>'+
+        '<p class="tna-note">'+esc(at.tip)+'</p>';
+    }
     rootNode.innerHTML='<form id="tnaWorkbookMapping" class="tna-import-stage">'+
       '<h3>'+esc(t.title)+'</h3>'+
       '<p class="tna-note">'+esc(t.warning)+'</p>'+ 
@@ -537,8 +569,10 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       '</div><h4>'+esc(t.map)+'</h4><div class="tna-form-grid">'+mapFields+'</div>'+
       '<div class="tna-import-row-preview" tabindex="0"><table><thead><tr><th>Row</th><th>Workbook cells (preview only)</th></tr></thead><tbody>'+
       (preview||'<tr><td colspan="2">No order rows were found.</td></tr>')+'</tbody></table></div>'+
-      '<p class="tna-note">'+esc(t.noOverwrite)+'</p><p class="tna-note">'+
-      'Other sheets/activities are not merged and no baseline is approved.</p>'+
+      '<p class="tna-note">'+esc(t.noOverwrite)+'</p>'+ 
+      (activityImport?'<label><input type="checkbox" name="includeActivities" '+(activitySettings?.enabled?'checked':'')+'> '+esc(at.include)+'</label>':'')+
+      activityFields+
+      (activitySettings?.enabled?'':'<p class="tna-note">Activities and dependencies are NOT imported in Order-only mode.</p>')+
       '<button type="submit" class="tna-btn">'+esc(t.review)+'</button></form>'+
       '<div id="tnaWorkbookDecision"></div><p id="tnaImportReviewFeedback" role="alert" aria-live="polite"></p>';
     const form=document.getElementById('tnaWorkbookMapping');
@@ -548,13 +582,33 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       return {sheetName:data.sheetName,headerRow:Number(data.headerRow),recordRow:Number(data.recordRow),
         dateFormat:data.dateFormat,basis:data.basis,templateId:data.templateId,mapping};
     };
+    const collectActivity=()=>{
+      const data=new FormData(form),prior=session.activitySettings,activityMap={};
+      for(const id of activityImport?.FIELD_IDS||[])activityMap[id]=Number(data.get('activity-map-'+id)??prior.mapping?.[id]??-1);
+      return {enabled:data.has('includeActivities'),
+        sheetName:String(data.get('activitySheetName')||prior.sheetName),
+        headerRow:Number(data.get('activityHeaderRow')||prior.headerRow),
+        dateFormat:String(data.get('activityDateFormat')||prior.dateFormat),
+        durationBasis:String(data.get('activityDurationBasis')||prior.durationBasis),
+        fsZeroConfirmed:data.has('fsZeroConfirmed'),
+        mapping:activityMap,rowBindings:{...prior.rowBindings}};
+    };
     form.onchange=event=>{
       session.settings=collect();
-      session.reviewed=null;
+      session.activitySettings=collectActivity();
+      session.reviewed=null;session.activityReviewed=null;
       document.getElementById('tnaWorkbookDecision').innerHTML='';
-      if(['sheetName','headerRow'].includes(event.target.name)){
-        if(event.target.name==='sheetName')session.settings.headerRow=importer.suggestHeaderRow(snap,session.settings.sheetName).row;
-        session.settings.mapping=null;session.settings.recordRow='';
+      const key=event.target.name;
+      if(['sheetName','headerRow','includeActivities','activitySheetName','activityHeaderRow'].includes(key)){
+        if(key==='sheetName')session.settings.headerRow=importer.suggestHeaderRow(snap,session.settings.sheetName).row;
+        if(key==='sheetName'||key==='headerRow'){session.settings.mapping=null;session.settings.recordRow='';}
+        if(key==='activitySheetName'){
+          const best=activityImport.suggestSheet(snap,session.settings.sheetName);
+          session.activitySettings.headerRow=best?.name===session.activitySettings.sheetName?best.headerRow:1;
+        }
+        if(['activitySheetName','activityHeaderRow'].includes(key)){
+          session.activitySettings.mapping=null;session.activitySettings.rowBindings={};
+        }
         renderWorkbookMapping();
       }
     };
@@ -564,25 +618,59 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
       const plans=readRecords();
       const checked=importer.review(snap,session.settings,plans);
       session.reviewed=checked;
-      const errors=checked.errors.map(e=>'<li>'+esc(e)+'</li>').join('');
-      const warnings=checked.warnings.map(w=>'<li>'+esc(w)+'</li>').join('');
+      session.activitySettings=collectActivity();
+      const activityCheck=session.activitySettings.enabled&&activityImport?
+        activityImport.review(snap,checked,session.activitySettings):null;
+      session.activityReviewed=activityCheck;
+      const activeReady=!session.activitySettings.enabled||!!activityCheck?.ready;
+      const complete=checked.ready&&activeReady;
+      const activityRows=activityCheck?.rows||[];
+      const activitySummary=activityCheck?'<section aria-label="Reviewed Excel activities"><h4>'+esc(at.preview)+
+        ' · '+activityRows.length+' · '+esc(activityCheck.edgeCount)+' FS/0 links</h4>'+
+        '<div class="tna-import-row-preview" tabindex="0"><table><thead><tr><th>Row</th><th>Source ref / Mapped task / Dates / Status / Predecessors</th></tr></thead><tbody>'+
+        activityRows.map(row=>'<tr><th scope="row">'+esc(row.line)+'</th><td>'+esc(row.sourceKey)+' → '+esc(row.targetRef||at.missing)+
+          ' · '+esc(row.title)+' · '+esc(row.dates.plannedFinish||t.missing)+' / '+esc(row.dates.revisedFinish||t.missing)+
+          ' / '+esc(row.dates.actualFinish||t.missing)+' · '+esc(row.status)+' · '+esc(row.predecessors.join(', ')||'No predecessor')+
+          '</td></tr>').join('')+'</tbody></table></div>'+
+        (activityCheck.missingTemplateRefs?.length?'<p class="tna-note">'+esc(activityCheck.missingTemplateRefs.length)+
+          ' template tasks have no Excel source and remain unstarted/unscheduled.</p>':'')+
+        '</section>':'';
+      const unmatchedHtml=activityCheck?.unmatched?.length?'<div class="tna-form-grid">'+
+        activityCheck.unmatched.map(row=>{
+          const plan=domain.createPlan(checked.proposal,{ownerUserId:'preview'});
+          const options=[['',at.missing],...plan.tasks.map(task=>[task.templateRef,task.templateRef+' · '+task.title])];
+          return '<label>'+esc(at.bind)+' · '+esc(row.line)+' '+esc(row.sourceKey)+' '+esc(row.title)+
+            '<select data-activity-bind-line="'+esc(row.line)+'">'+htmlOptions(options,session.activitySettings.rowBindings[row.line]||'')+
+            '</select></label>';
+        }).join('')+'</div>':'';
+      const errors=[...checked.errors,...(activityCheck?.errors||[])].map(e=>'<li>'+esc(e)+'</li>').join('');
+      const warnings=[...checked.warnings.filter(w=>!session.activitySettings.enabled||!w.includes('NOT imported')),...(activityCheck?.warnings||[])].map(w=>'<li>'+esc(w)+'</li>').join('');
       const summary=checked.ready?[
         ['Buyer',checked.proposal.buyerName],['Factory',checked.proposal.factoryName],
         ['Style',checked.proposal.styleNo],['PO',checked.proposal.poNumber],
         ['Quantity',checked.proposal.totalQty],['Ex-factory',checked.proposal.buyerRequiredExFactory],
         ['Template',checked.proposal.templateId],['Lead-time basis',checked.proposal.leadTimeBasis]
       ].map(item=>'<p><b>'+esc(item[0])+':</b> '+esc(item[1])+'</p>').join(''):'';
-      const consent=checked.ready?'<label><input type="checkbox" id="tnaWorkbookConsent"> '+esc(t.consent)+'</label>'+
+      const consent=complete?'<label><input type="checkbox" id="tnaWorkbookConsent"> '+esc(t.consent)+'</label>'+
+        (session.activitySettings.enabled?'<label><input type="checkbox" id="tnaWorkbookActivityConsent"> '+esc(at.confirmation)+'</label>':'')+
         (checked.duplicate?'<label><input type="checkbox" id="tnaWorkbookDuplicateConsent"> '+esc(t.duplicateConsent)+'</label>':'')+
         '<button type="button" class="tna-btn" id="tnaWorkbookConfirm">'+esc(t.confirm)+'</button>':'';
       const node=document.getElementById('tnaWorkbookDecision');
-      node.innerHTML='<h4>Review result</h4>'+summary+
+      node.innerHTML='<h4>Review result</h4>'+summary+activitySummary+unmatchedHtml+
         (errors?'<ul class="tna-import-errors">'+errors+'</ul>':'')+
         (warnings?'<ul class="tna-import-warnings">'+warnings+'</ul>':'')+consent;
+      node.querySelectorAll('[data-activity-bind-line]').forEach(select=>select.onchange=()=>{
+        session.activitySettings.rowBindings[select.dataset.activityBindLine]=select.value;
+        session.activityReviewed=null;
+        node.querySelector('#tnaWorkbookConfirm')?.remove();
+        importReviewError('Activity mapping changed. Select Review proposed draft again to validate all activities.');
+      });
       const button=document.getElementById('tnaWorkbookConfirm');
       if(button)button.onclick=()=>{
         if(!document.getElementById('tnaWorkbookConsent')?.checked)
           return importReviewError('Review the source and check the confirmation before creating the new draft.');
+        if(session.activitySettings.enabled&&!document.getElementById('tnaWorkbookActivityConsent')?.checked)
+          return importReviewError('Confirm the full activity and dependency review before importing.');
         if(checked.duplicate&&!document.getElementById('tnaWorkbookDuplicateConsent')?.checked)
           return importReviewError('Confirm that the matching existing order must remain separate.');
         try{
@@ -592,7 +680,12 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
           if(!fresh.ready)throw Error(fresh.errors.join('; '));
           if(fresh.duplicate&&!document.getElementById('tnaWorkbookDuplicateConsent')?.checked)
             throw Error('Matching existing order requires separate acknowledgement.');
-          const draft=importer.createNewDraft(fresh,{ownerUserId:userKey()});
+          let draft=importer.createNewDraft(fresh,{ownerUserId:userKey()});
+          if(session.activitySettings.enabled){
+            const finalActivity=activityImport.review(snap,fresh,session.activitySettings);
+            if(!finalActivity.ready)throw Error(finalActivity.errors.join('; '));
+            draft=activityImport.applyToNewDraft(draft,finalActivity,{ownerUserId:userKey()});
+          }
           if(readRecords().some(row=>row.recordId===draft.recordId))throw Error('New record ID conflicts with an existing saved order.');
           // savePlan is the only persistent write: a new stable ID is required.
           const saved=storage.savePlan(draft,userKey());
@@ -609,7 +702,9 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
           openDialog('New TNA created',
             '<p>A separate, unsigned TNA draft was saved locally. Existing orders were not replaced.</p>'+
             '<p><b>'+esc(saved.style||'New style')+'</b> · '+esc(saved.po||'New PO')+'</p>'+
-            '<p>Activity/dependency rows from the workbook were not imported. Review the task sheet and download a saved copy.</p>');
+            (session.activitySettings.enabled?'<p>Reviewed Excel activities and FS/0 predecessors are included. Other template tasks remain unverified.</p>':
+              '<p>Activity/dependency rows were not imported (Order-only). Review the task sheet.</p>')+
+            '<p>Download a saved copy before leaving this device.</p>');
         }catch(error){importReviewError(error.message);}
       };
     };
