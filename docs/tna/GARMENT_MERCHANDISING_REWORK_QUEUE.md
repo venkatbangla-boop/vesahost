@@ -26,3 +26,16 @@
 **Priority queue:** (1) Complete Costing 360, (2) TNA 360 Garment Merchandising Rework, (3) Packing & Container 360, (4) Order & Commission 360, then remaining approved roadmap.
 
 **Current status:** **QUEUED / NOT STARTED**. No TNA source changes authorized by this tracker alone.
+
+
+## GitHub Work source audit checkpoint — 2026-10-15 (CONDITIONAL)
+
+- **Branch:** `feature/tna-merchandising-rework`, created from `main`. Source inspected through connected GitHub; cloud/local checkout and runnable browser tests were not available in this session. **Policy reviewed; implementation files directly inspected** (bootstrap, domain, scheduling and storage). No feature implementation or PASS is asserted by this audit.
+- **Observed gap:** `apps/tna/src/bootstrap.js` renders a calculation-oriented dashboard first; `workspacePanel()` defaults to timeline, caps visible workspace rows at 24 and Gantt rows at 10; `planPanel()` places the editable list after scheduling, readiness, alerts, scenarios and shipments and labels it "First activities", showing just the first 12. That diverges from the approved familiar master-sheet-first merchandising request. Source-backed data and reporting paths must be preserved.
+- **File ownership:** `bootstrap.js` owns TNA presentation, event wiring, view/filter state; `domain.js` owns garment activity templates and immutable plan validation; `scheduling.js` owns CPM/calendar dates; `storage.js` owns local records, migrations, copies and workbook conversion. The first patch must affect presentation only, **not** the three latter owners or shared platform assets.
+- **First narrow patch group (not yet implemented):** Make the full activity follow-up sheet the primary workspace view, with scroll/pagination or filter access to every editable activity, clear column headers and truthful unknown-date statuses. Retain the existing timeline, Gantt and filters as optional views. Do not compute delays, approval authority or critical status from absent inputs. Preserve the current `data-edit-task` controls and storage format.
+- **In scope for first implementation:** `apps/tna/src/bootstrap.js`, only necessary TNA-specific CSS, and dedicated TNA browser/contract tests after direct inspection. **Frozen:** `domain.js`, `scheduling.js`, `storage.js`, PPM/AQL engines, app catalogue, VESA shared shell, records and production routes.
+- **Verification gate:** Actual browser checks for complete activity accessibility and edit action, two synthetic knit/woven workflows, missing-date behavior, 390/1280 responsive views, four languages, saved-copy reopen, CPM invariants and relevant TNA/PPM/AQL regressions. No such new tests were executed at this documentation checkpoint.
+- **Rollback:** revert the first UI-only commit if any of those proofs fails. No schema or storage migration is authorized.
+- **Verdict:** CONDITIONAL — source-level audit completed, not a rework acceptance or deployment.
+- **NEXT ACTION:** inspect entire TNA source/style/test entrypoints on this branch, implement the smallest master-sheet-first UI slice in `bootstrap.js` and TNA CSS, run real browser/regression tests, then update this ledger and `VESA_PROGRESS.md` with exact SHA and evidence. Next portfolio app remains Packing & Container 360.
