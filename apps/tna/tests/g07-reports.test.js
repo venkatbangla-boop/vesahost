@@ -28,12 +28,12 @@ for (const lang of ['en', 'bn', 'hi', 'ta']) {
   assert(catalogue[0].id === 'R01' && catalogue[11].id === 'R12', `G07 ${lang} catalogue should preserve R01-R12 IDs.`);
   const seen = new Set();
   for (const item of catalogue) {
-    const model = reports.buildReportModel(plan, { reportId: item.id, language: lang, generatedAt: '2026-10-10T07:10:00.000Z', timezone: 'Asia/Dhaka' });
+    const model = reports.buildReportModel(plan, { reportId: item.id, asOfDate: item.id==='R03'?'2026-10-10':undefined, language: lang, generatedAt: '2026-10-10T07:10:00.000Z', timezone: 'Asia/Dhaka' });
     seen.add(model.reportId);
     assert(model.schema === 'VESA-TNA-REPORT-1', `G07 ${lang} ${item.id} should use the report schema.`);
     assert(model.generatedLabel && model.timezone === 'Asia/Dhaka', `G07 ${lang} ${item.id} should preserve generated date/timezone metadata.`);
     assert(model.order.buyer === 'Buyer Report' && model.order.style === 'STYLE-RPT', `G07 ${lang} ${item.id} must not translate typed buyer/style values.`);
-    assert(item.id === 'R02' ? model.tasks.length <= plan.tasks.length && !!model.buyerTna : model.tasks.length === plan.tasks.length, `G07 ${lang} ${item.id} must respect its approved audience scope.`);
+    assert(item.id === 'R02' ? model.tasks.length <= plan.tasks.length && !!model.buyerTna : item.id==='R03' ? model.tasks.length <= plan.tasks.length && !!model.factoryDaily?.ready : model.tasks.length === plan.tasks.length, `G07 ${lang} ${item.id} must respect its approved audience scope.`);
     assert(model.labels.noFabrication && model.labels.shareFallback && model.labels.printFallback, `G07 ${lang} ${item.id} should include report fallback notes.`);
     assert(model.tasks.every(task => ['not-started','in-progress','blocked','submitted','approved','rejected','completed','waived','not-applicable'].includes(task.status)), `G07 ${lang} ${item.id} must preserve stable status IDs.`);
     const jsonExport = JSON.stringify(model, null, 2);
@@ -65,9 +65,9 @@ for (const model of [bnModel, taModel]) {
 }
 
 for (const fragment of [
-  './assets/tna.css?v=0.11.3',
-  './src/reports.js?v=0.8.1',
-  './src/storage.js?v=0.11.2',
+  './assets/tna.css?v=0.11.4',
+  './src/reports.js?v=0.9.0',
+  './src/storage.js?v=0.11.3',
   './src/bootstrap.js',
   "'./apps/tna/src/reports.js'",
   'const reports=globalThis.VesaTnaReports',
