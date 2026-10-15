@@ -32,7 +32,7 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
 
 /* TNA merchandise activity sheet: preserve all columns on narrow screens via horizontal scrolling. */
 .tna-sheet-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
-.tna-sheet-scroll .tna-activity-table{min-width:1050px}
-.tna-sheet-scroll .tna-activity-table [role=row]{display:grid;grid-template-columns:65px minmax(180px,2fr) minmax(100px,1fr) 112px 112px 112px 120px minmax(135px,1.2fr) 110px;align-items:center;gap:8px}
+.tna-sheet-scroll .tna-activity-table{min-width:1700px}
+.tna-sheet-scroll .tna-activity-table [role=row]{display:grid;grid-template-columns:65px minmax(180px,2fr) minmax(100px,1fr) 112px 112px 112px 125px 120px minmax(210px,1.7fr) minmax(145px,1.2fr) minmax(140px,1.2fr) 110px;align-items:center;gap:8px}
 .tna-sheet-scroll .tna-activity-heading{font-weight:800;background:var(--look-surface,#eef3f9)}
-@media(max-width:850px){.tna-sheet-scroll .tna-activity-table [role=row]{grid-template-columns:65px minmax(180px,2fr) minmax(100px,1fr) 112px 112px 112px 120px minmax(135px,1.2fr) 110px}}
+@media(max-width:850px){.tna-sheet-scroll .tna-activity-table [role=row]{grid-template-columns:65px minmax(180px,2fr) minmax(100px,1fr) 112px 112px 112px 125px 120px minmax(210px,1.7fr) minmax(145px,1.2fr) minmax(140px,1.2fr) 110px}}
