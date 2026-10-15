@@ -39,3 +39,12 @@
 - **Rollback:** revert the first UI-only commit if any of those proofs fails. No schema or storage migration is authorized.
 - **Verdict:** CONDITIONAL — source-level audit completed, not a rework acceptance or deployment.
 - **NEXT ACTION:** inspect entire TNA source/style/test entrypoints on this branch, implement the smallest master-sheet-first UI slice in `bootstrap.js` and TNA CSS, run real browser/regression tests, then update this ledger and `VESA_PROGRESS.md` with exact SHA and evidence. Next portfolio app remains Packing & Container 360.
+
+
+## Rework patch 1 — first sheet-first presentation slice (2026-10-15)
+
+**Branch/source commit:** `feature/tna-merchandising-rework` / `8a30a25ce1fd33c59e0ec0f2cd6a62a375de2a99`.
+**Scope actually changed:** `apps/tna/src/bootstrap.js` only. Moved the editable garment activity master sheet immediately after the order-master panel and ahead of other dashboards; removed the 12-row excerpt limitation; added meaningful headings and activity-specific Edit labels. Existing delegated `data-edit-task` action is retained. TNA CSS already has dedicated five-column desktop and one-column <=850px rules, so no stylesheet edit was needed.
+**Static source verification:** six source-contract checks passed on GitHub-fetched file (sheet ordering, full task iteration, removal of first-12 excerpt, handler preservation, order master, unchanged storage key). **This is not runtime/syntax/browser/CI proof.** No authentic browser tests, Excel export/import, four-language, PPM/AQL regression or visual review ran in this connector-only patch. The visible added headings are English-only, so translated four-language acceptance is still open.
+**Frozen:** `domain.js`, `scheduling.js`, `storage.js`, old records/versions, PPM/AQL, shared shell, routing, main and public release were not edited by this patch.
+**Verdict:** CONDITIONAL; not accepted, not deployed. **NEXT ACTION:** execute source syntax and real 390/1280 browser/regression checks; add localization and master-sheet columns (planned/forecast/actual/delay/source/remarks) without inventing data; update master dashboard and tracker with concrete green/red evidence. Revert `8a30a25` if proof fails.
