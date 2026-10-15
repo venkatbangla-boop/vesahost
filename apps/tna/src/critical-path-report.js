@@ -246,7 +246,7 @@
     if(margin>0)warnings.push(labels.negative+' '+margin+' '+labels.tf);
     return {...result,ready:true,confidence:'operator-reviewed-model-only',startDate:start,
       requiredDate:required,forecastDate:relative.project.forecastDate,
-      bufferWorkdays:-margin,workingWeek:week.title,exceptionDates:values,
+      bufferWorkdays:margin===0?0:-margin,workingWeek:week.title,exceptionDates:values,
       startSource:startField,rows,criticalChains:driverChains,
       driverTaskRefs:[...new Set(driverChains.flat())],dependencies:subsetEdges.map(edge=>({
         from:taskMap.get(edge.predecessorTaskId).templateRef,
