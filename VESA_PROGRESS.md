@@ -1,4 +1,9 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
+### Factory calendar, 2026-10-15 — DEVELOPMENT VERIFIED
+
+Verified code `f3ad70e5fd75752ac9e148bb0e6a47fc08240be4` and [CI PASS 38777699406](https://github.com/venkatbangla-boop/vesahost/actions/runs/38777699406): explicit factory weekdays, timezone, holidays/shutdowns, user-entered source, audit trail; saved-copy, knit/woven, EN/BN/HI/TA, PPM/AQL browser regressions passed. No public/main change. Two earlier runs 38777279276 and 38777457867 failed test-label assumptions; later full rerun passed. TNA rework remains ACTIVE; R04 not yet accepted. NEXT ACTION: source-backed R04 CPM report gated on explicit start/deadline, valid dependency graph and user-confirmed factory calendar. Next app Packing & Container 360.
+
+
 
 ### 2026-10-15 — R04 Critical Path calendar-source audit (CONDITIONAL, not implemented)
 

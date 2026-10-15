@@ -1,4 +1,9 @@
 # TNA 360 — Garment-Merchandising Rework Request
+### 2026-10-15: Factory Working Calendar — DEVELOPMENT VERIFIED
+
+Branch code SHA `f3ad70e5fd75752ac9e148bb0e6a47fc08240be4`; genuine [GitHub Actions 38777699406](https://github.com/venkatbangla-boop/vesahost/actions/runs/38777699406) SUCCESS (Node, knit/woven browser, EN/BN/HI/TA, saved copies, holiday/weekday/calendar input, PPM/AQL/shared shell regressions). No calendar working days/timezone are guessed; factory source is local user-entered, not independently authenticated. Baseline, approvals, original records, main and public release unchanged. Failed test-only intermediary runs 38777279276 and 38777457867 retained. Overall TNA ACTIVE, R04 CONDITIONAL. NEXT ACTION: implement R04 report from existing CPM engine only after explicit start/deadline, durations, dependencies and each task's user-confirmed calendar are validated; missing facts remain Needs Information. Next portfolio app Packing & Container 360.
+
+
 
 ### 2026-10-15 — R04 Critical Path calendar-source audit (CONDITIONAL, not implemented)
 
