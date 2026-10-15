@@ -133,6 +133,7 @@ async function run(){
   const pdfPath=path.join(output,'tna-g17-r02-buyer-print.pdf');
   await page.pdf({path:pdfPath,printBackground:true,landscape:true,preferCSSPageSize:true});
   await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+  await page.emulateMedia({media:'screen'}); // Restore interactive controls after PDF proof.
   const pdf=fs.readFileSync(pdfPath);
   assert.equal(pdf.subarray(0,5).toString(),'%PDF-');
   const pages=(pdf.toString('latin1').match(/\/Type\s*\/Page\b/g)||[]).length;
