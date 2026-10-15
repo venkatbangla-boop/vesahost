@@ -205,7 +205,8 @@
       const accepted=(Array.isArray(plan?.revisionEvents)?plan.revisionEvents:[])
         .filter(event=>event?.eventType==='scenario-applied'&&event.details?.scenarioId&&
           Number.isInteger(event.revision)&&event.revision>=0);
-      const rows=[],seen=new Set(),missing=0;
+      const rows=[],seen=new Set();
+      let missing=0;
       for(const [index,branch] of (Array.isArray(plan?.scenarioBranches)?plan.scenarioBranches:[]).entries()){
         if(!branch||branch.status!=='applied'||!this.text(branch.scenarioId))continue;
         const stamp=this.text(branch.appliedAt);
