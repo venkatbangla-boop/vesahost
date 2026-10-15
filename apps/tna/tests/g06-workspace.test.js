@@ -40,7 +40,7 @@ for (const fragment of [
   'Editable garment TNA activity sheet',
   'tna-master-activities',
   'tna-sheet-scroll',
-  'plan.tasks.map(task=>',
+  'GarmentTnaActivityView.renderCells(plan,task,state.language)',
   'task.dates?.currentTargetFinish||task.dates?.baselineFinish',
   'task.dates?.forecastFinish',
   'task.dates?.actualFinish',
@@ -79,6 +79,8 @@ assert(orderMasterAt !== -1 && sheetAt > orderMasterAt && schedulingAt > sheetAt
   'Garment sheet must follow Order Master and precede specialist dashboards.');
 assert(!bootstrap.includes('plan.tasks.slice(0,12)'),
   'Activity edit access cannot silently exclude the remaining template tasks.');
+assert(css.includes('.tna-sheet-scroll .tna-activity-table{min-width:0;display:grid;gap:10px'),
+  'Mobile should render complete localized activity cards.');
 assert(css.includes('.tna-sheet-scroll .tna-activity-table{min-width:1700px'),
   'Twelve source-backed follow-up columns must retain their mobile scroll width.');
 assert(css.includes('.tna-sheet-scroll{max-width:100%;overflow-x:auto'),

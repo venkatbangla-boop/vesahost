@@ -105,7 +105,13 @@ class TnaMerchandisingSheetBrowserProof {
         return {pageWidth:document.documentElement.scrollWidth,viewport:innerWidth,scrollWidth:table.scrollWidth,clientWidth:table.clientWidth};
       });
       assert.ok(geometry.pageWidth<=geometry.viewport+1,width+': page must not overflow horizontally');
-      if(width===390)assert.ok(geometry.scrollWidth>geometry.clientWidth,'Mobile nine-column sheet must allow internal horizontal scrolling');
+      if(width===390){
+        assert.ok(geometry.scrollWidth<=geometry.clientWidth+1,'Mobile activity cards must not require a hidden horizontal edit column');
+        const card=await this.page.locator('.tna-activity-table [role="row"]:not(.tna-activity-heading)').first();
+        assert.equal(await card.locator('.tna-sheet-cell-label').count(),12,'All twelve mobile fields must have localized visible labels');
+        assert.equal(await card.locator('[data-edit-task]').count(),1,'Mobile first card must have one visible edit action');
+        assert.equal(await this.page.locator('.tna-activity-heading').isVisible(),false,'Desktop-only table header must be hidden in mobile card view');
+      }
       // Screenshots contain synthetic order values only; they are CI evidence, not public deployment.
       const folder=path.join(this.root,'output','playwright');
       fs.mkdirSync(folder,{recursive:true});
