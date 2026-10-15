@@ -629,17 +629,17 @@ const records=readRecords();const offline=offlineSummary();const portfolioPlans=
     const reviewWrap=document.getElementById('tnaReportAsOfWrap');
     const criticalWrap=document.getElementById('tnaCriticalReviewWrap');
     const gate=document.getElementById('tnaReportGate');
-    const criticalInputs=()=>new FormData(criticalWrap);
     const criticalReview=()=>{
-      const d=criticalInputs();
-      return {startAnchor:d.get('criticalStartAnchor')||'',
-        weekKey:d.get('criticalWeek')||'',
-        exceptionDates:String(d.get('criticalExceptions')||''),
-        nearCriticalDays:d.get('criticalThreshold')||'',
-        calendarConfirmed:d.has('criticalCalendarConfirmed'),
-        durationsReviewed:d.has('criticalDurationsReviewed'),
-        dependenciesReviewed:d.has('criticalDependenciesReviewed'),
-        endpointReviewed:d.has('criticalEndpointReviewed')};
+      const value=name=>criticalWrap.querySelector('[name="'+name+'"]')?.value||'';
+      const checked=name=>!!criticalWrap.querySelector('[name="'+name+'"]')?.checked;
+      return {startAnchor:value('criticalStartAnchor'),
+        weekKey:value('criticalWeek'),
+        exceptionDates:value('criticalExceptions'),
+        nearCriticalDays:value('criticalThreshold'),
+        calendarConfirmed:checked('criticalCalendarConfirmed'),
+        durationsReviewed:checked('criticalDurationsReviewed'),
+        dependenciesReviewed:checked('criticalDependenciesReviewed'),
+        endpointReviewed:checked('criticalEndpointReviewed')};
     };
     const currentModel=()=>reportModel(type.value,
       type.value==='R03'?{asOfDate:review.value}:
