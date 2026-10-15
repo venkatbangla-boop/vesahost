@@ -27,3 +27,12 @@
 #tnaWorkbookDecision .tna-import-row-preview td{overflow-wrap:anywhere;white-space:normal}
 #tnaWorkbookDecision [data-activity-bind-line]{min-height:44px}
 @media(max-width:620px){#tnaWorkbookDecision .tna-import-row-preview{max-height:48vh}}
+
+
+/* GMR-04C reviewed custom activities and explicit per-link precedence. */
+#tnaWorkbookMapping .tna-note,#tnaWorkbookDecision h4{overflow-wrap:anywhere;line-height:1.5}
+#tnaWorkbookDecision .tna-import-row-preview th,
+#tnaWorkbookDecision .tna-import-row-preview td{font-variant-numeric:tabular-nums;line-height:1.5}
+#tnaWorkbookDecision [data-activity-bind-line]{width:100%;max-width:100%;box-sizing:border-box;margin-top:8px}
+#tnaWorkbookMapping label:has(input[name="advancedLinksConfirmed"]){align-items:start}
+@media(max-width:600px){#tnaWorkbookDecision .tna-import-row-preview{max-width:100%;overflow:auto}}
