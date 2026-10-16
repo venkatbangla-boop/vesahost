@@ -117,7 +117,10 @@
     if(!start||!required)return {status:'needs-information',reason:'Explicit order start and buyer required ex-factory dates are required.'};
     const calendarIssue=TnaScenarioCalendarGuard.confirmedIssue(plan);
     if(calendarIssue)return {status:'needs-information',reason:calendarIssue};
-    const primary=plan.calendars.find(item=>item.calendarId===primaryCalendarId);
+    const assignedIds=new Set((plan.tasks||[]).map(task=>task.calendarId||'default'));
+    const effectiveId=primaryCalendarId==='default'&&assignedIds.size===1?
+      [...assignedIds][0]:primaryCalendarId;
+    const primary=plan.calendars.find(item=>item.calendarId===effectiveId);
     if(!primary)return {status:'needs-information',reason:'Selected scenario factory calendar is missing.'};
     if(primaryCalendarId!=='default'&&!scheduling.isWorkingDate(required,primary))
       return {status:'needs-information',reason:'Required ex-factory date needs a confirmed working-day basis on the alternative calendar.'};
@@ -268,6 +271,61 @@
       baseScheduleStatus:baseSchedule.status,scenarioScheduleStatus:scenarioSchedule.status,capacity,changedCriticalTaskIds:comparison.changedCriticalTaskIds,resourceLoad:scenarioLoad,comparison,forecastProvenance:forecastProvenance(candidate,scenarioSchedule),violations};
     return {ok:true,branch,previewPlan:candidate,baseSchedule,scenarioSchedule,baseLoad,scenarioLoad,comparison,violations};
   }
+  /**
+   * Independently recompute a selected alternative before a saved preview
+   * or local apply. A caller cannot create factory approval by spoofing a
+   * preview status, a gain, a forecast or a stale candidate reference.
+   * Non-alternative legacy recovery branches retain their existing path.
+   */
+  function confirmedAlternativeBranchIssue(plan,branch){
+    const changes=branch?.changes||{};
+    if(!Object.prototype.hasOwnProperty.call(changes,'confirmedAlternativeCalendarId'))
+      return null;
+    const issue=TnaScenarioCalendarGuard.alternativeIssue(plan,changes);
+    if(issue)return issue;
+    const recalculated=previewScenario(plan,changes,{actorId:plan.ownerUserId});
+    if(!recalculated.ok||recalculated.violations.length||
+      recalculated.branch.status!=='preview'||
+      recalculated.baseSchedule.status!=='calculated'||
+      recalculated.scenarioSchedule.status!=='calculated')
+      return 'The selected alternative calendar needs a valid, source-confirmed comparison before saving or applying.';
+    for(const key of ['baseForecastDate','scenarioForecastDate',
+      'workingDaysGained','calendarDaysGained','calendarComparisonBasis']){
+      if(branch[key]!==recalculated.branch[key])
+        return 'The alternative comparison has changed; preview it again before saving or applying.';
+    }
+    return null;
+  }
+  /**
+   * Preserve a preview for the current revision and R12 selection. This is
+   * scenario metadata only: tasks, calendar, frozen baseline, approvals and
+   * buyer commitment remain untouched. No buyer/factory acceptance implied.
+   * A saved option does not change the live planning revision.
+   */
+  function saveScenarioPreview(plan,branch,context={}){
+    if(!plan||!Array.isArray(plan.tasks)||!branch||!branch.scenarioId)
+      return {ok:false,error:'A current previewed scenario is required.'};
+    if(branch.baseRecordId!==plan.recordId||
+      branch.baseRevision!==(plan.revision||0)||
+      branch.status!=='preview'||!Array.isArray(branch.violations)||
+      branch.violations.length)
+      return {ok:false,error:'Preview belongs to another order, revision or needs review.'};
+    if((plan.scenarioBranches||[]).some(item=>item.scenarioId===branch.scenarioId))
+      return {ok:false,error:'This scenario option is already recorded.'};
+    const issue=TnaScenarioCalendarGuard.proposedIssue(branch.changes||{})||
+      confirmedAlternativeBranchIssue(plan,branch);
+    if(issue)return {ok:false,error:issue};
+    const next=clone(plan),timestamp=context.createdAt||now(),
+      actorId=clean(context.actorId)||next.ownerUserId||'local-browser-user';
+    next.scenarioBranches=[...(next.scenarioBranches||[]),
+      {...clone(branch),savedAt:timestamp,savedBy:actorId,status:'preview'}];
+    next.updatedAt=timestamp;
+    next.auditEvents=[...(next.auditEvents||[]),{eventId:makeId('audit'),
+      eventType:'scenario-preview-saved',actorId,createdAt:timestamp,
+      details:{scenarioId:branch.scenarioId,baseRevision:branch.baseRevision,
+        confirmedAlternativeCalendarId:branch.changes?.confirmedAlternativeCalendarId||null}}];
+    return {ok:true,plan:next};
+  }
   function applyScenario(plan,branch,context={}){
     if(!context.confirm)return {ok:false,error:'Apply Scenario requires explicit confirmation.'};
     if(!clean(context.reason))return {ok:false,error:'Apply Scenario requires a revision reason.'};
@@ -278,15 +336,22 @@
       return {ok:false,error:'Scenario has unresolved review issues; it cannot be applied.'};
     const calendarIssue=TnaScenarioCalendarGuard.proposedIssue(branch.changes||{});
     if(calendarIssue)return {ok:false,error:calendarIssue};
-    if(Object.prototype.hasOwnProperty.call(branch.changes||{},'confirmedAlternativeCalendarId'))
-      return {ok:false,error:'Confirmed alternative calendar comparison is preview-only until its separate save, report and user approval gate is verified.'};
+    const alternativeIssue=confirmedAlternativeBranchIssue(plan,branch);
+    if(alternativeIssue)return {ok:false,error:alternativeIssue};
     const next=clone(plan),timestamp=context.createdAt||now();
     const errors=applyScenarioChanges(next,branch.changes||{});
     if(errors.length)return {ok:false,error:errors.join(' ')};
     next.revision=Number(next.revision||0)+1;
     next.updatedAt=timestamp;
-    next.scenarioBranches=[...(next.scenarioBranches||[]),{...clone(branch),status:'applied',appliedAt:timestamp,appliedBy:context.actorId||next.ownerUserId,applyReason:clean(context.reason)}];
-    next.revisionEvents=[...(next.revisionEvents||[]),{eventId:makeId('revision'),eventType:'scenario-applied',revision:next.revision,actorId:context.actorId||next.ownerUserId,createdAt:timestamp,reason:clean(context.reason),details:{scenarioId:branch.scenarioId,baseRevision:branch.baseRevision,workingDaysGained:branch.workingDaysGained}}];
+    const applied={...clone(branch),status:'applied',appliedAt:timestamp,
+      appliedBy:context.actorId||next.ownerUserId,applyReason:clean(context.reason)};
+    const alreadyRecorded=(next.scenarioBranches||[]).some(item=>item.scenarioId===branch.scenarioId);
+    next.scenarioBranches=alreadyRecorded?
+      next.scenarioBranches.map(item=>item.scenarioId===branch.scenarioId?applied:item):
+      [...(next.scenarioBranches||[]),applied];
+    next.revisionEvents=[...(next.revisionEvents||[]),{eventId:makeId('revision'),eventType:'scenario-applied',revision:next.revision,actorId:context.actorId||next.ownerUserId,createdAt:timestamp,reason:clean(context.reason),details:{scenarioId:branch.scenarioId,baseRevision:branch.baseRevision,workingDaysGained:branch.workingDaysGained,
+      calendarDaysGained:branch.calendarDaysGained??null,
+      confirmedAlternativeCalendarId:branch.changes?.confirmedAlternativeCalendarId||null}}];
     next.auditEvents=[...(next.auditEvents||[]),{eventId:makeId('audit'),eventType:'scenario-applied',actorId:context.actorId||next.ownerUserId,createdAt:timestamp,details:{scenarioId:branch.scenarioId}}];
     return {ok:true,plan:next};
   }
@@ -316,7 +381,7 @@
     const orders=visible.map(plan=>{const schedule=planSchedule(plan);const shipment=operations?.reconcileShipmentLots?.(plan.order?.totalQty,plan.shipmentLots||[],{inspectionPassed:plan.finalInspectionDecision?.status==='passed'})||null;return {recordId:plan.recordId,style:plan.order?.styles?.[0]?.styleNo||'',buyer:plan.order?.buyerName||'',factory:plan.order?.factoryName||'',po:plan.order?.poNumbers?.[0]||'',revision:Number(plan.revision||0),forecastDate:schedule.forecastDate||null,forecastStatus:schedule.status,risk:conflictIds.has(plan.recordId)?'capacity-conflict':schedule.workingDaysEarlyOrLate>0?'delayed':schedule.status==='calculated'?'calculated':'needs-information',shipment,forecastProvenance:forecastProvenance(plan,schedule)};});
     return {filters,orders,capacity,accessibleOrderCount:orders.length,conflictCount:capacity.conflicts.length};
   }
-  const api={ENGINE_VERSION,previewScenario,applyScenario,detectPortfolioCapacityConflicts,filterPortfolioPlans,portfolioSummary,forecastProvenance};
+  const api={ENGINE_VERSION,previewScenario,saveScenarioPreview,applyScenario,detectPortfolioCapacityConflicts,filterPortfolioPlans,portfolioSummary,forecastProvenance};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaScenarios=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

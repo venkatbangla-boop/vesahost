@@ -81,10 +81,37 @@ class ConfirmedAlternateCalendarProof {
       assert(preview.previewPlan.tasks.every(t=>t.calendarId===alt.calendarId));
       assert.equal(JSON.stringify(withAlternative),snapshot,
         'A/B simulation cannot mutate saved source or baseline.');
-      const blocked=scenarios.applyScenario(withAlternative,preview.branch,{
-        confirm:true,reason:'Even explicit apply is blocked until UI/report proof'});
-      assert.equal(blocked.ok,false);
-      assert(blocked.error.includes('preview-only'));
+      const refused=scenarios.applyScenario(withAlternative,preview.branch,{
+        confirm:false,reason:'No authorisation'});
+      assert.equal(refused.ok,false);
+      const stored=scenarios.saveScenarioPreview(withAlternative,preview.branch,{
+        actorId:'synthetic-reviewer'});
+      assert.equal(stored.ok,true,stored.error);
+      assert.equal(stored.plan.scenarioBranches.length,1);
+      assert.deepEqual(stored.plan.tasks,withAlternative.tasks);
+      assert.deepEqual(stored.plan.calendars,withAlternative.calendars);
+      assert.deepEqual(stored.plan.baselineSnapshots,withAlternative.baselineSnapshots);
+      assert.equal(stored.plan.revision,withAlternative.revision);
+      const applied=scenarios.applyScenario(stored.plan,preview.branch,{
+        confirm:true,reason:'Local calendar source reviewed; buyer agreement not claimed',
+        actorId:'synthetic-reviewer'});
+      assert.equal(applied.ok,true,applied.error);
+      assert.equal(applied.plan.revision,withAlternative.revision+1);
+      assert.equal(applied.plan.scenarioBranches.length,1);
+      assert.equal(applied.plan.scenarioBranches[0].status,'applied');
+      assert(applied.plan.tasks.every(t=>t.calendarId===alt.calendarId));
+      assert.deepEqual(applied.plan.calendars,withAlternative.calendars);
+      assert.deepEqual(applied.plan.baselineSnapshots,withAlternative.baselineSnapshots);
+      assert.deepEqual(applied.plan.approvals,withAlternative.approvals);
+      assert.equal(applied.plan.revisionEvents.at(-1).details.confirmedAlternativeCalendarId,
+        alt.calendarId);
+      assert.equal(scenarios.saveScenarioPreview(stored.plan,preview.branch).ok,false,
+        'Saving an identical scenario twice must fail closed.');
+      for(const key of ['scenarioForecastDate','calendarDaysGained','calendarComparisonBasis']){
+        const forgedResult=scenarios.applyScenario(withAlternative,{
+          ...preview.branch,[key]:'spoofed'}, {confirm:true,reason:'Reject forged gain'});
+        assert.equal(forgedResult.ok,false,key+' may not be spoofed.');
+      }
       const forged=scenarios.previewScenario(withAlternative,{
         confirmedAlternativeCalendarId:'alt-calendar-not-reviewed'});
       assert.equal(forged.branch.status,'needs-review');
