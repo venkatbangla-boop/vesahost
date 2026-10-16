@@ -23,7 +23,7 @@
     ta:{languageName:'தமிழ்',headings:{order:'ஆர்டர் விவரம்',dates:'தேதி காலங்கள்',tasks:'செயல்பாடுகள்',warnings:'டேட்டா குறை / கவனம்',actions:'ரிப்போர்ட் செயல்கள்',meta:'ரிப்போர்ட் தகவல்'},labels:{brand:BRAND,generated:'உருவாக்கப்பட்டது',timezone:'டைம்சோன்',audience:'பார்வையாளர்',revision:'ரிவிஷன்',baseline:'பேஸ்லைன் snapshots',buyer:'Buyer',factory:'Factory',style:'Style',po:'PO',quantity:'Quantity',status:'Status',owner:'Owner',forecast:'Forecast',required:'Required ex-factory',noFabrication:'approval, date, quantity, rate அல்லது shipment result எதுவும் உருவாக்கிப் போடப்படவில்லை. காலியான source data Needs Information ஆகவே இருக்கும்.',shareFallback:'Supported browser action இல்லையெனில் native share கிடையாது; report download அல்லது print செய்யவும்.',printFallback:'Verified local route-க்கு browser print பயன்படுத்தவும். Licensed local PDF renderer verify ஆகும் வரை dedicated PDF conditional ஆகும்.'},reports:{}}
   };
   const titleTranslations={
-    masterTna:['Master TNA','মাস্টার TNA','मास्टर TNA','மாஸ்டர் TNA'],buyerTna:['Buyer TNA','ক্রেতার TNA','खरीदार TNA','Buyer TNA — வாங்குபவர் திட்டம்'],factoryDailyAction:['Factory Daily Action','ফ্যাক্টরি দৈনিক কাজ','फैक्ट्री दैनिक कार्य','தொழிற்சாலை தினசரி செயல்கள்'],criticalPath:['Critical Path','ক্রিটিকাল পাথ','क्रिटिकल पाथ','முக்கிய செயல்பாதை'],weeklyTna:['Weekly TNA','Weekly TNA','Weekly TNA','Weekly TNA'],delayRecovery:['Delay & Recovery','Delay & Recovery','Delay & Recovery','Delay & Recovery'],productionStatus:['Production Status','Production Status','Production Status','Production Status'],materialLc:['Material & LC','Material & LC','Material & LC','Material & LC'],shipmentReadiness:['Shipment Readiness','Shipment Readiness','Shipment Readiness','Shipment Readiness'],portfolioMultiPo:['Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO'],approvalHistory:['Approval History','Approval History','Approval History','Approval History'],scenarioComparison:['Scenario Comparison','Scenario Comparison','Scenario Comparison','Scenario Comparison']
+    masterTna:['Master TNA','মাস্টার TNA','मास्टर TNA','மாஸ்டர் TNA'],buyerTna:['Buyer TNA','ক্রেতার TNA','खरीदार TNA','Buyer TNA — வாங்குபவர் திட்டம்'],factoryDailyAction:['Factory Daily Action','ফ্যাক্টরি দৈনিক কাজ','फैक्ट्री दैनिक कार्य','தொழிற்சாலை தினசரி செயல்கள்'],criticalPath:['Critical Path','ক্রিটিকাল পাথ','क्रिटिकल पाथ','முக்கிய செயல்பாதை'],weeklyTna:['Weekly TNA','সাপ্তাহিক TNA','साप्ताहिक TNA','வாராந்திர TNA'],delayRecovery:['Delay & Recovery','Delay & Recovery','Delay & Recovery','Delay & Recovery'],productionStatus:['Production Status','Production Status','Production Status','Production Status'],materialLc:['Material & LC','Material & LC','Material & LC','Material & LC'],shipmentReadiness:['Shipment Readiness','Shipment Readiness','Shipment Readiness','Shipment Readiness'],portfolioMultiPo:['Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO','Portfolio / Multi-PO'],approvalHistory:['Approval History','Approval History','Approval History','Approval History'],scenarioComparison:['Scenario Comparison','Scenario Comparison','Scenario Comparison','Scenario Comparison']
   };
   const audienceTranslations={
     factoryAgent:['Factory + agent','Factory + agent','Factory + agent','Factory + agent'],buyerBrand:['Buyer / brand','Buyer / brand','Buyer / brand','Buyer / brand'],departments:['Departments','Departments','Departments','Departments'],management:['Management','Management','Management','Management'],buyerAgentFactory:['Buyer / agent / factory','Buyer / agent / factory','Buyer / agent / factory','Buyer / agent / factory'],productionBuyer:['Production / authorized buyer','Production / authorized buyer','Production / authorized buyer','Production / authorized buyer'],commercialSourcing:['Commercial / sourcing','Commercial / sourcing','Commercial / sourcing','Commercial / sourcing'],qualityShipping:['Quality / shipping','Quality / shipping','Quality / shipping','Quality / shipping'],managementAgent:['Management / agent','Management / agent','Management / agent','Management / agent'],buyerFactory:['Buyer / factory','Buyer / factory','Buyer / factory','Buyer / factory'],plannerManagement:['Planner / management','Planner / management','Planner / management','Planner / management']
@@ -525,10 +525,209 @@
     }
   }
 
+  /**
+   * R05 LOCAL-ONLY Weekly TNA report owner.
+   * Access: buildReportModel(plan,{reportId:'R05',generatedAt,timezone,asOfDate}).
+   * Inputs: recorded task statuses and baseline/target/forecast/actual finish,
+   * plus optional raw task recoveryAction that remains a PROPOSAL.
+   * Output: immutable ISO-Monday/Sunday civil-week groups and explicit unknowns.
+   * No plan mutations, approval inference, recipient authorization, committed
+   * recovery or cloud delivery. Invalid timezone/as-of fails closed.
+   */
+  class TnaWeeklyReportProjection {
+    /**
+     * One translation dictionary is used by source projection, XLSX headers and
+     * print previews; typed garment values are never translated or overwritten.
+     */
+    static labels(language){
+      const all={
+        en:{localAudience:'Local merchandiser review — not authorized for buyer/factory distribution',
+          localNote:'Internal local working report. Do not send to buyer, factory or agent without reviewing recipient authority and removing restricted information.',
+          title:'Weekly merchandising follow-up',asOf:'As of',timezone:'Timezone',basis:'ISO Monday–Sunday calendar weeks (not factory working days)',
+          sections:{completedThisWeek:'Completed this week (recorded actual)',completedPreviousWeek:'Completed previous week (recorded actual)',missed:'Past due as of today',dueThisWeek:'Still due this week',dueNextWeek:'Due next week',approvalPending:'Approval / buyer response pending (local status)',recordedRecovery:'Recorded recovery proposals — agreement not verified',needsInformation:'Open tasks needing due date / completion evidence'},
+          columns:['Group','Ref','Activity','Owner','Original baseline','Current target / due','Forecast','Recorded actual','Status','Calendar days late','Date source','Recovery proposal','Agreement'],
+          none:'No recorded items',unknown:'Needs Information',agreed:'Agreement not verified',approvalNote:'A task marked submitted or awaiting approval does not prove the buyer received it or approved it.',
+          recoveryNote:'An entered recovery action or locally applied scenario is not an agreed buyer/factory recovery. No external agreement has been verified.',
+          dueSource:{current:'Current target',baseline:'Confirmed baseline',taskBaseline:'Recorded baseline',none:'No due date'},
+          weekNow:'Current week',weekPrevious:'Previous week',weekNext:'Next week',outside:'Later open actions (not shown)',earlier:'Earlier completed actions (not shown)',
+          invalidClock:'Valid report timezone and as-of date required; weekly classification is unavailable.',
+          unknownDue:'Open tasks have no valid recorded due date.',missingActual:'A completed status has no valid actual finish date on or before the as-of date.',
+          reviewNotice:'Review internal data and recipient permission before manual sharing. This report does not create buyer sign-off or an agreed recovery.',
+          asOfBasis:'Civil dates in the stated report timezone; the weekly boundary is Monday 00:00 through Sunday 23:59.',
+          count:'items'},
+        bn:{localAudience:'স্থানীয় মার্চেন্ডাইজার পর্যালোচনা — ক্রেতা/কারখানায় পাঠানোর অনুমতি নয়',
+          localNote:'শুধু স্থানীয় অভ্যন্তরীণ কাজের প্রতিবেদন। অনুমোদিত প্রাপক যাচাই না করে পাঠাবেন না।',
+          title:'সাপ্তাহিক মার্চেন্ডাইজিং ফলো-আপ',asOf:'তারিখ',timezone:'টাইমজোন',basis:'সোমবার–রবিবার ক্যালেন্ডার সপ্তাহ (কারখানার কাজের দিন নয়)',
+          sections:{completedThisWeek:'এই সপ্তাহে সম্পন্ন (বাস্তব তারিখ)',completedPreviousWeek:'গত সপ্তাহে সম্পন্ন',missed:'আজ পর্যন্ত সময় পেরিয়েছে',dueThisWeek:'এই সপ্তাহে বাকি',dueNextWeek:'পরের সপ্তাহে বাকি',approvalPending:'অনুমোদন / ক্রেতার উত্তর বাকি (স্থানীয় অবস্থা)',recordedRecovery:'নথিভুক্ত পুনরুদ্ধার প্রস্তাব — সম্মতি যাচাই হয়নি',needsInformation:'তারিখ / সমাপ্তির প্রমাণ প্রয়োজন'},
+          columns:['দল','নং','কাজ','দায়িত্ব','মূল পরিকল্পনা','বর্তমান লক্ষ্য','পূর্বাভাস','বাস্তব','অবস্থা','বিলম্ব দিন','তারিখ উৎস','পুনরুদ্ধার প্রস্তাব','সম্মতি'],
+          none:'নথিভুক্ত নেই',unknown:'তথ্য প্রয়োজন',agreed:'সম্মতি যাচাই হয়নি',approvalNote:'জমা বা অনুমোদন অপেক্ষায় থাকা কাজ ক্রেতার প্রাপ্তি বা অনুমোদনের প্রমাণ নয়।',
+          recoveryNote:'স্থানীয়ভাবে প্রয়োগ করা পরিকল্পনাও ক্রেতা/কারখানার সম্মতি নয়। স্বতন্ত্র সম্মতির প্রমাণ নেই।',
+          dueSource:{current:'বর্তমান লক্ষ্য',baseline:'নিশ্চিত মূল পরিকল্পনা',taskBaseline:'নথিভুক্ত মূল পরিকল্পনা',none:'শেষ তারিখ নেই'},
+          weekNow:'এই সপ্তাহ',weekPrevious:'গত সপ্তাহ',weekNext:'পরের সপ্তাহ',outside:'পরবর্তী খোলা কাজ (দেখানো হয়নি)',earlier:'আগের সম্পন্ন কাজ (দেখানো হয়নি)',
+          invalidClock:'বৈধ টাইমজোন এবং প্রতিবেদনের তারিখ দরকার।',unknownDue:'কিছু কাজের নির্ভরযোগ্য শেষ তারিখ নেই।',missingActual:'সম্পন্ন অবস্থার সঠিক বাস্তব শেষ তারিখ নেই।',
+          reviewNotice:'পাঠানোর আগে অনুমোদিত প্রাপক যাচাই করুন; এটি ক্রেতার অনুমোদন বা সম্মতি নয়।',
+          asOfBasis:'প্রতিবেদনের টাইমজোনে ক্যালেন্ডার তারিখ; সোমবার থেকে রবিবার।',count:'টি'},
+        hi:{localAudience:'स्थानीय मर्चेंडाइज़र समीक्षा — खरीदार/फैक्ट्री को भेजने की अनुमति नहीं',
+          localNote:'केवल स्थानीय आंतरिक कार्य रिपोर्ट। प्राप्तकर्ता की अनुमति जाँचने से पहले न भेजें।',
+          title:'साप्ताहिक मर्चेंडाइजिंग फॉलो-अप',asOf:'तारीख',timezone:'समय क्षेत्र',basis:'सोमवार–रविवार कैलेंडर सप्ताह (फैक्ट्री कार्यदिवस नहीं)',
+          sections:{completedThisWeek:'इस सप्ताह पूरे (वास्तविक तारीख)',completedPreviousWeek:'पिछले सप्ताह पूरे',missed:'आज तक देरी',dueThisWeek:'इस सप्ताह देय',dueNextWeek:'अगले सप्ताह देय',approvalPending:'अनुमोदन / खरीदार जवाब लंबित (स्थानीय स्थिति)',recordedRecovery:'दर्ज रिकवरी प्रस्ताव — सहमति सत्यापित नहीं',needsInformation:'देय तारीख / पूरा होने का प्रमाण चाहिए'},
+          columns:['समूह','क्रम','कार्य','जिम्मेदार','मूल योजना','वर्तमान लक्ष्य','पूर्वानुमान','वास्तविक','स्थिति','देरी दिन','तारीख स्रोत','रिकवरी प्रस्ताव','सहमति'],
+          none:'दर्ज नहीं',unknown:'जानकारी चाहिए',agreed:'सहमति सत्यापित नहीं',approvalNote:'जमा/अनुमोदन की प्रतीक्षा का अर्थ खरीदार ने पाया या मंजूर किया नहीं है।',
+          recoveryNote:'स्थानीय रिकवरी बदलाव खरीदार/फैक्ट्री की सहमति नहीं है; स्वतंत्र प्रमाण नहीं है।',
+          dueSource:{current:'वर्तमान लक्ष्य',baseline:'पुष्ट मूल योजना',taskBaseline:'दर्ज मूल योजना',none:'देय तारीख नहीं'},
+          weekNow:'यह सप्ताह',weekPrevious:'पिछला सप्ताह',weekNext:'अगला सप्ताह',outside:'बाद के खुले काम (दिखाए नहीं)',earlier:'पहले पूरे काम (दिखाए नहीं)',
+          invalidClock:'मान्य रिपोर्ट टाइमज़ोन और तारीख चाहिए।',unknownDue:'कुछ खुले कामों की मान्य देय तारीख नहीं है।',missingActual:'पूर्ण स्थिति के लिए मान्य वास्तविक तारीख नहीं है।',
+          reviewNotice:'भेजने से पहले प्राप्तकर्ता अनुमति की जाँच करें; यह खरीदार की स्वीकृति नहीं है।',
+          asOfBasis:'रिपोर्ट के टाइमज़ोन में कैलेंडर तारीख; सोमवार से रविवार।',count:'कार्य'},
+        ta:{localAudience:'உள்ளூர் Merchandiser ஆய்வு — Buyer/Factory-க்கு அனுப்ப அனுமதி இல்லை',
+          localNote:'உள்ளூர் உள்பயன்பாட்டு அறிக்கை மட்டுமே. பெறுநர் அனுமதியைச் சரிபார்க்காமல் பகிர வேண்டாம்.',
+          title:'வாராந்திர Merchandising Follow-up',asOf:'தேதி',timezone:'நேர மண்டலம்',basis:'திங்கள்–ஞாயிறு காலண்டர் வாரம் (Factory வேலை நாட்கள் அல்ல)',
+          sections:{completedThisWeek:'இந்த வாரம் முடிந்தவை (பதிந்த உண்மை தேதி)',completedPreviousWeek:'முந்தைய வாரம் முடிந்தவை',missed:'இன்றுவரை தாமதமானவை',dueThisWeek:'இந்த வாரம் முடிக்க வேண்டியவை',dueNextWeek:'அடுத்த வாரம் முடிக்க வேண்டியவை',approvalPending:'ஒப்புதல் / Buyer பதில் நிலுவை (உள்ளூர் பதிவு)',recordedRecovery:'பதிந்த Recovery திட்டங்கள் — ஒப்புதல் உறுதி இல்லை',needsInformation:'தேதி / முடிவின் ஆதாரம் தேவை'},
+          columns:['பிரிவு','எண்','செயல்','பொறுப்பு','முதல் திட்டம்','தற்போதைய இலக்கு','எதிர்பார்ப்பு','நிகழ்ந்தது','நிலை','தாமத நாட்கள்','தேதி ஆதாரம்','Recovery திட்டம்','ஒப்புதல்'],
+          none:'பதிவு இல்லை',unknown:'தகவல் தேவை',agreed:'ஒப்புதல் உறுதி இல்லை',approvalNote:'Submitted அல்லது Awaiting Approval என்பதால் Buyer பெற்றார்/ஒப்புதல் அளித்தார் என்று அர்த்தமில்லை.',
+          recoveryNote:'உள்ளூரில் மாற்றிய Recovery திட்டம் Buyer/Factory ஒப்புதல் அல்ல. சுயாதீன ஒப்புதல் ஆதாரம் இல்லை.',
+          dueSource:{current:'தற்போதைய இலக்கு',baseline:'உறுதிசெய்த முதல் திட்டம்',taskBaseline:'பதிந்த அடிப்படை தேதி',none:'முடிவு தேதி இல்லை'},
+          weekNow:'இந்த வாரம்',weekPrevious:'முந்தைய வாரம்',weekNext:'அடுத்த வாரம்',outside:'பின்னர் வரும் செயல்கள் (காட்டப்படவில்லை)',earlier:'முந்தைய முடிந்த செயல்கள் (காட்டப்படவில்லை)',
+          invalidClock:'சரியான Report நேர மண்டலம் மற்றும் தேதி தேவை.',unknownDue:'சில செயல்களுக்கு சரியான முடிவு தேதி இல்லை.',missingActual:'முடிந்தது என்ற நிலைக்கு சரியான நிகழ்ந்த தேதி இல்லை.',
+          reviewNotice:'பகிர்வதற்கு முன் பெறுநர் அனுமதியைச் சரிபார்க்கவும்; இது Buyer ஒப்புதல் அல்ல.',
+          asOfBasis:'Report நேர மண்டலத்தின் காலண்டர் தேதிகள்; திங்கள் முதல் ஞாயிறு.',count:'செயல்கள்'}
+      };
+      return all[language]||all.en;
+    }
+
+
+    /**
+     * Report civil weeks are fixed ISO Monday–Sunday intervals, not production
+     * working weeks. UTC civil-day arithmetic avoids DST and local date shifts.
+     * A malformed timezone or timestamp returns null, never a guessed period.
+     */
+    static window(options={}){
+      const timezone=options.timezone;
+      if(typeof timezone!=='string'||!timezone.trim())return null;
+      try{new Intl.DateTimeFormat('en-US',{timeZone:timezone});}catch{return null;}
+      const asOfDate=TnaFactoryDailyActionProjection.asOfDate(
+        options.generatedAt,timezone,options.asOfDate);
+      const today=TnaMasterReportProjection.day(asOfDate);
+      if(today===null)return null;
+      const weekday=new Date(today*86400000).getUTCDay();
+      const monday=today-((weekday+6)%7);
+      const iso=day=>new Date(day*86400000).toISOString().slice(0,10);
+      return {asOfDate,timeBasis:'ISO-Monday-Sunday-civil',timezone,
+        today,previousStart:today===null?null:iso(monday-7),previousEnd:iso(monday-1),
+        weekStart:iso(monday),weekEnd:iso(monday+6),nextStart:iso(monday+7),
+        nextEnd:iso(monday+13),previousStartDay:monday-7,weekStartDay:monday,
+        nextStartDay:monday+7,nextEndDay:monday+13};
+    }
+
+
+    /**
+     * Pure source projection with explicit as-of and immutable baseline dates.
+     * Returns six actionable groups plus undated work; one task can appear in
+     * multiple topical groups (e.g. overdue and pending approval). Counts are
+     * per section, never summed as unique task totals.
+     *
+     * COMPLETED uses status+actual date <= as-of. A later actual cannot imply
+     * the task was already complete in a past snapshot. The report does not
+     * have an agreement-authority schema: recorded recovery stays unverified.
+     */
+    static build(plan={},options={}){
+      const labels=TnaWeeklyReportProjection.labels(options.language);
+      const window=TnaWeeklyReportProjection.window(options);
+      const keys=['completedThisWeek','completedPreviousWeek','missed','dueThisWeek',
+        'dueNextWeek','approvalPending','recordedRecovery','needsInformation'];
+      const groups=Object.fromEntries(keys.map(key=>[key,[]]));
+      const blank={schema:'VESA-TNA-WEEKLY-1',audience:'local-merchandiser-review',
+        validity:'incomplete',asOfDate:null,timezone:options.timezone||null,
+        timeBasis:'ISO-Monday-Sunday-civil',week:null,groups,
+        counts:Object.fromEntries(keys.map(key=>[key,0])),
+        uniqueTaskCount:0,excludedLaterOpen:0,excludedEarlierCompleted:0,
+        missingInputs:[labels.invalidClock],warnings:[labels.invalidClock],
+        verifiedRecoveryAgreements:[],labels};
+      if(!window)return blank;
+      const first=Array.isArray(plan.baselineSnapshots)?plan.baselineSnapshots[0]:null;
+      const originals=new Map((Array.isArray(first?.taskDates)?first.taskDates:[])
+        .map(item=>[item.taskId,item.dates||{}]));
+      const closure=new Set(['approved','waived','not-applicable']);
+      let laterOpen=0,earlierComplete=0,missingDue=0,missingActual=0;
+      const tasks=Array.isArray(plan.tasks)?plan.tasks:[];
+      for(const task of tasks){
+        const sourceDates=task.dates||{},original=originals.get(task.taskId)||{};
+        const rawOriginal=original.currentTargetFinish||original.baselineFinish||null;
+        const originalDate=TnaMasterReportProjection.asDate(rawOriginal);
+        const rawTarget=sourceDates.currentTargetFinish||null;
+        const target=TnaMasterReportProjection.asDate(rawTarget);
+        const forecast=TnaMasterReportProjection.asDate(sourceDates.forecastFinish);
+        const recordedActual=TnaMasterReportProjection.asDate(sourceDates.actualFinish);
+        const baselineWithoutSnapshot=TnaMasterReportProjection.asDate(sourceDates.baselineFinish);
+        const dueCandidate=rawTarget?target:rawOriginal?originalDate:baselineWithoutSnapshot;
+        const dateSource=rawTarget?'current':rawOriginal?'baseline':
+          sourceDates.baselineFinish?'taskBaseline':'none';
+        const status=typeof task.status==='string'?task.status:'not-started';
+        const actualDay=TnaMasterReportProjection.day(recordedActual);
+        const dueDay=TnaMasterReportProjection.day(dueCandidate);
+        const completedAsOf=status==='completed'&&actualDay!==null&&actualDay<=window.today;
+        const lateDays=dueDay===null||dueDay>=window.today?null:window.today-dueDay;
+        const row={ref:task.templateRef||'—',stage:task.stage||labels.unknown,
+          activity:task.title||labels.unknown,owner:task.ownerParty||labels.unknown,
+          original:originalDate,target,forecast,actual:recordedActual,status,
+          due:dueCandidate||null,dateSource,lateDays,issue:null,
+          recoveryProposal:null,recoveryAgreement:null};
+        if(status==='completed'){
+          if(completedAsOf){
+            if(actualDay>=window.weekStartDay)groups.completedThisWeek.push(row);
+            else if(actualDay>=window.previousStartDay)groups.completedPreviousWeek.push(row);
+            else earlierComplete++;
+          }else{
+            missingActual++;
+            groups.needsInformation.push({...row,issue:labels.missingActual});
+          }
+        }
+        if(!closure.has(status)&&!completedAsOf&&status!=='completed'){
+          if(dueDay===null){
+            missingDue++;
+            groups.needsInformation.push({...row,issue:labels.unknownDue});
+          }else if(dueDay<window.today)groups.missed.push(row);
+          else if(dueDay<=TnaMasterReportProjection.day(window.weekEnd))groups.dueThisWeek.push(row);
+          else if(dueDay>=window.nextStartDay&&dueDay<=window.nextEndDay)groups.dueNextWeek.push(row);
+          else laterOpen++;
+        }
+        // Task approval status is only a local request/pending indication;
+        // it does not prove an external buyer actually received the submission.
+        if(['submitted','awaiting-approval'].includes(status)&&
+          (task.taskKind==='gate'||task.ownerParty==='buyer')){
+          groups.approvalPending.push(row);
+        }
+        // Scenario application is an internal plan revision, not buyer agreement.
+        if(typeof task.recoveryAction==='string'&&task.recoveryAction.trim()){
+          groups.recordedRecovery.push({...row,recoveryProposal:task.recoveryAction.trim(),
+            recoveryAgreement:labels.agreed});
+        }
+      }
+      for(const key of keys)groups[key].sort((a,b)=>{
+        const x=TnaMasterReportProjection.day(a.due),y=TnaMasterReportProjection.day(b.due);
+        return (x===null?Number.MAX_SAFE_INTEGER:x)-(y===null?Number.MAX_SAFE_INTEGER:y)||
+          String(a.ref).localeCompare(String(b.ref));
+      });
+      const counts=Object.fromEntries(keys.map(key=>[key,groups[key].length]));
+      const warnings=[labels.approvalNote,labels.recoveryNote,labels.reviewNotice];
+      if(missingDue)warnings.push(labels.unknownDue+' ('+missingDue+')');
+      if(missingActual)warnings.push(labels.missingActual+' ('+missingActual+')');
+      const week={previousStart:window.previousStart,previousEnd:window.previousEnd,
+        start:window.weekStart,end:window.weekEnd,
+        nextStart:window.nextStart,nextEnd:window.nextEnd};
+      return {...blank,validity:'valid',asOfDate:window.asOfDate,timezone:window.timezone,
+        week,counts,groups,uniqueTaskCount:tasks.length,
+        excludedLaterOpen:laterOpen,excludedEarlierCompleted:earlierComplete,
+        missingInputs:[],warnings};
+    }
+
+
+  }
+
   function taskRows(plan={},limit=Infinity){return (plan.tasks||[]).slice(0,limit).map(task=>({ref:task.templateRef,title:task.title,owner:task.ownerParty,status:task.status,baseline:task.dates?.baselineFinish||'',current:task.dates?.currentTargetFinish||'',forecast:task.dates?.forecastFinish||'',actual:task.dates?.actualFinish||'',risk:task.riskStatus||'needs-information'}))}
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local';if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:warnings(plan),notes:[I18N[l].labels.noFabrication,I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local';if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;

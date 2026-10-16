@@ -742,7 +742,71 @@
     }
   }
 
-  function reportPreviewHtml(model){return `<article class="tna-report-preview"><h2>${esc(model.title)}</h2><p><b>${esc(model.brand)}</b> · ${esc(model.reportId)} · ${esc(model.audience)}</p><p>${esc(model.labels.generated)}: ${esc(model.generatedLabel)} · ${esc(model.labels.timezone)}: ${esc(model.timezone)} · ${esc(model.labels.revision)}: ${esc(model.revision)}</p><h3>${esc(model.headings.order)}</h3><div class="tna-report-grid"><span>${esc(model.labels.buyer)}: ${esc(model.order.buyer)}</span><span>${esc(model.labels.factory)}: ${esc(model.order.factory)}</span><span>${esc(model.labels.style)}: ${esc(model.order.style)}</span><span>${esc(model.labels.po)}: ${esc(model.order.po)}</span><span>${esc(model.labels.quantity)}: ${esc(model.order.quantity)} ${esc(model.order.unit)}</span><span>${esc(model.labels.required)}: ${esc(model.order.requiredExFactory)}</span></div><h3>${esc(model.headings.tasks)}</h3>${model.reportId==='R02'?TnaBuyerPrintView.render(model):model.reportId==='R03'?TnaFactoryDailyPrintView.render(model):model.reportId==='R04'?TnaCriticalPathPrintView.render(model):TnaMasterPrintView.render(model)}<h3>${esc(model.headings.warnings)}</h3>${model.warnings.length?`<ul>${model.warnings.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:'<p>No validation warnings in this local draft.</p>'}<p class="tna-note">${esc(model.notes.join(' '))}</p></article>`}
+  /**
+   * R05 internal weekly report print owner, reachable from the existing report
+   * dialog only. Inputs: read-only weekly projection, no source plan access.
+   * Escapes all entered garment/recovery text; no record mutation, external
+   * transmission, inferred approval or agreed recovery. Invalid as-of shows
+   * Needs Information instead of false lateness/completion.
+   */
+  class TnaWeeklyPrintView {
+    /** Render a full group without truncation; each table repeats headers in print. */
+    static group(key,weekly){
+      const rows=weekly.groups[key]||[],l=weekly.labels;
+      const col=[l.columns[1],l.columns[2],l.columns[3],l.columns[4],
+        l.columns[5],l.columns[6],l.columns[7],l.columns[8],
+        l.columns[9],l.columns[11]];
+      if(!rows.length)return '<section class="tna-weekly-section"><h3>'+esc(l.sections[key])+
+        ' (0)</h3><p>'+esc(l.none)+'</p></section>';
+      const tableHead='<thead><tr>'+col.map(value=>'<th scope="col">'+esc(value)+'</th>').join('')+'</tr></thead>';
+      const body=rows.map(task=>{
+        const note=task.recoveryProposal?
+          task.recoveryProposal+' — '+l.agreed:task.issue||l.none;
+        const cell=[task.ref,task.activity,task.owner,task.original||'—',
+          task.target||'—',task.forecast||'—',task.actual||'—',task.status,
+          task.lateDays===null?'—':String(task.lateDays),note];
+        return '<tr>'+cell.map(value=>'<td>'+esc(value)+'</td>').join('')+'</tr>';
+      }).join('');
+      return '<section class="tna-weekly-section"><h3>'+esc(l.sections[key])+
+        ' ('+esc(rows.length)+')</h3><div class="tna-weekly-scroll" tabindex="0">'+
+        '<table class="tna-weekly-table">'+tableHead+'<tbody>'+body+'</tbody></table></div></section>';
+    }
+
+    /** Display the exact ISO-week bounds and an explicit manual-share restriction. */
+    static render(model){
+      const weekly=model.weeklyTna;
+      if(weekly?.schema!=='VESA-TNA-WEEKLY-1')return '<p>Needs Information — weekly report unavailable.</p>';
+      const l=weekly.labels;
+      if(weekly.validity!=='valid')return '<section class="tna-weekly-report">'+
+        '<h3>'+esc(l.unknown)+'</h3><p>'+esc(l.invalidClock)+'</p>'+
+        '<p class="tna-weekly-restriction">'+esc(l.localNote)+'</p></section>';
+      const w=weekly.week;
+      const summary=[
+        [l.weekPrevious,w.previousStart+' – '+w.previousEnd],
+        [l.weekNow,w.start+' – '+w.end],
+        [l.weekNext,w.nextStart+' – '+w.nextEnd]
+      ].map(([name,value])=>'<span><strong>'+esc(name)+':</strong> '+esc(value)+'</span>').join('');
+      const groups=['completedThisWeek','completedPreviousWeek','missed','dueThisWeek',
+        'dueNextWeek','approvalPending','recordedRecovery','needsInformation'];
+      const stats=groups.map(key=>'<span><strong>'+esc(l.sections[key])+':</strong> '+
+        esc(weekly.counts[key]||0)+'</span>').join('');
+      return '<section class="tna-weekly-report" aria-label="'+esc(l.title)+'">'+
+        '<p class="tna-weekly-restriction" role="note">'+esc(l.localNote)+'</p>'+
+        '<p class="tna-note">'+esc(l.asOf)+': '+esc(weekly.asOfDate)+' · '+esc(l.timezone)+
+          ': '+esc(weekly.timezone)+' · '+esc(l.basis)+'</p>'+
+        '<div class="tna-weekly-windows">'+summary+'</div>'+
+        '<div class="tna-weekly-stats">'+stats+'</div>'+
+        '<p class="tna-note">'+esc(l.asOfBasis)+'</p>'+
+        groups.map(key=>TnaWeeklyPrintView.group(key,weekly)).join('')+
+        '<p class="tna-note">'+esc(l.approvalNote)+'</p>'+
+        '<p class="tna-note">'+esc(l.recoveryNote)+'</p>'+
+        '<p class="tna-note">'+esc(l.outside)+': '+esc(weekly.excludedLaterOpen)+
+          ' · '+esc(l.earlier)+': '+esc(weekly.excludedEarlierCompleted)+'</p>'+
+      '</section>';
+    }
+  }
+
+  function reportPreviewHtml(model){return `<article class="tna-report-preview"><h2>${esc(model.title)}</h2><p><b>${esc(model.brand)}</b> · ${esc(model.reportId)} · ${esc(model.audience)}</p><p>${esc(model.labels.generated)}: ${esc(model.generatedLabel)} · ${esc(model.labels.timezone)}: ${esc(model.timezone)} · ${esc(model.labels.revision)}: ${esc(model.revision)}</p><h3>${esc(model.headings.order)}</h3><div class="tna-report-grid"><span>${esc(model.labels.buyer)}: ${esc(model.order.buyer)}</span><span>${esc(model.labels.factory)}: ${esc(model.order.factory)}</span><span>${esc(model.labels.style)}: ${esc(model.order.style)}</span><span>${esc(model.labels.po)}: ${esc(model.order.po)}</span><span>${esc(model.labels.quantity)}: ${esc(model.order.quantity)} ${esc(model.order.unit)}</span><span>${esc(model.labels.required)}: ${esc(model.order.requiredExFactory)}</span></div><h3>${esc(model.headings.tasks)}</h3>${model.reportId==='R02'?TnaBuyerPrintView.render(model):model.reportId==='R03'?TnaFactoryDailyPrintView.render(model):model.reportId==='R04'?TnaCriticalPathPrintView.render(model):model.reportId==='R05'?TnaWeeklyPrintView.render(model):TnaMasterPrintView.render(model)}<h3>${esc(model.headings.warnings)}</h3>${model.warnings.length?`<ul>${model.warnings.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:'<p>No validation warnings in this local draft.</p>'}<p class="tna-note">${esc(model.notes.join(' '))}</p></article>`}
   function openReportPanel(action='Prepare Report'){if(!reports)return openDialog('Reports','<p>Reports are temporarily unavailable. Keep the order open and try again.</p>');if(!state.currentPlan)return openDialog('Reports','<p>Create or open a TNA before preparing reports.</p>');if(state.currentPlan.mode==='practice')return openDialog('Reports','<p>Practice example reports are preview-only and cannot be used as business evidence.</p>');const first=reports.catalogue(state.language)[0];openDialog('Reports',`<div class="tna-form-grid"><label><span>Report type</span><select id="tnaReportType">${reportOptions()}</select></label><label><span>Language</span><input readonly value="${esc(state.language)}"></label></div><div class="menu-grid"><button class="tna-btn" type="button" data-report-action="preview">Preview report</button><button class="tna-btn secondary" type="button" data-report-action="download">Download report data</button><button class="tna-btn secondary" type="button" data-report-action="excel">Download report Excel</button><button class="tna-btn secondary" type="button" data-report-action="print">Print report</button><button class="tna-btn secondary" type="button" data-report-action="share">Share fallback</button></div><div id="tnaReportPreview">${reportPreviewHtml(reportModel(first.id))}</div>`);const update=()=>{document.getElementById('tnaReportPreview').innerHTML=reportPreviewHtml(reportModel(document.getElementById('tnaReportType').value));};document.getElementById('tnaReportType').onchange=update;document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{const model=reportModel(document.getElementById('tnaReportType').value);if(btn.dataset.reportAction==='preview')return update();if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}if(btn.dataset.reportAction==='share')return openDialog('Share fallback',`<p>${esc(model.labels.shareFallback)}</p><p>A shared link is unavailable in local mode. Download the report and share it through an approved channel.</p>`);if(btn.dataset.reportAction==='excel'){try{const data=storage.exportReportWorkbook(model);const blob=new Blob([data],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`vesa-tna-${model.reportId}-${model.order.style}.xlsx`.replace(/[^a-z0-9_.-]+/gi,'-');document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);return;}catch(error){return openDialog('Download report Excel',`<p>${esc(error.message)}</p>`);}}const blob=new Blob([JSON.stringify(model,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`vesa-tna-${model.reportId}-${model.order.style}.json`.replace(/[^a-z0-9_.-]+/gi,'-');document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);});}
   function openImportPreview(){openDialog('Import Excel TNA',`<p>${esc(text('xlsxBlocked'))}</p><input id="tnaWorkbookFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv,.tsv,text/csv,text/tab-separated-values"><label class="tna-wide"><span>Pasted table preview</span><textarea id="tnaImportText" rows="8" placeholder="Buyer,Factory,Style,PO,Quantity,Buyer Required Ex-Factory"></textarea></label><div class="menu-grid"><button class="tna-btn" type="button" data-import-preview="text">Preview pasted text</button><button class="tna-btn secondary" type="button" data-import-preview="file">Preview selected file</button></div><div id="tnaImportPreviewResult"></div>`);document.querySelector('[data-import-preview="text"]').onclick=()=>renderImportPreview(storage.importPreview(document.getElementById('tnaImportText').value));document.querySelector('[data-import-preview="file"]').onclick=()=>{const file=document.getElementById('tnaWorkbookFile').files?.[0];if(!file)return renderImportError('Select an Excel workbook or pasted table first.');const lower=file.name.toLowerCase();const reader=new FileReader();reader.onerror=()=>renderImportError('The selected file could not be read. Choose the original file and try again.');if(lower.endsWith('.xlsx')){reader.onload=()=>{try{renderImportPreview(storage.importWorkbookPreview(reader.result,file.name));}catch(error){renderImportError(error.message);}};reader.readAsArrayBuffer(file);return;}if(lower.endsWith('.xlsm'))return renderImportError('Excel workbooks with macros are not accepted. Save a clean workbook without macros and try again.');reader.onload=()=>{try{renderImportPreview(storage.importPreview(String(reader.result||'')));}catch(error){renderImportError(error.message);}};reader.readAsText(file);};}
   function renderImportPreview(preview){document.getElementById('tnaImportPreviewResult').innerHTML=`<h3>${esc(text('importPreview'))}</h3>${preview.workbook?`<p>Workbook sheet: ${esc(preview.workbook.sheetName)} · rows: ${esc(preview.workbook.rowCount)} · parser: ${esc(preview.workbook.parser)}</p>`:''}<p>Headers: ${esc(preview.headers.join(' · ')||'none')}</p><p>Rows previewed: ${esc(preview.rows.length)}</p>${preview.warnings.length?`<ul>${preview.warnings.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:'<p>No import warnings found in the preview.</p>'}<p class="tna-note">Preview only. Creating or updating production TNAs from spreadsheets requires a reviewed mapping step and does not overwrite existing TNA records.</p>`;}

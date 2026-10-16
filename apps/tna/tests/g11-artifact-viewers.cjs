@@ -225,6 +225,105 @@ async function run(){
     console.log('TNA R02 Chromium buyer report PASS: sanitized JSON/Excel, curated milestones, source privacy, buyer PDF '+buyerPages+' page(s), no clipping.');
 
 
+    // R05 source-absent proof: an old migrated TNA must NOT invent any weekly due date.
+    await page.locator('#tnaReportType').selectOption('R05');
+    await page.locator('.tna-weekly-report').waitFor();
+    assert.ok(await page.locator('.tna-weekly-restriction').isVisible(),
+      'Internal report must warn that it is not recipient-authorized.');
+    assert.equal(await page.locator('.tna-weekly-section').count(),8,
+      'Weekly print must show the entire named weekly action group taxonomy.');
+    const openUndatedRows=await page.locator('.tna-weekly-section').last().locator('tbody tr').count();
+    assert.equal(openUndatedRows,stored.records[0].plan.tasks.length,
+      'Old TNA with no dates must show every open task needing a date, never fake overdue.');
+    const firstWeeklyGroup=await page.locator('.tna-weekly-section').nth(2).innerText();
+    assert(firstWeeklyGroup.includes('(0)'),'R05 must not invent overdue activities for an undated saved record.');
+    const weeklyDataPromise=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const weeklyData=await weeklyDataPromise;
+    const weeklyJsonPath=path.join(output,'tna-r05-weekly-viewer.json');
+    await weeklyData.saveAs(weeklyJsonPath);
+    const weeklyModel=JSON.parse(fs.readFileSync(weeklyJsonPath,'utf8'));
+    assert.equal(weeklyModel.weeklyTna.schema,'VESA-TNA-WEEKLY-1');
+    assert.equal(weeklyModel.weeklyTna.validity,'valid');
+    assert.equal(weeklyModel.weeklyTna.counts.missed,0);
+    assert(weeklyModel.audience.includes('Local merchandiser'),'R05 cannot advertise buyer/factory recipient authorization.');
+    const weeklyExcelPromise=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const weeklyExcel=await weeklyExcelPromise;
+    const weeklyXlsxPath=path.join(output,'tna-r05-weekly-viewer.xlsx');
+    await weeklyExcel.saveAs(weeklyXlsxPath);
+    const weeklyWorkbook=XLSX.read(fs.readFileSync(weeklyXlsxPath),{type:'buffer',cellStyles:true});
+    assert.deepEqual(weeklyWorkbook.SheetNames,
+      ['Report Summary','Order Summary','Report Activities','Report Notes','Weekly Actions']);
+    const weeklySheetRows=XLSX.utils.sheet_to_json(weeklyWorkbook.Sheets['Weekly Actions'],{header:1,raw:false});
+    assert.equal(weeklySheetRows.length,stored.records[0].plan.tasks.length+1,
+      'Weekly worksheet must include all undated open actions and meaningful headings.');
+    await page.emulateMedia({media:'print'});
+    await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const weeklyGeometry=await page.locator('.tna-weekly-table').first().evaluate(table=>({
+      actual:table.getBoundingClientRect().width,available:table.parentElement.getBoundingClientRect().width,
+      display:getComputedStyle(table.tHead).display
+    }));
+    assert(weeklyGeometry.actual<=weeklyGeometry.available+1,'Weekly report must fit printable container.');
+    assert.equal(weeklyGeometry.display,'table-header-group',
+      'Long weekly reports must repeat table headers on printed pages.');
+    const weeklyPdfPath=path.join(output,'tna-r05-weekly-viewer.pdf');
+    await page.pdf({path:weeklyPdfPath,printBackground:true,preferCSSPageSize:true,landscape:true});
+    await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    const weeklyPdf=fs.readFileSync(weeklyPdfPath);
+    assert.equal(weeklyPdf.subarray(0,5).toString(),'%PDF-');
+    const weeklyPages=(weeklyPdf.toString('latin1').match(/\/Type\s*\/Page\b/g)||[]).length;
+    assert(weeklyPages>=2,'All undated activities in the R05 PDF should span multiple printable pages.');
+    const weeklyViewer=await context.newPage();
+    await weeklyViewer.goto(pathToFileURL(weeklyPdfPath).href,{waitUntil:'load'});
+    await weeklyViewer.screenshot({path:path.join(output,'tna-r05-weekly-pdf-preview.png')});
+    assert(await weeklyViewer.evaluate(()=>location.href.startsWith('file:')),
+      'Real Chromium PDF viewer must open the weekly print file.');
+    await weeklyViewer.close();
+    await page.emulateMedia({media:'screen'});
+    // Add source dates to the SYNTHETIC migrated record to verify browser grouping
+    // after reopening; this is not a production order or new importer operation.
+    await page.locator('#tnaDialog .tna-dialog-head button').click();
+    await page.evaluate(userKey=>{
+      const key='vesa.tna360.records.'+userKey;
+      const box=JSON.parse(localStorage.getItem(key)),plan=box.records[0].plan;
+      const today=new Date(),day=Math.floor(Date.UTC(today.getUTCFullYear(),today.getUTCMonth(),today.getUTCDate())/86400000);
+      const iso=offset=>new Date((day+offset)*86400000).toISOString().slice(0,10);
+      const nextMonday=7-((today.getUTCDay()+6)%7);
+      plan.tasks[0].status='completed';plan.tasks[0].dates.actualFinish=iso(0);
+      plan.tasks[1].dates.currentTargetFinish=iso(-1);
+      plan.tasks[2].dates.currentTargetFinish=iso(nextMonday);
+      plan.tasks[3].status='awaiting-approval';plan.tasks[3].taskKind='gate';
+      plan.tasks[3].ownerParty='buyer';
+      plan.tasks[4].recoveryAction='Synthetic proposal — not buyer agreed';
+      box.records[0].plan=plan;localStorage.setItem(key,JSON.stringify(box));
+    },session.userKey);
+    await page.reload({waitUntil:'domcontentloaded'});
+    await page.locator('[data-action="continue"]').click();
+    await page.locator('#tnaDialog .tna-dialog-head button').click();
+    await openTools(page);
+    await page.locator('[data-menu-action="Prepare Report"]').click();
+    await page.locator('#tnaReportType').selectOption('R05');
+    const regroup=await page.evaluate(()=>{
+      const user=JSON.parse(localStorage.getItem('vesa.appcentre.session.v1'));
+      const plan=JSON.parse(localStorage.getItem('vesa.tna360.records.'+user.userKey)).records[0].plan;
+      return VesaTnaReports.buildReportModel(plan,{
+        reportId:'R05',language:'en',timezone:'UTC',generatedAt:new Date().toISOString()
+      }).weeklyTna;
+    });
+    assert(regroup.groups.completedThisWeek.some(row=>row.ref===stored.records[0].plan.tasks[0].templateRef),
+      'Actual finish today must appear in this-week completed section.');
+    assert(regroup.groups.missed.some(row=>row.ref===stored.records[0].plan.tasks[1].templateRef),
+      'Recorded yesterday-due activity must appear as missed.');
+    assert(regroup.groups.dueNextWeek.some(row=>row.ref===stored.records[0].plan.tasks[2].templateRef),
+      'Recorded next-Monday activity must appear in next-week group.');
+    assert(regroup.groups.approvalPending.some(row=>row.ref===stored.records[0].plan.tasks[3].templateRef));
+    assert(regroup.groups.recordedRecovery.some(row=>row.ref===stored.records[0].plan.tasks[4].templateRef));
+    assert.deepEqual(regroup.verifiedRecoveryAgreements,[]);
+    assert.equal(await page.locator('.tna-weekly-section').nth(2).locator('tbody tr').count(),1);
+    assert.equal(await page.locator('.tna-weekly-section').nth(4).locator('tbody tr').count(),1);
+    console.log('TNA R05 Chromium weekly report PASS: source-free Needs Date, real Excel/JSON, printable '+weeklyPages+'-page PDF, reopen completion/overdue/next week/pending/recovery, no clipping.');
+
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}

@@ -46,6 +46,8 @@ for (const fragment of [
   'tnaCalendarForm',
   'updateFactoryCalendar(state.currentPlan,values',
   'class TnaCriticalPathPrintView',
+  'class TnaWeeklyPrintView',
+  "model.reportId==='R05'?TnaWeeklyPrintView.render(model)",
   "model.reportId==='R04'?TnaCriticalPathPrintView.render(model)",
   'class GarmentTnaFollowupEditor',
   'tnaFollowupEdit',
@@ -78,7 +80,7 @@ for (const fragment of [
   assert(bootstrap.includes(fragment), `G06 workspace UI missing: ${fragment}`);
 }
 
-for (const fragment of ['.tna-workspace-grid', '.tna-dashboard-grid', '.tna-gantt', '.tna-timeline-table', '.tna-readiness-grid', '.tna-readiness-card', '.tna-readiness-list', '.tna-mini-btn', '.tna-activity-table', '.tna-sheet-scroll', '.tna-portfolio-table', '@media(max-width:1050px)', '@media(max-width:850px)', '.tna-calendar-editor .tna-calendar-days', '.tna-cpm-table', '@media(max-width:540px)']) {
+for (const fragment of ['.tna-workspace-grid', '.tna-dashboard-grid', '.tna-gantt', '.tna-timeline-table', '.tna-readiness-grid', '.tna-readiness-card', '.tna-readiness-list', '.tna-mini-btn', '.tna-activity-table', '.tna-sheet-scroll', '.tna-portfolio-table', '@media(max-width:1050px)', '@media(max-width:850px)', '.tna-calendar-editor .tna-calendar-days', '.tna-cpm-table', '.tna-weekly-table', '@media(max-width:540px)']) {
   assert(css.includes(fragment), `G06 responsive workspace CSS missing: ${fragment}`);
 }
 
