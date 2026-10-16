@@ -112,11 +112,57 @@ class CommissionBrowserProof{
     assert.match(await page.locator('.com-tabs').innerText(),new RegExp(label));
     assert.equal(JSON.stringify(await saved()),before);
    }
+   // A new agreement version cannot retroactively edit an issued invoice or
+   // the written evidence tied to earned and received historical postings.
+   await click('agreement');
+   await click('edit-agreement');
+   await enter({rate:'4',source:'SYNTHETIC REVISED AGREEMENT',reason:'SYNTHETIC reviewed amendment'});
+   await submit();
+   const revised=await saved();
+   assert.equal(revised.agreement.version,2);
+   assert.equal(revised.agreement.ratePercent,'4');
+   assert.equal(revised.agreementHistory.length,1);
+   assert.equal(revised.agreementHistory[0].agreement.ratePercent,'3');
+   assert.equal(revised.agreementHistory[0].postedInvoices[0].amount,'40.00');
+   assert.equal(revised.invoices[0].amount,'40.00');
+   await click('summary');
+   assert.match(await page.locator('.com-metrics').innerText(),/100\.00/);
+   assert.match(await page.locator('.com-metrics').innerText(),/25\.00/);
+   // Open the exact exported earlier-version copy from the real file input.
+   // Collision handling must add a separate record, not overwrite amended
+   // agreements or immutable financial events.
+   await click('home');
+   await click('upload');
+   await page.locator('#comFile').setInputFiles(portable);
+   await page.locator('#comDialog[open]').waitFor();
+   await page.locator('#comClose').click();
+   const names=await page.evaluate(()=>{
+     const key=Object.keys(localStorage).find(x=>x.startsWith('vesa.order-commission.records.v1.'));
+     return JSON.parse(localStorage.getItem(key)).records.map(x=>({id:x.id,version:x.agreement.version}));
+   });
+   assert.equal(names.length,2);
+   assert(names.some(x=>x.id===revised.id&&x.version===2));
+   assert(names.some(x=>x.id!==revised.id&&x.version===1));
+   const corrupt=path.join(out,'commission-app02-invalid.vesacommission');
+   fs.writeFileSync(corrupt,fs.readFileSync(portable,'utf8').replace('"20.00"','"80.00"'));
+   const beforeBad=await page.evaluate(()=>{
+     const key=Object.keys(localStorage).find(x=>x.startsWith('vesa.order-commission.records.v1.'));
+     return localStorage.getItem(key);
+   });
+   await page.locator('#comFile').setInputFiles(corrupt);
+   await page.locator('#comDialog[open]').waitFor();
+   assert.match(await page.locator('#comDialogBody').innerText(),/altered or unsupported/i);
+   await page.locator('#comClose').click();
+   const afterBad=await page.evaluate(()=>{
+     const key=Object.keys(localStorage).find(x=>x.startsWith('vesa.order-commission.records.v1.'));
+     return localStorage.getItem(key);
+   });
+   assert.equal(afterBad,beforeBad,'Rejected copies may not alter local financial records.');
    await page.reload({waitUntil:'domcontentloaded'});await click('continue');
    assert.equal((await saved()).receipts[0].amount,'20.00');
    assert.deepEqual(errors,[]);
    assert.deepEqual(external,[]);
-   console.log('APP-02 CHROMIUM PASS: one VESA shell, explicit terms/FOB, sourced earned and issued invoice, paid/credit reconciliation, typed Excel, printable PDF, saved reload, EN/BN/HI/TA and 320/390/768, no external calls.');
+   console.log('APP-02 CHROMIUM PASS: VESA App Centre, sourced commission terms, earned/issued/receipts/credits, immutable amendment history, PDF/XLSX, saved-copy import and corrupt-rejection, EN/BN/HI/TA, 320/390/768 and no external calls.');
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}
  }
 }
