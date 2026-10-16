@@ -269,3 +269,30 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
   body.tna-printing-report .tna-material-table td{padding:3px!important;font-size:6.5pt!important;line-height:1.3!important;border-color:#999!important;background:#fff!important;color:#111!important;overflow-wrap:anywhere!important}
   body.tna-printing-report .tna-material-notice{font-size:8pt!important;color:#111!important}
 }
+
+
+
+/* R09 restricted internal quality/shipping tables use the existing VESA shell. */
+.tna-shipment-report{max-width:100%;min-width:0}
+.tna-shipment-notice,.tna-shipment-hold{padding:10px 12px;border-radius:8px;border:1px solid var(--line,#d5deea);font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+.tna-shipment-notice{font-weight:650}
+.tna-shipment-hold{font-weight:700}
+.tna-shipment-report h3{font-size:14px;margin:14px 0 7px}
+.tna-shipment-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.tna-shipment-table{width:100%;min-width:1000px;table-layout:fixed;border-collapse:collapse}
+.tna-shipment-table th,.tna-shipment-table td{border:1px solid var(--line,#d5deea);padding:6px;vertical-align:top;font-size:10px;line-height:1.3;white-space:normal;overflow-wrap:anywhere}
+.tna-shipment-table th{text-align:left;font-weight:800;background:var(--look-surface,#eef3f9)}
+.tna-shipment-dates{min-width:850px}
+.tna-shipment-gates{min-width:700px}
+.tna-shipment-links{min-width:590px}
+@media print{
+  body.tna-printing-report .tna-shipment-scroll{max-width:100%!important;overflow:visible!important}
+  body.tna-printing-report .tna-shipment-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
+  body.tna-printing-report .tna-shipment-table thead{display:table-header-group!important}
+  body.tna-printing-report .tna-shipment-table tr{break-inside:avoid!important;page-break-inside:avoid!important}
+  body.tna-printing-report .tna-shipment-table th,
+  body.tna-printing-report .tna-shipment-table td{font-size:7pt!important;padding:3px!important;line-height:1.25!important;border-color:#999!important;background:#fff!important;color:#111!important;overflow-wrap:anywhere!important}
+  body.tna-printing-report .tna-shipment-notice,
+  body.tna-printing-report .tna-shipment-hold{font-size:8pt!important;color:#111!important}
+  body.tna-printing-report .tna-shipment-report h3{break-after:avoid!important;color:#111!important}
+}

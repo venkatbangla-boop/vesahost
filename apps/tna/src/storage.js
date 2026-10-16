@@ -448,7 +448,65 @@
     }
   }
 
-  function exportReportWorkbook(model){const XLSX=xlsxLib();if(!XLSX)throw new Error('Excel workbook parser is not bundled.');if(!model||model.schema!=='VESA-TNA-REPORT-1')throw new Error('Unsupported TNA report model.');if(model.reportId==='R02')return TnaBuyerWorkbookWriter.export(XLSX,model);const workbook=XLSX.utils.book_new();const addSheet=(name,rows,widths,filter=false)=>{const sheet=XLSX.utils.aoa_to_sheet(rows);sheet['!cols']=widths.map(wch=>({wch}));if(filter&&sheet['!ref'])sheet['!autofilter']={ref:sheet['!ref']};XLSX.utils.book_append_sheet(workbook,sheet,name);};const meta=[['Brand',safeCell(model.brand)],['Report ID',safeCell(model.reportId)],['Title',safeCell(model.title)],['Audience',safeCell(model.audience)],['Language',safeCell(model.language)],['Generated',safeCell(model.generatedAt)],['Timezone',safeCell(model.timezone)],['Revision',model.revision],['No fabrication note',safeCell(model.labels?.noFabrication)]];if(model.reportId==='R08'&&model.materialLc){const m=model.materialLc;meta.push(['Material LC as-of',safeCell(m.asOfDate||m.labels.unknown)],['Commercial disclosure',safeCell(m.audience)],['LC source note',safeCell(m.labels.sourceWarning)]);}if(model.reportId==='R07'&&model.productionStatus){const p=model.productionStatus;meta.push(['Production as-of',safeCell(p.asOfDate||p.labels.unknown)],['Production source scope',safeCell(p.audience)],['Production disclosure',safeCell(p.warnings[0]||p.labels.unknown)]);}if(model.reportId==='R06'&&model.delayRecovery){const d=model.delayRecovery;meta.push(['Delay as-of date',safeCell(d.asOfDate||d.labels.unknown)],['Delay computation',safeCell(d.validity)],['Disclosure',safeCell(d.labels.disclosure)]);}if(model.reportId==='R05'&&model.weeklyTna){const w=model.weeklyTna;meta.push(['Weekly as-of date',safeCell(w.asOfDate||w.labels.unknown)],['Week basis',safeCell(w.labels.basis)],['Reporting scope',safeCell(w.labels.localAudience)],['Week range',safeCell(w.week?w.week.start+' to '+w.week.end:w.labels.unknown)]);}if(model.reportId==='R04'&&model.criticalPath){meta.push(['CPM state',safeCell(model.criticalPath.validity)],['Calendar provenance','Locally entered; independently unverified']);}if(model.reportId==='R03'&&model.factoryDailyAction){meta.push(['Action as-of date',safeCell(model.factoryDailyAction.asOfDate||'Needs Information')],['Due-date basis','7 calendar days; current target then recorded baseline']);}addSheet('Report Summary',meta,[24,96]);const orderRows=[['Buyer','Factory','Style','PO','Quantity','Unit','Required Ex-Factory'],[model.order.buyer,model.order.factory,model.order.style,model.order.po,model.order.quantity,model.order.unit,model.order.requiredExFactory].map(safeCell)];addSheet('Order Summary',orderRows,[28,28,24,20,14,10,22],true);const taskRows=[['Ref','Activity','Owner','Status','Baseline','Current','Forecast','Actual','Risk'],...(model.tasks||[]).map(task=>[task.ref,task.title,task.owner,task.status,task.baseline,task.current,task.forecast,task.actual,task.risk].map(safeCell))];addSheet('Report Activities',taskRows,[10,48,22,18,14,14,14,14,20],true);const warningRows=[['Warnings / Data gaps'],...((model.warnings&&model.warnings.length?model.warnings:['No validation warnings in this local draft.']).map(item=>[safeCell(item)])),[],['Fallback notes'],...(model.notes||[]).map(item=>[safeCell(item)])];addSheet('Report Notes',warningRows,[110]);TnaMasterWorkbookWriter.append(XLSX,workbook,model);TnaFactoryDailyWorkbookWriter.append(XLSX,workbook,model);TnaCriticalPathWorkbookWriter.append(XLSX,workbook,model);TnaWeeklyWorkbookWriter.append(XLSX,workbook,model);TnaDelayRecoveryWorkbookWriter.append(XLSX,workbook,model);TnaProductionWorkbookWriter.append(XLSX,workbook,model);TnaMaterialLcWorkbookWriter.append(XLSX,workbook,model);return XLSX.write(workbook,{type:'buffer',bookType:'xlsx'});}
+
+  /**
+   * R09 local Shipping Worksheets owner. Only consumes shipmentReadiness
+   * source projection: no lot release, inspection decision, PPM/AQL write,
+   * formula execution or external distribution. All dates are typed civil
+   * Excel serials and all entered text is rendered as inert strings.
+   */
+  class TnaShipmentWorkbookWriter {
+    static append(XLSX,workbook,model){
+      const ship=model.shipmentReadiness;
+      if(model.reportId!=='R09'||ship?.schema!=='VESA-TNA-SHIPMENT-1')return;
+      const l=ship.labels,number=v=>v===null||v===undefined?l.unknown:v;
+      const dated=v=>TnaMasterWorkbookWriter.dateValue(v);
+      const add=(name,rows,widths,dateColumns=[])=>{
+        const sheet=XLSX.utils.aoa_to_sheet(rows);
+        sheet['!cols']=widths.map(wch=>({wch}));
+        if(sheet['!ref'])sheet['!autofilter']={ref:sheet['!ref']};
+        for(let r=2;r<=rows.length;r++)for(const letter of dateColumns){
+          const cell=sheet[letter+r];if(cell?.t==='n')cell.z='yyyy-mm-dd';
+        }
+        XLSX.utils.book_append_sheet(workbook,sheet,name);
+      };
+      const lotRows=[l.lotHeaders];
+      const dateRows=[l.dateHeaders];
+      if(ship.validity==='restricted'){
+        lotRows.push([l.restricted]);dateRows.push([l.restricted]);
+      }else if(!ship.lots.length){
+        lotRows.push([l.noLots]);dateRows.push([l.noLots]);
+      }else for(const lot of ship.lots){
+        lotRows.push([safeCell(lot.lotReference),safeCell(lot.localStatus),
+          safeCell(lot.poAllocation||l.unknown),number(lot.plannedQty),
+          number(lot.packedQty),number(lot.passedQty),number(lot.shippedQty),
+          number(lot.remainingWithinLot),safeCell(lot.unit),
+          safeCell(lot.bookingRef||l.unknown),safeCell(lot.inspectionRef||l.unknown),
+          safeCell(lot.quantityState)]);
+        dateRows.push([safeCell(lot.lotReference),dated(lot.requestedExFactory),
+          dated(lot.currentExFactory),dated(lot.forecastExFactory),
+          dated(lot.enteredActualExFactory),dated(lot.ETD),dated(lot.ETA),
+          safeCell(lot.dateWarning)]);
+      }
+      add('Shipment Lots',lotRows,[27,22,31,17,17,17,18,18,12,32,32,49]);
+      add('Shipment Dates',dateRows,[27,22,22,22,22,23,23,45],['B','C','D','E','F','G']);
+      const milestoneRows=[l.gateHeaders];
+      if(ship.validity==='restricted')milestoneRows.push([l.restricted]);
+      else for(const gate of ship.gates)milestoneRows.push([
+        safeCell(gate.ref),safeCell(gate.status),dated(gate.currentTarget),
+        dated(gate.forecast),dated(gate.actualAsOf),safeCell(gate.evidenceState)]);
+      add('Shipment Gates',milestoneRows,[23,25,22,22,22,54],['C','D','E']);
+      const poRows=[l.allocationHeaders];
+      if(ship.validity==='restricted')poRows.push([l.restricted]);
+      else if(!ship.poAllocations.length)poRows.push([l.noLots]);
+      else for(const alloc of ship.poAllocations)poRows.push([
+        safeCell(alloc.lotRef),safeCell(alloc.po),
+        number(alloc.quantity),safeCell(alloc.locallyReconciled?l.sourceQty:l.conflict)]);
+      add('Shipment PO Allocation',poRows,[26,32,22,55]);
+    }
+  }
+
+  function exportReportWorkbook(model){const XLSX=xlsxLib();if(!XLSX)throw new Error('Excel workbook parser is not bundled.');if(!model||model.schema!=='VESA-TNA-REPORT-1')throw new Error('Unsupported TNA report model.');if(model.reportId==='R02')return TnaBuyerWorkbookWriter.export(XLSX,model);const workbook=XLSX.utils.book_new();const addSheet=(name,rows,widths,filter=false)=>{const sheet=XLSX.utils.aoa_to_sheet(rows);sheet['!cols']=widths.map(wch=>({wch}));if(filter&&sheet['!ref'])sheet['!autofilter']={ref:sheet['!ref']};XLSX.utils.book_append_sheet(workbook,sheet,name);};const meta=[['Brand',safeCell(model.brand)],['Report ID',safeCell(model.reportId)],['Title',safeCell(model.title)],['Audience',safeCell(model.audience)],['Language',safeCell(model.language)],['Generated',safeCell(model.generatedAt)],['Timezone',safeCell(model.timezone)],['Revision',model.revision],['No fabrication note',safeCell(model.labels?.noFabrication)]];if(model.reportId==='R09'&&model.shipmentReadiness){const s=model.shipmentReadiness;meta.push(['Shipment as-of date',safeCell(s.asOfDate||s.labels.unknown)],['Shipment audience',safeCell(s.audience)],['Release authorized','NO — independent verification required'],['Shipment source caution',safeCell(s.labels.basis)]);}if(model.reportId==='R08'&&model.materialLc){const m=model.materialLc;meta.push(['Material LC as-of',safeCell(m.asOfDate||m.labels.unknown)],['Commercial disclosure',safeCell(m.audience)],['LC source note',safeCell(m.labels.sourceWarning)]);}if(model.reportId==='R07'&&model.productionStatus){const p=model.productionStatus;meta.push(['Production as-of',safeCell(p.asOfDate||p.labels.unknown)],['Production source scope',safeCell(p.audience)],['Production disclosure',safeCell(p.warnings[0]||p.labels.unknown)]);}if(model.reportId==='R06'&&model.delayRecovery){const d=model.delayRecovery;meta.push(['Delay as-of date',safeCell(d.asOfDate||d.labels.unknown)],['Delay computation',safeCell(d.validity)],['Disclosure',safeCell(d.labels.disclosure)]);}if(model.reportId==='R05'&&model.weeklyTna){const w=model.weeklyTna;meta.push(['Weekly as-of date',safeCell(w.asOfDate||w.labels.unknown)],['Week basis',safeCell(w.labels.basis)],['Reporting scope',safeCell(w.labels.localAudience)],['Week range',safeCell(w.week?w.week.start+' to '+w.week.end:w.labels.unknown)]);}if(model.reportId==='R04'&&model.criticalPath){meta.push(['CPM state',safeCell(model.criticalPath.validity)],['Calendar provenance','Locally entered; independently unverified']);}if(model.reportId==='R03'&&model.factoryDailyAction){meta.push(['Action as-of date',safeCell(model.factoryDailyAction.asOfDate||'Needs Information')],['Due-date basis','7 calendar days; current target then recorded baseline']);}addSheet('Report Summary',meta,[24,96]);const orderRows=[['Buyer','Factory','Style','PO','Quantity','Unit','Required Ex-Factory'],[model.order.buyer,model.order.factory,model.order.style,model.order.po,model.order.quantity,model.order.unit,model.order.requiredExFactory].map(safeCell)];addSheet('Order Summary',orderRows,[28,28,24,20,14,10,22],true);const taskRows=[['Ref','Activity','Owner','Status','Baseline','Current','Forecast','Actual','Risk'],...(model.tasks||[]).map(task=>[task.ref,task.title,task.owner,task.status,task.baseline,task.current,task.forecast,task.actual,task.risk].map(safeCell))];addSheet('Report Activities',taskRows,[10,48,22,18,14,14,14,14,20],true);const warningRows=[['Warnings / Data gaps'],...((model.warnings&&model.warnings.length?model.warnings:['No validation warnings in this local draft.']).map(item=>[safeCell(item)])),[],['Fallback notes'],...(model.notes||[]).map(item=>[safeCell(item)])];addSheet('Report Notes',warningRows,[110]);TnaMasterWorkbookWriter.append(XLSX,workbook,model);TnaFactoryDailyWorkbookWriter.append(XLSX,workbook,model);TnaCriticalPathWorkbookWriter.append(XLSX,workbook,model);TnaWeeklyWorkbookWriter.append(XLSX,workbook,model);TnaDelayRecoveryWorkbookWriter.append(XLSX,workbook,model);TnaProductionWorkbookWriter.append(XLSX,workbook,model);TnaMaterialLcWorkbookWriter.append(XLSX,workbook,model);TnaShipmentWorkbookWriter.append(XLSX,workbook,model);return XLSX.write(workbook,{type:'buffer',bookType:'xlsx'});}
   const api={STORAGE_VERSION,FORMAT,MAX_BYTES,QUEUE_VERSION,QUEUE_MAX_ITEMS,QUEUE_MAX_BYTES,checksum,migratePlan,savePlan,listPlans,loadPlan,autosave,recoverAutosave,queueOfflineIntent,listOfflineIntents,updateOfflineIntent,reconcileOfflineIntent,exportCopy,importCopy,createHistory,pushHistory,undo,redo,importPreview,importWorkbookPreview,exportCsv,exportWorkbook,exportReportWorkbook,safeCell};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaStorage=api;

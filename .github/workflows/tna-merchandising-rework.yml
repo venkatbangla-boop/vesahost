@@ -60,6 +60,7 @@ jobs:
           node apps/tna/tests/r06-delay-recovery.test.js
           node apps/tna/tests/r07-production-status.test.js
           node apps/tna/tests/r08-material-lc.test.js
+          node apps/tna/tests/r09-shipment-readiness.test.js
           node apps/tna/tests/g11-garment-scenarios.test.js
           node apps/tna/tests/g11-saved-copy-migration.test.js
           node apps/ppm/tests/p-g00-baseline.cjs

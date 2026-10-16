@@ -545,6 +545,87 @@ async function run(){
     assert.equal(JSON.stringify(materialAfter),JSON.stringify(stored.records[0].plan));
     console.log('TNA R08 Chromium PASS: local blank-source, JSON/XLSX/PDF, typed LC, external blocked, mobile 390px, no data mutation.');
 
+
+    // R09 local shipment readiness stays read-only on reopened migrated plans.
+    // No lots / inspection references means no presumed release or shipment.
+    await page.locator('#tnaReportType').selectOption('R09');
+    await page.locator('.tna-shipment-report').waitFor();
+    assert(await page.locator('.tna-shipment-notice').isVisible());
+    assert.equal(await page.locator('.tna-shipment-lots tbody tr').count(),1);
+    const r09Download=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const r09Json=await r09Download,r09Path=path.join(output,'tna-r09-shipment.json');
+    await r09Json.saveAs(r09Path);
+    const r09Model=JSON.parse(fs.readFileSync(r09Path,'utf8'));
+    assert.equal(r09Model.shipmentReadiness.schema,'VESA-TNA-SHIPMENT-1');
+    assert.equal(r09Model.shipmentReadiness.lots.length,0);
+    assert.equal(r09Model.shipmentReadiness.totals,null);
+    assert.equal(r09Model.shipmentReadiness.releaseAuthorized,false);
+    assert(r09Model.shipmentReadiness.warnings.includes(r09Model.shipmentReadiness.labels.noLots));
+    const r09ExcelEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const r09Excel=await r09ExcelEvent,r09ExcelPath=path.join(output,'tna-r09-shipment.xlsx');
+    await r09Excel.saveAs(r09ExcelPath);
+    const r09Wb=XLSX.read(fs.readFileSync(r09ExcelPath),{type:'buffer'});
+    assert.deepEqual(r09Wb.SheetNames,['Report Summary','Order Summary',
+      'Report Activities','Report Notes','Shipment Lots','Shipment Dates',
+      'Shipment Gates','Shipment PO Allocation']);
+    assert.equal(r09Wb.Sheets['Shipment Lots'].A2.v,'No shipment lots recorded');
+    await page.emulateMedia({media:'print'});
+    await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const r09Layout=await page.locator('.tna-shipment-lots').evaluate(table=>({
+      width:table.getBoundingClientRect().width,
+      holder:table.parentElement.getBoundingClientRect().width,
+      repeatingHeader:getComputedStyle(table.tHead).display
+    }));
+    assert(r09Layout.width<=r09Layout.holder+1,'R09 print table must fit page width.');
+    assert.equal(r09Layout.repeatingHeader,'table-header-group');
+    const r09PdfPath=path.join(output,'tna-r09-shipment.pdf');
+    await page.pdf({path:r09PdfPath,printBackground:true,preferCSSPageSize:true,landscape:true});
+    await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    const r09Pdf=fs.readFileSync(r09PdfPath);
+    assert.equal(r09Pdf.subarray(0,5).toString(),'%PDF-');
+    const r09Viewer=await context.newPage();
+    await r09Viewer.goto(pathToFileURL(r09PdfPath).href,{waitUntil:'load'});
+    assert(await r09Viewer.evaluate(()=>location.href.startsWith('file:')));
+    await r09Viewer.screenshot({path:path.join(output,'tna-r09-shipment-pdf-viewer.png')});
+    await r09Viewer.close();
+    await page.emulateMedia({media:'screen'});
+    await page.setViewportSize({width:390,height:844});
+    const r09Mobile=await page.evaluate(()=>({
+      doc:document.documentElement.scrollWidth,screen:document.documentElement.clientWidth,
+      table:document.querySelector('.tna-shipment-scroll')?.scrollWidth,
+      holder:document.querySelector('.tna-shipment-scroll')?.clientWidth
+    }));
+    assert(r09Mobile.doc<=r09Mobile.screen+1);
+    assert(r09Mobile.table>=r09Mobile.holder);
+    await page.setViewportSize({width:1280,height:900});
+    // Direct browser runtime source copy tests a real entered lot; never save.
+    const r09Browser=await page.evaluate(()=>{
+      const key='vesa.tna360.records.qa-vesaent-com';
+      const original=JSON.parse(localStorage.getItem(key)).records[0].plan;
+      const before=JSON.stringify(original),p=JSON.parse(before);
+      p.shipmentLots=[{lotId:'synth-ship',lotReference:'R09-ONLY-LOCAL',
+        plannedQty:2400,packedQty:1800,passedQty:1700,shippedQty:100,
+        poAllocation:[{poNumber:'PO-G11-VIEW',qty:2400}],
+        bookingRef:'UNVERIFIED BOOKING',inspectionRef:'PRIVATE-LOCAL-AQL'}];
+      const options={reportId:'R09',language:'en',timezone:'Asia/Dhaka',
+        generatedAt:'2026-10-16T05:00:00Z',asOfDate:'2026-10-16'};
+      const report=VesaTnaReports.buildReportModel(p,options);
+      const blocked=VesaTnaReports.buildReportModel(p,{...options,audienceMode:'buyer'});
+      if(JSON.stringify(original)!==before)throw Error('R09 modified local order.');
+      return {report,blocked};
+    });
+    assert.equal(r09Browser.report.shipmentReadiness.totals.shipped,100);
+    assert.equal(r09Browser.report.shipmentReadiness.releaseAuthorized,false);
+    assert(r09Browser.report.shipmentReadiness.errors.some(e=>e.includes('final inspection pass')));
+    assert.equal(r09Browser.blocked.shipmentReadiness.validity,'restricted');
+    assert(!JSON.stringify(r09Browser.blocked).includes('R09-ONLY-LOCAL'));
+    const r09Unchanged=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).records[0].plan,
+      'vesa.tna360.records.'+session.userKey);
+    assert.equal(JSON.stringify(r09Unchanged),JSON.stringify(stored.records[0].plan));
+    console.log('TNA R09 Chromium PASS: internal empty-source, actual JSON/XLSX/PDF viewer, mobile, unverified lot dispatch gated, buyer blocked, saved copy immutable.');
+
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}

@@ -1269,10 +1269,278 @@
     }
   }
 
+
+  /**
+   * R09 owns a read-only, local quality/shipping evidence register.
+   * Input: existing shipmentLots, task milestones and optional local PPM/AQL
+   * integration references. Output: recorded lot balances and unresolved gates;
+   * no independent AQL pass, PPM GO, carrier confirmation, shipment release or
+   * actual dispatch is inferred. Saved plans and calculation engines are frozen.
+   * External audience is blocked BEFORE common task/order serialization.
+   */
+  class TnaShipmentReadinessProjection {
+    /** Four-language fixed headings, never translate business-entered values. */
+    static labels(language){
+      const words={
+        en:{title:'Shipment readiness — local source review',unknown:'Needs Information',
+          notice:'INTERNAL QUALITY / SHIPPING ONLY. Entered packed, passed or shipped quantities and linked decisions are NOT independently verified release. Check recipient permission before sharing.',
+          basis:'Lot quantities are the latest locally saved snapshots (zeros may be form defaults), NOT historical output as-of the report date. An entered booking reference is not a carrier confirmation. ETD/ETA are recorded date fields, not proven sailing or arrival.',
+          hold:'Shipment release is NOT authorized by this report. Final AQL disposition, PPM/cutting approval, packing list, commercial documents and carrier confirmation require independent reviewed evidence.',
+          noLots:'No shipment lots recorded',noMilestone:'Activity not in this garment template',
+          noLinks:'No independently reviewed PPM/AQL outcome available',
+          missingQty:'Missing or invalid quantity / PO allocation',
+          sourceQty:'Locally recorded; not independently accepted',
+          conflict:'Quantity, lot or PO reconciliation conflict — totals withheld',
+          missingDates:'Required booking, documents or ex-factory evidence not recorded',
+          entered:'Entered (not externally confirmed)',future:'Future entered actual; not as-of completion',
+          notRelease:'Recorded decision; shipment release NOT verified',
+          restricted:'External shipment report not authorized: no order, lot, buyer, factory or shipping information is disclosed.',
+          refState:'Local reference identity/provenance only; NOT authenticated final inspection.',
+          sections:{lots:'Lot quantity register',dates:'Lot shipping dates',gates:'Quality & document checkpoints',links:'Local PPM / AQL references'},
+          lotHeaders:['Lot','Local status','PO allocation','Planned','Packed','Passed (entered)','Shipped (entered)','Balance vs planned','Unit','Booking reference','Inspection reference','Quantity source / gate'],
+          dateHeaders:['Lot','Requested ex-factory','Current ex-factory','Forecast ex-factory','Entered actual ex-factory','ETD (type unverified)','ETA (type unverified)','Date warning'],
+          gateHeaders:['Checkpoint','Record status','Current target','Forecast','Recorded actual as-of','Evidence / authority'],
+          linkHeaders:['Source','Local reference state','Recorded decision','Release authority'],
+          allocationHeaders:['Lot','PO','Allocated quantity','Reconciliation'],
+          asOf:'As of',missing:'Not recorded',noAuthority:'Independent release authority not verified',
+          actualUnverified:'Recorded task completion — evidence not independently reviewed',
+          futureActual:'Task completion date is after report as-of',
+          recordedStatus:'Locally entered status only',sourceIncomplete:'Source date / status not verified'},
+        bn:{title:'শিপমেন্ট প্রস্তুতি — স্থানীয় নথি',unknown:'তথ্য প্রয়োজন',
+          notice:'শুধু অভ্যন্তরীণ কোয়ালিটি/শিপিং। লেখা packed/passed/shipped বা লিংক করা সিদ্ধান্ত স্বাধীন অনুমোদন নয়। পাঠানোর আগে অনুমতি যাচাই করুন।',
+          basis:'লট পরিমাণ সর্বশেষ স্থানীয় রেকর্ড, ঐ দিনের ইতিহাস নয়। বুকিং রেফারেন্স মানে ক্যারিয়ার নিশ্চিত নয়। ETD/ETA লিখিত তারিখ, বাস্তব যাত্রা নয়।',
+          hold:'এই রিপোর্ট শিপমেন্ট ছাড়পত্র নয়। AQL, PPM, প্যাকিং তালিকা, ডকুমেন্ট ও ক্যারিয়ার প্রমাণ আলাদাভাবে যাচাই দরকার।',
+          noLots:'কোন শিপমেন্ট লট নেই',noMilestone:'এই টেমপ্লেটে নেই',noLinks:'PPM/AQL স্বাধীন সিদ্ধান্ত যাচাই হয়নি',
+          missingQty:'পরিমাণ/PO তথ্য নেই বা ভুল',sourceQty:'স্থানীয় রেকর্ড; অনুমোদিত নয়',
+          conflict:'লট/PO/পরিমাণ মিলছে না — মোট দেখানো হয়নি',missingDates:'বুকিং/ডকুমেন্ট/এক্স-ফ্যাক্টরি প্রমাণ নেই',
+          entered:'লেখা আছে, বাইরের নিশ্চিত নয়',future:'রিপোর্টের পরে বাস্তব তারিখ',notRelease:'সিদ্ধান্ত লেখা, ছাড়পত্র নয়',
+          restricted:'বাইরে শিপমেন্ট রিপোর্ট অনুমোদিত নয়; অর্ডার/লট/কারখানা তথ্য গোপন।',
+          refState:'স্থানীয় রেফারেন্স পরিচয়; AQL অনুমোদন নয়',
+          sections:{lots:'লট পরিমাণ',dates:'শিপমেন্ট তারিখ',gates:'গুণমান ও ডকুমেন্ট',links:'স্থানীয় PPM/AQL রেফারেন্স'},
+          lotHeaders:['লট','অবস্থা','PO বরাদ্দ','পরিকল্পিত','প্যাকড','পাস লেখা','শিপ লেখা','বাকি','একক','বুকিং রেফারেন্স','ইন্সপেকশন রেফারেন্স','উৎস/গেট'],
+          dateHeaders:['লট','প্রয়োজনীয় এক্স-ফ্যাক্টরি','বর্তমান','পূর্বাভাস','লেখা বাস্তব','ETD','ETA','সতর্কতা'],
+          gateHeaders:['চেকপয়েন্ট','লেখা অবস্থা','লক্ষ্য','পূর্বাভাস','বাস্তব তারিখ','প্রমাণ/অনুমতি'],
+          linkHeaders:['উৎস','রেফারেন্স অবস্থা','লেখা সিদ্ধান্ত','ছাড়পত্র'],
+          allocationHeaders:['লট','PO','বরাদ্দ','মিল'],
+          asOf:'তারিখ',missing:'রেকর্ড নেই',noAuthority:'স্বাধীন ছাড়পত্র যাচাই হয়নি',
+          actualUnverified:'সমাপ্ত লেখা; স্বতন্ত্র প্রমাণ নেই',futureActual:'রিপোর্টের পরে সমাপ্তি',recordedStatus:'স্থানীয় অবস্থা',sourceIncomplete:'উৎস প্রমাণ নেই'},
+        hi:{title:'शिपमेंट तैयारी — स्थानीय रिकॉर्ड',unknown:'जानकारी चाहिए',
+          notice:'केवल आंतरिक क्वालिटी/शिपिंग। दर्ज पैक/पास/शिप मात्रा या लिंक निर्णय स्वतंत्र रिलीज़ नहीं। भेजने से पहले अनुमति जाँचें।',
+          basis:'लॉट मात्रा नवीनतम स्थानीय रिकॉर्ड है, पुरानी तारीख की मात्रा नहीं। बुकिंग रेफरेंस कैरियर पुष्टि नहीं; ETD/ETA दर्ज तारीखें हैं।',
+          hold:'यह रिपोर्ट शिपमेंट रिलीज़ नहीं है। AQL, PPM, पैकिंग सूची, दस्तावेज़ और कैरियर साक्ष्य अलग चाहिए।',
+          noLots:'कोई शिपमेंट लॉट नहीं',noMilestone:'टेम्पलेट में नहीं',noLinks:'PPM/AQL का स्वतंत्र निर्णय नहीं',
+          missingQty:'मात्रा/PO जानकारी गलत या नहीं',sourceQty:'स्थानीय रिकॉर्ड; स्वीकृत नहीं',
+          conflict:'लॉट/PO मात्रा मेल नहीं — कुल छिपाया',missingDates:'बुकिंग/दस्तावेज़/एक्स-फैक्टरी प्रमाण नहीं',
+          entered:'दर्ज, बाहर से पुष्टि नहीं',future:'रिपोर्ट बाद की असली तारीख',notRelease:'दर्ज निर्णय; रिलीज़ नहीं',
+          restricted:'बाहरी शिपमेंट रिपोर्ट की अनुमति नहीं; ऑर्डर/लॉट/फैक्ट्री जानकारी छिपाई गई।',
+          refState:'स्थानीय रेफरेंस, अंतिम AQL अनुमति नहीं',
+          sections:{lots:'लॉट मात्रा',dates:'शिपमेंट तारीखें',gates:'क्वालिटी और दस्तावेज़',links:'स्थानीय PPM/AQL रेफरेंस'},
+          lotHeaders:['लॉट','स्थिति','PO आवंटन','योजना','पैक्ड','पास दर्ज','शिप दर्ज','शेष','इकाई','बुकिंग रेफरेंस','निरीक्षण रेफरेंस','स्रोत/गेट'],
+          dateHeaders:['लॉट','जरूरी एक्स-फैक्टरी','वर्तमान','पूर्वानुमान','दर्ज असली','ETD','ETA','सावधानी'],
+          gateHeaders:['चेकपॉइंट','दर्ज स्थिति','लक्ष्य','पूर्वानुमान','असली तारीख','प्रमाण/अनुमति'],
+          linkHeaders:['स्रोत','स्थानीय रेफरेंस','दर्ज फैसला','रिलीज़'],
+          allocationHeaders:['लॉट','PO','आवंटन','मिलान'],
+          asOf:'रिपोर्ट तारीख',missing:'दर्ज नहीं',noAuthority:'स्वतंत्र रिलीज़ मंजूर नहीं',
+          actualUnverified:'पूर्ण दर्ज; स्वतंत्र प्रमाण नहीं',futureActual:'रिपोर्ट के बाद पूरा',recordedStatus:'स्थानीय स्थिति',sourceIncomplete:'प्रमाण नहीं'},
+        ta:{title:'Shipment Readiness — உள்ளூர் பதிவுகள்',unknown:'தகவல் தேவை',
+          notice:'Quality / Shipping உள் ஆய்வுக்கு மட்டும். பதிவு செய்த Packed/Passed/Shipped அல்லது இணைக்கப்பட்ட PPM/AQL முடிவுகள் தானாக Shipment Release அல்ல. பகிரும் முன் அனுமதி பார்க்கவும்.',
+          basis:'Lot எண்ணிக்கை கடைசியாக உள்ளூரில் பதிந்தது மட்டுமே; report நாளின் வரலாறு அல்ல. Booking reference என்பது carrier confirmation அல்ல. ETD/ETA பதிவு மட்டும்.',
+          hold:'இந்த report Shipment Release அனுமதி அல்ல. Final AQL, PPM, packing list, shipping documents, carrier உறுதி தனியாகச் சரிபார்க்கப்பட வேண்டும்.',
+          noLots:'Shipment lot பதிவாகவில்லை',noMilestone:'இந்த template-இல் checkpoint இல்லை',noLinks:'PPM/AQL முடிவுக்கு தனி உறுதி இல்லை',
+          missingQty:'Quantity / PO allocation குறைவு அல்லது தவறு',sourceQty:'உள்ளூர் பதிவு; வெளி உறுதி இல்லை',
+          conflict:'Lot / PO எண்ணிக்கை பொருந்தவில்லை — மொத்தம் மறைக்கப்பட்டது',
+          missingDates:'Booking/Documents/Ex-factory ஆதாரம் பதிவு இல்லை',
+          entered:'பதிவு; வெளி உறுதி இல்லை',future:'Report தேதிக்குப் பிந்தைய Actual',notRelease:'உள்ளூரில் பதிந்த நிலை; release உறுதி இல்லை',
+          restricted:'வெளிப்புற Shipment report-க்கு அனுமதி இல்லை. Order, Lot, Factory தகவல் மறைக்கப்பட்டது.',
+          refState:'உள்ளூர் reference மட்டும்; Final AQL ஒப்புதல் அல்ல',
+          sections:{lots:'Lot எண்ணிக்கை',dates:'Shipment தேதிகள்',gates:'Quality / Document checkpoints',links:'உள்ளூர் PPM / AQL இணைப்புகள்'},
+          lotHeaders:['Lot','பதிந்த நிலை','PO ஒதுக்கீடு','Planned','Packed','Passed பதிவு','Shipped பதிவு','மீதி','Unit','Booking Ref','Inspection Ref','ஆதாரம் / Gate'],
+          dateHeaders:['Lot','கோரிய Ex-factory','இப்போதைய தேதி','Forecast','பதிந்த Actual','ETD','ETA','தேதி குறிப்பு'],
+          gateHeaders:['செயல்','பதிந்த நிலை','Current','Forecast','Actual நாள்','ஆதாரம்'],
+          linkHeaders:['ஆப்','உள்ளூர் Reference','பதிந்த முடிவு','Release ஆதாரம்'],
+          allocationHeaders:['Lot','PO','ஒதுக்கீடு','பொருத்தம்'],
+          asOf:'அறிக்கை தேதி',missing:'பதிவு இல்லை',noAuthority:'தனி Shipment Release ஆதாரம் இல்லை',
+          actualUnverified:'முடிந்ததாகப் பதிந்தது; தனி உறுதி இல்லை',futureActual:'Report தேதிக்கு பின்னான Actual',recordedStatus:'பதிந்த நிலை மட்டும்',sourceIncomplete:'ஆதாரம் உறுதி இல்லை'}
+      };
+      return words[language]||words.en;
+    }
+    /** A checkpoint status alone is not an approved or inspected decision. */
+    static gates(plan,asOfDay,labels){
+      const refs=['PP08','PP10','Q06','Q07','Q08','PK04','PK05','S01','S02','S04','S06','S08'];
+      const tasks=Array.isArray(plan.tasks)?plan.tasks:[];
+      return refs.map(ref=>{
+        const task=tasks.find(t=>t.templateRef===ref);
+        const dates=task?.dates||{};
+        const actual=TnaMasterReportProjection.asDate(dates.actualFinish);
+        const actualDay=TnaMasterReportProjection.day(actual);
+        const recordedCompletion=task?.status==='completed'&&actualDay!==null&&actualDay<=asOfDay;
+        return {ref,status:typeof task?.status==='string'?task.status:labels.unknown,
+          currentTarget:TnaMasterReportProjection.asDate(dates.currentTargetFinish),
+          forecast:TnaMasterReportProjection.asDate(dates.forecastFinish),
+          actualAsOf:recordedCompletion?actual:null,actualAfterAsOf:actualDay!==null&&actualDay>asOfDay,
+          evidenceState:recordedCompletion?labels.actualUnverified:
+            actualDay!==null&&actualDay>asOfDay?labels.futureActual:
+              task?labels.sourceIncomplete:labels.noMilestone,
+          verifiedDecision:false};
+      });
+    }
+    /** A valid reference carries local verifier identity only, not AQL/PPM authority. */
+    static integration(plan,labels){
+      const lib=root.VesaTnaIntegrationReferences||
+        (typeof require==='function'?require('./integration-references.js'):null);
+      const refs=Array.isArray(plan.integrationReferences)?plan.integrationReferences:[];
+      return ['ppm','aql'].map(type=>{
+        const matches=refs.filter(r=>r?.sourceApp===type).map(ref=>
+          lib?.assessReference?.(ref,plan)).filter(Boolean);
+        const valid=matches.filter(item=>item.verified);
+        return {source:type.toUpperCase(),referenceState:valid.length===1?
+          labels.refState:valid.length>1?labels.conflict:labels.noLinks,
+          recordedDecision:valid.length===1?valid[0].reference.recordedStatus:null,
+          releaseAuthorityVerified:false,locallyMatched:valid.length===1};
+      });
+    }
+    /** Strictly validate all lot numbers and PO allocations BEFORE calling engine. */
+    static quantityAudit(plan,lots,labels){
+      const orderQty=plan.order?.totalQty;
+      const orderUnit=typeof plan.order?.unit==='string'?plan.order.unit.toLowerCase():'';
+      const pieces=['pcs','piece','pieces'].includes(orderUnit);
+      const numeric=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&(!pieces||Number.isInteger(v));
+      const errors=[],identifiers=new Set();
+      if(!numeric(orderQty)||orderQty<=0)errors.push(labels.missingQty);
+      const allowedPos=new Set(Array.isArray(plan.order?.poNumbers)?plan.order.poNumbers:[]);
+      const poRows=[];
+      for(const lot of lots){
+        const ref=typeof lot?.lotReference==='string'?lot.lotReference.trim():'';
+        if(!ref||identifiers.has(ref.toLowerCase()))errors.push(labels.conflict);
+        identifiers.add(ref.toLowerCase());
+        for(const field of ['plannedQty','packedQty','passedQty','shippedQty'])
+          if(!numeric(lot?.[field]))errors.push(labels.missingQty);
+        const allocations=Array.isArray(lot?.poAllocation)?lot.poAllocation:[];
+        if(!allocations.length)errors.push(labels.missingQty);
+        let allocated=0;
+        for(const a of allocations){
+          if(typeof a?.poNumber!=='string'||!allowedPos.has(a.poNumber)||!numeric(a.qty))
+            errors.push(labels.missingQty);
+          else allocated+=a.qty;
+          poRows.push({lotRef:ref||labels.unknown,
+            po:typeof a?.poNumber==='string'?a.poNumber:labels.unknown,
+            quantity:numeric(a?.qty)?a.qty:null,locallyReconciled:false});
+        }
+        if(numeric(lot?.plannedQty)&&allocated!==lot.plannedQty)errors.push(labels.conflict);
+        if(numeric(lot?.plannedQty)&&lot.plannedQty<=0)errors.push(labels.missingQty);
+        if(numeric(lot?.packedQty)&&numeric(lot?.plannedQty)&&lot.packedQty>lot.plannedQty)errors.push(labels.conflict);
+        if(numeric(lot?.passedQty)&&numeric(lot?.packedQty)&&lot.passedQty>lot.packedQty)errors.push(labels.conflict);
+        if(numeric(lot?.shippedQty)&&numeric(lot?.passedQty)&&lot.shippedQty>lot.passedQty)errors.push(labels.conflict);
+      }
+      if(errors.length)return {valid:false,errors:[...new Set(errors)],poRows,totals:null};
+      const engine=root.VesaTnaOperations||
+        (typeof require==='function'?require('./operations.js'):null);
+      if(!engine?.reconcileShipmentLots)return {valid:false,errors:[labels.missingQty],poRows,totals:null};
+      // Explicit false prevents a local AQL reference from being upgraded to release.
+      const result=engine.reconcileShipmentLots(orderQty,lots,{inspectionPassed:false});
+      const arithmeticErrors=(result.errors||[]).filter(message=>
+        !message.includes('Shipment cannot be released without a verified final inspection pass.'));
+      if(arithmeticErrors.length)return {valid:false,errors:arithmeticErrors,poRows,totals:null};
+      return {valid:true,errors:(result.errors||[]).slice(),poRows:poRows.map(row=>({
+        ...row,locallyReconciled:true})),
+        totals:{orderQty:result.orderQty,planned:result.plannedQty,packed:result.packedQty,
+          passed:result.passedQty,shipped:result.shippedQty,unallocated:result.unplannedQty,
+          balanceAgainstOrder:result.remainingQty,wholeOrderPlanned:result.wholeOrderPlanned,
+          wholeOrderShippedEntered:result.wholeOrderShipped},
+        releaseAuthorized:false};
+    }
+    /** Keep source dates distinct; even "actual" requires independent handover proof. */
+    static lotDates(lot,asOfDay,labels){
+      const date=value=>TnaMasterReportProjection.asDate(value);
+      const actual=date(lot.actualExFactory);
+      const actualDay=TnaMasterReportProjection.day(actual);
+      return {requestedExFactory:date(lot.requestedExFactory),
+        currentExFactory:date(lot.currentExFactory),
+        forecastExFactory:date(lot.forecastExFactory),
+        enteredActualExFactory:actual,
+        actualRecordedAsOf:actualDay!==null&&actualDay<=asOfDay,
+        ETD:date(lot.ETD),ETA:date(lot.ETA),
+        dateWarning:actualDay!==null&&actualDay>asOfDay?labels.future:
+          actual?labels.entered:labels.missingDates};
+    }
+    /** Source rows are never silently discarded; invalid numbers are withheld. */
+    static lots(plan,lots,asOfDay,labels,checked){
+      const unit=typeof plan.order?.unit==='string'&&plan.order.unit.trim()?
+        plan.order.unit.trim():labels.unknown;
+      const validNumbers=checked.valid;
+      return lots.map(lot=>{
+        const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
+        const qty=v=>validNumbers&&typeof v==='number'&&Number.isFinite(v)&&v>=0?v:null;
+        return {lotReference:text(lot?.lotReference)||labels.unknown,
+          localStatus:text(lot?.status)||labels.unknown,
+          poAllocation:Array.isArray(lot?.poAllocation)?lot.poAllocation.filter(a=>
+            typeof a?.poNumber==='string').map(a=>a.poNumber).join(', '):'',
+          plannedQty:qty(lot?.plannedQty),packedQty:qty(lot?.packedQty),
+          passedQty:qty(lot?.passedQty),shippedQty:qty(lot?.shippedQty),
+          remainingWithinLot:validNumbers?lot.plannedQty-lot.shippedQty:null,
+          unit,bookingRef:text(lot?.bookingRef),inspectionRef:text(lot?.inspectionRef),
+          quantityState:validNumbers?labels.sourceQty:labels.conflict,
+          ...this.lotDates(lot,asOfDay,labels),
+          bookingConfirmed:false,inspectionPassedVerified:false,
+          dispatchReleased:false,documentAcceptanceVerified:false};
+      });
+    }
+    /** An independent recipient policy is unavailable; external mode fails closed. */
+    static blockedReport(report,language,generatedAt,timezone){
+      const labels=this.labels(language),shared=I18N[language];
+      return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:'R09',
+        title:titleFor(report,language),language,languageName:shared.languageName,
+        audience:'External shipment report not authorized',
+        generatedAt,generatedLabel:formatDateTime(generatedAt,language),timezone,
+        revision:0,baselineSnapshots:0,headings:shared.headings,labels:shared.labels,
+        order:{buyer:labels.restricted,factory:labels.restricted,style:labels.restricted,
+          po:labels.restricted,quantity:labels.unknown,unit:labels.unknown,
+          requiredExFactory:labels.unknown},tasks:[],
+        shipmentReadiness:{schema:'VESA-TNA-SHIPMENT-1',validity:'restricted',
+          audience:'external-blocked',asOfDate:null,timezone,lots:[],
+          poAllocations:[],gates:[],integrations:[],totals:null,
+          errors:[],labels,counts:{lotCount:0,reportedShippedQty:null},
+          releaseAuthorized:false,externalDecisionsVerified:false,
+          warnings:[labels.restricted]},
+        warnings:[labels.restricted],notes:[labels.restricted],
+        source:{recordId:null,schemaVersion:null,mode:'restricted-external'}};
+    }
+    /**
+     * Produce an internal management snapshot. Never calculate a shipment
+     * readiness PASS: even a coherent lot and locally linked CONFORMED
+     * inspection lack trusted external authority on this static browser app.
+     */
+    static build(plan={},options={}){
+      const labels=this.labels(options.language);
+      const period=TnaWeeklyReportProjection.window(options);
+      const blank={schema:'VESA-TNA-SHIPMENT-1',validity:'incomplete',
+        audience:'internal-quality-shipping',timezone:options.timezone||null,
+        asOfDate:null,lots:[],poAllocations:[],gates:[],integrations:[],
+        totals:null,errors:[],labels,
+        counts:{lotCount:0,reportedShippedQty:null},
+        releaseAuthorized:false,externalDecisionsVerified:false,
+        warnings:[labels.notice,labels.basis,labels.hold]};
+      if(!period)return {...blank,warnings:[labels.unknown,labels.hold]};
+      const lots=Array.isArray(plan.shipmentLots)?plan.shipmentLots:[];
+      const checked=this.quantityAudit(plan,lots,labels);
+      const rows=this.lots(plan,lots,period.today,labels,checked);
+      const integrations=this.integration(plan,labels);
+      const gates=this.gates(plan,period.today,labels);
+      const totals=lots.length&&checked.valid?checked.totals:null;
+      const warnings=[labels.notice,labels.basis,labels.hold,
+        ...(!lots.length?[labels.noLots]:[]),...checked.errors];
+      return {...blank,validity:checked.valid?'valid':'incomplete',
+        asOfDate:period.asOfDate,lots:rows,poAllocations:checked.poRows,
+        gates,integrations,totals,errors:checked.errors,
+        counts:{lotCount:rows.length,reportedShippedQty:totals?.shipped??null},
+        warnings:[...new Set(warnings)]};
+    }
+  }
+
   function taskRows(plan={},limit=Infinity){return (plan.tasks||[]).slice(0,limit).map(task=>({ref:task.templateRef,title:task.title,owner:task.ownerParty,status:task.status,baseline:task.dates?.baselineFinish||'',current:task.dates?.currentTargetFinish||'',forecast:task.dates?.forecastFinish||'',actual:task.dates?.actualFinish||'',risk:task.riskStatus||'needs-information'}))}
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=(report[0]==='R05'||report[0]==='R06'||report[0]==='R07'||report[0]==='R08')&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);if(report[0]==='R08'&&options.audienceMode&&options.audienceMode!=='internal')return TnaMaterialLcProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R07'&&options.audienceMode==='buyer')return TnaProductionStatusProjection.buyerReport(plan,report,l,generatedAt,timezone,options);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const delay=report[0]==='R06'?TnaDelayRecoveryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const production=report[0]==='R07'?TnaProductionStatusProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const materials=report[0]==='R08'?TnaMaterialLcProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R08'?'Internal commercial and sourcing — restricted':report[0]==='R07'?'Internal production review — restricted':report[0]==='R06'?'Local management review — no external sharing authorization':report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(delay?{delayRecovery:delay}:{}),...(production?{productionStatus:production}:{}),...(materials?{materialLc:materials}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[]),...(delay?delay.warnings:[]),...(production?production.warnings:[]),...(materials?materials.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),...(delay?[delay.labels.disclosure]:[]),...(production?[production.labels.internalNotice]:[]),...(materials?[materials.labels.internalNotice]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=(report[0]==='R05'||report[0]==='R06'||report[0]==='R07'||report[0]==='R08'||report[0]==='R09')&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);if(report[0]==='R08'&&options.audienceMode&&options.audienceMode!=='internal')return TnaMaterialLcProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R09'&&options.audienceMode&&options.audienceMode!=='internal')return TnaShipmentReadinessProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R07'&&options.audienceMode==='buyer')return TnaProductionStatusProjection.buyerReport(plan,report,l,generatedAt,timezone,options);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const delay=report[0]==='R06'?TnaDelayRecoveryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const production=report[0]==='R07'?TnaProductionStatusProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const materials=report[0]==='R08'?TnaMaterialLcProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const shipment=report[0]==='R09'?TnaShipmentReadinessProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R09'?'Internal quality and shipping — restricted':report[0]==='R08'?'Internal commercial and sourcing — restricted':report[0]==='R07'?'Internal production review — restricted':report[0]==='R06'?'Local management review — no external sharing authorization':report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(delay?{delayRecovery:delay}:{}),...(production?{productionStatus:production}:{}),...(materials?{materialLc:materials}:{}),...(shipment?{shipmentReadiness:shipment}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[]),...(delay?delay.warnings:[]),...(production?production.warnings:[]),...(materials?materials.warnings:[]),...(shipment?shipment.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),...(delay?[delay.labels.disclosure]:[]),...(production?[production.labels.internalNotice]:[]),...(materials?[materials.labels.internalNotice]:[]),...(shipment?[shipment.labels.notice]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
