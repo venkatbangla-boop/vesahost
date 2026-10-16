@@ -231,6 +231,8 @@ class PackingMath {
        status:!possible?'Needs Information':(volumeEligible===false||weightEligible===false||doorEligible===false)?
          'Not eligible on entered checks':'Mathematical checks only — physical fit not verified'});
    }
+   // A physical carton lot cannot be dispatched twice by labeling the entries
+   // as different comparison scenarios. Reconcile counts across all scenarios.
    const totalsByLoad=new Map(),sceneIds=new Set(plan.containerScenarios.map(s=>s.id));
    for(const item of plan.loadEntries){
      const config=packs.find(p=>p.id===item.configId);
@@ -238,9 +240,9 @@ class PackingMath {
        !trim(item.evidenceRef)||!this.validDate(item.date)){
        errors.push('Loading entry needs a valid scenario, pack entry, carton count, date and manual evidence.');continue;
      }
-     const k=item.scenarioId+'|'+item.configId;
-     const loaded=(totalsByLoad.get(k)||0)+item.cartonCount;totalsByLoad.set(k,loaded);
-     if(loaded>config.count)errors.push('Actual loaded cartons exceed the matching planned carton count.');
+     const loaded=(totalsByLoad.get(item.configId)||0)+item.cartonCount;
+     totalsByLoad.set(item.configId,loaded);
+     if(loaded>config.count)errors.push('Actual loaded cartons exceed the matching planned carton count across all container entries.');
      loads.push({scenarioId:item.scenarioId,configId:item.configId,
        loaded:item.cartonCount,evidenceRef:item.evidenceRef,date:item.date});
    }
@@ -487,10 +489,13 @@ class PackingWorkspace {
  commit(label,mutator){
    if(!this.current)throw Error('Open a plan first.');
    if(this.current.mode==='practice')throw Error('Practice is read-only. Start a real plan.');
-   const next=deep(this.current);
+   const next=deep(this.current),wasFrozen=next.status==='frozen-local';
    mutator(next);
    next.revision+=1;next.updatedAt=new Date().toISOString();
-   if(next.status==='frozen-local')next.status='draft';
+   // Only a subsequent edit starts a new draft; a deliberate freeze must
+   // remain locally frozen and never imply buyer/factory approval.
+   if(wasFrozen&&next.status==='frozen-local'&&!label.startsWith('Local revision frozen:'))
+     next.status='draft';
    next.audit.push({at:next.updatedAt,revision:next.revision,action:label});
    PackingStore.validate(next);
    if(this.store.load(next.id))this.store.save(next);else this.dirty=true;
@@ -529,7 +534,8 @@ class PackingWorkspace {
    const name={summary:l('summary'),order:l('order'),cartons:l('cartons'),packs:l('packs'),containers:l('containers'),loads:l('loads'),reports:l('reports'),revision:l('revision')};
    this.main.innerHTML=title+
      '<section class="pack-card"><h2>'+safe(p.meta.po||'Draft PO')+' · '+safe(p.meta.style||'Style not entered')+'</h2>'+
-     '<p class="pack-note">'+safe(practice?l('pract'):p.meta.buyer+' · '+p.meta.factory+' · '+p.meta.sourceRef)+'</p>'+
+     '<p class="pack-note">'+safe(practice?l('pract'):p.meta.buyer+' · '+p.meta.factory+' · '+p.meta.sourceRef)+
+     ' · '+safe(p.status==='frozen-local'?'Locally frozen revision — NOT buyer approved':'Local draft — NOT buyer approved')+'</p>'+
      '<div class="pack-toolbar pack-noprint"><button class="pack-btn" data-action="home">'+safe(l('back'))+'</button>'+
      '<button class="pack-btn primary" data-action="save"'+(practice?' disabled':'')+'>'+safe(l('save'))+'</button>'+
      '<button class="pack-btn" data-action="download"'+(practice?' disabled':'')+'>'+safe(l('download'))+'</button>'+

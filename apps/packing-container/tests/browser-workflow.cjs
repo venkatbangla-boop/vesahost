@@ -56,6 +56,19 @@ class PackingBrowserProof{
    assert.match(await page.locator('.pack-table').innerText(),/physical fit not verified/i);
    await act('loads');await act('add-load');await f({loaded:1,date:'2026-10-16',evidence:'TEST LOADING INPUT'});await submit();
    p=await stored();assert.equal(p.loadEntries.length,1);
+   // A local revision freeze must survive Save and reload without suggesting
+   // buyer acceptance. Editing afterward creates a draft without losing history.
+   await act('freeze');
+   await f({reason:'SYNTHETIC frozen packing review'});
+   await submit();
+   p=await stored();assert.equal(p.status,'frozen-local');
+   assert.equal(p.frozenSnapshots.length,1);
+   const immutable=JSON.stringify(p.frozenSnapshots[0]);
+   await page.reload({waitUntil:'domcontentloaded'});await act('continue');
+   p=await stored();assert.equal(p.status,'frozen-local');
+   await act('meta');await f({buyer:'SYNTHETIC BUYER MODIFIED'});await submit();
+   p=await stored();assert.equal(p.status,'draft');
+   assert.equal(JSON.stringify(p.frozenSnapshots[0]),immutable);
    await act('reports');assert.match(await page.locator('.pack-report').innerText(),/NOT a physical loadability/i);
    const dlEvent=page.waitForEvent('download');await act('excel');
    fs.mkdirSync(output,{recursive:true});const dl=await dlEvent,local=path.join(output,'packing-app01-test.xlsx');await dl.saveAs(local);

@@ -60,6 +60,19 @@ class PackingEngineProof{
   s.containerScenarios[0].doorWidth=220;
   s.loadEntries=[{id:'LD1',scenarioId:'SC1',configId:'P1',cartonCount:7,date:'2026-10-16',evidenceRef:'TEST'}];
   assert(!M.analyze(s).ok);s.loadEntries[0].cartonCount=1;assert(M.analyze(s).ok);
+  const doubleLoad=JSON.parse(snapshot);
+  doubleLoad.containerScenarios=[
+   {id:'SC1',name:'SYNTHETIC A',type:'20ft test',sourceConfirmed:false},
+   {id:'SC2',name:'SYNTHETIC B',type:'20ft test',sourceConfirmed:false}];
+  doubleLoad.loadEntries=[
+   {id:'LOAD-A',scenarioId:'SC1',configId:'P1',cartonCount:4,
+     date:'2026-10-16',evidenceRef:'SOURCE-A'},
+   {id:'LOAD-B',scenarioId:'SC2',configId:'P1',cartonCount:3,
+     date:'2026-10-16',evidenceRef:'SOURCE-B'}];
+  assert(M.analyze(doubleLoad).errors.some(e=>e.includes('across all container')),
+    'One carton lot must never be loaded twice across alternative scenarios.');
+  doubleLoad.loadEntries[1].cartonCount=2;
+  assert.equal(M.analyze(doubleLoad).ok,true,'Exact six cartons may be reconciled across entries.');
   const store=new S('test@example.org'),valid=JSON.parse(snapshot);
   valid.mode='local';store.save(valid);const persisted=data.get(store.key);
   const token=S.encode(valid);assert.deepEqual(JSON.parse(JSON.stringify(S.decode(token))),valid);
