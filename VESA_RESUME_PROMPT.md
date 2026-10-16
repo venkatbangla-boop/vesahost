@@ -1,5 +1,12 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## Verified-source resumption notice (2026-10-16)
+
+For ChatGPT Work resume, prioritize the latest GitHub `feature/tna-merchandising-rework` checkpoint and the exact newest CI result, not the historical VS Code text below or older `main` queue state. R06 source commit `2d6367d1fddec52c97c00f23995b99344ffdb3aa` is **CONDITIONAL until the full Node + Chromium GitHub workflow passes after the inherited R05 documentation-whitespace fix**. Continue R06 verification/repair, then R07 report, not a fresh Costing or TNA build. The other `feature/tna360-continuous` branch is divergent and must not be merged blindly. Treat status and next action in `VESA_PROGRESS.md` and `docs/tna/06_EXECUTION_TRACKER.md` as authoritative when reconciled to branch commits/CI; never call a partially verified patch DEMO LIVE. No `main` deployment is authorized by a feature-branch commit.
+
+---
+
+
 ## Permanent ChatGPT Work / GitHub connector resumption overlay (2026-10-15)
 
 **This section supersedes VS Code-only and local-checkout assumptions below for ChatGPT Work sessions, while preserving the historical prompt.** For `NEXT`, `CONTINUE`, or `RESUME VESA 360`, inspect the live connected repository `venkatbangla-boop/vesahost` first: `main`, active branches, recent commits, CI results, `AGENTS.md`, `VESA_PROGRESS.md`, the current app's authoritative blueprints/tracker, `docs/platform/VESA_UNIFIED_UI_CONTRACT.md`, and `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md`. Prefer GitHub branch reads/writes and actual GitHub Actions proof if local checkout or cloud computer execution is unavailable. Do not claim to have executed local code from connector-only source reads.

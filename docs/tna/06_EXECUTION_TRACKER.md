@@ -1,5 +1,17 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+## TNA R06 Work checkpoint (2026-10-16) — CONDITIONAL pending browser CI
+
+- **Branch/source SHA:** `feature/tna-merchandising-rework` / `2d6367d1fddec52c97c00f23995b99344ffdb3aa`.
+- **File-level ownership:** `apps/tna/src/reports.js` pure R06 projection; `storage.js` R06 typed/safe Excel; `bootstrap.js` read-only print; `assets/tna.css` report-only responsive/print; new `tests/r06-delay-recovery.test.js`, additive `g11-artifact-viewers.cjs` Chromium proof, workflow registration. **Frozen:** `domain.js`, `scheduling.js`, `scenarios.js`, saved-copy schema/records, PPM/AQL source, shared shell, main/release assets.
+- **Actual first CI:** [38856676394](https://github.com/venkatbangla-boop/vesahost/actions/runs/38856676394) failure at `git diff --check origin/main...HEAD` from inherited R05 trailing whitespace in this tracker, master dashboard and rework queue. R06 Node deterministic knit/woven, parse, existing TNA/PPM/AQL source contracts passed; browser steps skipped. Historical failed CI remains failed. This corrective documentation commit strips only trailing whitespace, preserves history.
+- **Business boundaries:** report does NOT manufacture waiting party, upstream causality, buyer/factory agreement, source rates, commitments or scenario approval; recorded direct downstream refs are a possible effect, never proven blocker. Source plans are read-only, unknown dates remain explicit, closed/future-actual treatment is as-of gated.
+- **Verification gate:** exact new SHA CI Node+Chromium R01–R06, workbook/PDF/print/mobile, four languages, migrated saved-copy and sibling regression must PASS before R06 slice DEVELOPMENT VERIFIED. Human buyer/factory approval, physical UAT and release remain unverified.
+- **NEXT ACTION:** Inspect rerun; repair any failing contract and retest, then checkpoint R06 proof and proceed to R07 Production Status without merging competing feature branches. Portfolio next after TNA: Packing & Container 360.
+
+---
+
+
 ### 2026-10-16 — R05 Weekly Merchandising TNA: DEVELOPMENT VERIFIED
 
 **Verified code SHA:** `b68ab9c60ec7e8355ef313e646bc7f1a87717681` on `feature/tna-merchandising-rework`. **Actual [GitHub Actions run 38853286074](https://github.com/venkatbangla-boop/vesahost/actions/runs/38853286074) SUCCESS** (all five Node/Chromium stages). [Synthetic artifact 12026345518](https://github.com/venkatbangla-boop/vesahost/actions/runs/38853286074/artifacts/12026345518). Actual five-page Chromium R05 PDF rendered, opened and visually reviewed (first/middle/last page): readable repeated headers, no horizontal clipping; Excel/JSON downloads and migrated browser reopen were tested. PPM frozen 168-checkpoint baseline, AQL frozen 24 fixtures + sampling and shared-shell mobile/desktop/browser regressions remain PASS.
@@ -8,7 +20,7 @@
 
 **Failures honestly retained:** [run 38852585263](https://github.com/venkatbangla-boop/vesahost/actions/runs/38852585263) failed because the synthetic test expected whitespace the projection intentionally normalized; [38852642144](https://github.com/venkatbangla-boop/vesahost/actions/runs/38852642144) exposed a real explicit-empty-timezone fallback and prompted R05-specific fail-closed correction; [38852717281](https://github.com/venkatbangla-boop/vesahost/actions/runs/38852717281) failed when browser test attempted to mutate saved fixture behind the live UI state and was replaced by immutable browser fixture proof; [38852970293](https://github.com/venkatbangla-boop/vesahost/actions/runs/38852970293) first full PASS; final readability improvement [38853286074](https://github.com/venkatbangla-boop/vesahost/actions/runs/38853286074) full PASS. Do not rewrite earlier failures to PASS.
 
-**Status and boundary:** R05 targeted patch **DEVELOPMENT VERIFIED**. Entire garment merchandising TNA rework remains **ACTIVE**; R05 recipient authorization, independent approval/recovery agreement, human merchandiser UAT, external sharing and public production deployment remain unverified. No change to `main`, business records, scheduling engine, original baselines or PPM/AQL rules. No automatic buyer/factory distribution, no invented recovery approval. 
+**Status and boundary:** R05 targeted patch **DEVELOPMENT VERIFIED**. Entire garment merchandising TNA rework remains **ACTIVE**; R05 recipient authorization, independent approval/recovery agreement, human merchandiser UAT, external sharing and public production deployment remain unverified. No change to `main`, business records, scheduling engine, original baselines or PPM/AQL rules. No automatic buyer/factory distribution, no invented recovery approval.
 **PRECISE NEXT ACTION:** Audit and implement R06 **Delay & Recovery** management report from actual original/current/forecast/actual dates, waiting party/causal blocking tasks and source-recorded scenario branches; separate proposed/applied changes from externally **agreed** and require real approval authority/evidence before claiming acceptance. Gate fabricated causes, approval, lead times and recovery promises. Add dedicated typed Excel, printable report, four-language and browser/PPM/AQL regressions; continue R07–R12, staged Excel import and final garment-merchandiser acceptance. Next portfolio application after TNA: **Packing & Container 360**.
 
 
@@ -437,9 +449,9 @@ NEXT ACTION (ONE PRECISE STEP): audit area 31's complete stage/report catalogue,
 - `blocked`: cannot execute a particular task safely, missing external access/approval/prerequisite; isolate blocker and proceed with independent work if safe.
 - `rejected`: patch failed tests/contracts; fix or roll back before building on it.
 
-**Pre-code gate:** scope, file-level audit, ownership/dependency/state, affected and frozen files, tests and rollback recorded.  
-**Implementation gate:** approved/defined patch group only, no unrelated edits.  
-**Proof gate:** deterministic tests + UI/export/security checks, not just code review.  
+**Pre-code gate:** scope, file-level audit, ownership/dependency/state, affected and frozen files, tests and rollback recorded.
+**Implementation gate:** approved/defined patch group only, no unrelated edits.
+**Proof gate:** deterministic tests + UI/export/security checks, not just code review.
 **Release gate:** explicit user instruction, all safety/quality acceptance and live verification.
 
 ## D. One continuous execution sequence — G00 through G12
