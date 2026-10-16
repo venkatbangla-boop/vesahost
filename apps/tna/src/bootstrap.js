@@ -56,7 +56,7 @@
     }
   };
 
-  const state={dialog:null,language:'en',currentPlan:null,workspaceFilter:{owner:null,stage:null},workspaceView:'timeline',portfolioFilter:{buyer:null,factory:null,po:null},scenarioDraft:null,scenarioPreview:null};
+  const state={dialog:null,language:'en',currentPlan:null,workspaceFilter:{owner:null,stage:null},workspaceView:'timeline',portfolioFilter:{buyer:null,factory:null,po:null},scenarioDraft:null,scenarioPreview:null,alternativeChoice:null};
   const domain=globalThis.VesaTnaDomain;
   const scheduling=globalThis.VesaTnaScheduling;
   const operations=globalThis.VesaTnaOperations;
@@ -200,6 +200,7 @@
       ${notificationPanel(plan)}
       ${workspacePanel(plan)}
       ${scenarioPanel(plan)}
+      ${TnaAlternativeScenarioPanel.panel(plan)}
       ${splitShipmentPanel(plan)}
       <h3>Stages</h3><div class="tna-stage-chips">${Object.entries(stageCounts).map(([stage,count])=>`<span>${esc(stage)} · ${count}</span>`).join('')}</div>
 </div>`}
@@ -248,8 +249,11 @@
     root.querySelectorAll('[data-add-shipment-lot]').forEach(btn=>btn.onclick=openShipmentLotEntry);
     const scenarioForm=document.getElementById('tnaScenarioForm');if(scenarioForm)scenarioForm.onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());state.scenarioDraft={...data,durationUnits:Number(data.durationUnits),verifiedDailyOutput:data.verifiedDailyOutput};state.scenarioPreview=scenarios.previewScenario(state.currentPlan,{name:data.name,durationAdjustments:[{taskId:data.taskId,durationUnits:Number(data.durationUnits),reason:data.name}],capacity:data.verifiedDailyOutput?{plannedQty:state.currentPlan.order.totalQty,completedQty:0,verifiedDailyOutput:Number(data.verifiedDailyOutput)}:undefined},{actorId:userKey()});render();};
     root.querySelectorAll('[data-apply-scenario]').forEach(btn=>btn.onclick=openScenarioApply);
+    root.querySelectorAll('[data-save-scenario]').forEach(btn=>btn.onclick=saveScenarioOption);
+    TnaAlternativeScenarioPanel.bind(root);
     root.querySelectorAll('[data-edit-task]').forEach(btn=>btn.onclick=()=>openTaskEdit(btn.dataset.editTask));
     root.querySelectorAll('[data-edit-calendar]').forEach(btn=>btn.onclick=()=>TnaFactoryCalendarEditor.open());
+    root.querySelectorAll('[data-add-alt-calendar]').forEach(btn=>btn.onclick=()=>TnaFactoryCalendarEditor.open('alternative'));
   }
   function openDialog(title,body){document.getElementById('tnaDialogTitle').textContent=title;document.getElementById('tnaDialogBody').innerHTML=body;if(!state.dialog.open)state.dialog.showModal();}
   function openHelp(action){const id=String(action).replace(/^help-/,'');const topic=(HELP_TOPICS[state.language]||HELP_TOPICS.en)[id]||HELP_TOPICS.en[id];if(!topic)return;openDialog(topic.title,`<article data-help-topic="${esc(id)}"><p>${esc(topic.intro)}</p><ol>${topic.items.map(item=>`<li>${esc(item)}</li>`).join('')}</ol></article>`);}
@@ -329,7 +333,7 @@
     const taskLabel=task=>`${task.templateRef} · ${task.title}`;
     const result=preview?.branch;
     const gained=result?.workingDaysGained;
-    return `<section class="tna-advanced-grid" aria-label="Recovery scenarios"><article class="tna-panel tna-scenario-panel"><span class="tna-kicker">Recovery & scenarios</span><h3>Compare a recovery option</h3><p class="tna-note">Preview changes against revision ${esc(plan.revision)}. The accepted TNA and baseline stay unchanged until you explicitly confirm an apply reason.</p><form id="tnaScenarioForm" class="tna-form-grid"><label><span>Scenario name</span><input name="name" value="${esc(draft.name)}"></label><label><span>Activity to adjust</span><select name="taskId">${taskOptions.map(task=>`<option value="${esc(task.taskId)}" ${task.taskId===draft.taskId?'selected':''}>${esc(taskLabel(task))}</option>`).join('')}</select></label><label><span>Candidate duration</span><input name="durationUnits" type="number" min="0" step="1" value="${esc(draft.durationUnits)}"></label><label><span>Verified daily output (optional)</span><input name="verifiedDailyOutput" type="number" min="0" step="1" value="${esc(draft.verifiedDailyOutput)}"></label><div class="tna-wide"><button class="tna-btn" type="submit">Preview recovery option</button></div></form>${result?`<div class="tna-scenario-result"><h4>${esc(result.name)}</h4><div class="tna-dashboard-grid"><article><b>${esc(result.baseForecastDate||'Needs Information')}</b><span>Base forecast</span></article><article><b>${esc(result.scenarioForecastDate||'Needs Information')}</b><span>Scenario forecast</span></article><article><b>${esc(gained==null?'Needs Information':gained)}</b><span>Working days gained (+ earlier)</span></article><article><b>${esc(result.changedCriticalTaskIds.length)}</b><span>Critical tasks changed</span></article></div><p class="tna-note">${result.violations.length?`Needs review: ${esc(result.violations.join(' '))}`:`Local scenario preview only. Verify factory working calendar, task feasibility and buyer authority before relying on these dates. Forecast provenance: revision ${esc(result.forecastProvenance.inputRevision)} · ${esc(result.forecastProvenance.engineVersion||'schedule unavailable')}.`}</p><p>Critical chain before: ${esc(result.comparison.criticalTaskIdsBefore.join(', ')||'none')}<br>Critical chain after: ${esc(result.comparison.criticalTaskIdsAfter.join(', ')||'none')}<br>Shared resource conflicts: ${esc(result.comparison.resourceConflictsBefore)} → ${esc(result.comparison.resourceConflictsAfter)}</p><button class="tna-btn" type="button" data-apply-scenario="true" ${result.violations.length?'disabled title="Resolve scenario issues first"':''}>Apply this scenario as a new revision</button></div>`:'<p class="tna-note">No scenario preview yet. Enter only verified changes; blank capacity remains Needs Information.</p>'}</article></section>`;
+    return `<section class="tna-advanced-grid" aria-label="Recovery scenarios"><article class="tna-panel tna-scenario-panel"><span class="tna-kicker">Recovery & scenarios</span><h3>Compare a recovery option</h3><p class="tna-note">Preview changes against revision ${esc(plan.revision)}. The accepted TNA and baseline stay unchanged until you explicitly confirm an apply reason.</p><form id="tnaScenarioForm" class="tna-form-grid"><label><span>Scenario name</span><input name="name" value="${esc(draft.name)}"></label><label><span>Activity to adjust</span><select name="taskId">${taskOptions.map(task=>`<option value="${esc(task.taskId)}" ${task.taskId===draft.taskId?'selected':''}>${esc(taskLabel(task))}</option>`).join('')}</select></label><label><span>Candidate duration</span><input name="durationUnits" type="number" min="0" step="1" value="${esc(draft.durationUnits)}"></label><label><span>Verified daily output (optional)</span><input name="verifiedDailyOutput" type="number" min="0" step="1" value="${esc(draft.verifiedDailyOutput)}"></label><div class="tna-wide"><button class="tna-btn" type="submit">Preview recovery option</button></div></form>${result?`<div class="tna-scenario-result"><h4>${esc(result.name)}</h4><div class="tna-dashboard-grid"><article><b>${esc(result.baseForecastDate||'Needs Information')}</b><span>Base forecast</span></article><article><b>${esc(result.scenarioForecastDate||'Needs Information')}</b><span>Scenario forecast</span></article><article><b>${esc(gained==null?'Needs Information':gained)}</b><span>Working days gained (+ earlier)</span></article><article><b>${esc(result.changedCriticalTaskIds.length)}</b><span>Critical tasks changed</span></article></div><p class="tna-note">${result.violations.length?`Needs review: ${esc(result.violations.join(' '))}`:`Local scenario preview only. Verify factory working calendar, task feasibility and buyer authority before relying on these dates. Forecast provenance: revision ${esc(result.forecastProvenance.inputRevision)} · ${esc(result.forecastProvenance.engineVersion||'schedule unavailable')}.`}</p><p>Critical chain before: ${esc(result.comparison.criticalTaskIdsBefore.join(', ')||'none')}<br>Critical chain after: ${esc(result.comparison.criticalTaskIdsAfter.join(', ')||'none')}<br>Shared resource conflicts: ${esc(result.comparison.resourceConflictsBefore)} → ${esc(result.comparison.resourceConflictsAfter)}</p><button class="tna-btn" type="button" data-apply-scenario="true" ${result.violations.length?'disabled title="Resolve scenario issues first"':''}>Apply this scenario as a new revision</button><button class="tna-btn secondary" type="button" data-save-scenario="true" ${result.violations.length?'disabled':''}>${esc(TnaAlternativeScenarioPanel.copy(state.language).saveOption)}</button>${result.changes?.confirmedAlternativeCalendarId?'<p class="tna-note">'+esc(TnaAlternativeScenarioPanel.copy(state.language).civil)+': '+esc(result.calendarDaysGained??'Needs Information')+' · '+esc(TnaAlternativeScenarioPanel.copy(state.language).basis)+': '+esc(result.calendarComparisonBasis)+' · '+esc(TnaAlternativeScenarioPanel.copy(state.language).noWorkingGain)+'</p>':''}</div>`:'<p class="tna-note">No scenario preview yet. Enter only verified changes; blank capacity remains Needs Information.</p>'}</article></section>`;
   }
   function openCapacityEntry(){
     if(!state.currentPlan)return openDialog('Enter reviewed capacity','<p>Create or open a TNA draft before entering capacity.</p>');
@@ -344,6 +348,16 @@
     const defaultPo=state.currentPlan.order?.poNumbers?.[0]||'';
     openDialog('Add shipment lot',`<form class="tna-wizard" id="tnaShipmentLotEntry"><div class="tna-form-grid">${field('lotReference','Lot reference','text','',true)}${field('poNumber','PO allocation','text',defaultPo,true)}${field('plannedQty','Planned quantity','number','',true)}${field('packedQty','Packed quantity','number','0')}${field('passedQty','Passed quantity','number','0')}${field('shippedQty','Shipped quantity','number','0')}${field('requestedExFactory','Requested ex-factory','date')}${field('currentExFactory','Current ex-factory','date')}${field('forecastExFactory','Forecast ex-factory','date')}${field('ETD','ETD','date')}${field('ETA','ETA','date')}${field('destinationReceipt','Destination receipt','date')}${field('shipmentMethod','Shipment method','text',state.currentPlan.order?.shipmentMethod||'')}${field('bookingRef','Booking reference')}${field('inspectionRef','Inspection reference')}${selectField('status','Lot status',[['open','Open'],['packed','Packed'],['ready','Ready for shipment'],['partial','Partially shipped'],['shipped','Shipped'],['hold','On hold']],'open')}</div><p class="tna-note">Lot quantities must reconcile in order: packed ≤ planned, passed ≤ packed, shipped ≤ passed. Shipment release still requires a separately verified final inspection pass; this form never creates that approval.</p><button class="tna-btn" type="submit">Record shipment lot</button></form>`);
     document.getElementById('tnaShipmentLotEntry').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());const result=domain.addShipmentLot(state.currentPlan,data,{actorId:userKey()});if(!result.ok)return openDialog('Add shipment lot',`<p>${esc(result.error||(result.errors||[]).join(' '))}</p>`);state.currentPlan=result.plan;state.scenarioPreview=null;if(storage)storage.autosave(state.currentPlan,userKey());state.dialog.close();render();openDialog('Shipment lot recorded',`<p>Lot ${esc(result.lot.lotReference)} was recorded as revision ${esc(result.plan.revision)}.</p><p class="tna-note">The split-shipment totals were recomputed locally. Final inspection approval remains separate and was not inferred.</p>`);};
+  }
+  /** Save read-only Recovery A/B option without silently editing task dates. */
+  function saveScenarioOption(){
+    if(!state.currentPlan||!state.scenarioPreview?.branch)return;
+    const result=scenarios.saveScenarioPreview(state.currentPlan,state.scenarioPreview.branch,{actorId:userKey()});
+    if(!result.ok)return openDialog('Recovery option', '<p>'+esc(result.error)+'</p>');
+    try{TnaLocalEditPersistence.commit(result.plan,state.currentPlan);}
+    catch{return openDialog('Recovery option','<p>'+esc(TnaFactoryCalendarEditor.copy(state.language).failed)+'</p>');}
+    state.currentPlan=result.plan;state.scenarioPreview=null;render();
+    openDialog('Recovery option','<p>'+esc(TnaAlternativeScenarioPanel.copy(state.language).saveSuccess)+'</p>');
   }
   function openScenarioApply(){
     if(!state.currentPlan||!state.scenarioPreview?.branch)return openDialog('Apply scenario','<p>Preview a recovery option before applying it.</p>');
@@ -378,6 +392,49 @@
    * weekdays/timezone. If validation or browser storage fails the dialog stays
    * open and the in-memory plan is unchanged. Saved copies remain v1.1 compatible.
    */
+  /**
+   * F19: locally recorded alternative calendar selector in the single VESA UI.
+   * Access: planner renders panel; domain and scenario engines own mutations.
+   * No remote request, baseline mutation, buyer or factory approval is implied.
+   */
+  class TnaAlternativeScenarioPanel {
+    static copy(language){const all={"en":{"altTitle":"Alternative Factory Calendar","altButton":"Record another factory calendar","altDesc":"Enter a separately reviewed factory workweek, holidays and shutdowns from a written source. Local confirmation is NOT independent buyer/factory approval. Original baseline and default calendar stay unchanged.","altSave":"Record alternative calendar","altCount":"Recorded alternatives","chooseTitle":"Compare confirmed alternative factory calendar","chooseDescription":"Select a separately recorded factory calendar. This previews civil-day differences; if workweeks differ, working-day savings cannot be compared.","choose":"Alternative calendar","chooseEmpty":"No separate calendar recorded. Use Record another factory calendar first.","optionName":"Option name","preview":"Preview calendar option","civil":"Civil days earlier (+) / later (−)","basis":"Calendar comparison","saveOption":"Save option for R12 comparison","saveSuccess":"Saved locally for R12 comparison. This is not buyer approval.","noWorkingGain":"Different working calendars: working-day gain is not comparable.","source":"Source"},"bn":{"altTitle":"বিকল্প কারখানা ক্যালেন্ডার","altButton":"অন্য ফ্যাক্টরি ক্যালেন্ডার লিখুন","altDesc":"আলাদা উৎস দেখে কাজের দিন, ছুটি ও বন্ধ দিন লিখুন। স্থানীয় নিশ্চিতকরণ ক্রেতা বা কারখানার স্বাধীন অনুমোদন নয়। মূল বেসলাইন অপরিবর্তিত থাকবে।","altSave":"বিকল্প ক্যালেন্ডার সংরক্ষণ","altCount":"রেকর্ড করা বিকল্প","chooseTitle":"নিশ্চিত বিকল্প ক্যালেন্ডার তুলনা","chooseDescription":"পৃথক উৎসসহ সংরক্ষিত ক্যালেন্ডার বাছুন। কাজের সপ্তাহ আলাদা হলে শুধু সাধারণ দিনের পার্থক্য দেখাবে।","choose":"বিকল্প ক্যালেন্ডার","chooseEmpty":"এখনও আলাদা ক্যালেন্ডার নেই। প্রথমে উৎস দিয়ে লিখুন।","optionName":"বিকল্পের নাম","preview":"ক্যালেন্ডার বিকল্প দেখুন","civil":"সাধারণ দিন আগে (+) / পরে (−)","basis":"তুলনার ভিত্তি","saveOption":"R12 তুলনার জন্য সংরক্ষণ","saveSuccess":"R12 তুলনার জন্য স্থানীয়ভাবে সংরক্ষিত। ক্রেতার অনুমোদন নয়।","noWorkingGain":"কাজের ক্যালেন্ডার আলাদা; কর্মদিবস সাশ্রয় তুলনাযোগ্য নয়।","source":"উৎস"},"hi":{"altTitle":"वैकल्पिक फैक्ट्री कैलेंडर","altButton":"अलग फैक्ट्री कैलेंडर दर्ज करें","altDesc":"अलग स्रोत से कार्यदिवस, छुट्टियाँ और बंद दिन दर्ज करें। स्थानीय पुष्टि खरीदार/फैक्ट्री की स्वतंत्र मंजूरी नहीं है। मूल बेसलाइन सुरक्षित है।","altSave":"वैकल्पिक कैलेंडर दर्ज करें","altCount":"दर्ज विकल्प","chooseTitle":"पुष्टि वैकल्पिक कैलेंडर तुलना","chooseDescription":"अलग स्रोत वाला दर्ज कैलेंडर चुनें। कामकाजी सप्ताह अलग होने पर केवल सामान्य दिनों का अंतर दिखेगा।","choose":"वैकल्पिक कैलेंडर","chooseEmpty":"अभी अलग कैलेंडर नहीं है। पहले स्रोत दर्ज करें।","optionName":"विकल्प का नाम","preview":"वैकल्पिक कैलेंडर देखें","civil":"सामान्य दिन पहले (+) / बाद (−)","basis":"तुलना का आधार","saveOption":"R12 तुलना के लिए सहेजें","saveSuccess":"R12 तुलना के लिए स्थानीय रूप से सहेजा; खरीदार मंजूरी नहीं।","noWorkingGain":"कार्य कैलेंडर अलग हैं, कार्यदिवस बचत तुलनीय नहीं।","source":"स्रोत"},"ta":{"altTitle":"மாற்று Factory Calendar","altButton":"மாற்று Factory Calendar பதிவு செய்","altDesc":"தனியான Factory ஆதாரத்தில் வேலை நாட்கள், விடுமுறை, மூடல் நாட்களைச் சரிபார்த்துப் பதிவு செய்யுங்கள். இது Buyer/Factory தனி ஒப்புதல் அல்ல. Original Baseline மாறாது.","altSave":"மாற்று நாட்காட்டியைப் பதிவு செய்","altCount":"பதிந்த மாற்று நாட்காட்டிகள்","chooseTitle":"மாற்று நாட்காட்டி ஒப்பீடு","chooseDescription":"தனி ஆதாரத்துடன் பதிவு செய்த Calendar-ஐத் தேர்ந்தெடுங்கள். வேலை வாரம் வேறுபட்டால் Calendar நாள் வித்தியாசம் மட்டும் காட்டப்படும்.","choose":"மாற்று நாட்காட்டி","chooseEmpty":"மாற்று Calendar இன்னும் இல்லை. முதலில் தனி ஆதாரத்துடன் பதிவு செய்யவும்.","optionName":"விருப்பத்தின் பெயர்","preview":"Calendar Preview","civil":"Calendar நாட்கள் முன்னதாக (+) / தாமதம் (−)","basis":"ஒப்பீட்டு அடிப்படை","saveOption":"R12 ஒப்பீட்டுக்குச் சேமி","saveSuccess":"R12 ஒப்பீட்டிற்கு உள்ளூரில் சேமிக்கப்பட்டது; Buyer ஒப்புதல் அல்ல.","noWorkingGain":"வேலை நாட்காட்டி வேறு; working-day gain ஒப்பிட முடியாது.","source":"ஆதாரம்"}};return all[language]||all.en;}
+    static panel(plan){
+      const l=this.copy(state.language),calendars=Array.isArray(plan?.calendars)?plan.calendars:[];
+      const primary=calendars.find(item=>item.calendarId==='default');
+      const available=calendars.filter(item=>item.calendarKind==='confirmed-alternative'&&
+        item.source==='user-confirmed'&&item.orderRecordId===plan.recordId&&
+        item.basedOnCalendarRevision===primary?.revision&&
+        item.basedOnConfirmedAt===primary?.confirmedAt);
+      if(!available.length)return '<section class="tna-advanced-grid" aria-label="'+esc(l.altTitle)+'"><article class="tna-panel"><h3>'+esc(l.chooseTitle)+'</h3><p class="tna-note">'+esc(l.chooseEmpty)+'</p></article></section>';
+      const options=available.map(item=>'<option value="'+esc(item.calendarId)+'"'+
+        (item.calendarId===state.alternativeChoice?' selected':'')+'>'+
+        esc(item.name)+' · '+esc(l.source)+': '+esc(item.sourceReference)+'</option>').join('');
+      return '<section class="tna-advanced-grid" aria-label="'+esc(l.altTitle)+'"><article class="tna-panel"><h3>'+
+        esc(l.chooseTitle)+'</h3><p class="tna-note">'+esc(l.chooseDescription)+'</p>'+
+        '<form id="tnaAlternativeScenarioForm" class="tna-form-grid">'+
+        '<label><span>'+esc(l.choose)+'</span><select name="confirmedAlternativeCalendarId" required>'+
+        options+'</select></label>'+
+        '<label><span>'+esc(l.optionName)+'</span><input type="text" name="name" maxlength="120" required value="'+
+        esc(l.altTitle)+'"></label><div class="tna-wide"><button type="submit" class="tna-btn">'+
+        esc(l.preview)+'</button></div></form></article></section>';
+    }
+    static bind(root){
+      const form=root.querySelector('#tnaAlternativeScenarioForm');
+      if(!form)return;
+      form.onsubmit=event=>{
+        event.preventDefault();
+        if(!state.currentPlan)return;
+        const data=Object.fromEntries(new FormData(form).entries());
+        state.alternativeChoice=data.confirmedAlternativeCalendarId;
+        state.scenarioPreview=scenarios.previewScenario(state.currentPlan,{
+          name:data.name,confirmedAlternativeCalendarId:data.confirmedAlternativeCalendarId
+        },{actorId:userKey()});
+        render();
+      };
+    }
+  }
+
   class TnaFactoryCalendarEditor {
     /** The UI dictionary localizes labels only; factory-entered strings stay intact. */
     static copy(language){
@@ -425,19 +482,28 @@
         '<h3>'+esc(w.title)+'</h3><p class="tna-note">'+esc(w.status)+': '+esc(valid?w.recorded:w.missing)+'</p>'+
         (valid?'<p>'+esc(w.daysLabel)+': '+esc(days)+' · '+esc(w.zoneLabel)+': '+esc(cal.timezone||w.none)+'</p>'+
           '<p>'+esc(w.datesLabel)+': '+esc(dateCounts)+' · '+esc(w.sourceLabel)+': '+esc(cal.sourceReference||w.none)+'</p>':'')+
-        '<button class="tna-btn secondary" type="button" data-edit-calendar>'+esc(w.change)+'</button></section>';
+        '<button class="tna-btn secondary" type="button" data-edit-calendar>'+esc(w.change)+'</button>'+
+        (valid?'<button class="tna-btn secondary" type="button" data-add-alt-calendar>'+
+          esc(TnaAlternativeScenarioPanel.copy(language).altButton)+'</button>'+
+          '<p class="tna-note">'+esc(TnaAlternativeScenarioPanel.copy(language).altCount)+': '+
+          esc(plan.calendars.filter(item=>item.calendarKind==='confirmed-alternative').length)+'</p>':'')+
+        '</section>';
     }
 
     /** A reviewed, explicit factory calendar: unconfigured plans start with no checked days. */
-    static open(){
+    static open(mode='default'){
+      const alternative=mode==='alternative',alternateLabels=TnaAlternativeScenarioPanel.copy(state.language);
       if(!state.currentPlan)return openDialog('Factory Working Calendar','<p>Create or open a TNA before entering factory working days.</p>');
       if(state.currentPlan.mode==='practice')return openDialog('Factory Working Calendar','<p>Practice orders cannot be recorded as a confirmed factory calendar.</p>');
       const w=this.copy(state.language),cal=state.currentPlan.calendars?.find(item=>item.calendarId==='default');
-      const entered=cal?.source==='user-confirmed';
+      if(alternative&&cal?.source!=='user-confirmed')
+        return openDialog(alternateLabels.altTitle,'<p>'+esc(w.missing)+'</p>');
+      const entered=cal?.source==='user-confirmed'&&!alternative;
       const weekdays=[1,2,3,4,5,6,0].map(day=>'<label><input type="checkbox" name="workingWeek" value="'+day+'" '+(entered&&cal.workingWeek?.includes(day)?'checked':'')+'> '+esc(w.days[day])+'</label>').join('');
       const holidays=entered?(cal.holidays||[]).join('\n'):'';
       const shutdowns=entered?(cal.shutdowns||[]).join('\n'):'';
-      const body='<section class="tna-calendar-editor"><p class="tna-note">'+esc(w.description)+'</p>'+
+      const body='<section class="tna-calendar-editor"><p class="tna-note">'+
+        esc(alternative?alternateLabels.altDesc:w.description)+'</p>'+
         '<form class="tna-wizard" id="tnaCalendarForm">'+
         '<div class="tna-form-grid">'+field('name',w.name,'text',entered?cal.name||'':'',true)+
         field('timezone',w.zone,'text',entered?cal.timezone||'':'',true)+
@@ -447,9 +513,10 @@
         '<label class="tna-wide"><span>'+esc(w.shutdowns)+'</span><textarea name="shutdowns" rows="3" placeholder="YYYY-MM-DD">'+esc(shutdowns)+'</textarea></label>'+
         '<label class="tna-wide"><span>'+esc(w.reason)+' *</span><textarea name="reason" rows="2" maxlength="800" required></textarea></label>'+
         '<label class="tna-calendar-confirm"><input name="confirmed" type="checkbox" required> '+esc(w.confirm)+'</label>'+
-        '<p role="alert" data-tna-calendar-error></p><button class="tna-btn" type="submit">'+esc(w.save)+'</button>'+
+        '<p role="alert" data-tna-calendar-error></p><button class="tna-btn" type="submit">'+
+        esc(alternative?alternateLabels.altSave:w.save)+'</button>'+
         '</form></section>';
-      openDialog(w.title,body);
+      openDialog(alternative?alternateLabels.altTitle:w.title,body);
       const form=document.getElementById('tnaCalendarForm');
       form.onsubmit=event=>{
         event.preventDefault();
@@ -459,12 +526,14 @@
           workingWeek:[...form.querySelectorAll('input[name="workingWeek"]:checked')].map(node=>Number(node.value)),
           holidays:dates(input.holidays),shutdowns:dates(input.shutdowns),reason:input.reason,
           confirmed:form.querySelector('input[name="confirmed"]').checked};
-        const result=domain.updateFactoryCalendar(state.currentPlan,values,{actorId:userKey()});
+        const result=alternative?
+          domain.addConfirmedAlternativeCalendar(state.currentPlan,values,{actorId:userKey()}):
+          domain.updateFactoryCalendar(state.currentPlan,values,{actorId:userKey()});
         const message=form.querySelector('[data-tna-calendar-error]');
         if(!result.ok){message.textContent=result.error;return;}
         try{TnaLocalEditPersistence.commit(result.plan,state.currentPlan);}
         catch{message.textContent=w.failed;return;}
-        state.currentPlan=result.plan;state.dialog.close();render();
+        state.currentPlan=result.plan;state.scenarioPreview=null;state.dialog.close();render();
       };
     }
   }
