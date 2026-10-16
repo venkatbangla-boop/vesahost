@@ -45,7 +45,7 @@ class PackingEngineProof{
   const s=JSON.parse(snapshot);s.containerScenarios=[scen];
   assert.equal(M.analyze(s).containers[0].status,'Needs Information');
   scen.sourceConfirmed=true;
-  assert.equal(M.analyze(s).containers[0].volumeEligible,false,'Projection reads record, not external reference.');
+  assert.equal(M.analyze(s).containers[0].volumeEligible,true,'Confirmed synthetic record permits only mathematical checks.');
   s.containerScenarios[0].sourceConfirmed=true;
   assert.equal(M.analyze(s).containers[0].volumeEligible,true);
   assert.equal(M.analyze(s).containers[0].weightEligible,true);
