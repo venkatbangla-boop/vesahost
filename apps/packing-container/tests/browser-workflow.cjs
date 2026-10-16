@@ -76,13 +76,51 @@ class PackingBrowserProof{
    assert.deepEqual(book.SheetNames,['Packing Config','Carton List','CBM & Weight','Container Comparison','Packing Balance','Draft Load Plan']);
    assert.equal(book.Sheets['Carton List'].A2.t,'s');assert.equal(book.Sheets['Carton List'].A2.v,'0001');
    assert.equal(book.Sheets['CBM & Weight'].B4.t,'n');
+   // Real printable artifact (the shared app header is intentionally absent
+   // from print). This verifies browser print CSS rather than a static mock.
+   const pdfPath=path.join(output,'packing-app01-print.pdf');
+   await page.pdf({path:pdfPath,printBackground:true,landscape:true,preferCSSPageSize:true});
+   assert(fs.statSync(pdfPath).size>3500,'Draft report PDF was not generated.');
    const copyEvent=page.waitForEvent('download');await act('download');
-   const copy=await copyEvent;await copy.saveAs(path.join(output,'packing-app01-test.vesapack'));
+   const copy=await copyEvent,copyPath=path.join(output,'packing-app01-test.vesapack');
+   await copy.saveAs(copyPath);
+   const beforeCopy=await page.evaluate(()=>{
+     const key=Object.keys(localStorage).find(k=>k.startsWith('vesa.packing-container.records.v1.'));
+     return JSON.parse(localStorage.getItem(key)).records.map(p=>p.id);
+   });
+   assert.equal(beforeCopy.length,1);
+   await act('home');
+   await act('upload');
+   await page.locator('#packFile').setInputFiles(copyPath);
+   await page.locator('.pack-tabs').waitFor();
+   const afterCopy=await page.evaluate(()=>{
+     const key=Object.keys(localStorage).find(k=>k.startsWith('vesa.packing-container.records.v1.'));
+     return JSON.parse(localStorage.getItem(key)).records.map(p=>p.id);
+   });
+   assert.equal(afterCopy.length,2,'Opening an existing saved copy must create a separate, auditable local record.');
+   assert(afterCopy.includes(beforeCopy[0]),'Opening a copy may not replace the original plan.');
+   const corruptedPath=path.join(output,'packing-app01-corrupt.vesapack');
+   fs.writeFileSync(corruptedPath,fs.readFileSync(copyPath,'utf8').replace('"0001"','"9999"'));
+   const savedBeforeReject=await page.evaluate(()=>{
+     const key=Object.keys(localStorage).find(k=>k.startsWith('vesa.packing-container.records.v1.'));
+     return localStorage.getItem(key);
+   });
+   await page.locator('#packFile').setInputFiles(corruptedPath);
+   await page.locator('#packDialog[open]').waitFor();
+   assert.match(await page.locator('#packDialogBody').innerText(),/altered|not supported/i);
+   const savedAfterReject=await page.evaluate(()=>{
+     const key=Object.keys(localStorage).find(k=>k.startsWith('vesa.packing-container.records.v1.'));
+     return localStorage.getItem(key);
+   });
+   assert.equal(savedAfterReject,savedBeforeReject,'Corrupted copy must not modify either saved record.');
+   await page.locator('#packClose').click();
    await page.setViewportSize({width:390,height:844});
    assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=391);
    await page.screenshot({path:path.join(output,'packing-app01-mobile.png')});
    await page.setViewportSize({width:320,height:720});
    assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=321);
+   await page.setViewportSize({width:768,height:1024});
+   assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=769);
    await page.setViewportSize({width:1280,height:900});
    for(const [lang,label] of [['en','Packing Configurations'],['bn','প্যাকিং কনফিগারেশন'],['hi','पैकिंग कॉन्फ़िगरेशन'],['ta','Packing வகைகள்']]){
     const snap=JSON.stringify(await stored());
@@ -96,7 +134,7 @@ class PackingBrowserProof{
    await page.reload({waitUntil:'domcontentloaded'});await act('continue');p=await stored();
    assert.equal(p.packConfigs[0].cartonStart,'0001');assert.equal(p.loadEntries[0].cartonCount,1);
    assert.deepEqual(errors,[]);assert.deepEqual(external,[]);
-   console.log('APP-01 CHROMIUM PASS: shared shell, PO, mixed cartons, reload, container source, loading, typed Excel, portable backup, 320/390 and four languages, no network.');
+   console.log('APP-01 CHROMIUM PASS: shared shell, PO, mixed cartons, immutable freeze, real PDF, reload, source scenarios, manual loading, typed XLSX, portable restore, corrupt-copy rejection, 320/390/768 and four languages, no network.');
   }finally{await ctx.close();await browser.close();await new Promise(resolve=>server.close(resolve));}
  }
 }
