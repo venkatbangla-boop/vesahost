@@ -390,7 +390,7 @@
             }
           }
           if(!target){
-            unmatched.push({row:rowNumber,ref,title||ref});
+            unmatched.push({row:rowNumber,ref,title:title||ref});
             errors.push('Match or explicitly ignore source activity at row '+rowNumber);
             continue;
           }
