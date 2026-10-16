@@ -1,5 +1,19 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+## Verified R08 Material & LC source/report checkpoint — 2026-10-16
+
+- **Status:** Entire garment TNA rework ACTIVE / CONDITIONAL, R08 restricted internal Material & LC report/Excel/print **DEVELOPMENT VERIFIED**, NOT DEMO LIVE.
+- **Code source SHA / CI:** `feature/tna-merchandising-rework` / `443db60f4a4cecd135a9b1bff47eaad2e92bcf80`. [GitHub Actions 38859253864 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38859253864): real checkout, JS syntax, source/scheduling/PPM/AQL tests, R01–R08 pure contract and real Chromium JSON/Excel/PDF/viewer+390px source/permission probe, migrated saved-record preservation, desktop/mobile platform regressions. [Synthetic artifact 12028137328](https://github.com/venkatbangla-boop/vesahost/actions/runs/38859253864/artifacts/12028137328). No failures or skipped claimed browser steps.
+- **File owners:** `apps/tna/src/reports.js` pure R08 material + master-vs-B2B local source projection, explicit external-access failure; `src/storage.js` typed source `Material & LC` / `LC Milestones` xlsx owner, `src/bootstrap.js` existing report-dialog VESA print renderer, `assets/tna.css` print/table containment, `tests/r08-material-lc.test.js` deterministic knit/denim, additive `g11-artifact-viewers.cjs`, `.github/workflows/tna-merchandising-rework.yml` test registration.
+- **Frozen/out of scope:** Original `src/operations.js::materialReadiness` behavior is NOT relabeled as bank/QC-approved proof; `src/domain.js`, saved copies, scheduling, order/approval decisions, PPM/AQL source, root/shared shell, service workers, main/Pages and real records unchanged. A material QCDate, absent shortage or entered bank date never automatically confers external approval.
+- **Contract/safety:** Strict actual-as-of validation of material dates; B2B application and open dates are separate; master LC bank authentication never asserted; future recorded dates noted as unconfirmed; supplier costs excluded; quantity and zero/blank shortage typed separately; buyer/external report fails closed with no private order/supplier/LC data.
+- **Open requirements:** Authoritative bank LC verification, actual QC verdict/source, buyer/factory recipient access, actual cross-device evidence, human merchandising UAT, linked finance evidence and commercial hosting remain unverified/conditional, not software PASS.
+- **Rollback:** revert feature commit `443db60f4a4cecd135a9b1bff47eaad2e92bcf80`, no storage migration or browser data clearing.
+- **PRECISE NEXT ACTION:** R09 Shipment Readiness domain/inspection/release and privacy source audit, then conditional read-only lot-level report with real Excel/print/browser and sibling regression. No fake PPM/AQL release or shipping certainty. Next approved application after TNA: Packing & Container 360 with real original blueprint.
+
+---
+
+
 ## TNA R07 production-status exact evidence — 2026-10-16
 
 - **Overall status:** TNA Garment Merchandising Rework ACTIVE / CONDITIONAL; R07 targeted source-backed report and guarded buyer/Excel/print adapters DEVELOPMENT VERIFIED, not DEMO LIVE.

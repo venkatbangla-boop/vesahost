@@ -1,5 +1,12 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
+### 2026-10-16 — R08 Material & LC internal report DEVELOPMENT VERIFIED
+
+**Source/test SHA:** `443db60f4a4cecd135a9b1bff47eaad2e92bcf80` on `feature/tna-merchandising-rework`; [GitHub Actions 38859253864 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38859253864), [synthetic artifact 12028137328](https://github.com/venkatbangla-boop/vesahost/actions/runs/38859253864/artifacts/12028137328). Verified source-only master LC / distinct fabric/trims B2B application-open, booking, in-house, recorded QC date, verified-unknown shortage; safe source-specific report plus real workbook, Chromium print/PDF, four languages, 390px mobile, old saved copies and frozen PPM/AQL/shared browser regressions. Pricing excluded and external buyer model explicitly blocked. Bank authenticity, actual material QC acceptance, independent recipient authorization and public deployment NOT claimed. Entire garment TNA rework ACTIVE / CONDITIONAL, not DEMO LIVE.
+
+**PRECISE NEXT ACTION:** R09 Shipment Readiness. Audit source shipment lots, PO reconciliation, Q06–Q08 Final inspection vs PPM source references, custody/bookings/docs and requested/current/forecast/actual ex-factory. No invented final pass, carrier ETD, dispatched quantity or buyer authorization. Add typed XLSX, real print/Chromium/PDF, EN/BN/HI/TA and old-app regression. Then R10–R12, Excel import, factory/buyer UAT; next portfolio app Packing & Container 360.
+
+
 ### 2026-10-16 — R07 Production Status targeted DEVELOPMENT VERIFIED
 
 **Tested branch/source:** `feature/tna-merchandising-rework` / `6e6033af15b9c257816e1add8e8a96b106f188fd`. Actual [Actions run 38858334664 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38858334664) and [synthetic artifact 12027624484](https://github.com/venkatbangla-boop/vesahost/actions/runs/38858334664/artifacts/12027624484): pure knit/denim Stage C/P/PK quantities/dates and buyer redaction, four languages, typed real Excel, R07 guarded browser JSON/buyer copy, Chromium PDF+viewer, 390px no-overflow and frozen TNA/PPM/AQL/shared shell regression. Prior run 38858242358 FAIL due to test-only duplicate binding; fixed and retested. No main or public release.

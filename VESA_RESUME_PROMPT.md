@@ -1,5 +1,14 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## Latest ChatGPT Work checkpoint — 2026-10-16 R08 PASSED
+
+**Do not restart.** GitHub `venkatbangla-boop/vesahost` branch `feature/tna-merchandising-rework` now has R01–R08 targeted TNA report implementations. **Latest exact verified code SHA:** `443db60f4a4cecd135a9b1bff47eaad2e92bcf80`; [GitHub Actions #38859253864 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38859253864), real knit/woven Node + EN/BN/HI/TA, R08 JSON/typed Excel/PDF, migrated browser saved copies, and TNA/PPM/AQL platform regressions. The *full* Garment Merchandising TNA rework remains **ACTIVE / CONDITIONAL**; it is not deployed as a new public TNA version. Costing 360 is separately DEMO LIVE for noncommercial personal demonstration only; do not rebuild or republish it.
+
+**NEXT / CONTINUE:** refresh actual GitHub branch HEAD, CI and single authoritative `VESA_PROGRESS.md` queue + `docs/tna/06_EXECUTION_TRACKER.md`. Proceed with **R09 Shipment Readiness** source audit then reversible read-only quality/shipping report: distinguish lot/PO quantities, ex-factory vs ETD/ETA, inspection/PPM gates, source booking/documents and explicit recipient authority; no invented pass, shipment, dispatch or carrier commitment. The remaining R10–R12, reviewed workbook import, actual rate/CPM/approval evidence, human factory/buyer UAT and release remain pending; independent deployment blockers do not freeze other local development. The old `feature/tna360-continuous` branch remains divergent; never merge blindly. Do not touch `main`, DNS, public Pages, auth/schemas/PPM/AQL or the historical record without a separate verified authorization. Original Packing & Container blueprint is still needed when next portfolio app becomes eligible.
+
+---
+
+
 ## Latest ChatGPT Work GitHub resume checkpoint (2026-10-16 — R07 PASS)
 
 **Active program:** `venkatbangla-boop/vesahost` → feature branch `feature/tna-merchandising-rework`; `main` still holds the separately authorized noncommercial Costing demo and MUST NOT be overwritten for TNA. **R07 source production report targeted slice DEVELOPMENT VERIFIED**, exact tested SHA `6e6033af15b9c257816e1add8e8a96b106f188fd`; [real GitHub Actions CI #38858334664 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38858334664). All existing R01–R07, saved copy, real Chromium workbook/PDF and PPM/AQL/shared-shell tests passed. Entire TNA merchandising rework remains **ACTIVE / CONDITIONAL**, NOT public DEMO LIVE; unproven verified daily output, stage-end forecast, human UAT and legal hosting remain open. Historical R06 pending notice below is superseded by its later verified-success evidence, not a current task.
