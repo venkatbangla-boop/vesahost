@@ -92,7 +92,7 @@ class TnaWeeklyReportProof {
       for(const key of ['missed','dueThisWeek','dueNextWeek'])
         assert(!includes(key,12)&&!includes(key,15)&&!includes(key,16),'Closed tasks excluded from actionable due groups.');
       const recovery=weekly.groups.recordedRecovery.find(row=>row.ref===ref(3));
-      assert(recovery&&recovery.recoveryProposal==='  =SUM(1,2)');
+      assert(recovery&&recovery.recoveryProposal==='=SUM(1,2)');
       assert.equal(recovery.recoveryAgreement,weekly.labels.agreed);
       assert.deepEqual(weekly.verifiedRecoveryAgreements,[],
         'Neither a written proposal nor an applied local scenario establishes agreement.');
