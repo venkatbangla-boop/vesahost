@@ -32,7 +32,10 @@ class CommissionBrowserProof{
   const submit=async()=>{await page.locator('#comDialog form button[type=submit]').click();await page.locator('#comDialog[open]').waitFor({state:'hidden'});};
   const saved=async()=>page.evaluate(()=>{const key=Object.keys(localStorage).find(x=>x.startsWith('vesa.order-commission.records.v1.'));return JSON.parse(localStorage.getItem(key)).records[0];});
   try{
-   await page.goto(host+'/apps/order-commission/',{waitUntil:'domcontentloaded'});
+   await page.goto(host+'/apps/',{waitUntil:'domcontentloaded'});
+   const link=page.locator('a[href="/apps/order-commission/"]');
+   assert.equal(await link.count(),1,'Commission must appear exactly once in App Centre.');
+   await link.click();
    await page.locator('[data-action=new]').waitFor();
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('[data-vesa-menu]').count(),6);
