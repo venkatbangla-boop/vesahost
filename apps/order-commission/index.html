@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f3f6fa">
+<title>VESA Order & Commission 360</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/vesa-workspace.css?v=20261013-platform-g09">
+<script src="/js/preferences.js"></script>
+<script src="/js/auth.js" data-auth-guard="app" data-auth-bar="true"></script>
+<script src="/js/vesa-workspace-shell.js"></script>
+<script src="/js/vendor/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink,#17263d);background:var(--canvas,#f3f6fa);font:14px/1.55 var(--ui,Arial,sans-serif)}
+#commissionMain{width:min(1230px,calc(100vw - 26px));max-width:100%;margin:auto;padding:18px 0 70px;min-width:0}
+.com-card{border:1px solid var(--line,#cbd6e4);background:var(--paper,#fff);border-radius:14px;padding:17px;margin:0 0 16px;min-width:0}
+.com-card h1{font-size:clamp(1.35rem,3vw,1.9rem);margin:0}
+.com-card h2{font-size:1.1rem;margin:0 0 10px}
+.com-card h3{font-size:1rem;margin:5px 0}
+.com-muted{color:var(--muted,#526176);font-size:.89rem}
+.com-warning{border-left:4px solid var(--action,#b23547);padding:10px 12px;background:var(--look-surface,#eef3f9);border-radius:7px;white-space:pre-wrap}
+.com-actions,.com-tabs{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:10px 0}
+.com-tabs{padding-bottom:11px;border-bottom:1px solid var(--line,#cbd6e4)}
+.com-tabs [aria-current=true]{color:white;background:var(--blue,#244fd6);border-color:var(--blue,#244fd6)}
+.com-btn{font:inherit;color:var(--ink,#17263d);background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:9px;cursor:pointer;font-weight:700;min-height:44px;padding:10px 14px}
+.com-btn.primary{background:var(--blue,#244fd6);color:white;border-color:var(--blue,#244fd6)}
+.com-btn:disabled{opacity:.5;cursor:not-allowed}
+.com-btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--tna-gold,#a87623);outline-offset:2px}
+.com-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.com-metric{background:var(--look-surface,#eef3f9);border:1px solid var(--line,#cbd6e4);border-radius:12px;padding:14px;min-width:0}
+.com-metric strong{display:block;font-size:1.25rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.com-metric small{color:var(--muted,#526176)}
+.com-table-scroll{max-width:100%;overflow:auto;border:1px solid var(--line,#cbd6e4);border-radius:10px}
+.com-table{width:100%;border-collapse:collapse}
+.com-table th,.com-table td{padding:10px 12px;border-bottom:1px solid var(--line,#cbd6e4);text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.com-table th{background:var(--look-surface,#eef3f9);white-space:nowrap}
+.com-table tr:last-child td{border:0}
+.com-dialog{max-width:min(840px,calc(100vw - 18px));width:780px;max-height:90vh;overflow:auto;background:var(--paper,#fff);color:var(--ink,#17263d);border:1px solid var(--line,#cbd6e4);border-radius:15px;padding:19px;box-shadow:0 20px 70px #0005}
+.com-dialog::backdrop{background:#0d1736a3}
+.com-dialog-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.com-dialog-title h2{font-size:1.25rem;margin:0}
+.com-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:13px}
+.com-form label{min-width:0;display:grid;gap:5px;font-size:.9rem;font-weight:700}
+.com-form .wide{grid-column:1/-1}
+.com-form input,.com-form select,.com-form textarea{font:inherit;color:var(--ink,#17263d);background:var(--paper,#fff);padding:10px 12px;min-height:44px;width:100%;min-width:0;border:1px solid var(--line,#cbd6e4);border-radius:8px}
+.com-form textarea{min-height:74px}
+.com-form .com-check{display:flex;align-items:center;gap:9px}
+.com-form .com-check input{width:22px;min-height:22px}
+.com-record{display:flex;gap:8px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line,#cbd6e4);padding:13px 0}
+.com-record:last-child{border:0}
+.com-report section{margin:15px 0;break-inside:avoid}
+.com-report h3{margin:0 0 10px}
+.com-status{font-weight:800}
+@media(max-width:760px){.com-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:490px){.com-metrics,.com-form{grid-template-columns:1fr}.com-card{padding:12px}.com-form .wide{grid-column:1}.com-table{min-width:640px}}
+@media print{.vesa-workspace,.app-user-bar,.com-tabs,.com-actions,.com-dialog,.com-hide-print{display:none!important}#commissionMain{width:100%;padding:0}.com-card{padding:0;border:0}.com-report{display:block!important}.com-table th,.com-table td{padding:5px 6px;font-size:10px}@page{size:A4 landscape;margin:12mm}}
+</style></head>
+<body><main id="commissionMain" tabindex="-1"><p role="status">Opening VESA Order &amp; Commission 360…</p></main>
+<dialog id="comDialog" class="com-dialog" aria-labelledby="comDialogTitle">
+ <div class="com-dialog-title"><h2 id="comDialogTitle">Action</h2><button class="com-btn" id="comClose" type="button" aria-label="Close">×</button></div><div id="comDialogBody"></div>
+</dialog>
+<input type="file" id="comFile" hidden accept=".vesacommission,application/json">
+<script>
+(function(global){
+'use strict';
+const VERSION='VESA-OC360-PLAN-1',COPY_VERSION='VESA-OC360-COPY-1',PREFIX='vesa.order-commission.records.v1.';
+const MAX_BYTES=2*1024*1024;
+const guide='Planning and locally reviewed commission evidence only. Expected is not earned; invoices are not receipts; browser records are not bank or buyer certification.';
+const trim=value=>String(value??'').trim();
+const copy=value=>JSON.parse(JSON.stringify(value));
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sheetCell=v=>typeof v==='number'?v:/^[=+\-@\t\r]/.test(String(v??''))?"'"+String(v):String(v??'');
+const keygen=p=>p+'-'+(global.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+/**
+ * Exact decimal-money owner. No binary-float multiplication for contracted FOB,
+ * rate, adjustment or receipt. Base FOB/unit prices use four decimal places;
+ * commission payouts use two decimal places with EXPLICIT chosen rounding mode.
+ * Accepts nonnegative amounts only. Currency conversion requires a sourced
+ * local currency-to-agreement-currency exchange rate/date.
+ */
+class CommissionMoney{
+ static parse(text,digits=2,zero=true){
+  if(typeof text!=='string'&&typeof text!=='number')return null;
+  const s=trim(text),re=new RegExp('^([0-9]{1,10})(?:\\.([0-9]{1,'+digits+'}))?$');
+  const m=s.match(re);if(!m)return null;
+  const n=BigInt(m[1])*10n**BigInt(digits)+BigInt((m[2]||'').padEnd(digits,'0'));
+  return !zero&&n===0n?null:n;
+ }
+ static rate(value){const v=this.parse(value,4,false);return v!==null&&v<=1000000n?v:null;}
+ static round(n,d,rule){if(d<=0n||n<0n)throw Error('Unsupported commission calculation.');
+   if(rule==='total-half-up-2')return (n+d/2n)/d;
+   if(rule==='total-down-2')return n/d;
+   throw Error('Choose the documented commission rounding convention.');
+ }
+ static cents(n){if(n===null)return null;const sign=n<0n?'-':'';const x=n<0n?-n:n;
+   return sign+(x/100n).toString()+'.'+(x%100n).toString().padStart(2,'0');}
+ static value(n){return n===null?null:Number(this.cents(n));}
+ static fob(line,rule){
+   if(line.valueMode==='sourced-total')return this.parse(line.authoritativeFob,4,false);
+   if(line.valueMode==='quantity-unit'){
+     if(!Number.isSafeInteger(line.quantity)||line.quantity<=0||line.quantity>100000000)return null;
+     const unit=this.parse(line.unitFob,4,false);
+     return unit===null?null:BigInt(line.quantity)*unit;
+   }
+   return null;
+ }
+ static convert(receipt,agreement){
+   const foreign=this.parse(receipt.amount,2,false);if(foreign===null)return null;
+   if(receipt.currency===agreement.currency)return foreign;
+   const fx=this.parse(receipt.fxRate,8,false);
+   if(fx===null||!receipt.fxSource||!this.iso(receipt.fxDate))return null;
+   // A foreign currency unit becomes fxRate agreement currency units.
+   return this.round(foreign*fx,100000000n,agreement.rounding);
+ }
+ static iso(text){if(typeof text!=='string'||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(text))return false;
+   const t=Date.parse(text+'T00:00:00Z');return Number.isFinite(t)&&new Date(t).toISOString().slice(0,10)===text;}
+}
+/**
+ * Pure commission projection. Input contains separately sourced agreement,
+ * FOB lines, manual earning events, issued invoices, receipts and contract-
+ * backed credits. Output distinguishes expected/earned/billed/paid/overdue
+ * even when terms are unverified. Never infers a buyer milestone or default
+ * percentage, FX rate, due date, payment or approval.
+ */
+class CommissionDomain{
+ static blank(seed={},practice=false){
+   const t=new Date().toISOString();
+   return {version:VERSION,id:keygen('OC'),revision:0,createdAt:t,updatedAt:t,mode:practice?'practice':'local',
+     meta:{buyer:trim(seed.buyer),factory:trim(seed.factory),po:trim(seed.po),style:trim(seed.style),
+       sourceRef:trim(seed.sourceRef),manualReference:null},
+     agreement:{id:keygen('AGR'),version:1,sourceRef:'',effectiveDate:'',ratePercent:'',currency:'',
+       basis:'',rounding:'',earnedRule:'',debtor:'',confirmed:false,reviewedBy:'',reason:''},
+     agreementHistory:[],lines:[],exclusions:[],earnings:[],invoices:[],receipts:[],adjustments:[],audit:[]};
+ }
+ static demo(){
+   const p=this.blank({buyer:'SYNTHETIC BUYER',factory:'SYNTHETIC FACTORY',
+     po:'DEMO-PO',style:'DEMO-TEE',sourceRef:'SYNTHETIC DOCUMENT ONLY'},true);
+   p.agreement={...p.agreement,sourceRef:'DEMO SIGNED TERMS (NOT REAL)',effectiveDate:'2026-10-01',
+     ratePercent:'3',currency:'USD',basis:'total-fob',rounding:'total-half-up-2',
+     earnedRule:'manual-shipment-evidence',debtor:'factory',confirmed:true,reviewedBy:'Synthetic reviewer'};
+   p.lines=[{id:'L1',po:'DEMO-PO',style:'DEMO-TEE',basis:'total-fob',valueMode:'quantity-unit',
+     quantity:1000,unitFob:'2.5000',authoritativeFob:'',currency:'USD',sourceRef:'DEMO-FOB-001'}];
+   return p;
+ }
+ static analyze(p,asOf=''){
+  const errors=[],notes=[],detail=[],overdue=[],A=p?.agreement||{},ids=new Set(),lines=[],currency=A.currency;
+  if(!p||p.version!==VERSION||!Array.isArray(p.lines)||!Array.isArray(p.earnings)||
+     !Array.isArray(p.receipts)||!Array.isArray(p.invoices)||!Array.isArray(p.adjustments)||
+     !Array.isArray(p.exclusions)||!Array.isArray(p.agreementHistory))
+    return {ok:false,errors:['Unsupported commission record.'],notes,expected:null,earned:null,
+      invoiced:null,received:null,outstanding:null,overdue:[],detail:[],basis:null,currency:null};
+  const active=A.confirmed===true&&trim(A.sourceRef)&&trim(A.reviewedBy)&&
+    CommissionMoney.iso(A.effectiveDate)&&['total-fob','shipped-fob','invoiced-fob','received-fob'].includes(A.basis)&&
+    ['total-half-up-2','total-down-2'].includes(A.rounding)&&
+    ['buyer','factory','other'].includes(A.debtor)&&trim(A.earnedRule)&&
+    /^[A-Z]{3}$/.test(currency||'')&&CommissionMoney.rate(A.ratePercent)!==null;
+  if(!active)notes.push('Written agreement terms, basis, rate, round policy and locally reviewed source are Needed Information.');
+  let baseMicro=0n,excludedCents=0n,expected=null,earn=0n,billed=0n,paid=0n,credited=0n;
+  for(const line of p.lines){
+    if(ids.has(line.id))errors.push('Duplicate order commission line ID.');
+    ids.add(line.id);
+    const fob=CommissionMoney.fob(line,A.rounding);
+    if(!trim(line.po)||!trim(line.style)||!trim(line.sourceRef)||line.basis!==A.basis||
+       line.currency!==currency||fob===null)
+      errors.push('FOB line needs a sourced PO/style, matching basis/currency and positive supported amount.');
+    else{baseMicro+=fob;lines.push({id:line.id,po:line.po,style:line.style,source:line.sourceRef,
+      baseFourDecimal:(fob/10000n).toString()+'.'+(fob%10000n).toString().padStart(4,'0')});}
+  }
+  if(!p.lines.length)notes.push('Enter at least one sourced FOB order line.');
+  const excludeIds=new Set();
+  for(const x of p.exclusions){
+    if(excludeIds.has(x.id))errors.push('Duplicate exclusion ID.');excludeIds.add(x.id);
+    const amount=CommissionMoney.parse(x.amount,2,false);
+    if(amount===null||!trim(x.contractSource)||!trim(x.reason)||!CommissionMoney.iso(x.date))
+      errors.push('Each excluded charge requires an agreement reference, amount, reason and recorded date.');
+    else excludedCents+=amount;
+  }
+  if(excludedCents*100n>baseMicro)errors.push('Contract exclusions exceed total sourced FOB basis.');
+  if(active&&p.lines.length&&errors.length===0){
+    const commissionMicro=baseMicro-excludedCents*100n;
+    expected=CommissionMoney.round(commissionMicro*CommissionMoney.rate(A.ratePercent),
+      100000000n,A.rounding);
+  }
+  const earningIds=new Set();
+  for(const e of p.earnings){
+    if(earningIds.has(e.id))errors.push('Duplicate earned record.');earningIds.add(e.id);
+    const amt=CommissionMoney.parse(e.amount,2,false);
+    if(amt===null||e.currency!==currency||!trim(e.milestone)||e.milestone!==A.earnedRule||
+       !CommissionMoney.iso(e.date)||!trim(e.evidenceRef)||!trim(e.actor))
+      errors.push('Earned commission needs a matching documented milestone, currency, date, actor and evidence.');
+    else earn+=amt;
+  }
+  if(p.earnings.length&&expected===null)errors.push('Cannot post earned commission without sourced agreement and FOB expectation.');
+  if(expected!==null&&earn>expected)errors.push('Earned commission cannot exceed the current sourced expected amount.');
+  const invoiceIds=new Set(),invoiceRefs=new Set(),invoiceAmounts=new Map(),applied=new Map();
+  for(const inv of p.invoices){
+    if(invoiceIds.has(inv.id)||invoiceRefs.has(trim(inv.invoiceNo).toLowerCase()))errors.push('Duplicate commission invoice ID/reference.');
+    invoiceIds.add(inv.id);invoiceRefs.add(trim(inv.invoiceNo).toLowerCase());
+    const amount=CommissionMoney.parse(inv.amount,2,false);
+    if(amount===null||!trim(inv.invoiceNo)||inv.currency!==currency||!['draft','issued'].includes(inv.status))
+      errors.push('Commission invoice needs positive amount, unique number and matching currency.');
+    else if(inv.status==='issued'){
+      if(!CommissionMoney.iso(inv.issuedOn)||!trim(inv.sourceRef)||!trim(inv.issuedBy))
+        errors.push('Issued commission invoice needs a dated manual issuing actor and source.');
+      billed+=amount;invoiceAmounts.set(inv.id,amount);
+    }
+  }
+  if(billed>earn)notes.push('Issued invoice value exceeds locally recorded earned commission; review agreement milestone.');
+  const receiptIds=new Set();
+  for(const item of p.receipts){
+    if(receiptIds.has(item.id))errors.push('Duplicate receipt ID.');receiptIds.add(item.id);
+    if(!trim(item.ref)||!CommissionMoney.iso(item.date)||!trim(item.evidenceRef)||!trim(item.actor)||!trim(item.currency))
+      errors.push('Receipt requires actual date, reference, currency, actor and evidence.');
+    const value=CommissionMoney.convert(item,A);
+    if(value===null){errors.push('Receipt amount or explicitly sourced currency conversion is invalid.');continue;}
+    paid+=value;
+    if(item.invoiceId){
+      if(!invoiceAmounts.has(item.invoiceId))errors.push('Receipt allocation requires an issued invoice.');
+      else applied.set(item.invoiceId,(applied.get(item.invoiceId)||0n)+value);
+    }else notes.push('Unallocated receipt must be reconciled to an issued invoice separately.');
+  }
+  const adjustmentIds=new Set();
+  for(const item of p.adjustments){
+    if(adjustmentIds.has(item.id))errors.push('Duplicate adjustment ID.');adjustmentIds.add(item.id);
+    const amount=CommissionMoney.parse(item.amount,2,false);
+    if(amount===null||item.currency!==currency||!trim(item.contractRef)||!trim(item.reason)||
+       !CommissionMoney.iso(item.date)||!trim(item.actor))
+      errors.push('Credit/deduction needs contractual source, currency, dated actor, reason and positive amount.');
+    else credited+=amount;
+  }
+  if(credited>earn)errors.push('Contractual deductions exceed earned commission.');
+  if(paid>earn-credited)errors.push('Receipts exceed available earned commission after documented adjustments.');
+  for(const inv of p.invoices){
+    if(inv.status!=='issued')continue;
+    const amount=invoiceAmounts.get(inv.id);if(amount===undefined)continue;
+    const allocated=applied.get(inv.id)||0n;
+    if(allocated>amount)errors.push('Allocated receipts exceed the issued invoice amount.');
+    if(asOf&&CommissionMoney.iso(asOf)&&CommissionMoney.iso(inv.dueDate)&&inv.dueDate<asOf&&amount>allocated)
+      overdue.push({invoiceNo:inv.invoiceNo,dueDate:inv.dueDate,open:CommissionMoney.cents(amount-allocated)});
+    if(!CommissionMoney.iso(inv.dueDate))notes.push('Invoice '+inv.invoiceNo+' has no sourced due date; overdue cannot be calculated.');
+  }
+  const valid=errors.length===0;
+  const outstanding=active&&valid?earn-credited-paid:null;
+  return {ok:valid,errors,notes,active:Boolean(active),currency:currency||null,
+    basis:A.basis||null,expected:expected===null?null:CommissionMoney.cents(expected),
+    earned:active&&valid?CommissionMoney.cents(earn):null,
+    invoiced:active&&valid?CommissionMoney.cents(billed):null,
+    received:active&&valid?CommissionMoney.cents(paid):null,
+    adjustment:active&&valid?CommissionMoney.cents(credited):null,
+    outstanding:outstanding===null?null:CommissionMoney.cents(outstanding),
+    overdue,details:lines,asOf:CommissionMoney.iso(asOf)?asOf:null};
+ }
+}
+/** Private, browser-scoped record adapter and bounded checksummed portable copy. */
+class CommissionStore{
+ constructor(user){this.key=PREFIX+(trim(user).replace(/[^a-zA-Z0-9-]/g,'-').slice(0,100)||'local');}
+ static hash(s){let v=2166136261;for(let i=0;i<s.length;i++){v^=s.charCodeAt(i);v=Math.imul(v,16777619);}return (v>>>0).toString(16);}
+ static validate(p){
+  const r=CommissionDomain.analyze(p);
+  if(!r.ok)throw Error(r.errors.join('\n'));
+  if(!trim(p.id)||!Number.isSafeInteger(p.revision)||p.revision<0||!p.meta||
+     !Array.isArray(p.audit)||!Array.isArray(p.agreementHistory))
+    throw Error('Unsupported commission record structure.');
+  if(JSON.stringify(p).length>MAX_BYTES)throw Error('Saved commission record exceeds the safe local size.');
+  return r;
+ }
+ read(){let raw;try{raw=localStorage.getItem(this.key)}catch{throw Error('Cannot read device-saved records.')}
+  if(!raw)return [];
+  const box=JSON.parse(raw);
+  if(box.version!==VERSION||!Array.isArray(box.records))throw Error('Stored commission records are not a supported version.');
+  return box.records;
+ }
+ list(){return this.read().map(x=>({id:x.id,po:x.meta.po,buyer:x.meta.buyer,revision:x.revision,at:x.updatedAt}));}
+ open(id){const p=this.read().find(x=>x.id===id);if(!p)return null;this.constructor.validate(p);return copy(p);}
+ save(p){
+  this.constructor.validate(p);
+  const list=[copy(p),...this.read().filter(x=>x.id!==p.id)];
+  const value=JSON.stringify({version:VERSION,records:list});
+  if(value.length>MAX_BYTES)throw Error('Local save limit exceeded; download your saved copy.');
+  const temp=this.key+'.tmp';
+  try{localStorage.setItem(temp,value);localStorage.setItem(this.key,value);}
+  catch{throw Error('Local saving failed. Original saved records were not intentionally overwritten.');}
+  finally{try{localStorage.removeItem(temp)}catch{}}
+  return p.id;
+ }
+ static encode(p){this.validate(p);const content=JSON.stringify(p);
+  return JSON.stringify({format:COPY_VERSION,hash:this.hash(content),exportedAt:new Date().toISOString(),record:p});}
+ static decode(text){
+  if(typeof text!=='string'||text.length>MAX_BYTES)throw Error('Saved copy is too large.');
+  const box=JSON.parse(text);
+  if(box?.format!==COPY_VERSION||!box.record||box.hash!==this.hash(JSON.stringify(box.record)))
+    throw Error('This saved copy is altered or unsupported. Original records remain unchanged.');
+  this.validate(box.record);return copy(box.record);
+ }
+}
+/** Immutable escaped report projection, never represents local records as receipts/approval. */
+class CommissionReport{
+ static sheets(plan,calc){
+  const rows={
+   'Agreement':[['Field','Sourced value'],['Agreement ID',plan.agreement.id],
+    ['Terms version',plan.agreement.version],['Buyer',plan.meta.buyer],
+    ['Factory',plan.meta.factory],['PO',plan.meta.po],['Agreement source',plan.agreement.sourceRef],
+    ['Basis',plan.agreement.basis||'Needs Information'],['Rate %',plan.agreement.ratePercent||'Needs Information'],
+    ['Rounding',plan.agreement.rounding||'Needs Information'],['Currency',plan.agreement.currency||'Needs Information'],
+    ['Earned milestone',plan.agreement.earnedRule||'Needs Information'],
+    ['Locally reviewed',plan.agreement.confirmed?'Yes (not third-party approval)':'Needs Information']],
+   'PO Commission':[['PO','Style','Basis','FOB source','FOB amount (4dp)','Currency'],
+    ...calc.details.map(x=>[x.po,x.style,calc.basis,x.source,x.baseFourDecimal,calc.currency])],
+   'Expected Earned Paid':[['Measure','Agreement currency value','Note'],
+    ['Expected',calc.expected??'Needs Information','Not automatically earned'],
+    ['Earned',calc.earned??'Needs Information','Separate milestone/evidence'],
+    ['Issued invoices',calc.invoiced??'Needs Information','Draft invoices excluded'],
+    ['Received',calc.received??'Needs Information','Currency conversions source-verified'],
+    ['Deductions',calc.adjustment??'Needs Information','Documented contract credits'],
+    ['Outstanding',calc.outstanding??'Needs Information','Earned minus receipts and deductions']],
+   'Invoice Ledger':[['Invoice','Currency','Amount','Status','Issued date','Explicit due date','Document'],
+    ...plan.invoices.map(x=>[x.invoiceNo,x.currency,x.amount,x.status,x.issuedOn,x.dueDate,x.sourceRef])],
+   'Receipt Reconciliation':[['Reference','Date','Amount','Currency','Invoice allocation','FX rate','FX date','FX source','Evidence'],
+    ...plan.receipts.map(x=>[x.ref,x.date,x.amount,x.currency,
+      plan.invoices.find(inv=>inv.id===x.invoiceId)?.invoiceNo||'Unallocated',x.fxRate||'',x.fxDate||'',x.fxSource||'',x.evidenceRef])],
+   'Earned and Credits':[['Kind','Amount','Currency','Date','Source','Milestone or reason'],
+    ...plan.earnings.map(x=>['Earned',x.amount,x.currency,x.date,x.evidenceRef,x.milestone]),
+    ...plan.adjustments.map(x=>['Deduction',x.amount,x.currency,x.date,x.contractRef,x.reason])],
+   'Overdue':[['Invoice','Due date','Open amount', 'As of date'],
+    ...calc.overdue.map(x=>[x.invoiceNo,x.dueDate,x.open,calc.asOf])],
+   'Revision History':[['Version or revision','Date','Action','Source'],
+    ...plan.audit.map(x=>[x.revision,x.at,x.action,x.sourceRef||'']),
+    ...plan.agreementHistory.map(x=>[x.version,x.replacedAt,'Historical agreement',x.agreement.sourceRef])]
+  };
+  // Ensure money cells in the workbook have true numeric types; no formula
+  // injection in untrusted source strings.
+  for(const sheet of ['Expected Earned Paid','Overdue'])
+    rows[sheet]=rows[sheet].map((r,i)=>r.map((x,j)=>{
+      if(i===0||j!==1&&(sheet==='Expected Earned Paid'||j!==2))return x;
+      return /^\d+(\.\d{2})$/.test(String(x))?Number(x):x;
+    }));
+  return rows;
+ }
+ static html(p,c){
+  const sheets=this.sheets(p,c);
+  return '<div class="com-report"><h2>VESA Order & Commission 360 — DRAFT</h2>'+
+   '<p class="com-muted">'+esc(guide)+'</p>'+
+   Object.entries(sheets).map(([name,rows])=>'<section><h3>'+esc(name)+'</h3><div class="com-table-scroll"><table class="com-table"><thead><tr>'+
+    rows[0].map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+
+    rows.slice(1,2001).map(row=>'<tr>'+row.map(x=>'<td>'+esc(x??'Needs Information')+'</td>').join('')+
+    '</tr>').join('')+'</tbody></table></div></section>').join('')+
+   '<p class="com-muted">Report is a local calculation. Buyer/factory accounting approval and bank settlement are not implied.</p></div>';
+ }
+ static csvSafe(x){return typeof x==='number'&&Number.isFinite(x)?x:sheetCell(x);}
+}
+/** Authored interface text. User-entered business records are never translated. */
+const L={
+ en:{title:'Order & Commission 360',subtitle:'Source-based agent commissions, earnings, invoices, receipts and balances',
+ home:'Home',new:'New Commission Record',continue:'Continue Last',open:'Open Saved',practice:'Practice Example',save:'Save Now',
+ download:'Download Saved Copy',upload:'Open Saved Copy',report:'Prepare Report',excel:'Download Excel',print:'Print / PDF',back:'Back to Records',
+ summary:'Summary',agreement:'Agreement',lines:'PO / FOB Lines',earnings:'Earned Evidence',
+ invoices:'Invoices',receipts:'Receipts',adjustments:'Deductions',history:'Revisions',reports:'Reports',
+ add:'Add',edit:'Edit',remove:'Remove',close:'Close',buyer:'Buyer',factory:'Factory',po:'PO / Order',style:'Style',
+ source:'Written source reference',debtor:'Commission payer',rate:'Commission rate %',currency:'Agreement currency',
+ basis:'Approved commission basis',rounding:'Approved rounding rule',effective:'Effective date',
+ milestone:'Approved earned milestone',reviewer:'Local terms reviewer',confirmed:'I reviewed written agreement terms (not buyer approval)',
+ quantity:'FOB pieces',unitFob:'Unit FOB (4 decimals)',fobMode:'FOB source type',totalFob:'Sourced FOB total (up to 4 decimals)',
+ lineSource:'FOB document source',lineBasis:'FOB basis',amount:'Amount (2 decimals)',date:'Record date',
+ evidence:'Document / transaction evidence',actor:'Recorded by',invoiceNo:'Commission invoice number',invoiceStatus:'Invoice state',
+ issuedBy:'Issuing actor',issuedOn:'Actual issue date',dueDate:'Due date (only if explicitly sourced)',
+ invoiceChoice:'Issued invoice allocation',receiptRef:'Receipt / bank statement reference',receiptCurrency:'Receipt currency',
+ fxRate:'FX: agreement currency per received unit',fxDate:'FX rate date',fxSource:'FX source document',
+ creditReason:'Deduction / credit reason',contractRef:'Contract adjustment reference',reason:'Agreement revision reason',
+ orderRef:'Reviewed cross-app source reference',asOf:'As of date',due:'Overdue invoices',
+ expected:'Expected (not earned)',earned:'Earned (evidenced)',invoiced:'Invoices issued',received:'Received',outstanding:'Outstanding',deducted:'Credits / deductions',
+ needs:'Needs Information',none:'No records entered yet.',privacy:'Only stored in this browser · No automatic bank/PO sync',
+ help:'Use written commission terms and a verified FOB value. Expected commission never becomes earned without separate manual milestone evidence. Never enter a payment without a source. Download Saved Copy for recovery.',
+ warning:'Missing contract percentages, basis, earned milestones, due dates and FX are never guessed.',
+ uploadStatus:'Saved copy loaded as a separate reviewed record.',draft:'Draft / no third-party approval',formula:'Commission basis is explicitly sourced',
+ exclude:'FOB exclusions',issued:'Issue invoice',termsVersion:'Agreement version',newRevision:'Replace Terms With New Version',
+ newNote:'Changes to locally reviewed terms create a dated version. Posted earnings, invoices and receipts remain unchanged.',
+ allocation:'Allocate or leave unallocated',latest:'Current source and calculation status'},
+ bn:{title:'অর্ডার ও কমিশন ৩৬০',subtitle:'উৎসভিত্তিক কমিশন, আয়, ইনভয়েস, প্রাপ্তি ও বাকি',
+ home:'হোম',new:'নতুন কমিশন রেকর্ড',continue:'শেষটি খুলুন',open:'সংরক্ষিত খুলুন',practice:'অনুশীলন উদাহরণ',save:'এখন সংরক্ষণ',
+ download:'সংরক্ষিত কপি ডাউনলোড',upload:'সংরক্ষিত কপি খুলুন',report:'রিপোর্ট তৈরি',excel:'এক্সেল ডাউনলোড',print:'প্রিন্ট / PDF',back:'সব রেকর্ড',
+ summary:'সারাংশ',agreement:'চুক্তি',lines:'PO / FOB লাইন',earnings:'অর্জিত কমিশন',invoices:'ইনভয়েস',receipts:'প্রাপ্তি',
+ adjustments:'ছাড় / কর্তন',history:'সংস্করণের ইতিহাস',reports:'রিপোর্ট',add:'যোগ করুন',edit:'সম্পাদনা',remove:'সরান',close:'বন্ধ',
+ buyer:'ক্রেতা',factory:'কারখানা',po:'PO / অর্ডার',style:'স্টাইল',source:'লিখিত উৎস রেফারেন্স',debtor:'কমিশন প্রদানকারী',
+ rate:'কমিশন %',currency:'চুক্তির মুদ্রা',basis:'কমিশনের ভিত্তি',rounding:'অনুমোদিত রাউন্ডিং নিয়ম',effective:'কার্যকর তারিখ',
+ milestone:'অর্জিত হওয়ার শর্ত',reviewer:'স্থানীয় পর্যালোচক',confirmed:'লিখিত শর্ত স্থানীয়ভাবে দেখেছি (ক্রেতার অনুমোদন নয়)',
+ quantity:'FOB পিস',unitFob:'প্রতি পিস FOB',fobMode:'FOB উৎস ধরন',totalFob:'নথিভুক্ত মোট FOB',lineSource:'FOB নথি',lineBasis:'FOB ভিত্তি',
+ amount:'পরিমাণ',date:'তারিখ',evidence:'প্রমাণ রেফারেন্স',actor:'রেকর্ডকারী',invoiceNo:'কমিশন ইনভয়েস নম্বর',
+ invoiceStatus:'ইনভয়েস অবস্থা',issuedBy:'ইস্যুকারী',issuedOn:'ইস্যুর তারিখ',dueDate:'উৎসভিত্তিক শেষ তারিখ',
+ invoiceChoice:'ইস্যু করা ইনভয়েস',receiptRef:'প্রাপ্তির রেফারেন্স',receiptCurrency:'প্রাপ্ত মুদ্রা',
+ fxRate:'FX রেট',fxDate:'FX তারিখ',fxSource:'FX নথি',creditReason:'কর্তনের কারণ',contractRef:'চুক্তির রেফারেন্স',
+ reason:'চুক্তি সংস্করণের কারণ',orderRef:'উৎস রেফারেন্স',asOf:'যে তারিখে হিসাব',due:'বকেয়া ইনভয়েস',
+ expected:'প্রত্যাশিত',earned:'অর্জিত',invoiced:'ইস্যু ইনভয়েস',received:'প্রাপ্ত',outstanding:'বকেয়া',deducted:'কর্তন',
+ needs:'তথ্য প্রয়োজন',none:'এখনও কোনো রেকর্ড নেই',privacy:'শুধু ব্রাউজারে সংরক্ষিত · ব্যাংক/PO স্বয়ংক্রিয় সংযোগ নেই',
+ help:'লিখিত কমিশন চুক্তি, FOB এবং আলাদা অর্জিত প্রমাণ দিন। প্রাপ্তি লিখতে অবশ্যই উৎস লাগবে।',
+ warning:'চুক্তির হার, ভিত্তি, অর্জনের শর্ত, শেষ তারিখ ও FX অনুমান করা হয় না।',
+ uploadStatus:'সংরক্ষিত কপি আলাদা রেকর্ডে খোলা হয়েছে',draft:'খসড়া / তৃতীয় পক্ষের অনুমোদন নয়',
+ formula:'কমিশনের ভিত্তি উৎসসহ',exclude:'FOB বাদ',issued:'ইনভয়েস ইস্যু',termsVersion:'চুক্তির সংস্করণ',
+ newRevision:'নতুন চুক্তি সংস্করণ',newNote:'আগের কমিশন/পেমেন্ট রেকর্ড অপরিবর্তিত থাকবে',
+ allocation:'নির্দিষ্ট ইনভয়েস বা অনির্ধারিত',latest:'বর্তমান হিসাব'},
+ hi:{title:'ऑर्डर और कमीशन 360',subtitle:'स्रोत आधारित एजेंट कमीशन, अर्जित राशि, इनवॉइस, प्राप्ति और बकाया',
+ home:'होम',new:'नया कमीशन रिकॉर्ड',continue:'पिछला खोलें',open:'सेव रिकॉर्ड',practice:'अभ्यास उदाहरण',save:'अभी सेव करें',
+ download:'सेव कॉपी डाउनलोड',upload:'सेव कॉपी खोलें',report:'रिपोर्ट बनाएं',excel:'एक्सेल डाउनलोड',print:'प्रिंट / PDF',back:'रिकॉर्ड सूची',
+ summary:'सारांश',agreement:'समझौता',lines:'PO / FOB लाइन',earnings:'अर्जित प्रमाण',invoices:'इनवॉइस',receipts:'प्राप्तियां',
+ adjustments:'कटौती',history:'संस्करण',reports:'रिपोर्ट',add:'जोड़ें',edit:'संपादित करें',remove:'हटाएं',close:'बंद',
+ buyer:'खरीदार',factory:'फैक्ट्री',po:'PO / ऑर्डर',style:'स्टाइल',source:'लिखित स्रोत रिफरेंस',debtor:'कमीशन देने वाला',
+ rate:'कमीशन दर %',currency:'मुद्रा',basis:'कमीशन आधार',rounding:'अनुमोदित राउंडिंग',effective:'प्रभावी तिथि',
+ milestone:'अर्जित होने की शर्त',reviewer:'स्थानीय समीक्षक',confirmed:'लिखित समझौता जांचा (खरीदार मंजूरी नहीं)',
+ quantity:'FOB पीस',unitFob:'प्रति पीस FOB',fobMode:'FOB स्रोत प्रकार',totalFob:'लिखित कुल FOB',
+ lineSource:'FOB दस्तावेज',lineBasis:'FOB आधार',amount:'राशि',date:'तारीख',evidence:'दस्तावेज प्रमाण',actor:'दर्ज करने वाला',
+ invoiceNo:'इनवॉइस नंबर',invoiceStatus:'इनवॉइस स्थिति',issuedBy:'जारीकर्ता',issuedOn:'जारी तिथि',
+ dueDate:'स्रोत के अनुसार देय तिथि',invoiceChoice:'जारी इनवॉइस का आवंटन',receiptRef:'प्राप्ति संदर्भ',
+ receiptCurrency:'प्राप्त मुद्रा',fxRate:'FX दर',fxDate:'FX तारीख',fxSource:'FX स्रोत',creditReason:'कटौती कारण',
+ contractRef:'समझौता संदर्भ',reason:'नए समझौते का कारण',orderRef:'स्रोत संदर्भ',asOf:'हिसाब की तिथि',
+ due:'ओवरड्यू इनवॉइस',expected:'अपेक्षित',earned:'अर्जित',invoiced:'जारी इनवॉइस',
+ received:'प्राप्त',outstanding:'बकाया',deducted:'कटौती',needs:'जानकारी चाहिए',none:'अभी कोई रिकॉर्ड नहीं',
+ privacy:'इस ब्राउज़र में सेव · स्वचालित बैंक/PO सिंक नहीं',
+ help:'लिखित कमीशन शर्तें, FOB और अलग अर्जित प्रमाण दर्ज करें। भुगतान का स्रोत अनिवार्य है।',
+ warning:'कमीशन दर, आधार, समयसीमा या FX का अनुमान नहीं लगाया जाता।',
+ uploadStatus:'सेव कॉपी अलग रिकॉर्ड में खुल गई',draft:'ड्राफ्ट / खरीदार अनुमोदन नहीं',formula:'स्रोत आधारित कमीशन',
+ exclude:'FOB बहिष्करण',issued:'इनवॉइस जारी',termsVersion:'समझौते का संस्करण',
+ newRevision:'नया समझौता संस्करण',newNote:'पहले दर्ज भुगतान और इनवॉइस नहीं बदलते',allocation:'इनवॉइस आवंटन',latest:'वर्तमान हिसाब'},
+ ta:{title:'Order & Commission 360',subtitle:'ஆதாரத்துடன் Commission, Earned, Invoice, Receipt, Outstanding',
+ home:'Home',new:'புதிய Commission பதிவு',continue:'கடைசி பதிவைத் திற',open:'Saved பதிவைத் திற',practice:'Practice Example',save:'இப்போது Save செய்',
+ download:'Saved Copy Download',upload:'Saved Copy திற',report:'Report தயாரி',excel:'Excel Download',print:'Print / PDF',back:'எல்லாப் பதிவுகளும்',
+ summary:'சுருக்கம்',agreement:'Commission ஒப்பந்தம்',lines:'PO / FOB விவரங்கள்',earnings:'Earned ஆதாரம்',
+ invoices:'Invoices',receipts:'பெறப்பட்ட தொகை',adjustments:'கழித்தல்',history:'Revision வரலாறு',reports:'Reports',
+ add:'சேர்',edit:'திருத்து',remove:'நீக்கு',close:'மூடு',buyer:'Buyer',factory:'Factory',po:'PO / Order',
+ style:'Style',source:'எழுத்து ஆதாரம்',debtor:'Commission செலுத்துபவர்',rate:'Commission %',currency:'ஒப்பந்த Currency',
+ basis:'ஒப்பந்த Commission Basis',rounding:'ஒப்பந்த Rounding விதி',effective:'செயல்படும் தேதி',
+ milestone:'Commission Earned ஆகும் நிபந்தனை',reviewer:'உள்ளூர் சரிபார்த்தவர்',
+ confirmed:'எழுத்து ஒப்பந்தத்தைச் சரிபார்த்தேன் (Buyer approval அல்ல)',quantity:'FOB Pieces',unitFob:'ஒரு Piece FOB',
+ fobMode:'FOB ஆதார வகை',totalFob:'எழுத்து ஆதாரத்தில் Total FOB',lineSource:'FOB ஆதார ஆவணம்',
+ lineBasis:'FOB Basis',amount:'தொகை',date:'பதிவு தேதி',evidence:'ஆவணம் / Transaction ஆதாரம்',
+ actor:'பதிவு செய்தவர்',invoiceNo:'Commission Invoice No',invoiceStatus:'Invoice நிலை',
+ issuedBy:'Invoice வழங்கியவர்',issuedOn:'உண்மையில் வழங்கிய தேதி',dueDate:'ஆதாரத்திலுள்ள Due Date',
+ invoiceChoice:'Issued Invoice ஒதுக்கீடு',receiptRef:'Receipt / Bank Reference',
+ receiptCurrency:'பெற்ற Currency',fxRate:'FX: ஒரு Currency-க்கு ஒப்பந்த Currency மதிப்பு',
+ fxDate:'FX Rate தேதி',fxSource:'FX ஆதார ஆவணம்',creditReason:'Deduction காரணம்',
+ contractRef:'ஒப்பந்த Adjustment ஆதாரம்',reason:'புதிய ஒப்பந்த Revision காரணம்',
+ orderRef:'Cross-app ஆதார பதிவு',asOf:'கணக்கிடும் தேதி',due:'காலாவதி Invoice-கள்',
+ expected:'எதிர்பார்க்கும் Commission',earned:'ஆதாரத்துடன் Earned',invoiced:'Issue செய்யப்பட்ட Invoice',
+ received:'பெற்ற தொகை',outstanding:'மீதமுள்ள தொகை',deducted:'Deduction',
+ needs:'தகவல் தேவை',none:'இன்னும் பதிவுகள் இல்லை',privacy:'இந்த Browser-ல் மட்டும் Save · Bank/PO auto-sync இல்லை',
+ help:'எழுத்து ஒப்பந்த Rate, Basis, FOB ஆதாரம் பதிவு செய்யவும். Expected, Earned, Received மூன்றும் வேறு. ஆதாரம் இல்லாமல் Earned அல்லது Payment என்று காட்டாது.',
+ warning:'Commission rate, basis, earned milestone, due date, FX எதையும் ஊகிக்க மாட்டோம்.',
+ uploadStatus:'Saved Copy தனி புதிய பதிவாகத் திறக்கப்பட்டது',draft:'Draft மட்டும்; Buyer ஒப்புதல் அல்ல',
+ formula:'ஒப்பந்த ஆதாரத்தின் அடிப்படையில் Commission',exclude:'FOB Exclusions',
+ issued:'Invoice Issue',termsVersion:'ஒப்பந்த Version',newRevision:'புதிய ஒப்பந்த Version',
+ newNote:'ஏற்கெனவே Earned, Invoice, Receipt தொகை மாற்றப்படாது',
+ allocation:'Invoice ஒதுக்கீடு அல்லது ஒதுக்காத Receipt',latest:'தற்போதைய கணக்கு நிலை'}
+};
+/** Controller owns DOM and active local record. Domain and stores remain class owners. */
+class CommissionWorkspace{
+ constructor(){
+  this.main=document.getElementById('commissionMain');this.dialog=document.getElementById('comDialog');
+  this.body=document.getElementById('comDialogBody');this.file=document.getElementById('comFile');
+  this.current=null;this.section='summary';this.asOf=new Date().toISOString().slice(0,10);
+  this.dirty=false;this.focus=null;this.user=trim(global.VesaAuth?.session?.()?.email||'local-browser-user');
+  this.store=new CommissionStore(this.user);this.shell=null;
+ }
+ tr(key){const lang=global.VesaPrefs?.read?.()?.language||'en';return L[lang]?.[key]||L.en[key]||key;}
+ fmt(value){return value===null||value===undefined?this.tr('needs'):value;}
+ field(key,value='',kind='text',attrs='',wide=false){
+  return '<label class="'+(wide?'wide':'')+'"><span>'+esc(this.tr(key))+'</span>'+
+    '<input type="'+esc(kind)+'" name="'+esc(key)+'" value="'+esc(value??'')+'" '+attrs+'></label>';
+ }
+ choose(key,values,value,wide=false){
+  return '<label class="'+(wide?'wide':'')+'"><span>'+esc(this.tr(key))+'</span><select name="'+esc(key)+'">'+
+   values.map(v=>'<option value="'+esc(v[0])+'"'+(String(v[0])===String(value)?' selected':'')+'>'+esc(v[1])+'</option>').join('')+
+   '</select></label>';
+ }
+ area(key,value=''){return '<label class="wide"><span>'+esc(this.tr(key))+'</span><textarea name="'+esc(key)+'" maxlength="300">'+esc(value)+'</textarea></label>';}
+ close(){this.dialog.close()}
+ dialogOpen(title,content){this.focus=document.activeElement;
+  document.getElementById('comDialogTitle').textContent=title;
+  this.body.innerHTML=content;if(!this.dialog.open)this.dialog.showModal();
+  this.dialog.addEventListener('close',()=>this.focus?.focus?.(),{once:true});
+  this.dialog.querySelector('input:not([type=hidden]),select,button')?.focus?.();
+ }
+ error(text){this.dialogOpen('Please review','<p role="alert" class="com-warning">'+esc(text)+'</p>');}
+ start(){
+  if(!global.VesaWorkspaceShell?.VesaWorkspaceShell){this.main.textContent='VESA workspace shell not available.';return;}
+  const session=global.VesaAuth?.session?.()||{};
+  this.shell=new global.VesaWorkspaceShell.VesaWorkspaceShell({root:document.body,
+   descriptor:{id:'order-commission',name:'VESA Order & Commission 360',route:'/apps/order-commission/',
+    contentTarget:'#commissionMain',userLabel:session.name||session.email||'',userRole:session.role||'',
+    savedState:'Unsaved changes'},callbacks:{menu:name=>this.menu(name)}});
+  this.shell.mount();
+  document.getElementById('comClose').onclick=()=>this.close();
+  this.main.onclick=event=>{const button=event.target.closest('[data-action]');
+    if(button){event.preventDefault();this.action(button.dataset.action,button.dataset.id);}};
+  this.dialog.addEventListener('submit',event=>{if(event.target.matches('form[data-form]')){
+    event.preventDefault();this.submit(event.target);}});
+  this.file.addEventListener('change',async()=>{
+    const f=this.file.files?.[0];this.file.value='';if(!f)return;
+    try{
+      if(f.size>MAX_BYTES)throw Error('Saved copy exceeds safe size.');
+      const p=CommissionStore.decode(await f.text());
+      if(this.store.open(p.id)){p.id=keygen('OC-RESTORED');p.audit.push({at:new Date().toISOString(),action:'Restored a separate saved copy',revision:p.revision});}
+      p.mode='local';this.store.save(p);this.current=p;this.section='summary';this.dirty=false;this.render();
+      this.dialogOpen(this.tr('upload'),'<p>'+esc(this.tr('uploadStatus'))+'</p>');
+    }catch(e){this.error(e.message);}
+  });
+  global.addEventListener('vesa-preferences-change',()=>this.render());
+  global.addEventListener('beforeunload',event=>{if(this.dirty&&this.current?.mode==='local'){event.preventDefault();event.returnValue='';}});
+  this.render();
+ }
+ menu(name){
+  const options={Home:[['home',this.tr('home')],['new',this.tr('new')],['continue',this.tr('continue')],['practice',this.tr('practice')]],
+   File:[['save',this.tr('save')],['download',this.tr('download')],['upload',this.tr('upload')],['open',this.tr('open')]],
+   Edit:[['meta',this.tr('buyer')],['agreement',this.tr('agreement')],['add-line',this.tr('lines')],['add-earning',this.tr('earnings')]],
+   View:[['summary',this.tr('summary')],['lines',this.tr('lines')],['receipts',this.tr('receipts')],['history',this.tr('history')]],
+   Tools:[['report',this.tr('report')],['add-invoice',this.tr('invoices')],['add-receipt',this.tr('receipts')],['add-adjustment',this.tr('adjustments')]],
+   Help:[['help','How to use Commission 360'],['practice',this.tr('practice')]]};
+  this.dialogOpen(name,'<div class="com-actions">'+(options[name]||[]).map(([action,label])=>
+    '<button type="button" data-dialog-action="'+esc(action)+'" class="com-btn">'+esc(label)+'</button>').join('')+'</div>');
+  this.body.querySelectorAll('[data-dialog-action]').forEach(btn=>btn.onclick=()=>{this.close();this.action(btn.dataset.dialogAction)});
+ }
+ action(action,id){
+  try{
+   if(action==='home'){this.current=null;this.section='summary';this.render();return;}
+   if(action==='new')return this.form('new');
+   if(action==='practice'){this.current=CommissionDomain.demo();this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='open'){this.current=null;this.render();return;}
+   if(action==='continue'){const list=this.store.list();if(!list.length)throw Error('No saved commission record on this device.');return this.action('open-record',list[0].id);}
+   if(action==='open-record'){const item=this.store.open(id);if(!item)throw Error('Saved commission record not found.');this.current=item;this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='upload'){this.file.click();return;}
+   if(action==='save'){if(!this.current||this.current.mode==='practice')throw Error('Start a real commission record first.');this.store.save(this.current);this.dirty=false;this.render();return;}
+   if(action==='download'){if(!this.current||this.current.mode==='practice')throw Error('Open a real commission record first.');
+    this.download(CommissionStore.encode(this.current),'VESA-COMMISSION-'+this.current.id+'.vesacommission','application/json');return;}
+   if(['summary','agreement','lines','exclusions','earnings','invoices','receipts','adjustments','history','reports'].includes(action)){
+    if(!this.current)throw Error('Create a commission record first.');this.section=action;this.render();return;}
+   if(action==='report'){if(!this.current)throw Error('Create a record first.');this.section='reports';this.render();return;}
+   if(action==='print'){if(!this.current)throw Error('Create a record first.');this.section='reports';this.render();global.print();return;}
+   if(action==='excel')return this.excel();
+   if(action==='set-asof'){this.dialogOpen(this.tr('asOf'),'<form data-form="asof" class="com-form">'+
+     this.field('asOf',this.asOf,'date','required')+
+     '<div class="wide"><button type="submit" class="com-btn primary">'+esc(this.tr('save'))+'</button></div></form>');return;}
+   if(action==='help'){this.dialogOpen('Commission 360 · Help','<p>'+esc(this.tr('help'))+'</p><p>'+esc(this.tr('warning'))+'</p>');return;}
+   if(['meta','agreement','reference','add-line','add-exclusion','add-earning','add-invoice',
+        'add-receipt','add-adjustment'].includes(action))return this.form(action);
+   if(action.startsWith('edit-'))return this.form(action.slice(5),id);
+   if(action.startsWith('delete-'))return this.remove(action.slice(7),id);
+   if(action==='issue-invoice')return this.form('issue-invoice',id);
+  }catch(e){this.error(e.message);}
+ }
+ mutate(label,fn,source=''){
+  if(!this.current||this.current.mode!=='local')throw Error('Practice records cannot be edited.');
+  const next=copy(this.current);fn(next);
+  next.revision+=1;next.updatedAt=new Date().toISOString();
+  next.audit.push({at:next.updatedAt,revision:next.revision,action:label,sourceRef:source});
+  CommissionStore.validate(next);
+  if(this.store.open(next.id))this.store.save(next);else this.dirty=true;
+  this.current=next;this.render();
+ }
+ remove(kind,id){
+  if(!this.current||this.current.mode==='practice')throw Error('Only a real draft can be changed.');
+  const fields={line:'lines',exclusion:'exclusions',invoice:'invoices'};
+  const field=fields[kind];if(!field)throw Error('Posted financial events cannot be deleted; preserve evidence and record a documented adjustment.');
+  if(kind==='invoice'&&this.current.invoices.find(x=>x.id===id)?.status!=='draft')
+    throw Error('Issued commission invoices cannot be deleted.');
+  if(kind==='line'&&(this.current.earnings.length||this.current.invoices.some(x=>x.status==='issued')||this.current.receipts.length))
+    throw Error('Cannot silently change sourced FOB after earned/invoiced/received records. Keep the history and seek a documented revision.');
+  if(!global.confirm('Remove this unsigned local draft item?'))return;
+  this.mutate('Removed unsigned '+kind,p=>{p[field]=p[field].filter(x=>x.id!==id);});
+ }
+ render(){
+  const l=k=>esc(this.tr(k)),list=this.store.list();
+  const title='<section class="com-card"><h1>'+l('title')+'</h1><p class="com-muted">'+l('subtitle')+'</p>'+
+    '<p class="com-muted">'+l('privacy')+' · '+l('draft')+'</p></section>';
+  if(!this.current){
+   this.main.innerHTML=title+'<section class="com-card"><div class="com-actions">'+
+    '<button class="com-btn primary" data-action="new">'+l('new')+'</button>'+
+    '<button class="com-btn" data-action="continue">'+l('continue')+'</button>'+
+    '<button class="com-btn" data-action="upload">'+l('upload')+'</button>'+
+    '<button class="com-btn" data-action="practice">'+l('practice')+'</button></div>'+
+    '<h2>'+l('open')+'</h2>'+(list.length?list.map(p=>'<div class="com-record"><span><b>'+
+      esc(p.po||'PO not entered')+'</b> · '+esc(p.buyer)+'<br><small>Revision '+esc(p.revision)+'</small></span>'+
+      '<button class="com-btn" data-action="open-record" data-id="'+esc(p.id)+'">'+l('open')+'</button></div>').join(''):'<p class="com-muted">'+l('none')+'</p>')+'</section>';
+   this.shell?.setSavedState('unsaved');return;
+  }
+  const p=this.current,c=CommissionDomain.analyze(p,this.asOf),practice=p.mode==='practice';
+  const tabs=['summary','agreement','lines','exclusions','earnings','invoices','receipts','adjustments','history','reports'];
+  const names={summary:'summary',agreement:'agreement',lines:'lines',exclusions:'exclude',earnings:'earnings',
+   invoices:'invoices',receipts:'receipts',adjustments:'adjustments',history:'history',reports:'reports'};
+  this.main.innerHTML=title+
+   '<section class="com-card"><h2>'+esc(p.meta.po||'Draft PO')+' · '+esc(p.meta.buyer||'Buyer')+'</h2>'+
+    '<p class="com-muted">'+esc(p.meta.style)+' · '+esc(p.meta.factory)+' · '+esc(p.meta.sourceRef)+'</p>'+
+    '<div class="com-actions"><button class="com-btn" data-action="home">'+l('back')+'</button>'+
+     '<button class="com-btn primary" data-action="save"'+(practice?' disabled':'')+'>'+l('save')+'</button>'+
+     '<button class="com-btn" data-action="download"'+(practice?' disabled':'')+'>'+l('download')+'</button>'+
+     '<button class="com-btn" data-action="report">'+l('report')+'</button></div>'+
+    '<p class="com-muted">'+(practice?'Synthetic practice — no real commission':this.dirty?'Unsaved local changes':'Saved on this device')+'</p></section>'+
+   '<nav aria-label="Commission record sections" class="com-tabs">'+tabs.map(t=>'<button class="com-btn" aria-current="'+
+      (this.section===t)+'" data-action="'+t+'">'+l(names[t])+'</button>').join('')+'</nav>'+
+   (c.errors.length?'<section class="com-card" role="alert"><h2>Review this record</h2><ul>'+
+    c.errors.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></section>':'')+
+   this.panel(this.section,p,c,practice);
+  this.shell?.setSavedState(this.dirty?'unsaved':'saved');
+ }
+ panel(tab,p,c,practice){
+  const l=k=>esc(this.tr(k));
+  const button=(action,label,id)=>'<button class="com-btn" data-action="'+esc(action)+'"'+(id?' data-id="'+esc(id)+'"':'')+
+    (practice?' disabled':'')+'>'+l(label)+'</button>';
+  const table=(heads,rows)=>'<div class="com-table-scroll"><table class="com-table"><thead><tr>'+
+   heads.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+
+   rows.map(r=>'<tr>'+r.map(cell=>'<td>'+cell+'</td>').join('')+'</tr>').join('')+
+   '</tbody></table></div>';
+  const head=(name,action)=>'<div class="com-actions"><h2>'+l(name)+'</h2>'+(action?button(action,'add'):'')+'</div>';
+  const metric=(value,label)=>'<div class="com-metric"><strong>'+esc(value??this.tr('needs'))+'</strong><small>'+l(label)+'</small></div>';
+  if(tab==='summary')return '<section class="com-card">'+head('summary','meta')+
+   '<div class="com-metrics">'+metric(c.expected,'expected')+metric(c.earned,'earned')+
+    metric(c.invoiced,'invoiced')+metric(c.received,'received')+
+    metric(c.adjustment,'deducted')+metric(c.outstanding,'outstanding')+'</div>'+
+   '<p class="com-muted">'+l('currency')+': '+esc(c.currency||this.tr('needs'))+' · '+l('termsVersion')+': '+esc(p.agreement.version)+'</p>'+
+   '<div class="com-actions">'+button('set-asof','asOf')+button('reference','orderRef')+'</div>'+
+   '<p class="com-muted">'+l('asOf')+': '+esc(this.asOf)+' · '+l('due')+': '+esc(c.overdue.length)+'</p>'+
+   '<p class="com-muted">'+l('warning')+'</p>'+
+   (c.notes.length?'<ul>'+c.notes.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul>':'')+'</section>';
+  if(tab==='agreement')return '<section class="com-card">'+head('agreement','agreement')+
+   table(['Version','Basis','Rate %','Currency','Earned rule','Rounding','Source','Local review'],[[
+    esc(p.agreement.version),esc(p.agreement.basis||this.tr('needs')),
+    esc(p.agreement.ratePercent||this.tr('needs')),esc(p.agreement.currency||this.tr('needs')),
+    esc(p.agreement.earnedRule||this.tr('needs')),esc(p.agreement.rounding||this.tr('needs')),
+    esc(p.agreement.sourceRef||this.tr('needs')),esc(p.agreement.confirmed?'Locally reviewed / no third-party approval':'Needs Information')]])+
+   '<p class="com-muted">'+l('newNote')+'</p></section>';
+  if(tab==='lines')return '<section class="com-card">'+head('lines','add-line')+
+   table(['PO','Style','FOB source type','Basis','Currency','Source','Action'],
+    p.lines.map(x=>[esc(x.po),esc(x.style),esc(x.valueMode),esc(x.basis),esc(x.currency),esc(x.sourceRef),
+      button('edit-line','edit',x.id)+' '+button('delete-line','remove',x.id)]))+'</section>';
+  if(tab==='exclusions')return '<section class="com-card">'+head('exclude','add-exclusion')+
+   table(['Amount','Date','Contract source','Reason','Action'],p.exclusions.map(x=>[
+    esc(x.amount),esc(x.date),esc(x.contractSource),esc(x.reason),
+    button('edit-exclusion','edit',x.id)+' '+button('delete-exclusion','remove',x.id)]))+'</section>';
+  if(tab==='earnings')return '<section class="com-card">'+head('earnings','add-earning')+
+   table(['Amount','Currency','Milestone','Date','Evidence','Actor'],p.earnings.map(x=>[
+    esc(x.amount),esc(x.currency),esc(x.milestone),esc(x.date),esc(x.evidenceRef),esc(x.actor)]))+'</section>';
+  if(tab==='invoices')return '<section class="com-card">'+head('invoices','add-invoice')+
+   table(['Invoice','Amount','Currency','State','Actual date','Explicit due date','Actions'],p.invoices.map(x=>[
+    esc(x.invoiceNo),esc(x.amount),esc(x.currency),esc(x.status),esc(x.issuedOn),esc(x.dueDate),
+    x.status==='draft'?button('edit-invoice','edit',x.id)+' '+button('issue-invoice','issued',x.id)+' '+button('delete-invoice','remove',x.id):'Immutable issued evidence']))+'</section>';
+  if(tab==='receipts')return '<section class="com-card">'+head('receipts','add-receipt')+
+   table(['Reference','Date','Amount','Currency','Allocation','FX source'],p.receipts.map(x=>[
+    esc(x.ref),esc(x.date),esc(x.amount),esc(x.currency),
+    esc(p.invoices.find(v=>v.id===x.invoiceId)?.invoiceNo||'Unallocated'),esc(x.fxSource||'Same currency')]))+'</section>';
+  if(tab==='adjustments')return '<section class="com-card">'+head('adjustments','add-adjustment')+
+   table(['Amount','Date','Contract source','Reason'],p.adjustments.map(x=>[
+    esc(x.amount),esc(x.date),esc(x.contractRef),esc(x.reason)]))+'</section>';
+  if(tab==='history')return '<section class="com-card">'+head('history')+
+   '<h3>'+l('termsVersion')+'</h3>'+
+   table(['Version','Effective date','Rate','Basis','Replaced at','Written source'],
+    p.agreementHistory.map(x=>[esc(x.version),esc(x.agreement.effectiveDate),
+      esc(x.agreement.ratePercent),esc(x.agreement.basis),esc(x.replacedAt),esc(x.agreement.sourceRef)]))+
+   '<h3>Local change history</h3>'+table(['Revision','At','Action','Source'],p.audit.map(x=>[
+      esc(x.revision),esc(x.at),esc(x.action),esc(x.sourceRef||'')]))+'</section>';
+  if(tab==='reports')return '<section class="com-card"><div class="com-actions">'+
+   '<button class="com-btn primary" data-action="excel">'+l('excel')+'</button>'+
+   '<button class="com-btn" data-action="print">'+l('print')+'</button></div>'+
+   CommissionReport.html(p,c)+'</section>';
+  return '<section class="com-card">'+l('none')+'</section>';
+ }
+ form(kind,id){
+  const p=this.current,l=k=>esc(this.tr(k));
+  if(kind!=='new'&&!p)throw Error('Create a commission record first.');
+  const formStart='<form data-form="'+esc(kind)+'" class="com-form"><input type="hidden" name="id" value="'+esc(id||'')+'">';
+  const end='<div class="wide com-actions"><button class="com-btn primary" type="submit">'+l('save')+'</button></div></form>';
+  let part='',title='',obj={};
+  const currencies=[['','Choose currency'],...['USD','EUR','GBP','BDT','INR','MXN','CNY'].map(x=>[x,x])];
+  const basis=[['','Choose sourced basis'],['total-fob','Total FOB'],['shipped-fob','Shipped FOB'],
+   ['invoiced-fob','Invoiced FOB'],['received-fob','Received FOB']];
+  if(kind==='new'||kind==='meta'){
+   obj=kind==='meta'?p.meta:{};
+   title=kind==='new'?l('new'):l('buyer');
+   part=this.field('buyer',obj.buyer,'text','required maxlength="100"')+
+    this.field('factory',obj.factory,'text','required maxlength="100"')+
+    this.field('po',obj.po,'text','required maxlength="80"')+
+    this.field('style',obj.style,'text','required maxlength="80"')+
+    this.field('source',obj.sourceRef,'text','required maxlength="180"',true);
+  }else if(kind==='agreement'){
+   obj=p.agreement;title=l('agreement');
+   part=this.field('source',obj.sourceRef,'text','required maxlength="180"')+
+    this.field('effective',obj.effectiveDate,'date','required')+
+    this.field('rate',obj.ratePercent,'number','required min="0.0001" max="100" step="any"')+
+    this.choose('currency',currencies,obj.currency)+
+    this.choose('basis',basis,obj.basis)+
+    this.choose('rounding',[['','Choose written rule'],['total-half-up-2','Total, nearest cent (half up)'],
+     ['total-down-2','Total, down to cents']],obj.rounding)+
+    this.choose('debtor',[['','Who pays?'],['buyer','Buyer'],['factory','Factory'],['other','Other documented party']],obj.debtor)+
+    this.field('milestone',obj.earnedRule,'text','required maxlength="120"')+
+    this.field('reviewer',obj.reviewedBy,'text','required maxlength="100"')+
+    this.field('reason','','text',p.agreement.confirmed?'required maxlength="180"':'maxlength="180"',true)+
+    '<label class="wide com-check"><input type="checkbox" name="confirmed"'+
+    (obj.confirmed?' checked':'')+'><span>'+l('confirmed')+'</span></label>'+
+    '<p class="com-muted wide">'+l('newNote')+'</p>';
+  }else if(kind==='add-line'||kind==='line'){
+   obj=p.lines.find(x=>x.id===id)||{};
+   title=l('lines');
+   part=this.field('po',obj.po||p.meta.po,'text','required maxlength="90"')+
+    this.field('style',obj.style||p.meta.style,'text','required maxlength="90"')+
+    this.choose('lineBasis',basis,obj.basis||p.agreement.basis)+
+    this.choose('fobMode',[['quantity-unit','Quantity × unit price'],['sourced-total','Written total amount']],
+      obj.valueMode||'quantity-unit')+
+    this.field('quantity',obj.quantity??'','number','min="1" step="1"')+
+    this.field('unitFob',obj.unitFob,'text','inputmode="decimal" maxlength="22"')+
+    this.field('totalFob',obj.authoritativeFob,'text','inputmode="decimal" maxlength="22"')+
+    this.choose('currency',currencies,obj.currency||p.agreement.currency)+
+    this.field('lineSource',obj.sourceRef||p.meta.sourceRef,'text','required maxlength="180"',true);
+  }else if(kind==='add-exclusion'||kind==='exclusion'){
+   obj=p.exclusions.find(x=>x.id===id)||{};title=l('exclude');
+   part=this.field('amount',obj.amount,'text','required inputmode="decimal"')+
+    this.field('date',obj.date,'date','required')+
+    this.field('contractRef',obj.contractSource,'text','required maxlength="180"')+
+    this.area('creditReason',obj.reason);
+  }else if(kind==='add-earning'){
+   title=l('earnings');
+   part=this.field('amount','','text','required inputmode="decimal"')+
+    this.choose('currency',currencies,p.agreement.currency)+
+    this.field('milestone',p.agreement.earnedRule,'text','required maxlength="120"')+
+    this.field('date','','date','required')+
+    this.field('evidence','','text','required maxlength="180"')+
+    this.field('actor','','text','required maxlength="100"');
+  }else if(kind==='add-invoice'||kind==='invoice'||kind==='issue-invoice'){
+   obj=p.invoices.find(x=>x.id===id)||{};title=l('invoices');
+   part=this.field('invoiceNo',obj.invoiceNo,'text','required maxlength="100"')+
+    this.field('amount',obj.amount,'text','required inputmode="decimal"')+
+    this.choose('currency',currencies,obj.currency||p.agreement.currency)+
+    this.choose('invoiceStatus',[['draft','Draft (not issued)'],['issued','Issued with written proof']],
+      kind==='issue-invoice'?'issued':obj.status||'draft')+
+    this.field('issuedOn',obj.issuedOn,'date')+
+    this.field('dueDate',obj.dueDate,'date')+
+    this.field('issuedBy',obj.issuedBy,'text','maxlength="100"')+
+    this.field('source',obj.sourceRef,'text','maxlength="180"',true);
+  }else if(kind==='add-receipt'){
+   title=l('receipts');
+   part=this.field('receiptRef','','text','required maxlength="120"')+
+    this.field('date','','date','required')+
+    this.field('amount','','text','required inputmode="decimal"')+
+    this.choose('receiptCurrency',currencies,p.agreement.currency)+
+    this.choose('invoiceChoice',[['','Unallocated receipt'],...p.invoices.filter(x=>x.status==='issued')
+      .map(x=>[x.id,x.invoiceNo])],'')+
+    this.field('fxRate','','text','inputmode="decimal" maxlength="24"')+
+    this.field('fxDate','','date')+
+    this.field('fxSource','','text','maxlength="180"')+
+    this.field('evidence','','text','required maxlength="180"')+
+    this.field('actor','','text','required maxlength="100"');
+  }else if(kind==='add-adjustment'){
+   title=l('adjustments');
+   part=this.field('amount','','text','required inputmode="decimal"')+
+    this.choose('currency',currencies,p.agreement.currency)+
+    this.field('date','','date','required')+
+    this.field('contractRef','','text','required maxlength="180"')+
+    this.area('creditReason')+
+    this.field('actor','','text','required maxlength="100"');
+  }else if(kind==='reference'){
+   title=l('orderRef');obj=p.meta.manualReference||{};
+   part=this.field('sourceApp',obj.sourceApp,'text','maxlength="80"')+
+    this.field('recordType',obj.recordType,'text','maxlength="80"')+
+    this.field('recordId',obj.recordId,'text','maxlength="100"')+
+    this.field('revisionId',obj.revisionId,'text','maxlength="80"')+
+    this.field('sourceDate',obj.sourceDate,'date')+
+    this.field('verifiedBy',obj.verifiedBy,'text','maxlength="100"')+
+    this.field('verifiedAt',obj.verifiedAt,'date')+
+    this.area('displaySnapshot',obj.displaySnapshot);
+  }else throw Error('Unknown commission form.');
+  this.dialogOpen(title,formStart+part+end);
+ }
+ submit(form){
+  try{
+   const v=Object.fromEntries(new FormData(form).entries()),get=k=>trim(v[k]),type=form.dataset.form;
+   if(type==='asof'){if(!CommissionMoney.iso(get('asOf')))throw Error('Enter a real date.');
+    this.asOf=get('asOf');this.dialog.close();this.render();return;}
+   if(type==='new'){
+    if(!['buyer','factory','po','style','source'].every(k=>get(k)))throw Error('Enter all sourced PO header fields.');
+    this.current=CommissionDomain.blank({buyer:get('buyer'),factory:get('factory'),
+      po:get('po'),style:get('style'),sourceRef:get('source')});
+    this.section='agreement';this.dirty=true;
+   }else if(type==='meta'){
+    this.mutate('Order context manually updated',p=>{
+      p.meta={...p.meta,buyer:get('buyer'),factory:get('factory'),po:get('po'),
+        style:get('style'),sourceRef:get('source')};},get('source'));
+   }else if(type==='agreement'){
+    this.mutate('Commission agreement reviewed as new terms version',p=>{
+      const old=p.agreement,changed=['sourceRef','ratePercent','basis','currency','rounding','earnedRule','debtor',
+        'effectiveDate'].some((key,i)=>old[key]!==({sourceRef:get('source'),ratePercent:get('rate'),
+          basis:get('basis'),currency:get('currency'),rounding:get('rounding'),
+          earnedRule:get('milestone'),debtor:get('debtor'),effectiveDate:get('effective')})[key]);
+      if(changed&&old.confirmed&&!get('reason'))
+        throw Error('Enter a documented reason to create a new agreement version.');
+      if(changed&&old.confirmed)
+        p.agreementHistory.push({version:old.version,replacedAt:new Date().toISOString(),
+          reason:get('reason'),agreement:copy(old),
+          postedInvoices:copy(p.invoices.filter(x=>x.status==='issued')),
+          earnedAtRevision:copy(p.earnings),receiptsAtRevision:copy(p.receipts)});
+      p.agreement={...old,id:changed&&old.confirmed?keygen('AGR'):old.id,
+        version:changed&&old.confirmed?old.version+1:old.version,sourceRef:get('source'),
+        effectiveDate:get('effective'),ratePercent:get('rate'),currency:get('currency'),
+        basis:get('basis'),rounding:get('rounding'),earnedRule:get('milestone'),debtor:get('debtor'),
+        reviewedBy:get('reviewer'),confirmed:form.querySelector('[name="confirmed"]').checked,
+        reason:get('reason')};
+    },get('source'));
+   }else if(type==='add-line'||type==='line'){
+    this.mutate('Sourced FOB order line updated',p=>{
+      if(p.earnings.length||p.invoices.some(x=>x.status==='issued')||p.receipts.length)
+        throw Error('Sourced FOB cannot be silently repriced after posting earned/invoiced/received entries.');
+      const id=get('id')||keygen('L');
+      const item={id,po:get('po'),style:get('style'),basis:get('lineBasis'),
+        valueMode:get('fobMode'),quantity:get('quantity')===''?null:Number(get('quantity')),
+        unitFob:get('unitFob'),authoritativeFob:get('totalFob'),
+        currency:get('currency'),sourceRef:get('lineSource')};
+      p.lines=p.lines.filter(x=>x.id!==id).concat(item);
+    },get('lineSource'));
+   }else if(type==='add-exclusion'||type==='exclusion'){
+    this.mutate('Contract FOB exclusion recorded',p=>{
+      if(p.earnings.length||p.invoices.some(x=>x.status==='issued')||p.receipts.length)
+        throw Error('Contract base cannot be changed silently after earned/invoice/receipt posting.');
+      const id=get('id')||keygen('X');
+      const item={id,amount:get('amount'),date:get('date'),
+        contractSource:get('contractRef'),reason:get('creditReason')};
+      p.exclusions=p.exclusions.filter(x=>x.id!==id).concat(item);
+    },get('contractRef'));
+   }else if(type==='add-earning'){
+    this.mutate('Earned milestone manually recorded',p=>{
+      p.earnings.push({id:keygen('E'),amount:get('amount'),currency:get('currency'),
+        milestone:get('milestone'),date:get('date'),evidenceRef:get('evidence'),actor:get('actor')});
+    },get('evidence'));
+   }else if(['add-invoice','invoice','issue-invoice'].includes(type)){
+    this.mutate('Commission invoice recorded',p=>{
+      const id=get('id')||keygen('INV');
+      const previous=p.invoices.find(x=>x.id===id);
+      if(previous?.status==='issued')throw Error('An issued invoice is immutable.');
+      const item={id,invoiceNo:get('invoiceNo'),amount:get('amount'),currency:get('currency'),
+        status:get('invoiceStatus'),issuedOn:get('issuedOn'),dueDate:get('dueDate'),
+        sourceRef:get('source'),issuedBy:get('issuedBy')};
+      p.invoices=p.invoices.filter(x=>x.id!==id).concat(item);
+    },get('source'));
+   }else if(type==='add-receipt'){
+    this.mutate('Documented commission receipt recorded',p=>{
+      p.receipts.push({id:keygen('REC'),ref:get('receiptRef'),date:get('date'),
+        amount:get('amount'),currency:get('receiptCurrency'),invoiceId:get('invoiceChoice'),
+        fxRate:get('fxRate'),fxDate:get('fxDate'),fxSource:get('fxSource'),
+        evidenceRef:get('evidence'),actor:get('actor')});
+    },get('evidence'));
+   }else if(type==='add-adjustment'){
+    this.mutate('Documented contractual credit/deduction recorded',p=>{
+      p.adjustments.push({id:keygen('ADJ'),amount:get('amount'),currency:get('currency'),
+        date:get('date'),contractRef:get('contractRef'),reason:get('creditReason'),actor:get('actor')});
+    },get('contractRef'));
+   }else if(type==='reference'){
+    this.mutate('Manual reference recorded',p=>{
+      p.meta.manualReference={sourceApp:get('sourceApp'),recordType:get('recordType'),
+        recordId:get('recordId'),revisionId:get('revisionId'),sourceDate:get('sourceDate'),
+        verifiedBy:get('verifiedBy'),verifiedAt:get('verifiedAt'),
+        displaySnapshot:get('displaySnapshot')};
+    },get('sourceApp'));
+   }
+   this.dialog.close();this.render();
+  }catch(e){
+   let box=form.querySelector('[role=alert]');
+   if(!box){box=document.createElement('p');box.className='com-warning wide';box.setAttribute('role','alert');form.prepend(box);}
+   box.textContent=e.message;
+  }
+ }
+ download(data,name,mime){const file=data instanceof Blob?data:new Blob([data],{type:mime});
+  const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);
+  a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
+ }
+ excel(){
+  if(!this.current)throw Error('Open a commission record first.');
+  if(!global.XLSX?.utils?.book_new)throw Error('Local spreadsheet library unavailable.');
+  const source=CommissionReport.sheets(this.current,CommissionDomain.analyze(this.current,this.asOf));
+  const workbook=global.XLSX.utils.book_new();
+  for(const [name,rows] of Object.entries(source)){
+   const table=rows.map(row=>row.map(CommissionReport.csvSafe));
+   const sheet=global.XLSX.utils.aoa_to_sheet(table);sheet['!cols']=rows[0].map(()=>({wch:25}));
+   global.XLSX.utils.book_append_sheet(workbook,sheet,name.slice(0,31));
+  }
+  const buffer=global.XLSX.write(workbook,{bookType:'xlsx',type:'array',compression:true});
+  this.download(new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),
+    'VESA-COMMISSION-'+this.current.id+'.xlsx','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+ }
+}
+global.VesaOrderCommission360=Object.freeze({CommissionMoney,CommissionDomain,CommissionStore,CommissionReport,VERSION,COPY_VERSION});
+if(typeof module!=='undefined'&&module.exports)module.exports=global.VesaOrderCommission360;
+if(typeof document!=='undefined'){
+ const open=()=>new CommissionWorkspace().start();
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',open);else open();
+}
+})(typeof globalThis!=='undefined'?globalThis:this);
+</script></body></html>
