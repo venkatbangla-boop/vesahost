@@ -99,7 +99,8 @@ async function run(){
       await page.locator('#tnaDialog .tna-dialog-head button').click();
     }
     await page.setViewportSize({width:1280,height:900});
-    await page.locator('#tnaAlternativeScenarioForm button[type="submit"]').click();
+    // Apply the SAME saved option after changing languages; the browser must
+    // retain that preview's ID instead of manufacturing another scenario.
     await page.locator('[data-apply-scenario]').click();
     await page.locator('#tnaScenarioApply [name="reason"]').fill('Locally reviewed alternative, not buyer approval');
     await page.locator('#tnaScenarioApply [name="confirm"]').check();
