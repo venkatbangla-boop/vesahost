@@ -1251,9 +1251,9 @@
         (!state.currentPlan||state.currentPlan.mode==='practice'?' disabled':'')+'>'+
         esc(l.currentTemplate)+'</button></div></div>'+
 
-        '<label><span>Choose Excel / CSV / TSV</span><input id="tnaImportFile" type="file" '+
+        '<label><span>Choose a spreadsheet file</span><input id="tnaImportFile" type="file" '+
         'accept=".xlsx,.csv,.tsv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/tab-separated-values"></label>'+
-        '<label><span>Pasted CSV / tab-separated table</span><textarea id="tnaImportText" rows="5" '+
+        '<label><span>Paste a table from a spreadsheet</span><textarea id="tnaImportText" rows="5" '+
         'placeholder="Buyer,Factory,Style,PO,Quantity,Buyer Required Ex-Factory"></textarea></label>'+
         '<div class="menu-grid"><button type="button" class="tna-btn secondary" id="tnaImportReadFile">Review selected file</button>'+
         '<button type="button" class="tna-btn secondary" id="tnaImportReadText">Review pasted table</button></div>'+

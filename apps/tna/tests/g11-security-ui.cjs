@@ -45,11 +45,24 @@ async function run(){
     await menu(page,'File');
     await page.locator('[data-menu-action="Import Excel TNA"]').click();
     await page.locator('#tnaImportText').fill(`Buyer,Factory,Style,PO,Quantity,Buyer Required Ex-Factory\n${hostile},Factory,=HYPERLINK("bad"),PO,500,10/11/26`);
-    await page.locator('[data-import-preview="text"]').click();
-    assert.equal(await page.locator('#tnaImportPreviewResult #tna-xss').count(),0,'import preview markup must remain inert');
-    assert.match(await page.locator('#tnaImportPreviewResult').innerText(),/Formula-like cell blocked/,'import preview must disclose formula blocking');
-    assert.match(await page.locator('#tnaImportPreviewResult').innerText(),/Ambiguous date requires mapping/,'import preview must disclose ambiguous dates');
-    assert.equal(await page.evaluate(()=>globalThis.__tnaXss),undefined,'import preview must not execute event/script payloads');
+    const beforeImport=await page.evaluate(()=>localStorage.getItem('vesa.tna360.records.qa-vesaent-com'));
+    await page.locator('#tnaImportReadText').click();
+    await page.locator('#tnaImportReview [role="alert"]').waitFor();
+    assert.equal(await page.locator('#tnaImportReview #tna-xss').count(),0,'untrusted worksheet text must never render as an executable element');
+    assert.match(await page.locator('#tnaImportReview [role="alert"]').innerText(),/Formula-looking or unsafe source value found/i,
+      'the current G08 parser must reject hostile script/formula cells before mapping or saving');
+    assert.equal(await page.locator('#tnaImpCreate').count(),0,'hostile table must not offer Create New Draft');
+    assert.equal(await page.evaluate(()=>globalThis.__tnaXss),undefined,'hostile import must not execute event/script payloads');
+    // A syntactically clean but ambiguous source date is reviewed separately,
+    // never resolved from a guessed DD/MM or MM/DD convention.
+    await page.locator('#tnaImportText').fill('Buyer,Factory,Style,PO,Quantity,Buyer Required Ex-Factory\nSafe Buyer,Safe Factory,STYLE-SEC,PO-SEC,500,10/11/26');
+    await page.locator('#tnaImportReadText').click();
+    await page.locator('#tnaImpFormat').waitFor();
+    await page.waitForFunction(()=>document.querySelector('#tnaImportReview .tna-import-errors')?.textContent?.includes('invalid or unreviewed date'));
+    assert.match(await page.locator('#tnaImportReview').innerText(),/invalid or unreviewed date/,'ambiguous date must demand human date-format review');
+    assert.equal(await page.locator('#tnaImpCreate').isDisabled(),true,'ambiguous dates must not create an order');
+    assert.equal(await page.evaluate(()=>localStorage.getItem('vesa.tna360.records.qa-vesaent-com')),beforeImport,
+      'reviewing malicious or ambiguous input must not alter saved records');
     const geometry=await page.evaluate(()=>({inner:innerWidth,doc:document.documentElement.scrollWidth,body:document.body.scrollWidth,wide:[...document.querySelectorAll('*')].filter(node=>node.getBoundingClientRect().right>innerWidth+1||node.scrollWidth>node.clientWidth+1).slice(0,8).map(node=>({tag:node.tagName,id:node.id,className:String(node.className||''),left:Math.round(node.getBoundingClientRect().left),right:Math.round(node.getBoundingClientRect().right),clientWidth:node.clientWidth,scrollWidth:node.scrollWidth,text:String(node.textContent||'').slice(0,80)}))}));
     assert.ok(geometry.doc<=geometry.inner+1&&geometry.body<=geometry.inner+1,`security surfaces must not overflow at 390px: ${JSON.stringify(geometry)}`);
     const output=path.join(root,'output','playwright');fs.mkdirSync(output,{recursive:true});await page.locator('#tnaDialog').screenshot({path:path.join(output,'tna-g11-security-import-mobile.png')});

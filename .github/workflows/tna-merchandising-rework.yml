@@ -107,6 +107,9 @@ jobs:
           node apps/tna/tests/g11-localization-accessibility.cjs
           node apps/tna/tests/g11-unified-shell-browser.cjs
           node apps/tna/tests/g11-route-regression.cjs
+          node apps/tna/tests/g10-linked-ui.cjs
+          node apps/tna/tests/g11-f44-help.cjs
+          node apps/tna/tests/g11-security-ui.cjs
           node tests/vesa-shared-shell-matrix.cjs
       - name: Verify real exported Excel workbook and browser print artifact
         run: node apps/tna/tests/g11-artifact-viewers.cjs

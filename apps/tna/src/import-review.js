@@ -101,7 +101,7 @@
       issues:'समस्याएँ',warnings:'ध्यान दें',matched:'मिले काम',
       unmatchedCount:'अनजाने काम',existing:'पुराने ऑर्डर',
       loaded:'सिर्फ preview',errors:'फाइल जाँचें।'},
-    ta:{blankTemplate:'அனைத்து Tasks உடன் Blank Excel Template',currentTemplate:'தற்போதைய TNA-வை Excel-ஆக எடு',templateType:'Blank template Garment வகை',templateNotice:'Excel நிரப்பி review செய்யவும். Approved/Completed நிலை copy ஆகாது.',intro:'Excel/CSV file-இல் sheet, column, tasks-ஐ review செய்யுங்கள். Confirm செய்த பிறகு புதிய TNA Draft மட்டும் உருவாகும்; பழைய orders மாறாது.',
+    ta:{blankTemplate:'அனைத்து Tasks உடன் Blank Excel Template',currentTemplate:'தற்போதைய TNA-வை Excel-ஆக எடு',templateType:'Blank template Garment வகை',templateNotice:'Excel நிரப்பி review செய்யவும். Approved/Completed நிலை copy ஆகாது.',intro:'Excel file-இல் sheet, column, tasks-ஐ review செய்யுங்கள். Confirm செய்த பிறகு புதிய TNA Draft மட்டும் உருவாகும்; பழைய orders மாறாது.',
       sheet:'Order விவர sheet',tasksheet:'Activity sheet',none:'Activity sheet இல்லை — Order மட்டும்',
       row:'Header இருக்கும் வரிசை',format:'Source தேதி வடிவம்',template:'Garment template',
       unit:'Order quantity unit',basis:'Task நாள் கணக்கு',
