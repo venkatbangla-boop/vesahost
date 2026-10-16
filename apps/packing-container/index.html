@@ -98,6 +98,15 @@ const rounded=(n,p=4)=>n===null||!Number.isFinite(n)?'Needs Information':String(
 class PackingMath {
  static m(value,unit){return positive(value)?value*({cm:.01,mm:.001,in:.0254}[unit]||NaN):NaN;}
  static kg(value,unit){return positive(value)?value*({kg:1,lb:.45359237}[unit]||NaN):NaN;}
+ /** Only homogeneous sourced pieces-per-carton may be rounded automatically. */
+ static cartonsNeeded(pieces,per){return integer(pieces)&&integer(per)&&pieces>0&&per>0?
+   Math.ceil(pieces/per):null;}
+ /** Strict timezone-free civil date for manual loading evidence. */
+ static validDate(date){
+   if(typeof date!=='string'||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(date))return false;
+   const time=Date.parse(date+'T00:00:00Z');
+   return Number.isFinite(time)&&new Date(time).toISOString().slice(0,10)===date;
+ }
  static range(config,count){
    const start=trim(config.cartonStart),end=trim(config.cartonEnd);
    if(!start||!end)return {error:'Enter both carton range identifiers.'};
@@ -169,6 +178,9 @@ class PackingMath {
      const partialGross=partialSum>0?this.kg(config.partialGrossWeight,spec.weightUnit):0;
      if(partialSum>0&&!Number.isFinite(partialGross)){grossKnown=false;notes.push('Partial-carton actual gross weight is missing. Overall weight needs information.');}
      const qty=config.fullCartons*config.piecesPerCarton+partialSum;
+     if(!Number.isSafeInteger(qty)||qty>1000000000){
+       errors.push('Packing entry quantity exceeds the safe whole-piece calculation limit.');continue;
+     }
      for(const [lineId,each] of sums)packed.set(lineId,(packed.get(lineId)||0)+config.fullCartons*each);
      for(const [lineId,each] of partial)packed.set(lineId,(packed.get(lineId)||0)+each);
      totalCartons+=count;totalPieces+=qty;
@@ -177,7 +189,9 @@ class PackingMath {
        grossKg:partialSum&&!Number.isFinite(partialGross)?null:config.fullCartons*gross+(partialSum?partialGross:0),
        start:range.start,end:range.end,range,composition:config.composition,
        partialComposition:config.partialComposition,partialPieces:partialSum,
-       sourceRef:config.sourceRef,specId:spec.id});
+       sourceRef:config.sourceRef,specId:spec.id,
+       homogeneousCartonsNeeded:sums.size===1?
+         this.cartonsNeeded(orderById.get([...sums.keys()][0])?.quantity,config.piecesPerCarton):null});
    }
    for(const line of plan.orderLines){
      const value=packed.get(line.id)||0,remaining=line.quantity-value;
@@ -221,7 +235,7 @@ class PackingMath {
    for(const item of plan.loadEntries){
      const config=packs.find(p=>p.id===item.configId);
      if(!sceneIds.has(item.scenarioId)||!config||!integer(item.cartonCount)||item.cartonCount<1||
-       !trim(item.evidenceRef)||!trim(item.date)||!/^\d{4}-\d{2}-\d{2}$/.test(item.date)){
+       !trim(item.evidenceRef)||!this.validDate(item.date)){
        errors.push('Loading entry needs a valid scenario, pack entry, carton count, date and manual evidence.');continue;
      }
      const k=item.scenarioId+'|'+item.configId;
@@ -311,10 +325,10 @@ class PackingReport {
    const cartonLines=[];
    for(const c of calc.packs){
      const spec=p.cartonSpecs.find(x=>x.id===c.specId);
-     cartonLines.push([c.start+' – '+c.end,spec.code,c.packType,c.count,c.pieces,c.cbm,c.grossKg??'Needs Information',c.sourceRef]);
+     cartonLines.push([c.start+' – '+c.end,spec.code,c.packType,c.count,c.pieces,c.cbm,c.grossKg??'Needs Information',c.homogeneousCartonsNeeded??'Not applicable',c.sourceRef]);
    }
    return {
-     'Packing Config':[['Carton range','Carton ID','Pack type','Cartons','Packed pcs','CBM/carton','Gross kg','Source'],...cartonLines],
+     'Packing Config':[['Carton range','Carton ID','Pack type','Cartons','Packed pcs','CBM/carton','Gross kg','Homogeneous cartons needed','Source'],...cartonLines],
      'Carton List':[['Carton ID','Carton specification','Configuration','Pieces','Composition','Source'],
        ...calc.packs.flatMap(c=>{
          const spec=p.cartonSpecs.find(x=>x.id===c.specId),codes=[];
@@ -551,30 +565,30 @@ class PackingWorkspace {
    if(section==='order')return '<section class="pack-card">'+head(l('order'),'add-line')+
      table(['Style','Colour','Size','PO pcs','Packed','Remaining','Source','Action'],
        d.balances.map(r=>[safe(r.style),safe(r.color),safe(r.size),safe(r.ordered),safe(r.packed),
-         safe(r.remaining),safe(r.sourceRef),tool('edit-line',r.id)]))+'</section>';
+         safe(r.remaining),safe(r.sourceRef),tool('edit-line',r.id)+' '+tool('delete-line',r.id,l('remove'))]))+'</section>';
    if(section==='cartons')return '<section class="pack-card">'+head(l('cartons'),'add-carton')+
      table(['Code','L × W × H','Gross','Net','Source','Action'],p.cartonSpecs.map(c=>[
        safe(c.code),safe(c.length+' × '+c.width+' × '+c.height+' '+c.unit),
        safe(c.grossWeight+' '+c.weightUnit),safe(c.netWeight+' '+c.weightUnit),
-       safe(c.sourceRef),tool('edit-carton',c.id)]))+'</section>';
+       safe(c.sourceRef),tool('edit-carton',c.id)+' '+tool('delete-carton',c.id,l('remove'))]))+'</section>';
    if(section==='packs')return '<section class="pack-card">'+head(l('packs'),'add-pack')+
      table(['Carton range','Pack type','Pieces','Cartons','CBM','Gross kg','Source','Action'],
        d.packs.map(r=>[safe(r.start+' – '+r.end),safe(r.packType),safe(r.pieces),
          safe(r.count),safe(this.fmt(r.count*r.cbm)),safe(this.fmt(r.grossKg)),
-         safe(r.sourceRef),tool('edit-pack',r.id)]))+'</section>';
+         safe(r.sourceRef),tool('edit-pack',r.id)+' '+tool('delete-pack',r.id,l('remove'))]))+'</section>';
    if(section==='containers')return '<section class="pack-card">'+head(l('containers'),'add-scene')+
      '<p class="pack-note">'+safe(SCENE)+'</p>'+
      table(['Scenario','Type','Internal / usable CBM','Payload kg','Volume','Weight','Door','Result','Action'],
        d.containers.map(s=>[safe(s.name),safe(s.type),safe(this.fmt(s.interiorCbm)+' / '+this.fmt(s.usableCbm)),
          safe(this.fmt(s.payloadKg)),safe(String(s.volumeEligible??l('needs'))),
          safe(String(s.weightEligible??l('needs'))),safe(String(s.doorEligible??l('needs'))),
-         safe(s.status),tool('edit-scene',s.id)]))+'</section>';
+         safe(s.status),tool('edit-scene',s.id)+' '+tool('delete-scene',s.id,l('remove'))]))+'</section>';
    if(section==='loads')return '<section class="pack-card">'+head(l('loads'),'add-load',l('record'))+
      '<p class="pack-note">'+safe(l('loadNotice'))+'</p>'+
      table(['Container','Pack','Loaded cartons','Date','Evidence','Action'],
        p.loadEntries.map(row=>[safe(p.containerScenarios.find(x=>x.id===row.scenarioId)?.name||'–'),
          safe(p.packConfigs.find(x=>x.id===row.configId)?.cartonStart||'–'),safe(row.cartonCount),
-         safe(row.date),safe(row.evidenceRef),tool('edit-load',row.id)]))+'</section>';
+         safe(row.date),safe(row.evidenceRef),tool('edit-load',row.id)+' '+tool('delete-load',row.id,l('remove'))]))+'</section>';
    if(section==='reports')return '<section class="pack-card">'+head(l('reports'))+
      '<div class="pack-actions pack-noprint">'+
      '<button class="pack-btn primary" data-action="excel">'+safe(l('excel'))+'</button>'+

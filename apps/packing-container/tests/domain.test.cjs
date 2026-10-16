@@ -13,6 +13,9 @@ class PackingEngineProof{
  }
  static test(){
   const {PackingMath:M,PackingStore:S,PackingReport:R,data}=this.runtime();
+  assert.equal(M.cartonsNeeded(101,30),4);assert.equal(M.cartonsNeeded(90,30),3);
+  assert.equal(M.cartonsNeeded(90,0),null);assert.equal(M.validDate('2026-02-30'),false);
+  assert.equal(M.validDate('2026-10-16'),true);
   assert.equal(M.m(1000,'mm'),1);assert(Math.abs(M.m(10,'in')-.254)<1e-12);
   assert(Math.abs(M.kg(10,'lb')-4.5359237)<1e-8);
   const p=M.sample(),snapshot=JSON.stringify(p),calc=M.analyze(p);
