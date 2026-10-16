@@ -761,7 +761,7 @@
       const tableHead='<thead><tr>'+col.map(value=>'<th scope="col">'+esc(value)+'</th>').join('')+'</tr></thead>';
       const body=rows.map(task=>{
         const note=task.recoveryProposal?
-          task.recoveryProposal+' — '+l.agreed:task.issue||l.none;
+          task.recoveryProposal+' — '+l.agreed:task.issue===l.unknownDue?'—':task.issue||l.none;
         const cell=[task.ref,task.activity,task.owner,task.original||'—',
           task.target||'—',task.forecast||'—',task.actual||'—',task.status,
           task.lateDays===null?'—':String(task.lateDays),note];
@@ -797,6 +797,7 @@
         '<div class="tna-weekly-windows">'+summary+'</div>'+
         '<div class="tna-weekly-stats">'+stats+'</div>'+
         '<p class="tna-note">'+esc(l.asOfBasis)+'</p>'+
+        (weekly.counts.needsInformation?'<p class="tna-note">'+esc(l.unknownDue)+'</p>':'')+
         groups.map(key=>TnaWeeklyPrintView.group(key,weekly)).join('')+
         '<p class="tna-note">'+esc(l.approvalNote)+'</p>'+
         '<p class="tna-note">'+esc(l.recoveryNote)+'</p>'+
