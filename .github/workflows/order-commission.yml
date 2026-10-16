@@ -1,0 +1,58 @@
+# APP-02 review-only development; does NOT deploy GitHub Pages.
+name: VESA Order Commission 360 verification
+on:
+  push:
+    branches:
+      - feature/order-commission-360
+    paths:
+      - 'apps/order-commission/**'
+      - '.github/workflows/order-commission.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-commission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact feature commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Domain and frozen sibling regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check apps/order-commission/tests/domain.test.cjs
+          node --check apps/order-commission/tests/browser-workflow.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          git diff --check HEAD~2..HEAD
+      - name: Prepare no-cost Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Real browser workflow
+        run: node apps/order-commission/tests/browser-workflow.cjs
+      - name: Preserve synthetic browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app02-synthetic-browser
+          path: output/playwright/commission-app02-*
+          if-no-files-found: ignore
