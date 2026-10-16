@@ -34,6 +34,8 @@ jobs:
           node apps/ppm/tests/p-g00-baseline.cjs
           node apps/aql/tests/a-g00-baseline.cjs
           node apps/aql/tests/a-g03-sampling.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g05-storage.test.js
           node tests/vesa-workspace-shell-contract.cjs
           git diff --check HEAD~2..HEAD
       - name: Chromium and Playwright (free runner)
