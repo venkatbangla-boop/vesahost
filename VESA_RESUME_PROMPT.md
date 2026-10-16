@@ -1,5 +1,14 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## F19 group 1 independent CI — DEVELOPMENT VERIFIED (2026-10-16)
+
+**Authoritative tested code SHA:** `84f1653a97269d9ad3c74e7a9ef1c53b98bf87ab`; [GitHub Actions #38889798678 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38889798678). Node 22 parser, new knit/woven/denim alternative-calendar source/preview tests, calendar/CPM/duration/import/record preservation, G01–G12, R01–R12, PPM168, AQL24 and actual Chromium language/mobile, real XLSX/PDF/shell regressions completed successfully under this workflow. First attempted SHA `2cc1a17b` failed due to detached static validator call; fixed at exact green SHA. Earlier history is retained.
+
+**Scope of this verdict:** Distinct source-attributed calendar local record, same-order/default-revision confirmation binding, preview-only alternate choice, civil-day difference with working-day gains withheld on different calendar bases and invalid/forged/stale candidate rejection. **Group 2 remains unimplemented**: visible calendar input/selection, R12 alternative A/B report, controlled application to stored plan, translated workflows and browser acceptance. Full TNA remains **ACTIVE / CONDITIONAL, NOT DEMO LIVE**. User-local confirmation is not independently verified factory/Buyer consent. **NEXT ACTION:** Audit and execute F19 group 2 as a separately reversible branch patch with real browser/typed Excel/save-reopen/report regression, then factory/merchandiser UAT/native Excel/device and release gates. Costing personal demo remains unchanged on `main`; Packing & Container 360 follows valid TNA acceptance and original blueprint recovery.
+
+---
+
+
 ## Work auto-resume checkpoint — F19 group 1 (2026-10-16)
 
 Exact source 84f1653a97269d9ad3c74e7a9ef1c53b98bf87ab; [CI run 38889798678](https://github.com/venkatbangla-boop/vesahost/actions/runs/38889798678) must be checked for its final conclusion. First run 38889733346 FAILED on static API this.update; source fixed by direct class ownership. Added source-attributed local alternative factory calendar record in apps/tna/src/domain.js, safe preview-only selection in scenarios.js and synthetic knit/woven/denim tests enrolled in feature CI. Different calendar working patterns expose civil-day delta only, never invented working-day gain. Invalid, stale, cross-order or unconfirmed candidates fail closed; alternate apply remains blocked. Source/schema/baseline/PPM/AQL/main/public Pages unchanged. **TNA status ACTIVE / CONDITIONAL, NOT DEMO LIVE.** NEXT ACTION: inspect the final CI outcome, fix any remaining failure, then independently audit F19 group 2 VESA UI + R12 report + four language, native Excel, saved record/reopen and browser tests. Human factory UAT/approval and final release remain open; Packing & Container 360 follows valid TNA acceptance and recovered blueprint.
