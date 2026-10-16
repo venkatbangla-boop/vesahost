@@ -1,5 +1,16 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+## Verified R06 execution checkpoint — 2026-10-16
+
+- **Final test SHA:** `1942eaac07ed69c19137e95c8bb8cd126b59598f` on `feature/tna-merchandising-rework`.
+- **Exact evidence:** [GitHub Actions 38856899207 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38856899207). All Node/source, R06 knit/woven/EN/BN/HI/TA, TNA saved-copy migrations and R01–R05, PPM/AQL/shell/browser regressions passed; real Chromium R06 downloadable JSON/Excel, PDF print and viewer, repeating headers/print containment passed. Browser fixture preserved saved local record. No human factory/buyer approval or native physical-reader acceptance claimed.
+- **Verdict:** R06 *targeted patch* DEVELOPMENT VERIFIED; full garment TNA rework ACTIVE / CONDITIONAL, not DEMO LIVE. Earlier [38856676394 failure](https://github.com/venkatbangla-boop/vesahost/actions/runs/38856676394) retained; documentation whitespace correction enabled exact full-success run.
+- **Source/rollback:** Pure read-only `reports.js` projector, `storage.js` conditional typed XLSX, existing `bootstrap.js` report dialog and `tna.css` print, additive Node/Chromium tests and workflow. Revert feature commits for rollback; no source-plan migration, PPM/AQL rewrite, data schema, main merge or deployment.
+- **NEXT ACTION:** R07 Production Status: audit actual stage and quantity source owners and authorization before implementing/source testing. No fabricated factory capacity, line efficiency, run rate or buyer-release confirmation. Portfolio next after TNA: Packing & Container 360.
+
+---
+
+
 ## TNA R06 Work checkpoint (2026-10-16) — CONDITIONAL pending browser CI
 
 - **Branch/source SHA:** `feature/tna-merchandising-rework` / `2d6367d1fddec52c97c00f23995b99344ffdb3aa`.

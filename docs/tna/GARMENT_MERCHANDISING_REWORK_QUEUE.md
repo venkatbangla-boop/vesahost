@@ -1,5 +1,12 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
+### 2026-10-16 — R06 Delay & Recovery DEVELOPMENT VERIFIED (targeted slice)
+
+**Actual source/test SHA:** `1942eaac07ed69c19137e95c8bb8cd126b59598f`. [Full GitHub Actions CI 38856899207](https://github.com/venkatbangla-boop/vesahost/actions/runs/38856899207) **SUCCESS**: source, R01–R06, PPM/AQL, shared mobile/desktop browser, saved record restore, EN/BN/HI/TA, typed actual R06 XLSX and genuine Chromium PDF/browser viewing. R06 is internal management only and differentiates entered delay causes from verified root causes, direct dependency references from proven impacts, local scenario applications from any buyer/factory agreement, and unknown waiting parties from assigned owners. Initial run 38856676394 FAILED from earlier R05 documentation whitespace, later corrected before full success. Full garment-merchandising rework stays ACTIVE / CONDITIONAL, not DEMO LIVE. No main/public release or production-record rewrite.
+
+**PRECISE NEXT ACTION:** Implement separately audited **R07 Production Status** using real sourced cutting/sewing/finishing/packing and quantity/throughput inputs without invented rates, forecast or approvals, then R08–R12 and approved Excel import/UAT gates. Next portfolio app Packing & Container 360.
+
+
 ### 2026-10-16 — R06 Delay & Recovery patch: CONDITIONAL until full browser CI
 
 Implemented on `feature/tna-merchandising-rework` as source commit `2d6367d1fddec52c97c00f23995b99344ffdb3aa`. First [CI 38856676394](https://github.com/venkatbangla-boop/vesahost/actions/runs/38856676394) failed **only** at inherited trailing whitespace in three previous R05 documentation rows, after all JS/parser, R06 synthetic knit/denim and source/cross-app Node checks PASS. Documentation-only correction preserves R05 history and requires a fresh full run. R06 adds immutable as-of delay comparison, entered-but-unverified cause and recovery proposal, unknown waiting authority/party, audited locally applied scenario branches (never external agreement), typed formula-safe Excel, escaped printable VESA report and real Chromium artifact assertions. Full browser verification pending; TNA overall ACTIVE, not DEMO LIVE. No main or business schema modification.

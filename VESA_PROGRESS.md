@@ -1,5 +1,14 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## Latest exact GitHub CI — TNA R06 DEVELOPMENT VERIFIED (2026-10-16)
+
+**Full R06 Delay & Recovery slice: DEVELOPMENT VERIFIED, entire TNA rework: ACTIVE / CONDITIONAL (not DEMO LIVE).** Exact application code and CI SHA `1942eaac07ed69c19137e95c8bb8cd126b59598f` on `feature/tna-merchandising-rework` passed [GitHub Actions run 38856899207](https://github.com/venkatbangla-boop/vesahost/actions/runs/38856899207) with **SUCCESS**, including source parser, R06 synthetic knit/woven + EN/BN/HI/TA calculations, true typed Excel/formula-safety, migrated saved-copy, R01–R05 regressions, PPM 168-checkpoint and AQL 24-fixture/sampling tests, genuine Playwright knit/woven/mobile/shared navigation and real R06 JSON/XLSX/Chromium PDF generation/viewer/print-width/headers. Previously failing run 38856676394 remains accurately FAILED because of inherited R05 documentation whitespace; the historical whitespace was corrected without losing history.
+
+**R06 safety:** confirmed original baseline, current target, recorded forecast and as-of actual remain separate; no invented delay cause/waiting party/downstream causal certainty or external recovery agreement. Applied-local scenario requires source audit evidence but never means buyer/factory approval. Domain, scheduler, saved-record schema, PPM/AQL, main and public Pages were not changed. **PRECISE NEXT ACTION:** source audit and implement **R07 Production Status** (cutting/sewing/finishing/packing, recorded output, remaining quantities only when supported, source-backed dates; explicit privacy and Needs Information). Keep app ACTIVE, full UAT/hosting release conditional. Next approved portfolio application after TNA: **Packing & Container 360**. Do not merge divergent `feature/tna360-continuous` branch without scoped reconciliation.
+
+---
+
+
 ## Current GitHub Work checkpoint — R06 Delay & Recovery (2026-10-16)
 
 **TNA Garment Merchandising Rework: ACTIVE / CONDITIONAL; R06 independent source/Excel tests PASS; complete workflow CI under review.** Source commit `2d6367d1fddec52c97c00f23995b99344ffdb3aa` on `feature/tna-merchandising-rework`. [GitHub Actions run 38856676394](https://github.com/venkatbangla-boop/vesahost/actions/runs/38856676394) failed solely at `git diff --check origin/main...HEAD` due to previously existing trailing spaces in three 2026-10-16 R05 checkpoint paragraphs; JS parser, R06 knit/woven test, R01-R05, storage/migration, PPM 168-checkpoint, AQL 24-fixture/sampling and shared-shell contracts all PASSED. This documentation-only patch removes the three pre-existing trailing-space failures, retains complete R05 history, and triggers no application/deployment change.
