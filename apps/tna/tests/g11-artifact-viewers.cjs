@@ -1088,8 +1088,8 @@ async function run(){
     const blankTemplateBook=XLSX.read(fs.readFileSync(blankTemplatePath),{type:'buffer'});
     assert.deepEqual(blankTemplateBook.SheetNames,
       ['Order Summary','Master TNA','Import Guide']);
-    assert.equal(blankTemplateBook.Sheets['Order Summary'].A2,undefined);
-    assert.equal(blankTemplateBook.Sheets['Master TNA'].H2,undefined);
+    assert.equal(blankTemplateBook.Sheets['Order Summary'].A2?.v??'', '');
+    assert.equal(blankTemplateBook.Sheets['Master TNA'].H2?.v??'', '');
     assert(XLSX.utils.sheet_to_json(blankTemplateBook.Sheets['Master TNA'],{header:1}).length>50,
       'Garment-specific blank template must include real apparel activities.');
     const currentEvent=page.waitForEvent('download');

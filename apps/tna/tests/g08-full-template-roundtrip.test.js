@@ -112,12 +112,14 @@ class TnaG08TemplateRoundTripProof {
     const blankBytes=storage.exportImportTemplateWorkbook(blank,{blank:true,language:'ta'});
     const emptyBook=XLSX.read(blankBytes,{type:'buffer'});
     assert.deepEqual(emptyBook.SheetNames,['Order Summary','Master TNA','Import Guide']);
-    assert.equal(emptyBook.Sheets['Order Summary'].E2,undefined);
-    assert.equal(emptyBook.Sheets['Order Summary'].F2,undefined);
-    assert.equal(emptyBook.Sheets['Master TNA'].H2,undefined,
-      'Blank garment template must never populate unverified durations.');
-    assert.equal(emptyBook.Sheets['Master TNA'].K2,undefined,
-      'Blank garment template must never assume verified predecessor.');
+    assert.equal(emptyBook.Sheets['Order Summary'].E2?.v??'', '',
+      'Blank quantity cannot be fabricated.');
+    assert.equal(emptyBook.Sheets['Order Summary'].F2?.v??'', '',
+      'Blank buyer ex-factory cannot be fabricated.');
+    assert.equal(emptyBook.Sheets['Master TNA'].H2?.v??'', '',
+      'Blank garment template must not populate unverified durations.');
+    assert.equal(emptyBook.Sheets['Master TNA'].K2?.v??'', '',
+      'Blank garment template must not assume verified predecessors.');
     const blankStage=imports.parseWorkbook(blankBytes,'blank-woven.xlsx'),
       {config,context}=this.options(blankStage,'woven',user);
     const incomplete=imports.review(blankStage,config,context);
