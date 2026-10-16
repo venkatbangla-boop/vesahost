@@ -49,7 +49,7 @@ class TnaG08TemplateRoundTripProof {
       const source=this.source(profile,user),sourceBytes=JSON.stringify(source);
       storage.savePlan(source,user);
       const raw=storage.exportImportTemplateWorkbook(source,{blank:false,language:'en'});
-      const book=XLSX.read(raw,{type:'buffer',cellFormula:true,cellNF:true});
+      const book=XLSX.read(raw,{type:'buffer',cellFormula:true,cellNF:true,cellStyles:true});
       assert.deepEqual(book.SheetNames,['Order Summary','Master TNA','Import Guide']);
       const os=book.Sheets['Order Summary'],ws=book.Sheets['Master TNA'];
       assert.equal(os.A1.v,'Buyer');
