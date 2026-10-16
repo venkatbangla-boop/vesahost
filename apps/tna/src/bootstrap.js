@@ -1594,6 +1594,26 @@
   function openImportPreview(){new TnaG08ImportWizard().open();}
   function saveNow(){if(!state.currentPlan)return openDialog('Save TNA','<p>Create or open a TNA draft before saving.</p>');if(state.currentPlan.mode==='practice')return openDialog('Save TNA','<p>Practice example is isolated and cannot be saved into real production records.</p>');try{const saved=storage.savePlan(state.currentPlan,userKey());render();openDialog('Save TNA',`<p>Saved locally in this browser.</p><p><b>${esc(saved.style||'Untitled TNA')}</b> · ${esc(saved.po||'PO unknown')}</p>`);}catch(error){openDialog('Save TNA',`<p>${esc(error.message)}</p>`);}}
   function downloadCopy(){if(!state.currentPlan)return openDialog('Download Saved Copy','<p>Create or open a TNA draft before downloading a saved copy.</p>');if(state.currentPlan.mode==='practice')return openDialog('Download Saved Copy','<p>Practice example cannot be exported as business evidence. Create a real TNA first.</p>');try{const text=storage.exportCopy(state.currentPlan);const name=`vesa-tna-${(state.currentPlan.order.styles?.[0]?.styleNo||state.currentPlan.recordId||'copy').replace(/[^a-z0-9_-]+/gi,'-')}.json`;if(typeof Blob!=='undefined'&&document.createElement){const blob=new Blob([text],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}openDialog('Download Saved Copy',`<p>Portable copy prepared and checksum protected.</p><p>File name: <b>${esc(name)}</b></p><textarea readonly rows="6">${esc(text.slice(0,1200))}</textarea>`);}catch(error){openDialog('Download Saved Copy',`<p>${esc(error.message)}</p>`);}}
+
+  /**
+   * G12/F42: install the TNA-owned public static offline bundle, once the
+   * browser supports service workers. Access: a best-effort registration on
+   * genuine /apps/tna/ navigation; it is not a remote data/background sync.
+   * No state/approval is changed and no offline success is claimed on failure.
+   */
+  class TnaOfflineStaticBundle {
+    static register(){
+      if(!('serviceWorker' in navigator))return;
+      if(!['/apps/tna/','/apps/tna/index.html'].includes(window.location.pathname))return;
+      navigator.serviceWorker.register('./service-worker.js',{
+        scope:'./',updateViaCache:'none'
+      }).catch(()=>{
+        // Installed offline mode is optional. Existing browser-local saving,
+        // manual backup and live page behavior remain unchanged if unavailable.
+      });
+    }
+  }
+  TnaOfflineStaticBundle.register();
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.dialog?.open)state.dialog.close();});
   window.addEventListener('vesa-preferences-change',render);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();

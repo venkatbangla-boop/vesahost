@@ -43,6 +43,7 @@ jobs:
           done
           node --check js/vesa-workspace-shell.js
           node --check service-worker.js
+          node --check apps/tna/service-worker.js
       - name: Run source, scheduling, saved-copy and sibling calculation contracts
         shell: bash
         run: |
@@ -52,6 +53,7 @@ jobs:
           node apps/tna/tests/g03-scheduling.test.js
           node apps/tna/tests/g05-storage.test.js
           node apps/tna/tests/g11-draft-undo.test.js
+          node apps/tna/tests/g11-offline-assets.test.js
           node apps/tna/tests/g08-reviewed-import.test.js
           node apps/tna/tests/g08-full-template-roundtrip.test.js
           node apps/tna/tests/g06-workspace.test.js
@@ -114,6 +116,7 @@ jobs:
           node apps/tna/tests/g11-f44-help.cjs
           node apps/tna/tests/g11-security-ui.cjs
           node apps/tna/tests/g11-draft-undo-ui.cjs
+          node apps/tna/tests/g11-offline-reopen.cjs
           node apps/tna/tests/f19-alternative-calendar-ui.cjs
           node tests/vesa-shared-shell-matrix.cjs
       - name: Verify real exported Excel workbook and browser print artifact
