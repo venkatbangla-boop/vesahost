@@ -1,5 +1,75 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+## Full-scope TNA F01–F50 **evidence reconciliation** — 2026-10-16
+
+**Audit authority:** original `docs/tna/01_MASTER_BLUEPRINT.md` (all 50 IDs), `02_DOMAIN_WORKFLOWS_DATA.md` (records, tasks, status), `03_SCHEDULING_ENGINES.md` (CAL/GPH/COM/APR/CAP/SHP/SCN/RSK/PERF), `04_UX_LOCALIZATION_REPORTS.md`, `05_ARCHITECTURE_SECURITY_INTEGRATIONS.md`, `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md`, current source/tests and [actual complete latest Actions #38882558205](https://github.com/venkatbangla-boop/vesahost/actions/runs/38882558205), code SHA `8668c75b3cf5f072cc33c65e8a19e89f6d9c7ebc`. **Doc-only acceptance reconciliation; NOT a new runtime CI run.** The historical checkbox checklist below is retained exactly as history; checked boxes there are **not** full recipient/physical/user acceptance. This matrix is the current evidence interpretation; don't recalculate unsupported percentages.
+
+**Verdict terms:** `AUTOMATED LOCAL PASS` means a bounded source/browser capability was shown in GitHub CI, **not final real-world acceptance**. `CONDITIONAL` means some locally present source/tests but independent coverage, authority or human UAT remains. `DEFERRED_BY_SCOPE` means server/provider-only implementation and its proofs are not authorized under the current GitHub-Free-only contract. All final TNA release remains `CONDITIONAL`; not `DEMO LIVE`.
+
+| ID | Latest evidence gate | Verified local surface / exact missing requirement |
+|---|---|---|
+| F01 | AUTOMATED LOCAL PASS | App Centre/login/TNA routes: G11 route Chromium; remote authorization not implied |
+| F02 | AUTOMATED LOCAL PASS | Home/recent/new/practice/reopen: G11 browser; human clarity UAT open |
+| F03 | AUTOMATED LOCAL PASS | Quick/Full/Excel entry: F06 Chromium + G08 Excel; user walkthrough open |
+| F04 | AUTOMATED LOCAL PASS | Templates and five garment Excel types: G02 + G08 template; real factory variants to review |
+| F05 | AUTOMATED LOCAL PASS | Conditional tasks/custom import: G02, G08 reviewed; factory profile sign-off open |
+| F06 | AUTOMATED LOCAL PASS | Order PO/style/ports/color-size/target: G11 F06 real browser; genuine buyer data not supplied |
+| F07 | AUTOMATED LOCAL PASS | Frozen baseline and local revision: G02, saved-copy; authority for baseline is a local claim |
+| F08 | AUTOMATED LOCAL PASS | Forward schedule: G03, R04 fixtures; only explicit confirmed factory calendars |
+| F09 | AUTOMATED LOCAL PASS | Backward/negative float: G03/R04 fixtures; real LC/production acceptance still needed |
+| F10 | AUTOMATED LOCAL PASS | Working calendar confirmation/date-only: calendar-confirmation, G03; alternate what-if calendars conditional |
+| F11 | AUTOMATED LOCAL PASS | Critical/float: G03, R04; avoid confusing overdue with critical |
+| F12 | AUTOMATED LOCAL PASS | Master/B2B LC and material source-only planning: R08; real contract/LC evidence absent |
+| F13 | CONDITIONAL | R11 local approval history PASS; buyer reviewer, signatures and waiver authority NOT independently authenticated |
+| F14 | CONDITIONAL | R07 production/readiness and G04 engine exists; real factory rates, SMV/efficiency/WIP operating evidence/UAT still absent |
+| F15 | AUTOMATED LOCAL PASS | Original/current/forecast/actual + revisions in domain and R reports; local entries not third-party proof |
+| F16 | AUTOMATED LOCAL PASS | Graph/FS-SS-FF-SF, lag, cycle checks: G03, import; G11 full graph suite not in latest CI run |
+| F17 | AUTOMATED LOCAL PASS | R03/R05 due-today/overdue/7-day action projections; delivery of alerts not claimed |
+| F18 | AUTOMATED LOCAL PASS | Risk/blocker source reasons: R06/R04; separate G11 risk fixtures not re-run by current CI |
+| F19 | CONDITIONAL | R12 base/A/B duration simulation + legacy calendar safety PASS; full source-confirmed alternate calendar/comparable days and feasible route/capacity acceptance absent |
+| F20 | AUTOMATED LOCAL PASS | R09 source-only packing/booking/quality checkpoints; real authorized shipment release NOT verified |
+| F21 | AUTOMATED LOCAL PASS | R09 lot/PO quantities, partial lots; independent actual shipped/inspection proof absent |
+| F22 | AUTOMATED LOCAL PASS | R10 one-browser-user saved portfolio and PO filters; cloud multi-tenant rollup DEFERRED_BY_SCOPE |
+| F23 | CONDITIONAL | Department tabs in workspace/G06; full departments' real workflow acceptance and physical QA absent |
+| F24 | DEFERRED_BY_SCOPE | Buyer/factory/agent server roles, rights and private-data enforcement need authorized backend; local presentation cannot imply access rights |
+| F25 | CONDITIONAL | Gantt/timeline and table source present; expert read-through, interaction/long-data accessibility needs independent UAT |
+| F26 | AUTOMATED LOCAL PASS | R01–R12 JSON/XLSX/PDF browser regressions, internal/local scope; external buyer share authorization conditional |
+| F27 | AUTOMATED LOCAL PASS | G08 staged Excel import/full-task template + typed XLSX source tested; Microsoft Excel native UI review still absent |
+| F28 | AUTOMATED LOCAL PASS | Chromium PDF/print/viewer and fallback tests; native device print/share human UAT still open |
+| F29 | AUTOMATED LOCAL PASS | Local save, autosave, browser reload/continue: G05/G11; device loss remains user responsibility |
+| F30 | AUTOMATED LOCAL PASS | Portable checksummed saved copies and version migrations: G05/G11; real archived customer copies not tested |
+| F31 | CONDITIONAL | Draft undo/revision controls marked in legacy tracker; latest CI does not independently exercise all undo/redo states |
+| F32 | AUTOMATED LOCAL PASS | Stage/owner/PO and task filters/search: G06/R10; scale/accessibility human review open |
+| F33 | CONDITIONAL | EN/BN/HI/TA and glyph/browser regressions PASS; every help/risk/validation string and native PDF Indic reading not fully human accepted |
+| F34 | AUTOMATED LOCAL PASS | Shared one-logo/header/menus/themes; 320–1440px, zoom/keyboard Chromium PASS |
+| F35 | AUTOMATED LOCAL PASS | Practice sample segregated from real saved portfolio; source/G11 browser guards |
+| F36 | CONDITIONAL | In-app due-condition engine exists; dedicated G10 notification tests not in latest CI, external email/SMS/push DEFERRED_BY_SCOPE |
+| F37 | DEFERRED_BY_SCOPE | Authenticated tenant-aware cloud storage/order authorization requires unapproved backend/identity provider |
+| F38 | DEFERRED_BY_SCOPE | True cross-device live editing/locks/conflict service requires backend |
+| F39 | DEFERRED_BY_SCOPE | Real authenticated buyer/factory approval invitations/signatures cannot be proven locally |
+| F40 | CONDITIONAL | Local manual PPM/AQL linked-record display contract exists; independent true source identity/result release unverified |
+| F41 | AUTOMATED LOCAL PASS | Sheet/header/column mapping, explicit dates, separate new draft/old same-PO preservation in G08 source and Chromium |
+| F42 | CONDITIONAL | Source offline paths and current browser PASS; large 2,000-task/performance and full offline-refresh proof not in latest Actions suite |
+| F43 | CONDITIONAL | Formula/macro/XSS/record partition tests local; real server security/remote assets assessment DEFERRED_BY_SCOPE |
+| F44 | CONDITIONAL | Localized help implementation exists; dedicated g11-f44-help.cjs not run in latest CI, genuine nontechnical UAT missing |
+| F45 | CONDITIONAL | Latest R01–R12/G08/scenario/PPM/AQL CI SUCCESS; independent human acceptance, complete feature matrix and authorized release NOT done |
+| F46 | CONDITIONAL | Local recurring rules/dedupe exist; G10 test not in latest CI; server schedules/provider delivery DEFERRED_BY_SCOPE |
+| F47 | AUTOMATED LOCAL PASS | Scenario fork/application source revisions, baseline preserved; R12 plus G08 safety tests |
+| F48 | CONDITIONAL | Local conflict checks/source capacity fixture exists; 250-order performance and shared factory line operational verification not in latest CI |
+| F49 | DEFERRED_BY_SCOPE | Versioned provider-neutral local contracts remain dormant; real external integration/API rights and end-to-end proof need provider |
+| F50 | CONDITIONAL | Local revisions/audit/saved-copy histories exist; centralized retention, rights, audited exports need backend and policy approval |
+
+### Coverage and next engineering gate
+
+**Latest Actions #38882558205 DID run:** parser, G02 domain, calendar confirmation, G03 scheduler, G05 storage, both G08 import/template, G06 workspace, legacy G08 scenarios + new calendar safety, G07 reports, R02–R12 dedicated source, G11 garment scenarios and migration, frozen PPM 168/AQL 24/sampling/shared shell, Chromium F06/localization/unified shell/routes/real G08 Excel upload/PDF/print. **It did NOT rerun all separately present older suites** such as `g04-operations.test.js`, `g11-graph-fixtures.test.js`, `g11-risk-fixtures.test.js`, `g11-portfolio-performance.test.js`, `g09-backend-contracts.test.js`, `g10-integration-references.test.js`, `g10-notification-rules.test.js`, `g11-security-audit.test.js`, `g11-git-history-safety.test.js`, `g12-local-handoff.test.js`, or separate G10/Help/Security browser tests. These files existing in the repository are **not** proof of their latest run passing. `g05-ui.test.js` references an obsolete pre-G08 preview implementation and must be audited/updated against the new import wizard before becoming a required CI gate.
+
+**Matrix contract drift:** Old G08 fixture assumed an entered alternate holiday became an effective scenario calendar; new confirmed [Actions #38882558205] corrects it to review-only, preserving source while preventing false gain/date overrun. Current `scenarios.js` intentionally does not simulate an unconfirmed alternate calendar. This is *not* F19 full acceptance. No normal user-entered calendar/source is automatically verified. `G09` remote-provider sections remain `DEFERRED_BY_SCOPE`, including security claims; F24/F37/F38/F39/F49 cannot be counted as accepted free-only features.
+
+**PRECISE NEXT ACTION (deterministic and executable):** Scope-lock a **regression coverage reconciliation patch**: extend the existing feature-branch GitHub Actions workflow to run the directly audited, currently unrun pure local tests (G04 operations; G11 graph/risk/performance; G10 reference/notification; G12 local handoff) without expanding production app code. Check their age-dependent assumptions first, and preserve old proofs. Rerun full TNA/PPM/AQL/real Chromium suite. Track any failed contract as an actual gap (do not mark PASS by rewriting tests to an unsafe expectation). Then add independently useful G10/Help/Security browser contracts in a separate controlled test group. After test coverage, implement real confirmed-alternate-calendar scenario handling and then request only genuinely necessary garment merchandiser/factory UAT/real buyer source evidence. Never mark TNA complete from the report catalogue alone.
+
+---
+
+
 ## Recovery Scenario calendar date-overflow protection — verified 2026-10-16
 
 - **Gate:** Targeted legacy scenario/calendar safety **DEVELOPMENT VERIFIED**, full TNA **ACTIVE / CONDITIONAL**, NOT DEMO LIVE.
