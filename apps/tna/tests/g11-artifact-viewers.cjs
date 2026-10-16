@@ -979,6 +979,102 @@ async function run(){
     assert.equal(JSON.stringify(r12SavedAfter),JSON.stringify(stored.records[0].plan));
     console.log('TNA R12 Chromium PASS: A/B dialog, unconfirmed calendar blocks false forecast, strict confirmed-calendar runtime A/B, real XLSX/JSON/PDF viewer, 390px scroll and print, external model blocked, local source unchanged.');
 
+
+    // G08: Test real two-sheet Excel bytes, interactive mapping, explicit
+    // confirmation, same-PO creation as a distinct record, reload and recovery.
+    await page.locator('#tnaDialog .tna-dialog-head button').click();
+    const nav=page.locator('[data-vesa-mobile-menu]');
+    if(await nav.isVisible())await nav.click();
+    await page.locator('[data-vesa-menu="File"]').click();
+    await page.locator('[data-menu-action="Import Excel TNA"]').click();
+    await page.locator('#tnaImportFile').waitFor();
+    const sheetSource=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(sheetSource,XLSX.utils.aoa_to_sheet([
+      ['Buyer','Factory','Style','PO','Quantity','Buyer Required Ex-Factory','Order Confirmed On'],
+      ['Synthetic Migration Buyer','Synthetic Migration Factory','STYLE-G11-VIEW',
+        'PO-G11-VIEW',2400,'2026-12-20','2026-10-01']]),'Order Summary');
+    XLSX.utils.book_append_sheet(sheetSource,XLSX.utils.aoa_to_sheet([
+      ['Ref','Activity','Owner','Current','Predecessor','Duration','Status','Notes'],
+      ['O01','Review order','merchant','2026-10-12','',2,'not-started','Initial source'],
+      ['O02','Confirm order','factory','2026-10-14','O01',3,'in-progress','Local review only']
+    ]),'Master TNA');
+    const sheetBytes=XLSX.write(sheetSource,{type:'buffer',bookType:'xlsx'});
+    await page.locator('#tnaImportFile').setInputFiles({
+      name:'synthetic-g08.xlsx',
+      mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      buffer:sheetBytes
+    });
+    await page.locator('#tnaImportReadFile').click();
+    await page.locator('#tnaImpTaskSheet').waitFor();
+    assert.equal(await page.locator('#tnaImpOrderSheet').inputValue(),'0');
+    assert.equal(await page.locator('#tnaImpTaskSheet').inputValue(),'1');
+    assert((await page.locator('#tnaImportReview').innerText()).includes(
+      'Similar saved PO/style exists'),'Browser must warn on a matching saved PO.');
+    assert(await page.locator('#tnaImpCreate').isDisabled());
+    await page.locator('#tnaImpDependency').selectOption('source');
+    assert((await page.locator('#tnaImportReview').innerText()).includes(
+      'Ready to create a NEW draft'));
+    assert(await page.locator('#tnaImpCreate').isDisabled());
+    await page.setViewportSize({width:390,height:844});
+    const importWidth=await page.evaluate(()=>({
+      doc:document.documentElement.scrollWidth,
+      screen:document.documentElement.clientWidth,
+      inside:document.querySelector('.tna-import-flow')?.scrollWidth
+    }));
+    assert(importWidth.doc<=importWidth.screen+1,'G08 mobile page must not clip.');
+    await page.setViewportSize({width:1280,height:900});
+    await page.locator('#tnaImpConfirm').check();
+    assert(await page.locator('#tnaImpCreate').isEnabled());
+    await page.locator('#tnaImpCreate').click();
+    await page.getByText('New TNA draft saved locally. Existing saved orders were not changed.').waitFor();
+    const afterG08=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),
+      'vesa.tna360.records.'+session.userKey);
+    assert.equal(afterG08.records.length,2);
+    const newPlan=afterG08.records.find(r=>r.recordId!==stored.records[0].recordId).plan;
+    assert.equal(newPlan.recordStatus,'draft');
+    assert.equal(newPlan.revision,0);
+    assert.equal(newPlan.mode,'local');
+    assert.equal(newPlan.importReview.sourceType,'xlsx');
+    assert.equal(newPlan.importReview.orderSheet,'Order Summary');
+    assert.equal(newPlan.importReview.activitySheet,'Master TNA');
+    assert.equal(newPlan.importReview.matchedTaskRows,2);
+    assert.equal(newPlan.edges.length,1);
+    assert.equal(newPlan.order.poNumbers[0],'PO-G11-VIEW');
+    assert.equal(newPlan.baselineSnapshots.length,0);
+    assert.equal(newPlan.approvals.length,0);
+    assert.equal(newPlan.tasks.find(t=>t.templateRef==='O02').dates.currentTargetFinish,'2026-10-14');
+    assert.equal(JSON.stringify(afterG08.records.find(r=>r.recordId===stored.records[0].recordId).plan),
+      JSON.stringify(stored.records[0].plan),
+      'G08 must not replace the earlier saved record with the same PO/style.');
+    await page.locator('#tnaDialog .tna-dialog-head button').click();
+    await page.reload({waitUntil:'domcontentloaded'});
+    await page.locator('[data-action="continue"]').click();
+    await page.locator('#tnaDialog .tna-dialog-head button').click();
+    const reopened=await page.locator('[aria-label="Order master"]').innerText();
+    assert(reopened.includes('STYLE-G11-VIEW'));
+    const afterReopen=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).records[0].plan,
+      'vesa.tna360.records.'+session.userKey);
+    assert.equal(afterReopen.recordId,newPlan.recordId);
+    assert.equal(afterReopen.importReview.activitySheet,'Master TNA');
+    assert.equal(afterReopen.baselineSnapshots.length,0);
+    // Bad workbook source must not enable a stale prior Create Draft action.
+    await page.locator('[data-vesa-menu="File"]').click();
+    await page.locator('[data-menu-action="Import Excel TNA"]').click();
+    const unsafe=XLSX.read(sheetBytes,{type:'buffer'});
+    unsafe.Sheets['Order Summary'].B2.f='HYPERLINK("bad")';
+    await page.locator('#tnaImportFile').setInputFiles({
+      name:'bad-g08.xlsx',
+      mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      buffer:XLSX.write(unsafe,{type:'buffer',bookType:'xlsx'})
+    });
+    await page.locator('#tnaImportReadFile').click();
+    assert((await page.locator('#tnaImportReview').innerText()).includes('Formula'));
+    assert.equal(await page.locator('#tnaImpCreate').count(),0);
+    const afterUnsafe=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).records.length,
+      'vesa.tna360.records.'+session.userKey);
+    assert.equal(afterUnsafe,2,'Rejected spreadsheet never saved a new record.');
+    console.log('TNA G08 Chromium PASS: 2-sheet real XLSX, mapping/date/dependency review, mobile 390px, explicit checkbox/new draft with matching PO, reload, original immutability and formula workbook fail-closed.');
+
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}

@@ -383,3 +383,34 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
   body.tna-printing-report .tna-r12-notice{font-size:8pt!important;color:#111!important}
   body.tna-printing-report .tna-r12-report h3{page-break-after:avoid!important}
 }
+
+
+/* G08 reviewed import remains inside the single VESA workspace dialog. */
+.tna-import-flow{display:grid;gap:11px;min-width:0;max-width:100%}
+.tna-import-flow>label{display:grid;gap:5px;min-width:0}
+.tna-import-flow input[type=file],.tna-import-flow textarea{max-width:100%;min-width:0}
+.tna-import-settings{border:1px solid var(--line,#d5deea);border-radius:10px;
+  padding:10px;display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.tna-import-settings h3,.tna-import-settings .tna-note{grid-column:1/-1;margin:0}
+.tna-import-settings label,.tna-import-map label,.tna-import-unmatched label{display:grid;gap:4px;min-width:0;font-size:12px}
+.tna-import-settings select,.tna-import-map select,.tna-import-unmatched select{min-width:0;max-width:100%;width:100%}
+.tna-import-map-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tna-import-map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;
+  padding:10px;min-width:0;margin:0;border:1px solid var(--line,#d5deea);border-radius:9px}
+.tna-import-map legend,.tna-import-unmatched legend{font-weight:700;font-size:13px}
+.tna-import-unmatched{display:grid;gap:9px;border:1px solid var(--line,#d5deea);border-radius:9px;
+  min-width:0;padding:10px}
+.tna-import-metrics{display:flex;gap:8px;flex-wrap:wrap}
+.tna-import-metrics span{border:1px solid var(--line,#d5deea);border-radius:5px;padding:5px 8px;font-size:12px}
+.tna-import-scroll{max-width:100%;overflow-x:auto}
+.tna-import-scroll table{border-collapse:collapse;min-width:500px;width:100%}
+.tna-import-scroll th,.tna-import-scroll td{border:1px solid var(--line,#d5deea);padding:5px;
+  text-align:left;font-size:11px;overflow-wrap:anywhere}
+.tna-import-error,.tna-import-ready,.tna-import-warnings,.tna-import-errors{font-size:12px;line-height:1.45}
+.tna-import-error,.tna-import-errors{font-weight:650}
+.tna-import-confirm{display:flex;align-items:flex-start;gap:10px;padding:9px;border:1px solid var(--line,#d5deea);border-radius:7px}
+.tna-import-confirm input{margin-top:4px;flex:none}
+#tnaImportReview{display:grid;gap:8px;min-width:0}
+#tnaImportReview h3,#tnaImportReview h4{margin:4px 0}
+#tnaImpCreate:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:760px){.tna-import-settings,.tna-import-map-grid,.tna-import-map{grid-template-columns:1fr}}

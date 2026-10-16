@@ -61,6 +61,7 @@
   const scheduling=globalThis.VesaTnaScheduling;
   const operations=globalThis.VesaTnaOperations;
   const storage=globalThis.VesaTnaStorage;
+  const imports=globalThis.VesaTnaImportReview;
   const reports=globalThis.VesaTnaReports;
   const scenarios=globalThis.VesaTnaScenarios;
   const integrations=globalThis.VesaTnaIntegrationReferences;
@@ -254,7 +255,7 @@
   function openHelp(action){const id=String(action).replace(/^help-/,'');const topic=(HELP_TOPICS[state.language]||HELP_TOPICS.en)[id]||HELP_TOPICS.en[id];if(!topic)return;openDialog(topic.title,`<article data-help-topic="${esc(id)}"><p>${esc(topic.intro)}</p><ol>${topic.items.map(item=>`<li>${esc(item)}</li>`).join('')}</ol></article>`);}
   function openMenu(name){const help=HELP_TOPICS[state.language]||HELP_TOPICS.en;const items=name==='help'?Object.entries(help).map(([id,item])=>({action:`help-${id}`,label:item.label})):(MENUS[name]||[]).map(item=>({action:item,label:item==='Factory Working Calendar'?TnaFactoryCalendarEditor.copy(state.language).title:item}));const note=name==='file'?'Save, reopen and protected backup are available here. Excel preview rejects macros and warns about formulas.':name==='help'?(help.how?.intro||HELP_TOPICS.en.how.intro):text('unavailable');openDialog(text('menuTitle')+' · '+text(name),`<div class="menu-grid">${items.map(item=>`<button class="tna-btn secondary" type="button" data-menu-action="${esc(item.action)}">${esc(item.label)}</button>`).join('')}</div><p class="tna-note">${esc(note)}</p>`);document.querySelectorAll('[data-menu-action]').forEach(btn=>btn.onclick=()=>{const action=btn.dataset.menuAction;if(action.startsWith('help-'))return openHelp(action);if(action==='New TNA')return openWizard('quick');if(action==='Open Saved TNA')return openSavedList();if(action==='Save Now')return saveNow();if(action==='Make Another Copy'||action==='Download Saved Copy')return downloadCopy();if(action==='Open Saved Copy')return openSavedCopyDialog();if(action==='Import Excel TNA')return openImportPreview();if(action==='Factory Working Calendar')return TnaFactoryCalendarEditor.open();if(action==='Add Activity')return openCustomTask();if(action==='Production Capacity')return openCapacityEntry();if(action==='Shipment Lots')return openShipmentLotEntry();if(action==='Linked Records')return openLinkedRecords();if(action==='Recovery Scenarios'){document.getElementById('tnaScenarioForm')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return state.dialog?.close();}if(action==='Offline Work')return openOfflineWork();if(['Prepare Report','Download Report','Print Report','Share Report'].includes(action))return openReportPanel(action);return openDialog(action,`<p>${esc(text('unavailable'))}</p>`);});}
   function openAction(action){if(action==='new')return openWizard('quick');if(action==='practice')return createPractice();if(action==='save')return saveNow();if(action==='continue')return continueLast();if(action==='open'||action==='orders')return openSavedList();if(action==='copy')return openSavedCopyDialog();if(action==='download')return downloadCopy();openDialog(text(action)||action,`<p>${esc(text(action+'Text')||text('unavailable'))}</p><p class="tna-note">${esc(text('unavailable'))}</p>`);}
-  function openWizard(mode){const isFull=mode==='full';const body=`<form class="tna-wizard" id="tnaWizard">
+  function openWizard(mode){if(mode==='excel')return openImportPreview();const isFull=mode==='full';const body=`<form class="tna-wizard" id="tnaWizard">
       <div class="tna-tabs"><button type="button" data-wizard-tab="quick" class="${mode==='quick'?'active':''}">${esc(text('quick'))}</button><button type="button" data-wizard-tab="full" class="${mode==='full'?'active':''}">${esc(text('full'))}</button><button type="button" data-wizard-tab="excel" class="${mode==='excel'?'active':''}">${esc(text('excel'))}</button></div>
       ${mode==='excel'?excelEntry():standardEntry(isFull)}
       <p class="tna-note">${esc(mode==='excel'?'Review the matched columns before creating an order. Formula cells are flagged and no existing order is overwritten.':'Missing buyer, factory, style, PO, quantity or ex-factory date will stay marked as Needs Information. Full entry accepts one Color | Size | Quantity row per line. No dates, ports or quantities are guessed.')}</p>
@@ -1218,9 +1219,245 @@
       '</option><option value="factory">'+esc(r12Labels.modes[2])+'</option></select></label>'+
       r12Card('A')+r12Card('B')+'</div>';
     openDialog('Reports',`<div class="tna-form-grid"><label><span>Report type</span><select id="tnaReportType">${reportOptions()}</select></label><label><span>Language</span><input readonly value="${esc(state.language)}"></label></div>${productionControls}${portfolioControls}${approvalControls}${r12Controls}<div class="menu-grid"><button class="tna-btn" type="button" data-report-action="preview">Preview report</button><button class="tna-btn secondary" type="button" data-report-action="download">Download report data</button><button class="tna-btn secondary" type="button" data-report-action="excel">Download report Excel</button><button class="tna-btn secondary" type="button" data-report-action="print">Print report</button><button class="tna-btn secondary" type="button" data-report-action="share">Share fallback</button></div><div id="tnaReportPreview">${reportPreviewHtml(reportModel(first.id))}</div>`);const update=()=>{document.getElementById('tnaReportPreview').innerHTML=reportPreviewHtml(reportModel(document.getElementById('tnaReportType').value));};document.getElementById('tnaReportType').onchange=()=>{const selected=document.getElementById('tnaReportType').value;document.getElementById('tnaR07Controls').hidden=selected!=='R07';document.getElementById('tnaR10Controls').hidden=selected!=='R10';document.getElementById('tnaR11Controls').hidden=selected!=='R11';document.getElementById('tnaR12Controls').hidden=selected!=='R12';update();};for(const id of ['tnaR07AudienceMode','tnaR07Reviewed','tnaR07Source']){const control=document.getElementById(id);control.addEventListener(id==='tnaR07Source'?'input':'change',update);}for(const id of ['tnaR10Buyer','tnaR10Factory','tnaR10Po'])document.getElementById(id).addEventListener('change',update);document.getElementById('tnaR11Audience').addEventListener('change',update);for(const slot of ['A','B']){const selector=document.getElementById('tnaR12Select'+slot),draft=document.getElementById('tnaR12Draft'+slot);selector.addEventListener('change',()=>{draft.hidden=selector.value!=='draft';update();});for(const suffix of ['Task','Duration']){const control=document.getElementById('tnaR12'+suffix+slot);control.addEventListener(suffix==='Duration'?'input':'change',update);}}document.getElementById('tnaR12Audience').addEventListener('change',update);document.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>{const model=reportModel(document.getElementById('tnaReportType').value);if(btn.dataset.reportAction==='preview')return update();if(btn.dataset.reportAction==='print'){update();markReportPrint();return window.print();}if(btn.dataset.reportAction==='share')return openDialog('Share fallback',`<p>${esc(model.labels.shareFallback)}</p><p>A shared link is unavailable in local mode. Download the report and share it through an approved channel.</p>`);if(btn.dataset.reportAction==='excel'){try{const data=storage.exportReportWorkbook(model);const blob=new Blob([data],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`vesa-tna-${model.reportId}-${model.order.style}.xlsx`.replace(/[^a-z0-9_.-]+/gi,'-');document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);return;}catch(error){return openDialog('Download report Excel',`<p>${esc(error.message)}</p>`);}}const blob=new Blob([JSON.stringify(model,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`vesa-tna-${model.reportId}-${model.order.style}.json`.replace(/[^a-z0-9_.-]+/gi,'-');document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);});}
-  function openImportPreview(){openDialog('Import Excel TNA',`<p>${esc(text('xlsxBlocked'))}</p><input id="tnaWorkbookFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv,.tsv,text/csv,text/tab-separated-values"><label class="tna-wide"><span>Pasted table preview</span><textarea id="tnaImportText" rows="8" placeholder="Buyer,Factory,Style,PO,Quantity,Buyer Required Ex-Factory"></textarea></label><div class="menu-grid"><button class="tna-btn" type="button" data-import-preview="text">Preview pasted text</button><button class="tna-btn secondary" type="button" data-import-preview="file">Preview selected file</button></div><div id="tnaImportPreviewResult"></div>`);document.querySelector('[data-import-preview="text"]').onclick=()=>renderImportPreview(storage.importPreview(document.getElementById('tnaImportText').value));document.querySelector('[data-import-preview="file"]').onclick=()=>{const file=document.getElementById('tnaWorkbookFile').files?.[0];if(!file)return renderImportError('Select an Excel workbook or pasted table first.');const lower=file.name.toLowerCase();const reader=new FileReader();reader.onerror=()=>renderImportError('The selected file could not be read. Choose the original file and try again.');if(lower.endsWith('.xlsx')){reader.onload=()=>{try{renderImportPreview(storage.importWorkbookPreview(reader.result,file.name));}catch(error){renderImportError(error.message);}};reader.readAsArrayBuffer(file);return;}if(lower.endsWith('.xlsm'))return renderImportError('Excel workbooks with macros are not accepted. Save a clean workbook without macros and try again.');reader.onload=()=>{try{renderImportPreview(storage.importPreview(String(reader.result||'')));}catch(error){renderImportError(error.message);}};reader.readAsText(file);};}
-  function renderImportPreview(preview){document.getElementById('tnaImportPreviewResult').innerHTML=`<h3>${esc(text('importPreview'))}</h3>${preview.workbook?`<p>Workbook sheet: ${esc(preview.workbook.sheetName)} · rows: ${esc(preview.workbook.rowCount)} · parser: ${esc(preview.workbook.parser)}</p>`:''}<p>Headers: ${esc(preview.headers.join(' · ')||'none')}</p><p>Rows previewed: ${esc(preview.rows.length)}</p>${preview.warnings.length?`<ul>${preview.warnings.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:'<p>No import warnings found in the preview.</p>'}<p class="tna-note">Preview only. Creating or updating production TNAs from spreadsheets requires a reviewed mapping step and does not overwrite existing TNA records.</p>`;}
-  function renderImportError(message){document.getElementById('tnaImportPreviewResult').innerHTML=`<p>${esc(message)}</p>`;}
+
+  /**
+   * G08 review workflow. Source and mapping live only in this dialog.
+   * Reading, changing or previewing a workbook never touches a saved order.
+   * The user's checked Create New Draft command is the only persistence path.
+   */
+  class TnaG08ImportWizard {
+    constructor(){
+      this.source=null;this.selection=null;this.reviewed=null;this.overrides={};
+      this.copy=imports?.labels(state.language)||{};
+    }
+    open(){
+      if(!imports)return openDialog('Import Excel TNA',
+        '<p>Spreadsheet review is unavailable; saved orders were not changed.</p>');
+      const l=this.copy;
+      const html='<section class="tna-import-flow" aria-label="'+esc(l.map)+'">'+
+        '<p class="tna-note">'+esc(l.intro)+'</p>'+
+        '<label><span>Choose Excel / CSV / TSV</span><input id="tnaImportFile" type="file" '+
+        'accept=".xlsx,.csv,.tsv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/tab-separated-values"></label>'+
+        '<label><span>Pasted CSV / tab-separated table</span><textarea id="tnaImportText" rows="5" '+
+        'placeholder="Buyer,Factory,Style,PO,Quantity,Buyer Required Ex-Factory"></textarea></label>'+
+        '<div class="menu-grid"><button type="button" class="tna-btn secondary" id="tnaImportReadFile">Review selected file</button>'+
+        '<button type="button" class="tna-btn secondary" id="tnaImportReadText">Review pasted table</button></div>'+
+        '<div id="tnaImportSetup"></div><div id="tnaImportReview" role="status" aria-live="polite"></div></section>';
+      openDialog('Import Excel TNA',html);
+      document.getElementById('tnaImportReadText').onclick=()=>{
+        try{this.load(imports.parseText(document.getElementById('tnaImportText').value,'Pasted table'));}
+        catch(error){this.error(error.message);}
+      };
+      document.getElementById('tnaImportReadFile').onclick=()=>{
+        const file=document.getElementById('tnaImportFile')?.files?.[0];
+        if(!file)return this.error('Choose a file from this computer first.');
+        this.source=null;this.reviewed=null;
+        document.getElementById('tnaImportSetup').textContent='';
+        document.getElementById('tnaImportReview').textContent='';
+        const reader=new FileReader();
+        reader.onerror=()=>this.error('Could not read the file; choose a clean copy.');
+        const excel=file.name.toLowerCase().endsWith('.xlsx');
+        if(!excel&&!/\.(csv|tsv)$/i.test(file.name))
+          return this.error('Choose a macro-free .xlsx, .csv or .tsv file.');
+        reader.onload=()=>{
+          try{this.load(excel?imports.parseWorkbook(reader.result,file.name):
+            imports.parseText(String(reader.result||''),file.name));}
+          catch(error){this.error(error.message);}
+        };
+        if(excel)reader.readAsArrayBuffer(file);else reader.readAsText(file);
+      };
+    }
+    error(message){
+      this.reviewed=null;
+      const element=document.getElementById('tnaImportReview');
+      if(element)element.innerHTML='<p role="alert" class="tna-import-error">'+
+        esc(message||this.copy.errors)+'</p>';
+    }
+    /** Load source into memory and initialize suggested headings only. */
+    load(source){
+      this.source=source;this.selection=imports.suggested(source);
+      this.overrides={};this.reviewed=null;this.settings();
+    }
+    optionsForRows(sheetIndex,selected){
+      const sheet=this.source.sheets[sheetIndex];
+      return sheet?Array.from({length:Math.min(10,sheet.rows.length)},(_,i)=>
+        '<option value="'+(i+1)+'"'+(selected===i+1?' selected':'')+'>'+
+        (i+1)+'</option>').join(''):'';
+    }
+    optionList(options,selected){
+      return options.map(pair=>'<option value="'+esc(pair[0])+'"'+
+        (String(pair[0])===String(selected)?' selected':'')+'>'+
+        esc(pair[1])+'</option>').join('');
+    }
+    settings(){
+      if(!this.source)return;
+      const l=this.copy,select=(id,title,values,chosen)=>
+        '<label><span>'+esc(title)+'</span><select id="'+esc(id)+'">'+
+        this.optionList(values,chosen)+'</select></label>';
+      const sourceOptions=this.source.sheets.map((sheet,i)=>[String(i),sheet.name]),
+        taskOptions=[['-1',l.none],...sourceOptions],
+        templateOptions=Object.values(domain.TEMPLATE_PROFILES).map(p=>[p.id,p.name]);
+      const html='<div class="tna-import-settings"><h3>'+esc(l.summary)+': '+
+        esc(this.source.fileName)+'</h3><p class="tna-note">'+esc(l.loaded)+
+        ' · '+esc(l.note)+'</p>'+
+        select('tnaImpOrderSheet',l.sheet,sourceOptions,this.selection.orderSheet)+
+        '<label><span>'+esc(l.row)+' ('+esc(l.order)+')</span><select id="tnaImpOrderHeader">'+
+        this.optionsForRows(this.selection.orderSheet,this.selection.orderHeaderRow)+'</select></label>'+
+        select('tnaImpTaskSheet',l.tasksheet,taskOptions,this.selection.taskSheet)+
+        '<label><span>'+esc(l.row)+' ('+esc(l.tasks)+')</span><select id="tnaImpTaskHeader">'+
+        this.optionsForRows(this.selection.taskSheet,this.selection.taskHeaderRow)+'</select></label>'+
+        select('tnaImpTemplate',l.template,templateOptions,'knit')+
+        select('tnaImpFormat',l.format,[['iso','YYYY-MM-DD'],['dmy','DD/MM/YYYY'],
+          ['mdy','MM/DD/YYYY'],['excel','Excel numeric date']],'iso')+
+        select('tnaImpUnit',l.unit,[['pcs','pcs'],['sets','sets'],['dozen','dozen'],
+          ['kg','kg'],['meters','meters'],['yards','yards']],'pcs')+
+        select('tnaImpBasis',l.basis,[['working','Working days'],
+          ['calendar','Calendar days']],'working')+
+        select('tnaImpDependency',l.dep,[['','Select dependency handling'],
+          ['template',l.templateDep],['source',l.sourceDep],
+          ['none',l.noDep]],'')+
+        select('tnaImpRelation',l.relation,[['FS','Finish to Start'],
+          ['SS','Start to Start'],['FF','Finish to Finish'],
+          ['SF','Start to Finish']],'FS')+
+        '</div><div id="tnaImportColumns"></div>';
+      document.getElementById('tnaImportSetup').innerHTML=html;
+      document.getElementById('tnaImpOrderSheet').onchange=()=>this.updateHeaders();
+      document.getElementById('tnaImpTaskSheet').onchange=()=>this.updateHeaders();
+      document.getElementById('tnaImpOrderHeader').onchange=()=>this.updateHeaders();
+      document.getElementById('tnaImpTaskHeader').onchange=()=>this.updateHeaders();
+      for(const id of ['tnaImpTemplate','tnaImpFormat','tnaImpUnit',
+        'tnaImpBasis','tnaImpDependency','tnaImpRelation'])
+        document.getElementById(id).onchange=()=>this.review();
+      this.updateHeaders();
+    }
+    /** Header row changes replace suggested mappings; no source records change. */
+    updateHeaders(){
+      const oi=Number(document.getElementById('tnaImpOrderSheet').value),
+        ti=Number(document.getElementById('tnaImpTaskSheet').value),
+        oh=document.getElementById('tnaImpOrderHeader'),
+        th=document.getElementById('tnaImpTaskHeader');
+      const changingOrder=this.selection.orderSheet!==oi;
+      const changingTask=this.selection.taskSheet!==ti;
+      this.selection.orderSheet=oi;this.selection.taskSheet=ti;
+      this.selection.orderHeaderRow=changingOrder?1:Number(oh.value)||1;
+      this.selection.taskHeaderRow=changingTask?1:Number(th.value)||1;
+      oh.innerHTML=this.optionsForRows(oi,this.selection.orderHeaderRow);
+      th.innerHTML=this.optionsForRows(ti,this.selection.taskHeaderRow);
+      const orderHeaders=imports.headings(this.source.sheets[oi],this.selection.orderHeaderRow);
+      const taskHeaders=ti>=0?imports.headings(this.source.sheets[ti],
+        this.selection.taskHeaderRow):[];
+      this.selection.orderMap=imports.mapping(orderHeaders,imports.ORDER_KEYS);
+      this.selection.taskMap=ti>=0?imports.mapping(taskHeaders,imports.TASK_KEYS):{};
+      this.overrides={};this.mapping();
+    }
+    /** Human-editable column mapping with no automatic imported status grants. */
+    mapping(){
+      const l=this.copy;
+      const fields=(keys,headers,kind,map)=>
+        '<fieldset class="tna-import-map"><legend>'+esc(kind==='order'?l.order:l.tasks)+
+        '</legend>'+keys.map(key=>{
+          const choices=[['-1',l.unmapped],...headers.map((name,i)=>
+            [String(i),(i+1)+'. '+(name||'(blank column)')])];
+          return '<label><span>'+esc(key)+'</span><select data-imp-map="'+
+            esc(kind)+'" data-imp-key="'+esc(key)+'">'+
+            this.optionList(choices,map[key])+'</select></label>';
+        }).join('')+'</fieldset>';
+      const oh=imports.headings(this.source.sheets[this.selection.orderSheet],
+        this.selection.orderHeaderRow);
+      const th=this.selection.taskSheet>=0?imports.headings(
+        this.source.sheets[this.selection.taskSheet],this.selection.taskHeaderRow):[];
+      document.getElementById('tnaImportColumns').innerHTML='<h3>'+esc(l.map)+
+        '</h3><div class="tna-import-map-grid">'+
+        fields(imports.ORDER_KEYS,oh,'order',this.selection.orderMap)+
+        (this.selection.taskSheet>=0?fields(imports.TASK_KEYS,th,'task',
+          this.selection.taskMap):'')+
+        '</div><button type="button" class="tna-btn secondary" id="tnaImpRefresh">'+
+        esc(l.review)+'</button>';
+      document.querySelectorAll('[data-imp-map]').forEach(control=>control.onchange=()=>{
+        const name=control.dataset.impMap==='order'?'orderMap':'taskMap';
+        this.selection[name][control.dataset.impKey]=Number(control.value);
+        this.overrides={};this.review();
+      });
+      document.getElementById('tnaImpRefresh').onclick=()=>this.review();
+      this.review();
+    }
+    values(){
+      return {...this.selection,
+        templateId:document.getElementById('tnaImpTemplate').value,
+        dateFormat:document.getElementById('tnaImpFormat').value,
+        unit:document.getElementById('tnaImpUnit').value,
+        durationBasis:document.getElementById('tnaImpBasis').value,
+        dependencyMode:document.getElementById('tnaImpDependency').value,
+        relation:document.getElementById('tnaImpRelation').value,
+        taskOverrides:{...this.overrides}};
+    }
+    /** Re-evaluate source against existing local PO/Style before each confirmation. */
+    review(){
+      if(!this.source)return;
+      try{
+        this.reviewed=imports.review(this.source,this.values(),{
+          ownerUserId:userKey(),existing:storage?.listPlans(userKey())||[]});
+        this.showReview();
+      }catch(error){this.error(error.message);}
+    }
+    showReview(){
+      const r=this.reviewed,l=this.copy;
+      if(!r)return;
+      const list=(items,klass)=>items.length?'<ul class="'+klass+'">'+
+        items.slice(0,40).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'';
+      const unmatched=r.unmatched.length?'<fieldset class="tna-import-unmatched"><legend>'+
+        esc(l.unmatched)+'</legend>'+r.unmatched.map(item=>{
+          const chosen=this.overrides[String(item.row)]||'';
+          const choices=[['',l.reviewNeeded],['ignore',l.skip],['custom',l.custom],
+            ...r.plan.tasks.map(t=>['ref:'+t.templateRef,t.templateRef+' · '+t.title])];
+          return '<label><span>'+esc(l.row)+' '+item.row+' · '+
+            esc(item.ref||item.title)+'</span><select data-imp-unmatched="'+item.row+'">'+
+            this.optionList(choices,chosen)+'</select></label>';
+        }).join('')+'</fieldset>':'';
+      const p=r.plan,head='<h3>'+esc(l.summary)+'</h3><p class="tna-note">'+
+        esc((p?.order?.buyerName||'Needs Information')+' · '+
+          (p?.order?.styles?.[0]?.styleNo||'Style missing')+' · '+
+          (p?.order?.poNumbers?.[0]||'PO missing'))+'</p>'+
+        '<div class="tna-import-metrics"><span>'+esc(l.rows)+': '+
+          esc(r.summary?.sourceRows||0)+'</span><span>'+esc(l.matched)+': '+
+          esc(r.summary?.matched||0)+'</span><span>'+esc(l.unmatchedCount)+': '+
+          esc(r.unmatched.length)+'</span><span>'+esc(l.existing)+': '+
+          esc(r.existingCount||0)+'</span></div>';
+      const proof=r.rowProof.slice(0,16).map(item=>'<tr><td>'+item.row+
+        '</td><td>'+esc(item.sourceRef)+'</td><td>'+esc(item.targetRef||'—')+
+        '</td><td>'+esc(item.status)+'</td></tr>').join('');
+      const table=proof?'<div class="tna-import-scroll"><table><thead><tr>'+
+        '<th>'+esc(l.row)+'</th><th>'+esc(l.from)+'</th><th>'+esc(l.mapped)+
+        '</th><th>Status</th></tr></thead><tbody>'+proof+'</tbody></table></div>':'';
+      const button='<label class="tna-import-confirm"><input type="checkbox" id="tnaImpConfirm">'+
+        '<span>'+esc(l.accept)+'</span></label><button type="button" class="tna-btn"'+
+        ' id="tnaImpCreate" disabled>'+esc(l.create)+'</button>';
+      document.getElementById('tnaImportReview').innerHTML=head+
+        (r.ok?'<p class="tna-import-ready">'+esc(l.ready)+'</p>':
+          '<p class="tna-import-error">'+esc(l.fail)+'</p>')+
+        '<h4>'+esc(l.issues)+'</h4>'+list(r.errors,'tna-import-errors')+
+        '<h4>'+esc(l.warnings)+'</h4>'+list(r.warnings,'tna-import-warnings')+
+        unmatched+table+button+'<p class="tna-note">'+esc(l.note)+'</p>';
+      document.querySelectorAll('[data-imp-unmatched]').forEach(control=>control.onchange=()=>{
+        this.overrides[control.dataset.impUnmatched]=control.value;this.review();
+      });
+      const check=document.getElementById('tnaImpConfirm'),
+        action=document.getElementById('tnaImpCreate');
+      check.onchange=()=>action.disabled=!r.ok||!check.checked;
+      action.onclick=()=>{
+        if(!r.ok||!check.checked)return this.error(l.fail);
+        try{
+          const done=imports.commitNewDraft(r,{confirm:true,user:userKey()});
+          state.currentPlan=done.plan;state.scenarioPreview=null;state.scenarioDraft=null;
+          state.dialog?.close();render();
+          openDialog(l.create,'<p>'+esc(l.applied)+'</p><p><b>'+
+            esc(done.plan.order.styles[0]?.styleNo||'New draft')+'</b> · '+
+            esc(done.plan.order.poNumbers[0]||'PO not entered')+'</p>');
+        }catch(error){this.error(error.message);}
+      };
+    }
+  }
+  function openImportPreview(){new TnaG08ImportWizard().open();}
   function saveNow(){if(!state.currentPlan)return openDialog('Save TNA','<p>Create or open a TNA draft before saving.</p>');if(state.currentPlan.mode==='practice')return openDialog('Save TNA','<p>Practice example is isolated and cannot be saved into real production records.</p>');try{const saved=storage.savePlan(state.currentPlan,userKey());render();openDialog('Save TNA',`<p>Saved locally in this browser.</p><p><b>${esc(saved.style||'Untitled TNA')}</b> · ${esc(saved.po||'PO unknown')}</p>`);}catch(error){openDialog('Save TNA',`<p>${esc(error.message)}</p>`);}}
   function downloadCopy(){if(!state.currentPlan)return openDialog('Download Saved Copy','<p>Create or open a TNA draft before downloading a saved copy.</p>');if(state.currentPlan.mode==='practice')return openDialog('Download Saved Copy','<p>Practice example cannot be exported as business evidence. Create a real TNA first.</p>');try{const text=storage.exportCopy(state.currentPlan);const name=`vesa-tna-${(state.currentPlan.order.styles?.[0]?.styleNo||state.currentPlan.recordId||'copy').replace(/[^a-z0-9_-]+/gi,'-')}.json`;if(typeof Blob!=='undefined'&&document.createElement){const blob=new Blob([text],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}openDialog('Download Saved Copy',`<p>Portable copy prepared and checksum protected.</p><p>File name: <b>${esc(name)}</b></p><textarea readonly rows="6">${esc(text.slice(0,1200))}</textarea>`);}catch(error){openDialog('Download Saved Copy',`<p>${esc(error.message)}</p>`);}}
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.dialog?.open)state.dialog.close();});
