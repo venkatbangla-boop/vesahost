@@ -1,5 +1,14 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
+### 2026-10-16 — R11 Approval History targeted DEVELOPMENT VERIFIED
+
+**Code/test SHA:** `10a389e207476fdf2148ef4850711b31c35c73d3`, [GitHub Actions 38865557407 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38865557407), [synthetic browser/Excel/PDF artifact 12030604074](https://github.com/venkatbangla-boop/vesahost/actions/runs/38865557407/artifacts/12030604074). R11 source `approvals[]`/submission, decision and reviewer, `resubmissionSequence[]`, revisionEvents and evidence references read only; Node knit/denim + four languages and actual Chromium Excel/PDF/390px tests PASS, as did R01–R10, PPM/AQL and shared shell. Two source rejection entries, source-waived vs externally proven, missing authority/date/evidence, submitted/pending and future-as-of cases tested. No main/public deployment; no real customer files in synthetic CI.
+
+**Safety:** Recorded approvals are NOT independent Buyer/Factory authority; local `approvalState` only checks consistency. Source array ordinals are not independently numbered review rounds. External buyer/factory reports fail closed, leaving client auth/recipient approval CONDITIONAL. Full TNA rework ACTIVE / CONDITIONAL, not DEMO LIVE.
+
+**PRECISE NEXT ACTION:** R12 Scenario Comparison. Audit actual existing `scenarioBranches` and scenario/CPM engines before implementing comparison of base and two user-created recoveries, applied revision and authority, real changed critical chain, capacity, feasibility and verified cost only with source. Add typed XLSX/PDF, languages, mobile, saved-copy and sibling regression; then staged Excel mapping, UAT and full acceptance, then Packing & Container 360 (original approved blueprint required).
+
+
 ### 2026-10-16 — R10 Portfolio / Multi-PO DEVELOPMENT VERIFIED (targeted slice)
 
 **Source SHA:** `d74ffacf8ac60db201e3b5c0f26dc6b69afc3c3c`, [GitHub Actions #38863812722 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38863812722), [synthetic proof 12030566167](https://github.com/venkatbangla-boop/vesahost/actions/runs/38863812722/artifacts/12030566167). Real Node G07 R10-only privacy adaptation and dedicated R10 user-profile/owner/tenant local storage proof PASS; R01–R09, PPM/AQL, VESA browser shell/mobile, migrated saved records and actual XLSX/JSON/PDF browser verification PASS. Two initial runs 38863442819 and 38863662408 FAILED specific legacy G07/ordering checks; corrected without weakening R01–R09 or replacing source logic.

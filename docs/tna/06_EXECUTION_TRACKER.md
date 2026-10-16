@@ -1,5 +1,18 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+## R11 Approval History verified execution checkpoint (2026-10-16)
+
+- **Verdict:** R11 source-only internal approval history / three typed Excel sheets / real browser PDF **DEVELOPMENT VERIFIED**. Entire TNA garment rework **ACTIVE / CONDITIONAL**, NOT DEMO LIVE.
+- **Exact evidence:** `feature/tna-merchandising-rework` code SHA `10a389e207476fdf2148ef4850711b31c35c73d3`; [GitHub Actions 38865557407 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38865557407) — Node dedicated R11 knit+denim, two source rejection rounds, as-of local approved vs external unverified, waiver reason/reviewer mismatch/invalid proof/duplicate ID, four languages, typed formula-inert workbook, real Playwright JSON/XLSX/PDF viewer, mobile 390px, unchanged browser saved copy and full R01–R10/PPM168/AQL24/shared-shell regression. [Synthetic report evidence 12030604074](https://github.com/venkatbangla-boop/vesahost/actions/runs/38865557407/artifacts/12030604074).
+- **File-level audit and ownership:** `src/reports.js` R11 pure approval projection, bounded source `approvals[].resubmissionSequence[]`, `requiredForTaskIds[]` and approval-linked `revisionEvents[]`; independent external buyer/factory model blocked before common order/tasks serialisation. `src/storage.js` R11 conditional typed XLSX `Approval Records`, `Approval Rounds`, `Approval Revisions`; `src/bootstrap.js` existing VESA report dialog audience control and escaped report/print; `assets/tna.css` scoped responsive/print; new `tests/r11-approval-history.test.js`, additive `tests/g11-artifact-viewers.cjs`, CI workflow source registration. Existing `operations.approvalState` is **read-only local consistency**, never independent authority.
+- **Frozen unchanged:** `src/domain.js`, `src/operations.js`, `src/scheduling.js`, `src/scenarios.js`, local saved-record schema, actual production records, PPM/AQL engines, common VESA auth/header, branch-independent `main`, Pages and DNS. Rollback by reverting single R11 feature commit; no data migration.
+- **Safety:** Current approval/waiver claim and as-of date are distinct from verified recipient/decision authority. Source evidence reference is a claim, not checked external proof. Missing reviewer/evidence/waiver reason, inconsistent reviewer, duplicate ID and future-dated decision cannot produce locally consistent approved state. Event/round ordering is source array, not invented official buyer round number; no PPM/AQL acceptance inferred. Buyer/Factory external reports and Excel fail closed.
+- **Open gate:** Buyer/factory actual authorization, real electronic signatures, verified decisions, output acceptance and user-facing edit/review-approve workflow UAT remain unverified. Full TNA remains ACTIVE. R12 and staged Excel import, all original scheduling/approval gates and production deployment unverified.
+- **PRECISE NEXT ACTION:** R12 Scenario Comparison audit using source scenario branches, immutable baseline/current, valid local factory calendars and changed path provenance. Prove base/A/B differences and local application vs buyer accepted state without invented capacities, approvals, or cost. Then final TNA scope closure before Packing & Container 360.
+
+---
+
+
 ## R10 saved-order Portfolio / Multi-PO — exact verified checkpoint (2026-10-16)
 
 - **Status:** R10 targeted local multi-PO reporting DEVELOPMENT VERIFIED; entire garment TNA rework remains ACTIVE / CONDITIONAL, NOT DEMO LIVE.
