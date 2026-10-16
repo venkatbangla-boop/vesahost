@@ -1,5 +1,17 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+## Recovery Scenario calendar date-overflow protection — verified 2026-10-16
+
+- **Gate:** Targeted legacy scenario/calendar safety **DEVELOPMENT VERIFIED**, full TNA **ACTIVE / CONDITIONAL**, NOT DEMO LIVE.
+- **Exact independent proof:** `8668c75b3cf5f072cc33c65e8a19e89f6d9c7ebc`, [Actions #38882558205 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38882558205), [synthetic browser suite 12037948141](https://github.com/venkatbangla-boop/vesahost/actions/runs/38882558205/artifacts/12037948141). CI logs explicitly show `TNA G08 scenario checks passed`, `TNA G08 SCENARIO CALENDAR PASS`, G08 template+import, PPM 168, AQL 24, one shared VESA shell 320–1440px, actual XLSX/browser/print/mobile PASS. No skipped or failing CI job on this exact SHA.
+- **Root issue:** Legacy `scenarios.previewScenario` formerly applied raw proposed `calendarChanges` to a clone and compared source/candidate forecasts under *candidate* working calendar, potentially calling `workdayDifference` toward a source forecast no longer a working date; legacy scheduling may loop/overflow. A fresh draft's missing workingWeek could also have silently fallen back to Monday–Friday. The R12 read-only model already blocked proposed calendars but did not protect the separate legacy editor. Existing `g08-scenarios.test.js` previously assumed calendar proposal silently changed clone; updated to enforce safer business contract.
+- **Scoped patch:** `src/scenarios.js` pure `TnaScenarioCalendarGuard` holds any proposed new `calendarChanges` as review-only, requires user-confirmed calendar for legacy forecasts, withholds gained workdays under incomparable calendars, prevents applying a needs-review, cross-order or held calendar branch. `src/bootstrap.js` describes local preview uncertainty and disables blocked scenario apply. Tests `g08-scenario-calendar-safety.test.js` (new) and `g08-scenarios.test.js` (updated); CI workflow registration. **Frozen:** `domain.js` existing validated manual Factory Working Calendar editor, pure `scheduling.js` date/CPM formulas, saved-copy schema and data, R01–R12, PPM/AQL and shared VESA shell. Revert safety commit on feature branch for rollback, no migration.
+- **Intentional limitation:** This is a **fail-closed** safety gate, not full alternate-calendar scenario simulation/acceptance. Buyer-reapproved calendar/feasible capacity/alternate workday comparisons still need separately reviewed evidence and human acceptance; no invented default factory calendars, external authorization, gained days, new baseline or order release.
+- **PRECISE NEXT ACTION:** Complete detailed full TNA 01–05 blueprint-to-code and test acceptance matrix **inside this tracker**, with `ACCEPTED (automated)` / `CONDITIONAL (human/UAT)` / `BLOCKED` / `DEFERRED_BY_SCOPE` for evidence-based requirements. Identify next implemented feature gap and patch one at a time. Do not treat current report/Excel/calendar CI as the full app.
+
+---
+
+
 ## G08 Full-Task XLSX Template, Reviewed Round-Trip — VERIFIED (2026-10-16)
 
 - **Verdict:** G08 typed full-task export (blank and current local order), review and new saved draft **DEVELOPMENT VERIFIED**. Entire TNA remains **ACTIVE / CONDITIONAL**, NOT DEMO LIVE.

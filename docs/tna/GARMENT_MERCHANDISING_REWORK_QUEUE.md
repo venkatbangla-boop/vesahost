@@ -1,5 +1,12 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
+### 2026-10-16 — Legacy Scenario Calendar Guard DEVELOPMENT VERIFIED
+
+**Verified exact commit:** `8668c75b3cf5f072cc33c65e8a19e89f6d9c7ebc`; [Actions 38882558205 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38882558205), [synthetic browser evidence 12037948141](https://github.com/venkatbangla-boop/vesahost/actions/runs/38882558205/artifacts/12037948141). Unconfirmed default factory working week no longer creates fabricated Recovery dates; raw alternate calendar proposal held as source-only review, not applied or credited with working-day gain. Scenario "needs-review"/wrong-order/forged calendar cannot apply; valid confirmed-duration scenario still calculates, and explicit local duration revisions remain possible without buyer approval. Knit/woven/denim Node, all TNA reports/G08, PPM168/AQL24 and Chromium shell/browser regressions PASS. No `main` or public release, no saved schema change.
+
+**Remaining:** Legitimately confirmed alternate factory calendar comparison is not implemented end-to-end; this gate prevents incorrect scheduling instead of guessing. Full original TNA blueprint and real garment merchandiser/factory UAT still require audit. **NEXT:** blueprint-to-code acceptance matrix in `docs/tna/06_EXECUTION_TRACKER.md` then implement verified gaps. Packing & Container 360 follows *complete* accepted TNA, from original source blueprint.
+
+
 ### 2026-10-16 — G08 full-task Excel Template / Round-Trip DEVELOPMENT VERIFIED
 
 **Exact source:** `208e448bcc30ecd01ff96b9132d2e40411f16be0`; [Actions 38878742460 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38878742460), [synthetic XLSX/browser artifact 12035639525](https://github.com/venkatbangla-boop/vesahost/actions/runs/38878742460/artifacts/12035639525). Five apparel template families, full activity list in editable Excel, order summary and local guide, native typed dates, plain-source FS predecessor links, formula-neutral fields, blank workbook without invented dates, buyer/approval/price proof not promoted. Actual Chromium same-PO third draft explicit save, local reopen, 390px and original record bytes unchanged PASS. R01–R12, G08 reviewed import, PPM 168, AQL 24, VESA shared-shell CI PASS. No main or public release. Full TNA still ACTIVE / CONDITIONAL.
