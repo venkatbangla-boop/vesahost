@@ -2087,7 +2087,9 @@
           fields:{duration:'Duration',calendar:'Calendar',route:'Task route',capacity:'Capacity entry'},
           modes:['Internal report','Buyer copy — blocked','Factory copy — blocked'],
           select:'Choose saved option or enter a new duration',task:'Activity to adjust',duration:'Proposed duration (working/calendar units per task)',
-          actual:'Only saved plan state is authoritative; scenario preview never changes the order.'},
+          actual:'Only saved plan state is authoritative; scenario preview never changes the order.',
+          civilDays:'Civil calendar days gained (+ earlier / − later)',calendarBasis:'Comparison date basis',
+          sameBasis:'Same confirmed working calendar',crossBasis:'Different factory working weeks / holidays — working-day gain cannot be compared',unchangedBasis:'Original factory calendar only'},
         bn:{title:'বর্তমান পরিকল্পনা ও Recovery A/B তুলনা',unknown:'তথ্য প্রয়োজন',
           notice:'শুধু অভ্যন্তরীণ পরিকল্পনা। স্থানীয় পরিবর্তন ক্রেতার সম্মতি, ক্ষমতা বা সাশ্রয় নিশ্চিত নয়। পাঠানোর আগে অনুমতি যাচাই করুন।',
           basis:'একই রিভিশন ও নিশ্চিত ফ্যাক্টরি ক্যালেন্ডার থাকলেই পুনঃহিসাব। আগে প্রয়োগ করা বিকল্পের পুরোনো পূর্ণ পরিকল্পনা নেই।',
@@ -2109,7 +2111,9 @@
           headers:['তুলনা','মূল','বিকল্প A','বিকল্প B'],changes:['বিকল্প','পরিবর্তন','আগে','প্রস্তাব','প্রমাণ'],
           warnings:['বিকল্প','সমস্যা','ফলাফল'],fields:{duration:'সময়',calendar:'ক্যালেন্ডার',route:'রুট',capacity:'ক্যাপাসিটি'},
           modes:['ভেতরের রিপোর্ট','ক্রেতা কপি বন্ধ','কারখানা কপি বন্ধ'],select:'বিকল্প বাছুন',task:'কাজ',duration:'নতুন সময়',
-          actual:'বিকল্প দেখা মানে অর্ডার পরিবর্তন নয়'},
+          actual:'বিকল্প দেখা মানে অর্ডার পরিবর্তন নয়',
+          civilDays:'সাধারণ ক্যালেন্ডার দিনের পার্থক্য (+ আগে / − পরে)',calendarBasis:'দিন তুলনার ভিত্তি',
+          sameBasis:'একই নিশ্চিত কাজের ক্যালেন্ডার',crossBasis:'কাজের সপ্তাহ বা ছুটি আলাদা — কর্মদিবস লাভ তুলনাযোগ্য নয়',unchangedBasis:'শুধু মূল কারখানা ক্যালেন্ডার'},
         hi:{title:'मूल योजना बनाम रिकवरी A/B',unknown:'जानकारी चाहिए',
           notice:'केवल आंतरिक योजना। स्थानीय बदलाव खरीदार मंजूरी, क्षमता या बचत प्रमाण नहीं। साझा करने से पहले अनुमति देखें।',
           basis:'समान रिविजन और पुष्टि फैक्ट्री कैलेंडर पर ही पुनर्गणना। पुराने लागू विकल्प की मूल पूरी योजना उपलब्ध नहीं।',
@@ -2132,7 +2136,9 @@
           fields:{duration:'अवधि',calendar:'कैलेंडर',route:'रूट',capacity:'क्षमता'},
           modes:['आंतरिक रिपोर्ट','खरीदार प्रति रोकी','फैक्ट्री प्रति रोकी'],
           select:'बचाया विकल्प या नया प्रयास',task:'कार्य',duration:'प्रस्तावित अवधि',
-          actual:'पूर्वावलोकन अॉर्डर नहीं बदलता'},
+          actual:'पूर्वावलोकन अॉर्डर नहीं बदलता',
+          civilDays:'सामान्य कैलेंडर दिन लाभ (+ पहले / − बाद)',calendarBasis:'दिन तुलना का आधार',
+          sameBasis:'वही पुष्टि किया हुआ कार्य कैलेंडर',crossBasis:'कार्य सप्ताह या छुट्टियाँ अलग हैं — कार्यदिवस बचत की तुलना नहीं',unchangedBasis:'केवल मूल फैक्ट्री कैलेंडर'},
         ta:{title:'Base / Recovery A / B ஒப்பீடு',unknown:'தகவல் தேவை',
           notice:'Internal planning மட்டும். Locally apply செய்த recovery என்பது Buyer/Factory ஒப்புதல், capacity உறுதி அல்லது செலவு குறைவு அல்ல. பகிருவதற்கு அனுமதி தேவை.',
           basis:'ஒரே current revision, user-confirmed factory calendar இருந்தால் மட்டுமே மீண்டும் CPM கணக்கிடப்படும். முன்பு apply ஆன scenario-வின் முழு பழைய plan இல்லாததால் அதை புதிய கணக்காகக் காட்டமாட்டோம்.',
@@ -2164,7 +2170,9 @@
           fields:{duration:'Duration',calendar:'Calendar',route:'Route',capacity:'Capacity'},
           modes:['Internal report','Buyer copy — blocked','Factory copy — blocked'],
           select:'Saved option அல்லது புதிய மாற்றம்',task:'மாற்ற வேண்டிய Activity',duration:'Proposed duration',
-          actual:'Scenario preview என்பது Order-ஐ மாற்றாது'}
+          actual:'Scenario preview என்பது Order-ஐ மாற்றாது',
+          civilDays:'Calendar நாள் வித்தியாசம் (+ முன்னதாக / − தாமதம்)',calendarBasis:'நாள் ஒப்பீட்டு அடிப்படை',
+          sameBasis:'ஒரே உறுதிப்படுத்திய வேலை நாட்காட்டி',crossBasis:'வேலை நாட்கள் / விடுமுறைகள் வேறு — working-day gain ஒப்பிட முடியாது',unchangedBasis:'முதல் Factory Calendar மட்டும்'}
       };
       return all[language]||all.en;
     }
@@ -2214,6 +2222,13 @@
             typeof item?.calendarId==='string'&&kind==='calendarChanges'?item.calendarId:labels.unknown,
           before:labels.unknown,after:labels.claimed,proof:labels.unverified});
       }
+      if(Object.prototype.hasOwnProperty.call(input,'confirmedAlternativeCalendarId')){
+        const candidate=(plan.calendars||[]).find(c=>c.calendarId===input.confirmedAlternativeCalendarId);
+        const base=(plan.calendars||[]).find(c=>c.calendarId==='default');
+        lines.push({slot:branch.slot,kind:labels.fields.calendar,
+          ref:candidate?.name||labels.unknown,before:base?.name||labels.unknown,
+          after:candidate?.name||labels.unknown,proof:labels.claimed});
+      }
       if(input.capacity)lines.push({slot:branch.slot,kind:labels.fields.capacity,
         ref:labels.unknown,before:labels.unknown,after:labels.claimed,proof:labels.unverified});
       return lines;
@@ -2246,6 +2261,7 @@
         sourceState:typeof branch.status==='string'?branch.status:labels.unknown,
         inputs:differences,
         baseForecast:null,optionForecast:null,workdaysGained:null,
+        calendarDaysGained:null,calendarComparisonBasis:labels.unchangedBasis,
         changedCriticalRefs:[],criticalRefs:[],locallyApplied:false,
         buyerAgreementVerified:false,costImpact:null,capacityConflicts:null,
         recordedBaseForecast:null,recordedOptionForecast:null,appliedRevision:null,
@@ -2310,17 +2326,28 @@
       const calendar=plan.calendars?.find(c=>c.calendarId==='default');
       const scheduling=root.VesaTnaScheduling||
         (typeof require==='function'?require('./scheduling.js'):null);
-      const gained=durationChanged&&!calendarChange&&
-        TnaCriticalPathProjection.checkedCalendar(calendar)&&
-        typeof scheduling?.workdayDifference==='function'?
-        scheduling.workdayDifference(option.forecastDate,base.forecastDate,calendar,'working'):null;
+      const hasAlternative=typeof changes.confirmedAlternativeCalendarId==='string';
+      const gained=hasAlternative?preview.branch.workingDaysGained:
+        durationChanged&&!calendarChange&&
+          TnaCriticalPathProjection.checkedCalendar(calendar)&&
+          typeof scheduling?.workdayDifference==='function'?
+          scheduling.workdayDifference(option.forecastDate,base.forecastDate,calendar,'working'):null;
+      const dayDelta=preview.branch.calendarDaysGained;
+      const basis=hasAlternative?
+        preview.branch.calendarComparisonBasis==='civil-days-only'?
+          labels.crossBasis:labels.sameBasis:
+        labels.unchangedBasis;
+      if(preview.baseSchedule.forecastDate!==base.forecastDate||
+        preview.scenarioSchedule.forecastDate!==option.forecastDate)
+        return {...result,status:'conflict',statusLabel:labels.conflict,reason:labels.conflict};
       return {...result,status:'calculated-local',statusLabel:labels.claimed,
-        reason:labels.unverified,baseForecast:base.forecastDate,
-        optionForecast:option.forecastDate,
+        reason:basis===labels.crossBasis?labels.crossBasis:labels.unverified,
+        baseForecast:base.forecastDate,optionForecast:option.forecastDate,
         criticalRefs:option.rows.filter(r=>r.isCritical).map(r=>r.ref),
         changedCriticalRefs:changed,
         workdaysGained:Number.isFinite(gained)?gained:null,
-        capacityConflicts:count};
+        calendarDaysGained:Number.isInteger(dayDelta)?dayDelta:null,
+        calendarComparisonBasis:basis,capacityConflicts:count};
     }
     /** Empty R12 and invalid as-of always retain explicit Needs Information. */
     static build(plan={},options={}){

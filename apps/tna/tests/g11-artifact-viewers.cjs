@@ -856,7 +856,7 @@ async function run(){
     await page.locator('#tnaReportType').selectOption('R12');
     await page.locator('.tna-r12-report').waitFor();
     assert(await page.locator('#tnaR12Controls').isVisible());
-    assert.equal(await page.locator('.tna-r12-comparison tbody tr').count(),16);
+    assert.equal(await page.locator('.tna-r12-comparison tbody tr').count(),18);
     assert((await page.locator('.tna-r12-report').innerText()).includes(
       'No Recovery A/B has been selected or recorded'));
     await page.locator('#tnaR12SelectA').selectOption('draft');

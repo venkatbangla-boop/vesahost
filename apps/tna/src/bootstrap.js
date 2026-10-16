@@ -1199,7 +1199,9 @@
         [l.created,l.unknown,a?.localAppliedBy,b?.localAppliedBy],
         [l.reason,l.unknown,a?.localApplyReason,b?.localApplyReason],
         [l.limitations,l.unverified,l.unverified,l.unverified],
-        [l.cost,l.noCost,l.noCost,l.noCost]
+        [l.cost,l.noCost,l.noCost,l.noCost],
+        [l.civilDays,null,a?.calendarDaysGained,b?.calendarDaysGained],
+        [l.calendarBasis,l.unchangedBasis,a?.calendarComparisonBasis,b?.calendarComparisonBasis]
       ];
       const changes=p.changes.map(c=>[c.slot,c.kind+': '+c.ref,c.before,c.after,c.proof]);
       const issues=p.options.filter(o=>o.status!=='calculated-local').map(o=>

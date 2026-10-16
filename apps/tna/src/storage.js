@@ -710,6 +710,8 @@
         rows.push(row(l.reason,unknown,col(a,'localApplyReason'),col(b,'localApplyReason')));
         rows.push(row(l.limitations,l.unverified,l.unverified,l.unverified));
         rows.push(row(l.cost,l.noCost,l.noCost,l.noCost));
+        rows.push(row(l.civilDays,null,col(a,'calendarDaysGained'),col(b,'calendarDaysGained')));
+        rows.push(row(l.calendarBasis,l.unchangedBasis,col(a,'calendarComparisonBasis'),col(b,'calendarComparisonBasis')));
       }
       const inputs=[l.changes];
       for(const item of r.changes)inputs.push([
