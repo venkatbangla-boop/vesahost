@@ -48,7 +48,7 @@ class PackingBrowserProof{
    await act('containers');await act('add-scene');
    await f({name:'SYNTHETIC CONTAINER',type:'20ft SYNTHETIC',length:600,width:235,height:235,
      doorWidth:225,doorHeight:225,unit:'cm',payload:20000,weightUnit:'kg',headroom:10,
-     source:'TEST CONTAINER SOURCE - NOT ACTUAL',buyer:'Synthetic reviewer'});
+     source:'TEST CONTAINER SOURCE - NOT ACTUAL',verifiedBy:'Synthetic reviewer'});
    await page.locator('#packDialog [name=sourceConfirmed]').check();await submit();
    assert.match(await page.locator('.pack-table').innerText(),/physical fit not verified/i);
    await act('loads');await act('add-load');await f({loaded:1,date:'2026-10-16',evidence:'TEST LOADING INPUT'});await submit();
