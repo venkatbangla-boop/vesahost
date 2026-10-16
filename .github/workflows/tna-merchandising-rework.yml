@@ -56,6 +56,7 @@ jobs:
           node apps/tna/tests/g06-workspace.test.js
           node apps/tna/tests/g08-scenarios.test.js
           node apps/tna/tests/g08-scenario-calendar-safety.test.js
+          node apps/tna/tests/g08-confirmed-alternative-calendar.test.js
           node apps/tna/tests/g07-reports.test.js
           node apps/tna/tests/r02-buyer-milestones.test.js
           node apps/tna/tests/r03-factory-daily.test.js

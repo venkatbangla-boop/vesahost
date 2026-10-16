@@ -350,6 +350,51 @@
       next.auditEvents=[...(next.auditEvents||[]),{eventId:makeId('audit'),eventType:'factory-calendar-confirmed',actorId,createdAt:timestamp,details:{calendarId:'default',calendarRevision:revision}}];
       return {ok:true,plan:next};
     }
+    /**
+     * Record a distinct local, source-attributed alternative without changing
+     * the order's confirmed default calendar or any frozen task/baseline date.
+     * Access: VesaTnaDomain.addConfirmedAlternativeCalendar(plan, fields, context).
+     * Output: a new plan/revision and stable calendar ID; caller must save it.
+     * Failure: missing source, forged confirmation, changed default or invalid
+     * weekday/holiday/shutdown fails closed; no buyer approval is implied.
+     */
+    static addAlternative(plan,values={},context={}){
+      const primary=plan?.calendars?.find(item=>item.calendarId==='default');
+      if(!plan?.recordId||!primary||primary.source!=='user-confirmed'||
+        !primary.sourceReference||!primary.confirmedAt||
+        !Number.isSafeInteger(primary.revision)||primary.revision<1)
+        return {ok:false,error:'Confirm the source-backed default factory calendar before recording an alternative.'};
+      // Existing default-calendar validator remains the single field authority.
+      // This validated temporary plan is discarded; it never replaces default.
+      const checked=this.update(plan,values,context);
+      if(!checked.ok)return checked;
+      const reviewed=checked.plan.calendars.find(item=>item.calendarId==='default');
+      const next=clone(plan),actorId=clean(context.actorId)||next.ownerUserId||'local-browser-user',timestamp=now();
+      const used=new Set(next.calendars.map(item=>item.calendarId));
+      let id;
+      do{id=makeId('alt-calendar');}while(used.has(id));
+      const candidate={...reviewed,calendarId:id,calendarKind:'confirmed-alternative',
+        basedOnCalendarId:'default',basedOnCalendarRevision:primary.revision,
+        basedOnConfirmedAt:primary.confirmedAt,orderRecordId:next.recordId,
+        recordedAtPlanRevision:next.revision||0,revision:1,
+        confirmedBy:actorId,confirmedAt:timestamp,
+        approvalScope:'local-source-confirmation-only'};
+      next.calendars.push(candidate);
+      next.revision=(next.revision||0)+1;
+      next.updatedAt=timestamp;
+      const details={calendarId:id,basedOnCalendarId:'default',
+        basedOnCalendarRevision:primary.revision,sourceReference:candidate.sourceReference,
+        reason:values.reason.trim(),approvalScope:candidate.approvalScope};
+      next.revisionEvents=[...(next.revisionEvents||[]),{eventId:makeId('revision'),
+        eventType:'alternate-factory-calendar-recorded',revision:next.revision,
+        actorId,createdAt:timestamp,details}];
+      next.auditEvents=[...(next.auditEvents||[]),{eventId:makeId('audit'),
+        eventType:'alternate-factory-calendar-recorded',actorId,createdAt:timestamp,
+        details:{calendarId:id,basedOnCalendarRevision:primary.revision}}];
+      next.validation=validatePlan(next);
+      if(!next.validation.ok)return {ok:false,error:next.validation.errors.join('; ')};
+      return {ok:true,plan:next,calendar:clone(candidate)};
+    }
   }
 
   function addCustomTask(plan,input={},context={}){
@@ -455,7 +500,7 @@
     if(!next.validation.ok)return {ok:false,error:next.validation.errors.join(' '),errors:next.validation.errors};
     return {ok:true,plan:next,lot,warnings:next.validation.warnings};
   }
-  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,normalizeColorSizeBreakdown,createPlan,validatePlan,freezeBaseline,updateTaskStatus,updateTaskFollowup:TnaTaskFollowup.update,updateFactoryCalendar:TnaFactoryCalendar.update,addCustomTask,addCapacityEntry,addShipmentLot};
+  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,normalizeColorSizeBreakdown,createPlan,validatePlan,freezeBaseline,updateTaskStatus,updateTaskFollowup:TnaTaskFollowup.update,updateFactoryCalendar:TnaFactoryCalendar.update,addConfirmedAlternativeCalendar:TnaFactoryCalendar.addAlternative,addCustomTask,addCapacityEntry,addShipmentLot};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaDomain=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

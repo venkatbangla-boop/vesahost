@@ -62,6 +62,44 @@
       if(!changes.length)return null;
       return 'Recovery calendar changes cannot be calculated or applied as verified factory working days. Review the source, holidays and working week in Factory Working Calendar first.';
     }
+    /**
+     * Verify the same-order, same-default-revision candidate and local written
+     * provenance before any preview uses its working days. Form-level fields
+     * cannot impersonate confirmation; only domain-recorded candidates qualify.
+     */
+    static alternativeIssue(plan,input={}){
+      if(!Object.prototype.hasOwnProperty.call(input,'confirmedAlternativeCalendarId'))return null;
+      const id=input.confirmedAlternativeCalendarId;
+      if(typeof id!=='string'||!id.trim())return 'Select a recorded, locally confirmed alternative factory calendar.';
+      const primary=plan?.calendars?.find(item=>item.calendarId==='default');
+      const candidate=plan?.calendars?.find(item=>item.calendarId===id);
+      if(!primary||!candidate||candidate.calendarKind!=='confirmed-alternative'||
+        candidate.source!=='user-confirmed'||!candidate.confirmedAt||
+        !candidate.confirmedBy||!candidate.sourceReference||
+        candidate.approvalScope!=='local-source-confirmation-only'||
+        candidate.orderRecordId!==plan.recordId||
+        candidate.basedOnCalendarId!=='default'||
+        candidate.basedOnCalendarRevision!==primary.revision||
+        candidate.basedOnConfirmedAt!==primary.confirmedAt)
+        return 'The selected alternative is missing, stale or not locally source-confirmed for this order.';
+      if((plan.tasks||[]).some(task=>(task.calendarId||'default')!=='default'))
+        return 'Separate task calendars require their own reviewed route; no combined calendar gain can be calculated.';
+      if(Array.isArray(input.routeChanges)&&input.routeChanges.some(change=>change?.calendarId&&change.calendarId!=='default'))
+        return 'Do not combine a factory alternative with a separate task-calendar route.';
+      const check=this.confirmedIssue({...plan,tasks:[{calendarId:id}]});
+      if(check)return check;
+      const required=plan?.commitments?.buyerRequiredExFactory;
+      if(required&&!scheduling.isWorkingDate(required,candidate))
+        return 'Buyer-required date is not a working day on the selected alternative; confirm a comparable date before forecasting.';
+      return null;
+    }
+    /** Only equal confirmed date bases can yield a working-day difference. */
+    static sameBasis(a,b){
+      return !!a&&!!b&&a.source==='user-confirmed'&&b.source==='user-confirmed'&&
+        a.timezone===b.timezone&&
+        ['workingWeek','holidays','shutdowns'].every(key=>
+          JSON.stringify((a[key]||[]).slice().sort())===JSON.stringify((b[key]||[]).slice().sort()));
+    }
     /** Protect legacy workdayDifference from a nonworking endpoint loop. */
     static comparable(calendar,start,end){
       return calendar?.source==='user-confirmed'&&
@@ -72,15 +110,19 @@
     }
   }
 
-  function planSchedule(plan){
+  function planSchedule(plan,primaryCalendarId='default'){
     const start=plan?.commitments?.orderConfirmedOn||plan?.commitments?.poReceivedOn;
     const required=plan?.commitments?.buyerRequiredExFactory;
     if(!scheduling)return {status:'needs-information',reason:'Scheduling engine is not loaded.'};
     if(!start||!required)return {status:'needs-information',reason:'Explicit order start and buyer required ex-factory dates are required.'};
     const calendarIssue=TnaScenarioCalendarGuard.confirmedIssue(plan);
     if(calendarIssue)return {status:'needs-information',reason:calendarIssue};
+    const primary=plan.calendars.find(item=>item.calendarId===primaryCalendarId);
+    if(!primary)return {status:'needs-information',reason:'Selected scenario factory calendar is missing.'};
+    if(primaryCalendarId!=='default'&&!scheduling.isWorkingDate(required,primary))
+      return {status:'needs-information',reason:'Required ex-factory date needs a confirmed working-day basis on the alternative calendar.'};
     try{
-      const result=scheduling.schedule(plan.tasks||[],plan.edges||[],{calendar:plan.calendars?.[0],calendars:plan.calendars||[],startDate:start,requiredDate:required,asOfDate:start,nearCriticalDays:3});
+      const result=scheduling.schedule(plan.tasks||[],plan.edges||[],{calendar:primary,calendars:plan.calendars||[],startDate:start,requiredDate:required,asOfDate:start,nearCriticalDays:3});
       if(result.validity!=='valid')return {status:'blocked',reason:[...(result.errors||[]),...(result.missingInputs||[])].join('; ')||'Schedule is invalid.',raw:result};
       return {status:'calculated',forecastDate:result.project.forecastDate,workingDaysEarlyOrLate:result.project.workingDaysEarlyOrLate,criticalTaskIds:Object.values(result.taskResults||{}).filter(item=>item.isCritical).map(item=>item.taskId),raw:result};
     }catch{return {status:'needs-information',reason:'Recovery schedule could not be safely calculated; review calendar and source dates.'};}
@@ -107,6 +149,9 @@
       const task=(plan.tasks||[]).find(item=>item.taskId===change.taskId);
       if(!task){errors.push('Scenario route references a missing task.');continue;}
       if(change.calendarId!=null&&!plan.calendars?.some(item=>item.calendarId===change.calendarId)){errors.push('Scenario route references a missing calendar.');continue;}
+      if(change.calendarId!=null&&change.calendarId!==task.calendarId&&change.calendarId!=='default'){
+        errors.push('Select a reviewed alternative factory calendar through the dedicated calendar choice, not a route change.');continue;
+      }
       if(change.ownerParty!=null)task.ownerParty=clean(change.ownerParty)||task.ownerParty;
       if(change.calendarId!=null)task.calendarId=clean(change.calendarId);
       task.recoveryAction=clean(change.reason)||'Scenario route adjustment';
@@ -129,6 +174,20 @@
     }
     return errors;
   }
+  /**
+   * Preview-only: swap default-calendar task references to an already recorded
+   * alternative. Never rewrite stored calendar objects or signed task dates.
+   * Applying such a selection to live records is deliberately blocked until
+   * the separate UI/acceptance group has independently proved save/report.
+   */
+  function selectConfirmedAlternative(plan,input={}){
+    if(!Object.prototype.hasOwnProperty.call(input,'confirmedAlternativeCalendarId'))return [];
+    const issue=TnaScenarioCalendarGuard.alternativeIssue(plan,input);
+    if(issue)return [issue];
+    for(const task of plan.tasks||[])if((task.calendarId||'default')==='default')
+      task.calendarId=input.confirmedAlternativeCalendarId;
+    return [];
+  }
   function applyScenarioChanges(plan,input={}){
     if(!input||typeof input!=='object'||Array.isArray(input))
       return ['Scenario changes must be a reviewed object.'];
@@ -139,7 +198,8 @@
       ...applyDurationAdjustments(plan,input.durationAdjustments||[]),
       ...applyCalendarChanges(plan,input.calendarChanges||[]),
       ...applyRouteChanges(plan,input.routeChanges||[]),
-      ...applyCapacityChanges(plan,input.capacityChanges||[])
+      ...applyCapacityChanges(plan,input.capacityChanges||[]),
+      ...selectConfirmedAlternative(plan,input)
     ];
   }
   function capacityPreview(plan,input={}){
@@ -171,25 +231,41 @@
         scenarioSchedule.forecastDate,baseSchedule.forecastDate,calendar,'working');}
       catch{gained=null;}
     }
-    return {baseForecastDate:baseSchedule?.forecastDate||null,scenarioForecastDate:scenarioSchedule?.forecastDate||null,workingDaysGained:gained,criticalTaskIdsBefore:baseCritical,criticalTaskIdsAfter:scenarioCritical,changedCriticalTaskIds,resourceEntriesBefore:baseLoad?.totalEntries||0,resourceEntriesAfter:scenarioLoad?.totalEntries||0,resourceConflictsBefore:baseLoad?.overAllocations?.length||0,resourceConflictsAfter:scenarioLoad?.overAllocations?.length||0};
+    let calendarDaysGained=null;
+    if(baseSchedule?.status==='calculated'&&scenarioSchedule?.status==='calculated'&&
+      TnaScenarioCalendarGuard.validDate(baseSchedule.forecastDate)&&
+      TnaScenarioCalendarGuard.validDate(scenarioSchedule.forecastDate))
+      calendarDaysGained=scheduling.toDay(baseSchedule.forecastDate)-scheduling.toDay(scenarioSchedule.forecastDate);
+    return {baseForecastDate:baseSchedule?.forecastDate||null,scenarioForecastDate:scenarioSchedule?.forecastDate||null,workingDaysGained:gained,calendarDaysGained,criticalTaskIdsBefore:baseCritical,criticalTaskIdsAfter:scenarioCritical,changedCriticalTaskIds,resourceEntriesBefore:baseLoad?.totalEntries||0,resourceEntriesAfter:scenarioLoad?.totalEntries||0,resourceConflictsBefore:baseLoad?.overAllocations?.length||0,resourceConflictsAfter:scenarioLoad?.overAllocations?.length||0};
   }
   function previewScenario(plan,input={},context={}){
     if(!plan||!Array.isArray(plan.tasks))return {ok:false,error:'A valid TNA plan is required.'};
     if(!input||typeof input!=='object'||Array.isArray(input))return {ok:false,error:'Scenario changes must be a reviewed object.'};
     const base=clone(plan),candidate=clone(plan),violations=applyScenarioChanges(candidate,input);
-    const heldCalendar=TnaScenarioCalendarGuard.proposedIssue(input);
+    const selectionIssue=TnaScenarioCalendarGuard.alternativeIssue(plan,input);
+    const heldCalendar=TnaScenarioCalendarGuard.proposedIssue(input)||selectionIssue;
+    const selectedId=typeof input.confirmedAlternativeCalendarId==='string'?
+      input.confirmedAlternativeCalendarId:'';
     const baseSchedule=planSchedule(base);
-    const scenarioSchedule=heldCalendar?
-      {status:'needs-information',reason:heldCalendar}:planSchedule(candidate);
+    const scenarioSchedule=heldCalendar||violations.length?
+      {status:'needs-information',reason:heldCalendar||violations.join('; ')}:
+      planSchedule(candidate,selectedId||'default');
     const capacity=capacityPreview(candidate,input);
     if(capacity.status&&capacity.status!=='calculated'&&capacity.status!=='not-entered')violations.push(capacity.message||capacity.reason||'Capacity remains Needs Information.');
     const baseLoad=resourceLoadPreview(base),scenarioLoad=resourceLoadPreview(candidate);
     if(!scenarioLoad.ok)violations.push('Shared resource capacity remains over-allocated in this scenario.');
     const routeCalendarChanged=Array.isArray(input.routeChanges)&&
       input.routeChanges.some(x=>x?.calendarId!=null);
+    const baseCalendar=base.calendars?.find(item=>item.calendarId==='default');
+    const alternateCalendar=candidate.calendars?.find(item=>item.calendarId===selectedId);
+    const sameCalendarBasis=!selectedId||TnaScenarioCalendarGuard.sameBasis(baseCalendar,alternateCalendar);
+    const canCompare=!heldCalendar&&!routeCalendarChanged&&sameCalendarBasis;
     const comparison=compareScenario(baseSchedule,scenarioSchedule,baseLoad,scenarioLoad,
-      candidate.calendars?.[0],!heldCalendar&&!routeCalendarChanged);
-    const branch={scenarioId:input.scenarioId||makeId('scenario'),name:clean(input.name)||'Recovery scenario',engineVersion:ENGINE_VERSION,createdAt:context.createdAt||now(),createdBy:context.actorId||plan.ownerUserId||'local-browser-user',baseRecordId:plan.recordId,baseRevision:plan.revision||0,status:violations.length?'needs-review':'preview',changes:clone(input),baseForecastDate:comparison.baseForecastDate,scenarioForecastDate:comparison.scenarioForecastDate,workingDaysGained:comparison.workingDaysGained,baseScheduleStatus:baseSchedule.status,scenarioScheduleStatus:scenarioSchedule.status,capacity,changedCriticalTaskIds:comparison.changedCriticalTaskIds,resourceLoad:scenarioLoad,comparison,forecastProvenance:forecastProvenance(candidate,scenarioSchedule),violations};
+      baseCalendar,canCompare);
+    const branch={scenarioId:input.scenarioId||makeId('scenario'),name:clean(input.name)||'Recovery scenario',engineVersion:ENGINE_VERSION,createdAt:context.createdAt||now(),createdBy:context.actorId||plan.ownerUserId||'local-browser-user',baseRecordId:plan.recordId,baseRevision:plan.revision||0,status:violations.length?'needs-review':'preview',changes:clone(input),baseForecastDate:comparison.baseForecastDate,scenarioForecastDate:comparison.scenarioForecastDate,workingDaysGained:comparison.workingDaysGained,
+      calendarDaysGained:comparison.calendarDaysGained,
+      calendarComparisonBasis:selectedId?(sameCalendarBasis?'same-confirmed-calendar':'civil-days-only'):'unchanged',
+      baseScheduleStatus:baseSchedule.status,scenarioScheduleStatus:scenarioSchedule.status,capacity,changedCriticalTaskIds:comparison.changedCriticalTaskIds,resourceLoad:scenarioLoad,comparison,forecastProvenance:forecastProvenance(candidate,scenarioSchedule),violations};
     return {ok:true,branch,previewPlan:candidate,baseSchedule,scenarioSchedule,baseLoad,scenarioLoad,comparison,violations};
   }
   function applyScenario(plan,branch,context={}){
@@ -202,6 +278,8 @@
       return {ok:false,error:'Scenario has unresolved review issues; it cannot be applied.'};
     const calendarIssue=TnaScenarioCalendarGuard.proposedIssue(branch.changes||{});
     if(calendarIssue)return {ok:false,error:calendarIssue};
+    if(Object.prototype.hasOwnProperty.call(branch.changes||{},'confirmedAlternativeCalendarId'))
+      return {ok:false,error:'Confirmed alternative calendar comparison is preview-only until its separate save, report and user approval gate is verified.'};
     const next=clone(plan),timestamp=context.createdAt||now();
     const errors=applyScenarioChanges(next,branch.changes||{});
     if(errors.length)return {ok:false,error:errors.join(' ')};
