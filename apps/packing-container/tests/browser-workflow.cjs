@@ -28,7 +28,10 @@ class PackingBrowserProof{
   const act=async k=>{await page.locator('[data-action="'+k+'"]').first().click();};
   const stored=async()=>page.evaluate(()=>{const key=Object.keys(localStorage).find(k=>k.startsWith('vesa.packing-container.records.v1.'));return JSON.parse(localStorage.getItem(key)).records[0];});
   try{
-   await page.goto(host+'/apps/packing-container/',{waitUntil:'domcontentloaded'});
+   await page.goto(host+'/apps/',{waitUntil:'domcontentloaded'});
+   const route=page.locator('a[href="/apps/packing-container/"]');
+   assert.equal(await route.count(),1,'Packing app must appear once in VESA App Centre.');
+   await route.click();
    await page.locator('[data-action=new]').waitFor();
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('.vesa-workspace__brand img').count(),1);
