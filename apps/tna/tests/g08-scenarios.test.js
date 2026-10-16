@@ -55,7 +55,10 @@ const advancedPreview = scenarios.previewScenario(advancedPlan, {
 }, { actorId: 'admin@vesa', createdAt: '2026-10-10T07:45:00.000Z' });
 assert(advancedPreview.ok, 'G08 alternative calendar/route preview should succeed.');
 assert(JSON.stringify(advancedPlan) === advancedBefore, 'G08 alternative preview must not mutate operations or calendar.');
-assert(advancedPreview.previewPlan.calendars[0].holidays.includes('2026-10-20'), 'G08 scenario should carry an explicit holiday change.');
+assert(!advancedPreview.previewPlan.calendars[0].holidays.includes('2026-10-20'), 'Unreviewed holiday cannot change effective working days.');
+assert(advancedPreview.branch.changes.calendarChanges[0].holidays.includes('2026-10-20'), 'Retain proposed source holiday for review only.');
+assert(advancedPreview.branch.status==='needs-review'&&advancedPreview.branch.workingDaysGained===null,'Held calendar cannot claim saved working days.');
+assert(!scenarios.applyScenario(advancedPlan,advancedPreview.branch,{confirm:true,reason:'No proof'}).ok,'Held calendar may not be applied.');
 assert(advancedPreview.previewPlan.operations[0].datedCapacityEntries[0].availableLines === 4, 'G08 scenario should compare entered resource capacity.');
 assert(advancedPreview.branch.forecastProvenance.inputRevision === advancedPlan.revision, 'G08 forecast provenance should identify the source revision.');
 
