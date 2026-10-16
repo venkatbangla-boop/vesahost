@@ -32,19 +32,28 @@ for (const lang of ['en', 'bn', 'hi', 'ta']) {
     seen.add(model.reportId);
     assert(model.schema === 'VESA-TNA-REPORT-1', `G07 ${lang} ${item.id} should use the report schema.`);
     assert(model.generatedLabel && model.timezone === 'Asia/Dhaka', `G07 ${lang} ${item.id} should preserve generated date/timezone metadata.`);
-    assert(model.order.buyer === 'Buyer Report' && model.order.style === 'STYLE-RPT', `G07 ${lang} ${item.id} must not translate typed buyer/style values.`);
+    if(item.id==='R10'){
+      assert(model.portfolio?.schema==='VESA-TNA-PORTFOLIO-1'&&model.portfolio.validity==='incomplete',
+        'G07 R10 must fail closed when no same-user saved snapshot was supplied.');
+      assert(model.tasks.length===0&&model.order.buyer!=='Buyer Report',
+        'G07 R10 cannot export an unsaved source order as portfolio data.');
+    }else assert(model.order.buyer === 'Buyer Report' && model.order.style === 'STYLE-RPT',
+      `G07 ${lang} ${item.id} must not translate typed buyer/style values.`);
     if(item.id==='R02'){
       assert(model.tasks.length>0&&model.tasks.length<plan.tasks.length,
         'G07 R02 must include a curated buyer-safe milestone subset, not every internal activity.');
       assert(model.buyerTna?.schema==='VESA-TNA-BUYER-1','G07 buyer model needs a typed disclosure boundary.');
       assert(model.order.factory===model.buyerTna.labels.notShared,'G07 buyer model must hide factory identity.');
-    }else assert(model.tasks.length===plan.tasks.length,
-      `G07 ${lang} ${item.id} non-buyer reports must retain the activity count.`);
+    }else if(item.id!=='R10')assert(model.tasks.length===plan.tasks.length,
+      `G07 ${lang} ${item.id} non-buyer/non-portfolio reports must retain the activity count.`);
     assert(model.labels.noFabrication && model.labels.shareFallback && model.labels.printFallback, `G07 ${lang} ${item.id} should include report fallback notes.`);
     if(item.id!=='R02')assert(model.tasks.every(task => ['not-started','in-progress','blocked','submitted','approved','rejected','completed','waived','not-applicable'].includes(task.status)), `G07 ${lang} ${item.id} must preserve stable status IDs.`);
     else assert(model.tasks.every(task=>task.status.includes('local')||task.status.length>3), 'G07 R02 must use qualified public-status descriptions.');
     const jsonExport = JSON.stringify(model, null, 2);
-    assert(jsonExport.includes(item.id) && jsonExport.includes('Buyer Report') && jsonExport.includes('STYLE-RPT'), `G07 ${lang} ${item.id} JSON export should preserve report and order identity.`);
+    if(item.id==='R10')assert(jsonExport.includes(item.id)&&!jsonExport.includes('Buyer Report')&&
+      !jsonExport.includes('STYLE-RPT'),'G07 R10 without scoped saved records cannot leak typed current-order identity.');
+    else assert(jsonExport.includes(item.id) && jsonExport.includes('Buyer Report') && jsonExport.includes('STYLE-RPT'),
+      `G07 ${lang} ${item.id} JSON export should preserve report and order identity.`);
     const workbook = XLSX.read(storage.exportReportWorkbook(model), { type: 'buffer', cellStyles: true });
     assert(workbook.SheetNames.includes('Report Summary') && workbook.SheetNames.includes('Order Summary') && workbook.SheetNames.includes('Report Activities') && workbook.SheetNames.includes('Report Notes'), `G07 ${lang} ${item.id} workbook export should include all required report sheets.`);
     assert(workbook.Sheets['Report Activities']['!cols']?.[1]?.wch >= 40, `G07 ${lang} ${item.id} workbook should provide a readable activity column width.`);
