@@ -1,5 +1,12 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
+### 2026-10-16 — F01–F50 expanded local regression CI PASS (targeted proof)
+
+Exact source `256242ed3c4738b777f92d80fc9914a6c7c0962a`, [Actions 38885516013 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38885516013), [synthetic artifact 12038823524](https://github.com/venkatbangla-boop/vesahost/actions/runs/38885516013/artifacts/12038823524). Expanded G01/G04/G09/G10/G11/G12 Node fixture enrollment proves operational, graph, risk, 250-order/25,250-task portfolio, 2,000-task iterative CPM, notifications, source security/backup/handoff while all R01–R12/G08/PPM168/AQL24 and real Chromium regressions stay PASS. Narrow G12 test correction preserved the exact historical 2026-10-14 `source state` release candidate instead of editing the old runbook. No production or actual factory UAT; complete TNA **ACTIVE / CONDITIONAL**.
+
+**NEXT:** Audit/enroll existing current-browser G10 linked records, F44 Help and G11 security/XSS routes; older import-preview selectors are now obsolete, so maintain user-proof security under the new G08 review UI. Full alternate-calendar scenario and real UAT remain CONDITIONAL. No main/Pages release; Packing & Container follows applicable TNA acceptance.
+
+
 ### 2026-10-16 — Legacy Scenario Calendar Guard DEVELOPMENT VERIFIED
 
 **Verified exact commit:** `8668c75b3cf5f072cc33c65e8a19e89f6d9c7ebc`; [Actions 38882558205 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38882558205), [synthetic browser evidence 12037948141](https://github.com/venkatbangla-boop/vesahost/actions/runs/38882558205/artifacts/12037948141). Unconfirmed default factory working week no longer creates fabricated Recovery dates; raw alternate calendar proposal held as source-only review, not applied or credited with working-day gain. Scenario "needs-review"/wrong-order/forged calendar cannot apply; valid confirmed-duration scenario still calculates, and explicit local duration revisions remain possible without buyer approval. Knit/woven/denim Node, all TNA reports/G08, PPM168/AQL24 and Chromium shell/browser regressions PASS. No `main` or public release, no saved schema change.
