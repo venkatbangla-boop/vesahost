@@ -1,5 +1,46 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## CURRENT APPROVED 17-APP PORTFOLIO QUEUE — SINGLE AUTHORITY (2026-10-16)
+
+Historical work entries remain below; this **one table** is current, not a percent-of-done estimate or an alternate tracker. Refresh it from actual branches/CI before every handover.
+
+| Priority | Application | Current status | Release / next gate |
+|---|---|---|---|
+| 01 | Costing 360 | **DEVELOPMENT VERIFIED** | Personal demo on main previously verified; real-user release boundaries remain distinct |
+| 02 | TNA 360 Garment Merchandising Rework | **ACTIVE / CONDITIONAL** | F19 automated local proof complete; human factory/merchandiser, native Excel/device and remaining F01–F50 acceptance gates open |
+| 03 | Packing & Container 360 | **BLOCKED** | Original APP-01_packing-container.md inside 15-app ZIP not accessible as raw file; no M1 application implementation without exact approved blueprint |
+| 04 | Order & Commission 360 | **NOT STARTED** | After Packing verified |
+| 05 | Tech Pack & Spec 360 | **NOT STARTED** | After Order & Commission verified |
+| 06 | Purchase Order 360 | **NOT STARTED** | Approved queue |
+| 07 | LC & Payment 360 | **NOT STARTED** | Approved queue |
+| 08 | Sampling & Approval 360 | **NOT STARTED** | Approved queue |
+| 09 | Fabric & Trims 360 | **NOT STARTED** | Approved queue |
+| 10 | Shipment & Documentation 360 | **NOT STARTED** | Approved queue |
+| 11 | Production Tracker 360 | **NOT STARTED** | Approved queue |
+| 12 | Factory & Vendor 360 | **NOT STARTED** | Approved queue |
+| 13 | Label & Artwork Approval 360 | **NOT STARTED** | Approved queue |
+| 14 | Buyer CRM 360 | **NOT STARTED** | Approved queue |
+| 15 | Fabric & Supplier Comparison 360 | **NOT STARTED** | Approved queue |
+| 16 | Claims & Disputes 360 | **NOT STARTED** | Approved queue |
+| 17 | Product Development 360 | **NOT STARTED** | Approved queue |
+
+**Portfolio rule:** Finish all independently verifiable local software work on each application within the available Work session; user does not need to type NEXT after every patch. Record genuine external/human/hosting blockers and proceed to the next source-authorized app when development is verified. Never skip an app or invent its missing full blueprint. No automatic/background work after the session ends. No `main`/public release without release authority.
+
+---
+
+## F19 GROUP 2 — LOCAL DEVELOPMENT VERIFIED (2026-10-16)
+
+**Verified runtime SHA `373c4f9b51dbb37fc213952b7e6e42b098515cec`**, [Actions #38894328513 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38894328513) and [synthetic Chromium/Excel/PDF artifact](https://github.com/venkatbangla-boop/vesahost/actions/runs/38894328513/artifacts/12043037280). This is code on `feature/tna-merchandising-rework`; **not a public release**. New local F19 proof covers default and independently entered alternative factory calendars (separate source/actor/revision), guarded preview, saved R12 A/B option, typed civil-day calculation and print/Excel, local explicit apply to a named record and reopen, stable scenario ID through four-language switch, invalid/forged/stale/raw calendar rejection, unchanged baselines, no Buyer/Factory approval inference. Cross-calendar working-day gains remain **Needs Information**. Synthetic knit/woven/denim Node and actual Chromium 390px/print/EN-BN-HI-TA source/no-network tests PASS. Existing G01–G12, R01–R12, G08 Excel and security, PPM168/AQL24/sampling/shared-shell regression PASS.
+
+**Actual bug fixes:** Earlier run 38893806020 FAILED because explicit scenario apply only autosaved (named record stale); fixed in `beca576c` with the existing persistence owner. Follow-up 38894018330 FAILED because resubmitting an already saved preview generated a second scenario ID; fixed in `373c4f9b51dbb37fc213952b7e6e42b098515cec` by retaining the saved preview identity and suppressing duplicate save. Both failed histories preserved; never call them PASS. Other narrowly scoped source commits: `38257158` local apply/record, `8e2f1530` factory/alternative UI, `9d7d29f4` R12/typed workbook and `195ef704` independent Node/Chromium enrollment. Existing schema/version, supplier rates, TNA baseline, PPM/AQL engines, shared header, `main`, DNS and Pages untouched.
+
+**Status distinction:** F19 Group 1 + 2 local implementation **DEVELOPMENT VERIFIED**. Full TNA **ACTIVE / CONDITIONAL; NOT DEMO LIVE**. Independent factory calendar authenticity, actual capacity and Buyer authority, human merchandiser/factory UAT, native Excel/real devices/screen-reader, remaining F01–F50 full-scope gates and commercial hosting release remain open; code tests do not prove physical feasibility or customer acceptance.
+
+**PRECISE NEXT ACTION:** Do NOT revisit F19 or R01–R12 absent a regression. Audit remaining locally actionable items in F01–F50 matrix, then hand off human approval/native-device gates. For portfolio APP-01 Packing & Container 360, the original `VESA_360_15_APP_MASTER_ROADMAP_HANDOVER.zip` is indexed in Library but its dedicated `blueprints/APP-01_packing-container.md` raw bytes cannot be opened here; existing `feature/tna360-continuous:docs/roadmap/APP-01_M0_SOURCE_AND_SCOPE_AUDIT.md` independently records the same blocker. Recover that exact approved file before coding APP-01 M1; no guessed pack ratios, interior dimensions, loadability or missing policies. Next after APP-01 is Order & Commission 360.
+
+---
+
+
 ## F19 group 1 independent CI — DEVELOPMENT VERIFIED (2026-10-16)
 
 **Authoritative tested code SHA:** `84f1653a97269d9ad3c74e7a9ef1c53b98bf87ab`; [GitHub Actions #38889798678 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38889798678). Node 22 parser, new knit/woven/denim alternative-calendar source/preview tests, calendar/CPM/duration/import/record preservation, G01–G12, R01–R12, PPM168, AQL24 and actual Chromium language/mobile, real XLSX/PDF/shell regressions completed successfully under this workflow. First attempted SHA `2cc1a17b` failed due to detached static validator call; fixed at exact green SHA. Earlier history is retained.

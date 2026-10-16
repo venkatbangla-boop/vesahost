@@ -1,5 +1,16 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## CURRENT CHATGPT WORK / SINGLE-SESSION EXECUTION (2026-10-16)
+
+**Authoritative runtime:** TNA F19 source `373c4f9b51dbb37fc213952b7e6e42b098515cec` [Actions #38894328513 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38894328513); development branch `feature/tna-merchandising-rework`. This checkpoint supersedes *dated* earlier NEXT guidance but retains all history. Whole TNA remains **ACTIVE / CONDITIONAL**, no public release; F19 local source/preview/save/apply/R12/typed XLSX/four languages/real Chromium **DEVELOPMENT VERIFIED**. See `VESA_PROGRESS.md` for the **single 17-app portfolio queue** and `docs/tna/06_EXECUTION_TRACKER.md` for F01–F50 matrix.
+
+**APP-FIRST RULE:** Once begun, continue audit→implementation→tests→small fixes→commit→next action inside the current available ChatGPT Work session. Do not stop after a tiny checkpoint or require user NEXT between patches. Inform user on complete app development or a genuine dependency, not each micro-task. If human acceptance/Pages eligibility is the only remaining block, preserve the development verdict and continue to the next approved app. No background/asynchronous promise after the session. Use connected GitHub to read live HEAD/CI before each decision; no stale percentages, repeated code or competing tracker.
+
+**APP-01 SOURCE GATE:** Packing & Container 360 is next. Exact original dedicated blueprint `blueprints/APP-01_packing-container.md` appears only within `VESA_360_15_APP_MASTER_ROADMAP_HANDOVER.zip` Library listing; raw ZIP extraction/materialization is unavailable. `docs/roadmap/APP-01_M0_SOURCE_AND_SCOPE_AUDIT.md` on `feature/tna360-continuous` is an already-written audit (not a build). Before M1, recover approved blueprint from accessible attachment/repo. Do not fabricate physical dimensions, box count, pack policy, container rating or claim user-specific loading feasibility. Preserve `main` and accepted TNA, PPM, AQL, Costing and shell. Do not open an invented backend or publish a commercial Pages SaaS.
+
+---
+
+
 ## F19 group 1 independent CI — DEVELOPMENT VERIFIED (2026-10-16)
 
 **Authoritative tested code SHA:** `84f1653a97269d9ad3c74e7a9ef1c53b98bf87ab`; [GitHub Actions #38889798678 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38889798678). Node 22 parser, new knit/woven/denim alternative-calendar source/preview tests, calendar/CPM/duration/import/record preservation, G01–G12, R01–R12, PPM168, AQL24 and actual Chromium language/mobile, real XLSX/PDF/shell regressions completed successfully under this workflow. First attempted SHA `2cc1a17b` failed due to detached static validator call; fixed at exact green SHA. Earlier history is retained.
