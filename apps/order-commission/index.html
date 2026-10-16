@@ -508,7 +508,7 @@ class CommissionWorkspace{
  menu(name){
   const options={Home:[['home',this.tr('home')],['new',this.tr('new')],['continue',this.tr('continue')],['practice',this.tr('practice')]],
    File:[['save',this.tr('save')],['download',this.tr('download')],['upload',this.tr('upload')],['open',this.tr('open')]],
-   Edit:[['meta',this.tr('buyer')],['agreement',this.tr('agreement')],['add-line',this.tr('lines')],['add-earning',this.tr('earnings')]],
+   Edit:[['meta',this.tr('buyer')],['edit-agreement',this.tr('agreement')],['add-line',this.tr('lines')],['add-earning',this.tr('earnings')]],
    View:[['summary',this.tr('summary')],['lines',this.tr('lines')],['receipts',this.tr('receipts')],['history',this.tr('history')]],
    Tools:[['report',this.tr('report')],['add-invoice',this.tr('invoices')],['add-receipt',this.tr('receipts')],['add-adjustment',this.tr('adjustments')]],
    Help:[['help','How to use Commission 360'],['practice',this.tr('practice')]]};
@@ -617,7 +617,7 @@ class CommissionWorkspace{
    '<p class="com-muted">'+l('asOf')+': '+esc(this.asOf)+' · '+l('due')+': '+esc(c.overdue.length)+'</p>'+
    '<p class="com-muted">'+l('warning')+'</p>'+
    (c.notes.length?'<ul>'+c.notes.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul>':'')+'</section>';
-  if(tab==='agreement')return '<section class="com-card">'+head('agreement','agreement')+
+  if(tab==='agreement')return '<section class="com-card">'+head('agreement','edit-agreement')+
    table(['Version','Basis','Rate %','Currency','Earned rule','Rounding','Source','Local review'],[[
     esc(p.agreement.version),esc(p.agreement.basis||this.tr('needs')),
     esc(p.agreement.ratePercent||this.tr('needs')),esc(p.agreement.currency||this.tr('needs')),
