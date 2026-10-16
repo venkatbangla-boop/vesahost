@@ -626,6 +626,114 @@ async function run(){
     assert.equal(JSON.stringify(r09Unchanged),JSON.stringify(stored.records[0].plan));
     console.log('TNA R09 Chromium PASS: internal empty-source, actual JSON/XLSX/PDF viewer, mobile, unverified lot dispatch gated, buyer blocked, saved copy immutable.');
 
+
+    // R10 previews only saved compatible orders from this user profile; raw
+    // practice, other local user keys and unconfirmed CPM are never promoted.
+    await page.locator('#tnaReportType').selectOption('R10');
+    await page.locator('.tna-portfolio-report').waitFor();
+    assert(await page.locator('#tnaR10Controls').isVisible());
+    assert.equal(await page.locator('.tna-portfolio-orders tbody tr').count(),1,
+      'Current saved local order is visible without creating synthetic extras.');
+    const portfolioSavedBefore=await page.evaluate(k=>localStorage.getItem(k),
+      'vesa.tna360.records.'+session.userKey);
+    // Seed synthetic saved records in the SAME user key; restore at test end.
+    await page.evaluate(k=>{
+      const another=VesaTnaDomain.createPlan({
+        templateId:'knit',buyerName:'Synthetic Buyer Second',factoryName:'Synthetic Factory Second',
+        styleNo:'SYNTHETIC-PORTFOLIO-2',poNumber:'SYN-PO-2',totalQty:500,
+        orderConfirmedOn:'2026-10-01',buyerRequiredExFactory:'2026-10-30'
+      },{ownerUserId:'qa@vesaent.com'});
+      VesaTnaStorage.savePlan(another,k);
+      const different=VesaTnaDomain.createPlan({
+        templateId:'knit',buyerName:'PRIVATE DIFFERENT OWNER',
+        factoryName:'PRIVATE FACTORY',styleNo:'PRIVATE-OTHER-STYLE',
+        poNumber:'PRIVATE-OTHER-PO',totalQty:120
+      },{ownerUserId:'unrelated-owner'});
+      VesaTnaStorage.savePlan(different,k);
+      const anotherProfile=VesaTnaDomain.createPlan({
+        templateId:'knit',buyerName:'PRIVATE OTHER LOGIN',
+        factoryName:'PRIVATE FACTORY',styleNo:'PRIVATE-LOGIN-STYLE',
+        poNumber:'PRIVATE-LOGIN-PO',totalQty:120
+      },{ownerUserId:'qa@vesaent.com'});
+      VesaTnaStorage.savePlan(anotherProfile,'another-user-profile');
+    },session.userKey);
+    // The existing report model rereads the same-profile saved snapshot on each action.
+    await page.locator('[data-report-action="preview"]').click();
+    assert.equal(await page.locator('.tna-portfolio-orders tbody tr').count(),2,
+      'R10 includes two saved orders, excludes a different local owner.');
+    const r10Download=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const r10Json=await r10Download,r10JsonPath=path.join(output,'tna-r10-portfolio.json');
+    await r10Json.saveAs(r10JsonPath);
+    const r10Model=JSON.parse(fs.readFileSync(r10JsonPath,'utf8'));
+    assert.equal(r10Model.portfolio.schema,'VESA-TNA-PORTFOLIO-1');
+    assert.equal(r10Model.portfolio.orders.length,2);
+    assert.equal(r10Model.portfolio.counts.excludedLocalRecords,1);
+    assert.equal(r10Model.portfolio.counts.unverifiedCpm,2);
+    assert(r10Model.portfolio.orders.every(x=>x.cpmForecast===null));
+    assert(!JSON.stringify(r10Model).includes('PRIVATE DIFFERENT OWNER'));
+    assert(!JSON.stringify(r10Model).includes('PRIVATE OTHER LOGIN'));
+    const r10ExcelEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const r10Xlsx=await r10ExcelEvent,r10XlsxPath=path.join(output,'tna-r10-portfolio.xlsx');
+    await r10Xlsx.saveAs(r10XlsxPath);
+    const r10Book=XLSX.read(fs.readFileSync(r10XlsxPath),{type:'buffer'});
+    assert.deepEqual(r10Book.SheetNames,['Report Summary','Order Summary','Report Activities','Report Notes',
+      'Portfolio Orders','Portfolio PO','Portfolio Actions']);
+    assert.equal(XLSX.utils.sheet_to_json(r10Book.Sheets['Portfolio Orders'],{header:1,raw:false}).length,3);
+    assert(!JSON.stringify(r10Book.Sheets).includes('PRIVATE DIFFERENT OWNER'));
+    await page.emulateMedia({media:'print'});
+    await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const r10Print=await page.locator('.tna-portfolio-orders').evaluate(table=>({
+      width:table.getBoundingClientRect().width,
+      holder:table.parentElement.getBoundingClientRect().width,
+      heading:getComputedStyle(table.tHead).display
+    }));
+    assert(r10Print.width<=r10Print.holder+1,'R10 print must fit without clipping.');
+    assert.equal(r10Print.heading,'table-header-group');
+    const r10PdfPath=path.join(output,'tna-r10-portfolio.pdf');
+    await page.pdf({path:r10PdfPath,printBackground:true,preferCSSPageSize:true,landscape:true});
+    await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    assert.equal(fs.readFileSync(r10PdfPath).subarray(0,5).toString(),'%PDF-');
+    const r10Viewer=await context.newPage();
+    await r10Viewer.goto(pathToFileURL(r10PdfPath).href,{waitUntil:'load'});
+    assert(await r10Viewer.evaluate(()=>location.href.startsWith('file:')));
+    await r10Viewer.screenshot({path:path.join(output,'tna-r10-portfolio-pdf-viewer.png')});
+    await r10Viewer.close();
+    await page.emulateMedia({media:'screen'});
+    await page.setViewportSize({width:390,height:844});
+    const r10Mobile=await page.evaluate(()=>({
+      doc:document.documentElement.scrollWidth,
+      viewport:document.documentElement.clientWidth,
+      table:document.querySelector('.tna-portfolio-scroll')?.scrollWidth,
+      container:document.querySelector('.tna-portfolio-scroll')?.clientWidth
+    }));
+    assert(r10Mobile.doc<=r10Mobile.viewport+1);
+    assert(r10Mobile.table>=r10Mobile.container);
+    await page.setViewportSize({width:1280,height:900});
+    // Reopen the same VESA report dialog to populate all saved-order filter options.
+    await page.locator('#tnaDialog .tna-dialog-head button').click();
+    await openTools(page);
+    await page.locator('[data-menu-action="Prepare Report"]').click();
+    await page.locator('#tnaReportType').selectOption('R10');
+    await page.locator('#tnaR10Buyer').selectOption('Synthetic Buyer Second');
+    assert.equal(await page.locator('.tna-portfolio-orders tbody tr').count(),1);
+    const r10FilterEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const filterDownload=await r10FilterEvent,filterPath=path.join(output,'tna-r10-portfolio-filter.json');
+    await filterDownload.saveAs(filterPath);
+    const filtered=JSON.parse(fs.readFileSync(filterPath,'utf8')).portfolio;
+    assert.equal(filtered.counts.visibleOrders,1);
+    assert.equal(filtered.orders[0].style,'SYNTHETIC-PORTFOLIO-2');
+    // Restore the original real-browser synthetic local saved copy byte-for-byte.
+    await page.evaluate(({key,text})=>localStorage.setItem(key,text),{
+      key:'vesa.tna360.records.'+session.userKey,text:portfolioSavedBefore
+    });
+    const afterPortfolio=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).records[0].plan,
+      'vesa.tna360.records.'+session.userKey);
+    assert.equal(JSON.stringify(afterPortfolio),JSON.stringify(stored.records[0].plan));
+    console.log('TNA R10 Chromium PASS: two same-owner local saved orders, other-owner and other-login segregation, filters, real typed XLSX/JSON/PDF viewer, print and 390px, restored source.');
+
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}

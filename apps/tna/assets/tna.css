@@ -296,3 +296,31 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
   body.tna-printing-report .tna-shipment-hold{font-size:8pt!important;color:#111!important}
   body.tna-printing-report .tna-shipment-report h3{break-after:avoid!important;color:#111!important}
 }
+
+
+
+/* R10 local management report: same VESA dialog, scrollable tables, safe print. */
+.tna-portfolio-controls[hidden]{display:none!important}
+.tna-portfolio-controls{border:1px solid var(--line,#d5deea);border-radius:10px;padding:11px;margin:8px 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tna-portfolio-controls .tna-note{grid-column:1/-1;margin:0}
+.tna-portfolio-controls label{display:flex;flex-direction:column;gap:6px;min-width:0}
+.tna-portfolio-report{max-width:100%;min-width:0}
+.tna-portfolio-notice{border:1px solid var(--line,#d5deea);padding:10px 12px;border-radius:8px;font-size:12px;line-height:1.45;font-weight:650;overflow-wrap:anywhere}
+.tna-portfolio-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.tna-portfolio-report-table{width:100%;min-width:1370px;table-layout:fixed;border-collapse:collapse}
+.tna-portfolio-report-table th,.tna-portfolio-report-table td{border:1px solid var(--line,#d5deea);padding:5px;vertical-align:top;font-size:10px;line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+.tna-portfolio-report-table th{text-align:left;font-weight:800;background:var(--look-surface,#eef3f9)}
+.tna-portfolio-po{min-width:750px}
+.tna-portfolio-actions{min-width:830px}
+.tna-portfolio-report h3{font-size:14px;margin:13px 0 6px}
+@media(max-width:700px){.tna-portfolio-controls{grid-template-columns:1fr}}
+@media print{
+  body.tna-printing-report .tna-portfolio-scroll{max-width:100%!important;overflow:visible!important}
+  body.tna-printing-report .tna-portfolio-report-table{min-width:0!important;width:100%!important;table-layout:fixed!important}
+  body.tna-printing-report .tna-portfolio-report-table thead{display:table-header-group!important}
+  body.tna-printing-report .tna-portfolio-report-table tr{break-inside:avoid!important;page-break-inside:avoid!important}
+  body.tna-printing-report .tna-portfolio-report-table th,
+  body.tna-printing-report .tna-portfolio-report-table td{padding:2px!important;font-size:6pt!important;line-height:1.25!important;border-color:#999!important;background:#fff!important;color:#111!important;overflow-wrap:anywhere!important}
+  body.tna-printing-report .tna-portfolio-notice{font-size:8pt!important;color:#111!important}
+  body.tna-printing-report .tna-portfolio-report h3{break-after:avoid!important;color:#111!important}
+}
