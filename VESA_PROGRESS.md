@@ -1,5 +1,14 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## F31 safe draft Undo/Redo — DEVELOPMENT VERIFIED (2026-10-16)
+
+Verified code `8a75d2ce8767c80069ca16000e874277ac3a336e` at [GitHub Actions #38896564923 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38896564923). F31 existing Edit menu now performs **tab-local Undo/Redo of unsigned activity follow-up changes only**, using `apps/tna/src/storage.js` `TnaDraftFollowupHistory` and existing `domain.updateTaskFollowup` validation/audit. It preserves monotonic revision/audit history, rejects confirmed baselines, approved/completed/waived evidence, stale/intervening edits, other order and storage failures; replay is re-saved to the named local order. UI labels available in EN/BN/HI/TA. Reopen/reload safely clears volatile undo chain. Browser 390px and local saved copy recorded, no external calls; PPM168/AQL24/sampling, G01–G12, R01–R12/G08 Excel/print, one shared shell/mobile regressions all PASS. Synthetic [test artifact](https://github.com/venkatbangla-boop/vesahost/actions/runs/38896564923) in Actions. Existing history controls remain limited to **draft follow-up**; undo of confirmed baseline or buyer decision is intentionally forbidden. Rollback: revert code commit `8a75d2ce8767c80069ca16000e874277ac3a336e`; no schema, migration, `main`, cloud or Pages changes.
+
+**Portfolio NEXT ACTION:** F42 locally actionable offline refresh + recoverability browser proof (service worker / shell behavior) from actual existing source, not unsupported provider claims. Original Packing & Container APP-01 blueprint in previous Library ZIP remains unreadable; cannot safely start its complete M1 implementation without exact approved document. This source blocker does not stop applicable TNA local work. Full TNA **ACTIVE / CONDITIONAL**, not DEMO LIVE; human merchandiser, physical native Excel/device and server/release authority remain open.
+
+---
+
+
 ## CURRENT APPROVED 17-APP PORTFOLIO QUEUE — SINGLE AUTHORITY (2026-10-16)
 
 Historical work entries remain below; this **one table** is current, not a percent-of-done estimate or an alternate tracker. Refresh it from actual branches/CI before every handover.

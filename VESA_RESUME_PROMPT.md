@@ -1,5 +1,14 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## F31 safe draft Undo/Redo — DEVELOPMENT VERIFIED (2026-10-16)
+
+Verified code `8a75d2ce8767c80069ca16000e874277ac3a336e` at [GitHub Actions #38896564923 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38896564923). F31 existing Edit menu now performs **tab-local Undo/Redo of unsigned activity follow-up changes only**, using `apps/tna/src/storage.js` `TnaDraftFollowupHistory` and existing `domain.updateTaskFollowup` validation/audit. It preserves monotonic revision/audit history, rejects confirmed baselines, approved/completed/waived evidence, stale/intervening edits, other order and storage failures; replay is re-saved to the named local order. UI labels available in EN/BN/HI/TA. Reopen/reload safely clears volatile undo chain. Browser 390px and local saved copy recorded, no external calls; PPM168/AQL24/sampling, G01–G12, R01–R12/G08 Excel/print, one shared shell/mobile regressions all PASS. Synthetic [test artifact](https://github.com/venkatbangla-boop/vesahost/actions/runs/38896564923) in Actions. Existing history controls remain limited to **draft follow-up**; undo of confirmed baseline or buyer decision is intentionally forbidden. Rollback: revert code commit `8a75d2ce8767c80069ca16000e874277ac3a336e`; no schema, migration, `main`, cloud or Pages changes.
+
+**Portfolio NEXT ACTION:** F42 locally actionable offline refresh + recoverability browser proof (service worker / shell behavior) from actual existing source, not unsupported provider claims. Original Packing & Container APP-01 blueprint in previous Library ZIP remains unreadable; cannot safely start its complete M1 implementation without exact approved document. This source blocker does not stop applicable TNA local work. Full TNA **ACTIVE / CONDITIONAL**, not DEMO LIVE; human merchandiser, physical native Excel/device and server/release authority remain open.
+
+---
+
+
 ## CURRENT CHATGPT WORK / SINGLE-SESSION EXECUTION (2026-10-16)
 
 **Authoritative runtime:** TNA F19 source `373c4f9b51dbb37fc213952b7e6e42b098515cec` [Actions #38894328513 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38894328513); development branch `feature/tna-merchandising-rework`. This checkpoint supersedes *dated* earlier NEXT guidance but retains all history. Whole TNA remains **ACTIVE / CONDITIONAL**, no public release; F19 local source/preview/save/apply/R12/typed XLSX/four languages/real Chromium **DEVELOPMENT VERIFIED**. See `VESA_PROGRESS.md` for the **single 17-app portfolio queue** and `docs/tna/06_EXECUTION_TRACKER.md` for F01–F50 matrix.
