@@ -1002,7 +1002,7 @@ async function run(){
     await page.locator('#tnaImportFile').setInputFiles({
       name:'synthetic-g08.xlsx',
       mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      buffer:sheetBytes
+      buffer:Buffer.from(sheetBytes)
     });
     await page.locator('#tnaImportReadFile').click();
     await page.locator('#tnaImpTaskSheet').waitFor();
@@ -1065,7 +1065,7 @@ async function run(){
     await page.locator('#tnaImportFile').setInputFiles({
       name:'bad-g08.xlsx',
       mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      buffer:XLSX.write(unsafe,{type:'buffer',bookType:'xlsx'})
+      buffer:Buffer.from(XLSX.write(unsafe,{type:'buffer',bookType:'xlsx'}))
     });
     await page.locator('#tnaImportReadFile').click();
     assert((await page.locator('#tnaImportReview').innerText()).includes('Formula'));
