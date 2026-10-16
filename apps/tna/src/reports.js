@@ -1794,10 +1794,260 @@
     }
   }
 
+
+  /**
+   * R11 read-only approval sequence, local proof and revision-event projection.
+   * Source ownership remains OrderPlan.approvals / revisionEvents: this class
+   * never creates decisions, changes task state, asserts external reviewer
+   * identity, grants buyer/factory access or mutates approval history.
+   * Existing operations.approvalState is only a LOCAL consistency classifier.
+   */
+  class TnaApprovalHistoryProjection {
+    static labels(language){
+      const dict={
+        en:{title:'Approval History — recorded source',unknown:'Needs Information',
+          notice:'INTERNAL APPROVAL REVIEW ONLY. Approval/waiver claims and recorded reviewer names are local entries, NOT independently authenticated buyer/factory decisions. Obtain recipient permission before sharing.',
+          basis:'Submission, receipt, decision and revisions are separate source records. A submission does not mean approval; a date or evidence reference alone does not validate the decision authority. Resubmission entries are source-order positions, not confirmed external round numbers.',
+          external:'External buyer/factory approval history cannot be released without independent order-level recipient authorization. All source approval/order data is withheld.',
+          empty:'No approval instances recorded',noRounds:'No resubmission entries recorded',
+          noEvents:'No approval-linked revision events recorded',invalid:'Invalid or missing source date / reviewer / evidence',
+          future:'Recorded decision date falls after report as-of',pending:'Submitted / pending — no verified decision',
+          localApproved:'Approved claim locally consistent — external authority unverified',
+          localWaived:'Waiver claim locally consistent — external authority unverified',
+          localRejected:'Rejection entered locally — external decision unverified',
+          incomplete:'Approval or waiver claim incomplete — check reviewer, evidence, reason and decision date',
+          inconsistent:'Required reviewer and entered decision maker do not match',
+          recordedOnly:'Locally recorded; independent proof missing',
+          notDecision:'Task status or revision event is NOT an independent approval',
+          noAuthority:'No independent buyer/factory authorization is verified',
+          missingTasks:'No required task references recorded',localRevision:'Approval-linked local revision history; no externally approved baseline implied',
+          modes:['Internal review (restricted)','Buyer copy (blocked)','Factory copy (blocked)'],
+          headings:['Approval item','Item revision','Required approver','Submitted','Received','Decision date','Source response','Local as-of classification','Decision maker','Authorized reviewer (entered)','Evidence reference','Waiver reason','Authority / proof','Required task refs'],
+          roundHeadings:['Approval item','Source entry','Submitted','Received','Decision date','Entered response','Decision maker','Evidence reference','As-of classification','Comments'],
+          eventHeadings:['Revision event','Plan revision','Logged timestamp','Recorded actor','Related approval','Recorded reason','Authority status'],
+          asOf:'As of'},
+        bn:{title:'অনুমোদনের ইতিহাস — স্থানীয় নথি',unknown:'তথ্য প্রয়োজন',
+          notice:'শুধু অভ্যন্তরীণ অনুমোদন পর্যালোচনা। নাম/অনুমোদন/ওয়েভার স্থানীয় নথি; ক্রেতা/কারখানার স্বাধীন প্রমাণ নয়। অনুমতি ছাড়া পাঠাবেন না।',
+          basis:'জমা, প্রাপ্তি, সিদ্ধান্ত ও সংশোধন আলাদা। জমা দিলেই অনুমোদন নয়। পুনরায় জমার তালিকার সংখ্যা বাইরের নিশ্চিত রাউন্ড নয়।',
+          external:'স্বাধীন প্রাপকের অনুমতি নেই; ক্রেতা/কারখানার কপি বন্ধ এবং সব অর্ডার/অনুমোদন তথ্য গোপন।',
+          empty:'অনুমোদন নথি নেই',noRounds:'পুনরায় জমা নেই',noEvents:'অনুমোদন-সম্পর্কিত সংশোধন নেই',
+          invalid:'তারিখ/পর্যালোচক/প্রমাণ নেই বা ভুল',future:'রিপোর্ট তারিখের পরের সিদ্ধান্ত',
+          pending:'জমা/অপেক্ষা — নিশ্চিত সিদ্ধান্ত নেই',
+          localApproved:'স্থানীয় অনুমোদন লেখা — স্বাধীন যাচাই হয়নি',
+          localWaived:'স্থানীয় ছাড় লেখা — স্বাধীন যাচাই হয়নি',
+          localRejected:'স্থানীয় প্রত্যাখ্যান — বাইরের যাচাই নেই',
+          incomplete:'অনুমোদন/ছাড়ের প্রমাণ অসম্পূর্ণ',inconsistent:'লেখা পর্যালোচক ও সিদ্ধান্তকারীর অমিল',
+          recordedOnly:'স্থানীয় রেকর্ড; স্বাধীন প্রমাণ নেই',notDecision:'কাজ/সংশোধন মানে অনুমোদন নয়',
+          noAuthority:'বাইরের অনুমতি নিশ্চিত নয়',missingTasks:'প্রয়োজনীয় কাজের লিংক নেই',
+          localRevision:'স্থানীয় পরিবর্তন; ক্রেতার অনুমোদিত বেসলাইন নয়',
+          modes:['ভেতরের রিপোর্ট','ক্রেতার কপি বন্ধ','কারখানার কপি বন্ধ'],
+          headings:['অনুমোদন','সংশোধন','প্রয়োজনীয় পক্ষ','জমা','প্রাপ্তি','সিদ্ধান্ত তারিখ','লেখা অবস্থা','স্থানীয় ফল','সিদ্ধান্তকারী','পর্যালোচক','প্রমাণ','ছাড়ের কারণ','অনুমতি','কাজ'],
+          roundHeadings:['অনুমোদন','নথি নম্বর','জমা','প্রাপ্তি','সিদ্ধান্ত','ফল','সিদ্ধান্তকারী','প্রমাণ','অবস্থা','মন্তব্য'],
+          eventHeadings:['ঘটনা','রিভিশন','সময়','কর্তা','অনুমোদন','কারণ','অনুমতি'],
+          asOf:'তারিখ'},
+        hi:{title:'अनुमोदन इतिहास — स्थानीय रिकॉर्ड',unknown:'जानकारी चाहिए',
+          notice:'केवल आंतरिक अनुमोदन समीक्षा। दर्ज मंजूरी, छूट या समीक्षक के नाम खरीदार/फैक्ट्री की स्वतंत्र पुष्टि नहीं। अनुमति बिना साझा न करें।',
+          basis:'सबमिशन, प्राप्ति, फैसला और बदलाव अलग स्रोत हैं। सबमिट होना मंजूरी नहीं। पुनः सबमिशन की प्रविष्टि पुष्टि बाहरी राउंड नहीं।',
+          external:'खरीदार/फैक्ट्री के लिए स्वतंत्र अनुमति नहीं; बाहरी कॉपी और आदेश डेटा रोका गया।',
+          empty:'अनुमोदन रिकॉर्ड नहीं',noRounds:'पुनः सबमिशन रिकॉर्ड नहीं',noEvents:'अनुमोदन संबंधित संशोधन नहीं',
+          invalid:'तारीख/समीक्षक/प्रमाण गलत या नहीं',future:'रिपोर्ट तारीख के बाद का निर्णय',
+          pending:'जमा / प्रतीक्षा — सत्यापित निर्णय नहीं',
+          localApproved:'स्थानीय मंजूरी लिखी — स्वतंत्र प्रमाण नहीं',
+          localWaived:'स्थानीय छूट लिखी — स्वतंत्र प्रमाण नहीं',
+          localRejected:'स्थानीय रिजेक्शन — स्वतंत्र प्रमाण नहीं',
+          incomplete:'मंजूरी/छूट का प्रमाण अधूरा',inconsistent:'लिखा समीक्षक और निर्णयकर्ता अलग',
+          recordedOnly:'स्थानीय रिकॉर्ड, स्वतंत्र प्रमाण नहीं',notDecision:'कार्य/रिविजन मंजूरी नहीं',
+          noAuthority:'खरीदार/फैक्ट्री अनुमति सत्यापित नहीं',missingTasks:'संबंधित कार्य नहीं',
+          localRevision:'स्थानीय संशोधन; खरीदार बेजलाइन मंजूर नहीं',
+          modes:['आंतरिक रिपोर्ट','खरीदार कॉपी रुकी','फैक्ट्री कॉपी रुकी'],
+          headings:['अनुमोदन','रिविजन','जरूरी पक्ष','सबमिट','प्राप्त','फैसला','लिखा स्टेटस','स्थानीय अर्थ','निर्णयकर्ता','समीक्षक','प्रमाण','छूट कारण','अनुमति','कार्य'],
+          roundHeadings:['अनुमोदन','क्रम प्रविष्टि','सबमिट','प्राप्त','निर्णय','स्टेटस','निर्णयकर्ता','प्रमाण','स्थिति','टिप्पणी'],
+          eventHeadings:['घटना','रिविजन','समय','कर्ता','अनुमोदन','कारण','अनुमति'],
+          asOf:'रिपोर्ट तारीख'},
+        ta:{title:'Approval History — உள்ளூர் பதிவுகள்',unknown:'தகவல் தேவை',
+          notice:'Internal Approval review மட்டும். Approved/Waived என்ற பதிவு அல்லது reviewer பெயர் Buyer/Factory-யின் தனி உறுதி அல்ல. வெளியில் பகிர முன் அனுமதி பார்க்க வேண்டும்.',
+          basis:'Submission, Received, Decision மற்றும் Revision தனித்தனி பதிவுகள். Submit செய்தால் Approved அல்ல. Evidence reference மட்டும் authority உறுதி அல்ல. Resubmission entry வரிசை வெளி buyer round உறுதி அல்ல.',
+          external:'Buyer/Factory பெறுநரின் சுயாதீன அனுமதி இல்லை. வெளி copy தடுக்கப்பட்டுள்ளது; order/approval விவரங்கள் காட்டப்படாது.',
+          empty:'Approval பதிவு இல்லை',noRounds:'Resubmission பதிவு இல்லை',noEvents:'Approval-இன் revision பதிவு இல்லை',
+          invalid:'தேதி / reviewer / evidence தவறு அல்லது இல்லை',future:'Report தேதிக்குப் பிறகான decision பதிவு',
+          pending:'Submission / Pending; உறுதி செய்யப்பட்ட முடிவு இல்லை',
+          localApproved:'உள்ளூரில் Approved பதிவு; வெளி Authority உறுதி இல்லை',
+          localWaived:'உள்ளூரில் Waived பதிவு; வெளி Authority உறுதி இல்லை',
+          localRejected:'உள்ளூரில் Rejected பதிவு; வெளி உறுதி இல்லை',
+          incomplete:'Approval / Waiver-க்கு evidence அல்லது authority குறைவு',
+          inconsistent:'பதிந்த reviewer மற்றும் decision maker வேறுபடுகின்றனர்',
+          recordedOnly:'உள்ளூர் பதிவு மட்டும்',notDecision:'Task/Revision என்பது Approval அல்ல',
+          noAuthority:'Buyer/Factory சுயாதீன ஒப்புதல் உறுதி இல்லை',
+          missingTasks:'Linked task பதிவு இல்லை',localRevision:'உள்ளூர் Revision மட்டும்; Buyer approved baseline அல்ல',
+          modes:['Internal review','Buyer copy — blocked','Factory copy — blocked'],
+          headings:['Approval item','Item revision','Approval தரவேண்டியவர்','Submit','Received','Decision','Source response','Local classification','Decision maker','Reviewer பதிவு','Evidence','Waiver reason','Authority / proof','Linked task'],
+          roundHeadings:['Approval item','பதிந்த entry','Submit','Received','Decision','Response','Decision maker','Evidence','Local நிலை','Comments'],
+          eventHeadings:['Revision event','Revision','பதிந்த நேரம்','Actor','Related approval','பதிந்த காரணம்','Authority'],
+          asOf:'அறிக்கை நாள்'}
+      };
+      return dict[language]||dict.en;
+    }
+    /** Normalize entered dates and reject future-as-of decisions without mutation. */
+    static civil(value){
+      const result=TnaMasterReportProjection.asDate(value);
+      return result&&TnaMasterReportProjection.day(result)!==null?result:null;
+    }
+    /** Exact matcher: local delegation remains a CLAIM even when consistent. */
+    static classify(source,asOfDay,labels){
+      const date=this.civil(source?.decisionDate);
+      const entered=typeof source?.responseStatus==='string'?source.responseStatus:'';
+      const evidence=typeof source?.evidenceRef==='string'&&source.evidenceRef.trim().length>0;
+      const decidedBy=typeof source?.decidedBy==='string'?source.decidedBy.trim():'';
+      const reviewer=typeof source?.authorizedReviewerId==='string'?source.authorizedReviewerId.trim():'';
+      const delegated=source?.delegatedLocalOfficeAllowed===true;
+      const permitted=Boolean(decidedBy&&(reviewer===decidedBy||(delegated&&
+        typeof source?.partyRequiredToApprove==='string'&&source.partyRequiredToApprove.trim())));
+      const reviewerMismatch=Boolean(decidedBy&&reviewer&&reviewer!==decidedBy&&!delegated);
+      const ops=root.VesaTnaOperations||(typeof require==='function'?require('./operations.js'):null);
+      const consistency=ops?.approvalState?.(source)||{status:'needs-information',reason:labels.invalid};
+      if(date&&TnaMasterReportProjection.day(date)>asOfDay)
+        return {sourceStatus:entered||labels.unknown,asOfStatus:labels.future,
+          consistency:consistency.status,authorityClaimRecorded:permitted,externallyVerified:false};
+      if(reviewerMismatch)
+        return {sourceStatus:entered||labels.unknown,asOfStatus:labels.inconsistent,
+          consistency:consistency.status,authorityClaimRecorded:false,externallyVerified:false};
+      const isDecision=Boolean(date&&TnaMasterReportProjection.day(date)<=asOfDay);
+      const waiverReason=typeof source?.waiverReason==='string'&&source.waiverReason.trim()||
+        typeof source?.returnComments==='string'&&source.returnComments.trim();
+      let value=labels.pending;
+      if(entered==='approved')value=isDecision&&evidence&&permitted&&consistency.status==='approved'?
+        labels.localApproved:labels.incomplete;
+      else if(entered==='waived')value=isDecision&&evidence&&permitted&&waiverReason&&
+        consistency.status==='waived'?labels.localWaived:labels.incomplete;
+      else if(entered==='rejected')value=isDecision?labels.localRejected:labels.incomplete;
+      else if(entered==='submitted'||source?.submittedDate)value=labels.pending;
+      else value=labels.unknown;
+      return {sourceStatus:entered||labels.unknown,asOfStatus:value,
+        consistency:consistency.status,authorityClaimRecorded:permitted,
+        externallyVerified:false};
+    }
+    /** Approval IDs are source keys; duplicate IDs make authority unresolved. */
+    static record(source,plan,asOfDay,labels,duplicate){
+      const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
+      const allTasks=Array.isArray(plan.tasks)?plan.tasks:[];
+      const linked=Array.isArray(source?.requiredForTaskIds)?source.requiredForTaskIds:[];
+      const linkedRefs=linked.map(id=>allTasks.find(t=>t.taskId===id)?.templateRef||labels.unknown);
+      const c=this.classify(source,asOfDay,labels);
+      return {approvalId:text(source?.approvalId),
+        item:text(source?.itemName)||labels.unknown,
+        itemRevision:Number.isInteger(source?.revision)&&source.revision>=0?
+          source.revision:text(source?.revision),
+        requiredParty:text(source?.partyRequiredToApprove)||labels.unknown,
+        submittedDate:this.civil(source?.submittedDate),receivedDate:this.civil(source?.receivedDate),
+        decisionDate:this.civil(source?.decisionDate),
+        recordedResponse:c.sourceStatus,
+        asOfStatus:duplicate?labels.inconsistent:c.asOfStatus,
+        localConsistency:c.consistency,
+        decidedBy:text(source?.decidedBy)||labels.unknown,
+        reviewer:text(source?.authorizedReviewerId)||labels.unknown,
+        evidenceRef:text(source?.evidenceRef),
+        waiverReason:text(source?.waiverReason)||text(source?.returnComments),
+        linkedTasks:linkedRefs,authorityClaimRecorded:!duplicate&&c.authorityClaimRecorded,
+        externallyVerified:false,delegationClaimRecorded:source?.delegatedLocalOfficeAllowed===true,
+        resubmissionCount:Array.isArray(source?.resubmissionSequence)?source.resubmissionSequence.length:0};
+    }
+    /** Rounds remain individually entered snapshots; never infer missing comments or dates. */
+    static rounds(source,asOfDay,labels){
+      const entries=Array.isArray(source?.resubmissionSequence)?source.resubmissionSequence:[];
+      return entries.map((entry,i)=>{
+        const safe=entry&&typeof entry==='object'&&!Array.isArray(entry)?entry:{};
+        const reviewed=this.classify(safe,asOfDay,labels);
+        const t=v=>typeof v==='string'&&v.trim()?v.trim():null;
+        return {item:t(source?.itemName)||labels.unknown,sourceEntry:i+1,
+          submittedDate:this.civil(safe.submittedDate),
+          receivedDate:this.civil(safe.receivedDate),
+          decisionDate:this.civil(safe.decisionDate),
+          recordedResponse:reviewed.sourceStatus,
+          decidedBy:t(safe.decidedBy)||labels.unknown,
+          evidenceRef:t(safe.evidenceRef),
+          asOfStatus:reviewed.asOfStatus,
+          comments:t(safe.returnComments)||t(safe.waiverReason),
+          externallyVerified:false};
+      });
+    }
+    /** Revision events are source audit entries, not new approval decisions. */
+    static events(plan,approvalIds,linkedIds,asOfDay,labels){
+      const events=Array.isArray(plan.revisionEvents)?plan.revisionEvents:[];
+      return events.filter(event=>{
+        const approvalId=event?.details?.approvalId;
+        return (typeof event?.eventType==='string'&&event.eventType.startsWith('approval-'))||
+          (approvalIds.has(approvalId)&&approvalId)||
+          (event?.eventType==='task-status-changed'&&linkedIds.has(event?.details?.taskId));
+      }).map(event=>{
+        const date=typeof event?.createdAt==='string'?event.createdAt.slice(0,10):'';
+        return {eventType:typeof event?.eventType==='string'?event.eventType:labels.unknown,
+          planRevision:Number.isInteger(event?.revision)?event.revision:null,
+          timestamp:typeof event?.createdAt==='string'?event.createdAt:null,
+          actor:typeof event?.actorId==='string'?event.actorId:labels.unknown,
+          relatedApproval:typeof event?.details?.approvalId==='string'?
+            event.details.approvalId:labels.unknown,
+          reason:typeof event?.reason==='string'?event.reason:
+            typeof event?.details?.reason==='string'?event.details.reason:null,
+          asOfState:this.civil(date)&&TnaMasterReportProjection.day(date)<=asOfDay?
+            labels.notDecision:labels.future,externallyVerified:false};
+      });
+    }
+    /** Report one local snapshot; no hidden external acceptance or approval count. */
+    static build(plan={},options={}){
+      const labels=this.labels(options.language),window=TnaWeeklyReportProjection.window(options);
+      const blank={schema:'VESA-TNA-APPROVAL-HISTORY-1',validity:'incomplete',
+        audience:'internal-approval-review',asOfDate:null,timezone:options.timezone||null,
+        records:[],rounds:[],revisions:[],labels,independentlyApproved:false,
+        counts:{approvalRecords:0,sourceRoundEntries:0,localApprovalClaims:0,externallyVerified:0},
+        warnings:[labels.notice,labels.basis,labels.noAuthority]};
+      if(!window)return {...blank,warnings:[labels.invalid,labels.noAuthority]};
+      const input=Array.isArray(plan.approvals)?plan.approvals:[];
+      const idCounts=new Map();
+      for(const a of input)if(typeof a?.approvalId==='string'&&a.approvalId.trim())
+        idCounts.set(a.approvalId,(idCounts.get(a.approvalId)||0)+1);
+      const records=input.map(a=>this.record(a,plan,window.today,labels,
+        !a?.approvalId||idCounts.get(a.approvalId)!==1));
+      const rounds=input.flatMap(a=>this.rounds(a,window.today,labels));
+      const ids=new Set(records.map(x=>x.approvalId).filter(Boolean));
+      const linked=new Set(input.flatMap(a=>Array.isArray(a?.requiredForTaskIds)?a.requiredForTaskIds:[]));
+      const revisions=this.events(plan,ids,linked,window.today,labels);
+      const localClaims=records.filter(r=>r.asOfStatus===labels.localApproved||
+        r.asOfStatus===labels.localWaived).length;
+      return {...blank,validity:'valid',asOfDate:window.asOfDate,
+        records,rounds,revisions,
+        counts:{approvalRecords:records.length,sourceRoundEntries:rounds.length,
+          localApprovalClaims:localClaims,externallyVerified:0},
+        warnings:[labels.notice,labels.basis,labels.noAuthority,
+          ...(!records.length?[labels.empty]:[]),
+          ...(records.some(r=>r.asOfStatus===labels.incomplete||
+            r.asOfStatus===labels.inconsistent)?[labels.invalid]:[])]};
+    }
+    /** Explicitly withhold order and task data in buyer/factory report models. */
+    static externalReport(report,language,generatedAt,timezone){
+      const labels=this.labels(language),shared=I18N[language];
+      return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:'R11',
+        title:titleFor(report,language),language,languageName:shared.languageName,
+        audience:'External approval history — blocked',generatedAt,
+        generatedLabel:formatDateTime(generatedAt,language),timezone,
+        revision:0,baselineSnapshots:0,headings:shared.headings,labels:shared.labels,
+        order:{buyer:labels.external,factory:labels.external,style:labels.external,
+          po:labels.external,quantity:labels.unknown,unit:labels.unknown,
+          requiredExFactory:labels.unknown},
+        tasks:[],
+        approvalHistory:{schema:'VESA-TNA-APPROVAL-HISTORY-1',validity:'restricted',
+          audience:'external-blocked',asOfDate:null,timezone,
+          records:[],rounds:[],revisions:[],labels,independentlyApproved:false,
+          counts:{approvalRecords:0,sourceRoundEntries:0,localApprovalClaims:0,externallyVerified:0},
+          warnings:[labels.external]},
+        warnings:[labels.external],notes:[labels.external],
+        source:{recordId:null,schemaVersion:null,mode:'restricted-external'}};
+    }
+  }
+
   function taskRows(plan={},limit=Infinity){return (plan.tasks||[]).slice(0,limit).map(task=>({ref:task.templateRef,title:task.title,owner:task.ownerParty,status:task.status,baseline:task.dates?.baselineFinish||'',current:task.dates?.currentTargetFinish||'',forecast:task.dates?.forecastFinish||'',actual:task.dates?.actualFinish||'',risk:task.riskStatus||'needs-information'}))}
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=(report[0]==='R05'||report[0]==='R06'||report[0]==='R07'||report[0]==='R08'||report[0]==='R09'||report[0]==='R10')&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);if(report[0]==='R10')return TnaPortfolioProjection.report(plan,report,l,generatedAt,timezone,options);if(report[0]==='R08'&&options.audienceMode&&options.audienceMode!=='internal')return TnaMaterialLcProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R09'&&options.audienceMode&&options.audienceMode!=='internal')return TnaShipmentReadinessProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R07'&&options.audienceMode==='buyer')return TnaProductionStatusProjection.buyerReport(plan,report,l,generatedAt,timezone,options);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const delay=report[0]==='R06'?TnaDelayRecoveryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const production=report[0]==='R07'?TnaProductionStatusProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const materials=report[0]==='R08'?TnaMaterialLcProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const shipment=report[0]==='R09'?TnaShipmentReadinessProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R09'?'Internal quality and shipping — restricted':report[0]==='R08'?'Internal commercial and sourcing — restricted':report[0]==='R07'?'Internal production review — restricted':report[0]==='R06'?'Local management review — no external sharing authorization':report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(delay?{delayRecovery:delay}:{}),...(production?{productionStatus:production}:{}),...(materials?{materialLc:materials}:{}),...(shipment?{shipmentReadiness:shipment}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[]),...(delay?delay.warnings:[]),...(production?production.warnings:[]),...(materials?materials.warnings:[]),...(shipment?shipment.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),...(delay?[delay.labels.disclosure]:[]),...(production?[production.labels.internalNotice]:[]),...(materials?[materials.labels.internalNotice]:[]),...(shipment?[shipment.labels.notice]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=(report[0]==='R05'||report[0]==='R06'||report[0]==='R07'||report[0]==='R08'||report[0]==='R09'||report[0]==='R10'||report[0]==='R11')&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);if(report[0]==='R10')return TnaPortfolioProjection.report(plan,report,l,generatedAt,timezone,options);if(report[0]==='R11'&&options.audienceMode&&options.audienceMode!=='internal')return TnaApprovalHistoryProjection.externalReport(report,l,generatedAt,timezone);if(report[0]==='R08'&&options.audienceMode&&options.audienceMode!=='internal')return TnaMaterialLcProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R09'&&options.audienceMode&&options.audienceMode!=='internal')return TnaShipmentReadinessProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R07'&&options.audienceMode==='buyer')return TnaProductionStatusProjection.buyerReport(plan,report,l,generatedAt,timezone,options);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const delay=report[0]==='R06'?TnaDelayRecoveryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const production=report[0]==='R07'?TnaProductionStatusProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const materials=report[0]==='R08'?TnaMaterialLcProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const shipment=report[0]==='R09'?TnaShipmentReadinessProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const approvals=report[0]==='R11'?TnaApprovalHistoryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R11'?'Internal approval history — restricted':report[0]==='R09'?'Internal quality and shipping — restricted':report[0]==='R08'?'Internal commercial and sourcing — restricted':report[0]==='R07'?'Internal production review — restricted':report[0]==='R06'?'Local management review — no external sharing authorization':report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(delay?{delayRecovery:delay}:{}),...(production?{productionStatus:production}:{}),...(materials?{materialLc:materials}:{}),...(shipment?{shipmentReadiness:shipment}:{}),...(approvals?{approvalHistory:approvals}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[]),...(delay?delay.warnings:[]),...(production?production.warnings:[]),...(materials?materials.warnings:[]),...(shipment?shipment.warnings:[]),...(approvals?approvals.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),...(delay?[delay.labels.disclosure]:[]),...(production?[production.labels.internalNotice]:[]),...(materials?[materials.labels.internalNotice]:[]),...(shipment?[shipment.labels.notice]:[]),...(approvals?[approvals.labels.notice]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;

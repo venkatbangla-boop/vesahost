@@ -734,6 +734,118 @@ async function run(){
     assert.equal(JSON.stringify(afterPortfolio),JSON.stringify(stored.records[0].plan));
     console.log('TNA R10 Chromium PASS: two same-owner local saved orders, other-owner and other-login segregation, filters, real typed XLSX/JSON/PDF viewer, print and 390px, restored source.');
 
+
+    // R11 Approval History: the migrated empty source is visible as unknown,
+    // not an implicit approval. Browser outputs must be real JSON/XLSX/PDF.
+    await page.locator('#tnaDialog .tna-dialog-head button').click();
+    await openTools(page);
+    await page.locator('[data-menu-action="Prepare Report"]').click();
+    await page.locator('#tnaReportType').selectOption('R11');
+    await page.locator('.tna-approval-history').waitFor();
+    assert(await page.locator('#tnaR11Controls').isVisible());
+    assert.equal(await page.locator('.tna-approval-records tbody tr').count(),1);
+    assert((await page.locator('.tna-approval-records tbody').innerText())
+      .includes('No approval instances recorded'));
+    const r11Promise=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const r11Data=await r11Promise,r11JsonPath=path.join(output,'tna-r11-approval-history.json');
+    await r11Data.saveAs(r11JsonPath);
+    const r11Model=JSON.parse(fs.readFileSync(r11JsonPath,'utf8'));
+    assert.equal(r11Model.approvalHistory.schema,'VESA-TNA-APPROVAL-HISTORY-1');
+    assert.equal(r11Model.approvalHistory.validity,'valid');
+    assert.equal(r11Model.approvalHistory.counts.approvalRecords,0);
+    assert.equal(r11Model.approvalHistory.independentlyApproved,false);
+    const r11XlsxPromise=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const r11Excel=await r11XlsxPromise,r11ExcelPath=path.join(output,'tna-r11-approval-history.xlsx');
+    await r11Excel.saveAs(r11ExcelPath);
+    const r11Workbook=XLSX.read(fs.readFileSync(r11ExcelPath),{type:'buffer'});
+    assert.deepEqual(r11Workbook.SheetNames,['Report Summary','Order Summary','Report Activities',
+      'Report Notes','Approval Records','Approval Rounds','Approval Revisions']);
+    assert.equal(r11Workbook.Sheets['Approval Records'].A2.v,'No approval instances recorded');
+    await page.emulateMedia({media:'print'});
+    await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const r11Print=await page.locator('.tna-approval-records').evaluate(table=>({
+      width:table.getBoundingClientRect().width,
+      holder:table.parentElement.getBoundingClientRect().width,
+      headers:getComputedStyle(table.tHead).display
+    }));
+    assert(r11Print.width<=r11Print.holder+1,'R11 printed table must fit.');
+    assert.equal(r11Print.headers,'table-header-group');
+    const r11PdfPath=path.join(output,'tna-r11-approval-history.pdf');
+    await page.pdf({path:r11PdfPath,printBackground:true,preferCSSPageSize:true,landscape:true});
+    await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    assert.equal(fs.readFileSync(r11PdfPath).subarray(0,5).toString(),'%PDF-');
+    const r11Viewer=await context.newPage();
+    await r11Viewer.goto(pathToFileURL(r11PdfPath).href,{waitUntil:'load'});
+    assert(await r11Viewer.evaluate(()=>location.href.startsWith('file:')));
+    await r11Viewer.screenshot({path:path.join(output,'tna-r11-approval-pdf-viewer.png')});
+    await r11Viewer.close();
+    await page.emulateMedia({media:'screen'});
+    await page.setViewportSize({width:390,height:844});
+    const r11Mobile=await page.evaluate(()=>({
+      doc:document.documentElement.scrollWidth,
+      viewport:document.documentElement.clientWidth,
+      table:document.querySelector('.tna-approval-scroll')?.scrollWidth,
+      holder:document.querySelector('.tna-approval-scroll')?.clientWidth
+    }));
+    assert(r11Mobile.doc<=r11Mobile.viewport+1,'R11 mobile page must not overflow.');
+    assert(r11Mobile.table>=r11Mobile.holder,'R11 wide table scrolls inside labelled holder.');
+    await page.setViewportSize({width:1280,height:900});
+    await page.locator('#tnaR11Audience').selectOption('buyer');
+    const r11Blocked=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const r11BlockedFile=await r11Blocked;
+    const r11BlockedPath=path.join(output,'tna-r11-buyer-blocked.json');
+    await r11BlockedFile.saveAs(r11BlockedPath);
+    const r11Buyer=JSON.parse(fs.readFileSync(r11BlockedPath,'utf8'));
+    assert.equal(r11Buyer.approvalHistory.validity,'restricted');
+    assert.equal(r11Buyer.approvalHistory.records.length,0);
+    assert.equal(r11Buyer.source.recordId,null);
+    assert(!JSON.stringify(r11Buyer).includes('Synthetic Migration Factory'));
+    assert((await page.locator('.tna-approval-history').innerText()).includes('cannot be released'));
+    await page.locator('#tnaR11Audience').selectOption('factory');
+    const r11FactoryEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const r11FactoryExcel=await r11FactoryEvent;
+    const r11FactoryPath=path.join(output,'tna-r11-factory-blocked.xlsx');
+    await r11FactoryExcel.saveAs(r11FactoryPath);
+    const r11FactoryWorkbook=XLSX.read(fs.readFileSync(r11FactoryPath),{type:'buffer'});
+    assert(!JSON.stringify(r11FactoryWorkbook.Sheets).includes('Synthetic Migration Factory'));
+    await page.locator('#tnaR11Audience').selectOption('internal');
+    // Runtime synthetic plan: verify entered approval claim is NOT promoted.
+    const r11Runtime=await page.evaluate(key=>{
+      const raw=localStorage.getItem(key);
+      const original=JSON.parse(raw).records[0].plan;
+      const copy=JSON.parse(JSON.stringify(original));
+      copy.approvals=[{approvalId:'R11-BROWSER',itemName:'PRIVATE FIT APPROVAL',
+        revision:2,partyRequiredToApprove:'Synthetic buyer office',
+        authorizedReviewerId:'BUYER-REVIEWER',decidedBy:'BUYER-REVIEWER',
+        submittedDate:'2026-10-11',decisionDate:'2026-10-14',
+        responseStatus:'approved',evidenceRef:'PRIVATE-APPROVAL-PROOF',
+        requiredForTaskIds:[copy.tasks[0].taskId],
+        resubmissionSequence:[{submittedDate:'2026-10-02',
+          decisionDate:'2026-10-04',responseStatus:'rejected'}]}];
+      const options={reportId:'R11',language:'en',
+        timezone:'Asia/Dhaka',asOfDate:'2026-10-16',
+        generatedAt:'2026-10-16T05:00:00.000Z'};
+      const report=VesaTnaReports.buildReportModel(copy,options);
+      const blocked=VesaTnaReports.buildReportModel(copy,{...options,audienceMode:'buyer'});
+      if(localStorage.getItem(key)!==raw)throw Error('R11 runtime changed saved local source.');
+      return {report,blocked};
+    },'vesa.tna360.records.'+session.userKey);
+    assert.equal(r11Runtime.report.approvalHistory.records[0].asOfStatus,
+      r11Runtime.report.approvalHistory.labels.localApproved);
+    assert.equal(r11Runtime.report.approvalHistory.records[0].externallyVerified,false);
+    assert.equal(r11Runtime.report.approvalHistory.rounds.length,1);
+    assert.equal(r11Runtime.blocked.approvalHistory.validity,'restricted');
+    assert(!JSON.stringify(r11Runtime.blocked).includes('PRIVATE FIT APPROVAL'));
+    assert(!JSON.stringify(r11Runtime.blocked).includes('PRIVATE-APPROVAL-PROOF'));
+    const r11After=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).records[0].plan,
+      'vesa.tna360.records.'+session.userKey);
+    assert.equal(JSON.stringify(r11After),JSON.stringify(stored.records[0].plan));
+    console.log('TNA R11 Chromium PASS: local missing approvals, real JSON/XLSX/PDF and viewer, 390px, internal-only source claims, buyer/factory blocked, immutable migrated saved record.');
+
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}

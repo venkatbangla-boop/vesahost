@@ -324,3 +324,30 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
   body.tna-printing-report .tna-portfolio-notice{font-size:8pt!important;color:#111!important}
   body.tna-printing-report .tna-portfolio-report h3{break-after:avoid!important;color:#111!important}
 }
+
+
+
+/* R11 approval history only: VESA report shell remains the sole navigation. */
+.tna-approval-controls[hidden]{display:none!important}
+.tna-approval-controls{display:grid;grid-template-columns:1fr;gap:10px;margin:8px 0;padding:11px;border:1px solid var(--line,#d5deea);border-radius:9px}
+.tna-approval-controls .tna-note{margin:0}
+.tna-approval-controls label{display:flex;flex-direction:column;gap:6px;min-width:0}
+.tna-approval-history{max-width:100%;min-width:0}
+.tna-approval-notice{padding:10px 12px;border-radius:8px;border:1px solid var(--line,#d5deea);font-size:12px;line-height:1.45;font-weight:650;overflow-wrap:anywhere}
+.tna-approval-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.tna-approval-table{width:100%;min-width:1380px;table-layout:fixed;border-collapse:collapse}
+.tna-approval-table th,.tna-approval-table td{border:1px solid var(--line,#d5deea);padding:5px;vertical-align:top;font-size:10px;line-height:1.3;overflow-wrap:anywhere;white-space:normal}
+.tna-approval-table th{text-align:left;font-weight:800;background:var(--look-surface,#eef3f9)}
+.tna-approval-rounds{min-width:1100px}
+.tna-approval-events{min-width:840px}
+.tna-approval-history h3{font-size:14px;margin:14px 0 6px}
+@media print{
+  body.tna-printing-report .tna-approval-scroll{max-width:100%!important;overflow:visible!important}
+  body.tna-printing-report .tna-approval-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
+  body.tna-printing-report .tna-approval-table thead{display:table-header-group!important}
+  body.tna-printing-report .tna-approval-table tr{page-break-inside:avoid!important;break-inside:avoid!important}
+  body.tna-printing-report .tna-approval-table th,
+  body.tna-printing-report .tna-approval-table td{font-size:6pt!important;line-height:1.25!important;padding:2px!important;border-color:#999!important;color:#111!important;background:#fff!important;overflow-wrap:anywhere!important}
+  body.tna-printing-report .tna-approval-notice{font-size:8pt!important;color:#111!important}
+  body.tna-printing-report .tna-approval-history h3{page-break-after:avoid!important}
+}
