@@ -1,5 +1,18 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+## R09 Shipment Readiness — verified source/compatibility checkpoint, 2026-10-16
+
+- **Verdict:** R09 targeted source-only report/Excel/print **DEVELOPMENT VERIFIED** by independent GitHub Actions; entire TNA Garment Rework **ACTIVE / CONDITIONAL** (NOT DEMO LIVE).
+- **Exact tested source:** `532452d67595e25da459747ab6e0baff4862ebab` on `feature/tna-merchandising-rework`; [GitHub Actions 38861267272 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38861267272). Actual `node apps/tna/tests/r09-shipment-readiness.test.js` PASS, R01–R08/PPM/AQL Node regressions PASS, real Chromium report JSON, eight-sheet Excel, landscape PDF and opened viewer, 390px responsive, saved-copy immutability, one VESA shell at 320–1440px, cross-app login/App Centre/PPM/AQL regressions PASS. [Synthetic artifact 12029024013](https://github.com/venkatbangla-boop/vesahost/actions/runs/38861267272/artifacts/12029024013).
+- **File-level audit/patch scope:** `apps/tna/src/reports.js` owns R09 pure TNA lot/PO/date/milestone and local-reference presentation; `src/storage.js` owns conditional `Shipment Lots`, `Shipment Dates`, `Shipment Gates`, `Shipment PO Allocation` typed/inert Excel; `src/bootstrap.js` only existing VESA report dialog/escaped screen/print, `assets/tna.css` print containment. New `tests/r09-shipment-readiness.test.js`, appended `tests/g11-artifact-viewers.cjs`, CI workflow registration. Dependency: unchanged `operations.reconcileShipmentLots`, `integration-references.assessReference`, `TnaWeeklyReportProjection.window` for civil date validation. No new data owner/header.
+- **Out-of-scope frozen:** `src/domain.js` shipment-write validators/record schema; `src/operations.js` calculation/acceptance; `src/scheduling.js`, `src/integration-references.js`, PPM/AQL engines/records, local storage migration, shared VESA header/auth, `main`/public Pages/service worker. All untouched; rollback by reverting only R09 feature commit on branch.
+- **Correctness and security:** Printed/Excel PPM GO or AQL CONFORMED is **locally linked reference status only**; not an independently released shipment. The engine is always invoked with `inspectionPassed:false` and no PPM/AQL result is invented. Distinct PO/lot allocations/zero-default quantities, booking/inspection refs, as-of milestones, future 'actual' fields, ETD/ETA and shipping docs remain explicitly unverified. Buyer/external model does not serialize source buyer, factory, PO, lot or private integration IDs. Invalid or unknown totals withheld. Quantity snapshot ≠ historical as-of output. No cloud or authorized recipient implied.
+- **Still conditional:** Independent AQL final pass, authorized PPM/production release, inspection decision authority, actual carrier/ex-factory proof, documents and manual ship approval; user acceptance, printing on physical devices, production hosting permissions and R10–R12/import remain open.
+- **PRECISE NEXT ACTION:** R10 Portfolio/Multi-PO audit for user-scoped local record ownership and source-backed counts/deadlines/critical tasks, then reversible implementation and real CI. Next full portfolio app after TNA is Packing & Container 360, with original blueprint required.
+
+---
+
+
 ## Verified R08 Material & LC source/report checkpoint — 2026-10-16
 
 - **Status:** Entire garment TNA rework ACTIVE / CONDITIONAL, R08 restricted internal Material & LC report/Excel/print **DEVELOPMENT VERIFIED**, NOT DEMO LIVE.

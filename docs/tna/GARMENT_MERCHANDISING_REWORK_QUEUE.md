@@ -1,5 +1,14 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
+### 2026-10-16 — R09 Shipment Readiness DEVELOPMENT VERIFIED (targeted slice)
+
+**Tested source:** `532452d67595e25da459747ab6e0baff4862ebab` / `feature/tna-merchandising-rework`. [GitHub Actions 38861267272 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38861267272), [synthetic proof 12029024013](https://github.com/venkatbangla-boop/vesahost/actions/runs/38861267272/artifacts/12029024013). Actual R09 knit/denim lot/PO/quantity verification, PPM/AQL local-reference warning, final inspection release held, strict date/timezone, bad/duplicate lots, external privacy fail-close, EN/BN/HI/TA, typed/inert Excel (four R09 sheets), real Chromium JSON/XLSX/PDF viewer/print-width, migrated saved-copy and PPM/AQL/shared-UX regressions PASS. No main, Page or public release; no real customer data in fixture.
+
+**Scope limits:** reported shipped quantity or PPM GO/AQL CONFORMED **never** authorizes shipment; carrier reference is not booking confirmation and actual ex-factory date is not independently authenticated handover. Quantity rollups hidden if source invalid; default zero is locally entered snapshot, not proven production. Overall TNA merchandising rework remains ACTIVE / CONDITIONAL. Independent PPM/AQL release/recipient rights, shipping-document acceptance and factory UAT remain NOT VERIFIED.
+
+**PRECISE NEXT ACTION — R10 Portfolio/Multi-PO:** Audit actual same-user local order list/load and authorized multi-order scope; never mix unrelated tenant/user records or presume portfolio KPIs/CPM from missing source. Deliver source-only multi-PO rollup, typed Excel, printable browser report with 4 languages/mobile and PPM/AQL regressions. Follow R11/R12, staged Excel import and TNA human acceptance; next portfolio app Packing & Container 360 (recover original blueprint).
+
+
 ### 2026-10-16 — R08 Material & LC internal report DEVELOPMENT VERIFIED
 
 **Source/test SHA:** `443db60f4a4cecd135a9b1bff47eaad2e92bcf80` on `feature/tna-merchandising-rework`; [GitHub Actions 38859253864 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38859253864), [synthetic artifact 12028137328](https://github.com/venkatbangla-boop/vesahost/actions/runs/38859253864/artifacts/12028137328). Verified source-only master LC / distinct fabric/trims B2B application-open, booking, in-house, recorded QC date, verified-unknown shortage; safe source-specific report plus real workbook, Chromium print/PDF, four languages, 390px mobile, old saved copies and frozen PPM/AQL/shared browser regressions. Pricing excluded and external buyer model explicitly blocked. Bank authenticity, actual material QC acceptance, independent recipient authorization and public deployment NOT claimed. Entire garment TNA rework ACTIVE / CONDITIONAL, not DEMO LIVE.

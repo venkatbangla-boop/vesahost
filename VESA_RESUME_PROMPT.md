@@ -1,5 +1,14 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## Current ChatGPT Work GitHub checkpoint — R09 VERIFIED 2026-10-16
+
+For NEXT / CONTINUE / RESUME VESA 360: Inspect repository `venkatbangla-boop/vesahost`, `main`, `feature/tna-merchandising-rework`, latest CI, `VESA_PROGRESS.md` and `docs/tna/06_EXECUTION_TRACKER.md` FIRST. Last targeted slice **R09 Shipment Readiness DEVELOPMENT VERIFIED**, exact tested source SHA `532452d67595e25da459747ab6e0baff4862ebab`, [GitHub Actions 38861267272 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38861267272). R01–R09 pure contracts, EN/BN/HI/TA, typed Excel, actual Chromium PDF/browser and saved-copy, PPM 168 checks, AQL 24 fixtures and shared shell regressions PASS. Whole TNA Garment Merchandising Rework remains **ACTIVE / CONDITIONAL**, NOT publicly DEMO LIVE. Do not infer PPM GO, AQL CONFORMED, shipped quantity or a booking reference as independent shipment release. Do not rebuild Costing/R01–R09 or reset TNA baselines.
+
+**PRECISE NEXT ACTION: R10 Portfolio/Multi-PO** from genuinely accessible same-user browser records. Audit local `storage.listPlans/loadPlan` and visibility/permissions before code; separate counted orders from unseen records, and preserve source quantity units, dates, critical path/calendars and privacy. External multiuser/provider metrics remain DEFERRED_BY_SCOPE. Continue R11–R12, staged workbook import, source-authorized rate/CPM/approval evidence and human merchandiser UAT. Original Packing & Container 360 blueprint is still required for the next portfolio app. Do not touch `main`, DNS, Pages, saved schemas, PPM/AQL or divergent `feature/tna360-continuous` without separate gates. Historic VS Code guidance below is superseded but retained for context.
+
+---
+
+
 ## Latest ChatGPT Work checkpoint — 2026-10-16 R08 PASSED
 
 **Do not restart.** GitHub `venkatbangla-boop/vesahost` branch `feature/tna-merchandising-rework` now has R01–R08 targeted TNA report implementations. **Latest exact verified code SHA:** `443db60f4a4cecd135a9b1bff47eaad2e92bcf80`; [GitHub Actions #38859253864 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38859253864), real knit/woven Node + EN/BN/HI/TA, R08 JSON/typed Excel/PDF, migrated browser saved copies, and TNA/PPM/AQL platform regressions. The *full* Garment Merchandising TNA rework remains **ACTIVE / CONDITIONAL**; it is not deployed as a new public TNA version. Costing 360 is separately DEMO LIVE for noncommercial personal demonstration only; do not rebuild or republish it.
