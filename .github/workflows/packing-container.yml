@@ -1,0 +1,50 @@
+# APP-01 feature branch only; source/QA without Pages publishing.
+name: VESA Packing Container 360 verification
+on:
+  push:
+    branches:
+      - feature/packing-container-360
+    paths:
+      - 'apps/packing-container/**'
+      - '.github/workflows/packing-container.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-packing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout feature
+        uses: actions/checkout@v4
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Domain and existing app regression
+        run: |
+          set -e
+          node --check apps/packing-container/tests/domain.test.cjs
+          node --check apps/packing-container/tests/browser-workflow.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          git diff --check HEAD~2..HEAD
+      - name: Chromium and Playwright (free runner)
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Browser workflow
+        run: node apps/packing-container/tests/browser-workflow.cjs
+      - name: Save screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app01-synthetic-evidence
+          path: output/playwright/packing-app01-*
+          if-no-files-found: ignore
