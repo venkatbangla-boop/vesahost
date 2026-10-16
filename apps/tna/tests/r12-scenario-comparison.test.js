@@ -142,12 +142,13 @@ class TnaScenarioComparisonProof {
       const invalidDate=reports.buildReportModel(plan,this.options({asOfDate:'2026-02-30'})).scenarioComparison;
       assert.equal(invalidDate.validity,'incomplete');
       assert.deepEqual(invalidDate.options,[]);
-      const calendarDraft=scenarios.previewScenario(plan,{
-        scenarioId:'R12-CALENDAR',name:'Calendar proposal',
-        calendarChanges:[{calendarId:'default',holidays:['2026-10-20']}]},
-      {actorId:'synthetic',createdAt:'2026-10-14T05:00:00Z'});
+      // Do not execute unconfirmed holiday edits through the frozen planning
+      // engine. R12 must reject this raw saved proposal before recomputation.
+      const calendarDraft={scenarioId:'R12-CALENDAR',name:'Calendar proposal',
+        status:'preview',baseRecordId:plan.recordId,baseRevision:plan.revision,
+        changes:{calendarChanges:[{calendarId:'default',holidays:['2026-10-20']}]}};
       const withCalendar=structuredClone(plan);
-      withCalendar.scenarioBranches=[calendarDraft.branch];
+      withCalendar.scenarioBranches=[calendarDraft];
       const calendarReport=reports.buildReportModel(withCalendar,this.options()).scenarioComparison;
       assert.equal(calendarReport.options[0].status,'calendar-unconfirmed');
       assert.equal(calendarReport.options[0].workdaysGained,null);
