@@ -315,6 +315,61 @@ async function run(){
     assert.deepEqual(regroup.verifiedRecoveryAgreements,[]);
     console.log('TNA R05 Chromium weekly report PASS: source-free Needs Date, real Excel/JSON, printable '+weeklyPages+'-page PDF, browser-cloned completed/overdue/next-week/pending/recovery source cases, no clipping.');
 
+
+    // R06 uses the same migrated local order without inventing a baseline or
+    // waiting party. Verify actual browser JSON/Excel/PDF bytes and print fit.
+    await page.locator('#tnaReportType').selectOption('R06');
+    await page.locator('.tna-delay-report').waitFor();
+    assert.ok(await page.locator('.tna-delay-restriction').isVisible());
+    assert.equal(await page.locator('.tna-delay-table').first().locator('tbody tr').count(),
+      stored.records[0].plan.tasks.length);
+    const r06JsonEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const r06Json=await r06JsonEvent,r06JsonPath=path.join(output,'tna-r06-delay-recovery-viewer.json');
+    await r06Json.saveAs(r06JsonPath);
+    const r06Model=JSON.parse(fs.readFileSync(r06JsonPath,'utf8'));
+    assert.equal(r06Model.delayRecovery.schema,'VESA-TNA-DELAY-1');
+    assert.equal(r06Model.delayRecovery.validity,'valid');
+    assert.equal(r06Model.delayRecovery.counts.missingOriginal,stored.records[0].plan.tasks.length);
+    assert.equal(r06Model.delayRecovery.counts.positiveVariance,0);
+    assert.deepEqual(r06Model.delayRecovery.verifiedExternalAgreements,[]);
+    const r06ExcelEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const r06Excel=await r06ExcelEvent,r06ExcelPath=path.join(output,'tna-r06-delay-recovery-viewer.xlsx');
+    await r06Excel.saveAs(r06ExcelPath);
+    const r06Workbook=XLSX.read(fs.readFileSync(r06ExcelPath),{type:'buffer'});
+    assert.deepEqual(r06Workbook.SheetNames,
+      ['Report Summary','Order Summary','Report Activities','Report Notes','Delay & Recovery','Recovery Options']);
+    assert.equal(XLSX.utils.sheet_to_json(r06Workbook.Sheets['Delay & Recovery'],{header:1,raw:false}).length,
+      stored.records[0].plan.tasks.length+1);
+    await page.emulateMedia({media:'print'});
+    await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const r06Layout=await page.locator('.tna-delay-table').first().evaluate(table=>({
+      actual:table.getBoundingClientRect().width,
+      available:table.parentElement.getBoundingClientRect().width,
+      headings:getComputedStyle(table.tHead).display
+    }));
+    assert(r06Layout.actual<=r06Layout.available+1,'R06 report print width must fit.');
+    assert.equal(r06Layout.headings,'table-header-group','R06 print must repeat table headings.');
+    const r06PdfPath=path.join(output,'tna-r06-delay-recovery-viewer.pdf');
+    await page.pdf({path:r06PdfPath,printBackground:true,preferCSSPageSize:true,landscape:true});
+    await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    const r06Pdf=fs.readFileSync(r06PdfPath);
+    assert.equal(r06Pdf.subarray(0,5).toString(),'%PDF-');
+    const r06Pages=(r06Pdf.toString('latin1').match(/\/Type\s*\/Page\b/g)||[]).length;
+    assert(r06Pages>=2,'All R06 source rows must print across actual PDF pages.');
+    const r06Viewer=await context.newPage();
+    await r06Viewer.goto(pathToFileURL(r06PdfPath).href,{waitUntil:'load'});
+    assert(await r06Viewer.evaluate(()=>location.href.startsWith('file:')));
+    await r06Viewer.screenshot({path:path.join(output,'tna-r06-delay-recovery-pdf-preview.png')});
+    await r06Viewer.close();
+    await page.emulateMedia({media:'screen'});
+    const unchangedR06=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).records[0].plan,
+      'vesa.tna360.records.'+session.userKey);
+    assert.equal(JSON.stringify(unchangedR06),JSON.stringify(stored.records[0].plan),
+      'R06 preview and export must not modify the reopened TNA record.');
+    console.log('TNA R06 browser PASS: genuine local JSON/Excel, read-only migrated order, '+r06Pages+'-page PDF, repeating table headings, no clipping.');
+
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}

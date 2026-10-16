@@ -724,10 +724,150 @@
 
   }
 
+
+  /**
+   * R06 Delay & Recovery: immutable management-only view of recorded local facts.
+   * Access: buildReportModel(...,{reportId:'R06',timezone,asOfDate}).
+   * Inputs: frozen original task dates, current/forecast/actual source dates,
+   * typed dependency edges, entered delay notes and audited scenario branches.
+   * Output: a local as-of comparison, never a buyer/factory-accepted recovery.
+   * No task, schema, order, browser storage or acceptance rule is modified.
+   */
+  class TnaDelayRecoveryProjection {
+    /** Presentation labels are localized; business-entered text is unchanged. */
+    static labels(language){
+      const all={
+        en:{title:'Delay & Recovery — local management review',disclosure:'Internal management only. Verify recipient permission before sharing. A local scenario or note is NOT an agreed buyer/factory recovery.',
+          unknown:'Needs Information',asOf:'As of',overview:'Recorded task date movement',scenarioHeading:'Locally recorded recovery options',noScenarios:'No source-recorded scenario options',
+          columns:['Ref','Activity','Assigned owner','Confirmed original','Current target','Forecast finish','Actual finish','Variance days','Compared against','Status','Entered cause (unverified)','Waiting party','Direct next tasks (effect unverified)','Recovery proposal'],
+          scenarioColumns:['Scenario','Local evidence state','Original forecast','Option forecast','Source change in working days','External agreement'],
+          localApplied:'Applied locally — buyer/factory agreement unverified',previewOnly:'Preview/unverified — not applied',notAgreed:'Not independently verified',
+          current:'Current target',actual:'Recorded actual',forecast:'Recorded forecast',none:'No supported finish',
+          missingOriginal:'No confirmed original baseline',missingDue:'No current/confirmed due date',missingActual:'Completed status lacks as-of actual proof',futureActual:'Actual finish is later than report as-of',missingComparison:'No comparable original and observed finish',
+          note:'Calendar-day variances use confirmed original finish against source actual (completed as-of) or recorded forecast (open). Negative is earlier. Assigned owner is NOT verified waiting party. Direct successors do not prove impact. No independent recovery approval authority is recorded.',
+          invalidClock:'Valid as-of date and timezone required; delay figures are unavailable.',count:'activities'},
+        bn:{title:'বিলম্ব ও পুনরুদ্ধার — স্থানীয় ব্যবস্থাপনা পর্যালোচনা',disclosure:'শুধু অভ্যন্তরীণ ব্যবস্থাপনা। পাঠানোর আগে প্রাপকের অনুমতি যাচাই করুন। স্থানীয় পরিকল্পনা ক্রেতা/কারখানার সম্মতি নয়।',
+          unknown:'তথ্য প্রয়োজন',asOf:'তারিখ',overview:'নথিভুক্ত কাজ ও তারিখ পরিবর্তন',scenarioHeading:'স্থানীয় পুনরুদ্ধার বিকল্প',noScenarios:'পুনরুদ্ধার পরিকল্পনা নেই',
+          columns:['নং','কার্যক্রম','দায়িত্ব','নিশ্চিত মূল তারিখ','বর্তমান লক্ষ্য','পূর্বাভাস','বাস্তব শেষ','পার্থক্য দিন','তুলনার ভিত্তি','অবস্থা','লেখা কারণ (অযাচাইকৃত)','অপেক্ষমাণ পক্ষ','পরবর্তী কাজ (প্রভাব অযাচাইকৃত)','পুনরুদ্ধার প্রস্তাব'],
+          scenarioColumns:['পরিকল্পনা','স্থানীয় অবস্থা','আগের পূর্বাভাস','নতুন পূর্বাভাস','কর্মদিবসের পরিবর্তন','বাহ্যিক সম্মতি'],
+          localApplied:'স্থানীয়ভাবে প্রয়োগ — সম্মতি যাচাই হয়নি',previewOnly:'প্রস্তাব/যাচাই হয়নি',notAgreed:'স্বাধীনভাবে যাচাই হয়নি',
+          current:'বর্তমান লক্ষ্য',actual:'নথিভুক্ত বাস্তব',forecast:'নথিভুক্ত পূর্বাভাস',none:'যাচাইকৃত সমাপ্তি নেই',
+          missingOriginal:'নিশ্চিত মূল তারিখ নেই',missingDue:'বর্তমান/নিশ্চিত শেষ তারিখ নেই',missingActual:'সম্পন্ন অবস্থায় বাস্তব তারিখ নেই',futureActual:'প্রতিবেদনের পরে বাস্তব তারিখ',missingComparison:'তুলনাযোগ্য তারিখ নেই',
+          note:'ক্যালেন্ডার দিনের হিসাব। দায়িত্বপ্রাপ্ত ব্যক্তি অপেক্ষমাণ পক্ষের প্রমাণ নয়। পরবর্তী কাজের প্রভাব নিশ্চিত নয়। বাইরের সম্মতির প্রমাণ নেই।',
+          invalidClock:'সঠিক তারিখ ও টাইমজোন প্রয়োজন।',count:'কাজ'},
+        hi:{title:'देरी और रिकवरी — स्थानीय प्रबंधन समीक्षा',disclosure:'केवल आंतरिक प्रबंधन। भेजने से पहले प्राप्तकर्ता की अनुमति जाँचें। स्थानीय योजना खरीदार/फैक्ट्री की सहमति नहीं है।',
+          unknown:'जानकारी चाहिए',asOf:'तारीख',overview:'दर्ज काम और तारीख के बदलाव',scenarioHeading:'दर्ज रिकवरी विकल्प',noScenarios:'कोई दर्ज विकल्प नहीं',
+          columns:['क्रम','कार्य','जिम्मेदार','पुष्ट मूल तारीख','वर्तमान लक्ष्य','पूर्वानुमान','वास्तविक अंत','अंतर दिन','तुलना आधार','स्थिति','दर्ज कारण (अपुष्ट)','किसकी प्रतीक्षा','अगले काम (प्रभाव अपुष्ट)','रिकवरी प्रस्ताव'],
+          scenarioColumns:['विकल्प','स्थानीय स्थिति','मूल पूर्वानुमान','विकल्प पूर्वानुमान','कार्यदिवस में अंतर','बाहरी सहमति'],
+          localApplied:'स्थानीय रूप से लागू — सहमति अपुष्ट',previewOnly:'प्रस्ताव/अपुष्ट',notAgreed:'स्वतंत्र पुष्टि नहीं',
+          current:'वर्तमान लक्ष्य',actual:'दर्ज वास्तविक',forecast:'दर्ज पूर्वानुमान',none:'समर्थित अंत नहीं',
+          missingOriginal:'पुष्ट मूल तारीख नहीं',missingDue:'पुष्ट अंतिम तारीख नहीं',missingActual:'पूर्ण स्थिति लेकिन वास्तविक तारीख नहीं',futureActual:'रिपोर्ट के बाद वास्तविक तारीख',missingComparison:'तुलना योग्य तारीख नहीं',
+          note:'अंतर कैलेंडर दिनों का है। जिम्मेदार व्यक्ति प्रतीक्षारत पक्ष का प्रमाण नहीं है। अगले काम का प्रभाव पुष्ट नहीं। बाहरी सहमति का प्रमाण नहीं है।',
+          invalidClock:'वैध तारीख और टाइमज़ोन जरूरी।',count:'कार्य'},
+        ta:{title:'தாமதம் & Recovery — உள்ளூர் நிர்வாக ஆய்வு',disclosure:'உள் நிர்வாகத்திற்கு மட்டும். பகிரும் முன் பெறுநர் அனுமதி தேவை. உள்ளூரில் மாற்றியது Buyer/Factory ஒப்புதல் அல்ல.',
+          unknown:'தகவல் தேவை',asOf:'தேதி',overview:'பதிவான செயல்கள் மற்றும் தேதி மாற்றம்',scenarioHeading:'பதிவான Recovery திட்டங்கள்',noScenarios:'Recovery திட்டம் பதிவாகவில்லை',
+          columns:['எண்','செயல்','பொறுப்பாளர்','உறுதியான முதல் தேதி','தற்போதைய இலக்கு','எதிர்பார்ப்பு','நிகழ்ந்த முடிவு','வித்தியாச நாட்கள்','ஒப்பீட்டு ஆதாரம்','நிலை','பதிவான காரணம் (சரிபார்க்கவில்லை)','காத்திருக்கும் தரப்பு','அடுத்த செயல்கள் (பாதிப்பு உறுதியில்லை)','Recovery யோசனை'],
+          scenarioColumns:['திட்டம்','உள்ளூர் பதிவு நிலை','முதல் எதிர்பார்ப்பு','மாற்று எதிர்பார்ப்பு','வேலைநாள் வித்தியாசம்','வெளி ஒப்புதல்'],
+          localApplied:'உள்ளூரில் பயன்படுத்தப்பட்டது — ஒப்புதல் உறுதி இல்லை',previewOnly:'யோசனை / உறுதி இல்லை',notAgreed:'தனியாகச் சரிபார்க்கவில்லை',
+          current:'தற்போதைய இலக்கு',actual:'பதிந்த உண்மை',forecast:'பதிந்த எதிர்பார்ப்பு',none:'உறுதியான முடிவு இல்லை',
+          missingOriginal:'உறுதியான முதல் தேதி இல்லை',missingDue:'இலக்கு தேதி இல்லை',missingActual:'முடிந்த நிலைக்கு உண்மை தேதி இல்லை',futureActual:'அறிக்கை தேதிக்குப் பிந்தைய முடிவு',missingComparison:'ஒப்பிடும் தேதிகள் இல்லை',
+          note:'வித்தியாசம் காலண்டர் நாட்கள். பொறுப்பாளர் என்பது காத்திருக்கும் தரப்பின் ஆதாரம் அல்ல. அடுத்த செயல்களில் பாதிப்பு உறுதி இல்லை. Buyer/Factory ஒப்புதல் ஆதாரம் இல்லை.',
+          invalidClock:'சரியான தேதி மற்றும் நேர மண்டலம் தேவை.',count:'செயல்கள்'}
+      };
+      return all[language]||all.en;
+    }
+    /** Only a validated IANA zone plus source or supplied civil date can classify delay. */
+    static clock(options){
+      if(typeof options.timezone!=='string'||!options.timezone.trim())return null;
+      try{new Intl.DateTimeFormat('en-US',{timeZone:options.timezone});}catch{return null;}
+      const asOf=TnaFactoryDailyActionProjection.asOfDate(options.generatedAt,options.timezone,options.asOfDate);
+      return TnaMasterReportProjection.day(asOf)===null?null:asOf;
+    }
+    /** Read immutable scenario lineage without inferring external acceptance. */
+    static scenarioRows(plan,labels){
+      const events=Array.isArray(plan.revisionEvents)?plan.revisionEvents:[];
+      const branches=Array.isArray(plan.scenarioBranches)?plan.scenarioBranches:[];
+      return branches.map(branch=>{
+        const applied=branch?.status==='applied'&&branch.baseRecordId===plan.recordId&&
+          events.some(event=>event.eventType==='scenario-applied'&&event.details?.scenarioId===branch.scenarioId);
+        return {name:String(branch?.name||labels.unknown),scenarioId:String(branch?.scenarioId||labels.unknown),
+          locallyApplied:applied,localState:applied?labels.localApplied:labels.previewOnly,
+          baseForecast:TnaMasterReportProjection.asDate(branch?.baseForecastDate),
+          optionForecast:TnaMasterReportProjection.asDate(branch?.scenarioForecastDate),
+          workingDaysGained:typeof branch?.workingDaysGained==='number'&&Number.isFinite(branch.workingDaysGained)?branch.workingDaysGained:null,
+          externalAgreement:null,agreementLabel:labels.notAgreed};
+      });
+    }
+    /** Project all garment tasks, including unknowns; never drop records for missing dates. */
+    static build(plan={},options={}){
+      const labels=this.labels(options.language),asOfDate=this.clock(options);
+      const blank={schema:'VESA-TNA-DELAY-1',audience:'local-management-review',
+        validity:'incomplete',asOfDate:null,timezone:options.timezone||null,
+        basis:'civil-calendar-days',rows:[],scenarios:[],labels,
+        counts:{total:0,overdue:0,positiveVariance:0,enteredCauses:0,missingOriginal:0,missingDue:0,missingActual:0,localScenarioApplications:0},
+        verifiedExternalAgreements:[],warnings:[labels.invalidClock,labels.disclosure]};
+      if(!asOfDate)return blank;
+      const today=TnaMasterReportProjection.day(asOfDate);
+      const originalSnapshot=Array.isArray(plan.baselineSnapshots)?plan.baselineSnapshots[0]:null;
+      const originals=new Map((Array.isArray(originalSnapshot?.taskDates)?originalSnapshot.taskDates:[])
+        .map(row=>[row.taskId,row.dates||{}]));
+      const tasks=Array.isArray(plan.tasks)?plan.tasks:[];
+      const ids=new Map(tasks.map(task=>[task.taskId,task.templateRef||labels.unknown]));
+      const edges=Array.isArray(plan.edges)?plan.edges:[];
+      const rows=tasks.map(task=>{
+        const dates=task.dates||{},source=originals.get(task.taskId);
+        const original=TnaMasterReportProjection.asDate(source?.currentTargetFinish||source?.baselineFinish||null);
+        const target=TnaMasterReportProjection.asDate(dates.currentTargetFinish);
+        const forecast=TnaMasterReportProjection.asDate(dates.forecastFinish);
+        const actual=TnaMasterReportProjection.asDate(dates.actualFinish);
+        const actualDay=TnaMasterReportProjection.day(actual);
+        const status=typeof task.status==='string'?task.status:'needs-information';
+        const closed=['completed','approved','waived','not-applicable'].includes(status);
+        const verifiedAsOfActual=status==='completed'&&actualDay!==null&&actualDay<=today;
+        const observed=verifiedAsOfActual?actual:status!=='completed'?forecast:null;
+        const difference=original&&observed?
+          TnaMasterReportProjection.day(observed)-TnaMasterReportProjection.day(original):null;
+        const rawDue=dates.currentTargetFinish?dates.currentTargetFinish:
+          source?.currentTargetFinish||source?.baselineFinish||null;
+        const due=TnaMasterReportProjection.asDate(rawDue);
+        const overdue=!closed&&TnaMasterReportProjection.day(due)!==null&&
+          TnaMasterReportProjection.day(due)<today;
+        const missingActual=status==='completed'&&!verifiedAsOfActual;
+        const cause=typeof task.delayReason==='string'&&task.delayReason.trim()?task.delayReason.trim():null;
+        const recovery=typeof task.recoveryAction==='string'&&task.recoveryAction.trim()?task.recoveryAction.trim():null;
+        const affected=edges.filter(edge=>edge.predecessorTaskId===task.taskId&&ids.has(edge.successorTaskId))
+          .map(edge=>ids.get(edge.successorTaskId));
+        const gaps=[];
+        if(!original)gaps.push(labels.missingOriginal);
+        if(!due)gaps.push(labels.missingDue);
+        if(missingActual)gaps.push(actualDay!==null&&actualDay>today?labels.futureActual:labels.missingActual);
+        if(difference===null)gaps.push(labels.missingComparison);
+        return {ref:task.templateRef||labels.unknown,taskId:task.taskId,
+          activity:task.title||labels.unknown,stage:task.stage||labels.unknown,
+          assignedOwner:task.ownerParty||labels.unknown,original,target,forecast,actual,
+          due,actualAsOf:verifiedAsOfActual,varianceDays:difference,
+          comparedTo:verifiedAsOfActual?labels.actual:status!=='completed'&&forecast?labels.forecast:null,
+          status,overdue,enteredCause:cause,waitingParty:null,
+          possibleDownstreamRefs:[...new Set(affected)],recoveryProposal:recovery,
+          agreementVerified:false,gaps};
+      });
+      const scenarios=this.scenarioRows(plan,labels);
+      const counts={total:rows.length,overdue:rows.filter(row=>row.overdue).length,
+        positiveVariance:rows.filter(row=>row.varianceDays>0).length,
+        enteredCauses:rows.filter(row=>row.enteredCause).length,
+        missingOriginal:rows.filter(row=>!row.original).length,
+        missingDue:rows.filter(row=>!row.due).length,
+        missingActual:rows.filter(row=>row.status==='completed'&&!row.actualAsOf).length,
+        localScenarioApplications:scenarios.filter(row=>row.locallyApplied).length};
+      return {...blank,validity:'valid',asOfDate,rows,scenarios,counts,
+        warnings:[labels.disclosure,labels.note]};
+    }
+  }
+
   function taskRows(plan={},limit=Infinity){return (plan.tasks||[]).slice(0,limit).map(task=>({ref:task.templateRef,title:task.title,owner:task.ownerParty,status:task.status,baseline:task.dates?.baselineFinish||'',current:task.dates?.currentTargetFinish||'',forecast:task.dates?.forecastFinish||'',actual:task.dates?.actualFinish||'',risk:task.riskStatus||'needs-information'}))}
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=report[0]==='R05'&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=(report[0]==='R05'||report[0]==='R06')&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const delay=report[0]==='R06'?TnaDelayRecoveryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R06'?'Local management review — no external sharing authorization':report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(delay?{delayRecovery:delay}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[]),...(delay?delay.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),...(delay?[delay.labels.disclosure]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
