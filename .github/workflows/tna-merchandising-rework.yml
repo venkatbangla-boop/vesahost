@@ -70,6 +70,21 @@ jobs:
           node apps/tna/tests/r12-scenario-comparison.test.js
           node apps/tna/tests/g11-garment-scenarios.test.js
           node apps/tna/tests/g11-saved-copy-migration.test.js
+          # Original G00–G12 local acceptance suites already present in repo,
+          # previously omitted from the narrow R01–R12 report CI. These run
+          # on free Node 22 and do not send records or call remote providers.
+          node apps/tna/tests/g01-shell.test.js
+          node apps/tna/tests/g04-operations.test.js
+          node apps/tna/tests/g09-backend-contracts.test.js
+          node apps/tna/tests/g10-integration-references.test.js
+          node apps/tna/tests/g10-notification-rules.test.js
+          node apps/tna/tests/g11-calendar-fixtures.test.js
+          node apps/tna/tests/g11-graph-fixtures.test.js
+          node apps/tna/tests/g11-risk-fixtures.test.js
+          node apps/tna/tests/g11-portfolio-performance.test.js
+          node apps/tna/tests/g11-security-audit.test.js
+          node apps/tna/tests/g11-git-history-safety.test.js
+          node apps/tna/tests/g12-local-handoff.test.js
           node apps/ppm/tests/p-g00-baseline.cjs
           node apps/aql/tests/a-g00-baseline.cjs
           node apps/aql/tests/a-g03-sampling.cjs
