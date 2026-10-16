@@ -1,4 +1,5 @@
 # Development-only evidence for TNA merchandising rework.
+# R06: validate inherited docs diff as well as Node/Chromium output on exact branch SHA.
 # Runs on GitHub Free standard runners; no deployment, secrets or customer data.
 name: VESA TNA merchandising rework verification
 
