@@ -1,5 +1,12 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
+### 2026-10-16 — G08 full-task Excel Template / Round-Trip DEVELOPMENT VERIFIED
+
+**Exact source:** `208e448bcc30ecd01ff96b9132d2e40411f16be0`; [Actions 38878742460 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38878742460), [synthetic XLSX/browser artifact 12035639525](https://github.com/venkatbangla-boop/vesahost/actions/runs/38878742460/artifacts/12035639525). Five apparel template families, full activity list in editable Excel, order summary and local guide, native typed dates, plain-source FS predecessor links, formula-neutral fields, blank workbook without invented dates, buyer/approval/price proof not promoted. Actual Chromium same-PO third draft explicit save, local reopen, 390px and original record bytes unchanged PASS. R01–R12, G08 reviewed import, PPM 168, AQL 24, VESA shared-shell CI PASS. No main or public release. Full TNA still ACTIVE / CONDITIONAL.
+
+**PRECISE NEXT ACTION:** Legacy Recovery Scenario editor proposed factory-calendar date overflow must be audited and hardened (R12 reporting gates protect only that read-only route), then complete master-blueprint functional gap/UAT/release matrix before portfolio moves to Packing & Container 360; recover its original blueprint.
+
+
 ### 2026-10-16 — G08 Reviewed Excel/CSV Import DEVELOPMENT VERIFIED (targeted slice)
 
 **Exact tested SHA `4b28cd7dad4c914d76fad79894f9df903e4699b7`**, [Actions #38875160019 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38875160019), [synthetic G08 browser/Excel evidence 12035365805](https://github.com/venkatbangla-boop/vesahost/actions/runs/38875160019/artifacts/12035365805). New `src/import-review.js` reads bounded XLSX/CSV/TSV, rejects formula/macro/script data, stages distinct Order Summary / Master TNA sheet and header row mapping, human-edited order/activity columns, explicit date/day basis and template, unmatched custom/ignore, strict predecessor and duplicate checks. Existing order unchanged until checkbox-confirmed **Create New Draft** save with a different local record ID, no baseline freeze or fake Buyer/Factory release. Browser same-PO saved record preserved and reopened across real Chromium reload. All R01–R12/PPM168/AQL24/shared shell and EN/BN/HI/TA regressions PASS. Earlier failed runs were syntax/fixture errors; latest exact commit independent CI PASS. No public deployment or existing record migration.
