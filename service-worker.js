@@ -23,6 +23,7 @@ const ASSETS=[
   './apps/tna/src/notification-rules.js',
   './apps/tna/src/storage.js',
   './apps/tna/src/reports.js',
+  './apps/tna/src/import-review.js',
   './apps/tna/src/scenarios.js',
   './apps/tna/src/remote-api.js',
   './apps/tna/src/bootstrap.js',
