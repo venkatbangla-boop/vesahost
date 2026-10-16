@@ -37,7 +37,7 @@ async function run(){
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,headless:true,args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage']});
   const context=await browser.newContext({viewport:{width:1280,height:900},acceptDownloads:true});
-  await context.addInitScript(({auth,box})=>{localStorage.setItem('vesa.appcentre.session.v1',JSON.stringify(auth));localStorage.setItem(`vesa.tna360.records.${auth.userKey}`,JSON.stringify(box));},{auth:session,box:seeded});
+  await context.addInitScript(({auth,box})=>{localStorage.setItem('vesa.appcentre.session.v1',JSON.stringify(auth));const key=`vesa.tna360.records.${auth.userKey}`;if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(box));},{auth:session,box:seeded});
   const page=await context.newPage(),errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   try{
