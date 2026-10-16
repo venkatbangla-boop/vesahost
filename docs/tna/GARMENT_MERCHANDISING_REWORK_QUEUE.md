@@ -1,5 +1,14 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
+### 2026-10-16 — R12 Scenario Comparison DEVELOPMENT VERIFIED (targeted slice)
+
+**Exact tested SHA** `e20dd1717beea7e96d564a252b397c54366e044d`, [Actions #38869110875 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38869110875), [synthetic artifact 12032029766](https://github.com/venkatbangla-boop/vesahost/actions/runs/38869110875/artifacts/12032029766). Local base versus entered Recovery A/B (draft task-duration or saved current-revision branches) uses unchanged strict R04 confirmed calendars and frozen scenario engine; source-backed forecast/working-days/critical path, no altered-calendar gain or rate/cost invented. Earlier locally applied branches show historic source dates and matching actor/reason/revision without pretending to replay old base or prove buyer agreement. Report internal only; buyer/factory model blocked. EN/BN/HI/TA, true XLSX/JSON/Chromium landscape PDF/viewer, 390px responsive and all R01–R11, PPM/AQL/saved-copy regressions PASS. Intermediate failed CI fixture assumptions and Excel offset fixes retained in Git history, exact final test SHA PASS. `main`, public Pages, domain/scheduling/scenario engines and saved records unchanged.
+
+**Still CONDITIONAL:** Full practical TNA application has unfinished G08 reviewed Excel import-to-new-draft, other original blueprint gates and human merchandiser/factory acceptance. Existing separate Recovery Scenarios editor's unconfirmed calendar handling needs audit; R12 report specifically blocks it before running. No secure external sharing or production deployment approved.
+
+**PRECISE NEXT ACTION:** Staged Excel import review + explicit new-draft mapping and dependency reconciliation, no overwrites; then full local TNA acceptance/UI/UAT and release gates. Next full portfolio app Packing & Container 360, only with recovered original blueprint.
+
+
 ### 2026-10-16 — R11 Approval History targeted DEVELOPMENT VERIFIED
 
 **Code/test SHA:** `10a389e207476fdf2148ef4850711b31c35c73d3`, [GitHub Actions 38865557407 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38865557407), [synthetic browser/Excel/PDF artifact 12030604074](https://github.com/venkatbangla-boop/vesahost/actions/runs/38865557407/artifacts/12030604074). R11 source `approvals[]`/submission, decision and reviewer, `resubmissionSequence[]`, revisionEvents and evidence references read only; Node knit/denim + four languages and actual Chromium Excel/PDF/390px tests PASS, as did R01–R10, PPM/AQL and shared shell. Two source rejection entries, source-waived vs externally proven, missing authority/date/evidence, submitted/pending and future-as-of cases tested. No main/public deployment; no real customer files in synthetic CI.
