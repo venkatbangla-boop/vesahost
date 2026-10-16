@@ -1707,7 +1707,10 @@
         po:typeof requested.po==='string'&&requested.po?requested.po:null};
       const selected=allowed.filter(p=>(!filter.buyer||p.order?.buyerName===filter.buyer)&&
         (!filter.factory||p.order?.factoryName===filter.factory)&&
-        (!filter.po||(Array.isArray(p.order?.poNumbers)&&p.order.poNumbers.includes(filter.po))));
+        (!filter.po||(Array.isArray(p.order?.poNumbers)&&p.order.poNumbers.includes(filter.po))))
+        .sort((a,b)=>(a.recordId===anchor.recordId?-1:b.recordId===anchor.recordId?1:0)||
+          String(a.order?.buyerName||'').localeCompare(String(b.order?.buyerName||''))||
+          String(a.order?.poNumbers?.[0]||'').localeCompare(String(b.order?.poNumbers?.[0]||'')));
       const orders=[],poRows=[],actions=[];
       for(const p of selected){
         const cpm=TnaCriticalPathProjection.build(p,{language:options.language});
