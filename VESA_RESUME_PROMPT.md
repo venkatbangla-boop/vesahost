@@ -1,5 +1,14 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## Latest ChatGPT Work GitHub resume checkpoint (2026-10-16 — R07 PASS)
+
+**Active program:** `venkatbangla-boop/vesahost` → feature branch `feature/tna-merchandising-rework`; `main` still holds the separately authorized noncommercial Costing demo and MUST NOT be overwritten for TNA. **R07 source production report targeted slice DEVELOPMENT VERIFIED**, exact tested SHA `6e6033af15b9c257816e1add8e8a96b106f188fd`; [real GitHub Actions CI #38858334664 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38858334664). All existing R01–R07, saved copy, real Chromium workbook/PDF and PPM/AQL/shared-shell tests passed. Entire TNA merchandising rework remains **ACTIVE / CONDITIONAL**, NOT public DEMO LIVE; unproven verified daily output, stage-end forecast, human UAT and legal hosting remain open. Historical R06 pending notice below is superseded by its later verified-success evidence, not a current task.
+
+For **NEXT / CONTINUE / RESUME VESA 360**, first refresh branch HEAD/latest Actions and the one `VESA_PROGRESS.md` queue with `docs/tna/06_EXECUTION_TRACKER.md`, never an outdated percentage or an older branch. **Precise next action: R08 Material & LC** source audit and independent gated implementation, with master-vs-B2B LC authenticity, material booking/QC/shortage dates, buyer/privacy release and formula-safe XLSX/real PDF evidence. Do not infer LC opened from an application, QC approved from an in-house date, any buyer permission or source price. The competing `feature/tna360-continuous` branch is divergent; DO NOT force-merge it or restart Costing/TNA. Continue sequentially through R09–R12 and remaining TNA acceptance, then Packing & Container 360 only with its real original blueprint. This Work overlay supersedes old VS Code-only instructions below without deleting history.
+
+---
+
+
 ## Verified-source resumption notice (2026-10-16)
 
 For ChatGPT Work resume, prioritize the latest GitHub `feature/tna-merchandising-rework` checkpoint and the exact newest CI result, not the historical VS Code text below or older `main` queue state. R06 source commit `2d6367d1fddec52c97c00f23995b99344ffdb3aa` is **CONDITIONAL until the full Node + Chromium GitHub workflow passes after the inherited R05 documentation-whitespace fix**. Continue R06 verification/repair, then R07 report, not a fresh Costing or TNA build. The other `feature/tna360-continuous` branch is divergent and must not be merged blindly. Treat status and next action in `VESA_PROGRESS.md` and `docs/tna/06_EXECUTION_TRACKER.md` as authoritative when reconciled to branch commits/CI; never call a partially verified patch DEMO LIVE. No `main` deployment is authorized by a feature-branch commit.

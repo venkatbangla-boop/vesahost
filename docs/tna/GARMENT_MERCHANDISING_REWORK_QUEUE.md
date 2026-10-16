@@ -1,5 +1,14 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
+### 2026-10-16 — R07 Production Status targeted DEVELOPMENT VERIFIED
+
+**Tested branch/source:** `feature/tna-merchandising-rework` / `6e6033af15b9c257816e1add8e8a96b106f188fd`. Actual [Actions run 38858334664 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38858334664) and [synthetic artifact 12027624484](https://github.com/venkatbangla-boop/vesahost/actions/runs/38858334664/artifacts/12027624484): pure knit/denim Stage C/P/PK quantities/dates and buyer redaction, four languages, typed real Excel, R07 guarded browser JSON/buyer copy, Chromium PDF+viewer, 390px no-overflow and frozen TNA/PPM/AQL/shared shell regression. Prior run 38858242358 FAIL due to test-only duplicate binding; fixed and retested. No main or public release.
+
+**Boundaries:** stage input/completed/reject/rework/WIP and conservation balance are entered local records, not independent accepted/cleared output; capacity-only default zeros are NOT output. Missing verified rate, calendar/source timing and projection remain Needs Information. Buyer copy requires local consent/source and uses an allowlisted limited model; no server authorization or buyer agreement is implied. Entire TNA rework remains ACTIVE / CONDITIONAL, not DEMO LIVE.
+
+**PRECISE NEXT ACTION — R08 Material & LC:** Audit real materials supplier/B2B/master LC/evidence/QC records and commercial recipient contract, then implement source-gated internal commercial report/Excel/print and EN/BN/HI/TA, preserving R01–R07, PPM/AQL and saved data. Continue R09–R12/Excel/human/UAT; next portfolio app Packing & Container 360.
+
+
 ### 2026-10-16 — R06 Delay & Recovery DEVELOPMENT VERIFIED (targeted slice)
 
 **Actual source/test SHA:** `1942eaac07ed69c19137e95c8bb8cd126b59598f`. [Full GitHub Actions CI 38856899207](https://github.com/venkatbangla-boop/vesahost/actions/runs/38856899207) **SUCCESS**: source, R01–R06, PPM/AQL, shared mobile/desktop browser, saved record restore, EN/BN/HI/TA, typed actual R06 XLSX and genuine Chromium PDF/browser viewing. R06 is internal management only and differentiates entered delay causes from verified root causes, direct dependency references from proven impacts, local scenario applications from any buyer/factory agreement, and unknown waiting parties from assigned owners. Initial run 38856676394 FAILED from earlier R05 documentation whitespace, later corrected before full success. Full garment-merchandising rework stays ACTIVE / CONDITIONAL, not DEMO LIVE. No main/public release or production-record rewrite.

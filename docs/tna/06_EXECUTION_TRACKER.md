@@ -1,5 +1,18 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+## TNA R07 production-status exact evidence — 2026-10-16
+
+- **Overall status:** TNA Garment Merchandising Rework ACTIVE / CONDITIONAL; R07 targeted source-backed report and guarded buyer/Excel/print adapters DEVELOPMENT VERIFIED, not DEMO LIVE.
+- **Source / branch:** `feature/tna-merchandising-rework` / `6e6033af15b9c257816e1add8e8a96b106f188fd`. **Proof:** [GitHub Actions 38858334664 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38858334664), including JavaScript parser, R01–R07 Node contract, real Chromium R07 JSON/XLSX/PDF and buyer blocked/locally reviewed flow, 390px report geometry, unchanged migrated saved record, EN/BN/HI/TA, PPM 168 tuple baseline and AQL Q01–Q24/sampling plus full shared-shell cross-app browser checks. [Synthetic artifact 12027624484](https://github.com/venkatbangla-boop/vesahost/actions/runs/38858334664/artifacts/12027624484). Earlier [38858242358 FAILED](https://github.com/venkatbangla-boop/vesahost/actions/runs/38858242358) on duplicate browser-test variable; a single scoped test-only correction produced exact all-green SHA. This failure remains on record.
+- **File/ownership impact:** `apps/tna/src/reports.js` immutable R07 stage/quantity and separately gated buyer allowlist; `src/storage.js` two internal/one reviewed-buyer conditional XLSX worksheets with typed dates/counts and formula-safe text; `src/bootstrap.js` existing VESA report dialog/print plus local recipient review UI; `assets/tna.css` R07 responsive/landscape table; new `tests/r07-production-status.test.js`, additive `g11-artifact-viewers.cjs`, and test workflow registration. **Frozen unchanged:** `src/domain.js`, `src/operations.js`, `src/scheduling.js`, browser storage schema, PPM/AQL source, auth/shared shell, root worker, `main`, Pages, real user records.
+- **Source/decision contract:** Stage milestone sources C04/C06, P01/P03, P07/P08, PK02/PK04; operation types cut/sew/finish/pack. Explicit nonzero operation quantities validated against CAP-05; capacity-only seeded zeros ignored. Multiple operation quantities are aggregated only if distinct named lots/units and individually reconciled; no claim of whole-order goods accepted. Operation snapshot is latest locally stored quantity, NOT past as-of history. Buyer reviewed output excludes factory, lot/operation IDs, private notes, rate, evidence, price, LC and raw plan fields. Local checkbox is not server-side permission.
+- **Open acceptance:** Source-authorized dailyActual verification / verified rate / projected stage finish and independent workday/quantity history are NOT VERIFIED; show Needs Information. Buyer/factory independent release, human UAT, Excel desktop reader/print and commercial deployment remain CONDITIONAL. No approved original quantity-progress schema was changed to invent this evidence.
+- **Rollback:** revert R07 code/test commits `9459903ca10cd2f9253c32e6d5af95de1ed0083a`, `6e6033af15b9c257816e1add8e8a96b106f188fd` on feature branch only; no record migration or browser clearing.
+- **PRECISE NEXT ACTION:** R08 Material & LC source and privacy audit, then implement internal source-backed commercial/sourcing view with Excel/print/four languages/PPM/AQL regressions, without guessed B2B dates, shortages, supplier pricing or approval. Next portfolio app Packing & Container 360 after TNA acceptance; do not treat hosting blockers as code-completion blockers.
+
+---
+
+
 ## Verified R06 execution checkpoint — 2026-10-16
 
 - **Final test SHA:** `1942eaac07ed69c19137e95c8bb8cd126b59598f` on `feature/tna-merchandising-rework`.
