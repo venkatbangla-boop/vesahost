@@ -95,7 +95,128 @@
     const conflicts=summary.capacity.conflicts.map(item=>`${item.resourceId} on ${item.date}: over by ${item.overAllocatedBy} line(s)`).join(' · ');
     return `<div class="tna-panel tna-portfolio-advanced"><h2>Portfolio & shared capacity</h2><div class="tna-dashboard-grid"><article><b>${esc(summary.accessibleOrderCount)}</b><span>Local orders in view</span></article><article><b>${esc(poRefs.length)}</b><span>PO references</span></article><article><b>${esc(summary.conflictCount)}</b><span>Capacity conflicts</span></article><article><b>${esc(summary.orders.filter(order=>order.risk==='delayed').length)}</b><span>Delayed forecasts</span></article><article><b>${esc(summary.orders.filter(order=>order.risk==='needs-information').length)}</b><span>Needs Information</span></article></div><p class="tna-note">${conflicts?`Shared capacity warning: ${esc(conflicts)}`:'No shared capacity conflict is present in the entered local records.'} Forecast rows retain source revision and engine provenance. Portfolio is browser-local until authenticated backend storage is provisioned. Connected multi-company access remains blocked until an authenticated backend is provisioned.</p><h3>Management filters</h3><div class="tna-stage-chips">${buyers.map(buyer=>`<button type="button" data-portfolio-buyer="${esc(buyer)}" aria-pressed="${filter.buyer===buyer?'true':'false'}">Buyer · ${esc(buyer)}</button>`).join('')}${factories.map(factory=>`<button type="button" data-portfolio-factory="${esc(factory)}" aria-pressed="${filter.factory===factory?'true':'false'}">Factory · ${esc(factory)}</button>`).join('')}${poRefs.slice(0,8).map(po=>`<button type="button" data-portfolio-po="${esc(po)}" aria-pressed="${filter.po===po?'true':'false'}">PO · ${esc(po)}</button>`).join('')}<button type="button" data-clear-portfolio="true">Clear filters</button></div>${summary.orders.length?`<div class="tna-task-table tna-portfolio-table" role="table" aria-label="Local multi-PO portfolio proof">${rows}</div>`:'<p>No saved local order details are available for this portfolio view.</p>'}</div>`;
   }
-  function workspacePanel(plan){const data=workspaceData(plan);const filter=state.workspaceFilter||{};const view=state.workspaceView||'timeline';const statusCounts=plan.tasks.reduce((acc,task)=>{acc[task.status]=(acc[task.status]||0)+1;return acc},{});const ownerOptions=Object.keys(data.ownerCounts).slice(0,8);const stageOptions=Object.entries(domain.STAGE_LABELS).filter(([stage])=>plan.tasks.some(task=>task.stageCode===stage));const baseRows=data.rows.filter(row=>(!filter.owner||row.task.ownerParty===filter.owner)&&(!filter.stage||row.task.stageCode===filter.stage));const viewRows=view==='today'?baseRows.filter(row=>data.dueToday.includes(row)||data.nextSeven.includes(row)):view==='critical'?baseRows.filter(row=>row.result?.isCritical):baseRows;const datedRows=viewRows.filter(row=>row.date).slice(0,24);const visibleRows=(datedRows.length?datedRows:viewRows.slice(0,24));const ganttRows=visibleRows.slice(0,10);const activeFilter=[filter.owner?`Owner ${filter.owner}`:null,filter.stage?`Stage ${filter.stage}`:null].filter(Boolean).join(' · ')||'All activities';const viewButtons=[['table','Table'],['timeline','Timeline (Gantt)'],['today','Today / Next 7 Days'],['critical','Critical Only']];return `<section class="tna-workspace-grid" aria-label="TNA dashboard and timeline"><div class="tna-panel"><span class="tna-kicker">Dashboard</span><h3>Action view</h3><div class="tna-dashboard-grid"><article><b>${esc(data.dueToday.length)}</b><span>Due today</span></article><article><b>${esc(data.overdue.length)}</b><span>Overdue</span></article><article><b>${esc(data.nextSeven.length)}</b><span>Next 7 days</span></article><article><b>${esc(data.critical.length)}</b><span>Critical path</span></article></div><p class="tna-note">${data.asOf?`As-of date uses explicit order start ${esc(data.asOf)}. No hidden current-date assumption is used.`:'Enter an explicit order start date to activate due-today, overdue and next-7-day filters.'}</p><p class="tna-note">Active timeline filter: ${esc(activeFilter)} · ${esc(viewRows.length)} visible activities · View ${esc(view)}.</p><h4>Workspace views</h4><div class="tna-stage-chips">${viewButtons.map(([key,label])=>`<button type="button" data-workspace-view="${esc(key)}" aria-pressed="${view===key?'true':'false'}">${esc(label)}</button>`).join('')}</div><h4>Owner filters</h4><div class="tna-stage-chips">${ownerOptions.map(owner=>`<button type="button" data-filter-owner="${esc(owner)}" aria-pressed="${filter.owner===owner?'true':'false'}">${esc(owner)} · ${esc(data.ownerCounts[owner])}</button>`).join('')}</div><h4>Stage filters</h4><div class="tna-stage-chips">${stageOptions.map(([stage,label])=>`<button type="button" data-filter-stage="${esc(stage)}" aria-pressed="${filter.stage===stage?'true':'false'}">${esc(stage)} · ${esc(label)}</button>`).join('')}<button type="button" data-clear-filters="true">Clear filters</button></div></div><div class="tna-panel"><span class="tna-kicker">Timeline</span><h3>${esc(viewButtons.find(([key])=>key===view)?.[1]||'Timeline')}</h3>${data.scheduled&&view!=='table'?`<div class="tna-gantt" aria-hidden="true">${ganttRows.map(row=>`<span style="--tna-bar:${Math.min(100,Math.max(8,(row.result?.floatDays??0)+12))}%"><i>${esc(row.task.templateRef)}</i></span>`).join('')}</div>`:view==='table'?'<p class="tna-note">Table view keeps all calculated date and risk details in text form.</p>':`<p class="tna-note">Timeline needs explicit start and buyer required ex-factory dates. It will not invent dates.</p>`}<div class="tna-task-table tna-timeline-table" role="table" aria-label="Accessible TNA timeline table filtered view">${visibleRows.length?visibleRows.map(row=>`<div role="row"><span>${esc(row.task.templateRef)}</span><span>${esc(row.task.title)}</span><span>${esc(row.task.ownerParty)}</span><span>${esc(row.date||'Needs date')}</span><span>${esc(row.result?.risk||row.task.riskStatus||'needs-information')}</span></div>`).join(''):`<div role="row"><span>No activities match the active filter or view.</span></div>`}</div></div></section>`}
+  /**
+   * F25 garment date-axis projection. Owns date-only visualization exclusively:
+   * immutable first signed baseline, entered current targets, ACTUAL evidence
+   * and source-confirmed pure CPM early dates. A missing or unsigned source
+   * never becomes a fabricated forecast. No persistence, clock, DOM API or
+   * mutation of TNA order records occurs here.
+   * Accessible activity table remains below the diagram.
+   */
+  class TnaDateScaledTimeline {
+    static labels(language){
+      const words={
+        en:{title:'Date-scaled activity timeline',base:'Original confirmed baseline',target:'Current target (entered)',forecast:'Forecast (source-confirmed calculation)',actual:'Recorded actual',missing:'Enter dated milestones to display a timeline. No bars are invented.',unconfirmed:'Calculated forecast is withheld until all task factory calendars have a locally confirmed written source.',noBaseline:'Original baseline bars require a separately confirmed baseline.',nonwork:'Non-working day from entered factory calendar',limits:'Visible rows use actual calendar dates, not task float. Full garment activity sheet remains available above.',predecessor:'After'},
+        bn:{title:'তারিখ অনুযায়ী কাজের সময়রেখা',base:'নিশ্চিত মূল পরিকল্পনা',target:'বর্তমান লক্ষ্য (লিখিত)',forecast:'উৎস-নিশ্চিত হিসাবের পূর্বাভাস',actual:'নথিভুক্ত বাস্তব',missing:'তারিখ দিলে কাজের সময়রেখা দেখা যাবে। অনুমান করে বার দেখানো হয় না।',unconfirmed:'ফ্যাক্টরি ক্যালেন্ডারের উৎস নিশ্চিত না হলে হিসাবের পূর্বাভাস দেখানো হবে না।',noBaseline:'মূল বেসলাইন নিশ্চিত না হওয়া পর্যন্ত সেই বার দেখানো হবে না।',nonwork:'লিখিত ফ্যাক্টরি ক্যালেন্ডারের ছুটির দিন',limits:'সময়রেখায় আসল তারিখ ব্যবহৃত হয়, ফ্লোট নয়। উপরের শিটে সব কাজ আছে।',predecessor:'আগের কাজ'},
+        hi:{title:'तारीख पर आधारित कार्य समयरेखा',base:'पुष्टि किया मूल बेसलाइन',target:'दर्ज वर्तमान लक्ष्य',forecast:'स्रोत-पुष्टि गणना का पूर्वानुमान',actual:'दर्ज वास्तविक',missing:'तारीख दर्ज करने पर समयरेखा दिखेगी; कोई अनुमानित बार नहीं।',unconfirmed:'पुष्टि किए फैक्ट्री कैलेंडर स्रोत के बिना गणना का पूर्वानुमान नहीं दिखेगा।',noBaseline:'मूल बेसलाइन की पुष्टि होने तक बेसलाइन बार नहीं।',nonwork:'दर्ज फैक्ट्री कैलेंडर में गैर-कार्य दिवस',limits:'बार असली तारीखों पर हैं, फ्लोट पर नहीं। ऊपर सभी गतिविधियाँ हैं।',predecessor:'पिछला कार्य'},
+        ta:{title:'தேதி அடிப்படையிலான TNA காலவரிசை',base:'உறுதிப்படுத்திய முதல் Baseline',target:'பதிந்த தற்போதைய இலக்கு',forecast:'ஆதாரத்துடன் கணிக்கப்பட்ட Forecast',actual:'பதிந்த உண்மை தேதி',missing:'செயல் தேதிகளைப் பதிவு செய்தால் காலவரிசை தோன்றும்; ஊகித்துப் பட்டைகள் காட்டப்படாது.',unconfirmed:'Factory Calendar ஆதாரம் உறுதியாகும் வரை கணக்கிட்ட Forecast காட்டப்படாது.',noBaseline:'Original Baseline ஒப்புதல் இல்லாமல் Baseline பட்டை காட்டப்படாது.',nonwork:'பதிந்த Factory Calendar-இன் வேலை இல்லாத நாள்',limits:'இந்தப் பட்டைகள் உண்மையான தேதிகளை அடிப்படையாகக் கொண்டவை; Float இல்லை. எல்லாச் செயல்களும் மேலே உள்ள Sheet-ல் உள்ளன.',predecessor:'முந்தைய செயல்'}
+      };
+      return words[language]||words.en;
+    }
+    /** Calendar-day conversion is UTC-only and round-tripped to reject 2026-02-30. */
+    static day(date){
+      if(typeof date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(date))return null;
+      try{
+        const day=scheduling.toDay(date);
+        return scheduling.fromDay(day)===date?day:null;
+      }catch{return null;}
+    }
+    static part(start,finish,kind,label){
+      const a=this.day(start),b=this.day(finish);
+      if(a===null&&b===null)return null;
+      if(a!==null&&b!==null&&a>b)return null;
+      return {kind,label,begin:a??b,end:b??a,
+        point:a===null||b===null,start:start||null,finish:finish||null};
+    }
+    static confirmed(plan){
+      const ids=new Set((plan.tasks||[]).map(task=>task.calendarId||'default'));
+      for(const id of ids){
+        const cal=(plan.calendars||[]).find(item=>item.calendarId===id);
+        if(!cal||cal.source!=='user-confirmed'||!cal.sourceReference||
+          !cal.confirmedAt)return false;
+      }
+      return ids.size>0;
+    }
+    static view(plan,visible,scheduled,language){
+      const l=this.labels(language),checked=this.confirmed(plan);
+      const baseline=plan.baselineSnapshots?.[0];
+      const signed=new Map((baseline?.taskDates||[]).map(item=>[item.taskId,item.dates||{}]));
+      const refById=new Map((plan.tasks||[]).map(task=>[task.taskId,task.templateRef]));
+      const byTask=visible.map(row=>{
+        const task=row.task,d=task.dates||{},base=signed.get(task.taskId)||{};
+        const calc=checked?scheduled?.taskResults?.[task.taskId]:null;
+        const bars=[
+          baseline?this.part(base.baselineStart,base.baselineFinish,'baseline',l.base):null,
+          this.part(d.currentTargetStart,d.currentTargetFinish,'target',l.target),
+          calc?this.part(calc.earlyStart,calc.earlyFinish,'forecast',l.forecast):null,
+          this.part(d.actualStart,d.actualFinish,'actual',l.actual)
+        ].filter(Boolean);
+        const predecessors=(plan.edges||[]).filter(e=>e.successorTaskId===task.taskId)
+          .map(e=>refById.get(e.predecessorTaskId)||'?');
+        return {task,bars,predecessors,critical:Boolean(calc?.isCritical)};
+      });
+      const all=byTask.flatMap(row=>row.bars);
+      const warning=(!checked?l.unconfirmed:'')+(!baseline?' '+l.noBaseline:'');
+      if(!all.length)return '<section class="tna-date-scale" aria-label="'+esc(l.title)+'">'+
+        '<p class="tna-note">'+esc(l.missing)+'</p>'+
+        '<p class="tna-note">'+esc(warning.trim())+'</p></section>';
+      const min=Math.min(...all.map(item=>item.begin)),
+        max=Math.max(...all.map(item=>item.end)),span=Math.max(14,max-min+1);
+      const trackWidth=Math.max(700,Math.min(5400,span*15));
+      const offset=day=>((day-min)/span*100).toFixed(3);
+      const length=bar=>((bar.end-bar.begin+1)/span*100).toFixed(3);
+      const ticks=[];
+      const step=Math.max(7,Math.ceil(span/11));
+      for(let day=min;day<=max;day+=step)
+        ticks.push('<span style="left:'+offset(day)+'%">'+esc(scheduling.fromDay(day))+'</span>');
+      const calendars=(plan.calendars||[]).filter(item=>item.calendarId!=='default'||
+        (plan.tasks||[]).some(t=>(t.calendarId||'default')==='default'));
+      const ids=new Set((plan.tasks||[]).map(t=>t.calendarId||'default'));
+      const common=ids.size===1?(plan.calendars||[]).find(c=>c.calendarId===[...ids][0]):null;
+      const holidays=[];
+      if(checked&&common&&span<=250){
+        for(let day=min;day<=max;day++){
+          if(!scheduling.isWorkingDate(scheduling.fromDay(day),common))
+            holidays.push('<span class="tna-date-offday" style="left:'+offset(day)+
+              '%;width:'+(100/span).toFixed(3)+'%" aria-hidden="true"></span>');
+        }
+      }
+      const legend=[['baseline',l.base],['target',l.target],['forecast',l.forecast],
+        ['actual',l.actual]].map(([kind,title])=>
+        '<span class="tna-date-legend-item"><i class="tna-date-legend-mark tna-date-'+kind+
+        '"></i>'+esc(title)+'</span>').join('');
+      const bar=part=>'<span class="tna-date-scale-segment tna-date-'+part.kind+
+        (part.point?' tna-date-point':'')+'" data-kind="'+part.kind+'" style="left:'+
+        offset(part.begin)+'%;width:'+length(part)+'%" title="'+
+        esc(part.label+': '+(part.start||'')+
+          (part.start&&part.finish?' to ':'')+(part.finish||''))+'" aria-label="'+
+        esc(part.label+': '+(part.start||part.finish)+' to '+
+          (part.finish||part.start))+'"></span>';
+      const rows=byTask.map(row=>
+        '<div class="tna-date-scale-row" role="row" data-timeline-task="'+
+          esc(row.task.templateRef)+'"><div class="tna-date-scale-label" role="rowheader">'+
+          '<button type="button" class="tna-mini-btn" data-edit-task="'+
+          esc(row.task.taskId)+'" aria-label="Edit '+esc(row.task.title)+'">'+
+          esc(row.task.templateRef)+'</button>'+
+          (row.critical?'<small>Critical</small>':'')+
+          (row.predecessors.length?'<small>'+esc(l.predecessor)+': '+
+            esc(row.predecessors.join(', '))+'</small>':'')+
+          '</div><div class="tna-date-scale-track" role="cell" style="width:'+
+          trackWidth+'px">'+holidays.join('')+
+          row.bars.map(bar).join('')+'</div></div>').join('');
+      return '<section class="tna-date-scale" aria-label="'+esc(l.title)+'">'+
+        '<h4>'+esc(l.title)+'</h4><div class="tna-date-scale-legend">'+legend+'</div>'+
+        '<p class="tna-note">'+esc(l.limits)+'</p>'+
+        (warning.trim()?'<p class="tna-note">'+esc(warning.trim())+'</p>':'')+
+        '<div class="tna-date-scale-scroll" tabindex="0" aria-label="'+esc(l.title)+
+        '"><div class="tna-date-scale-axis-row" style="width:'+
+        (trackWidth+180)+'px"><span class="tna-date-scale-axis-label">YYYY-MM-DD</span>'+
+        '<div class="tna-date-scale-axis" style="width:'+trackWidth+
+        'px">'+ticks.join('')+'</div></div>'+
+        '<div role="table" aria-label="'+esc(l.title)+'">'+rows+'</div></div></section>';
+    }
+  }
+  function workspacePanel(plan){const data=workspaceData(plan);const filter=state.workspaceFilter||{};const view=state.workspaceView||'timeline';const statusCounts=plan.tasks.reduce((acc,task)=>{acc[task.status]=(acc[task.status]||0)+1;return acc},{});const ownerOptions=Object.keys(data.ownerCounts).slice(0,8);const stageOptions=Object.entries(domain.STAGE_LABELS).filter(([stage])=>plan.tasks.some(task=>task.stageCode===stage));const baseRows=data.rows.filter(row=>(!filter.owner||row.task.ownerParty===filter.owner)&&(!filter.stage||row.task.stageCode===filter.stage));const viewRows=view==='today'?baseRows.filter(row=>data.dueToday.includes(row)||data.nextSeven.includes(row)):view==='critical'?baseRows.filter(row=>row.result?.isCritical):baseRows;const datedRows=viewRows.filter(row=>row.date).slice(0,24);const visibleRows=(datedRows.length?datedRows:viewRows.slice(0,24));const ganttRows=visibleRows;const activeFilter=[filter.owner?`Owner ${filter.owner}`:null,filter.stage?`Stage ${filter.stage}`:null].filter(Boolean).join(' · ')||'All activities';const viewButtons=[['table','Table'],['timeline','Timeline (Gantt)'],['today','Today / Next 7 Days'],['critical','Critical Only']];return `<section class="tna-workspace-grid" aria-label="TNA dashboard and timeline"><div class="tna-panel"><span class="tna-kicker">Dashboard</span><h3>Action view</h3><div class="tna-dashboard-grid"><article><b>${esc(data.dueToday.length)}</b><span>Due today</span></article><article><b>${esc(data.overdue.length)}</b><span>Overdue</span></article><article><b>${esc(data.nextSeven.length)}</b><span>Next 7 days</span></article><article><b>${esc(data.critical.length)}</b><span>Critical path</span></article></div><p class="tna-note">${data.asOf?`As-of date uses explicit order start ${esc(data.asOf)}. No hidden current-date assumption is used.`:'Enter an explicit order start date to activate due-today, overdue and next-7-day filters.'}</p><p class="tna-note">Active timeline filter: ${esc(activeFilter)} · ${esc(viewRows.length)} visible activities · View ${esc(view)}.</p><h4>Workspace views</h4><div class="tna-stage-chips">${viewButtons.map(([key,label])=>`<button type="button" data-workspace-view="${esc(key)}" aria-pressed="${view===key?'true':'false'}">${esc(label)}</button>`).join('')}</div><h4>Owner filters</h4><div class="tna-stage-chips">${ownerOptions.map(owner=>`<button type="button" data-filter-owner="${esc(owner)}" aria-pressed="${filter.owner===owner?'true':'false'}">${esc(owner)} · ${esc(data.ownerCounts[owner])}</button>`).join('')}</div><h4>Stage filters</h4><div class="tna-stage-chips">${stageOptions.map(([stage,label])=>`<button type="button" data-filter-stage="${esc(stage)}" aria-pressed="${filter.stage===stage?'true':'false'}">${esc(stage)} · ${esc(label)}</button>`).join('')}<button type="button" data-clear-filters="true">Clear filters</button></div></div><div class="tna-panel"><span class="tna-kicker">Timeline</span><h3>${esc(viewButtons.find(([key])=>key===view)?.[1]||'Timeline')}</h3>${view==='table'?'<p class="tna-note">Table view keeps all calculated date and risk details in text form.</p>':TnaDateScaledTimeline.view(plan,ganttRows,data.scheduled,state.language)}<div class="tna-task-table tna-timeline-table" role="table" aria-label="Accessible TNA timeline table filtered view">${visibleRows.length?visibleRows.map(row=>`<div role="row"><span>${esc(row.task.templateRef)}</span><span>${esc(row.task.title)}</span><span>${esc(row.task.ownerParty)}</span><span>${esc(row.date||'Needs date')}</span><span>${esc(row.result?.risk||row.task.riskStatus||'needs-information')}</span></div>`).join(''):`<div role="row"><span>No activities match the active filter or view.</span></div>`}</div></div></section>`}
   function currentPlanSaved(plan){return !!plan&&readRecords().some(record=>record.recordId===plan.recordId)}
   function notificationPanel(plan){
     const asOfDate=plan?.commitments?.orderConfirmedOn||plan?.commitments?.poReceivedOn||'';

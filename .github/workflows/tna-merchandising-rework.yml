@@ -54,6 +54,7 @@ jobs:
           node apps/tna/tests/g05-storage.test.js
           node apps/tna/tests/g11-draft-undo.test.js
           node apps/tna/tests/g11-offline-assets.test.js
+          node apps/tna/tests/g11-date-scaled-timeline.test.js
           node apps/tna/tests/g08-reviewed-import.test.js
           node apps/tna/tests/g08-full-template-roundtrip.test.js
           node apps/tna/tests/g06-workspace.test.js
@@ -117,6 +118,7 @@ jobs:
           node apps/tna/tests/g11-security-ui.cjs
           node apps/tna/tests/g11-draft-undo-ui.cjs
           node apps/tna/tests/g11-offline-reopen.cjs
+          node apps/tna/tests/g11-date-scaled-timeline-ui.cjs
           node apps/tna/tests/f19-alternative-calendar-ui.cjs
           node tests/vesa-shared-shell-matrix.cjs
       - name: Verify real exported Excel workbook and browser print artifact

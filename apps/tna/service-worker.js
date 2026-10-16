@@ -5,7 +5,7 @@
  * Update CACHE_VERSION whenever a released static dependency changes.
  */
 'use strict';
-const CACHE_NAME='vesa-tna-static-v1-20261016-f42';
+const CACHE_NAME='vesa-tna-static-v2-20261016-f25';
 const ASSETS=Object.freeze([
   './','./index.html','./assets/tna.css?v=0.11.1',
   './src/domain.js?v=1.1.1',
