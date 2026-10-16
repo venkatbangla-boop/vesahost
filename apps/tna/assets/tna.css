@@ -454,3 +454,8 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
 .tna-date-scale-segment.tna-date-actual,.tna-date-legend-mark.tna-date-actual{top:36px;background:var(--ink,#17263d)}
 .tna-date-scale-segment.tna-date-point{min-width:7px;border-radius:2px}
 @media print{.tna-date-scale-scroll{overflow:visible}.tna-date-scale-scroll .tna-date-scale-row{break-inside:avoid}}
+
+/* F25 mobile containment: wide date axes scroll INSIDE the existing timeline panel. */
+.tna-workspace-grid,.tna-workspace-grid>.tna-panel{min-width:0;max-width:100%}
+.tna-date-scale{min-width:0;width:100%;max-width:100%;overflow:hidden}
+.tna-date-scale-scroll{box-sizing:border-box;display:block;min-width:0;width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden}
