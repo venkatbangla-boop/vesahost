@@ -691,18 +691,23 @@
       if(r.validity==='restricted')rows.push([l.restricted]);
       else if(r.validity!=='valid')rows.push([l.noClock]);
       else{
+        rows.push(row(l.select,l.base,a?.name||l.noSelection,b?.name||l.noSelection));
         rows.push(row(l.source,l.base,a?.statusLabel,b?.statusLabel));
         rows.push(row(l.original,date(r.originalRequired),null,null));
         rows.push(row(l.dateLabel,date(r.currentRequired),null,null));
         rows.push(row(l.forecast,date(r.base.forecastDate),
           date(a?.optionForecast),date(b?.optionForecast)));
-        rows.push(row(l.sourceForecast,unknown,
-          a?.recordedOptionForecast||null,b?.recordedOptionForecast||null));
+        rows.push(row(l.sourceForecast+' — base',unknown,
+          date(a?.recordedBaseForecast),date(b?.recordedBaseForecast)));
+        rows.push(row(l.sourceForecast+' — option',unknown,
+          date(a?.recordedOptionForecast),date(b?.recordedOptionForecast)));
         rows.push(row(l.gains,null,col(a,'workdaysGained'),col(b,'workdaysGained')));
         rows.push(row(l.critical,r.base.criticalRefs,a?.criticalRefs,b?.criticalRefs));
         rows.push(row(l.changed,null,a?.changedCriticalRefs,b?.changedCriticalRefs));
         rows.push(row(l.inputs,unknown,a?.inputs?.length||null,b?.inputs?.length||null));
         rows.push(row(l.revised,model.revision,col(a,'appliedRevision'),col(b,'appliedRevision')));
+        rows.push(row(l.created,unknown,col(a,'localAppliedBy'),col(b,'localAppliedBy')));
+        rows.push(row(l.reason,unknown,col(a,'localApplyReason'),col(b,'localApplyReason')));
         rows.push(row(l.limitations,l.unverified,l.unverified,l.unverified));
         rows.push(row(l.cost,l.noCost,l.noCost,l.noCost));
       }
@@ -725,7 +730,7 @@
         }
         XLSX.utils.book_append_sheet(workbook,sheet,name);
       };
-      add('Scenario Comparison',rows,[56,43,43,43],['B3','B4','B5','C5','D5']);
+      add('Scenario Comparison',rows,[56,43,43,43],['B4','B5','B6','C6','D6','C7','D7','C8','D8']);
       add('Scenario Inputs',inputs,[20,48,30,30,60]);
       add('Scenario Warnings',gaps,[18,100,50]);
     }

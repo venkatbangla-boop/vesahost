@@ -221,14 +221,27 @@ class TnaScenarioComparisonProof {
       assert.deepEqual(wb.SheetNames,['Report Summary','Order Summary','Report Activities',
         'Report Notes','Scenario Comparison','Scenario Inputs','Scenario Warnings']);
       const sheet=wb.Sheets['Scenario Comparison'];
-      assert.equal(sheet.B3.t,'n','Locally frozen original is a typed date.');
-      assert.equal(sheet.B4.t,'n','Current required is typed date.');
-      assert.equal(sheet.B5.t,'n','Strict CPM base finish is typed date.');
-      assert.equal(sheet.C5.t,'n');
-      assert.equal(sheet.D5.t,'n');
-      assert.equal(sheet.C7.t,'n');
-      assert.equal(sheet.D7.t,'n');
-      assert.equal(sheet.B3.z,'yyyy-mm-dd');
+      assert.equal(sheet.C2.v,r.labels.optionA);
+      assert.equal(sheet.D2.v,r.labels.optionB);
+      assert.equal(sheet.B4.t,'n','Locally frozen original is a typed date.');
+      assert.equal(sheet.B5.t,'n','Current required is typed date.');
+      assert.equal(sheet.B6.t,'n','Strict CPM base finish is typed date.');
+      assert.equal(sheet.C6.t,'n');
+      assert.equal(sheet.D6.t,'n');
+      assert.equal(sheet.C9.t,'n');
+      assert.equal(sheet.D9.t,'n');
+      assert.equal(sheet.B4.z,'yyyy-mm-dd');
+      const named=XLSX.read(storage.exportReportWorkbook(
+        reports.buildReportModel(stored,this.options())),{type:'buffer'});
+      assert(named.Sheets['Scenario Comparison'].C2.v.startsWith("'"),
+        'Saved formula-looking recovery name must be inert in Excel.');
+      const historyBook=XLSX.read(storage.exportReportWorkbook(
+        reports.buildReportModel(applied.plan,this.options())),{type:'buffer',cellNF:true});
+      assert.equal(historyBook.Sheets['Scenario Comparison'].C7.t,'n');
+      assert.equal(historyBook.Sheets['Scenario Comparison'].C8.t,'n');
+      assert.equal(historyBook.Sheets['Scenario Comparison'].C7.z,'yyyy-mm-dd');
+      assert.equal(historyBook.Sheets['Scenario Comparison'].C13.t,'s');
+      assert.equal(historyBook.Sheets['Scenario Comparison'].C14.t,'s');
       assert.equal(wb.Sheets['Scenario Inputs'].C2.t,'n');
       assert.equal(wb.Sheets['Scenario Inputs'].D2.t,'n');
       assert.equal(wb.Sheets['Scenario Inputs'].D2.v,1);

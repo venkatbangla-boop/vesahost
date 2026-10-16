@@ -1112,15 +1112,20 @@
           '<tr><td colspan="'+heads.length+'">'+esc(empty)+'</td></tr>')+
         '</tbody></table></div>';
       const rows=[
+        [l.select,l.base,a?.name||l.noSelection,b?.name||l.noSelection],
         [l.source,l.base,a?.statusLabel||l.noSelection,b?.statusLabel||l.noSelection],
         [l.original,p.originalRequired,null,null],
         [l.dateLabel,p.currentRequired,null,null],
         [l.forecast,p.base.forecastDate,a?.optionForecast,b?.optionForecast],
-        [l.sourceForecast,l.unknown,a?.recordedOptionForecast,b?.recordedOptionForecast],
+        [l.sourceForecast+' — base',l.unknown,a?.recordedBaseForecast,b?.recordedBaseForecast],
+        [l.sourceForecast+' — option',l.unknown,a?.recordedOptionForecast,b?.recordedOptionForecast],
         [l.gains,null,a?.workdaysGained,b?.workdaysGained],
         [l.critical,p.base.criticalRefs,a?.criticalRefs,b?.criticalRefs],
         [l.changed,null,a?.changedCriticalRefs,b?.changedCriticalRefs],
+        [l.inputs,l.unknown,a?.inputs?.length||null,b?.inputs?.length||null],
         [l.revised,model.revision,a?.appliedRevision,b?.appliedRevision],
+        [l.created,l.unknown,a?.localAppliedBy,b?.localAppliedBy],
+        [l.reason,l.unknown,a?.localApplyReason,b?.localApplyReason],
         [l.limitations,l.unverified,l.unverified,l.unverified],
         [l.cost,l.noCost,l.noCost,l.noCost]
       ];

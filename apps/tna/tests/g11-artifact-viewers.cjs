@@ -856,7 +856,7 @@ async function run(){
     await page.locator('#tnaReportType').selectOption('R12');
     await page.locator('.tna-r12-report').waitFor();
     assert(await page.locator('#tnaR12Controls').isVisible());
-    assert.equal(await page.locator('.tna-r12-comparison tbody tr').count(),11);
+    assert.equal(await page.locator('.tna-r12-comparison tbody tr').count(),16);
     assert((await page.locator('.tna-r12-report').innerText()).includes(
       'No Recovery A/B has been selected or recorded'));
     await page.locator('#tnaR12SelectA').selectOption('draft');
@@ -882,9 +882,10 @@ async function run(){
     const r12Book=XLSX.read(fs.readFileSync(r12ExcelPath),{type:'buffer'});
     assert.deepEqual(r12Book.SheetNames,['Report Summary','Order Summary','Report Activities',
       'Report Notes','Scenario Comparison','Scenario Inputs','Scenario Warnings']);
-    assert.equal(r12Book.Sheets['Scenario Comparison'].C5.t,'s',
+    assert.equal(r12Book.Sheets['Scenario Comparison'].C6.t,'s',
       'Unconfirmed source calendar cannot be exported as a calculated finish.');
     assert.equal(r12Book.Sheets['Scenario Inputs'].D2.v,1);
+    assert.equal(r12Book.Sheets['Scenario Comparison'].C2.v,'Recovery A');
     await page.emulateMedia({media:'print'});
     await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
     const r12Print=await page.locator('.tna-r12-comparison').evaluate(table=>({
