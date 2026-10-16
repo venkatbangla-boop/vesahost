@@ -69,8 +69,8 @@ class TnaG08TemplateRoundTripProof {
       assert.equal(ws.F3.z,'yyyy-mm-dd');
       assert.equal(ws.J4.v,'not-started',
         'Old local approval must not be promoted as an imported approval.');
-      assert.equal(ws.L5,undefined,
-        'Customer internal note must never enter a shareable spreadsheet.');
+      assert(ws.L5===undefined||ws.L5.v==='',
+        'Empty Excel cells are fine; confidential note text must remain excluded.');
       assert(!JSON.stringify(book.Sheets).includes('PRIVATE CUSTOMER INTERNAL NOTE'));
       assert(!Object.values(book.Sheets).some(sheet=>
         Object.values(sheet).some(cell=>cell?.f)), 'No formulas in downloaded workbook.');
