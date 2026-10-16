@@ -9,7 +9,22 @@ const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 const PORTFOLIO_SIZE=250;
 const FULL_BUDGET_MS=8000;
 const FILTER_BUDGET_MS=1000;
-const base=domain.createPlan({templateId:'knit',buyerName:'Synthetic Performance Buyer',factoryName:'Synthetic Performance Factory',styleNo:'STYLE-PERF-000',poNumber:'PO-PERF-000',totalQty:1000,orderConfirmedOn:'2026-10-10',buyerRequiredExFactory:'2027-03-31'},{ownerUserId:'synthetic-performance'});
+// First prove that an unconfirmed default factory week cannot manufacture
+// 250 ready-to-promise shipment forecasts.
+const unconfirmed=domain.createPlan({templateId:'knit',buyerName:'Synthetic Performance Buyer',factoryName:'Synthetic Performance Factory',styleNo:'STYLE-PERF-000',poNumber:'PO-PERF-000',totalQty:1000,orderConfirmedOn:'2026-10-10',buyerRequiredExFactory:'2027-03-31'},{ownerUserId:'synthetic-performance'});
+assert(scenarios.portfolioSummary([unconfirmed]).orders[0].forecastStatus==='needs-information',
+  'A default unconfirmed factory calendar must never create calculated portfolio forecasts.');
+// The performance acceptance fixture must supply its own reviewed, explicit,
+// synthetic five-day factory calendar before requiring CALCULATED forecast.
+const confirmed=domain.updateFactoryCalendar(unconfirmed,{
+  name:'Synthetic performance factory working week',
+  workingWeek:[1,2,3,4,5],holidays:[],shutdowns:[],
+  timezone:'Asia/Dhaka',confirmed:true,
+  sourceReference:'Synthetic QA performance fixture — not real factory proof',
+  reason:'Reproduce verified-date portfolio performance only'
+},{actorId:'synthetic-performance'});
+assert(confirmed.ok,'Synthetic performance calendar confirmation must succeed.');
+const base=confirmed.plan;
 const plans=Array.from({length:PORTFOLIO_SIZE},(_,index)=>{
   const plan=JSON.parse(JSON.stringify(base)),suffix=String(index).padStart(3,'0');
   plan.recordId=`TNA-PERF-${suffix}`;
