@@ -1,5 +1,15 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+## G10 linked records / F44 help / G11 security — Chromium VERIFIED (2026-10-16)
+
+- **Proof:** Code `5b9d133fd18d054d2977a70782c52f755f4f80f9`, [Actions 38886374209 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38886374209), [synthetic browser artifact 12039658826](https://github.com/venkatbangla-boop/vesahost/actions/runs/38886374209/artifacts/12039658826). `g10-linked-ui.cjs` real browser linked PPM source with schema mismatch rejection and unchanged TNA task decisions, local save/reopen/remove + 390px; `g11-f44-help.cjs` five Help topics across English/Bengali/Hindi/Tamil, backup guidance, keyboard focus, no developer jargon, 390px and no mutation; `g11-security-ui.cjs` stored and report HTML escaping, current G08 worksheet formula/script rejection, explicit ambiguous-date review blocks Create New Draft, record immutability and no external network. Full prior G01–G12/R01–R12/G08/PPM/AQL/shared-shell/browser regressions PASS.
+- **Patch ownership:** `src/bootstrap.js` two routine spreadsheet labels; `src/import-review.js` one Tamil abbreviation; `tests/g11-security-ui.cjs` selector upgrade without weakened XSS/approval assertions; `.github/workflows/tna-merchandising-rework.yml` enrolls three existing browser probes. G10/F44 original scripts, storage/source schema, dependency calculations, PPM/AQL and unified shell untouched. No production branch/Pages change. Revert single code patch for rollback; synthetic evidence only.
+- **F01–F50 reinterpretation:** F40 local manual PPM reference browser workflow now directly verified, but source receipt/authority still CONDITIONAL. F44 local in-app Help is AUTOMATED LOCAL PASS (20 topic/language combinations, keyboard/mobile/recovery); actual novice user and screen-reader reading remains independent UAT. F43 local stored/reflected XSS/input protections supported by browser PASS, remote server/provider permissions still DEFERRED_BY_SCOPE. F36 and F46 local notification rules source PASS, external alert delivery not approved. Do not upgrade overall app release.
+- **NEXT:** Review legitimate *source-confirmed* proposed alternate factory calendars for scheduling/scenarios against 03 engine spec and R12 comparison; no fabricated working-day gains if calendars not comparable or separately reviewed. Add source tests and real browser only for defensible local semantics. Then factory/merchandiser and native Excel/device UAT before any release decision.
+
+---
+
+
 ## Expanded full-scope local regression enrollment — independently VERIFIED (2026-10-16)
 
 - **Actual CI:** [GitHub Actions #38885516013 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38885516013), code SHA `256242ed3c4738b777f92d80fc9914a6c7c0962a` on `feature/tna-merchandising-rework`, synthetic [browser/Excel/PDF artifact 12038823524](https://github.com/venkatbangla-boop/vesahost/actions/runs/38885516013/artifacts/12038823524). Full TNA remains **ACTIVE / CONDITIONAL**, no deployment or real human acceptance. Do NOT replace the existing F01–F50 row matrix/historical change log with this targeted proof.
@@ -58,11 +68,11 @@
 | F37 | DEFERRED_BY_SCOPE | Authenticated tenant-aware cloud storage/order authorization requires unapproved backend/identity provider |
 | F38 | DEFERRED_BY_SCOPE | True cross-device live editing/locks/conflict service requires backend |
 | F39 | DEFERRED_BY_SCOPE | Real authenticated buyer/factory approval invitations/signatures cannot be proven locally |
-| F40 | CONDITIONAL | Local manual PPM/AQL linked-record display contract exists; independent true source identity/result release unverified |
+| F40 | CONDITIONAL | G10 Chromium local PPM-linked record add/save/reopen/remove and stale schema rejection PASS in Actions 38886374209; independent genuine PPM/AQL source identity/result still unverified |
 | F41 | AUTOMATED LOCAL PASS | Sheet/header/column mapping, explicit dates, separate new draft/old same-PO preservation in G08 source and Chromium |
 | F42 | CONDITIONAL | Source offline paths and current browser PASS; large 2,000-task/performance and full offline-refresh proof not in latest Actions suite |
-| F43 | CONDITIONAL | Formula/macro/XSS/record partition tests local; real server security/remote assets assessment DEFERRED_BY_SCOPE |
-| F44 | CONDITIONAL | Localized help implementation exists; dedicated g11-f44-help.cjs not run in latest CI, genuine nontechnical UAT missing |
+| F43 | CONDITIONAL | Formula/macro, stored/report/import XSS, ambiguous-date blocking and local partition browser PASS in Actions 38886374209; genuine server security/remote authorization DEFERRED_BY_SCOPE |
+| F44 | AUTOMATED LOCAL PASS | G11 F44 Chromium: 5 help topics × EN/BN/HI/TA, keyboard return/390px, safe backup guidance PASS in Actions 38886374209; real nontechnical and assistive-device UAT still open |
 | F45 | CONDITIONAL | Latest R01–R12/G08/scenario/PPM/AQL CI SUCCESS; independent human acceptance, complete feature matrix and authorized release NOT done |
 | F46 | CONDITIONAL | Local recurring rules/dedupe exist; G10 test not in latest CI; server schedules/provider delivery DEFERRED_BY_SCOPE |
 | F47 | AUTOMATED LOCAL PASS | Scenario fork/application source revisions, baseline preserved; R12 plus G08 safety tests |

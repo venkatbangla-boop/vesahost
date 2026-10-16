@@ -1,5 +1,14 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## Work auto-resume checkpoint — G10/F44/SECURITY BROWSER VERIFIED (2026-10-16)
+
+Read **actual GitHub** `venkatbangla-boop/vesahost` feature `feature/tna-merchandising-rework` and `VESA_PROGRESS.md` first. Exact accepted code SHA `5b9d133fd18d054d2977a70782c52f755f4f80f9`, [Actions 38886374209 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38886374209): G10 linked PPM record stale/reopen/remove, F44 five localized Help topics EN/BN/HI/TA + keyboard/mobile, G11 stored/report/import XSS & ambiguous date fail-closed, alongside full G01–G12/R01–R12/G08/PPM168/AQL24/real Excel/PDF/shared-shell regressions. Small normal-screen spreadsheet-label cleanup; source algorithms and prior history untouched. Entire TNA still **ACTIVE / CONDITIONAL, NOT DEMO LIVE**; GitHub Pages commercial release not authorized.
+
+**PRECISE NEXT ACTION:** Audit and (if source-backed) implement the genuine confirmed-alternate-calendar planning scenario comparison. First read `docs/tna/03_SCHEDULING_ENGINES.md`, live `src/scenarios.js` / `scheduling.js` / `domain.js`, `src/bootstrap.js` and R04/R12 report; protect baseline, own revision, source confirmation, cross-calendar semantics, approval and route/capacity. Keep missing authority as Needs Information rather than invented recovery. Then independent factory/merchandiser human UAT, native Excel/device/accessibility proofs, full original F01–F50 acceptance. Continue along approved portfolio queue to Packing & Container 360 only after applicable TNA acceptance and recovering original blueprint. No `main` merge, no live Pages commercial SaaS, no remote provider/sync or record alteration.
+
+---
+
+
 ## Current Work NEXT checkpoint — EXPANDED TNA CI PASS (2026-10-16)
 
 **Actual accepted source:** `feature/tna-merchandising-rework` `256242ed3c4738b777f92d80fc9914a6c7c0962a`, [Actions 38885516013 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38885516013). G01–G12 expanded source coverage (including 250 orders/25,250 tasks, 2,000-task critical path, backup migration and security), R01–R12, G08 reviewed Excel/complete importable five-garment Excel, calendar safety and PPM/AQL regressions PASS. G12 mismatch corrected in test alone: old HOLD source handoff is historically `source state`, NOT a new documentation-approved branch state. Source and public files/records unchanged. Entire TNA remains **ACTIVE / CONDITIONAL, NOT DEMO LIVE**; main and GitHub Pages are unchanged.

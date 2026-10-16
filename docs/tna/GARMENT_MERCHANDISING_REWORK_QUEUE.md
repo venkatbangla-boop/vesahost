@@ -1,5 +1,12 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
+### 2026-10-16 — G10 linked / F44 Help / G11 security browser proof VERIFIED
+
+Source `5b9d133fd18d054d2977a70782c52f755f4f80f9`, [Actions 38886374209 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38886374209), [browser artifact 12039658826](https://github.com/venkatbangla-boop/vesahost/actions/runs/38886374209/artifacts/12039658826). Actual G10 linked PPM record/stale schema/save/reopen/remove + no inferred approval, F44 20 localized Help views EN/BN/HI/TA/390px/keyboard focus, G11 XSS/hostile worksheet/ambiguous date fail-close and immutable local copy all PASS. Old G08 preview selectors replaced in dedicated security test; ordinary import wording simplified in UI. All previously verified source, Excel, PDF, calendar, PPM/AQL and shell tests still PASS; no public release. Whole TNA **ACTIVE / CONDITIONAL**.
+
+**NEXT:** source-confirmed alternate calendar scenario/CPM comparison, then real factory/merchandiser human and native Excel/device UAT. Packing & Container follows actual TNA applicable acceptance only.
+
+
 ### 2026-10-16 — F01–F50 expanded local regression CI PASS (targeted proof)
 
 Exact source `256242ed3c4738b777f92d80fc9914a6c7c0962a`, [Actions 38885516013 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38885516013), [synthetic artifact 12038823524](https://github.com/venkatbangla-boop/vesahost/actions/runs/38885516013/artifacts/12038823524). Expanded G01/G04/G09/G10/G11/G12 Node fixture enrollment proves operational, graph, risk, 250-order/25,250-task portfolio, 2,000-task iterative CPM, notifications, source security/backup/handoff while all R01–R12/G08/PPM168/AQL24 and real Chromium regressions stay PASS. Narrow G12 test correction preserved the exact historical 2026-10-14 `source state` release candidate instead of editing the old runbook. No production or actual factory UAT; complete TNA **ACTIVE / CONDITIONAL**.
