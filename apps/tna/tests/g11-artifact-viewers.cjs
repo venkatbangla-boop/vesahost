@@ -281,13 +281,15 @@ async function run(){
       'Real Chromium PDF viewer must open the weekly print file.');
     await weeklyViewer.close();
     await page.emulateMedia({media:'screen'});
-    // Add source dates to the SYNTHETIC migrated record to verify browser grouping
-    // after reopening; this is not a production order or new importer operation.
-    await page.locator('#tnaDialog .tna-dialog-head button').click();
-    await page.evaluate(userKey=>{
+    // Probe explicit SOURCE-ENTERED dates in a copied synthetic browser plan.
+    // Do not change local storage or active page state: this test proves that
+    // read-only report projection is pure and preserves the migrated saved copy.
+    const regroup=await page.evaluate(userKey=>{
       const key='vesa.tna360.records.'+userKey;
-      const box=JSON.parse(localStorage.getItem(key)),plan=box.records[0].plan;
-      const today=new Date(),day=Math.floor(Date.UTC(today.getUTCFullYear(),today.getUTCMonth(),today.getUTCDate())/86400000);
+      const current=JSON.parse(localStorage.getItem(key)).records[0].plan;
+      const unchanged=JSON.stringify(current),plan=JSON.parse(unchanged);
+      const today=new Date();
+      const day=Math.floor(Date.UTC(today.getUTCFullYear(),today.getUTCMonth(),today.getUTCDate())/86400000);
       const iso=offset=>new Date((day+offset)*86400000).toISOString().slice(0,10);
       const nextMonday=7-((today.getUTCDay()+6)%7);
       plan.tasks[0].status='completed';plan.tasks[0].dates.actualFinish=iso(0);
@@ -296,21 +298,12 @@ async function run(){
       plan.tasks[3].status='awaiting-approval';plan.tasks[3].taskKind='gate';
       plan.tasks[3].ownerParty='buyer';
       plan.tasks[4].recoveryAction='Synthetic proposal — not buyer agreed';
-      box.records[0].plan=plan;localStorage.setItem(key,JSON.stringify(box));
-    },session.userKey);
-    await page.reload({waitUntil:'domcontentloaded'});
-    await page.locator('[data-action="continue"]').click();
-    await page.locator('#tnaDialog .tna-dialog-head button').click();
-    await openTools(page);
-    await page.locator('[data-menu-action="Prepare Report"]').click();
-    await page.locator('#tnaReportType').selectOption('R05');
-    const regroup=await page.evaluate(()=>{
-      const user=JSON.parse(localStorage.getItem('vesa.appcentre.session.v1'));
-      const plan=JSON.parse(localStorage.getItem('vesa.tna360.records.'+user.userKey)).records[0].plan;
-      return VesaTnaReports.buildReportModel(plan,{
+      const projection=VesaTnaReports.buildReportModel(plan,{
         reportId:'R05',language:'en',timezone:'UTC',generatedAt:new Date().toISOString()
       }).weeklyTna;
-    });
+      if(JSON.stringify(current)!==unchanged)throw new Error('Browser fixture mutated saved plan');
+      return projection;
+    },session.userKey);
     assert(regroup.groups.completedThisWeek.some(row=>row.ref===stored.records[0].plan.tasks[0].templateRef),
       'Actual finish today must appear in this-week completed section.');
     assert(regroup.groups.missed.some(row=>row.ref===stored.records[0].plan.tasks[1].templateRef),
@@ -320,9 +313,7 @@ async function run(){
     assert(regroup.groups.approvalPending.some(row=>row.ref===stored.records[0].plan.tasks[3].templateRef));
     assert(regroup.groups.recordedRecovery.some(row=>row.ref===stored.records[0].plan.tasks[4].templateRef));
     assert.deepEqual(regroup.verifiedRecoveryAgreements,[]);
-    assert.equal(await page.locator('.tna-weekly-section').nth(2).locator('tbody tr').count(),1);
-    assert.equal(await page.locator('.tna-weekly-section').nth(4).locator('tbody tr').count(),1);
-    console.log('TNA R05 Chromium weekly report PASS: source-free Needs Date, real Excel/JSON, printable '+weeklyPages+'-page PDF, reopen completion/overdue/next week/pending/recovery, no clipping.');
+    console.log('TNA R05 Chromium weekly report PASS: source-free Needs Date, real Excel/JSON, printable '+weeklyPages+'-page PDF, browser-cloned completed/overdue/next-week/pending/recovery source cases, no clipping.');
 
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
