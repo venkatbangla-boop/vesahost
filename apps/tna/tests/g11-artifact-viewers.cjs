@@ -1069,6 +1069,7 @@ async function run(){
       buffer:Buffer.from(XLSX.write(unsafe,{type:'buffer',bookType:'xlsx'}))
     });
     await page.locator('#tnaImportReadFile').click();
+    await page.locator('#tnaImportReview [role="alert"]').waitFor();
     assert((await page.locator('#tnaImportReview').innerText()).includes('Formula'));
     assert.equal(await page.locator('#tnaImpCreate').count(),0);
     const afterUnsafe=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).records.length,
