@@ -1,5 +1,12 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## F19 group 1 code checkpoint — CONDITIONAL (2026-10-16)
+
+Exact source 84f1653a97269d9ad3c74e7a9ef1c53b98bf87ab; [CI run 38889798678](https://github.com/venkatbangla-boop/vesahost/actions/runs/38889798678) must be checked for its final conclusion. First run 38889733346 FAILED on static API this.update; source fixed by direct class ownership. Added source-attributed local alternative factory calendar record in apps/tna/src/domain.js, safe preview-only selection in scenarios.js and synthetic knit/woven/denim tests enrolled in feature CI. Different calendar working patterns expose civil-day delta only, never invented working-day gain. Invalid, stale, cross-order or unconfirmed candidates fail closed; alternate apply remains blocked. Source/schema/baseline/PPM/AQL/main/public Pages unchanged. **TNA status ACTIVE / CONDITIONAL, NOT DEMO LIVE.** NEXT ACTION: inspect the final CI outcome, fix any remaining failure, then independently audit F19 group 2 VESA UI + R12 report + four language, native Excel, saved record/reopen and browser tests. Human factory UAT/approval and final release remain open; Packing & Container 360 follows valid TNA acceptance and recovered blueprint.
+
+---
+
+
 ## G10 / F44 / G11 real-browser local acceptance — DEVELOPMENT VERIFIED (2026-10-16)
 
 **Current application:** TNA 360 Garment Merchandising Rework **ACTIVE / CONDITIONAL, NOT DEMO LIVE**. Exact code SHA `5b9d133fd18d054d2977a70782c52f755f4f80f9` and [GitHub Actions 38886374209 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38886374209), [synthetic artifact 12039658826](https://github.com/venkatbangla-boop/vesahost/actions/runs/38886374209/artifacts/12039658826). CI independently ran previously unenrolled `apps/tna/tests/g10-linked-ui.cjs` (blocked action alert, source-schema mismatch rejection, local PPM reference add/save/reload/remove without promotion to TNA approval), `g11-f44-help.cjs` (5 topics × EN/BN/HI/TA, keyboard focus, 390px, recovery guidance and local saved-plan immutability) and `g11-security-ui.cjs` (stored/reported HTML/XSS remains escaped, G08 hostile/formula source blocked, ambiguous date cannot save, zero external requests, current record unchanged). All prior expanded G01–G12 source, R01–R12, G08 full-task Excel/CSV, calendar-safety, PPM 168, AQL 24/sampling and real Chromium XLSX/PDF/shared-shell regressions PASS.

@@ -1,5 +1,12 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## Work auto-resume checkpoint — F19 group 1 (2026-10-16)
+
+Exact source 84f1653a97269d9ad3c74e7a9ef1c53b98bf87ab; [CI run 38889798678](https://github.com/venkatbangla-boop/vesahost/actions/runs/38889798678) must be checked for its final conclusion. First run 38889733346 FAILED on static API this.update; source fixed by direct class ownership. Added source-attributed local alternative factory calendar record in apps/tna/src/domain.js, safe preview-only selection in scenarios.js and synthetic knit/woven/denim tests enrolled in feature CI. Different calendar working patterns expose civil-day delta only, never invented working-day gain. Invalid, stale, cross-order or unconfirmed candidates fail closed; alternate apply remains blocked. Source/schema/baseline/PPM/AQL/main/public Pages unchanged. **TNA status ACTIVE / CONDITIONAL, NOT DEMO LIVE.** NEXT ACTION: inspect the final CI outcome, fix any remaining failure, then independently audit F19 group 2 VESA UI + R12 report + four language, native Excel, saved record/reopen and browser tests. Human factory UAT/approval and final release remain open; Packing & Container 360 follows valid TNA acceptance and recovered blueprint.
+
+---
+
+
 ## Work auto-resume checkpoint — G10/F44/SECURITY BROWSER VERIFIED (2026-10-16)
 
 Read **actual GitHub** `venkatbangla-boop/vesahost` feature `feature/tna-merchandising-rework` and `VESA_PROGRESS.md` first. Exact accepted code SHA `5b9d133fd18d054d2977a70782c52f755f4f80f9`, [Actions 38886374209 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38886374209): G10 linked PPM record stale/reopen/remove, F44 five localized Help topics EN/BN/HI/TA + keyboard/mobile, G11 stored/report/import XSS & ambiguous date fail-closed, alongside full G01–G12/R01–R12/G08/PPM168/AQL24/real Excel/PDF/shared-shell regressions. Small normal-screen spreadsheet-label cleanup; source algorithms and prior history untouched. Entire TNA still **ACTIVE / CONDITIONAL, NOT DEMO LIVE**; GitHub Pages commercial release not authorized.
