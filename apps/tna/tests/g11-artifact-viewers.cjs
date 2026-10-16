@@ -846,6 +846,138 @@ async function run(){
     assert.equal(JSON.stringify(r11After),JSON.stringify(stored.records[0].plan));
     console.log('TNA R11 Chromium PASS: local missing approvals, real JSON/XLSX/PDF and viewer, 390px, internal-only source claims, buyer/factory blocked, immutable migrated saved record.');
 
+
+    // R12: actual report-dialog A/B selectors and local duration proposal. The
+    // imported source has no confirmed factory calendar and must not invent
+    // CPM gain or buyer acceptance. All files are real Chromium downloads.
+    await page.locator('#tnaDialog .tna-dialog-head button').click();
+    await openTools(page);
+    await page.locator('[data-menu-action="Prepare Report"]').click();
+    await page.locator('#tnaReportType').selectOption('R12');
+    await page.locator('.tna-r12-report').waitFor();
+    assert(await page.locator('#tnaR12Controls').isVisible());
+    assert.equal(await page.locator('.tna-r12-comparison tbody tr').count(),11);
+    assert((await page.locator('.tna-r12-report').innerText()).includes(
+      'No Recovery A/B has been selected or recorded'));
+    await page.locator('#tnaR12SelectA').selectOption('draft');
+    assert(await page.locator('#tnaR12DraftA').isVisible());
+    const sourceTask=stored.records[0].plan.tasks[1].taskId;
+    await page.locator('#tnaR12TaskA').selectOption(sourceTask);
+    await page.locator('#tnaR12DurationA').fill('1');
+    const r12JsonEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const r12Json=await r12JsonEvent,r12JsonPath=path.join(output,'tna-r12-scenario.json');
+    await r12Json.saveAs(r12JsonPath);
+    const r12Model=JSON.parse(fs.readFileSync(r12JsonPath,'utf8'));
+    assert.equal(r12Model.scenarioComparison.schema,'VESA-TNA-SCENARIO-COMPARISON-1');
+    assert.equal(r12Model.scenarioComparison.options.length,1);
+    assert.equal(r12Model.scenarioComparison.base.validity,'incomplete');
+    assert.equal(r12Model.scenarioComparison.options[0].optionForecast,null);
+    assert.equal(r12Model.scenarioComparison.options[0].workdaysGained,null);
+    assert.equal(r12Model.scenarioComparison.options[0].buyerAgreementVerified,false);
+    const r12XlsxEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const r12Excel=await r12XlsxEvent,r12ExcelPath=path.join(output,'tna-r12-scenario.xlsx');
+    await r12Excel.saveAs(r12ExcelPath);
+    const r12Book=XLSX.read(fs.readFileSync(r12ExcelPath),{type:'buffer'});
+    assert.deepEqual(r12Book.SheetNames,['Report Summary','Order Summary','Report Activities',
+      'Report Notes','Scenario Comparison','Scenario Inputs','Scenario Warnings']);
+    assert.equal(r12Book.Sheets['Scenario Comparison'].C5.t,'s',
+      'Unconfirmed source calendar cannot be exported as a calculated finish.');
+    assert.equal(r12Book.Sheets['Scenario Inputs'].D2.v,1);
+    await page.emulateMedia({media:'print'});
+    await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const r12Print=await page.locator('.tna-r12-comparison').evaluate(table=>({
+      width:table.getBoundingClientRect().width,
+      holder:table.parentElement.getBoundingClientRect().width,
+      headers:getComputedStyle(table.tHead).display
+    }));
+    assert(r12Print.width<=r12Print.holder+1,'R12 print side-by-side table must fit.');
+    assert.equal(r12Print.headers,'table-header-group');
+    const r12PdfPath=path.join(output,'tna-r12-scenario.pdf');
+    await page.pdf({path:r12PdfPath,printBackground:true,preferCSSPageSize:true,landscape:true});
+    await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    assert.equal(fs.readFileSync(r12PdfPath).subarray(0,5).toString(),'%PDF-');
+    const r12Viewer=await context.newPage();
+    await r12Viewer.goto(pathToFileURL(r12PdfPath).href,{waitUntil:'load'});
+    assert(await r12Viewer.evaluate(()=>location.href.startsWith('file:')));
+    await r12Viewer.screenshot({path:path.join(output,'tna-r12-scenario-pdf-viewer.png')});
+    await r12Viewer.close();
+    await page.emulateMedia({media:'screen'});
+    await page.setViewportSize({width:390,height:844});
+    const r12Mobile=await page.evaluate(()=>({
+      doc:document.documentElement.scrollWidth,
+      viewport:document.documentElement.clientWidth,
+      table:document.querySelector('.tna-r12-scroll')?.scrollWidth,
+      holder:document.querySelector('.tna-r12-scroll')?.clientWidth
+    }));
+    assert(r12Mobile.doc<=r12Mobile.viewport+1,'R12 mobile page must not overflow.');
+    assert(r12Mobile.table>=r12Mobile.holder,'R12 wide table must scroll within report.');
+    await page.setViewportSize({width:1280,height:900});
+    await page.locator('#tnaR12Audience').selectOption('buyer');
+    const r12BuyerEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const r12BuyerFile=await r12BuyerEvent,r12BuyerPath=path.join(output,'tna-r12-buyer-blocked.json');
+    await r12BuyerFile.saveAs(r12BuyerPath);
+    const r12Buyer=JSON.parse(fs.readFileSync(r12BuyerPath,'utf8'));
+    assert.equal(r12Buyer.scenarioComparison.validity,'restricted');
+    assert.deepEqual(r12Buyer.scenarioComparison.options,[]);
+    assert.equal(r12Buyer.source.recordId,null);
+    assert(!JSON.stringify(r12Buyer).includes('Synthetic Migration Factory'));
+    await page.locator('#tnaR12Audience').selectOption('factory');
+    const r12FactoryEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const r12Factory=await r12FactoryEvent,r12FactoryPath=path.join(output,'tna-r12-factory-blocked.xlsx');
+    await r12Factory.saveAs(r12FactoryPath);
+    const r12FactoryBook=XLSX.read(fs.readFileSync(r12FactoryPath),{type:'buffer'});
+    assert(!JSON.stringify(r12FactoryBook.Sheets).includes('Synthetic Migration Factory'));
+    await page.locator('#tnaR12Audience').selectOption('internal');
+    const r12Strict=await page.evaluate(key=>{
+      const before=localStorage.getItem(key);
+      const original=JSON.parse(before).records[0].plan;
+      let plan=JSON.parse(JSON.stringify(original));
+      plan.tasks=plan.tasks.slice(0,4);
+      for(const [i,t] of plan.tasks.entries()){
+        t.durationUnits=[2,3,2,1][i];t.durationBasis='working';
+      }
+      const [a,b,c,d]=plan.tasks;
+      plan.edges=[[a,b],[a,c],[b,d],[c,d]].map(([from,to,i])=>({
+        edgeId:'browser-'+i,predecessorTaskId:from.taskId,
+        successorTaskId:to.taskId,relation:'FS',lagUnits:0,
+        lagBasis:'working',calendarPolicy:'successor'
+      }));
+      const pairs=[[a,b],[a,c],[b,d],[c,d]];
+      plan.edges=pairs.map(([from,to],i)=>({
+        edgeId:'browser-'+i,predecessorTaskId:from.taskId,
+        successorTaskId:to.taskId,relation:'FS',lagUnits:0,
+        lagBasis:'working',calendarPolicy:'successor'
+      }));
+      const response=VesaTnaDomain.updateFactoryCalendar(plan,{
+        name:'Synthetic Browser Factory',workingWeek:[1,2,3,4,5],
+        holidays:[],shutdowns:[],timezone:'Asia/Dhaka',
+        sourceReference:'Browser synthetic confirmed calendar',
+        confirmed:true,reason:'Test record only'
+      },{actorId:'qa@vesaent.com'});
+      if(!response.ok)throw Error('Unable to confirm synthetic factory calendar');
+      plan=response.plan;
+      const report=VesaTnaReports.buildReportModel(plan,{
+        reportId:'R12',language:'en',timezone:'Asia/Dhaka',
+        generatedAt:'2026-10-16T05:00:00Z',asOfDate:'2026-10-16',
+        scenarioSelections:{A:'draft',B:'draft'},
+        scenarioDrafts:{A:{taskId:plan.tasks[1].taskId,durationUnits:'1'},
+          B:{taskId:plan.tasks[2].taskId,durationUnits:'6'}}
+      });
+      if(localStorage.getItem(key)!==before)throw Error('R12 wrote saved source.');
+      return report.scenarioComparison;
+    },'vesa.tna360.records.'+session.userKey);
+    assert.equal(r12Strict.base.validity,'valid');
+    assert(r12Strict.options.every(item=>item.status==='calculated-local'));
+    assert(r12Strict.options.every(item=>typeof item.workdaysGained==='number'));
+    const r12SavedAfter=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).records[0].plan,
+      'vesa.tna360.records.'+session.userKey);
+    assert.equal(JSON.stringify(r12SavedAfter),JSON.stringify(stored.records[0].plan));
+    console.log('TNA R12 Chromium PASS: A/B dialog, unconfirmed calendar blocks false forecast, strict confirmed-calendar runtime A/B, real XLSX/JSON/PDF viewer, 390px scroll and print, external model blocked, local source unchanged.');
+
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}

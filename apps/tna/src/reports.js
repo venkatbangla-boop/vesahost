@@ -2044,10 +2044,348 @@
     }
   }
 
+
+  /**
+   * R12 locally computed planning scenario comparison. Owns only read-only
+   * report projection. The existing scenario engine replays current-revision
+   * draft changes into cloned plans; R04 owns confirmed-calendar CPM numbers.
+   * Historic applied revisions have no full immutable pre-apply plan snapshot:
+   * therefore they are DISPLAYED AS RECORDED, not recalculated or promised.
+   * Neither local scenario application nor an entered due date proves buyer
+   * approval, resource feasibility, shipment release or financial savings.
+   */
+  class TnaScenarioComparisonProjection {
+    static labels(language){
+      const all={
+        en:{title:'Base vs Recovery A / B — planning comparison',unknown:'Needs Information',
+          notice:'INTERNAL PLANNING ONLY. Neither preview nor locally applied recovery proves buyer/factory agreement, production capacity, cost saving or delivery feasibility. Check authority before sharing.',
+          basis:'A/B are actual selected, locally saved scenario branches or manually entered task-duration drafts. A scenario is recalculated only against the identical current revision with a user-confirmed factory calendar. Historical applied branches are recorded snapshots, not reconstructed original plans.',
+          restricted:'External recovery scenario report is not authorized: no order, task, buyer, factory, cost or branch details are disclosed.',
+          noScenario:'No Recovery A/B has been selected or recorded',noClock:'Valid report date and timezone required',noBase:'Base critical path requires confirmed calendar, dates and valid dependencies.',
+          stale:'Saved scenario belongs to another order/revision; no comparable forecast.',
+          historic:'Previously applied locally — original plan cannot be reconstructed from saved branch.',
+          applied:'Locally applied revision recorded, not buyer-agreed',
+          claimed:'Local scenario record, not externally verified',missing:'Missing or invalid proposed change',
+          noGain:'Working-day difference unavailable (missing comparable CPM or altered calendar).',
+          calendarProposed:'Proposed calendar change is NOT an independently confirmed working calendar; comparison withheld.',
+          load:'Capacity is locally entered; resource adequacy and rate remain unverified.',
+          conflict:'Scenario has validation or local capacity conflicts; forecast difference withheld.',
+          dateLabel:'Buyer required ex-factory (current local)',original:'Original locally frozen required date',
+          forecast:'Strict CPM forecast (current vs options)',sourceForecast:'Historic entered base/option dates (not reverified)',
+          gains:'Calculated working days gained (+earlier / −later)',critical:'Critical activity refs (strict CPM)',
+          changed:'Changed critical activities (strict CPM)',inputs:'Recorded proposed inputs',source:'Source / local application',
+          limitations:'Operational feasibility and buyer approval',cost:'Financial cost change',
+          noCost:'Needs Information — no reviewed cost model',
+          unverified:'Not independently verified',
+          notCompared:'Not comparable',base:'Current local base',optionA:'Recovery A',optionB:'Recovery B',
+          invalidBranch:'Duplicate, invalid or unrelated branch ID',noSelection:'No option selected',
+          noActivity:'Choose an activity and enter proposed duration',draft:'Try duration change (preview only)',
+          created:'Local scenario entered',revised:'Local revision',reason:'Local apply reason',
+          headers:['Comparison item','Current base','Recovery A','Recovery B'],
+          changes:['Option','Source change','Before (local)','Proposed','Proof level'],
+          warnings:['Option','Issue / missing input','Consequence'],
+          fields:{duration:'Duration',calendar:'Calendar',route:'Task route',capacity:'Capacity entry'},
+          modes:['Internal report','Buyer copy — blocked','Factory copy — blocked'],
+          select:'Choose saved option or enter a new duration',task:'Activity to adjust',duration:'Proposed duration (working/calendar units per task)',
+          actual:'Only saved plan state is authoritative; scenario preview never changes the order.'},
+        bn:{title:'বর্তমান পরিকল্পনা ও Recovery A/B তুলনা',unknown:'তথ্য প্রয়োজন',
+          notice:'শুধু অভ্যন্তরীণ পরিকল্পনা। স্থানীয় পরিবর্তন ক্রেতার সম্মতি, ক্ষমতা বা সাশ্রয় নিশ্চিত নয়। পাঠানোর আগে অনুমতি যাচাই করুন।',
+          basis:'একই রিভিশন ও নিশ্চিত ফ্যাক্টরি ক্যালেন্ডার থাকলেই পুনঃহিসাব। আগে প্রয়োগ করা বিকল্পের পুরোনো পূর্ণ পরিকল্পনা নেই।',
+          restricted:'বাইরের রিকভারি রিপোর্ট অনুমোদিত নয়; অর্ডার/দর/কাজের তথ্য গোপন।',
+          noScenario:'A/B বিকল্প নির্বাচিত হয়নি',noClock:'সঠিক তারিখ ও টাইমজোন প্রয়োজন',noBase:'নিশ্চিত ফ্যাক্টরি ক্যালেন্ডার ছাড়া CPM নেই',
+          stale:'অন্য অর্ডার বা রিভিশন; তুলনা নয়',historic:'আগে স্থানীয়ভাবে প্রয়োগ; পুরোনো পরিকল্পনা পুনঃহিসাব নয়',
+          applied:'স্থানীয়ভাবে প্রয়োগ; ক্রেতার সম্মতি নয়',claimed:'স্থানীয় রেকর্ড, বাইরের প্রমাণ নয়',
+          missing:'পরিবর্তন নেই বা ভুল',noGain:'তুলনাযোগ্য CPM / ক্যালেন্ডার নেই',
+          calendarProposed:'প্রস্তাবিত ক্যালেন্ডার নিশ্চিত নয়',load:'ক্যাপাসিটি স্থানীয়; স্বাধীন যাচাই নেই',
+          conflict:'পরিকল্পনায় ভুল/ক্যাপাসিটি দ্বন্দ্ব; সময় বাঁচানো দেখানো হয়নি',
+          dateLabel:'ক্রেতার বর্তমান তারিখ',original:'মূল সংরক্ষিত তারিখ',
+          forecast:'CPM পূর্বাভাস',sourceForecast:'পুরোনো লেখা তারিখ (পুনঃযাচাই নয়)',
+          gains:'কর্মদিবস সাশ্রয় (+আগে/−পরে)',critical:'গুরুত্বপূর্ণ কাজ',changed:'বদলানো গুরুত্বপূর্ণ কাজ',
+          inputs:'প্রস্তাবিত পরিবর্তন',source:'স্থানীয় উৎস',limitations:'সম্ভাব্যতা ও ক্রেতার অনুমতি',
+          cost:'আর্থিক পরিবর্তন',noCost:'যাচাইকৃত খরচ নেই',unverified:'স্বাধীনভাবে নিশ্চিত নয়',notCompared:'তুলনা নয়',
+          base:'বর্তমান পরিকল্পনা',optionA:'রিকভারি A',optionB:'রিকভারি B',invalidBranch:'অবৈধ/অন্য রেকর্ডের বিকল্প',
+          noSelection:'বিকল্প নেই',noActivity:'কাজ ও সময় নির্বাচন করুন',draft:'সময় বদল (পূর্বদর্শন)',created:'স্থানীয় বিকল্প',
+          revised:'স্থানীয় রিভিশন',reason:'প্রয়োগের কারণ',
+          headers:['তুলনা','মূল','বিকল্প A','বিকল্প B'],changes:['বিকল্প','পরিবর্তন','আগে','প্রস্তাব','প্রমাণ'],
+          warnings:['বিকল্প','সমস্যা','ফলাফল'],fields:{duration:'সময়',calendar:'ক্যালেন্ডার',route:'রুট',capacity:'ক্যাপাসিটি'},
+          modes:['ভেতরের রিপোর্ট','ক্রেতা কপি বন্ধ','কারখানা কপি বন্ধ'],select:'বিকল্প বাছুন',task:'কাজ',duration:'নতুন সময়',
+          actual:'বিকল্প দেখা মানে অর্ডার পরিবর্তন নয়'},
+        hi:{title:'मूल योजना बनाम रिकवरी A/B',unknown:'जानकारी चाहिए',
+          notice:'केवल आंतरिक योजना। स्थानीय बदलाव खरीदार मंजूरी, क्षमता या बचत प्रमाण नहीं। साझा करने से पहले अनुमति देखें।',
+          basis:'समान रिविजन और पुष्टि फैक्ट्री कैलेंडर पर ही पुनर्गणना। पुराने लागू विकल्प की मूल पूरी योजना उपलब्ध नहीं।',
+          restricted:'बाहरी रिकवरी रिपोर्ट अधिकृत नहीं; ऑर्डर/कार्य/दाम छिपाए गए।',
+          noScenario:'A/B विकल्प दर्ज/चुने नहीं',noClock:'तारीख/टाइमजोन चाहिए',noBase:'पुष्टि कैलेंडर के बिना CPM नहीं',
+          stale:'दूसरे ऑर्डर/रिविजन का विकल्प',historic:'पहले स्थानीय लागू; पुरानी योजना की पुनर्गणना नहीं',
+          applied:'स्थानीय लागू, खरीदार मंजूरी नहीं',claimed:'स्थानीय रिकॉर्ड, बाहरी प्रमाण नहीं',
+          missing:'अधूरा प्रस्ताव',noGain:'तुलनीय CPM/कैलेंडर नहीं',calendarProposed:'बदला कैलेंडर पुष्टि नहीं',
+          load:'स्थानीय क्षमता; स्वतंत्र सत्यापन नहीं',conflict:'स्रोत/क्षमता विरोध; लाभ रोका',
+          dateLabel:'वर्तमान खरीदार तारीख',original:'मूल सुरक्षित तारीख',forecast:'CPM अनुमान',
+          sourceForecast:'पुरानी दर्ज तारीख (अपुष्ट)',gains:'कार्य-दिन लाभ (+जल्दी/−देर)',
+          critical:'महत्वपूर्ण कार्य',changed:'बदले महत्वपूर्ण कार्य',inputs:'प्रस्तावित बदलाव',
+          source:'स्थानीय स्रोत',limitations:'व्यावहारिकता और खरीदार सहमति',cost:'लागत बदलाव',
+          noCost:'सत्यापित लागत मॉडल नहीं',unverified:'स्वतंत्र पुष्टि नहीं',notCompared:'तुलना नहीं',
+          base:'वर्तमान आधार',optionA:'रिकवरी A',optionB:'रिकवरी B',invalidBranch:'अमान्य/दूसरा विकल्प',
+          noSelection:'विकल्प नहीं',noActivity:'कार्य और नया समय चुनें',draft:'समय बदलें (पूर्वावलोकन)',
+          created:'स्थानीय विकल्प',revised:'स्थानीय संशोधन',reason:'स्थानीय कारण',
+          headers:['मापदंड','मूल','रिकवरी A','रिकवरी B'],
+          changes:['विकल्प','बदलाव','पहले','प्रस्ताव','प्रमाण'],warnings:['विकल्प','समस्या','अर्थ'],
+          fields:{duration:'अवधि',calendar:'कैलेंडर',route:'रूट',capacity:'क्षमता'},
+          modes:['आंतरिक रिपोर्ट','खरीदार प्रति रोकी','फैक्ट्री प्रति रोकी'],
+          select:'बचाया विकल्प या नया प्रयास',task:'कार्य',duration:'प्रस्तावित अवधि',
+          actual:'पूर्वावलोकन अॉर्डर नहीं बदलता'},
+        ta:{title:'Base / Recovery A / B ஒப்பீடு',unknown:'தகவல் தேவை',
+          notice:'Internal planning மட்டும். Locally apply செய்த recovery என்பது Buyer/Factory ஒப்புதல், capacity உறுதி அல்லது செலவு குறைவு அல்ல. பகிருவதற்கு அனுமதி தேவை.',
+          basis:'ஒரே current revision, user-confirmed factory calendar இருந்தால் மட்டுமே மீண்டும் CPM கணக்கிடப்படும். முன்பு apply ஆன scenario-வின் முழு பழைய plan இல்லாததால் அதை புதிய கணக்காகக் காட்டமாட்டோம்.',
+          restricted:'Buyer/Factory வெளி recovery report-க்கு அனுமதி இல்லை; order, task, cost, branch தகவல் வெளியிடப்படாது.',
+          noScenario:'Recovery A/B தேர்வு செய்யப்படவில்லை',noClock:'சரியான நாள் / timezone தேவை',
+          noBase:'Factory-confirmed calendar, dates மற்றும் dependency இல்லாமல் CPM முடியாது',
+          stale:'பழைய revision / வேறு order. சரியான ஒப்பீடு முடியாது',
+          historic:'முன்பு உள்ளூரில் apply ஆன பதிவு; பழைய plan-ஐ மீள்கணக்கிட முடியாது',
+          applied:'உள்ளூரில் apply ஆன revision; Buyer agreed அல்ல',
+          claimed:'உள்ளூர் பதிவு; வெளியுறுதி இல்லை',missing:'Proposed change தவறு அல்லது இல்லை',
+          noGain:'ஒப்பிடக்கூடிய CPM/calendar இல்லாததால் working-day gain கிடையாது',
+          calendarProposed:'புதிய calendar proposal இன்னும் confirm ஆகவில்லை; நாட்கள் கணக்கு தடுக்கப்பட்டது',
+          load:'Capacity உள்ளூர் பதிவு; production feasibility உறுதி இல்லை',
+          conflict:'Input/Capacity conflict இருப்பதால் gain மறைக்கப்பட்டது',
+          dateLabel:'Buyer கேட்ட தற்போதைய Ex-factory',original:'முதல் locally frozen தேதி',
+          forecast:'Strict CPM கணித்த finish',sourceForecast:'பழைய பதிவு dates (மீள் உறுதி இல்லை)',
+          gains:'கணிக்கப்பட்ட Working days gained (+முன் / −பின்)',critical:'Critical task refs',
+          changed:'மாறிய critical task refs',inputs:'மாற்றப்பட்ட input',
+          source:'Source / local apply',limitations:'Production feasibility / Buyer approval',
+          cost:'Cost மாற்றம்',noCost:'Reviewed cost model இல்லை',unverified:'தனி உறுதி இல்லை',
+          notCompared:'ஒப்பிட முடியவில்லை',base:'இப்போதைய local Base',
+          optionA:'Recovery A',optionB:'Recovery B',invalidBranch:'Duplicate/தவறான/வேறு order Scenario',
+          noSelection:'Option தேர்வு இல்லை',noActivity:'Task மற்றும் Proposed duration தரவும்',
+          draft:'Duration மாற்றம் முயற்சி (Preview)',created:'உள்ளூர் Scenario பதிவு',
+          revised:'உள்ளூர் revision',reason:'Apply காரணம்',
+          headers:['ஒப்பீடு','Current Base','Recovery A','Recovery B'],
+          changes:['Option','மாற்றப்பட்ட input','முந்தைய பதிவு','Proposed','ஆதார நிலை'],
+          warnings:['Option','குறைவு / பிழை','பாதிப்பு'],
+          fields:{duration:'Duration',calendar:'Calendar',route:'Route',capacity:'Capacity'},
+          modes:['Internal report','Buyer copy — blocked','Factory copy — blocked'],
+          select:'Saved option அல்லது புதிய மாற்றம்',task:'மாற்ற வேண்டிய Activity',duration:'Proposed duration',
+          actual:'Scenario preview என்பது Order-ஐ மாற்றாது'}
+      };
+      return all[language]||all.en;
+    }
+    /** Read a selected source branch, but never treat its stored calculations as proof. */
+    static selected(plan,options,slot,labels){
+      const branches=Array.isArray(plan.scenarioBranches)?plan.scenarioBranches:[];
+      const selections=options.scenarioSelections;
+      const hasExplicit=selections&&Object.prototype.hasOwnProperty.call(selections,slot);
+      const selector=hasExplicit?selections[slot]:(branches[slot==='A'?0:1]?.scenarioId||'');
+      if(!selector)return null;
+      if(selector==='draft'){
+        const data=options.scenarioDrafts?.[slot]||{};
+        if(!data.taskId||data.durationUnits===''||data.durationUnits===null||
+          data.durationUnits===undefined)return {invalid:labels.noActivity,slot};
+        const duration=Number(data.durationUnits);
+        if(!Number.isFinite(duration)||duration<0||!Number.isInteger(duration))
+          return {invalid:labels.missing,slot};
+        return {scenarioId:'R12-DRAFT-'+slot,name:slot==='A'?labels.optionA:labels.optionB,
+          baseRecordId:plan.recordId,baseRevision:plan.revision||0,
+          status:'preview',changes:{durationAdjustments:[{taskId:data.taskId,
+            durationUnits:duration,reason:'R12 locally entered comparison only'}]},
+          sourceKind:'local-draft',slot};
+      }
+      if(typeof selector!=='string'||selector.length>160)return {invalid:labels.invalidBranch,slot};
+      const matches=branches.filter(b=>b?.scenarioId===selector);
+      if(matches.length!==1)return {invalid:labels.invalidBranch,slot};
+      return {...matches[0],sourceKind:'saved-local-branch',slot};
+    }
+    /** Describe source changes without exporting prices or business-entered notes. */
+    static differences(plan,branch,labels){
+      const input=branch.changes||{};
+      const tasks=Array.isArray(plan.tasks)?plan.tasks:[];
+      const lines=[];
+      for(const item of (Array.isArray(input.durationAdjustments)?input.durationAdjustments:[]).slice(0,40)){
+        const task=tasks.find(t=>t.taskId===item?.taskId);
+        lines.push({slot:branch.slot,kind:labels.fields.duration,
+          ref:task?.templateRef||labels.unknown,
+          before:task&&typeof task.durationUnits==='number'?task.durationUnits:null,
+          after:typeof item?.durationUnits==='number'&&Number.isFinite(item.durationUnits)?
+            item.durationUnits:null,proof:labels.claimed});
+      }
+      for(const kind of ['calendarChanges','routeChanges','capacityChanges']){
+        const values=Array.isArray(input[kind])?input[kind]:[];
+        const caption=labels.fields[kind==='calendarChanges'?'calendar':kind==='routeChanges'?'route':'capacity'];
+        for(const item of values.slice(0,20))lines.push({slot:branch.slot,kind:caption,
+          ref:kind==='routeChanges'?tasks.find(t=>t.taskId===item?.taskId)?.templateRef||labels.unknown:
+            typeof item?.calendarId==='string'&&kind==='calendarChanges'?item.calendarId:labels.unknown,
+          before:labels.unknown,after:labels.claimed,proof:labels.unverified});
+      }
+      if(input.capacity)lines.push({slot:branch.slot,kind:labels.fields.capacity,
+        ref:labels.unknown,before:labels.unknown,after:labels.claimed,proof:labels.unverified});
+      return lines;
+    }
+    /** Historic applied branch has lineage but cannot reproduce its old base. */
+    static lineage(plan,branch,asOfDay){
+      const events=Array.isArray(plan.revisionEvents)?plan.revisionEvents:[];
+      if(branch.status!=='applied')return null;
+      const matching=events.filter(e=>e?.eventType==='scenario-applied'&&
+        e.details?.scenarioId===branch.scenarioId&&
+        e.details?.baseRevision===branch.baseRevision&&
+        Number.isInteger(e.revision)&&e.revision===branch.baseRevision+1&&
+        typeof e.createdAt==='string'&&e.createdAt.slice(0,10)<=
+          new Date(asOfDay*86400000).toISOString().slice(0,10));
+      return matching.length===1?matching[0]:null;
+    }
+    /** Every option computes on a cloned current plan, not a saved plan write. */
+    static compare(plan,branch,base,asOfDay,labels){
+      if(branch.invalid)return {slot:branch.slot,name:labels.unknown,
+        status:'incomplete',statusLabel:branch.invalid,reason:branch.invalid,
+        inputs:[],baseForecast:null,optionForecast:null,workdaysGained:null,
+        changedCriticalRefs:[],criticalRefs:[],locallyApplied:false,
+        buyerAgreementVerified:false,costImpact:null,capacityConflicts:null,
+        recordedBaseForecast:null,recordedOptionForecast:null,appliedRevision:null};
+      const differences=this.differences(plan,branch,labels);
+      const result={slot:branch.slot,name:typeof branch.name==='string'&&branch.name.trim()?
+        branch.name.trim():labels.unknown,
+        status:'incomplete',statusLabel:labels.missing,reason:labels.missing,
+        sourceKind:branch.sourceKind,baseRevision:Number.isInteger(branch.baseRevision)?branch.baseRevision:null,
+        sourceState:typeof branch.status==='string'?branch.status:labels.unknown,
+        inputs:differences,
+        baseForecast:null,optionForecast:null,workdaysGained:null,
+        changedCriticalRefs:[],criticalRefs:[],locallyApplied:false,
+        buyerAgreementVerified:false,costImpact:null,capacityConflicts:null,
+        recordedBaseForecast:null,recordedOptionForecast:null,appliedRevision:null,
+        localApplyReason:null,localAppliedBy:null};
+      if(typeof branch.baseRecordId!=='string'||branch.baseRecordId!==plan.recordId||
+        !Number.isInteger(branch.baseRevision)||branch.baseRevision<0)
+        return {...result,status:'stale',statusLabel:labels.stale,reason:labels.stale};
+      const applied=this.lineage(plan,branch,asOfDay);
+      if(branch.status==='applied'){
+        return {...result,status:applied?'historic-applied':'historic-unverified',
+          statusLabel:applied?labels.applied:labels.historic,reason:labels.historic,
+          locallyApplied:Boolean(applied),appliedRevision:applied?.revision??null,
+          localApplyReason:typeof branch.applyReason==='string'?branch.applyReason:null,
+          localAppliedBy:typeof branch.appliedBy==='string'?branch.appliedBy:null,
+          recordedBaseForecast:TnaMasterReportProjection.asDate(branch.baseForecastDate),
+          recordedOptionForecast:TnaMasterReportProjection.asDate(branch.scenarioForecastDate)};
+      }
+      if(!['preview','needs-review'].includes(branch.status)||branch.baseRevision!==plan.revision)
+        return {...result,status:'stale',statusLabel:labels.stale,reason:labels.stale};
+      if(!differences.length||!branch.changes||typeof branch.changes!=='object')
+        return {...result,status:'incomplete',statusLabel:labels.missing,reason:labels.missing};
+      const changes=branch.changes;
+      if(['durationAdjustments','calendarChanges','routeChanges','capacityChanges'].some(k=>
+        changes[k]!==undefined&&!Array.isArray(changes[k])))
+        return {...result,status:'incomplete',statusLabel:labels.missing,reason:labels.missing};
+      if(Array.isArray(changes.calendarChanges)&&changes.calendarChanges.length)
+        return {...result,status:'calendar-unconfirmed',statusLabel:labels.calendarProposed,
+          reason:labels.calendarProposed};
+      if(base.validity!=='valid')
+        return {...result,status:'incomplete',statusLabel:labels.noBase,reason:labels.noBase};
+      const scenarios=root.VesaTnaScenarios||
+        (typeof require==='function'?require('./scenarios.js'):null);
+      if(!scenarios?.previewScenario)
+        return {...result,status:'incomplete',statusLabel:labels.missing,reason:labels.missing};
+      let preview,option;
+      try{
+        preview=scenarios.previewScenario(plan,changes,{
+          actorId:plan.ownerUserId,createdAt:'2026-01-01T00:00:00Z'});
+        if(!preview.ok)return {...result,status:'incomplete',
+          reason:typeof preview.error==='string'?preview.error:labels.missing};
+        option=TnaCriticalPathProjection.build(preview.previewPlan,{language:'en'});
+      }catch{return {...result,status:'incomplete',reason:labels.missing};}
+      const conflicts=Array.isArray(preview.scenarioLoad?.overAllocations)?
+        preview.scenarioLoad.overAllocations.length:0;
+      const count=Number.isInteger(preview.scenarioLoad?.totalEntries)&&
+        preview.scenarioLoad.totalEntries>0?conflicts:null;
+      if(option.validity!=='valid'||(preview.violations||[]).length)
+        return {...result,status:'conflict',statusLabel:labels.conflict,
+          reason:[...(preview.violations||[]),...(option.missingInputs||[]),
+            ...(option.errors||[])].slice(0,12).join('; ')||labels.conflict,
+          capacityConflicts:count};
+      const baseCritical=new Set(base.rows.filter(r=>r.isCritical).map(r=>r.ref));
+      const otherCritical=new Set(option.rows.filter(r=>r.isCritical).map(r=>r.ref));
+      const changed=[...new Set([...baseCritical,...otherCritical])]
+        .filter(ref=>baseCritical.has(ref)!==otherCritical.has(ref));
+      // Comparable working-day gains exclude route/calendar changes. Capacity
+      // alone never creates phantom schedule savings.
+      const calendarChange=Array.isArray(changes.routeChanges)&&
+        changes.routeChanges.some(r=>r?.calendarId!==undefined);
+      const durationChanged=Array.isArray(changes.durationAdjustments)&&
+        changes.durationAdjustments.length>0;
+      const calendar=plan.calendars?.find(c=>c.calendarId==='default');
+      const scheduling=root.VesaTnaScheduling||
+        (typeof require==='function'?require('./scheduling.js'):null);
+      const gained=durationChanged&&!calendarChange&&
+        TnaCriticalPathProjection.checkedCalendar(calendar)&&
+        typeof scheduling?.workdayDifference==='function'?
+        scheduling.workdayDifference(option.forecastDate,base.forecastDate,calendar,'working'):null;
+      return {...result,status:'calculated-local',statusLabel:labels.claimed,
+        reason:labels.unverified,baseForecast:base.forecastDate,
+        optionForecast:option.forecastDate,
+        criticalRefs:option.rows.filter(r=>r.isCritical).map(r=>r.ref),
+        changedCriticalRefs:changed,
+        workdaysGained:Number.isFinite(gained)?gained:null,
+        capacityConflicts:count};
+    }
+    /** Empty R12 and invalid as-of always retain explicit Needs Information. */
+    static build(plan={},options={}){
+      const labels=this.labels(options.language),window=TnaWeeklyReportProjection.window(options);
+      const blank={schema:'VESA-TNA-SCENARIO-COMPARISON-1',
+        validity:'incomplete',audience:'local-planning-only',asOfDate:null,
+        timezone:options.timezone||null,originalRequired:null,currentRequired:null,
+        base:{validity:'incomplete',forecastDate:null,workingDaysEarlyOrLate:null,
+          criticalRefs:[],missingInputs:[]},options:[],changes:[],labels,
+        sourceBranchCount:Array.isArray(plan.scenarioBranches)?plan.scenarioBranches.length:0,
+        buyerAgreementVerified:false,capacityFeasibilityVerified:false,costImpact:null,
+        warnings:[labels.notice,labels.basis,labels.noBase]};
+      if(!window)return {...blank,warnings:[labels.notice,labels.noClock]};
+      const cpm=TnaCriticalPathProjection.build(plan,{language:options.language});
+      const original=TnaMasterReportProjection.asDate(
+        plan.baselineSnapshots?.[0]?.commitments?.buyerRequiredExFactory);
+      const current=TnaMasterReportProjection.asDate(
+        plan.commitments?.buyerRequiredExFactory);
+      const base={validity:cpm.validity,forecastDate:cpm.validity==='valid'?
+        cpm.forecastDate:null,workingDaysEarlyOrLate:cpm.validity==='valid'?
+        cpm.workingDaysEarlyOrLate:null,
+        criticalRefs:cpm.validity==='valid'?cpm.rows.filter(r=>r.isCritical).map(r=>r.ref):[],
+        missingInputs:cpm.missingInputs||[]};
+      const a=this.selected(plan,options,'A',labels),b=this.selected(plan,options,'B',labels);
+      const slots=[a,b],duplicate=a&&b&&a.scenarioId&&a.scenarioId===b.scenarioId;
+      const compared=slots.filter(Boolean).map(item=>duplicate&&item.slot==='B'?
+        this.compare(plan,{invalid:labels.invalidBranch,slot:'B'},cpm,window.today,labels):
+        this.compare(plan,item,cpm,window.today,labels));
+      return {...blank,validity:'valid',asOfDate:window.asOfDate,
+        originalRequired:original,currentRequired:current,base,
+        options:compared,changes:compared.flatMap(row=>row.inputs||[]),
+        warnings:[labels.notice,labels.basis,labels.actual,
+          ...(!compared.length?[labels.noScenario]:[]),
+          ...(cpm.validity!=='valid'?[labels.noBase,...(cpm.missingInputs||[])]:[]),
+          ...compared.filter(x=>x.status!=='calculated-local')
+            .map(x=>x.name+': '+x.reason)]};
+    }
+    /** External recipient rights are not provable on browser-only hosting. */
+    static blockedReport(report,language,generatedAt,timezone){
+      const labels=this.labels(language),shared=I18N[language];
+      return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:'R12',
+        title:titleFor(report,language),language,languageName:shared.languageName,
+        audience:'External scenario comparison blocked',generatedAt,
+        generatedLabel:formatDateTime(generatedAt,language),timezone,
+        revision:0,baselineSnapshots:0,headings:shared.headings,labels:shared.labels,
+        order:{buyer:labels.restricted,factory:labels.restricted,style:labels.restricted,
+          po:labels.restricted,quantity:labels.unknown,unit:labels.unknown,
+          requiredExFactory:labels.unknown},tasks:[],
+        scenarioComparison:{schema:'VESA-TNA-SCENARIO-COMPARISON-1',
+          validity:'restricted',audience:'external-blocked',asOfDate:null,timezone,
+          originalRequired:null,currentRequired:null,
+          base:{validity:'restricted',forecastDate:null,workingDaysEarlyOrLate:null,
+            criticalRefs:[],missingInputs:[]},options:[],changes:[],labels,
+          sourceBranchCount:0,buyerAgreementVerified:false,
+          capacityFeasibilityVerified:false,costImpact:null,
+          warnings:[labels.restricted]},
+        warnings:[labels.restricted],notes:[labels.restricted],
+        source:{recordId:null,schemaVersion:null,mode:'restricted-external'}};
+    }
+  }
+
   function taskRows(plan={},limit=Infinity){return (plan.tasks||[]).slice(0,limit).map(task=>({ref:task.templateRef,title:task.title,owner:task.ownerParty,status:task.status,baseline:task.dates?.baselineFinish||'',current:task.dates?.currentTargetFinish||'',forecast:task.dates?.forecastFinish||'',actual:task.dates?.actualFinish||'',risk:task.riskStatus||'needs-information'}))}
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=(report[0]==='R05'||report[0]==='R06'||report[0]==='R07'||report[0]==='R08'||report[0]==='R09'||report[0]==='R10'||report[0]==='R11')&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);if(report[0]==='R10')return TnaPortfolioProjection.report(plan,report,l,generatedAt,timezone,options);if(report[0]==='R11'&&options.audienceMode&&options.audienceMode!=='internal')return TnaApprovalHistoryProjection.externalReport(report,l,generatedAt,timezone);if(report[0]==='R08'&&options.audienceMode&&options.audienceMode!=='internal')return TnaMaterialLcProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R09'&&options.audienceMode&&options.audienceMode!=='internal')return TnaShipmentReadinessProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R07'&&options.audienceMode==='buyer')return TnaProductionStatusProjection.buyerReport(plan,report,l,generatedAt,timezone,options);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const delay=report[0]==='R06'?TnaDelayRecoveryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const production=report[0]==='R07'?TnaProductionStatusProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const materials=report[0]==='R08'?TnaMaterialLcProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const shipment=report[0]==='R09'?TnaShipmentReadinessProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const approvals=report[0]==='R11'?TnaApprovalHistoryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R11'?'Internal approval history — restricted':report[0]==='R09'?'Internal quality and shipping — restricted':report[0]==='R08'?'Internal commercial and sourcing — restricted':report[0]==='R07'?'Internal production review — restricted':report[0]==='R06'?'Local management review — no external sharing authorization':report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(delay?{delayRecovery:delay}:{}),...(production?{productionStatus:production}:{}),...(materials?{materialLc:materials}:{}),...(shipment?{shipmentReadiness:shipment}:{}),...(approvals?{approvalHistory:approvals}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[]),...(delay?delay.warnings:[]),...(production?production.warnings:[]),...(materials?materials.warnings:[]),...(shipment?shipment.warnings:[]),...(approvals?approvals.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),...(delay?[delay.labels.disclosure]:[]),...(production?[production.labels.internalNotice]:[]),...(materials?[materials.labels.internalNotice]:[]),...(shipment?[shipment.labels.notice]:[]),...(approvals?[approvals.labels.notice]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=(report[0]==='R05'||report[0]==='R06'||report[0]==='R07'||report[0]==='R08'||report[0]==='R09'||report[0]==='R10'||report[0]==='R11'||report[0]==='R12')&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);if(report[0]==='R10')return TnaPortfolioProjection.report(plan,report,l,generatedAt,timezone,options);if(report[0]==='R11'&&options.audienceMode&&options.audienceMode!=='internal')return TnaApprovalHistoryProjection.externalReport(report,l,generatedAt,timezone);if(report[0]==='R12'&&options.audienceMode&&options.audienceMode!=='internal')return TnaScenarioComparisonProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R08'&&options.audienceMode&&options.audienceMode!=='internal')return TnaMaterialLcProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R09'&&options.audienceMode&&options.audienceMode!=='internal')return TnaShipmentReadinessProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R07'&&options.audienceMode==='buyer')return TnaProductionStatusProjection.buyerReport(plan,report,l,generatedAt,timezone,options);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const delay=report[0]==='R06'?TnaDelayRecoveryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const production=report[0]==='R07'?TnaProductionStatusProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const materials=report[0]==='R08'?TnaMaterialLcProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const shipment=report[0]==='R09'?TnaShipmentReadinessProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const approvals=report[0]==='R11'?TnaApprovalHistoryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const comparison=report[0]==='R12'?TnaScenarioComparisonProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l,scenarioSelections:options.scenarioSelections,scenarioDrafts:options.scenarioDrafts}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R12'?'Internal scenario planning — restricted':report[0]==='R11'?'Internal approval history — restricted':report[0]==='R09'?'Internal quality and shipping — restricted':report[0]==='R08'?'Internal commercial and sourcing — restricted':report[0]==='R07'?'Internal production review — restricted':report[0]==='R06'?'Local management review — no external sharing authorization':report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(delay?{delayRecovery:delay}:{}),...(production?{productionStatus:production}:{}),...(materials?{materialLc:materials}:{}),...(shipment?{shipmentReadiness:shipment}:{}),...(approvals?{approvalHistory:approvals}:{}),...(comparison?{scenarioComparison:comparison}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[]),...(delay?delay.warnings:[]),...(production?production.warnings:[]),...(materials?materials.warnings:[]),...(shipment?shipment.warnings:[]),...(approvals?approvals.warnings:[]),...(comparison?comparison.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),...(delay?[delay.labels.disclosure]:[]),...(production?[production.labels.internalNotice]:[]),...(materials?[materials.labels.internalNotice]:[]),...(shipment?[shipment.labels.notice]:[]),...(approvals?[approvals.labels.notice]:[]),...(comparison?[comparison.labels.notice]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;

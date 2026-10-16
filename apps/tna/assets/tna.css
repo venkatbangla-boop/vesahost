@@ -351,3 +351,35 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
   body.tna-printing-report .tna-approval-notice{font-size:8pt!important;color:#111!important}
   body.tna-printing-report .tna-approval-history h3{page-break-after:avoid!important}
 }
+
+
+
+/* R12 read-only recovery comparison follows shared VESA report/table tokens. */
+.tna-r12-controls[hidden],.tna-r12-card div[hidden]{display:none!important}
+.tna-r12-controls{margin:9px 0;padding:11px;border:1px solid var(--line,#d5deea);border-radius:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tna-r12-controls>p,.tna-r12-controls>.tna-r12-audience{grid-column:1/-1;margin:0}
+.tna-r12-controls label{display:flex;flex-direction:column;gap:6px;min-width:0}
+.tna-r12-card{margin:0;min-width:0;padding:10px;border:1px solid var(--line,#d5deea);border-radius:8px}
+.tna-r12-card legend{padding:0 5px;font-weight:700;font-size:13px}
+.tna-r12-card>div{display:grid;gap:7px;margin-top:8px}
+.tna-r12-report{max-width:100%;min-width:0}
+.tna-r12-notice{padding:10px 12px;border-radius:8px;border:1px solid var(--line,#d5deea);font-size:12px;font-weight:650;line-height:1.45;overflow-wrap:anywhere}
+.tna-r12-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.tna-r12-table{width:100%;min-width:750px;table-layout:fixed;border-collapse:collapse}
+.tna-r12-table th,.tna-r12-table td{border:1px solid var(--line,#d5deea);padding:6px;vertical-align:top;font-size:10px;line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+.tna-r12-table th{text-align:left;font-weight:800;background:var(--look-surface,#eef3f9)}
+.tna-r12-comparison th:first-child{width:34%}
+.tna-r12-inputs{min-width:850px}
+.tna-r12-issues{min-width:720px}
+.tna-r12-report h3{font-size:14px;margin:13px 0 7px}
+@media(max-width:700px){.tna-r12-controls{grid-template-columns:1fr}.tna-r12-card{grid-column:1}}
+@media print{
+  body.tna-printing-report .tna-r12-scroll{max-width:100%!important;overflow:visible!important}
+  body.tna-printing-report .tna-r12-table{min-width:0!important;width:100%!important;table-layout:fixed!important}
+  body.tna-printing-report .tna-r12-table thead{display:table-header-group!important}
+  body.tna-printing-report .tna-r12-table tr{page-break-inside:avoid!important;break-inside:avoid!important}
+  body.tna-printing-report .tna-r12-table th,
+  body.tna-printing-report .tna-r12-table td{padding:3px!important;font-size:7pt!important;line-height:1.28!important;background:#fff!important;color:#111!important;border-color:#999!important;overflow-wrap:anywhere!important}
+  body.tna-printing-report .tna-r12-notice{font-size:8pt!important;color:#111!important}
+  body.tna-printing-report .tna-r12-report h3{page-break-after:avoid!important}
+}
