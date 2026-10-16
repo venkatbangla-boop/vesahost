@@ -437,10 +437,10 @@ async function run(){
     const buyerExcelArtifact=await buyerExcelEvent;
     const buyerExcelPath=path.join(output,'tna-r07-buyer-reviewed.xlsx');
     await buyerExcelArtifact.saveAs(buyerExcelPath);
-    const buyerWorkbook=XLSX.read(fs.readFileSync(buyerExcelPath),{type:'buffer'});
-    assert.deepEqual(buyerWorkbook.SheetNames,
+    const r07BuyerWorkbook=XLSX.read(fs.readFileSync(buyerExcelPath),{type:'buffer'});
+    assert.deepEqual(r07BuyerWorkbook.SheetNames,
       ['Report Summary','Order Summary','Report Activities','Report Notes','Production Stages']);
-    assert(!JSON.stringify(buyerWorkbook.Sheets).includes('Synthetic Migration Factory'));
+    assert(!JSON.stringify(r07BuyerWorkbook.Sheets).includes('Synthetic Migration Factory'));
     await page.setViewportSize({width:390,height:844});
     const prodMobile=await page.evaluate(()=>({
       width:document.documentElement.scrollWidth,screen:document.documentElement.clientWidth,
