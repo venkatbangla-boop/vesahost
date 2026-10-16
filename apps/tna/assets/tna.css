@@ -414,3 +414,14 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
 #tnaImportReview h3,#tnaImportReview h4{margin:4px 0}
 #tnaImpCreate:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:760px){.tna-import-settings,.tna-import-map-grid,.tna-import-map{grid-template-columns:1fr}}
+
+
+/* G08 importable full-task Excel download inside the existing VESA dialog. */
+.tna-import-template-tools{display:grid;gap:8px;border:1px solid var(--line,#d5deea);
+  border-radius:9px;padding:10px;min-width:0}
+.tna-import-template-tools label{display:grid;gap:5px;min-width:0;font-size:12px}
+.tna-import-template-tools select{min-width:0;width:100%}
+.tna-import-template-tools .tna-note{margin:0}
+.tna-import-template-tools .menu-grid{display:flex;gap:8px;flex-wrap:wrap}
+.tna-import-template-tools .menu-grid button{white-space:normal;max-width:100%;min-height:44px}
+.tna-import-template-tools button:disabled{opacity:.45;cursor:not-allowed}

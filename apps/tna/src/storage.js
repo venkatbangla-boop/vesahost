@@ -736,8 +736,123 @@
     }
   }
 
+
+  /**
+   * G08 importable, values-only task workbook owner, independent of unchanged
+   * legacy exportWorkbook and report exports. Explicitly downloaded, never
+   * alters the plan or authenticates an approval/baseline/calendar.
+   * Unsupported mixed-order or non-FS dependency structures fail closed.
+   */
+  class TnaImportableTemplateWorkbookWriter {
+    static date(value){
+      if(!value)return '';
+      const n=TnaMasterWorkbookWriter.dateValue(value);
+      return typeof n==='number'?n:'';
+    }
+    static text(value){return safeCell(typeof value==='string'?value:'');}
+    static count(value){return Number.isSafeInteger(value)&&value>0?value:'';}
+    static export(plan,options={}){
+      assertPlan(plan);
+      const blank=options.blank===true;
+      if(plan.mode==='practice'&&!blank)
+        throw Error('Practice example cannot be exported as an order.');
+      const XLSX=xlsxLib();
+      if(!XLSX)throw Error('Excel workbook support is unavailable.');
+      const tasks=Array.isArray(plan.tasks)?plan.tasks:[];
+      if(tasks.length>180)throw Error('Importable Excel activity limit is 180.');
+      if(!blank&&((plan.order?.styles||[]).length>1||
+        (plan.order?.poNumbers||[]).length>1))
+        throw Error('Separate PO and style records into reviewed import workbooks.');
+      const refs=new Map(tasks.map(task=>[task.taskId,task.templateRef]));
+      if(refs.size!==tasks.length)throw Error('Duplicate task IDs block importable export.');
+      const incoming=new Map();
+      if(!blank)for(const edge of plan.edges||[]){
+        if(edge.relation!=='FS'||Number(edge.lagUnits)!==0||
+          edge.calendarPolicy!=='successor'||!refs.has(edge.predecessorTaskId)||
+          !refs.has(edge.successorTaskId))
+          throw Error('Advanced dependency cannot be represented in the import template. Use Download Saved Copy.');
+        const values=incoming.get(edge.successorTaskId)||[];
+        values.push(refs.get(edge.predecessorTaskId));
+        incoming.set(edge.successorTaskId,values);
+      }
+      const order=plan.order||{},commits=plan.commitments||{};
+      const orderRows=[
+        ['Buyer','Factory','Style','PO','Quantity','Buyer Required Ex-Factory',
+          'Order Confirmed On','Unit'],
+        [blank?'':this.text(order.buyerName),
+          blank?'':this.text(order.factoryName),
+          blank?'':this.text(order.styles?.[0]?.styleNo),
+          blank?'':this.text(order.poNumbers?.[0]),
+          blank?'':this.count(order.totalQty),
+          blank?'':this.date(commits.buyerRequiredExFactory),
+          blank?'':this.date(commits.orderConfirmedOn),
+          blank?'':this.text(order.unit)]
+      ];
+      const taskRows=[['Ref','Activity','Stage','Owner','Baseline Finish',
+        'Current Target Finish','Actual Finish','Duration','Duration Basis',
+        'Status','Predecessor','Notes']];
+      for(const task of tasks){
+        const dates=task.dates||{};
+        taskRows.push([this.text(task.templateRef),this.text(task.title),
+          this.text(task.stageCode||task.stage),this.text(task.ownerParty),
+          blank?'':this.date(dates.baselineFinish),
+          blank?'':this.date(dates.currentTargetFinish),
+          blank?'':this.date(dates.actualFinish),
+          blank?'':Number.isSafeInteger(task.durationUnits)&&
+            task.durationUnits>=0?task.durationUnits:'',
+          blank?'':this.text(task.durationBasis),
+          'not-started',
+          blank?'':this.text((incoming.get(task.taskId)||[]).join(', ')),
+          '']);
+      }
+      const guide=[
+        ['VESA TNA 360 — EXCEL IMPORT GUIDE','LOCAL DRAFT ONLY'],
+        ['Garment profile to select during import',this.text(plan.templateId)],
+        ['1','Enter one buyer, factory, style, PO and quantity in Order Summary. Confirm delivery dates from actual source.'],
+        ['2','Review all Master TNA activities, owners, day basis and durations. They are template labels or local values, not factory confirmations.'],
+        ['3','Open Import Excel TNA; choose the sheet, header, garment type and source date format.'],
+        ['4','Choose source predecessors, template connections or no connections. Inspect all warnings before creating a draft.'],
+        ['5','Tick explicit confirmation to CREATE A DIFFERENT LOCAL DRAFT; never overwrite a matching PO.'],
+        ['Dates','Existing dates are numeric Excel date cells. Blank means unknown.'],
+        ['Status','All activity statuses reset to not-started. Approved/completed/waived statuses are excluded.'],
+        ['Baseline','Import does not create, freeze or authenticate an approved baseline.'],
+        ['Authority','Source dates, notes and references are NOT independent buyer/factory authorization.'],
+        ['Calendar','No factory calendar or independently verified production rate is imported.'],
+        ['Scope','One PO/style per workbook. Multi-order and multi-style plans require separate review.'],
+        ['Privacy','No LC/price/commission, source identity, evidence, security or private remarks exported.'],
+        ['Backup','For full-fidelity records use Download Saved Copy, not this Excel template.'],
+        ['Language of download',this.text(options.language||'en')]
+      ];
+      const book=XLSX.utils.book_new();
+      const append=(name,rows,widths)=>{
+        const ws=XLSX.utils.aoa_to_sheet(rows);
+        ws['!cols']=widths.map(wch=>({wch}));
+        if(ws['!ref'])ws['!autofilter']={ref:ws['!ref']};
+        XLSX.utils.book_append_sheet(book,ws,name);
+        return ws;
+      };
+      const orderSheet=append('Order Summary',orderRows,
+        [28,28,24,24,16,27,24,12]);
+      for(const a of ['F2','G2'])
+        if(orderSheet[a]?.t==='n')orderSheet[a].z='yyyy-mm-dd';
+      const activitySheet=append('Master TNA',taskRows,
+        [12,55,17,20,22,22,22,16,20,18,34,24]);
+      for(let r=2;r<=taskRows.length;r++)
+        for(const col of ['E','F','G']){
+          const cell=activitySheet[col+r];
+          if(cell?.t==='n')cell.z='yyyy-mm-dd';
+        }
+      append('Import Guide',guide,[42,120]);
+      return XLSX.write(book,{type:'buffer',bookType:'xlsx'});
+    }
+  }
+  /** Human-click-only local download; no implicit storage or plan mutation. */
+  function exportImportTemplateWorkbook(plan,options={}){
+    return TnaImportableTemplateWorkbookWriter.export(plan,options);
+  }
+
   function exportReportWorkbook(model){const XLSX=xlsxLib();if(!XLSX)throw new Error('Excel workbook parser is not bundled.');if(!model||model.schema!=='VESA-TNA-REPORT-1')throw new Error('Unsupported TNA report model.');if(model.reportId==='R02')return TnaBuyerWorkbookWriter.export(XLSX,model);const workbook=XLSX.utils.book_new();const addSheet=(name,rows,widths,filter=false)=>{const sheet=XLSX.utils.aoa_to_sheet(rows);sheet['!cols']=widths.map(wch=>({wch}));if(filter&&sheet['!ref'])sheet['!autofilter']={ref:sheet['!ref']};XLSX.utils.book_append_sheet(workbook,sheet,name);};const meta=[['Brand',safeCell(model.brand)],['Report ID',safeCell(model.reportId)],['Title',safeCell(model.title)],['Audience',safeCell(model.audience)],['Language',safeCell(model.language)],['Generated',safeCell(model.generatedAt)],['Timezone',safeCell(model.timezone)],['Revision',model.revision],['No fabrication note',safeCell(model.labels?.noFabrication)]];if(model.reportId==='R12'&&model.scenarioComparison){const c=model.scenarioComparison;meta.push(['Scenario as-of',safeCell(c.asOfDate||c.labels.unknown)],['Base CPM state',safeCell(c.base.validity)],['Recovery agreements verified','NO'],['Selected options',c.options.length],['Scenario caveat',safeCell(c.labels.notice)]);}if(model.reportId==='R11'&&model.approvalHistory){const a=model.approvalHistory;meta.push(['Approval as-of',safeCell(a.asOfDate||a.labels.unknown)],['Recorded approval count',a.counts.approvalRecords],['Independently verified approvals',0],['Approval disclosure',safeCell(a.warnings[0]||a.labels.unknown)]);}if(model.reportId==='R10'&&model.portfolio){const p=model.portfolio;meta.push(['Portfolio as-of date',safeCell(p.asOfDate||p.labels.unknown)],['Local portfolio scope',safeCell(p.scope||p.audience)],['Visible saved TNA records',p.counts?.visibleOrders??0],['Privacy note',safeCell(p.labels.notice)]);}if(model.reportId==='R09'&&model.shipmentReadiness){const s=model.shipmentReadiness;meta.push(['Shipment as-of date',safeCell(s.asOfDate||s.labels.unknown)],['Shipment audience',safeCell(s.audience)],['Release authorized','NO — independent verification required'],['Shipment source caution',safeCell(s.labels.basis)]);}if(model.reportId==='R08'&&model.materialLc){const m=model.materialLc;meta.push(['Material LC as-of',safeCell(m.asOfDate||m.labels.unknown)],['Commercial disclosure',safeCell(m.audience)],['LC source note',safeCell(m.labels.sourceWarning)]);}if(model.reportId==='R07'&&model.productionStatus){const p=model.productionStatus;meta.push(['Production as-of',safeCell(p.asOfDate||p.labels.unknown)],['Production source scope',safeCell(p.audience)],['Production disclosure',safeCell(p.warnings[0]||p.labels.unknown)]);}if(model.reportId==='R06'&&model.delayRecovery){const d=model.delayRecovery;meta.push(['Delay as-of date',safeCell(d.asOfDate||d.labels.unknown)],['Delay computation',safeCell(d.validity)],['Disclosure',safeCell(d.labels.disclosure)]);}if(model.reportId==='R05'&&model.weeklyTna){const w=model.weeklyTna;meta.push(['Weekly as-of date',safeCell(w.asOfDate||w.labels.unknown)],['Week basis',safeCell(w.labels.basis)],['Reporting scope',safeCell(w.labels.localAudience)],['Week range',safeCell(w.week?w.week.start+' to '+w.week.end:w.labels.unknown)]);}if(model.reportId==='R04'&&model.criticalPath){meta.push(['CPM state',safeCell(model.criticalPath.validity)],['Calendar provenance','Locally entered; independently unverified']);}if(model.reportId==='R03'&&model.factoryDailyAction){meta.push(['Action as-of date',safeCell(model.factoryDailyAction.asOfDate||'Needs Information')],['Due-date basis','7 calendar days; current target then recorded baseline']);}addSheet('Report Summary',meta,[24,96]);const orderRows=[['Buyer','Factory','Style','PO','Quantity','Unit','Required Ex-Factory'],[model.order.buyer,model.order.factory,model.order.style,model.order.po,model.order.quantity,model.order.unit,model.order.requiredExFactory].map(safeCell)];addSheet('Order Summary',orderRows,[28,28,24,20,14,10,22],true);const taskRows=[['Ref','Activity','Owner','Status','Baseline','Current','Forecast','Actual','Risk'],...(model.tasks||[]).map(task=>[task.ref,task.title,task.owner,task.status,task.baseline,task.current,task.forecast,task.actual,task.risk].map(safeCell))];addSheet('Report Activities',taskRows,[10,48,22,18,14,14,14,14,20],true);const warningRows=[['Warnings / Data gaps'],...((model.warnings&&model.warnings.length?model.warnings:['No validation warnings in this local draft.']).map(item=>[safeCell(item)])),[],['Fallback notes'],...(model.notes||[]).map(item=>[safeCell(item)])];addSheet('Report Notes',warningRows,[110]);TnaMasterWorkbookWriter.append(XLSX,workbook,model);TnaFactoryDailyWorkbookWriter.append(XLSX,workbook,model);TnaCriticalPathWorkbookWriter.append(XLSX,workbook,model);TnaWeeklyWorkbookWriter.append(XLSX,workbook,model);TnaDelayRecoveryWorkbookWriter.append(XLSX,workbook,model);TnaProductionWorkbookWriter.append(XLSX,workbook,model);TnaMaterialLcWorkbookWriter.append(XLSX,workbook,model);TnaShipmentWorkbookWriter.append(XLSX,workbook,model);TnaPortfolioWorkbookWriter.append(XLSX,workbook,model);TnaApprovalHistoryWorkbookWriter.append(XLSX,workbook,model);TnaScenarioComparisonWorkbookWriter.append(XLSX,workbook,model);return XLSX.write(workbook,{type:'buffer',bookType:'xlsx'});}
-  const api={STORAGE_VERSION,FORMAT,MAX_BYTES,QUEUE_VERSION,QUEUE_MAX_ITEMS,QUEUE_MAX_BYTES,checksum,migratePlan,savePlan,listPlans,loadPlan,portfolioSnapshot,autosave,recoverAutosave,queueOfflineIntent,listOfflineIntents,updateOfflineIntent,reconcileOfflineIntent,exportCopy,importCopy,createHistory,pushHistory,undo,redo,importPreview,importWorkbookPreview,exportCsv,exportWorkbook,exportReportWorkbook,safeCell};
+  const api={STORAGE_VERSION,FORMAT,MAX_BYTES,QUEUE_VERSION,QUEUE_MAX_ITEMS,QUEUE_MAX_BYTES,checksum,migratePlan,savePlan,listPlans,loadPlan,portfolioSnapshot,autosave,recoverAutosave,queueOfflineIntent,listOfflineIntents,updateOfflineIntent,reconcileOfflineIntent,exportCopy,importCopy,createHistory,pushHistory,undo,redo,importPreview,importWorkbookPreview,exportCsv,exportWorkbook,exportImportTemplateWorkbook,exportReportWorkbook,safeCell};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaStorage=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

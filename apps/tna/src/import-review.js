@@ -38,7 +38,7 @@
     notes:['notes','remarks','comment','comments','factorynotes']
   });
   const COPY={
-    en:{intro:'Choose a file, review the sheets, match columns and activities, then confirm a NEW saved TNA. Your open order and other saved copies will not be replaced.',
+    en:{blankTemplate:'Download blank full-task Excel template',currentTemplate:'Download current TNA as Excel',templateType:'Garment type for blank template',templateNotice:'Fill and review the Excel file. Approved or completed statuses are not copied.',intro:'Choose a file, review the sheets, match columns and activities, then confirm a NEW saved TNA. Your open order and other saved copies will not be replaced.',
       sheet:'Order details sheet',tasksheet:'Activity sheet',none:'No activity sheet — order details only',
       row:'Header row',format:'Source date format',template:'Garment template',
       unit:'Order quantity unit',basis:'Activity day basis',
@@ -62,7 +62,7 @@
       warnings:'Review notes',matched:'Matched activities',unmatchedCount:'Unmatched activities',
       existing:'Existing saved orders',loaded:'File reviewed in memory only',
       errors:'Please check the selected file and try again.'},
-    bn:{intro:'ফাইল বেছে sheet ও column মিলিয়ে দেখুন। নিশ্চিত করার পর শুধু নতুন TNA draft তৈরি হবে; পুরোনো order বদলাবে না।',
+    bn:{blankTemplate:'সব কাজসহ খালি TNA Excel ডাউনলোড',currentTemplate:'বর্তমান TNA Excel-এ নিন',templateType:'খালি ফর্মের পোশাকের ধরন',templateNotice:'Excel পূরণ করে যাচাই করুন। Approved/Completed অবস্থা কপি হয় না।',intro:'ফাইল বেছে sheet ও column মিলিয়ে দেখুন। নিশ্চিত করার পর শুধু নতুন TNA draft তৈরি হবে; পুরোনো order বদলাবে না।',
       sheet:'অর্ডারের sheet',tasksheet:'কাজের sheet',none:'কাজের sheet নেই',row:'শিরোনামের সারি',
       format:'তারিখের ধরন',template:'পোশাকের ধরন',unit:'পরিমাণের একক',basis:'কাজের দিনের ধরন',
       dep:'কাজের সম্পর্ক',relation:'পূর্ববর্তী কাজের সম্পর্ক',templateDep:'Template-এর কাজের সংযোগ',
@@ -81,7 +81,7 @@
       headers:'Column',rows:'সারি',issues:'সমস্যা',warnings:'নোট',
       matched:'মেলা কাজ',unmatchedCount:'না মেলা কাজ',existing:'আগের order',
       loaded:'ফাইল শুধু preview',errors:'ফাইল আবার পরীক্ষা করুন।'},
-    hi:{intro:'फाइल और शीट चुनकर कॉलम व कार्य जाँचें। पुष्टि के बाद केवल नया TNA draft बनेगा; पुराने ऑर्डर नहीं बदलेंगे।',
+    hi:{blankTemplate:'सभी कामों के साथ खाली TNA Excel',currentTemplate:'मौजूदा TNA Excel में लें',templateType:'खाली फॉर्म का गारमेंट प्रकार',templateNotice:'Excel भरकर जाँचें। Approved/Completed स्थिति कॉपी नहीं होती।',intro:'फाइल और शीट चुनकर कॉलम व कार्य जाँचें। पुष्टि के बाद केवल नया TNA draft बनेगा; पुराने ऑर्डर नहीं बदलेंगे।',
       sheet:'ऑर्डर शीट',tasksheet:'गतिविधि शीट',none:'गतिविधि शीट नहीं',row:'हेडर पंक्ति',
       format:'तारीख फॉर्मेट',template:'गारमेंट टेम्पलेट',unit:'मात्रा इकाई',
       basis:'काम के दिन',dep:'कार्य निर्भरता',relation:'निर्भरता प्रकार',
@@ -101,7 +101,7 @@
       issues:'समस्याएँ',warnings:'ध्यान दें',matched:'मिले काम',
       unmatchedCount:'अनजाने काम',existing:'पुराने ऑर्डर',
       loaded:'सिर्फ preview',errors:'फाइल जाँचें।'},
-    ta:{intro:'Excel/CSV file-இல் sheet, column, tasks-ஐ review செய்யுங்கள். Confirm செய்த பிறகு புதிய TNA Draft மட்டும் உருவாகும்; பழைய orders மாறாது.',
+    ta:{blankTemplate:'அனைத்து Tasks உடன் Blank Excel Template',currentTemplate:'தற்போதைய TNA-வை Excel-ஆக எடு',templateType:'Blank template Garment வகை',templateNotice:'Excel நிரப்பி review செய்யவும். Approved/Completed நிலை copy ஆகாது.',intro:'Excel/CSV file-இல் sheet, column, tasks-ஐ review செய்யுங்கள். Confirm செய்த பிறகு புதிய TNA Draft மட்டும் உருவாகும்; பழைய orders மாறாது.',
       sheet:'Order விவர sheet',tasksheet:'Activity sheet',none:'Activity sheet இல்லை — Order மட்டும்',
       row:'Header இருக்கும் வரிசை',format:'Source தேதி வடிவம்',template:'Garment template',
       unit:'Order quantity unit',basis:'Task நாள் கணக்கு',

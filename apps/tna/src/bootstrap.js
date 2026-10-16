@@ -1234,8 +1234,21 @@
       if(!imports)return openDialog('Import Excel TNA',
         '<p>Spreadsheet review is unavailable; saved orders were not changed.</p>');
       const l=this.copy;
+      const garmentTypes=Object.values(domain.TEMPLATE_PROFILES).map(p=>
+        '<option value="'+esc(p.id)+'"'+
+        (p.id===(state.currentPlan?.templateId||'knit')?' selected':'')+'>'+
+        esc(p.name)+'</option>').join('');
       const html='<section class="tna-import-flow" aria-label="'+esc(l.map)+'">'+
         '<p class="tna-note">'+esc(l.intro)+'</p>'+
+        '<div class="tna-import-template-tools"><label><span>'+esc(l.templateType)+
+        '</span><select id="tnaImportTemplateType">'+garmentTypes+'</select></label>'+
+        '<p class="tna-note">'+esc(l.templateNotice)+'</p><div class="menu-grid">'+
+        '<button type="button" class="tna-btn secondary" id="tnaImportTemplateBlank">'+
+        esc(l.blankTemplate)+'</button>'+
+        '<button type="button" class="tna-btn secondary" id="tnaImportTemplateCurrent"'+
+        (!state.currentPlan||state.currentPlan.mode==='practice'?' disabled':'')+'>'+
+        esc(l.currentTemplate)+'</button></div></div>'+
+
         '<label><span>Choose Excel / CSV / TSV</span><input id="tnaImportFile" type="file" '+
         'accept=".xlsx,.csv,.tsv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/tab-separated-values"></label>'+
         '<label><span>Pasted CSV / tab-separated table</span><textarea id="tnaImportText" rows="5" '+
@@ -1244,6 +1257,8 @@
         '<button type="button" class="tna-btn secondary" id="tnaImportReadText">Review pasted table</button></div>'+
         '<div id="tnaImportSetup"></div><div id="tnaImportReview" role="status" aria-live="polite"></div></section>';
       openDialog('Import Excel TNA',html);
+      document.getElementById('tnaImportTemplateBlank').onclick=()=>this.downloadTemplate(true);
+      document.getElementById('tnaImportTemplateCurrent').onclick=()=>this.downloadTemplate(false);
       document.getElementById('tnaImportReadText').onclick=()=>{
         try{this.load(imports.parseText(document.getElementById('tnaImportText').value,'Pasted table'));}
         catch(error){this.error(error.message);}
@@ -1266,6 +1281,31 @@
         };
         if(excel)reader.readAsArrayBuffer(file);else reader.readAsText(file);
       };
+    }
+    /**
+     * Download is explicit and local only, never writes the source plan or
+     * upgrades practice records, buyer approval or immutable baseline.
+     */
+    downloadTemplate(blank){
+      try{
+        const template=document.getElementById('tnaImportTemplateType')?.value||'';
+        if(blank&&!domain.TEMPLATE_PROFILES?.[template])throw Error('Choose a garment type.');
+        const plan=blank?domain.createPlan({templateId:template},
+          {ownerUserId:userKey()}):state.currentPlan;
+        if(!plan||(!blank&&plan.mode==='practice'))
+          throw Error('Open a real order before exporting its Excel values.');
+        const bytes=storage.exportImportTemplateWorkbook(plan,
+          {blank,language:state.language});
+        const url=URL.createObjectURL(new Blob([bytes],{
+          type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+        const a=document.createElement('a');
+        a.href=url;
+        a.download=('VESA_TNA_360_'+(blank?'Blank_':'Current_')+
+          (blank?template:plan.order?.styles?.[0]?.styleNo||'Order')+
+          '_Excel_Template.xlsx').replace(/[^a-z0-9_.-]+/gi,'-');
+        document.body.appendChild(a);a.click();a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),1000);
+      }catch(error){this.error(error.message);}
     }
     error(message){
       this.reviewed=null;
@@ -1308,7 +1348,7 @@
         this.optionsForRows(this.selection.taskSheet,this.selection.taskHeaderRow)+'</select></label>'+
         select('tnaImpTemplate',l.template,templateOptions,'knit')+
         select('tnaImpFormat',l.format,[['iso','YYYY-MM-DD'],['dmy','DD/MM/YYYY'],
-          ['mdy','MM/DD/YYYY'],['excel','Excel numeric date']],'iso')+
+          ['mdy','MM/DD/YYYY'],['excel','Excel numeric date']],this.source.kind==='xlsx'?'excel':'iso')+
         select('tnaImpUnit',l.unit,[['pcs','pcs'],['sets','sets'],['dozen','dozen'],
           ['kg','kg'],['meters','meters'],['yards','yards']],'pcs')+
         select('tnaImpBasis',l.basis,[['working','Working days'],
