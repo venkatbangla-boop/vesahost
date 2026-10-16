@@ -94,6 +94,94 @@
   function reconcileOfflineIntent(intentId,serverResult,user){if(!contracts?.reconcileOfflineIntent)throw new Error('TNA cloud contracts are not loaded.');const queue=readOfflineQueue(user);const current=queue.find(item=>item.intentId===intentId);if(!current)throw new Error('Offline intent was not found.');const resolution=contracts.reconcileOfflineIntent(current,serverResult);if(!resolution.ok)throw new Error(resolution.errors.join('; '));return updateOfflineIntent(intentId,resolution.status,user,resolution.metadata);}
   function exportCopy(plan){assertPlan(plan);const record=safeJson(plan);const payload={format:FORMAT,schemaVersion:plan.schemaVersion,storageVersion:STORAGE_VERSION,exportedAt:new Date().toISOString(),checksum:checksum(record),record:plan};return safeJson(payload);}
   function importCopy(text){if(enc(text)>MAX_BYTES)throw new Error('Saved copy is too large.');let payload;try{payload=JSON.parse(text)}catch{throw new Error('Saved copy is not valid JSON.');}if(payload.format!==FORMAT)throw new Error('Saved copy format is not VESA-TNA.');if(!payload.record||typeof payload.record!=='object'||Array.isArray(payload.record))throw new Error('Saved copy record is missing or invalid.');if(!payload.schemaVersion||payload.schemaVersion!==payload.record.schemaVersion)throw new Error('Saved copy schema metadata does not match its record.');if(typeof payload.checksum!=='string'||!payload.checksum)throw new Error('Saved copy checksum is missing.');const recordText=safeJson(payload.record);if(payload.checksum!==checksum(recordText))throw new Error('Saved copy checksum does not match.');return migratePlan(payload.record).plan;}
+  /**
+   * F31 volatile undo/redo owner for recent UNSIGNED activity follow-up edits.
+   * Access: storage.TnaDraftFollowupHistory, driven by Edit menu only.
+   * Input: a validated before/after plan from updateTaskFollowup; a reviewed
+   * actor ID and persistence callback for replay. Output: new domain-audited
+   * plan or a fail-closed result. Never rewinds revision/audit history, alters
+   * signed status/evidence/baseline, changes other tasks or survives reload.
+   * State belongs to this browser tab and is discarded on plan switch or
+   * intervening unrelated changes. No storage, provider or network access.
+   */
+  class TnaDraftFollowupHistory {
+    constructor(){this.reset();}
+    reset(){this.entries=[];this.cursor=0;this.expected=null;}
+    static draftTask(plan,task){
+      const blockedStatuses=['submitted','awaiting-approval','approved','rejected','completed','waived','not-applicable'];
+      const protectedEvents=['baseline-confirmed','scenario-applied','approval-decision-recorded'];
+      return !!plan&&!!task&&plan.mode!=='practice'&&plan.recordStatus==='draft'&&
+        !(plan.baselineSnapshots||[]).length&&!(plan.approvals||[]).length&&
+        !(plan.scenarioBranches||[]).some(item=>item.status==='applied')&&
+        !(plan.revisionEvents||[]).some(item=>protectedEvents.includes(item.eventType))&&
+        !blockedStatuses.includes(task.status)&&!(task.proofRefs||[]).length&&
+        !task.dates?.actualStart&&!task.dates?.actualFinish;
+    }
+    static value(task){
+      return {ownerParty:task.ownerParty,
+        currentTargetFinish:task.dates?.currentTargetFinish||null,
+        forecastFinish:task.dates?.forecastFinish||null};
+    }
+    static mark(plan){
+      if(!plan)return null;
+      return [plan.recordId,plan.revision,plan.updatedAt,
+        (plan.revisionEvents||[]).length,(plan.auditEvents||[]).length,
+        (plan.scenarioBranches||[]).length,(plan.baselineSnapshots||[]).length].join('|');
+    }
+    /** Track only a fully persisted draft follow-up; other revisions invalidate replay. */
+    record(before,after,taskId){
+      const prior=before?.tasks?.find(item=>item.taskId===taskId);
+      const current=after?.tasks?.find(item=>item.taskId===taskId);
+      if(before?.recordId!==after?.recordId||
+        !TnaDraftFollowupHistory.draftTask(before,prior)||
+        !TnaDraftFollowupHistory.draftTask(after,current)||
+        prior.status!==current.status)return false;
+      const start=TnaDraftFollowupHistory.value(prior),
+        finish=TnaDraftFollowupHistory.value(current);
+      if(safeJson(start)===safeJson(finish))return false;
+      if(this.expected&&this.expected!==TnaDraftFollowupHistory.mark(before))
+        this.reset();
+      this.entries=this.entries.slice(0,this.cursor);
+      this.entries.push({recordId:after.recordId,taskId,before:start,after:finish});
+      if(this.entries.length>20)this.entries.shift();
+      this.cursor=this.entries.length;
+      this.expected=TnaDraftFollowupHistory.mark(after);
+      return true;
+    }
+    available(plan,direction){
+      if(!plan||!this.expected||this.expected!==TnaDraftFollowupHistory.mark(plan))return false;
+      return direction==='undo'?this.cursor>0:direction==='redo'&&this.cursor<this.entries.length;
+    }
+    /**
+     * Replay through the same domain validator (with a visible reason) and
+     * existing named-record persistence. Pointer advances ONLY after save.
+     */
+    move(plan,direction,actorId,persist){
+      if(!['undo','redo'].includes(direction))return {ok:false,error:'Unknown draft action.'};
+      if(!this.available(plan,direction))return {ok:false,error:'No recent draft follow-up is available. Signed revisions cannot be undone.'};
+      const step=this.entries[direction==='undo'?this.cursor-1:this.cursor];
+      const task=plan.tasks.find(item=>item.taskId===step.taskId);
+      const expected=direction==='undo'?step.after:step.before;
+      if(step.recordId!==plan.recordId||
+        !TnaDraftFollowupHistory.draftTask(plan,task)||
+        safeJson(TnaDraftFollowupHistory.value(task))!==safeJson(expected)){
+        this.reset();
+        return {ok:false,error:'This draft has changed. Undo/Redo was cleared to protect newer edits.'};
+      }
+      if(typeof persist!=='function')return {ok:false,error:'Local saving is unavailable.'};
+      const target=direction==='undo'?step.before:step.after;
+      const result=domain.updateTaskFollowup(plan,step.taskId,
+        {...copy(target),note:direction==='undo'?
+          'Undo previous unsigned draft follow-up':'Redo unsigned draft follow-up'},
+        {actorId});
+      if(!result.ok)return result;
+      try{persist(result.plan,plan);}
+      catch{return {ok:false,error:'Could not confirm this change in browser storage. The active draft has not been replaced.'};}
+      this.cursor+=direction==='undo'?-1:1;
+      this.expected=TnaDraftFollowupHistory.mark(result.plan);
+      return {ok:true,plan:result.plan,taskId:step.taskId,direction};
+    }
+  }
   function createHistory(initial){return {past:[],present:initial,future:[]};}
   function pushHistory(history,next){return {past:[...history.past,history.present].slice(-50),present:next,future:[]};}
   function undo(history){if(!history.past.length)return history;const present=history.past.at(-1);return {past:history.past.slice(0,-1),present,future:[history.present,...history.future]};}
@@ -854,7 +942,7 @@
   }
 
   function exportReportWorkbook(model){const XLSX=xlsxLib();if(!XLSX)throw new Error('Excel workbook parser is not bundled.');if(!model||model.schema!=='VESA-TNA-REPORT-1')throw new Error('Unsupported TNA report model.');if(model.reportId==='R02')return TnaBuyerWorkbookWriter.export(XLSX,model);const workbook=XLSX.utils.book_new();const addSheet=(name,rows,widths,filter=false)=>{const sheet=XLSX.utils.aoa_to_sheet(rows);sheet['!cols']=widths.map(wch=>({wch}));if(filter&&sheet['!ref'])sheet['!autofilter']={ref:sheet['!ref']};XLSX.utils.book_append_sheet(workbook,sheet,name);};const meta=[['Brand',safeCell(model.brand)],['Report ID',safeCell(model.reportId)],['Title',safeCell(model.title)],['Audience',safeCell(model.audience)],['Language',safeCell(model.language)],['Generated',safeCell(model.generatedAt)],['Timezone',safeCell(model.timezone)],['Revision',model.revision],['No fabrication note',safeCell(model.labels?.noFabrication)]];if(model.reportId==='R12'&&model.scenarioComparison){const c=model.scenarioComparison;meta.push(['Scenario as-of',safeCell(c.asOfDate||c.labels.unknown)],['Base CPM state',safeCell(c.base.validity)],['Recovery agreements verified','NO'],['Selected options',c.options.length],['Scenario caveat',safeCell(c.labels.notice)]);}if(model.reportId==='R11'&&model.approvalHistory){const a=model.approvalHistory;meta.push(['Approval as-of',safeCell(a.asOfDate||a.labels.unknown)],['Recorded approval count',a.counts.approvalRecords],['Independently verified approvals',0],['Approval disclosure',safeCell(a.warnings[0]||a.labels.unknown)]);}if(model.reportId==='R10'&&model.portfolio){const p=model.portfolio;meta.push(['Portfolio as-of date',safeCell(p.asOfDate||p.labels.unknown)],['Local portfolio scope',safeCell(p.scope||p.audience)],['Visible saved TNA records',p.counts?.visibleOrders??0],['Privacy note',safeCell(p.labels.notice)]);}if(model.reportId==='R09'&&model.shipmentReadiness){const s=model.shipmentReadiness;meta.push(['Shipment as-of date',safeCell(s.asOfDate||s.labels.unknown)],['Shipment audience',safeCell(s.audience)],['Release authorized','NO — independent verification required'],['Shipment source caution',safeCell(s.labels.basis)]);}if(model.reportId==='R08'&&model.materialLc){const m=model.materialLc;meta.push(['Material LC as-of',safeCell(m.asOfDate||m.labels.unknown)],['Commercial disclosure',safeCell(m.audience)],['LC source note',safeCell(m.labels.sourceWarning)]);}if(model.reportId==='R07'&&model.productionStatus){const p=model.productionStatus;meta.push(['Production as-of',safeCell(p.asOfDate||p.labels.unknown)],['Production source scope',safeCell(p.audience)],['Production disclosure',safeCell(p.warnings[0]||p.labels.unknown)]);}if(model.reportId==='R06'&&model.delayRecovery){const d=model.delayRecovery;meta.push(['Delay as-of date',safeCell(d.asOfDate||d.labels.unknown)],['Delay computation',safeCell(d.validity)],['Disclosure',safeCell(d.labels.disclosure)]);}if(model.reportId==='R05'&&model.weeklyTna){const w=model.weeklyTna;meta.push(['Weekly as-of date',safeCell(w.asOfDate||w.labels.unknown)],['Week basis',safeCell(w.labels.basis)],['Reporting scope',safeCell(w.labels.localAudience)],['Week range',safeCell(w.week?w.week.start+' to '+w.week.end:w.labels.unknown)]);}if(model.reportId==='R04'&&model.criticalPath){meta.push(['CPM state',safeCell(model.criticalPath.validity)],['Calendar provenance','Locally entered; independently unverified']);}if(model.reportId==='R03'&&model.factoryDailyAction){meta.push(['Action as-of date',safeCell(model.factoryDailyAction.asOfDate||'Needs Information')],['Due-date basis','7 calendar days; current target then recorded baseline']);}addSheet('Report Summary',meta,[24,96]);const orderRows=[['Buyer','Factory','Style','PO','Quantity','Unit','Required Ex-Factory'],[model.order.buyer,model.order.factory,model.order.style,model.order.po,model.order.quantity,model.order.unit,model.order.requiredExFactory].map(safeCell)];addSheet('Order Summary',orderRows,[28,28,24,20,14,10,22],true);const taskRows=[['Ref','Activity','Owner','Status','Baseline','Current','Forecast','Actual','Risk'],...(model.tasks||[]).map(task=>[task.ref,task.title,task.owner,task.status,task.baseline,task.current,task.forecast,task.actual,task.risk].map(safeCell))];addSheet('Report Activities',taskRows,[10,48,22,18,14,14,14,14,20],true);const warningRows=[['Warnings / Data gaps'],...((model.warnings&&model.warnings.length?model.warnings:['No validation warnings in this local draft.']).map(item=>[safeCell(item)])),[],['Fallback notes'],...(model.notes||[]).map(item=>[safeCell(item)])];addSheet('Report Notes',warningRows,[110]);TnaMasterWorkbookWriter.append(XLSX,workbook,model);TnaFactoryDailyWorkbookWriter.append(XLSX,workbook,model);TnaCriticalPathWorkbookWriter.append(XLSX,workbook,model);TnaWeeklyWorkbookWriter.append(XLSX,workbook,model);TnaDelayRecoveryWorkbookWriter.append(XLSX,workbook,model);TnaProductionWorkbookWriter.append(XLSX,workbook,model);TnaMaterialLcWorkbookWriter.append(XLSX,workbook,model);TnaShipmentWorkbookWriter.append(XLSX,workbook,model);TnaPortfolioWorkbookWriter.append(XLSX,workbook,model);TnaApprovalHistoryWorkbookWriter.append(XLSX,workbook,model);TnaScenarioComparisonWorkbookWriter.append(XLSX,workbook,model);return XLSX.write(workbook,{type:'buffer',bookType:'xlsx'});}
-  const api={STORAGE_VERSION,FORMAT,MAX_BYTES,QUEUE_VERSION,QUEUE_MAX_ITEMS,QUEUE_MAX_BYTES,checksum,migratePlan,savePlan,listPlans,loadPlan,portfolioSnapshot,autosave,recoverAutosave,queueOfflineIntent,listOfflineIntents,updateOfflineIntent,reconcileOfflineIntent,exportCopy,importCopy,createHistory,pushHistory,undo,redo,importPreview,importWorkbookPreview,exportCsv,exportWorkbook,exportImportTemplateWorkbook,exportReportWorkbook,safeCell};
+  const api={STORAGE_VERSION,FORMAT,MAX_BYTES,QUEUE_VERSION,QUEUE_MAX_ITEMS,QUEUE_MAX_BYTES,checksum,migratePlan,savePlan,listPlans,loadPlan,portfolioSnapshot,autosave,recoverAutosave,queueOfflineIntent,listOfflineIntents,updateOfflineIntent,reconcileOfflineIntent,exportCopy,importCopy,TnaDraftFollowupHistory,createHistory,pushHistory,undo,redo,importPreview,importWorkbookPreview,exportCsv,exportWorkbook,exportImportTemplateWorkbook,exportReportWorkbook,safeCell};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaStorage=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
