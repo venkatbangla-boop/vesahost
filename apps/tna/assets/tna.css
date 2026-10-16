@@ -221,3 +221,31 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
   body.tna-printing-report .tna-delay-restriction{font-size:8pt!important;color:#111!important}
   body.tna-printing-report .tna-delay-summary span{color:#111!important}
 }
+
+
+
+/* R07 stages stay inside the VESA report dialog; no independent header/sidebar. */
+.tna-production-controls{border:1px solid var(--line,#d5deea);border-radius:10px;padding:12px;margin:8px 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tna-production-controls[hidden]{display:none!important}
+.tna-production-controls .tna-wide{grid-column:1/-1}
+.tna-production-controls .tna-note{grid-column:1/-1;margin:0}
+.tna-production-controls label{min-width:0;display:flex;flex-direction:column;gap:6px}
+.tna-production-controls label:has(input[type=checkbox]){flex-direction:row;align-items:center}
+.tna-production-report{max-width:100%;min-width:0}
+.tna-production-notice{border:1px solid var(--line,#d5deea);border-radius:8px;padding:9px 11px;font-size:12px;line-height:1.5;overflow-wrap:anywhere;font-weight:650}
+.tna-production-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.tna-production-table{width:100%;min-width:1000px;border-collapse:collapse;table-layout:fixed}
+.tna-production-table th,.tna-production-table td{border:1px solid var(--line,#d5deea);padding:6px;vertical-align:top;font-size:10px;line-height:1.3;overflow-wrap:anywhere;white-space:normal}
+.tna-production-table th{text-align:left;font-weight:800;background:var(--look-surface,#eef3f9)}
+.tna-production-details{min-width:850px}
+@media(max-width:600px){.tna-production-controls{grid-template-columns:1fr}}
+@media print{
+  body.tna-printing-report .tna-production-controls{display:none!important}
+  body.tna-printing-report .tna-production-scroll{max-width:100%!important;overflow:visible!important}
+  body.tna-printing-report .tna-production-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
+  body.tna-printing-report .tna-production-table thead{display:table-header-group!important}
+  body.tna-printing-report .tna-production-table tr{break-inside:avoid!important;page-break-inside:avoid!important}
+  body.tna-printing-report .tna-production-table th,
+  body.tna-printing-report .tna-production-table td{font-size:6.7pt!important;padding:3px!important;line-height:1.3!important;border-color:#999!important;background:#fff!important;color:#111!important;overflow-wrap:anywhere!important}
+  body.tna-printing-report .tna-production-notice{font-size:8pt!important;color:#111!important}
+}

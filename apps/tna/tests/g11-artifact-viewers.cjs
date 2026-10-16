@@ -370,6 +370,106 @@ async function run(){
       'R06 preview and export must not modify the reopened TNA record.');
     console.log('TNA R06 browser PASS: genuine local JSON/Excel, read-only migrated order, '+r06Pages+'-page PDF, repeating table headings, no clipping.');
 
+
+    // R07 real Chromium proof on an unchanged migrated TNA. Capacity-only data
+    // must not become production or a fabricated throughput/ship-date promise.
+    await page.locator('#tnaReportType').selectOption('R07');
+    await page.locator('.tna-production-report').waitFor();
+    assert(await page.locator('#tnaR07Controls').isVisible());
+    assert.equal(await page.locator('.tna-production-table').first().locator('tbody tr').count(),4);
+    const prodDownload=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const prodJson=await prodDownload,prodJsonPath=path.join(output,'tna-r07-production.json');
+    await prodJson.saveAs(prodJsonPath);
+    const prodModel=JSON.parse(fs.readFileSync(prodJsonPath,'utf8'));
+    assert.equal(prodModel.productionStatus.schema,'VESA-TNA-PRODUCTION-1');
+    assert.equal(prodModel.productionStatus.counts.withRecordedOutput,0);
+    assert(prodModel.productionStatus.stageRows.every(row=>row.completed===null&&row.projectedFinish===null));
+    const prodExcelEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const prodExcel=await prodExcelEvent,prodXlsx=path.join(output,'tna-r07-production.xlsx');
+    await prodExcel.saveAs(prodXlsx);
+    const prodWorkbook=XLSX.read(fs.readFileSync(prodXlsx),{type:'buffer'});
+    assert.deepEqual(prodWorkbook.SheetNames,
+      ['Report Summary','Order Summary','Report Activities','Report Notes','Production Stages','Recorded Operations']);
+    assert.equal(XLSX.utils.sheet_to_json(prodWorkbook.Sheets['Production Stages'],{header:1,raw:false}).length,5);
+    await page.emulateMedia({media:'print'});
+    await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const prodLayout=await page.locator('.tna-production-table').first().evaluate(table=>({
+      width:table.getBoundingClientRect().width,
+      holder:table.parentElement.getBoundingClientRect().width,
+      headers:getComputedStyle(table.tHead).display
+    }));
+    assert(prodLayout.width<=prodLayout.holder+1,'R07 printed production table must fit.');
+    assert.equal(prodLayout.headers,'table-header-group');
+    const prodPdfPath=path.join(output,'tna-r07-production.pdf');
+    await page.pdf({path:prodPdfPath,printBackground:true,preferCSSPageSize:true,landscape:true});
+    assert.equal(fs.readFileSync(prodPdfPath).subarray(0,5).toString(),'%PDF-');
+    await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    const prodViewer=await context.newPage();
+    await prodViewer.goto(pathToFileURL(prodPdfPath).href,{waitUntil:'load'});
+    assert(await prodViewer.evaluate(()=>location.href.startsWith('file:')));
+    await prodViewer.screenshot({path:path.join(output,'tna-r07-production-pdf-viewer.png')});
+    await prodViewer.close();
+    await page.emulateMedia({media:'screen'});
+    await page.locator('#tnaR07AudienceMode').selectOption('buyer');
+    assert((await page.locator('.tna-production-report').innerText()).includes('withheld'));
+    const buyerBlockedDownload=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const buyerBlockedFile=await buyerBlockedDownload;
+    const buyerBlockedPath=path.join(output,'tna-r07-buyer-blocked.json');
+    await buyerBlockedFile.saveAs(buyerBlockedPath);
+    assert.equal(JSON.parse(fs.readFileSync(buyerBlockedPath,'utf8')).productionStatus.stageRows.length,0);
+    await page.locator('#tnaR07Reviewed').check();
+    await page.locator('#tnaR07Source').fill('Synthetic manual recipient review');
+    const buyerApprovedDownload=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const approvedBuyerFile=await buyerApprovedDownload;
+    const approvedBuyerPath=path.join(output,'tna-r07-buyer-reviewed.json');
+    await approvedBuyerFile.saveAs(approvedBuyerPath);
+    const reviewedModel=JSON.parse(fs.readFileSync(approvedBuyerPath,'utf8'));
+    assert.equal(reviewedModel.productionStatus.stageRows.length,4);
+    assert.equal(reviewedModel.tasks.length,0);
+    assert.equal(reviewedModel.productionStatus.operationRows.length,0);
+    assert(!JSON.stringify(reviewedModel).includes('Synthetic Migration Factory'));
+    const buyerExcelEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const buyerExcelArtifact=await buyerExcelEvent;
+    const buyerExcelPath=path.join(output,'tna-r07-buyer-reviewed.xlsx');
+    await buyerExcelArtifact.saveAs(buyerExcelPath);
+    const buyerWorkbook=XLSX.read(fs.readFileSync(buyerExcelPath),{type:'buffer'});
+    assert.deepEqual(buyerWorkbook.SheetNames,
+      ['Report Summary','Order Summary','Report Activities','Report Notes','Production Stages']);
+    assert(!JSON.stringify(buyerWorkbook.Sheets).includes('Synthetic Migration Factory'));
+    await page.setViewportSize({width:390,height:844});
+    const prodMobile=await page.evaluate(()=>({
+      width:document.documentElement.scrollWidth,screen:document.documentElement.clientWidth,
+      holder:document.querySelector('.tna-production-scroll')?.clientWidth,
+      scroll:document.querySelector('.tna-production-scroll')?.scrollWidth
+    }));
+    assert(prodMobile.width<=prodMobile.screen+1,'R07 mobile must not cause document overflow.');
+    assert(prodMobile.scroll>=prodMobile.holder);
+    await page.setViewportSize({width:1280,height:900});
+    const browserSource=await page.evaluate(()=>{
+      const original=JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan;
+      const text=JSON.stringify(original),copy=JSON.parse(text);
+      copy.operations=[{operationId:'PRIVATE-OP',type:'cut',lotId:'PRIVATE-LOT',
+        qtyInput:100,qtyCompleted:55,qtyRejected:5,qtyReworked:0,qtyWip:20,
+        unit:'pcs',dailyActuals:[]}];
+      const model=VesaTnaReports.buildReportModel(copy,{reportId:'R07',
+        language:'en',generatedAt:'2026-10-16T05:00:00Z',timezone:'UTC',
+        audienceMode:'buyer',recipientReviewed:true,authorizationSourceRef:'synthetic user reviewed'});
+      if(JSON.stringify(original)!==text)throw Error('Saved TNA changed by report probe');
+      return model;
+    });
+    assert.equal(browserSource.productionStatus.stageRows[0].completed,55);
+    assert(!JSON.stringify(browserSource).includes('PRIVATE-OP'));
+    assert(!JSON.stringify(browserSource).includes('PRIVATE-LOT'));
+    const postR07=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).records[0].plan,
+      'vesa.tna360.records.'+session.userKey);
+    assert.equal(JSON.stringify(postR07),JSON.stringify(stored.records[0].plan));
+    console.log('TNA R07 Chromium PASS: JSON/XLSX/PDF, buyer review + blocked preview, 390px, source projection, unchanged local record.');
+
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}

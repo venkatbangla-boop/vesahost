@@ -864,10 +864,265 @@
     }
   }
 
+
+  /**
+   * R07 Production Status owns a read-only source projection with four garment
+   * production stages. It reads existing operations and milestone dates; it
+   * neither fills unknown output nor modifies local records or rate engines.
+   * Buyer mode is an independent allowlisted output, not the internal report
+   * with fields redacted after serializing. Manual review is NOT server auth.
+   */
+  class TnaProductionStatusProjection {
+    /** Fixed stage references are template milestone IDs, not task UUIDs. */
+    static stages(){
+      return [
+        {code:'cut',types:['cut','cutting'],start:'C04',finish:'C06'},
+        {code:'sew',types:['sew','sewing'],start:'P01',finish:'P03'},
+        {code:'finish',types:['finish','finishing'],start:'P07',finish:'P08'},
+        {code:'pack',types:['pack','packing'],start:'PK02',finish:'PK04'}
+      ];
+    }
+    /** Keep authored labels in all four languages; entered values are never translated. */
+    static labels(language){
+      const words={
+        en:{title:'Production stage status',unknown:'Needs Information',
+          stages:{cut:'Cutting',sew:'Sewing',finish:'Finishing',pack:'Packing'},
+          note:'Quantities are the latest locally entered operation snapshot, NOT accepted goods or historical as-of output. Capacity-only records with seeded zeros prove no production. Rates and projected finish need independent verified output/calendar evidence.',
+          internalNotice:'INTERNAL PRODUCTION REVIEW ONLY. Check recipient permission before sharing. No inspection/PPM release or factory acceptance is inferred.',
+          buyerNotice:'Buyer-facing copy contains only reviewed stage milestones and recorded outputs. Local review is not server authorization, buyer acceptance or shipment release.',
+          restrictedNotice:'Buyer copy is withheld. Choose Buyer, tick reviewed permission, and enter its source reference. No order or factory details are exported before that review.',
+          controlMode:'Production report audience',internalMode:'Internal production (restricted)',buyerMode:'Buyer reviewed copy (limited)',
+          controlConsent:'I checked buyer recipient permission and reviewed the content',
+          controlSource:'Permission source reference (required for buyer copy)',
+          controlHelp:'This manual check is not secure authorization. Do not send without independent approval.',
+          noSource:'No locally recorded output for this stage',
+          invalidSource:'Invalid or unreconciled operation quantities; numbers withheld',
+          mixedLots:'Several entries cannot be proven disjoint by lot and unit; no totals',
+          localSource:'Locally recorded counts; not independently accepted',
+          statusUnverified:'Milestone completion requires recorded actual date; no release is inferred',
+          rateMissing:'Verified daily output and source-approved working calendar are unavailable',
+          asOf:'Report as of',notAsOf:'Operation quantities are latest snapshot; date of each quantity update is unverified',
+          columns:['Stage','Start recorded','Finish recorded','Current target','Forecast finish','Locally entered output','Entered input','Work in progress','Rejected','Reworked','Remainder within entered input','Unit','Evidence state','Verified output/day','Projected finish'],
+          printColumns:['Stage','Start actual','End actual','Current target','Forecast','Recorded output','Entered input','Remainder','Unit','Source status','Projected end'],
+          operationColumns:['Stage','Operation','Lot','Input','Output','Rejected','Rework','WIP','Remainder','Unit','Status'],
+          orderHidden:'Not included in buyer copy',unitUnknown:'Unknown unit'},
+        bn:{title:'উৎপাদন ধাপের অবস্থা',unknown:'তথ্য প্রয়োজন',
+          stages:{cut:'কাটিং',sew:'সেলাই',finish:'ফিনিশিং',pack:'প্যাকিং'},
+          note:'সংখ্যা স্থানীয়ভাবে লেখা সর্বশেষ তথ্য; অনুমোদিত পণ্য বা আগের দিনের উৎপাদন নয়। শুধু লাইন-ক্যাপাসিটির শূন্য সংখ্যা উৎপাদন প্রমাণ করে না। যাচাইকৃত রেট ও ক্যালেন্ডার না থাকলে শেষ তারিখ অজানা।',
+          internalNotice:'শুধু অভ্যন্তরীণ উৎপাদন রিপোর্ট। অনুমতি ছাড়া পাঠাবেন না; PPM/ইন্সপেকশন ছাড়পত্র ধরে নেওয়া হয়নি।',
+          buyerNotice:'ক্রেতার জন্য কেবল পর্যালোচিত ধাপ/উৎপাদন তথ্য। স্থানীয় পরীক্ষা সার্ভার অনুমোদন বা ক্রেতার স্বীকৃতি নয়।',
+          restrictedNotice:'ক্রেতার রিপোর্ট বন্ধ। অনুমতি যাচাই ও সূত্র দিন; আগে অর্ডার তথ্য দেখানো হবে না।',
+          controlMode:'রিপোর্ট প্রাপক',internalMode:'অভ্যন্তরীণ উৎপাদন',buyerMode:'পর্যালোচিত ক্রেতার কপি',
+          controlConsent:'প্রাপকের অনুমতি ও বিষয়বস্তু যাচাই করেছি',controlSource:'অনুমতি সূত্র (প্রয়োজনীয়)',
+          controlHelp:'এটি সার্ভারের নিরাপদ অনুমোদন নয়। স্বতন্ত্র সম্মতি ছাড়া পাঠাবেন না।',
+          noSource:'উৎপাদনের তথ্য নেই',invalidSource:'অসামঞ্জস্যপূর্ণ উৎপাদন সংখ্যা — গোপন রাখা হয়েছে',
+          mixedLots:'একাধিক লট আলাদা প্রমাণ নেই; মোট নয়',localSource:'স্থানীয় সংখ্যা; অনুমোদিত নয়',
+          statusUnverified:'বাস্তব তারিখ ছাড়া কাজ সমাপ্ত প্রমাণ নয়',rateMissing:'যাচাইকৃত দৈনিক রেট/ক্যালেন্ডার নেই',
+          asOf:'রিপোর্ট তারিখ',notAsOf:'পরিমাণ সর্বশেষ নথি; তারিখভিত্তিক ইতিহাস নয়',
+          columns:['ধাপ','শুরু','শেষ','বর্তমান লক্ষ্য','পূর্বাভাস','দর্জ আউটপুট','ইনপুট','চলমান','বাতিল','রিওয়ার্ক','অবশিষ্ট ইনপুট','একক','প্রমাণ অবস্থা','দৈনিক রেট','শেষের পূর্বাভাস'],
+          printColumns:['ধাপ','শুরু','শেষ','বর্তমান','পূর্বাভাস','আউটপুট','ইনপুট','অবশিষ্ট','একক','উৎস','শেষ'],
+          operationColumns:['ধাপ','অপারেশন','লট','ইনপুট','আউটপুট','বাতিল','রিওয়ার্ক','চলমান','অবশিষ্ট','একক','অবস্থা'],
+          orderHidden:'ক্রেতার রিপোর্টে নেই',unitUnknown:'একক জানা নেই'},
+        hi:{title:'उत्पादन चरण स्थिति',unknown:'जानकारी चाहिए',
+          stages:{cut:'कटिंग',sew:'सिलाई',finish:'फिनिशिंग',pack:'पैकिंग'},
+          note:'मात्रा केवल स्थानीय नवीनतम प्रविष्टि है; स्वीकृत माल या पुराने दिन का उत्पादन नहीं। क्षमता की डिफॉल्ट शून्य मात्रा असली उत्पादन नहीं। सत्यापित रेट और कैलेंडर के बिना समाप्ति तारीख नहीं निकलेगी।',
+          internalNotice:'केवल आंतरिक उत्पादन रिपोर्ट। अनुमति जाँचें; PPM/निरीक्षण रिलीज़ नहीं मानी गई।',
+          buyerNotice:'खरीदार को केवल जाँचे गए चरण और दर्ज आउटपुट। स्थानीय समीक्षा सुरक्षित सर्वर अनुमति या खरीदार स्वीकृति नहीं है।',
+          restrictedNotice:'खरीदार कॉपी रोकी गई। प्रापक अनुमति जाँचें और स्रोत लिखें; तब तक ऑर्डर जानकारी नहीं।',
+          controlMode:'रिपोर्ट प्राप्तकर्ता',internalMode:'आंतरिक उत्पादन',buyerMode:'जाँची खरीदार कॉपी',
+          controlConsent:'प्रापक अनुमति और सामग्री जाँची है',controlSource:'अनुमति स्रोत (अनिवार्य)',
+          controlHelp:'यह सुरक्षित सर्वर अनुमति नहीं। स्वतंत्र स्वीकृति के बिना न भेजें।',
+          noSource:'उत्पादन रिकॉर्ड नहीं',invalidSource:'अवैध / असंगत संख्या छिपाई गई',
+          mixedLots:'लॉट अलग होने का प्रमाण नहीं; योग नहीं',localSource:'स्थानीय संख्या; स्वीकृत नहीं',
+          statusUnverified:'असली तारीख के बिना पूरा होना पुष्ट नहीं',rateMissing:'सत्यापित दैनिक रेट या कैलेंडर नहीं',
+          asOf:'रिपोर्ट तारीख',notAsOf:'मात्रा नवीनतम स्थिति है; पुरानी तारीख का हिसाब नहीं',
+          columns:['चरण','शुरू','समाप्त','वर्तमान लक्ष्य','पूर्वानुमान','दर्ज आउटपुट','इनपुट','चलता काम','रिजेक्ट','रीवर्क','शेष इनपुट','इकाई','प्रमाण','दैनिक रेट','समाप्ति अनुमान'],
+          printColumns:['चरण','शुरू','समाप्त','वर्तमान','पूर्वानुमान','आउटपुट','इनपुट','शेष','इकाई','स्रोत स्थिति','अनुमान'],
+          operationColumns:['चरण','ऑपरेशन','लॉट','इनपुट','आउटपुट','रिजेक्ट','रीवर्क','WIP','शेष','इकाई','स्थिति'],
+          orderHidden:'खरीदार कॉपी में नहीं',unitUnknown:'इकाई अज्ञात'},
+        ta:{title:'உற்பத்தி நிலை அறிக்கை',unknown:'தகவல் தேவை',
+          stages:{cut:'Cutting',sew:'Sewing',finish:'Finishing',pack:'Packing'},
+          note:'எண்ணிக்கை கடைசியாக உள்ளூரில் பதிவானது மட்டும்; ஒப்புக்கொண்ட சரக்கோ பழைய தேதியின் output-ஓ அல்ல. Capacity-only default zero உண்மையான உற்பத்தி இல்லை. சரிபார்த்த தினசரி rate/calendar இல்லாமல் முடிவு தேதி கணிக்க முடியாது.',
+          internalNotice:'உள் Production குழுவிற்கு மட்டும். பகிரும் முன் அனுமதி தேவை. PPM/AQL release உறுதி செய்யப்படவில்லை.',
+          buyerNotice:'Buyer copy-யில் review செய்த stage/date/output மட்டும். Local review என்பது secure authorization அல்லது Buyer approval அல்ல.',
+          restrictedNotice:'Buyer copy தடுக்கப்பட்டுள்ளது. அனுமதி பார்த்ததாகக் குறியிட்டு ஆதார reference கொடுக்க வேண்டும். அதுவரை order விவரம் வராது.',
+          controlMode:'Report பெறுபவர்',internalMode:'உள் Production (கட்டுப்பாடு)',buyerMode:'Buyer-க்கு review செய்த copy',
+          controlConsent:'Buyer பெறுநர் அனுமதியையும் விவரங்களையும் சரிபார்த்தேன்',
+          controlSource:'அனுமதி ஆதார reference (கட்டாயம்)',
+          controlHelp:'இந்த உள்ளூர் ஒப்புதல் secure server authorization அல்ல. தனியான approval இல்லாமல் அனுப்பாதீர்கள்.',
+          noSource:'உற்பத்தி output பதிவு இல்லை',invalidSource:'தவறான / பொருந்தாத எண்ணிக்கை மறைக்கப்பட்டுள்ளது',
+          mixedLots:'பல entries தனித்தனி lot என உறுதி இல்லை; மொத்தம் காட்ட முடியாது',localSource:'உள்ளூரில் பதிந்தது; வெளி ஒப்புதல் இல்லை',
+          statusUnverified:'நிகழ்ந்த தேதி இல்லாமல் செயல் முடிந்தது என்று உறுதி இல்லை',rateMissing:'சரிபார்த்த daily rate/calendar இல்லை',
+          asOf:'அறிக்கை நாள்',notAsOf:'Quantity கடைசி பதிவு மட்டும்; அன்றைய சரித்திர output அல்ல',
+          columns:['நிலை','தொடங்கியது','முடிந்தது','இப்போதைய இலக்கு','எதிர்பார்ப்பு','பதிந்த output','உள்ளீடு','WIP','நிராகரிப்பு','Rework','உள்ளீட்டில் மீதி','அலகு','ஆதார நிலை','தினசரி output','முடிவு கணிப்பு'],
+          printColumns:['நிலை','தொடக்கம்','முடிவு','இலக்கு','எதிர்பார்ப்பு','Output','Input','மீதி','அலகு','ஆதார நிலை','முடிவு'],
+          operationColumns:['நிலை','செயல்','Lot','Input','Output','Reject','Rework','WIP','மீதி','அலகு','நிலை'],
+          orderHidden:'Buyer copy-யில் இல்லை',unitUnknown:'அலகு தெரியவில்லை'}
+      };
+      return words[language]||words.en;
+    }
+    /** A date is historical actual only if that milestone was marked completed. */
+    static milestone(plan,ref,asOfDay){
+      const task=(Array.isArray(plan.tasks)?plan.tasks:[]).find(item=>item.templateRef===ref);
+      const enteredActual=TnaMasterReportProjection.asDate(task?.dates?.actualFinish);
+      const day=TnaMasterReportProjection.day(enteredActual);
+      return {ref,actual:task?.status==='completed'&&day!==null&&day<=asOfDay?enteredActual:null,
+        futureActual:task?.status==='completed'&&day!==null&&day>asOfDay,
+        current:TnaMasterReportProjection.asDate(task?.dates?.currentTargetFinish),
+        forecast:TnaMasterReportProjection.asDate(task?.dates?.forecastFinish),
+        status:task?.status||'needs-information'};
+    }
+    /**
+     * Treat zero-capacity placeholders as unknown rather than output=0.
+     * Validate explicit operation snapshot numbers before invoking frozen
+     * CAP-05 quantity conservation; never call a claimed completed unit an
+     * accepted or shipment-passed unit without independent inspection proof.
+     */
+    static operation(op,code,labels){
+      const fields=['qtyInput','qtyCompleted','qtyRejected','qtyReworked','qtyWip'];
+      const hasEvidence=fields.some(key=>typeof op?.[key]==='number'&&op[key]>0)||
+        (Array.isArray(op?.dailyActuals)&&op.dailyActuals.length>0);
+      const unit=typeof op?.unit==='string'&&op.unit.trim()?op.unit.trim():null;
+      const id=typeof op?.operationId==='string'?op.operationId:'';
+      const lot=typeof op?.lotId==='string'?op.lotId.trim():'';
+      const blank={code,operationId:id,lotId:lot,unit:unit||labels.unitUnknown,
+        input:null,completed:null,rejected:null,reworked:null,wip:null,remaining:null,
+        sourceStatus:labels.noSource,quantityValid:false};
+      if(!hasEvidence)return blank;
+      if(!unit||fields.some(key=>typeof op[key]!=='number'||!Number.isFinite(op[key])||op[key]<0||
+        ((unit==='pcs'||unit==='piece'||unit==='pieces')&&!Number.isInteger(op[key])))){
+        return {...blank,sourceStatus:labels.invalidSource};
+      }
+      const engine=root.VesaTnaOperations||(typeof require==='function'?require('./operations.js'):null);
+      const checked=engine?.validateOperationQuantity?.(op);
+      if(!checked?.ok||!Number.isFinite(checked.remainingQty)){
+        return {...blank,sourceStatus:labels.invalidSource};
+      }
+      return {...blank,input:op.qtyInput,completed:op.qtyCompleted,rejected:op.qtyRejected,
+        reworked:op.qtyReworked,wip:op.qtyWip,remaining:checked.remainingQty,
+        sourceStatus:labels.localSource,quantityValid:true};
+    }
+    /** Combine only disjoint named lots with identical units and complete data. */
+    static combined(rows,labels){
+      if(!rows.length)return {state:labels.noSource,scope:'missing',input:null,completed:null,
+        rejected:null,reworked:null,wip:null,remaining:null,unit:null};
+      const allValid=rows.every(row=>row.quantityValid);
+      const distinct=rows.length===1||rows.every(row=>row.lotId)&&
+        new Set(rows.map(row=>row.lotId.toLowerCase())).size===rows.length;
+      const sameUnit=rows.every(row=>row.unit===rows[0].unit);
+      if(!allValid||!distinct||!sameUnit)return {state:allValid?labels.mixedLots:labels.invalidSource,
+        scope:'unreconciled',input:null,completed:null,rejected:null,reworked:null,wip:null,
+        remaining:null,unit:null};
+      const sum=key=>rows.reduce((total,row)=>total+row[key],0);
+      return {state:labels.localSource,scope:rows.length===1?'one-operation':'distinct-entered-lots',
+        input:sum('input'),completed:sum('completed'),rejected:sum('rejected'),
+        reworked:sum('reworked'),wip:sum('wip'),remaining:sum('remaining'),unit:rows[0].unit};
+    }
+    /** Make a fixed four-stage report from source records only, with unknown rate/finish. */
+    static build(plan={},options={}){
+      const labels=this.labels(options.language);
+      const date=TnaWeeklyReportProjection.window(options)?.asOfDate||null;
+      const blank={schema:'VESA-TNA-PRODUCTION-1',validity:'incomplete',
+        audience:'internal-production-review',asOfDate:null,timezone:options.timezone||null,
+        stageRows:[],operationRows:[],labels,
+        counts:{stages:4,withRecordedOutput:0,needsQuantitySource:4,invalidOrOverlapping:0},
+        verifiedRates:[],projectedStageEnds:[],warnings:[labels.note,labels.internalNotice]};
+      if(!date)return {...blank,warnings:[labels.unknown,labels.internalNotice]};
+      const asOfDay=TnaMasterReportProjection.day(date);
+      const operations=Array.isArray(plan.operations)?plan.operations:[];
+      const snapshots=Array.isArray(plan.baselineSnapshots)?plan.baselineSnapshots:[];
+      const originalDates=new Map((Array.isArray(snapshots[0]?.taskDates)?snapshots[0].taskDates:[])
+        .map(item=>[item.taskId,item.dates||{}]));
+      const stageRows=[],allOperations=[];
+      for(const def of this.stages()){
+        const start=this.milestone(plan,def.start,asOfDay);
+        const finish=this.milestone(plan,def.finish,asOfDay);
+        const endTask=(Array.isArray(plan.tasks)?plan.tasks:[]).find(task=>task.templateRef===def.finish);
+        const original=originalDates.get(endTask?.taskId);
+        const baseline=TnaMasterReportProjection.asDate(original?.currentTargetFinish||original?.baselineFinish||null);
+        const stageOps=operations.filter(item=>def.types.includes(String(item?.type||'').toLowerCase()))
+          .map(item=>this.operation(item,def.code,labels));
+        allOperations.push(...stageOps);
+        const totals=this.combined(stageOps,labels);
+        stageRows.push({code:def.code,label:labels.stages[def.code],startActual:start.actual,
+          finishActual:finish.actual,completionAfterAsOf:finish.futureActual,
+          confirmedBaseline:baseline,currentTarget:finish.current,forecastFinish:finish.forecast,
+          taskStatus:finish.status,input:totals.input,completed:totals.completed,
+          rejected:totals.rejected,reworked:totals.reworked,wip:totals.wip,
+          remainingWithinInput:totals.remaining,unit:totals.unit,
+          quantityState:totals.state,quantityScope:totals.scope,
+          operationCount:stageOps.length,verifiedDailyOutput:null,projectedFinish:null});
+      }
+      return {...blank,validity:'valid',asOfDate:date,stageRows,operationRows:allOperations,
+        counts:{stages:stageRows.length,
+          withRecordedOutput:stageRows.filter(item=>item.completed!==null).length,
+          needsQuantitySource:stageRows.filter(item=>item.quantityScope==='missing').length,
+          invalidOrOverlapping:stageRows.filter(item=>item.quantityScope==='unreconciled').length},
+        warnings:[labels.note,labels.internalNotice,labels.rateMissing]};
+    }
+    /**
+     * Buyer mode can export only explicit allowlisted stage facts after a local
+     * recipient review. Never include operation/lot IDs, factory, proof, source
+     * record UUID, commercial notes, finance fields, rejected/WIP quantities
+     * or internal free-text. A local checkbox is not independent authorization.
+     */
+    static buyer(plan={},options={}){
+      const labels=this.labels(options.language);
+      const allowed=options.recipientReviewed===true&&
+        typeof options.authorizationSourceRef==='string'&&
+        options.authorizationSourceRef.trim().length>0&&options.authorizationSourceRef.trim().length<=120;
+      const blank={schema:'VESA-TNA-PRODUCTION-1',audience:'buyer-local-review',
+        validity:'restricted',asOfDate:null,timezone:options.timezone||null,
+        stageRows:[],operationRows:[],labels,
+        counts:{stages:0,withRecordedOutput:0,needsQuantitySource:0,invalidOrOverlapping:0},
+        verifiedRates:[],projectedStageEnds:[],warnings:[labels.restrictedNotice]};
+      if(!allowed)return blank;
+      const full=this.build(plan,options);
+      if(full.validity!=='valid')return {...blank,warnings:[labels.unknown,labels.buyerNotice]};
+      const rows=full.stageRows.map(row=>({code:row.code,label:row.label,
+        startActual:row.startActual,finishActual:row.finishActual,
+        currentTarget:row.currentTarget,forecastFinish:row.forecastFinish,
+        completed:row.completed,unit:row.unit,quantityState:row.quantityState,
+        verifiedDailyOutput:null,projectedFinish:null}));
+      return {...blank,validity:'valid',asOfDate:full.asOfDate,stageRows:rows,
+        counts:{stages:rows.length,withRecordedOutput:rows.filter(row=>row.completed!==null).length,
+          needsQuantitySource:rows.filter(row=>row.completed===null).length,invalidOrOverlapping:0},
+        warnings:[labels.buyerNotice,labels.rateMissing]};
+    }
+    /** Return a restricted/allowlisted model before common export adapters run. */
+    static buyerReport(plan,report,language,generatedAt,timezone,options){
+      const projection=this.buyer(plan,{...options,language,generatedAt,timezone});
+      const source=projection.validity==='valid'?plan.order||{}:{};
+      const safeQty=typeof source.totalQty==='number'&&Number.isFinite(source.totalQty)?
+        source.totalQty:projection.labels.unknown;
+      const order={
+        buyer:typeof source.buyerName==='string'?source.buyerName:projection.labels.orderHidden,
+        factory:projection.labels.orderHidden,
+        style:typeof source.styles?.[0]?.styleNo==='string'?source.styles[0].styleNo:projection.labels.orderHidden,
+        po:typeof source.poNumbers?.[0]==='string'?source.poNumbers[0]:projection.labels.orderHidden,
+        quantity:safeQty,unit:typeof source.unit==='string'?source.unit:projection.labels.unitUnknown,
+        requiredExFactory:projection.validity==='valid'?
+          TnaMasterReportProjection.asDate(plan.commitments?.buyerRequiredExFactory)||projection.labels.unknown:
+          projection.labels.orderHidden
+      };
+      const shared=I18N[language];
+      return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:'R07',
+        title:titleFor(report,language),language,languageName:shared.languageName,
+        audience:'Buyer copy — local manual review, no server authorization',
+        generatedAt,generatedLabel:formatDateTime(generatedAt,language),timezone,
+        revision:projection.validity==='valid'?(plan.revision??0):0,baselineSnapshots:0,
+        headings:shared.headings,labels:shared.labels,order,tasks:[],
+        productionStatus:projection,warnings:projection.warnings.slice(),
+        notes:[shared.labels.noFabrication,projection.validity==='valid'?
+          projection.labels.buyerNotice:projection.labels.restrictedNotice],
+        source:{recordId:null,schemaVersion:null,mode:'buyer-review-export'}};
+    }
+  }
+
   function taskRows(plan={},limit=Infinity){return (plan.tasks||[]).slice(0,limit).map(task=>({ref:task.templateRef,title:task.title,owner:task.ownerParty,status:task.status,baseline:task.dates?.baselineFinish||'',current:task.dates?.currentTargetFinish||'',forecast:task.dates?.forecastFinish||'',actual:task.dates?.actualFinish||'',risk:task.riskStatus||'needs-information'}))}
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=(report[0]==='R05'||report[0]==='R06')&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const delay=report[0]==='R06'?TnaDelayRecoveryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R06'?'Local management review — no external sharing authorization':report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(delay?{delayRecovery:delay}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[]),...(delay?delay.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),...(delay?[delay.labels.disclosure]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=(report[0]==='R05'||report[0]==='R06'||report[0]==='R07')&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);if(report[0]==='R07'&&options.audienceMode==='buyer')return TnaProductionStatusProjection.buyerReport(plan,report,l,generatedAt,timezone,options);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const delay=report[0]==='R06'?TnaDelayRecoveryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const production=report[0]==='R07'?TnaProductionStatusProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R07'?'Internal production review — restricted':report[0]==='R06'?'Local management review — no external sharing authorization':report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(delay?{delayRecovery:delay}:{}),...(production?{productionStatus:production}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[]),...(delay?delay.warnings:[]),...(production?production.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),...(delay?[delay.labels.disclosure]:[]),...(production?[production.labels.internalNotice]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
