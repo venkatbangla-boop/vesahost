@@ -83,8 +83,18 @@ class TnaScenarioComparisonProof {
       assert(r.options.every(o=>typeof o.workdaysGained==='number'));
       assert(r.options[0].workdaysGained>=0,'Shorter path cannot create negative improvement.');
       assert(r.options[1].workdaysGained<=0,'Longer competing path cannot improve finish.');
-      assert(r.options[1].changedCriticalRefs.length>0,
-        'Changed path must come from recalculated R04 task data.');
+      const independentPreview=scenarios.previewScenario(plan,{
+        durationAdjustments:[{taskId:two.taskId,durationUnits:6}]});
+      assert.equal(independentPreview.ok,true);
+      const baseCpm=reports.buildReportModel(plan,{reportId:'R04'}).criticalPath;
+      const candidateCpm=reports.buildReportModel(independentPreview.previewPlan,
+        {reportId:'R04'}).criticalPath;
+      const beforeCritical=new Set(baseCpm.rows.filter(row=>row.isCritical).map(row=>row.ref));
+      const afterCritical=new Set(candidateCpm.rows.filter(row=>row.isCritical).map(row=>row.ref));
+      const expectedChange=[...new Set([...beforeCritical,...afterCritical])]
+        .filter(ref=>beforeCritical.has(ref)!==afterCritical.has(ref));
+      assert.deepEqual(r.options[1].changedCriticalRefs,expectedChange,
+        'Changed critical path must match independent strict R04 computation; a different duration does not guarantee a different controlling task.');
       assert.equal(r.changes.length,2);
       assert(!JSON.stringify(model).includes('PRIVATE-PRICE'),
         'No rate or cost savings invented.');
