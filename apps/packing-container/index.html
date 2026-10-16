@@ -128,7 +128,6 @@ class PackingMath {
      const gross=this.kg(spec.grossWeight,spec.weightUnit),net=this.kg(spec.netWeight,spec.weightUnit);
      if(!trim(spec.code)||!trim(spec.sourceRef)||!Number.isFinite(cbm)||!Number.isFinite(gross)||
        !Number.isFinite(net)||gross<net)errors.push('Carton dimensions, sourced net and gross weights must be positive; gross must be at least net.');
-     spec.cbmPreview=undefined; // intentionally not persisted; projection uses local values
    }
    let totalCartons=0,totalPieces=0,totalCbm=0,totalGrossKg=0,grossKnown=true;
    const registered=[];
