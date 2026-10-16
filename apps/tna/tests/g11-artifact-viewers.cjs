@@ -470,6 +470,81 @@ async function run(){
     assert.equal(JSON.stringify(postR07),JSON.stringify(stored.records[0].plan));
     console.log('TNA R07 Chromium PASS: JSON/XLSX/PDF, buyer review + blocked preview, 390px, source projection, unchanged local record.');
 
+
+    // R08 internal source register on the unchanged migrated browser record:
+    // missing supplier/LC inputs remain visibly unknown; do not invent banks.
+    await page.locator('#tnaReportType').selectOption('R08');
+    await page.locator('.tna-material-report').waitFor();
+    assert(await page.locator('.tna-material-notice').isVisible());
+    assert.equal(await page.locator('.tna-material-table').first().locator('tbody tr').count(),1);
+    const materialDownload=page.waitForEvent('download');
+    await page.locator('[data-report-action="download"]').click();
+    const materialJson=await materialDownload,materialJsonPath=path.join(output,'tna-r08-material-lc.json');
+    await materialJson.saveAs(materialJsonPath);
+    const materialModel=JSON.parse(fs.readFileSync(materialJsonPath,'utf8'));
+    assert.equal(materialModel.materialLc.schema,'VESA-TNA-MATERIAL-LC-1');
+    assert.equal(materialModel.materialLc.materials.length,0);
+    assert.equal(materialModel.materialLc.masterLc.bankAuthenticated,false);
+    const materialExcelEvent=page.waitForEvent('download');
+    await page.locator('[data-report-action="excel"]').click();
+    const materialExcel=await materialExcelEvent,materialExcelPath=path.join(output,'tna-r08-material-lc.xlsx');
+    await materialExcel.saveAs(materialExcelPath);
+    const materialWb=XLSX.read(fs.readFileSync(materialExcelPath),{type:'buffer'});
+    assert.deepEqual(materialWb.SheetNames,
+      ['Report Summary','Order Summary','Report Activities','Report Notes','Material & LC','LC Milestones']);
+    assert.equal(materialWb.Sheets['Material & LC'].A2.v,'No fabric/trims source records entered');
+    await page.emulateMedia({media:'print'});
+    await page.evaluate(()=>document.body.classList.add('tna-printing-report'));
+    const materialLayout=await page.locator('.tna-material-table').first().evaluate(table=>({
+      width:table.getBoundingClientRect().width,
+      container:table.parentElement.getBoundingClientRect().width,
+      heading:getComputedStyle(table.tHead).display
+    }));
+    assert(materialLayout.width<=materialLayout.container+1,'R08 printed table must fit.');
+    assert.equal(materialLayout.heading,'table-header-group');
+    const materialPdfPath=path.join(output,'tna-r08-material-lc.pdf');
+    await page.pdf({path:materialPdfPath,printBackground:true,preferCSSPageSize:true,landscape:true});
+    await page.evaluate(()=>document.body.classList.remove('tna-printing-report'));
+    assert.equal(fs.readFileSync(materialPdfPath).subarray(0,5).toString(),'%PDF-');
+    const materialViewer=await context.newPage();
+    await materialViewer.goto(pathToFileURL(materialPdfPath).href,{waitUntil:'load'});
+    assert(await materialViewer.evaluate(()=>location.href.startsWith('file:')));
+    await materialViewer.screenshot({path:path.join(output,'tna-r08-material-lc-pdf-viewer.png')});
+    await materialViewer.close();
+    await page.emulateMedia({media:'screen'});
+    await page.setViewportSize({width:390,height:844});
+    const materialMobile=await page.evaluate(()=>({
+      documentWidth:document.documentElement.scrollWidth,
+      viewportWidth:document.documentElement.clientWidth,
+      tableWidth:document.querySelector('.tna-material-scroll')?.scrollWidth,
+      holderWidth:document.querySelector('.tna-material-scroll')?.clientWidth
+    }));
+    assert(materialMobile.documentWidth<=materialMobile.viewportWidth+1);
+    assert(materialMobile.tableWidth>=materialMobile.holderWidth);
+    await page.setViewportSize({width:1280,height:900});
+    const syntheticMaterial=await page.evaluate(()=>{
+      const original=JSON.parse(localStorage.getItem('vesa.tna360.records.qa-vesaent-com')).records[0].plan;
+      const unchanged=JSON.stringify(original),clone=JSON.parse(unchanged);
+      clone.commitments.masterLcOpenedOn='2026-10-10';
+      clone.materials=[{materialId:'SYN-FAB',category:'fabric',supplier:'=PRIVATE-SUPPLIER',
+        requiredQty:200,unit:'kg',bookingDate:'2026-10-09',b2bLcApplicationDate:'2026-10-11',
+        b2bLcOpenDate:null,inHouseDate:'2026-10-12',shortageQty:5}];
+      const projected=VesaTnaReports.buildReportModel(clone,{reportId:'R08',
+        language:'en',generatedAt:'2026-10-16T05:00:00Z',timezone:'UTC'});
+      const denied=VesaTnaReports.buildReportModel(clone,{reportId:'R08',
+        language:'en',generatedAt:'2026-10-16T05:00:00Z',timezone:'UTC',audienceMode:'buyer'});
+      if(JSON.stringify(original)!==unchanged)throw Error('R08 material probe changed local record.');
+      return {projected,denied};
+    });
+    assert.equal(syntheticMaterial.projected.materialLc.materials[0].b2bOpenDate,null);
+    assert.equal(syntheticMaterial.projected.materialLc.materials[0].qcAccepted,false);
+    assert.equal(syntheticMaterial.denied.materialLc.validity,'restricted');
+    assert(!JSON.stringify(syntheticMaterial.denied).includes('SYN-FAB'));
+    const materialAfter=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).records[0].plan,
+      'vesa.tna360.records.'+session.userKey);
+    assert.equal(JSON.stringify(materialAfter),JSON.stringify(stored.records[0].plan));
+    console.log('TNA R08 Chromium PASS: local blank-source, JSON/XLSX/PDF, typed LC, external blocked, mobile 390px, no data mutation.');
+
     assert.deepEqual(errors,[]);
     console.log(`TNA G11 browser artifacts passed: migrated reload, ${activityRows.length-1} Excel activities, ${pageCount}-page PDF opened in Chromium viewer, no horizontal clipping or page errors`);
   }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}

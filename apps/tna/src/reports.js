@@ -1119,10 +1119,160 @@
     }
   }
 
+
+  /**
+   * R08 material/LC projection for INTERNAL commercial and sourcing staff.
+   * LC applications, locally entered open dates, in-house dates and QC events
+   * are separate facts. No rate, financing approval, supplier price, receipt,
+   * bank authenticity or fabric cutting release is inferred.
+   * Pure: accepts OrderPlan and civil report time; returns a new read-only model.
+   */
+  class TnaMaterialLcProjection {
+    /** Fixed copy is translated; supplier-entered text is never changed. */
+    static labels(language){
+      const dict={
+        en:{title:'Material & LC source register',unknown:'Needs Information',noMaterials:'No fabric/trims source records entered',
+          internalNotice:'INTERNAL COMMERCIAL / SOURCING REVIEW ONLY. Supplier identities and LC details are restricted. No automatic buyer/factory sharing.',
+          sourceWarning:'Entered master/B2B LC open dates are NOT independent bank authentication. Application is not opening; QCDate is not QC acceptance. A blank shortage is not zero. Do not release cutting from this report.',
+          noPrice:'Supplier pricing, bank guarantees and commercial approvals are not included.',
+          rejected:'External/buyer report not authorized; supplier, order and financing details are withheld.',
+          master:'Master LC',fabric:'Fabric',trims:'Trims',other:'Other / accessory',
+          recorded:'Locally recorded, independently unverified',future:'Entered event after report as-of; not yet evidenced',
+          application:'B2B LC application',opened:'B2B LC open date (entered)',missing:'Not recorded',qcPending:'QC date alone does not prove acceptance',
+          inHousePending:'In-house entry does not prove QC pass',shortageOpen:'Locally recorded shortage; action required',
+          shortageZero:'Zero shortage entered locally; not independently verified',shortageUnknown:'Shortage not confirmed',
+          columns:['Category','Material / source ID','Supplier','Country','Required Qty','Unit','Booking date','B2B application','B2B open date','In-house date','QC recorded date','Entered shortage','Availability / QC authority'],
+          lcColumns:['LC type','Material ID / source','Application date','Entered open date','Evidence state'],
+          asOf:'As of',buyerHidden:'Not included in external report'},
+        bn:{title:'ম্যাটেরিয়াল ও LC নথি',unknown:'তথ্য প্রয়োজন',noMaterials:'ফ্যাব্রিক/ট্রিমস নথি নেই',
+          internalNotice:'শুধু অভ্যন্তরীণ কমার্শিয়াল/সোর্সিং। সরবরাহকারী ও LC তথ্য সীমিত; অনুমতি ছাড়া পাঠাবেন না।',
+          sourceWarning:'LC খোলার লেখা তারিখ ব্যাংক প্রমাণ নয়; আবেদন মানে LC খোলা নয়। QC তারিখ মানে অনুমোদন নয়; খালি ঘাটতি শূন্য নয়। এই রিপোর্ট থেকে কাটিং ছাড়পত্র নয়।',
+          noPrice:'সরবরাহকারীর মূল্য/ব্যাংক গ্যারান্টি/কমার্শিয়াল অনুমোদন নেই।',
+          rejected:'বাইরের রিপোর্ট অনুমোদিত নয়; সব উৎস/অর্ডার তথ্য গোপন।',
+          master:'মাস্টার LC',fabric:'ফ্যাব্রিক',trims:'ট্রিমস',other:'অন্যান্য',
+          recorded:'স্থানীয় নথি; স্বাধীনভাবে যাচাই হয়নি',future:'রিপোর্ট দিনের পরের তারিখ; নিশ্চিত নয়',
+          application:'B2B আবেদন',opened:'B2B খোলার লেখা তারিখ',missing:'নথি নেই',qcPending:'QC তারিখ অনুমোদন নয়',
+          inHousePending:'ইন-হাউস মানে QC অনুমোদন নয়',shortageOpen:'ঘাটতি লেখা আছে',shortageZero:'শূন্য ঘাটতি লেখা, যাচাই নয়',shortageUnknown:'ঘাটতির তথ্য নেই',
+          columns:['শ্রেণি','ম্যাটেরিয়াল','সরবরাহকারী','দেশ','প্রয়োজনীয় পরিমাণ','একক','বুকিং','B2B আবেদন','B2B খোলা','ইন-হাউস','QC তারিখ','ঘাটতি','উপলব্ধতা/QC'],
+          lcColumns:['LC ধরন','উৎস','আবেদন','খোলার লেখা তারিখ','প্রমাণ অবস্থা'],
+          asOf:'তারিখ',buyerHidden:'বাইরের রিপোর্টে নেই'},
+        hi:{title:'मटीरियल और LC रिकॉर्ड',unknown:'जानकारी चाहिए',noMaterials:'फैब्रिक/ट्रिम रिकॉर्ड नहीं',
+          internalNotice:'केवल आंतरिक कमर्शियल/सोर्सिंग। सप्लायर और LC जानकारी गोपनीय; बिना अनुमति न भेजें।',
+          sourceWarning:'दर्ज LC ओपन तारीख बैंक पुष्टि नहीं; आवेदन से LC नहीं खुलता। QC तारीख स्वीकृति नहीं; खाली शॉर्टेज शून्य नहीं। इस रिपोर्ट से कटिंग रिलीज़ नहीं।',
+          noPrice:'सप्लायर कीमतें और बैंक/कमर्शियल मंजूरी शामिल नहीं।',
+          rejected:'बाहरी कॉपी अधिकृत नहीं; स्रोत व ऑर्डर डेटा छिपाया गया।',
+          master:'मास्टर LC',fabric:'फैब्रिक',trims:'ट्रिम्स',other:'अन्य',
+          recorded:'स्थानीय रिकॉर्ड; स्वतंत्र सत्यापन नहीं',future:'रिपोर्ट के बाद की तारीख; पुष्ट नहीं',
+          application:'B2B आवेदन',opened:'B2B खुलने की दर्ज तारीख',missing:'दर्ज नहीं',qcPending:'QC तारीख मंजूरी नहीं',
+          inHousePending:'इन-हाउस QC पास नहीं',shortageOpen:'शॉर्टेज दर्ज है',shortageZero:'शून्य दर्ज, सत्यापित नहीं',shortageUnknown:'शॉर्टेज अज्ञात',
+          columns:['श्रेणी','मटीरियल','सप्लायर','देश','जरूरी मात्रा','इकाई','बुकिंग','B2B आवेदन','B2B खुला','इन-हाउस','QC तारीख','शॉर्टेज','उपलब्धता/QC'],
+          lcColumns:['LC प्रकार','स्रोत','आवेदन','खुलने की दर्ज तारीख','प्रमाण'],
+          asOf:'तारीख',buyerHidden:'बाहरी रिपोर्ट में नहीं'},
+        ta:{title:'Material & LC பதிவுகள்',unknown:'தகவல் தேவை',noMaterials:'Fabric/Trims பதிவு இல்லை',
+          internalNotice:'Commercial/Sourcing உள் ஆய்வுக்கு மட்டும். Supplier மற்றும் LC விவரங்கள் தனிப்பட்டவை. அனுமதி இல்லாமல் பகிர வேண்டாம்.',
+          sourceWarning:'பதிந்த LC opening தேதி என்பது வங்கியின் உறுதி அல்ல. Application என்பது LC open அல்ல. QC தேதி என்பது QC pass அல்ல. Shortage காலியாக இருந்தால் zero அல்ல. இதனால் cutting release கிடையாது.',
+          noPrice:'Supplier price, bank guarantee மற்றும் Commercial approval இதில் இல்லை.',
+          rejected:'வெளி Buyer அறிக்கைக்கு அனுமதி இல்லை; order/supplier/LC விவரம் மறைக்கப்பட்டது.',
+          master:'Master LC',fabric:'Fabric',trims:'Trims',other:'Other',
+          recorded:'உள்ளூர் பதிவு; வெளி சரிபார்ப்பு இல்லை',future:'Report தேதிக்குப் பிறகான பதிவு; உறுதி இல்லை',
+          application:'B2B விண்ணப்பம்',opened:'B2B திறப்பு தேதி (பதிவு)',missing:'பதிவு இல்லை',qcPending:'QC தேதி மட்டும் QC pass அல்ல',
+          inHousePending:'In-house பதிவு QC pass அல்ல',shortageOpen:'பதிந்த shortage உள்ளது',shortageZero:'Zero shortage பதிவானது; வெளி உறுதி இல்லை',shortageUnknown:'Shortage உறுதி இல்லை',
+          columns:['வகை','Material ID','Supplier','நாடு','தேவையான அளவு','அலகு','Booking தேதி','B2B விண்ணப்பம்','B2B திறப்பு','In-house தேதி','QC தேதி','பதிந்த Shortage','Availability/QC ஆதாரம்'],
+          lcColumns:['LC வகை','Material ID','விண்ணப்ப தேதி','திறந்ததாகப் பதிந்த தேதி','ஆதார நிலை'],
+          asOf:'அறிக்கை தேதி',buyerHidden:'வெளி அறிக்கையில் இல்லை'}
+      };
+      return dict[language]||dict.en;
+    }
+    /** Strictly accept source civil dates; malformed/future values never prove receipt. */
+    static civil(value,asOfDay){
+      const recorded=TnaMasterReportProjection.asDate(value);
+      const day=TnaMasterReportProjection.day(recorded);
+      return {date:recorded,occurredAsOf:day!==null&&day<=asOfDay,
+        future:day!==null&&day>asOfDay};
+    }
+    /** One material without default zero shortages, fake approvals or inferred LC. */
+    static material(source,labels,asOfDay){
+      const rawCategory=String(source?.category||'').toLowerCase();
+      const category=rawCategory==='fabric'?'fabric':['trim','trims','accessory','accessories'].includes(rawCategory)?'trims':'other';
+      const text=value=>typeof value==='string'&&value.trim()?value.trim():null;
+      const typed=value=>typeof value==='number'&&Number.isFinite(value)&&value>=0?value:null;
+      const required=typed(source?.requiredQty),shortage=typed(source?.shortageQty);
+      const booking=this.civil(source?.bookingDate,asOfDay),apply=this.civil(source?.b2bLcApplicationDate,asOfDay);
+      const opened=this.civil(source?.b2bLcOpenDate,asOfDay),inHouse=this.civil(source?.inHouseDate,asOfDay);
+      const qc=this.civil(source?.QCDate,asOfDay);
+      // A stored QCDate represents a date, never an authorized QC decision.
+      const qcStatus=qc.occurredAsOf?labels.qcPending:inHouse.occurredAsOf?
+        labels.inHousePending:labels.unknown;
+      const shortageStatus=shortage===null?labels.shortageUnknown:shortage>0?
+        labels.shortageOpen:labels.shortageZero;
+      return {category,categoryLabel:labels[category],materialId:text(source?.materialId)||labels.unknown,
+        supplier:text(source?.supplier)||labels.unknown,country:text(source?.country)||labels.unknown,
+        requiredQty:required,unit:text(source?.unit)||labels.unknown,
+        bookingDate:booking.date,b2bApplicationDate:apply.date,b2bOpenDate:opened.date,
+        inHouseDate:inHouse.date,qcDate:qc.date,shortageQty:shortage,
+        shortageStatus,qcStatus,
+        bankAuthenticated:false,qcAccepted:false,cuttingReleased:false,
+        availabilityStatus:shortage===null?labels.shortageUnknown:
+          shortage>0?labels.shortageOpen:qcStatus,
+        b2bState:opened.occurredAsOf?labels.recorded:
+          apply.occurredAsOf?labels.application:labels.missing,
+        b2bOccurredAsOf:opened.occurredAsOf,
+        openAfterAsOf:opened.future,bookingAfterAsOf:booking.future,
+        sourceStatus:labels.recorded};
+    }
+    /** Consumes approved existing OrderPlan material/commitment field names only. */
+    static build(plan={},options={}){
+      const labels=this.labels(options.language);
+      const date=TnaWeeklyReportProjection.window(options)?.asOfDate||null;
+      const blank={schema:'VESA-TNA-MATERIAL-LC-1',validity:'incomplete',
+        audience:'internal-commercial-sourcing',asOfDate:null,timezone:options.timezone||null,
+        masterLc:{enteredOpenedOn:null,occurredAsOf:false,bankAuthenticated:false,
+          status:labels.missing},materials:[],counts:{total:0,fabric:0,trims:0,other:0,
+          lcApplications:0,enteredB2bOpens:0,missingShortage:0},
+        labels,warnings:[labels.internalNotice,labels.sourceWarning,labels.noPrice]};
+      if(!date)return {...blank,warnings:[labels.unknown,labels.internalNotice]};
+      const asOfDay=TnaMasterReportProjection.day(date);
+      const sourceLc=this.civil(plan.commitments?.masterLcOpenedOn,asOfDay);
+      const list=(Array.isArray(plan.materials)?plan.materials:[])
+        .map(item=>this.material(item,labels,asOfDay));
+      const counts={total:list.length,
+        fabric:list.filter(item=>item.category==='fabric').length,
+        trims:list.filter(item=>item.category==='trims').length,
+        other:list.filter(item=>item.category==='other').length,
+        lcApplications:list.filter(item=>item.b2bApplicationDate).length,
+        enteredB2bOpens:list.filter(item=>item.b2bOccurredAsOf).length,
+        missingShortage:list.filter(item=>item.shortageQty===null).length};
+      return {...blank,validity:'valid',asOfDate:date,materials:list,counts,
+        masterLc:{enteredOpenedOn:sourceLc.date,occurredAsOf:sourceLc.occurredAsOf,
+          bankAuthenticated:false,status:sourceLc.future?labels.future:
+            sourceLc.occurredAsOf?labels.recorded:labels.missing},
+        warnings:[labels.internalNotice,labels.sourceWarning,labels.noPrice,
+          ...(list.length?[]:[labels.noMaterials])]};
+    }
+    /** Explicitly refuse external/Buyer model before shared report serializers run. */
+    static blockedReport(report,language,generatedAt,timezone){
+      const labels=this.labels(language),shared=I18N[language];
+      return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:'R08',
+        title:titleFor(report,language),language,languageName:shared.languageName,
+        audience:'External material and LC distribution not authorized',
+        generatedAt,generatedLabel:formatDateTime(generatedAt,language),timezone,
+        revision:0,baselineSnapshots:0,headings:shared.headings,labels:shared.labels,
+        order:{buyer:labels.buyerHidden,factory:labels.buyerHidden,style:labels.buyerHidden,
+          po:labels.buyerHidden,quantity:labels.buyerHidden,unit:labels.buyerHidden,
+          requiredExFactory:labels.buyerHidden},
+        tasks:[],materialLc:{schema:'VESA-TNA-MATERIAL-LC-1',
+          validity:'restricted',audience:'external-blocked',asOfDate:null,timezone,
+          masterLc:{enteredOpenedOn:null,occurredAsOf:false,bankAuthenticated:false,status:labels.rejected},
+          materials:[],counts:{total:0},labels,warnings:[labels.rejected]},
+        warnings:[labels.rejected],notes:[labels.rejected],
+        source:{recordId:null,schemaVersion:null,mode:'restricted-external'}};
+    }
+  }
+
   function taskRows(plan={},limit=Infinity){return (plan.tasks||[]).slice(0,limit).map(task=>({ref:task.templateRef,title:task.title,owner:task.ownerParty,status:task.status,baseline:task.dates?.baselineFinish||'',current:task.dates?.currentTargetFinish||'',forecast:task.dates?.forecastFinish||'',actual:task.dates?.actualFinish||'',risk:task.riskStatus||'needs-information'}))}
   function warnings(plan={}){return [...(plan.unknownFields||[]).map(item=>'Missing: '+item),...(plan.validation?.warnings||[])]}
   function catalogue(language='en'){const l=lang(language);return REPORT_TYPES.map(report=>({id:report[0],title:titleFor(report,l),audience:audienceFor(report,l),scope:report[3]}))}
-  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=(report[0]==='R05'||report[0]==='R06'||report[0]==='R07')&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);if(report[0]==='R07'&&options.audienceMode==='buyer')return TnaProductionStatusProjection.buyerReport(plan,report,l,generatedAt,timezone,options);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const delay=report[0]==='R06'?TnaDelayRecoveryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const production=report[0]==='R07'?TnaProductionStatusProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R07'?'Internal production review — restricted':report[0]==='R06'?'Local management review — no external sharing authorization':report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(delay?{delayRecovery:delay}:{}),...(production?{productionStatus:production}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[]),...(delay?delay.warnings:[]),...(production?production.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),...(delay?[delay.labels.disclosure]:[]),...(production?[production.labels.internalNotice]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
+  function buildReportModel(plan,options={}){const l=lang(options.language);const report=reportType(options.reportId||'R01');const generatedAt=options.generatedAt||new Date().toISOString();const timezone=(report[0]==='R05'||report[0]==='R06'||report[0]==='R07'||report[0]==='R08')&&Object.prototype.hasOwnProperty.call(options,'timezone')?options.timezone:(options.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'local');if(report[0]==='R02')return TnaBuyerMilestoneProjection.report(plan,report,l,generatedAt,timezone);if(report[0]==='R08'&&options.audienceMode&&options.audienceMode!=='internal')return TnaMaterialLcProjection.blockedReport(report,l,generatedAt,timezone);if(report[0]==='R07'&&options.audienceMode==='buyer')return TnaProductionStatusProjection.buyerReport(plan,report,l,generatedAt,timezone,options);const daily=report[0]==='R03'?TnaFactoryDailyActionProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const weekly=report[0]==='R05'?TnaWeeklyReportProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const delay=report[0]==='R06'?TnaDelayRecoveryProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const production=report[0]==='R07'?TnaProductionStatusProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;const materials=report[0]==='R08'?TnaMaterialLcProjection.build(plan,{generatedAt,timezone,asOfDate:options.asOfDate,language:l}):null;return {schema:'VESA-TNA-REPORT-1',brand:BRAND,reportId:report[0],title:titleFor(report,l),language:l,languageName:I18N[l].languageName,audience:report[0]==='R08'?'Internal commercial and sourcing — restricted':report[0]==='R07'?'Internal production review — restricted':report[0]==='R06'?'Local management review — no external sharing authorization':report[0]==='R05'?TnaWeeklyReportProjection.labels(l).localAudience:audienceFor(report,l),generatedAt,generatedLabel:formatDateTime(generatedAt,l),timezone,revision:plan?.revision??0,baselineSnapshots:(plan?.baselineSnapshots||[]).length,headings:I18N[l].headings,labels:I18N[l].labels,order:orderContext(plan),tasks:taskRows(plan),...(report[0]==='R01'?{masterTna:{schema:'VESA-TNA-MASTER-1',rows:TnaMasterReportProjection.rows(plan)}}:{}),...(daily?{factoryDailyAction:daily}:{}),...(weekly?{weeklyTna:weekly}:{}),...(delay?{delayRecovery:delay}:{}),...(production?{productionStatus:production}:{}),...(materials?{materialLc:materials}:{}),...(report[0]==='R04'?{criticalPath:TnaCriticalPathProjection.build(plan,{language:l})}:{}),warnings:[...warnings(plan),...(weekly?weekly.warnings:[]),...(delay?delay.warnings:[]),...(production?production.warnings:[]),...(materials?materials.warnings:[])],notes:[I18N[l].labels.noFabrication,...(weekly?[weekly.labels.localNote]:[]),...(delay?[delay.labels.disclosure]:[]),...(production?[production.labels.internalNotice]:[]),...(materials?[materials.labels.internalNotice]:[]),I18N[l].labels.printFallback,I18N[l].labels.shareFallback],source:{recordId:plan?.recordId||null,schemaVersion:plan?.schemaVersion||null,mode:plan?.mode||'unknown'}}}
   function assertLanguageCoverage(){const missing=[];for(const l of SUPPORTED_LANGUAGES){for(const report of REPORT_TYPES){if(!titleFor(report,l))missing.push(l+':'+report[0]);}for(const key of ['order','dates','tasks','warnings','actions','meta'])if(!I18N[l].headings[key])missing.push(l+':heading:'+key);for(const key of ['brand','generated','timezone','audience','revision','baseline','noFabrication','shareFallback','printFallback'])if(!I18N[l].labels[key])missing.push(l+':label:'+key);}return {ok:missing.length===0,missing}}
   const api={SUPPORTED_LANGUAGES,REPORT_TYPES,I18N,catalogue,buildReportModel,assertLanguageCoverage};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;

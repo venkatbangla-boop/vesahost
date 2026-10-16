@@ -249,3 +249,23 @@ body.tna-vesa-adapted .tna-commandbar{position:static!important;top:auto!importa
   body.tna-printing-report .tna-production-table td{font-size:6.7pt!important;padding:3px!important;line-height:1.3!important;border-color:#999!important;background:#fff!important;color:#111!important;overflow-wrap:anywhere!important}
   body.tna-printing-report .tna-production-notice{font-size:8pt!important;color:#111!important}
 }
+
+
+
+/* R08 restricted internal material & LC: scrollable source facts, no new VESA chrome. */
+.tna-material-report{max-width:100%;min-width:0}
+.tna-material-notice{padding:10px 12px;border-radius:8px;border:1px solid var(--line,#d5deea);font-size:12px;font-weight:650;line-height:1.5;overflow-wrap:anywhere}
+.tna-material-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.tna-material-table{width:100%;min-width:1140px;table-layout:fixed;border-collapse:collapse}
+.tna-material-table th,.tna-material-table td{border:1px solid var(--line,#d5deea);padding:5px;vertical-align:top;font-size:10px;line-height:1.3;white-space:normal;overflow-wrap:anywhere}
+.tna-material-table th{text-align:left;font-weight:800;background:var(--look-surface,#eef3f9)}
+.tna-lc-table{min-width:680px}
+@media print{
+  body.tna-printing-report .tna-material-scroll{max-width:100%!important;overflow:visible!important}
+  body.tna-printing-report .tna-material-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
+  body.tna-printing-report .tna-material-table thead{display:table-header-group!important}
+  body.tna-printing-report .tna-material-table tr{break-inside:avoid!important;page-break-inside:avoid!important}
+  body.tna-printing-report .tna-material-table th,
+  body.tna-printing-report .tna-material-table td{padding:3px!important;font-size:6.5pt!important;line-height:1.3!important;border-color:#999!important;background:#fff!important;color:#111!important;overflow-wrap:anywhere!important}
+  body.tna-printing-report .tna-material-notice{font-size:8pt!important;color:#111!important}
+}

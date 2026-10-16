@@ -904,7 +904,49 @@
     }
   }
 
-  function reportPreviewHtml(model){return `<article class="tna-report-preview"><h2>${esc(model.title)}</h2><p><b>${esc(model.brand)}</b> · ${esc(model.reportId)} · ${esc(model.audience)}</p><p>${esc(model.labels.generated)}: ${esc(model.generatedLabel)} · ${esc(model.labels.timezone)}: ${esc(model.timezone)} · ${esc(model.labels.revision)}: ${esc(model.revision)}</p><h3>${esc(model.headings.order)}</h3><div class="tna-report-grid"><span>${esc(model.labels.buyer)}: ${esc(model.order.buyer)}</span><span>${esc(model.labels.factory)}: ${esc(model.order.factory)}</span><span>${esc(model.labels.style)}: ${esc(model.order.style)}</span><span>${esc(model.labels.po)}: ${esc(model.order.po)}</span><span>${esc(model.labels.quantity)}: ${esc(model.order.quantity)} ${esc(model.order.unit)}</span><span>${esc(model.labels.required)}: ${esc(model.order.requiredExFactory)}</span></div><h3>${esc(model.headings.tasks)}</h3>${model.reportId==='R02'?TnaBuyerPrintView.render(model):model.reportId==='R03'?TnaFactoryDailyPrintView.render(model):model.reportId==='R04'?TnaCriticalPathPrintView.render(model):model.reportId==='R05'?TnaWeeklyPrintView.render(model):model.reportId==='R06'?TnaDelayRecoveryPrintView.render(model):model.reportId==='R07'?TnaProductionPrintView.render(model):TnaMasterPrintView.render(model)}<h3>${esc(model.headings.warnings)}</h3>${model.warnings.length?`<ul>${model.warnings.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:'<p>No validation warnings in this local draft.</p>'}<p class="tna-note">${esc(model.notes.join(' '))}</p></article>`}
+
+  /**
+   * R08 print owner within the existing VESA shell. Inputs are the safe
+   * material/LC projection, not raw supplier/finance records. All rendered
+   * text is escaped and headers repeat in browser print.
+   */
+  class TnaMaterialLcPrintView {
+    static render(model){
+      const m=model.materialLc,l=m?.labels;
+      if(m?.schema!=='VESA-TNA-MATERIAL-LC-1')return '<p>Needs Information — material register unavailable.</p>';
+      const restricted=m.validity==='restricted';
+      if(m.validity!=='valid')return '<section class="tna-material-report"><p class="tna-material-notice">'+
+        esc(restricted?l.rejected:l.unknown)+'</p></section>';
+      const details=m.materials.map(row=>{
+        const cells=[row.categoryLabel,row.materialId,row.supplier,row.country,
+          row.requiredQty===null?'—':String(row.requiredQty),row.unit,
+          row.bookingDate||'—',row.b2bApplicationDate||'—',row.b2bOpenDate||'—',
+          row.inHouseDate||'—',row.qcDate||'—',
+          row.shortageQty===null?'—':String(row.shortageQty),row.availabilityStatus];
+        return '<tr>'+cells.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>';
+      }).join('')||'<tr><td colspan="13">'+esc(l.noMaterials)+'</td></tr>';
+      const lcRows=[
+        [l.master,'—','—',m.masterLc.enteredOpenedOn||'—',m.masterLc.status],
+        ...m.materials.map(row=>[l.opened,row.materialId,row.b2bApplicationDate||'—',
+          row.b2bOpenDate||'—',row.b2bState])
+      ];
+      const lcBody=lcRows.map(row=>'<tr>'+row.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('');
+      return '<section class="tna-material-report" aria-label="'+esc(l.title)+'">'+
+        '<p class="tna-material-notice" role="note">'+esc(l.internalNotice)+'</p>'+
+        '<p class="tna-note">'+esc(l.asOf)+': '+esc(m.asOfDate)+' · '+esc(l.sourceWarning)+'</p>'+
+        '<h3>'+esc(l.title)+'</h3>'+
+        '<div class="tna-material-scroll" tabindex="0"><table class="tna-material-table">'+
+        '<thead><tr>'+l.columns.map(v=>'<th scope="col">'+esc(v)+'</th>').join('')+
+        '</tr></thead><tbody>'+details+'</tbody></table></div>'+
+        '<h3>'+esc(l.master)+' / '+esc(l.opened)+'</h3>'+
+        '<div class="tna-material-scroll" tabindex="0"><table class="tna-material-table tna-lc-table">'+
+        '<thead><tr>'+l.lcColumns.map(v=>'<th scope="col">'+esc(v)+'</th>').join('')+
+        '</tr></thead><tbody>'+lcBody+'</tbody></table></div>'+
+        '<p class="tna-note">'+esc(l.noPrice)+'</p></section>';
+    }
+  }
+
+  function reportPreviewHtml(model){return `<article class="tna-report-preview"><h2>${esc(model.title)}</h2><p><b>${esc(model.brand)}</b> · ${esc(model.reportId)} · ${esc(model.audience)}</p><p>${esc(model.labels.generated)}: ${esc(model.generatedLabel)} · ${esc(model.labels.timezone)}: ${esc(model.timezone)} · ${esc(model.labels.revision)}: ${esc(model.revision)}</p><h3>${esc(model.headings.order)}</h3><div class="tna-report-grid"><span>${esc(model.labels.buyer)}: ${esc(model.order.buyer)}</span><span>${esc(model.labels.factory)}: ${esc(model.order.factory)}</span><span>${esc(model.labels.style)}: ${esc(model.order.style)}</span><span>${esc(model.labels.po)}: ${esc(model.order.po)}</span><span>${esc(model.labels.quantity)}: ${esc(model.order.quantity)} ${esc(model.order.unit)}</span><span>${esc(model.labels.required)}: ${esc(model.order.requiredExFactory)}</span></div><h3>${esc(model.headings.tasks)}</h3>${model.reportId==='R02'?TnaBuyerPrintView.render(model):model.reportId==='R03'?TnaFactoryDailyPrintView.render(model):model.reportId==='R04'?TnaCriticalPathPrintView.render(model):model.reportId==='R05'?TnaWeeklyPrintView.render(model):model.reportId==='R06'?TnaDelayRecoveryPrintView.render(model):model.reportId==='R07'?TnaProductionPrintView.render(model):model.reportId==='R08'?TnaMaterialLcPrintView.render(model):TnaMasterPrintView.render(model)}<h3>${esc(model.headings.warnings)}</h3>${model.warnings.length?`<ul>${model.warnings.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:'<p>No validation warnings in this local draft.</p>'}<p class="tna-note">${esc(model.notes.join(' '))}</p></article>`}
   function openReportPanel(action='Prepare Report'){if(!reports)return openDialog('Reports','<p>Reports are temporarily unavailable. Keep the order open and try again.</p>');if(!state.currentPlan)return openDialog('Reports','<p>Create or open a TNA before preparing reports.</p>');if(state.currentPlan.mode==='practice')return openDialog('Reports','<p>Practice example reports are preview-only and cannot be used as business evidence.</p>');const first=reports.catalogue(state.language)[0];
     const r07=reports.buildReportModel(state.currentPlan,{reportId:'R07',language:state.language,
       timezone:Intl.DateTimeFormat().resolvedOptions().timeZone}).productionStatus.labels;
