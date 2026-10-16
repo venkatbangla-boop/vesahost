@@ -1050,8 +1050,9 @@ async function run(){
     await page.reload({waitUntil:'domcontentloaded'});
     await page.locator('[data-action="continue"]').click();
     await page.locator('#tnaDialog .tna-dialog-head button').click();
-    const reopened=await page.locator('[aria-label="Order master"]').innerText();
-    assert(reopened.includes('STYLE-G11-VIEW'));
+    const reopened=await page.locator('.tna-plan-head').innerText();
+    assert(reopened.includes('STYLE-G11-VIEW'),
+      'Reopened imported style must be present in the order identity header.');
     const afterReopen=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).records[0].plan,
       'vesa.tna360.records.'+session.userKey);
     assert.equal(afterReopen.recordId,newPlan.recordId);
