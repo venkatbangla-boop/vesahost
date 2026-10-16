@@ -60,7 +60,9 @@ const localAssets=[...index.matchAll(/(?:src|href)="(\.\/[^"?]+)(?:\?[^" ]*)?"/g
 assert.ok(localAssets.length>=10,'Release inventory must find the local TNA bundle assets.');
 for(const asset of localAssets)assert.ok(worker.includes(`'./apps/tna/${asset.slice(2)}'`),`Offline inventory is missing ${asset}.`);
 assert.match(worker,/const CACHE='vesa-v69-costing-demo'/,'The checked root worker must match its actual current main branch cache release; do not pin an obsolete platform cache.');
-const handoff=readiness.match(/\*\*Local handoff candidate:\*\* `([0-9a-f]{7})` documentation state \(full-regression baseline: `([0-9a-f]{7})`; latest runtime implementation: `([0-9a-f]{7})`\)/);
+// The historical 2026-10-14 release review accurately calls d4a56f2 a source
+// state, not a current TNA branch or new documentation-only commit.
+const handoff=readiness.match(/\*\*Local handoff candidate:\*\* `([0-9a-f]{7})` source state \(full-regression baseline: `([0-9a-f]{7})`; latest runtime implementation: `([0-9a-f]{7})`\)/);
 assert.ok(handoff,'Runbook must pin documentation, accepted full-matrix and latest runtime SHAs.');
 for(const sha of handoff.slice(1))assert.match(progress,new RegExp('`'+sha+'`'),'Dashboard must agree with every pinned handoff SHA.');
 assert.match(readiness,/\*\*Decision:\*\* \*\*HOLD — not ready for production deployment\*\*/,'Runbook must retain the release HOLD.');
