@@ -240,8 +240,12 @@ class TnaScenarioComparisonProof {
       assert.equal(historyBook.Sheets['Scenario Comparison'].C7.t,'n');
       assert.equal(historyBook.Sheets['Scenario Comparison'].C8.t,'n');
       assert.equal(historyBook.Sheets['Scenario Comparison'].C7.z,'yyyy-mm-dd');
-      assert.equal(historyBook.Sheets['Scenario Comparison'].C13.t,'s');
-      assert.equal(historyBook.Sheets['Scenario Comparison'].C14.t,'s');
+      assert.equal(historyBook.Sheets['Scenario Comparison'].C13.t,'n',
+        'Applied local revision is a typed number.');
+      assert.equal(historyBook.Sheets['Scenario Comparison'].C14.t,'s',
+        'Entered local actor stays unverified text.');
+      assert.equal(historyBook.Sheets['Scenario Comparison'].C15.t,'s',
+        'Local apply reason is a source label, not buyer approval.');
       assert.equal(wb.Sheets['Scenario Inputs'].C2.t,'n');
       assert.equal(wb.Sheets['Scenario Inputs'].D2.t,'n');
       assert.equal(wb.Sheets['Scenario Inputs'].D2.v,1);
