@@ -1,5 +1,14 @@
 # TNA 360 — Garment-Merchandising Rework Request
 
+### 2026-10-16 — R10 Portfolio / Multi-PO DEVELOPMENT VERIFIED (targeted slice)
+
+**Source SHA:** `d74ffacf8ac60db201e3b5c0f26dc6b69afc3c3c`, [GitHub Actions #38863812722 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38863812722), [synthetic proof 12030566167](https://github.com/venkatbangla-boop/vesahost/actions/runs/38863812722/artifacts/12030566167). Real Node G07 R10-only privacy adaptation and dedicated R10 user-profile/owner/tenant local storage proof PASS; R01–R09, PPM/AQL, VESA browser shell/mobile, migrated saved records and actual XLSX/JSON/PDF browser verification PASS. Two initial runs 38863442819 and 38863662408 FAILED specific legacy G07/ordering checks; corrected without weakening R01–R09 or replacing source logic.
+
+**Scope and limitations:** R10 report reads same-user saved browser records only, anchored to current saved TNA; unsaved changes/other user keys or local owners/tenants stay out. Buyer/Factory/PO selectors filter only permitted saved data. Multiple POs never inherit whole-order total as each PO quantity; mixed units not aggregated. Confirmed-calendar R04 CPM yields forecast and critical actions when valid; otherwise named next due action marked **criticality not verified**. Frozen original/current dates separate, local S04 actual does NOT prove independent delivery. External share is blocked, local permission isn't server authorization. Source data/PPM/AQL/scheduler/main untouched. Full garment TNA rework ACTIVE / CONDITIONAL; NOT DEMO LIVE.
+
+**PRECISE NEXT ACTION — R11 Approval History:** audit rounds/submissions/decisions/actor roles/waivers and evidence references from actual plans, separate local claim vs buyer-approved state, add typed Excel, print/PDF, four languages/mobile, saved-copy and cross-app regression. Follow with R12 Scenario Comparison, reviewed Excel import and final blueprint acceptance. Next portfolio application after full TNA: Packing & Container 360 with original blueprint.
+
+
 ### 2026-10-16 — R09 Shipment Readiness DEVELOPMENT VERIFIED (targeted slice)
 
 **Tested source:** `532452d67595e25da459747ab6e0baff4862ebab` / `feature/tna-merchandising-rework`. [GitHub Actions 38861267272 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38861267272), [synthetic proof 12029024013](https://github.com/venkatbangla-boop/vesahost/actions/runs/38861267272/artifacts/12029024013). Actual R09 knit/denim lot/PO/quantity verification, PPM/AQL local-reference warning, final inspection release held, strict date/timezone, bad/duplicate lots, external privacy fail-close, EN/BN/HI/TA, typed/inert Excel (four R09 sheets), real Chromium JSON/XLSX/PDF viewer/print-width, migrated saved-copy and PPM/AQL/shared-UX regressions PASS. No main, Page or public release; no real customer data in fixture.

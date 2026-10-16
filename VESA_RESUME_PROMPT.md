@@ -1,5 +1,14 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## Current Work auto-resume checkpoint — 2026-10-16 R10 VERIFIED
+
+**Current repository:** `venkatbangla-boop/vesahost`; `main` preserves the separately authorized Costing 360 demo; **active development branch:** `feature/tna-merchandising-rework`. R10 Portfolio/Multi-PO target report **DEVELOPMENT VERIFIED** at exact source `d74ffacf8ac60db201e3b5c0f26dc6b69afc3c3c`, [GitHub CI #38863812722 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38863812722). R01–R10 targeted source/Excel/browser reports, EN/BN/HI/TA, true saved-user and tenant segregated portfolio, print/PDF and PPM/AQL/one-shell browser regressions PASS. Full TNA Garment Merchandising Rework is **ACTIVE / CONDITIONAL**, not DEMO LIVE. R10 reader only accesses current profile's compatible saved records and never grants secure multiuser access. Initial R10 failed runs are documented and corrected; latest exact SHA passed full CI.
+
+For every **NEXT / CONTINUE / RESUME VESA 360**, inspect actual current GitHub HEAD, development branches, latest CI and `VESA_PROGRESS.md` + `docs/tna/06_EXECUTION_TRACKER.md`. **PRECISE NEXT ACTION — R11 Approval History**, not redoing Costing or R01–R10. Audit original approval schema/source recorded decisions (reviewer identity and time, rounds, resubmissions, waiver reason, missing evidence), PPM/AQL independence and external order-level recipient rights, then implement one scope-limited tested report/Excel/browser patch without assuming buyer approval. R12 Scenario Comparison is next, followed by complete staged Excel import, remaining TNA requirement audit, physical human UAT and release eligibility. GitHub-Free/local-only provider exclusions remain `DEFERRED_BY_SCOPE`. No overwrite of `main`, no force-merge `feature/tna360-continuous`, no public commercial Pages or hidden off-session work. Original Packing & Container 360 blueprint still required after full TNA.
+
+---
+
+
 ## Current ChatGPT Work GitHub checkpoint — R09 VERIFIED 2026-10-16
 
 For NEXT / CONTINUE / RESUME VESA 360: Inspect repository `venkatbangla-boop/vesahost`, `main`, `feature/tna-merchandising-rework`, latest CI, `VESA_PROGRESS.md` and `docs/tna/06_EXECUTION_TRACKER.md` FIRST. Last targeted slice **R09 Shipment Readiness DEVELOPMENT VERIFIED**, exact tested source SHA `532452d67595e25da459747ab6e0baff4862ebab`, [GitHub Actions 38861267272 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/38861267272). R01–R09 pure contracts, EN/BN/HI/TA, typed Excel, actual Chromium PDF/browser and saved-copy, PPM 168 checks, AQL 24 fixtures and shared shell regressions PASS. Whole TNA Garment Merchandising Rework remains **ACTIVE / CONDITIONAL**, NOT publicly DEMO LIVE. Do not infer PPM GO, AQL CONFORMED, shipped quantity or a booking reference as independent shipment release. Do not rebuild Costing/R01–R09 or reset TNA baselines.
