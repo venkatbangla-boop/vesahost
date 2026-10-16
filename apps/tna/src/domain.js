@@ -366,7 +366,7 @@
         return {ok:false,error:'Confirm the source-backed default factory calendar before recording an alternative.'};
       // Existing default-calendar validator remains the single field authority.
       // This validated temporary plan is discarded; it never replaces default.
-      const checked=this.update(plan,values,context);
+      const checked=TnaFactoryCalendar.update(plan,values,context);
       if(!checked.ok)return checked;
       const reviewed=checked.plan.calendars.find(item=>item.calendarId==='default');
       const next=clone(plan),actorId=clean(context.actorId)||next.ownerUserId||'local-browser-user',timestamp=now();
