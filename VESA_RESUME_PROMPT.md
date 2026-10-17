@@ -1,5 +1,13 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## CURRENT APP-09 VERIFIED M1 — RESUME M2 (2026-10-17)
+
+Current development: `feature/production-tracker-360`. Exact M1 source `45b08317b0c8b649381b7858d35a2a708d1ae01e`; [real GitHub Actions Node/legacy CI #39021308588 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39021308588). `docs/production-tracker/01_EXECUTION_TRACKER.md` records M0 ownership audit, accepted M1 domain, remaining work. **NEXT:** M2 local browser workspace (EN/BN/HI/TA, shared shell, Save/Open/portable copies), then M3 reports/manual TNA reference, then M4 actual Chromium/sibling and conditional personal-demo release. No APP-09 live demo exists yet, and user approval/source-dependent production rules remain `Needs Information`.
+
+The owner’s 15-app source package is now self-contained in GitHub `main` `10d11ba3cda6fdeb8dc40c5413a2aa667ed08f08`: `blueprints/`, `docs/portfolio/` and downloadable source ZIP. `node tests/vesa-blueprint-integrity.cjs` checks all originals without chat attachments. Never ask the owner to reupload this ZIP without first checking GitHub branches/history and authorized Library backup.
+
+---
+
 ## PERMANENT REPOSITORY BLUEPRINT RESOLUTION — NO REPEATED ZIP UPLOAD (2026-10-17)
 
 The user's original 15-app handover source is now committed permanently in `venkatbangla-boop/vesahost`:
