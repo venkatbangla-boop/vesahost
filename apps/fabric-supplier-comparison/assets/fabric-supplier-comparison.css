@@ -1,0 +1,38 @@
+/* APP-12 app-owned cards only. One global VESA shell owns header/nav/settings. */
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14px/1.5 var(--ui,Arial,sans-serif)}
+#fsMain{width:min(1300px,calc(100% - 24px));min-width:0;margin:0 auto;padding:18px 0 72px}
+.fs-card{background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:13px;padding:16px;margin:0 0 14px;min-width:0}
+.fs-card h1{font-size:clamp(1.4rem,3vw,2rem);margin:0 0 8px}
+.fs-card h2{font-size:1.12rem;margin:0 0 8px}
+.fs-note{color:var(--muted,#526176);overflow-wrap:anywhere;margin:9px 0}
+.fs-warning{padding:10px 12px;background:var(--look-surface,#eef3f9);border:1px solid var(--line,#cbd6e4);border-left:4px solid #a32644;border-radius:8px;overflow-wrap:anywhere}
+.fs-actions,.fs-tabs{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:10px 0}
+.fs-tabs{padding-bottom:9px;border-bottom:1px solid var(--line,#cbd6e4)}
+.fs-btn{font:inherit;font-weight:600;min-height:44px;max-width:100%;border:1px solid var(--line,#cbd6e4);border-radius:9px;background:var(--paper,#fff);color:var(--ink,#17263d);padding:9px 13px;cursor:pointer;overflow-wrap:anywhere}
+.fs-btn.primary,.fs-tabs .fs-btn[aria-current=true]{background:var(--blue,#244fd6);border-color:var(--blue,#244fd6);color:var(--look-on-accent,#fff)}
+.fs-btn:disabled{opacity:.55;cursor:not-allowed}
+.fs-btn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--gold,#e0b65f);outline-offset:2px}
+.fs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.fs-stat{background:var(--look-surface,#eef3f9);border:1px solid var(--line,#cbd6e4);border-radius:9px;padding:13px}
+.fs-stat strong{display:block;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.fs-stat small{color:var(--muted,#526176);overflow-wrap:anywhere}
+.fs-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--line,#cbd6e4);border-radius:9px}
+.fs-table{border-collapse:collapse;min-width:720px;width:100%;font-size:.9rem}
+.fs-table td,.fs-table th{text-align:left;vertical-align:top;border-bottom:1px solid var(--line,#cbd6e4);padding:10px 11px;overflow-wrap:anywhere}
+.fs-table th{background:var(--look-surface,#eef3f9);white-space:nowrap}
+.fs-record{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line,#cbd6e4)}
+.fs-record small{display:block;color:var(--muted,#526176)}
+.fs-dialog{width:min(820px,calc(100vw - 18px));max-height:92vh;overflow:auto;padding:17px;background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);color:var(--ink,#17263d);border-radius:14px;box-shadow:0 18px 55px #0006}
+.fs-dialog::backdrop{background:#06162eaf}
+.fs-dialog-header{display:flex;justify-content:space-between;align-items:center;gap:10px}.fs-dialog-header h2{margin:0}
+.fs-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:13px 0}
+.fs-form label{display:grid;gap:5px;font-weight:600;min-width:0}
+.fs-form .wide{grid-column:1/-1}
+.fs-form input,.fs-form select,.fs-form textarea{font:inherit;width:100%;min-width:0;min-height:44px;padding:10px;color:var(--ink,#17263d);background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:8px}
+.fs-form textarea{min-height:80px}
+.fs-subhead{grid-column:1/-1;margin:10px 0 0;border-bottom:1px solid var(--line,#cbd6e4);padding-bottom:5px}
+.fs-badge{display:inline-block;font-weight:600;border:1px solid var(--line,#cbd6e4);border-radius:8px;padding:3px 7px;overflow-wrap:anywhere}
+@media(max-width:740px){.fs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fs-card{padding:12px}}
+@media(max-width:480px){.fs-grid,.fs-form{grid-template-columns:1fr}.fs-form .wide,.fs-subhead{grid-column:1}.fs-actions .fs-btn{flex:1 1 auto}}
+@media print{.vesa-workspace,.app-user-bar,.fs-tabs,.fs-actions,.fs-dialog{display:none!important}#fsMain{width:100%;padding:0}.fs-card{border:0;padding:0}.fs-table th,.fs-table td{font-size:10px;padding:5px}}
