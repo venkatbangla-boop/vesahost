@@ -2,7 +2,7 @@
 'use strict';
 const fs=require('fs'),path=require('path'),assert=require('assert/strict');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
-for(const file of ['apps/packing-container/index.html','apps/order-commission/index.html','apps/tech-pack-spec/index.html','apps/purchase-order/index.html','apps/lc-payment/index.html','apps/sampling-approval/index.html','apps/fabric-trims/index.html','apps/shipment-documentation/index.html','apps/production-tracker/index.html','apps/factory-vendor/index.html','apps/label-artwork-approval/index.html','apps/buyer-crm/index.html']){
+for(const file of ['apps/packing-container/index.html','apps/order-commission/index.html','apps/tech-pack-spec/index.html','apps/purchase-order/index.html','apps/lc-payment/index.html','apps/sampling-approval/index.html','apps/fabric-trims/index.html','apps/shipment-documentation/index.html','apps/production-tracker/index.html','apps/factory-vendor/index.html','apps/label-artwork-approval/index.html','apps/buyer-crm/index.html','apps/fabric-supplier-comparison/index.html']){
  const s=read(file);assert(s.includes('NON-COMMERCIAL PERSONAL DEMO.'));
  assert(s.includes('synthetic')||s.includes('Synthetic'));
  assert(s.includes('/js/auth.js')&&s.includes('/js/vesa-workspace-shell.js'));
@@ -20,7 +20,8 @@ assert.equal((catalog.match(/id:'production-tracker'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'factory-vendor'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'label-artwork-approval'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'buyer-crm'/g)||[]).length,1);
-assert(sw.includes('vesa-v80-buyer-crm-personal-demo'));
+assert.equal((catalog.match(/id:'fabric-supplier-comparison'/g)||[]).length,1);
+assert(sw.includes('vesa-v81-fabric-supplier-personal-demo'));
 for(const url of ['./apps/packing-container/','./apps/order-commission/',
  './apps/packing-container/index.html','./apps/order-commission/index.html',
  './apps/tech-pack-spec/','./apps/tech-pack-spec/index.html',
@@ -97,6 +98,19 @@ for(const url of ['./apps/packing-container/','./apps/order-commission/',
  './apps/buyer-crm/src/data/local-record-port.js',
  './apps/buyer-crm/src/reports/report-model.js',
  './apps/buyer-crm/src/i18n/app-copy.js',
- './apps/buyer-crm/src/application/workspace-controller.js'])
+ './apps/buyer-crm/src/application/workspace-controller.js',
+'./apps/fabric-supplier-comparison/',
+'./apps/fabric-supplier-comparison/index.html',
+'./apps/fabric-supplier-comparison/assets/fabric-supplier-comparison.css',
+'./apps/fabric-supplier-comparison/src/bootstrap.js',
+'./apps/fabric-supplier-comparison/src/domain/quote-normalization.js',
+'./apps/fabric-supplier-comparison/src/domain/comparability-gate.js',
+'./apps/fabric-supplier-comparison/src/domain/landed-scenario.js',
+'./apps/fabric-supplier-comparison/src/domain/reviewed-reference.js',
+'./apps/fabric-supplier-comparison/src/data/saved-copy-codec.js',
+'./apps/fabric-supplier-comparison/src/data/local-record-port.js',
+'./apps/fabric-supplier-comparison/src/reports/report-model.js',
+'./apps/fabric-supplier-comparison/src/i18n/app-copy.js',
+'./apps/fabric-supplier-comparison/src/application/workspace-controller.js'])
  assert(sw.includes("'"+url+"'"));
 console.log('VESA DEMO RELEASE SOURCE PASS: synthetic-only public disclaimer, exact catalogue routes, updated service-worker cache.');
