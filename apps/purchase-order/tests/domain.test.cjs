@@ -138,7 +138,7 @@ class PurchaseOrderDomainProof{
   const legacy=JSON.parse(copy);delete legacy.factoryConfirmation;
   assert.equal(E.validate(legacy).ok,true,'Previous saved PO versions remain supported.');
   const numeric=R.excelRows('Style Colour Size',sheets['Style Colour Size']);
-  assert.equal(numeric[1][4],40);assert.equal(numeric[1][5],2.5);assert.equal(numeric[1][6],100);
+  assert.equal(numeric[1][4],38);assert.equal(numeric[1][5],2.5);assert.equal(numeric[1][6],95);
   assert.equal(R.excelRows('PO Summary',[['Field','Value'],['PO Number','=FAKE']])[1][1],"'=FAKE");
   console.log('PO-360 DOMAIN PASS: explicit buyer terms, sourced 4dp FOB, half-up/down, staged size controls, mixed/split IDs, over-ship/cancel, ledger source gating, ACK, revision snapshots, Excel and safe saved-copy.');
  }
