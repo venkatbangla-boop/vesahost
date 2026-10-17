@@ -1,5 +1,16 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## 2026-10-18 — AQL/19-APP DEPTH AUDIT + VERIFIED PPM G3 RELEASE
+
+**Latest audited live app runtime:** `e7b8a549abbc7f115236952c2df04d94d49b897e`. PPM G3 mobile task-first section focus is on main: at 390px synthetic editor document ~25,986px -> 9,108px, 168 checkpoints remain mounted, 44px mobile navigation/status buttons, full checklist/filters/Tamil, print and offline remain working. [Feature #39061533910 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39061533910), [main CI #39063021250 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063021250), [Pages #39063020350 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063020350).
+
+**Full 19-app source depth read completed**, [entire AQL/19-app source CI #39063215638 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063215638), [AQL embedded media analysis #39063360880 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063360880). Exact AQL HTML: 11,783,142 bytes, 294 embedded Base64 media URLs total 10,715,539 bytes (90.94% raw source); 291 PNGs total 10,376,506 bytes; 99 source classes, 29 tests. The other apps already have business engines, editable forms, actual XLSX and printable reports; prioritize deeper application-specific user workflows, not arbitrary code expansion. **Read `docs/portfolio/16_AQL_DEPTH_BENCHMARK_AND_19_APP_WORKPLAN.md` for 19 individually scoped next actions.** Original app and homepage source remains untouched by this audit. Existing human UAT 1 PASS, 0 FAIL, 48 NOT TESTED.
+
+**EXACT NEXT:** source-only AQL cold load/image decode/scroll profiling against real browser; audit APP-01 Packing end-to-end stage/screens/blueprint and implement one source-backed safe improvement; then go across all 19 per roadmap without restarting finished work.
+
+---
+
+
 ## 2026-10-18 — TNA G3 STYLESHEET CACHE REFRESH VERIFIED; PPM MOBILE NEXT
 
 TNA sheet-first source had old exact CSS/cache identity; returning users could see a cached earlier design. Narrow TNA-only release fix `9feaf2cd577125de1f9d000fed7ff0cad6e5e168` changes versioned index CSS reference, app worker manifest/cache and isolated tests; no TNA domain, records, reports or public homepage edits. Feature Chromium offline/legacy-cache and original save/XLSX/PDF [#39060843140 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060843140); main offline suite [#39060958773 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958773); Pages [#39060958901 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958901). **NEXT G3-PPM-02** mobile 168-checkpoint editor task flow and legible buttons; AQL performance source profiling afterwards. Human UAT unchanged.
