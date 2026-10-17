@@ -4,6 +4,8 @@
 
 This directory preserves the **original handover text, unedited**, from the user-provided 15-App Master Roadmap package. The 15 exact technical specifications live in the repository-root [`blueprints/`](../../blueprints/) folder so every new Work/Codex session can open its next app directly.
 
+**Current implementation proof:** [21_G4_COSTING_PO_PROOF_AND_NEXT.md](21_G4_COSTING_PO_PROOF_AND_NEXT.md) — Costing + Purchase Order verified; next app LC & Payment 360.
+
 ## Reliable lookup for every new session
 
 1. Confirm real `main` and feature HEADs, latest CI and `VESA_PROGRESS.md`. The newest verified NEXT ACTION controls which app to work on; historical next actions do not.
