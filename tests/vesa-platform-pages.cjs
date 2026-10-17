@@ -60,7 +60,32 @@ async function authenticatedProbe(browser,base,width,route,id){
   assert.equal(await shell.locator('[data-vesa-logout]').count(),1,`${id}@${width}: one Logout owner`);
   assert.equal(await shell.locator('[data-vesa-saved]').count(),1,`${id}@${width}: one state owner`);
   assert.equal(await page.evaluate(()=>[...document.querySelectorAll('.vesa-workspace,.app-user-bar')].filter(node=>['sticky','fixed'].includes(getComputedStyle(node).position)).length),1,`${id}@${width}: one sticky header`);
-  if(id==='apps')assert.deepEqual(await page.locator('#appCatalogue a[href^="/apps/"]').evaluateAll(nodes=>nodes.map(x=>x.getAttribute('href')).sort()),['/apps/aql/','/apps/costing/','/apps/ppm/','/apps/tna/'],`${id}@${width}: exactly four approved App Centre routes`);
+  if(id==='apps'){
+    const expected=['aql','ppm','tna','costing','packing-container','order-commission',
+      'tech-pack-spec','purchase-order','lc-payment','sampling-approval','fabric-trims',
+      'shipment-documentation','production-tracker','factory-vendor','label-artwork-approval',
+      'buyer-crm','fabric-supplier-comparison','claims-disputes','product-development']
+      .map(slug=>'/apps/'+slug+'/').sort();
+    assert.deepEqual(await page.locator('#appCatalogue a[href^="/apps/"]')
+      .evaluateAll(nodes=>nodes.map(x=>x.getAttribute('href')).sort()),
+      expected,`${id}@${width}: all 19 routes retained without duplicate cards`);
+    assert.equal(await page.locator('.app-tile').count(),19,'all 19 workspaces render');
+    assert.equal(await page.locator('#appCatalogue h3').evaluateAll(nodes=>
+      nodes.every(n=>!/^VESA\s/i.test(n.textContent.trim()))),true,
+      'one logo in header; no repeated VESA prefix on visible card names');
+    await page.locator('#appSearch').fill('claims-disputes');
+    assert.equal(await page.locator('.app-tile').count(),1,'app search finds exact route');
+    assert.equal(await page.locator('[data-app-id="claims-disputes"]').count(),1,'claim app discovered');
+    await page.locator('#appSearch').fill('not-a-real-vesa-app-123');
+    assert.equal(await page.locator('.app-tile').count(),0,'no false search matches');
+    await page.locator('#appClear').click();
+    assert.equal(await page.locator('.app-tile').count(),19,'clear restores the catalogue');
+    await page.locator('[data-app-group="orders"]').click();
+    assert.equal(await page.locator('.app-tile').count(),4,'orders group has four apps');
+    assert.equal(await page.locator('[data-app-group="orders"]').getAttribute('aria-pressed'),'true','active filter announced');
+    await page.locator('[data-app-group="all"]').click();
+    assert.equal(await page.locator('.app-tile').count(),19,'all group restores all apps');
+  }
   if(id==='admin')assert.equal(await page.locator('.admin-grid').count(),1,`${id}@${width}: admin content retained`);
   await geometry(page,width,id);
   if(width===390||width===1280)await page.screenshot({path:path.join(output,`vesa-platform-${id}-${width}.png`),fullPage:true});
@@ -74,6 +99,10 @@ async function authenticatedProbe(browser,base,width,route,id){
     await shell.locator('[data-vesa-user]').click();
     const dialog=page.locator('[data-vesa-settings]');await dialog.waitFor({state:'visible'});
     await dialog.locator('[data-pref-language]').selectOption('bn');await dialog.locator('[data-pref-theme]').selectOption('pure-mono');
+    if(id==='apps'){
+      assert.equal(await page.locator('#appSearch').getAttribute('placeholder'),'অ্যাপ, কাজ বা রিপোর্ট খুঁজুন…','Bengali search text follows Settings');
+      assert.equal(await page.locator('.app-tile').count(),19,'language change retains all apps');
+    }
     await dialog.locator('footer button').click();
     assert.equal(await page.evaluate(()=>localStorage.getItem('vesa.appcentre.store.v1')),before,`${id}@${width}: preferences preserve auth/user store`);
     assert.equal(await page.evaluate(()=>document.activeElement?.matches('[data-vesa-user]')),true,`${id}@${width}: Settings returns focus`);
