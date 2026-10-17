@@ -171,7 +171,7 @@ async function themeProbe(browser,base,theme,route,id,authenticated){
       shellColor:shell?getComputedStyle(shell).color:null,
       shellLogoFilter:shell?getComputedStyle(shell.querySelector('.vesa-workspace__brand img')).filter:null,
       cardColor:getComputedStyle(card).color,
-      primary:[...document.querySelectorAll('.btn.primary')].filter(visible).slice(0,1).map(node=>({color:getComputedStyle(node).color,background:getComputedStyle(node).backgroundColor}))[0],
+      primary:[...document.querySelectorAll(id==='apps'?'.app-tile-open':'.btn.primary')].filter(visible).slice(0,1).map(node=>({color:getComputedStyle(node).color,background:getComputedStyle(node).backgroundColor}))[0],
       minControlHeight:Math.min(...controls),
       documentWidth:document.documentElement.scrollWidth,
       bodyWidth:document.body.scrollWidth
