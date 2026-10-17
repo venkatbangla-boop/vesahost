@@ -1,0 +1,49 @@
+# APP-09 development-only pure-domain gate. Does not publish a route.
+name: VESA Production Tracker 360 verification
+on:
+  push:
+    branches:
+      - feature/production-tracker-360
+    paths:
+      - 'apps/production-tracker/**'
+      - 'docs/production-tracker/**'
+      - '.github/workflows/production-tracker.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  production-domain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: APP-09 original source and M1 pure production engine
+        run: |
+          set -euo pipefail
+          node tests/vesa-blueprint-integrity.cjs
+          node --check apps/production-tracker/src/domain/stage-flow.js
+          node --check apps/production-tracker/src/domain/wip-balance.js
+          node --check apps/production-tracker/src/domain/daily-output-ledger.js
+          node --check apps/production-tracker/tests/domain.test.cjs
+          node apps/production-tracker/tests/domain.test.cjs
+          node tests/vesa-next-app-starter.cjs
+          node apps/shipment-documentation/tests/domain.test.cjs
+          node apps/fabric-trims/tests/domain.test.cjs
+          node apps/sampling-approval/tests/domain.test.cjs
+          node apps/lc-payment/tests/domain.test.cjs
+          node apps/purchase-order/tests/domain.test.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/tech-pack-spec/tests/domain.test.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          git diff --check HEAD~1 HEAD
