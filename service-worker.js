@@ -1,4 +1,4 @@
-const CACHE='vesa-v73-lc-payment-personal-demo';
+const CACHE='vesa-v74-sampling-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -20,6 +20,15 @@ const ASSETS=[
   './apps/purchase-order/index.html',
   './apps/lc-payment/',
   './apps/lc-payment/index.html',
+  './apps/sampling-approval/',
+  './apps/sampling-approval/index.html',
+  './apps/sampling-approval/assets/sampling-approval.css',
+  './apps/sampling-approval/src/bootstrap.js',
+  './apps/sampling-approval/src/domain/sampling-engine.js',
+  './apps/sampling-approval/src/data/local-record-port.js',
+  './apps/sampling-approval/src/reports/report-model.js',
+  './apps/sampling-approval/src/i18n/app-copy.js',
+  './apps/sampling-approval/src/application/workspace-controller.js',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',

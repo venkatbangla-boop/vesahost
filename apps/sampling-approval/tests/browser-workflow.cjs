@@ -45,7 +45,10 @@ class SamplingBrowserProof{
    return JSON.parse(localStorage.getItem(key)).records;
   });
   try{
-   await page.goto(host+'/apps/sampling-approval/',{waitUntil:'domcontentloaded'});
+   await page.goto(host+'/apps/',{waitUntil:'domcontentloaded'});
+   const link=page.locator('a[href="/apps/sampling-approval/"]');
+   assert.equal(await link.count(),1,'App Centre should list sampling once.');
+   await link.click();
    await page.locator('[data-action=new]').waitFor({timeout:9000});
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('[data-vesa-menu]').count(),6);
