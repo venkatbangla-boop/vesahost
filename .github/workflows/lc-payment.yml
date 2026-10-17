@@ -30,6 +30,8 @@ jobs:
           node --check apps/lc-payment/tests/domain.test.cjs
           node --check apps/lc-payment/tests/browser-workflow.cjs
           node apps/lc-payment/tests/domain.test.cjs
+          node tests/personal-demo-release.cjs
+          node --check service-worker.js
           node apps/purchase-order/tests/domain.test.cjs
           node apps/packing-container/tests/domain.test.cjs
           node apps/order-commission/tests/domain.test.cjs

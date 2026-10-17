@@ -40,7 +40,10 @@ class LCBrowserProof{
    return JSON.parse(localStorage.getItem(k)).records;
   });
   try{
-   await page.goto(host+'/apps/lc-payment/',{waitUntil:'domcontentloaded'});
+   await page.goto(host+'/apps/',{waitUntil:'domcontentloaded'});
+   const link=page.locator('a[href="/apps/lc-payment/"]');
+   assert.equal(await link.count(),1,'LC entry must appear once in VESA App Centre.');
+   await link.click();
    await page.locator('[data-action=new]').waitFor();
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('[data-vesa-menu]').count(),6);
