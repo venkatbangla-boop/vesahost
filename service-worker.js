@@ -1,4 +1,4 @@
-const CACHE='vesa-v82-claims-personal-demo';
+const CACHE='vesa-v83-product-development-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -112,6 +112,19 @@ const ASSETS=[
   './apps/fabric-supplier-comparison/src/reports/report-model.js',
   './apps/fabric-supplier-comparison/src/i18n/app-copy.js',
   './apps/fabric-supplier-comparison/src/application/workspace-controller.js',
+  './apps/product-development/',
+  './apps/product-development/index.html',
+  './apps/product-development/assets/product-development.css',
+  './apps/product-development/src/bootstrap.js',
+  './apps/product-development/src/domain/concept-register.js',
+  './apps/product-development/src/domain/board-layout.js',
+  './apps/product-development/src/domain/revision-history.js',
+  './apps/product-development/src/domain/reviewed-reference.js',
+  './apps/product-development/src/data/saved-copy-codec.js',
+  './apps/product-development/src/data/local-record-port.js',
+  './apps/product-development/src/reports/report-model.js',
+  './apps/product-development/src/i18n/app-copy.js',
+  './apps/product-development/src/application/workspace-controller.js',
   './apps/claims-disputes/',
   './apps/claims-disputes/index.html',
   './apps/claims-disputes/assets/claims-disputes.css',

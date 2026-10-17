@@ -1,5 +1,13 @@
 # APP-15 Product Development 360 — Execution Tracker
 
+## 2026-10-17 — M4 FEATURE RELEASE REGISTRATION SUBMITTED (CONDITIONAL)
+
+**Exact implementation scope:** `js/app-catalogue.js`, `js/preferences.js`, `service-worker.js`, `tests/personal-demo-release.cjs`, `.github/workflows/vesa-costing-demo-live-smoke.yml`, NEW `apps/product-development/RELEASE_NOTES.md` plus tracker only. APP-15 M1–M3 original domains and all other app files untouched. Registration adds one `product-development` id/route and four locale labels, SW `vesa-v83-product-development-personal-demo` cache preserving all previous paths, exact public asset checks and strict synthetic disclaimer. Scope and patch gates follow M4 audit already recorded below.
+
+**Current verdict:** CANDIDATE, NOT `DEMO LIVE`. Independent branch Node+real Chromium regressions, fast-forward main, main CI, actual Pages and public HTML/JS/CSS exact byte checks are required. Newest run SHA and independent evidence to be appended after verification. Rollback only this M4 registration if acceptance fails; preserve original master ZIP, blueprints, archived app logic and local data.
+
+---
+
 ## 2026-10-17 — M3 REAL CHROMIUM ACCEPTED; M4 PERSONAL DEMO RELEASE SCOPE LOCK
 
 **M3 verdict ACCEPTED: local synthetic development, not deployed.** Verified exact `feature/product-development-360` source `be22164c223f06bb8b70e99c4c87f119510e95fb`; [full original 15-blueprint integrity, all APP-15 Node + prior applications and real installed Chromium #39045372618 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39045372618) job `product-domain`. Proves explicit device-created PNG JPEG/WebP rights-labelled board append + invalid format rejection, manually user-selected exact-concept Tech Pack DRAFT source, no auto buyer/Tech Pack/production approval, escaped board/report HTML, formula-safe actual XLSX, Chromium PDF, four languages, 320–1440 widths and no outside network calls. Earlier M3 candidate CI #39045076938 failed board UI join; #39045223427 failed trailing whitespace; #39045275029 failed premature assertion before async image error. Each fix had a distinct GitHub commit; all were retained and NOT marked PASS. Native-device, real copyrighted art authorization, buyer review and final tech-approval remain externally `Needs Information`. M2 prior saved copies remain valid.

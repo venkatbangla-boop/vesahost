@@ -23,6 +23,7 @@ on:
       - 'apps/buyer-crm/**'
       - 'apps/fabric-supplier-comparison/**'
       - 'apps/claims-disputes/**'
+      - 'apps/product-development/**'
       - 'apps/index.html'
       - 'js/app-catalogue.js'
       - 'js/preferences.js'
@@ -160,5 +161,19 @@ jobs:
               exit 1
             }
           done
-          printf 'LIVE PASS: Login -> App Centre -> Costing, Packing, Commission, Tech Pack, Purchase Order, LC & Payment, Sampling, Fabric & Trims, Shipment & Documentation, Production Tracker Factory & Vendor, Label & Artwork Buyer CRM, Fabric & Supplier Comparison and Claims & Disputes personal demos; exact public source bytes; existing AQL/PPM/TNA intact; main=%s\n' "$(git rev-parse HEAD)"
+          # APP-15 independent public bytes: never access or collect user/private concept records.
+          curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/product-development/" -o /tmp/vesa-product-live.html
+          cmp -s apps/product-development/index.html /tmp/vesa-product-live.html || {
+            echo "HOLD: Product Development HTML does not match published main" >&2
+            exit 1
+          }
+          grep -Fq 'personal non-commercial synthetic-only demo' /tmp/vesa-product-live.html
+          for asset in assets/product-development.css src/bootstrap.js src/domain/concept-register.js src/domain/board-layout.js src/domain/revision-history.js src/domain/reviewed-reference.js src/data/saved-copy-codec.js src/data/local-record-port.js src/reports/report-model.js src/i18n/app-copy.js src/application/workspace-controller.js; do
+            curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/product-development/$asset" -o "/tmp/vesa-product-$(basename "$asset")"
+            cmp -s "apps/product-development/$asset" "/tmp/vesa-product-$(basename "$asset")" || {
+              echo "HOLD: Product Development source $asset does not match main" >&2
+              exit 1
+            }
+          done
+          printf 'LIVE PASS: Login -> App Centre -> Costing, Packing, Commission, Tech Pack, Purchase Order, LC & Payment, Sampling, Fabric & Trims, Shipment & Documentation, Production Tracker Factory & Vendor, Label & Artwork Buyer CRM, Fabric & Supplier Comparison and Claims & Disputes and Product Development personal demos; exact public source bytes; existing AQL/PPM/TNA intact; main=%s\n' "$(git rev-parse HEAD)"
           echo "This check does not establish server-side authentication, buyer approval or production SaaS permission."
