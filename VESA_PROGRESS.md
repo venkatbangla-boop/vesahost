@@ -1,5 +1,14 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## 2026-10-18 — AQL G3 MEASURED; PACKING FIRST G4 FEATURE DISCOVERY
+
+[Real Chromium performance #39063920076 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063920076) opened AQL actual 11.78 MB page and fictional inspection under 390px/4× CPU and 1440px/1× CPU twice each. 390px DOM ready ~1.17–1.19s, inspection ~1.78–1.83s, ~58MB JS heap and 646–659ms browser long tasks. This is a controlled local lab, not a physical Android/Pages CDN timing. AQL source unchanged. Exact technical note `docs/ux/03_AQL_G3_MOBILE_LOAD_PROFILE.md`.
+
+**EXACT NEXT**: G4-W1 Packing 360 already has eight working tab modules in `apps/packing-container/index.html`, but the home screen exposes only New/Continue/Open Copy/Practice and saved records; inspect the hidden feature discoverability and create one audited, accessible guided feature preview without changing carton/CBM/loading calculations, approvals, reports or saved records. Then remaining apps per `docs/portfolio/16_AQL_DEPTH_BENCHMARK_AND_19_APP_WORKPLAN.md`.
+
+---
+
+
 ## 2026-10-18 — AQL/19-APP DEPTH AUDIT + VERIFIED PPM G3 RELEASE
 
 **Latest audited live app runtime:** `e7b8a549abbc7f115236952c2df04d94d49b897e`. PPM G3 mobile task-first section focus is on main: at 390px synthetic editor document ~25,986px -> 9,108px, 168 checkpoints remain mounted, 44px mobile navigation/status buttons, full checklist/filters/Tamil, print and offline remain working. [Feature #39061533910 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39061533910), [main CI #39063021250 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063021250), [Pages #39063020350 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063020350).
