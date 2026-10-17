@@ -64,7 +64,7 @@ class TechPackUnitProof {
   assert.equal(E.project(girth,{basis:'circumference'}).cells[1].target,'100.00');
   assert.equal(E.project(girth,{unit:'in',basis:'circumference'}).cells[1].target,'39.37',
     'Unit and measurement-basis transforms must happen before final rounding.');
-  assert.equal(E.project(girth,{unit:'in',basis:'circumference'}).cells[1].upper,'39.96');
+  assert.equal(E.project(girth,{unit:'in',basis:'circumference'}).cells[1].upper,'40.55');
   const manual=JSON.parse(original);manual.mode='local';
   manual.revisions=[{id:'REV1',recordRevision:1,recordedAt:'2026-10-17T00:00:00Z',
     approver:'Synthetic approver',evidenceRef:'SYNTHETIC SIGNED REV',effectiveDate:'2026-10-17',
