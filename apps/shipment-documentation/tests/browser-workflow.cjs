@@ -182,11 +182,20 @@ class ShipmentBrowserProof{
    assert.match(await page.locator('#sdDialogBody').innerText(),/altered\/unsupported/);
    await page.locator('#sdClose').click();
    assert.equal(JSON.stringify(await saved()),beforeBad);
-   for(const width of [320,390,768,1280]){
+   for(const width of [320,360,390,768,1024,1280,1440]){
     await page.setViewportSize({width,height:850});
     const scroll=await page.evaluate(()=>document.documentElement.scrollWidth);
     assert(scroll<=width+1,width+'px document overflow '+scroll);
+    if(width===768)await page.screenshot({path:path.join(out,'ship-app07-tablet.png')});
+    if(width===1440)await page.screenshot({path:path.join(out,'ship-app07-wide-desktop.png')});
    }
+   // Chromium applies 200% CSS zoom: catch crowded header/content and overflow.
+   await page.setViewportSize({width:1280,height:900});
+   await page.evaluate(()=>document.documentElement.style.zoom='2');
+   const zoomScroll=await page.evaluate(()=>document.documentElement.scrollWidth);
+   assert(zoomScroll<=641,'200% zoom produced horizontal page overflow '+zoomScroll);
+   await page.screenshot({path:path.join(out,'ship-app07-zoom-200.png')});
+   await page.evaluate(()=>document.documentElement.style.zoom='');
    await page.setViewportSize({width:390,height:844});
    await page.screenshot({path:path.join(out,'ship-app07-mobile.png')});
    await page.setViewportSize({width:1280,height:900});
