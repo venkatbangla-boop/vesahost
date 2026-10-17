@@ -655,8 +655,8 @@ class CommissionWorkspace{
     '<button class="com-btn primary" data-action="new">'+l('new')+'</button>'+
     '<button class="com-btn" data-action="continue">'+l('continue')+'</button>'+
     '<button class="com-btn" data-action="upload">'+l('upload')+'</button>'+
-    '<button class="com-btn" data-action="practice">'+l('practice')+'</button></div>'+
-    '<h2>'+l('open')+'</h2>'+(list.length?list.map(p=>'<div class="com-record"><span><b>'+
+    '<button class="com-btn" data-action="practice">'+l('practice')+'</button></div></section>'+desk+
+    '<section class="com-card"><h2>'+l('open')+'</h2>'+(list.length?list.map(p=>'<div class="com-record"><span><b>'+
       esc(p.po||'PO not entered')+'</b> · '+esc(p.buyer)+'<br><small>Revision '+esc(p.revision)+'</small></span>'+
       '<button class="com-btn" data-action="open-record" data-id="'+esc(p.id)+'">'+l('open')+'</button></div>').join(''):'<p class="com-muted">'+l('none')+'</p>')+'</section>';
    this.shell?.setSavedState('unsaved');return;
