@@ -1,0 +1,49 @@
+# Release candidate tests only; main publishing separately authorized.
+name: VESA Packing Commission personal demo release verification
+on:
+  push:
+    branches:
+      - feature/personal-demo-release-packing-commission
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  demo-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Domain, shell and privacy proof
+        run: |
+          set -e
+          node tests/personal-demo-release.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          node --check service-worker.js
+          git diff --check HEAD~2..HEAD
+      - name: Install Chromium for real browser proof
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Run both full application journeys
+        run: |
+          node apps/packing-container/tests/browser-workflow.cjs
+          node apps/order-commission/tests/browser-workflow.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: packing-commission-demo-evidence
+          path: output/playwright/
+          if-no-files-found: ignore

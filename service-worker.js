@@ -1,4 +1,4 @@
-const CACHE='vesa-v69-costing-demo';
+const CACHE='vesa-v70-packing-commission-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -10,6 +10,10 @@ const ASSETS=[
   './apps/index.html',
   './apps/costing/',
   './apps/costing/index.html',
+  './apps/packing-container/',
+  './apps/packing-container/index.html',
+  './apps/order-commission/',
+  './apps/order-commission/index.html',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
