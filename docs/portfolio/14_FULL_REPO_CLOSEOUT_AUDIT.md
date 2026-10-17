@@ -3,8 +3,8 @@
 > **Current status addendum — 2026-10-17:** This report's original `main` and TNA release-HOLD details are an earlier checkpoint. The owner has since explicitly confirmed personal-showcase usage and authorized main personal-preview work. App Centre redesign is on main at `8b82a3e6` (CI `39054754765`, Pages `39054754247` both SUCCESS), and TNA G17 is on main at `0e62b45a` (CI `39055025377`, Pages `39055025289` both SUCCESS). The 19-app evidence matrix remains a historical baseline, not a claim every user-facing route has received a final visual review. Human results remain 1 PASS / 0 FAIL / 48 NOT TESTED. The next engineering priority is genuine cross-route UI and feature-accessibility polish, not re-auditing the same hosting decision. See `docs/portfolio/15_PERSONAL_DEMO_UX_FINISH_PROMPT.md`.
 
 
-**Date:** 2026-10-17 (Asia/Dhaka)  
-**Evidence scope:** Connected GitHub source/branches/commit history, original blueprint files, existing test/workflow files, release ledgers, Actions outcomes and earlier exact public-byte smoke. **No new browser/Node execution or human/physical testing in this audit.**  
+**Date:** 2026-10-17 (Asia/Dhaka)
+**Evidence scope:** Connected GitHub source/branches/commit history, original blueprint files, existing test/workflow files, release ledgers, Actions outcomes and earlier exact public-byte smoke. **No new browser/Node execution or human/physical testing in this audit.**
 **Verdict:** **ACCEPTED AS AN EVIDENCE INVENTORY; PRODUCTION / SECURE MULTIUSER / TNA G17 PUBLICATION BLOCKED.** No code defect is asserted without a reproduced failure.
 
 ## 1. Actual repository checkpoint (not a stale handover)
