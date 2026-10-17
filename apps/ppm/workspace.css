@@ -43,3 +43,82 @@ html:not([lang="en"]) .cp-title{font-size:14px;font-weight:600}html:not([lang="e
 /* VESA shell cleanup: app commands remain reachable in a compact branded command bar. */
 .topbar{top:var(--vesa-auth-bar-height,0px)}
 .section-nav-wrap{top:calc(var(--vesa-auth-bar-height,0px) + 112px)}
+
+
+/*
+ * G3 PPM mobile workbench — reversible screen-only focus.
+ * FormRenderer still mounts all 168 checkpoint IDs; only the currently
+ * selected section is presented after a phone user opens the editor.
+ * The new All sections control restores every original section for review.
+ * No stylesheet rules apply to the printable report.
+ */
+.ppm-section-expand[hidden]{display:none!important}
+@media screen and (max-width:767px){
+  body:not(.at-home) .section-nav-wrap{
+    display:flex;align-items:center;gap:7px;
+    padding:5px 9px;
+    border-bottom:1px solid var(--line,#d9e3ea);
+    background:var(--vesa-bg,#edf3f6);
+  }
+  body:not(.at-home) .section-nav-wrap #sectionNav{
+    flex:1 1 auto;
+    width:0;
+    min-width:0;
+    max-width:none;
+    margin:0;
+    padding:3px 0;
+    scrollbar-width:thin;
+    overscroll-behavior-inline:contain;
+  }
+  body:not(.at-home) .section-nav-wrap .nav-chip{
+    flex:0 0 auto;
+    min-height:44px;
+    border-radius:9px;
+    font-size:11px;
+    line-height:1.25;
+    font-weight:750;
+    padding:8px 13px;
+    white-space:normal;
+    max-width:155px;
+  }
+  body:not(.at-home) .section-nav-wrap .nav-chip.ppm-section-selected{
+    background:var(--navy,#0a2746);
+    color:#fff;
+    border-color:var(--navy,#0a2746);
+  }
+  body:not(.at-home) .section-nav-wrap .ppm-section-expand{
+    display:inline-flex;
+    align-items:center;justify-content:center;
+    flex:0 0 auto;
+    min-width:100px;
+    min-height:44px;
+    padding:9px 11px;
+    border-radius:9px;
+    border:1px solid var(--vesa-border,#b9ced8);
+    background:var(--vesa-surface,#fff);
+    color:var(--vesa-text,#172431);
+    font-size:11px;
+    font-weight:800;
+    line-height:1.35;
+    cursor:pointer;
+    text-align:center;
+  }
+  body:not(.at-home) .section-nav-wrap .ppm-section-expand:focus-visible{
+    outline:3px solid var(--vesa-focus,#c8a33a);outline-offset:2px;
+  }
+  body.ppm-section-focus #sectionsRoot>.section-card:not(.ppm-section-selected){
+    display:none!important;
+  }
+  body:not(.at-home) :is(.status-btn,.filter-btn,.mode-btn,.section-tool,.remark-toggle){
+    min-height:44px;
+    font-size:11px;
+    line-height:1.3;
+  }
+  body:not(.at-home) .status-buttons .status-btn{padding:9px 5px;font-weight:800}
+  body:not(.at-home) .checkpoint .cp-title{font-size:13px;line-height:1.55}
+  body:not(.at-home) .checkpoint .cp-num{font-size:10px}
+  body:not(.at-home) .section-card .section-head h2{font-size:14px;line-height:1.4}
+  body:not(.at-home) .section-card :is(.status-btn,.section-tool,.remark-toggle):focus-visible{
+    outline:3px solid var(--vesa-focus,#c8a33a);outline-offset:2px
+  }
+}
