@@ -8,6 +8,8 @@ class ArtworkWorkspace{
   this.main=document.getElementById('laMain');this.dialog=document.getElementById('laDialog');
   this.body=document.getElementById('laDialogBody');this.file=document.getElementById('laCopyFile');
   this.previewFile=document.getElementById('laPreviewFile');
+  this.refFile=document.getElementById('laReferenceFile');this.pendingRef=null;this.refKind='tech';
+  this.Ref=root.VesaArtworkReviewedReference;this.R=root.VesaArtworkReportModel;
   this.E=root.VesaArtworkRevision;this.L=root.VesaLabelSpec;this.D=root.VesaArtworkReviewState;
   this.C=root.VesaArtworkCopyCodec;this.T=root.VesaArtworkCopy;
   const session=root.VesaAuth?.session?.()||{};
@@ -57,6 +59,13 @@ class ArtworkWorkspace{
   this.previewFile.addEventListener('change',async()=>{const file=this.previewFile.files?.[0];this.previewFile.value='';if(!file)return;
    try{await this.acceptPreview(file);}catch(err){this.error(err.message);}
   });
+  this.refFile.addEventListener('change',async()=>{const file=this.refFile.files?.[0];this.refFile.value='';if(!file)return;
+   try{if(file.size>120000)throw Error('Source file exceeds 120 KB');
+    const ref=JSON.parse(await file.text());
+    if(!this.Ref.sourceValid(ref,this.refKind)||!this.Ref.matchesRecord(ref,this.current))throw Error('Source owner or style/colour/size does not match current artwork');
+    this.pendingRef=this.E.copy(ref);this.form('source-confirm');
+   }catch(err){this.pendingRef=null;this.error(err.message);}
+  });
   root.addEventListener('vesa-preferences-change',()=>this.render());
   root.addEventListener('beforeunload',()=>this.clearPreview());
   root.VesaArtwork360=this;this.render();
@@ -64,10 +73,19 @@ class ArtworkWorkspace{
  menu(name){const groups={Home:[['home','back'],['new','new'],['continue','continue'],['practice','practice']],
   File:[['save','save'],['download','download'],['upload','upload']],
   Edit:[['add-revision','addRevision'],['add-comment','addComment'],['add-decision','addDecision']],
-  View:[['summary','summary'],['revisions','revisions'],['reviews','reviews'],['preview','preview'],['reports','reports'],['history','history']],
-  Tools:[['preview-select','selectPreview'],['preview-clear','clearPreview']],Help:[['help','help']]};
+  View:[['summary','summary'],['revisions','revisions'],['reviews','reviews'],['preview','preview'],['references','references'],['reports','reports'],['history','history']],
+  Tools:[['preview-select','selectPreview'],['preview-clear','clearPreview'],['reference-select','referenceSelect'],['report','report'],['excel','excel'],['print','print']],Help:[['help','help']]};
   this.showModal(name,'<div class="la-actions">'+(groups[name]||[]).map(([id,key])=>'<button type="button" class="la-btn" data-dialog-action="'+this.e(id)+'">'+this.e(this.t(key))+'</button>').join('')+'</div>');
   this.body.querySelectorAll('[data-dialog-action]').forEach(x=>x.onclick=()=>{this.dialog.close();this.action(x.dataset.dialogAction);});
+ }
+ excel(){if(!this.current)throw Error('Open artwork record before export');
+  const check=this.E.validate(this.current);if(!check.ok)throw Error(check.errors.join('; '));
+  if(!root.XLSX)throw Error('Local Excel workbook library unavailable');
+  const book=root.XLSX.utils.book_new();
+  for(const [name,rows] of Object.entries(this.R.rows(this.current))){
+   const sheet=root.XLSX.utils.aoa_to_sheet(this.R.excelRows(name,rows));
+   root.XLSX.utils.book_append_sheet(book,sheet,name.slice(0,31));
+  }root.XLSX.writeFile(book,'VESA-ARTWORK-'+this.current.id+'.xlsx');
  }
  download(s,name,type){const url=URL.createObjectURL(new Blob([s],{type})),a=document.createElement('a');a.href=url;a.download=name;
   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1400);}
@@ -84,8 +102,12 @@ class ArtworkWorkspace{
   if(name==='download'){if(!this.current||this.current.mode==='practice')throw Error('Open a saved artwork record first');
    this.download(this.C.encode(this.current),'VESA-ARTWORK-'+this.current.id+'.vesaart','application/json');return;}
   if(name==='upload'){this.file.click();return;}
-  if(['summary','revisions','reviews','preview','reports','history'].includes(name)){
+  if(['summary','revisions','reviews','preview','references','reports','history'].includes(name)){
    if(!this.current)throw Error('Open an artwork record first');this.section=name;this.render();return;}
+  if(name==='report'){if(!this.current)throw Error('Open artwork record');this.section='reports';this.render();return;}
+  if(name==='excel'){this.excel();return;}
+  if(name==='print'){if(!this.current)throw Error('Open artwork record');this.section='reports';this.render();root.print();return;}
+  if(name==='reference-select'){if(!this.current||this.current.mode==='practice')throw Error('Open local artwork record');this.form('reference-select');return;}
   if(name==='preview-select'){if(!this.current)throw Error('Open an artwork record');this.previewFile.click();return;}
   if(name==='preview-clear'){this.clearPreview();this.section='preview';this.render();return;}
   if(name==='help'){this.showModal(this.t('help'),'<p class="la-warning">'+this.e(this.t('warning'))+'</p><p>'+this.e(this.t('noApproval'))+'</p>');return;}
@@ -102,7 +124,7 @@ class ArtworkWorkspace{
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,practice=p.mode==='practice',analysis=this.E.validate(p);
-  const tabs=['summary','revisions','reviews','preview','reports','history'];
+  const tabs=['summary','revisions','reviews','preview','references','reports','history'];
   this.main.innerHTML=banner+'<section class="la-card"><h2>'+e(p.header.style)+' / '+e(p.header.colour)+' / '+e(p.header.size)+'</h2><p class="la-note">'+(practice?'SYNTHETIC PRACTICE':t('localOnly'))+' / '+t('status')+'</p>'+
    '<div class="la-actions">'+this.button('home','back')+this.button('save','save',true,'',practice)+this.button('download','download',false,'',practice)+'</div></section>'+
    '<nav class="la-tabs" aria-label="Artwork sections">'+tabs.map(k=>'<button type="button" class="la-btn" data-action="'+k+'" aria-current="'+(this.section===k)+'">'+t(k)+'</button>').join('')+'</nav>'+
@@ -124,7 +146,12 @@ class ArtworkWorkspace{
    '<p class="la-warning">'+e(state.status)+' / '+e(t('noApproval'))+'</p></section>';
   if(this.section==='preview')return '<section class="la-card">'+header('preview')+'<p class="la-warning">'+e(t('previewNotice'))+'</p><div class="la-actions">'+this.button('preview-select','selectPreview',true)+this.button('preview-clear','clearPreview')+'</div>'+
    (this.preview?'<p class="la-note">'+e(this.preview.name)+' ('+e(this.preview.size)+' bytes)</p><img class="la-preview" alt="Temporary local image preview" src="'+e(this.preview.url)+'">':'<p class="la-note">'+e(t('previewEmpty'))+'</p>')+'</section>';
-  if(this.section==='reports')return '<section class="la-card">'+header('reports')+'<p class="la-warning">'+e(t('reportPlanned'))+'</p><p>'+e(t('noApproval'))+'</p></section>';
+  if(this.section==='references')return '<section class="la-card">'+header('references','reference-select','referenceSelect')+
+   '<p class="la-warning">'+e(t('sourceNotice'))+'</p>'+
+   this.table([t('sourceType'),t('sourceApp'),t('sourceRecord'),t('localReviewer'),t('localReviewDate')],
+   (p.manualReferences||[]).map(r=>[r.kind,r.source.sourceApp,r.source.recordId,r.localReviewer,r.localReviewDate]))+'</section>';
+  if(this.section==='reports')return '<section class="la-card la-print-card"><div class="la-actions">'+
+   this.button('excel','excel',true)+this.button('print','print')+'</div>'+this.R.html(p)+'</section>';
   return '<section class="la-card">'+header('history')+this.table(['Revision','Action','Time','Evidence ID'],p.audit.map(a=>[a.revision,a.action,a.at,a.recordId||'']))+'</section>';
  }
  form(kind){const e=v=>this.e(v),t=k=>this.t(k),begin='<form class="la-form" data-form="'+e(kind)+'">',end='<div class="wide la-actions"><button type="submit" class="la-btn primary">'+e(t('submit'))+'</button></div></form>';
@@ -133,6 +160,14 @@ class ArtworkWorkspace{
    body+=this.field('style',true)+this.field('colour',true)+this.field('size',true);
    body+=this.select('itemType',[['label','Label'],['care-label','Care Label'],['barcode','Barcode'],['print','Print'],['embroidery','Embroidery'],['other','Other']]);
    body+=this.field('placement',true)+this.field('sourceRef',true,'text',true);
+  }else if(kind==='reference-select'){
+   body='<p class="wide la-warning">'+e(t('sourceNotice'))+'</p>'+
+    this.select('refKind',[['tech','VESA Tech Pack & Spec 360'],['sampling','VESA Sampling & Approval 360']],true);
+  }else if(kind==='source-confirm'){
+   if(!this.pendingRef)throw Error('Select a source file first');
+   body='<p class="wide la-warning">'+e(t('sourceNotice'))+'</p><p class="wide">'+e(this.pendingRef.sourceApp)+' / '+e(this.pendingRef.recordId)+' / '+e(this.pendingRef.revisionId)+'</p>'+
+    this.field('localReviewer',true)+this.field('localReviewDate',true,'date')+
+    '<label class="wide la-confirm"><input type="checkbox" name="identityConfirmed" value="yes" required><span>'+e(t('identityConfirmed'))+'</span></label>';
   }else if(kind==='add-revision'){
    body+=this.field('artworkRef',true)+this.field('sourceDate',true,'date')+this.field('sourceRef',true,'text',true);
    body+=this.field('width')+this.field('height')+this.select('unit',[['mm','mm'],['cm','cm'],['in','in']]);
@@ -153,7 +188,7 @@ class ArtworkWorkspace{
     body+=this.field('authorityRef',false,'text',true);
    }
   }
-  const label=({new:'new','add-revision':'addRevision','add-comment':'addComment','add-decision':'addDecision'})[kind]||'new';
+  const label=({new:'new','add-revision':'addRevision','add-comment':'addComment','add-decision':'addDecision','reference-select':'referenceSelect','source-confirm':'referenceSelect'})[kind]||'new';
   this.showModal(this.t(label),begin+body+end);
  }
  submit(form){const fd=new FormData(form),get=k=>String(fd.get(k)??'').trim();const kind=form.dataset.form;
@@ -161,6 +196,15 @@ class ArtworkWorkspace{
    if(kind==='new'){
     const p=this.E.create({style:get('style'),colour:get('colour'),size:get('size'),itemType:get('itemType'),placement:get('placement'),sourceRef:get('sourceRef')});
     const a=this.E.validate(p);if(!a.ok)throw Error(a.errors.join('; '));this.store.save(p);this.current=p;this.section='summary';
+   }else if(kind==='reference-select'){
+    if(!this.current||this.current.mode==='practice')throw Error('Open local artwork record');
+    this.refKind=get('refKind');this.pendingRef=null;this.dialog.close();this.refFile.click();return;
+   }else if(kind==='source-confirm'){
+    if(!this.current||this.current.mode==='practice'||!this.pendingRef)throw Error('Select reviewed local evidence');
+    const next=this.Ref.append(this.current,this.refKind,this.pendingRef,{
+     localReviewer:get('localReviewer'),localReviewDate:get('localReviewDate'),identityConfirmed:fd.get('identityConfirmed')==='yes'
+    });
+    this.store.save(next);this.current=next;this.pendingRef=null;this.section='references';
    }else{
     if(!this.current||this.current.mode==='practice')throw Error('Practice is read only');let next;
     if(kind==='add-revision'){

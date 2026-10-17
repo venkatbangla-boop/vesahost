@@ -21,3 +21,17 @@
 @media(max-width:740px){.la-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.la-card{padding:12px}}
 @media(max-width:470px){.la-grid,.la-form{grid-template-columns:1fr}.la-form .wide{grid-column:1}.la-actions .la-btn{flex:1 1 auto}}
 @media print{.vesa-workspace,.app-user-bar,.la-tabs,.la-actions,.la-dialog{display:none!important}#laMain{width:100%;padding:0}.la-card{border:0;padding:0}.la-table th,.la-table td{font-size:10px;padding:5px}}
+
+/* APP-10 M3: source-only draft report and explicit local reference confirmation. */
+.la-report{min-width:0;overflow-wrap:anywhere}.la-report-section{margin:14px 0;min-width:0}.la-report h2{font-size:1.12rem}.la-report h3{font-size:1rem}
+.la-form .la-confirm{display:flex;align-items:center;gap:12px;font-weight:500}
+.la-form .la-confirm input[type=checkbox]{width:20px;height:20px;min-height:20px;flex:0 0 20px}
+@media print{
+ #laMain>.la-card:not(.la-print-card),#laMain>.la-tabs{display:none!important}
+ .la-print-card{display:block!important;border:0!important}
+ .la-report-section{break-inside:avoid}
+ .la-scroll{overflow:visible;border:0}
+ .la-table{min-width:0;width:100%;table-layout:fixed;font-size:8px}
+ .la-table th,.la-table td{white-space:normal;overflow-wrap:anywhere}
+ @page{size:A4 landscape;margin:12mm}
+}
