@@ -152,17 +152,22 @@ class PurchaseOrderEngine {
    lineMap.set(line.id,line);
   }
   if(!Number.isSafeInteger(quantity)||quantity>1000000000)errors.push('Quantity total exceeds whole-piece limit.');
+  const quantityReconciled=p.lines.length>0&&Number.isSafeInteger(h.declaredQty)&&
+    h.declaredQty===quantity;
+  const declaredCents=trim(h.declaredAmount)?this.parse(h.declaredAmount,2,true):null;
+  const amountReconciled=p.lines.length>0&&declaredCents!==null&&declaredCents===amount;
+  // In-progress source lines may be entered one by one. A mismatch remains an
+  // explicit visible hold, not a permanent blocker preventing the next line.
   if(h.declaredQty!==null&&h.declaredQty!==undefined&&h.declaredQty!==''){
-   if(!Number.isSafeInteger(h.declaredQty)||h.declaredQty<0||
-      (p.lines.length>0&&h.declaredQty!==quantity))
-      errors.push('Entered PO control quantity does not reconcile to size/colour lines.');
-   if(!p.lines.length)notes.push('Buyer PO control quantity needs sourced style/size lines to reconcile.');
+   if(!Number.isSafeInteger(h.declaredQty)||h.declaredQty<0)
+      errors.push('PO control quantity must be a positive or zero whole-piece value.');
+   if(!quantityReconciled)
+      notes.push('HOLD: Buyer PO control quantity does not yet match complete style/colour/size lines. Revision cannot be recorded.');
   }else notes.push('Buyer PO control quantity not entered; quantity confirmation Needs Information.');
   if(trim(h.declaredAmount)){
-   const documented=this.parse(h.declaredAmount,2,true);
-   if(documented===null||(p.lines.length>0&&documented!==amount))
-    errors.push('Buyer PO control amount differs from sourced line totals in the same currency.');
-   if(!p.lines.length)notes.push('Buyer PO control amount needs sourced line values to reconcile.');
+   if(declaredCents===null)errors.push('Buyer PO control value must be a nonnegative two-decimal currency amount.');
+   if(!amountReconciled)
+     notes.push('HOLD: Buyer PO amount has not yet reconciled to the complete line totals. Revision cannot be recorded.');
   }else notes.push('Buyer PO control value missing; totals are calculated but not confirmed against source.');
   if(!p.lines.length)notes.push('PO style/colour/size lines are not entered.');
   const cancelled=new Map(),shipped=new Map();
@@ -205,7 +210,8 @@ class PurchaseOrderEngine {
     errors.push('Factory/buyer acknowledgment needs matching amendment, actor, source and date.');
   }
   if(h.ledgerComplete&&!trim(h.ledgerSource))errors.push('Complete shipment ledger requires explicit reviewed source evidence.');
-  return {ok:errors.length===0,errors,notes,quantity,amount:this.money(amount),amountCents:amount,
+  return {ok:errors.length===0,errors,notes,controlReconciled:quantityReconciled&&amountReconciled,
+    quantity,amount:this.money(amount),amountCents:amount,
     currency:h.currency,
     balances:p.lines.map(line=>{
      const canc=cancelled.get(line.id)||0,ship=shipped.get(line.id)||0;
@@ -721,7 +727,8 @@ class PurchaseOrderWorkspace {
    }else if(kind==='record-revision'){
     if(!checked('reviewed'))throw Error('Verify the actual PO document yourself before recording this source.');
     this.update('User-referenced signed PO revision snapshot recorded',p=>{
-     if(!p.lines.length)throw Error('A sourced PO must have line quantities before a revision snapshot.');
+     if(!p.lines.length||!PurchaseOrderEngine.validate(p).controlReconciled)
+       throw Error('Reconcile signed PO control quantity and value with every sourced size line before recording a revision.');
      if(!get('authority')||!get('document')||!PurchaseOrderEngine.date(get('effective')))
       throw Error('Approval source, effective date and recorded authority required.');
      p.revisions.push({id:identifier('REV'),recordRevision:p.revision+1,at:new Date().toISOString(),
