@@ -6,6 +6,7 @@ on:
     branches:
       - feature/tna-merchandising-sheet
       - feature/tna-personal-preview-20261017
+      - fix/tna-g3-css-offline-version
       - main
     paths:
       - 'apps/tna/**'
