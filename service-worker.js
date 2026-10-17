@@ -1,4 +1,4 @@
-const CACHE='vesa-v80-buyer-crm-personal-demo';
+const CACHE='vesa-v81-fabric-supplier-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -99,6 +99,19 @@ const ASSETS=[
   './apps/buyer-crm/src/reports/report-model.js',
   './apps/buyer-crm/src/i18n/app-copy.js',
   './apps/buyer-crm/src/application/workspace-controller.js',
+  './apps/fabric-supplier-comparison/',
+  './apps/fabric-supplier-comparison/index.html',
+  './apps/fabric-supplier-comparison/assets/fabric-supplier-comparison.css',
+  './apps/fabric-supplier-comparison/src/bootstrap.js',
+  './apps/fabric-supplier-comparison/src/domain/quote-normalization.js',
+  './apps/fabric-supplier-comparison/src/domain/comparability-gate.js',
+  './apps/fabric-supplier-comparison/src/domain/landed-scenario.js',
+  './apps/fabric-supplier-comparison/src/domain/reviewed-reference.js',
+  './apps/fabric-supplier-comparison/src/data/saved-copy-codec.js',
+  './apps/fabric-supplier-comparison/src/data/local-record-port.js',
+  './apps/fabric-supplier-comparison/src/reports/report-model.js',
+  './apps/fabric-supplier-comparison/src/i18n/app-copy.js',
+  './apps/fabric-supplier-comparison/src/application/workspace-controller.js',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
