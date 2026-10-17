@@ -1,5 +1,12 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## 2026-10-18 — G3 TNA SHEET-FIRST UI RELEASED; PPM NEXT
+
+**Latest verified application SHA**: `4a35070f2b6e17a69830db1c602c199ae95cc4a2`. Active TNA/PPM/AQL Playwright evidence 36 opened-screen cases / 60 screenshots [G3 baseline #39059572072 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059572072). TNA sheet-first scoped CSS safely merged after G13 browser + saved-copy + four-language proof [feature #39059962505 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059962505), [main TNA #39060152231 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152231), [main G3 #39060152136 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152136), [Pages #39060152341 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152341). Preserved all 8 TNA actions, domain dates/CPM, PDF/XLSX/print, PPM/AQL and original 19 apps. No public homepage file changed. **EXACT NEXT:** PPM mobile active editor 26k-pixel scroll and undersized controls; inspect PPM controllers/navigation/print before task-first UI patch. After PPM profile AQL 11.78MB HTML. Evidence and next action: `docs/ux/02_G3_ACTIVE_WORKFLOW_AUDIT.md`. Human UAT remains 1 PASS / 0 FAIL / 48 NOT TESTED; no fabrication. Continue automatically from newest GitHub checkpoint.
+
+---
+
+
 ## 2026-10-18 — Premium app-only UX G0/G1/G2 closed; G3 NEXT
 
 **Owner boundary:** Public `vesaent.com/` homepage is completely outside redesign scope. Do not change root `index.html`, `css/style.css`, `js/main.js`, home imagery/video or metadata. Only `/login/`, `/apps/`, `/admin/` and 19 apps can be changed, while app domain rules stay preserved. Synthetic demo login is visibly prefilled as `user@vesa` / `vesa` (existing auth.js user account), actual one-click VesaAuth login preserved.
