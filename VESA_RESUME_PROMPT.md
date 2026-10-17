@@ -1,5 +1,12 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## 2026-10-18 — RESUME G3-PPM-02 AFTER VERIFIED TNA OFFLINE STYLE REFRESH
+
+Newest known verified TNA application SHA `9feaf2cd577125de1f9d000fed7ff0cad6e5e168`. Returning-client stylesheet cache issue closed: [feature #39060843140 PASS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060843140), [main #39060958773 PASS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958773), [Pages #39060958901 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958901). No domain/file loss. **EXACT NEXT G3-PPM-02:** review PPM `apps/ppm/index.html`, `core.js`, `workspace.js`, `workspace.css`, app worker and original PPM tests; safely shorten mobile long-form task flow and make controls usable, preserve all 168 status IDs and four languages. After PPM, AQL 11.78MB source/performance profile. Public company homepage remains FROZEN. `Continue` means read newest GitHub and pick up at PPM, not restart.
+
+---
+
+
 ## 2026-10-18 — VERIFIED G3 TNA DONE / PPM EDITOR NEXT
 
 Newest known released runtime `4a35070f2b6e17a69830db1c602c199ae95cc4a2`. G3 real 60-screenshot active-workflow audit succeeded [#39059572072](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059572072). TNA first-screen Master Sheet CSS-only improvement passed [#39059962505](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059962505), exact main G3 + G13–G17 CI [#39060152136](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152136) and [#39060152231](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152231), Pages [#39060152341](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152341). **NEXT G3-PPM-02**: audit/read all PPM editor action/section/form ownership, reduce 26kpx mobile scrolling and improve small touch controls with one safe app-only reversible patch; test 168 identities, GO/HOLD, forms, print, EN/BN/HI/TA, saved copies and TNA/AQL. Then profile AQL 11.78MB HTML. Read `docs/ux/02_G3_ACTIVE_WORKFLOW_AUDIT.md` and `docs/ux/01_PREMIUM_UX_EXECUTION_TRACKER.md`. `Continue` resumes exactly this point using actual latest GitHub state; no restart/ZIP requests. Public vesaent.com/ homepage and its files remain frozen.
