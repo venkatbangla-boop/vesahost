@@ -27,4 +27,34 @@ assert(blueprints.has('blueprints/APP-09_production-tracker.md'),'Production Tra
 const app=fs.readFileSync(path.join(root,'blueprints/APP-09_production-tracker.md'),'utf8');
 assert(app.includes('Stage WIP = opening + verified_in - verified_out - verified_rejects'));
 assert(app.includes('M0 - audit/scope'));
-console.log('VESA BLUEPRINT INTEGRITY PASS: 28 original SHA-256 entries, 15 original app blueprints, APP-09 available, no ZIP/chat attachment required.');
+// The convenient ZIP in git is repacked from the exact original text bytes,
+// not a claim of byte-for-byte identity with the original compressed ZIP.
+const zip=fs.readFileSync(path.join(root,'docs/portfolio/VESA_360_15_APP_MASTER_ROADMAP_REPOSITORY_COPY.zip'));
+const prefix='VESA_360_15_APP_MASTER_ROADMAP/';
+const included=new Set();
+const expectedNames=new Set([...entries.map(([relative])=>prefix+relative),prefix+'13_FILE_INTEGRITY_SHA256.json']);
+let offset=0;
+function crc32(bytes){
+ let c=0xffffffff;
+ for(const b of bytes){c^=b;for(let i=0;i<8;i++)c=(c>>>1)^((c&1)?0xedb88320:0);}
+ return (c^0xffffffff)>>>0;
+}
+while(offset+30<=zip.length && zip.readUInt32LE(offset)===0x04034b50){
+ assert.equal(zip.readUInt16LE(offset+8),0,'Repo ZIP entries must be stored without compression for deterministic reading');
+ const size=zip.readUInt32LE(offset+18),nameLen=zip.readUInt16LE(offset+26),extraLen=zip.readUInt16LE(offset+28);
+ const name=zip.subarray(offset+30,offset+30+nameLen).toString('utf8');
+ assert(expectedNames.has(name),'Unexpected file inside master ZIP: '+name);
+ assert(!included.has(name),'Duplicate file inside master ZIP: '+name);
+ const bytes=zip.subarray(offset+30+nameLen+extraLen,offset+30+nameLen+extraLen+size);
+ const relative=name.slice(prefix.length);
+ const at=path.join(root,relative.startsWith('blueprints/')?relative:'docs/portfolio/'+relative);
+ assert(bytes.equals(fs.readFileSync(at)),'Repacked ZIP file differs from canonical original: '+relative);
+ assert.equal(crc32(bytes),zip.readUInt32LE(offset+14),'Repacked ZIP CRC mismatch: '+relative);
+ included.add(name);
+ offset+=30+nameLen+extraLen+size;
+}
+assert.equal(included.size,29,'The repository ZIP must include all 29 handover texts');
+assert.equal(zip.readUInt32LE(offset),0x02014b50,'Repacked ZIP central directory missing');
+assert.equal(zip.readUInt32LE(zip.length-22),0x06054b50,'Repacked ZIP end record missing');
+assert.equal(zip.readUInt16LE(zip.length-12),29,'Repacked ZIP directory count mismatch');
+console.log('VESA BLUEPRINT INTEGRITY PASS: 28 original SHA-256 entries, 15 original app blueprints, 29 readable ZIP files, APP-09 available, no chat attachment required.');
