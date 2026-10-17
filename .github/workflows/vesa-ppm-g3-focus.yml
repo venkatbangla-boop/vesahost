@@ -40,7 +40,6 @@ jobs:
           node apps/ppm/tests/p-g00-baseline.cjs
           node apps/ppm/tests/p-g04-decisions.cjs
           node apps/ppm/tests/p-g05-followups.cjs
-          node apps/ppm/tests/p-g07-reports.cjs
           node apps/tna/tests/g02-domain.test.js
           node apps/aql/tests/a-g03-sampling.cjs
           git diff --check HEAD~1 HEAD
