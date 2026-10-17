@@ -2,40 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin | VESA App Centre</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f3f6fa">
+  <title>User Access | VESA 360</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/vesa-workspace.css?v=20261013-platform-g09">
+  <link rel="stylesheet" href="/css/vesa-admin.css?v=20261018-admin-r1">
   <script src="/js/preferences.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/vesa-workspace-shell.js?v=20261013-platform-g09"></script>
 </head>
-<body class="app-centre-page">
+<body class="app-centre-page vesa-admin-page">
   <script>VesaAuth.requireAdmin();</script>
-  <main class="admin-shell">
-    <section class="app-centre-hero" tabindex="-1">
-      <span class="kicker">Admin</span>
-      <h1>User Access</h1>
-      <p class="lead">Create users and review local login history for this browser.</p>
+  <main class="admin-shell" id="vesaMainContent" tabindex="-1">
+    <section class="app-centre-hero" tabindex="-1" aria-labelledby="adminTitle">
+      <div class="admin-heading">
+        <span class="admin-eyebrow">WORKSPACE SETTINGS</span>
+        <h1 id="adminTitle">User Access</h1>
+        <p>Add users, manage local access and review the login activity stored on this device.</p>
+      </div>
+      <div class="admin-context">Saved on this device</div>
     </section>
-    <section class="admin-grid">
-      <form id="userForm" class="panel admin-panel">
-        <h2>Add User</h2>
-        <label>Name<input class="input" id="newName" required></label>
-        <label>User ID / email<input class="input" id="newEmail" type="email" required></label>
-        <label>Password<input class="input" id="newPassword" type="password" minlength="6" required></label>
-        <label>Role<select class="input" id="newRole"><option value="user">User</option><option value="admin">Admin</option></select></label>
+
+    <section class="admin-grid" aria-label="User administration">
+      <form id="userForm" class="admin-panel" aria-labelledby="adminNewTitle">
+        <h2 id="adminNewTitle">Add a user</h2>
+        <p class="admin-panel-intro">Create a login for someone who uses this browser.</p>
+        <label for="newName">Name
+          <input class="input" id="newName" autocomplete="name" required>
+        </label>
+        <label for="newEmail">User ID / email
+          <input class="input" id="newEmail" type="email" autocomplete="off" required>
+        </label>
+        <label for="newPassword">Password
+          <input class="input" id="newPassword" type="password" autocomplete="new-password" minlength="6" required>
+        </label>
+        <label for="newRole">Role
+          <select class="input" id="newRole"><option value="user">User</option><option value="admin">Admin</option></select>
+        </label>
         <button class="btn primary" type="submit">Create User</button>
-        <p id="adminMessage" class="auth-message" role="status"></p>
+        <p id="adminMessage" class="auth-message" role="status" aria-live="polite"></p>
       </form>
-      <section class="panel admin-panel" id="usersPanel" tabindex="-1">
-        <h2>Users</h2>
+
+      <section class="admin-panel" id="usersPanel" tabindex="-1" aria-labelledby="adminUsersTitle">
+        <div class="admin-panel-heading">
+          <h2 id="adminUsersTitle">Users</h2>
+          <span class="admin-panel-caption">This browser</span>
+        </div>
         <div id="userList"></div>
       </section>
-      <section class="panel admin-panel wide" id="eventsPanel" tabindex="-1">
-        <h2>Login History</h2>
-        <div class="btn-row compact"><button class="btn secondary" id="downloadEvents" type="button">Download CSV</button></div>
+
+      <section class="admin-panel wide" id="eventsPanel" tabindex="-1" aria-labelledby="adminHistoryTitle">
+        <div class="admin-history-head">
+          <h2 id="adminHistoryTitle">Login History</h2>
+          <div class="btn-row compact">
+            <button class="btn secondary" id="downloadEvents" type="button">Download CSV</button>
+          </div>
+        </div>
+        <p class="admin-history-note">A local activity log for this device. Download a copy when needed.</p>
         <div id="eventList"></div>
       </section>
     </section>

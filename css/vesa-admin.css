@@ -1,0 +1,172 @@
+/* VESA 360 admin workspace only. Auth, user records, sessions and history
+   remain owned by existing js/auth.js and admin/index.html handlers.
+   Never apply these selectors to the public company website or other apps. */
+.vesa-admin-page,.vesa-admin-page *{box-sizing:border-box}
+.vesa-admin-page{
+ margin:0;
+ min-height:100vh;
+ background:var(--vesa-bg,#f3f6fa);
+ color:var(--vesa-text,#17263d);
+ font:400 15px/1.5 var(--vesa-font-body,Inter,system-ui,-apple-system,"Segoe UI",sans-serif);
+ -webkit-font-smoothing:antialiased;
+}
+.vesa-admin-page button,.vesa-admin-page input,.vesa-admin-page select{font:inherit}
+.vesa-admin-page .admin-shell{
+ width:min(1250px,calc(100% - 44px));
+ min-width:0;
+ margin:0 auto;
+ padding:clamp(23px,3.25vw,46px) 0 86px;
+}
+.vesa-admin-page .app-centre-hero{
+ display:flex;justify-content:space-between;align-items:flex-end;gap:26px;
+ margin-bottom:27px;padding:0 0 28px;
+ border-bottom:1px solid var(--vesa-border,#cbd6e4);
+}
+.vesa-admin-page .admin-heading{max-width:730px;min-width:0}
+.vesa-admin-page .admin-eyebrow{
+ display:block;margin-bottom:11px;color:var(--vesa-muted,#526176);
+ font-size:.72rem;letter-spacing:.13em;line-height:1.4;font-weight:790;
+}
+.vesa-admin-page .app-centre-hero h1{
+ margin:0 0 9px;font:760 clamp(2.1rem,3.5vw,3rem)/1.08 var(--vesa-font-heading,var(--vesa-font-body));
+ letter-spacing:-.045em;color:var(--vesa-text,#17263d);
+}
+.vesa-admin-page .app-centre-hero p{
+ margin:0;max-width:600px;color:var(--vesa-muted,#526176);
+ font-size:.94rem;line-height:1.65;
+}
+.vesa-admin-page .admin-context{
+ min-width:190px;display:flex;gap:9px;align-items:center;
+ border:1px solid var(--vesa-border,#cbd6e4);border-radius:12px;
+ padding:13px 14px;background:var(--vesa-surface,#fff);
+ color:var(--vesa-muted,#526176);font-size:.82rem;font-weight:670;
+}
+.vesa-admin-page .admin-context::before{
+ content:"";display:block;flex:0 0 auto;width:9px;height:9px;
+ border-radius:50%;background:#23825d;
+}
+.vesa-admin-page .admin-grid{
+ display:grid;
+ grid-template-columns:minmax(325px,.84fr) minmax(0,1.16fr);
+ gap:18px;
+ min-width:0;
+ align-items:start;
+}
+.vesa-admin-page .admin-panel{
+ min-width:0;
+ margin:0;
+ padding:25px;
+ border:1px solid var(--vesa-border,#cbd6e4);
+ border-radius:14px;
+ background:var(--vesa-surface,#fff);
+ color:var(--vesa-text,#17263d);
+ box-shadow:0 7px 25px rgba(7,26,53,.03);
+}
+.vesa-admin-page .admin-panel:focus-visible,.vesa-admin-page .app-centre-hero:focus-visible{
+ outline:3px solid var(--vesa-focus,#c8a33a);outline-offset:3px;
+}
+.vesa-admin-page .admin-panel h2{
+ margin:0;
+ color:var(--vesa-text,#17263d);
+ font:770 1.3rem/1.25 var(--vesa-font-heading,var(--vesa-font-body));
+ letter-spacing:-.026em;
+}
+.vesa-admin-page .admin-panel-intro{
+ margin:8px 0 23px;color:var(--vesa-muted,#526176);font-size:.86rem;line-height:1.6;
+}
+.vesa-admin-page .admin-panel .input{
+ display:block;width:100%;min-width:0;min-height:44px;
+ padding:10px 13px;border:1px solid var(--vesa-border,#cbd6e4);border-radius:9px;
+ outline:0;background:var(--vesa-field,#fff);color:var(--vesa-text,#17263d);
+ font-size:.91rem;line-height:1.35;font-weight:550;
+}
+.vesa-admin-page .admin-panel label{
+ display:flex;flex-direction:column;gap:6px;
+ margin:0 0 14px;color:var(--vesa-text,#17263d);
+ font-size:.82rem;line-height:1.35;font-weight:750;
+}
+.vesa-admin-page .admin-panel .input:focus{
+ outline:2px solid var(--vesa-focus,#c8a33a);outline-offset:2px;
+ border-color:var(--vesa-action,#244fd6);
+}
+.vesa-admin-page .btn{
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;
+ min-width:0;min-height:44px;padding:9px 14px;
+ border:1px solid var(--vesa-border,#cbd6e4);border-radius:9px;
+ background:var(--vesa-surface-soft,#eef3f9);color:var(--vesa-text,#17263d);
+ font-size:.84rem;line-height:1.35;font-weight:760;cursor:pointer;text-align:center;
+ text-decoration:none;white-space:normal;
+ transition:background-color .16s ease,border-color .16s ease;
+}
+.vesa-admin-page .btn.primary{
+ width:100%;min-height:46px;
+ color:var(--vesa-action-text,#fff);
+ background:var(--vesa-action,#244fd6);border-color:var(--vesa-action,#244fd6);
+}
+.vesa-admin-page .btn.secondary:hover:not(:disabled){border-color:var(--vesa-action,#244fd6)}
+.vesa-admin-page .btn:disabled{
+ color:var(--vesa-muted,#526176);
+ background:var(--vesa-surface-soft,#eef3f9);
+ cursor:not-allowed;opacity:.88;
+}
+.vesa-admin-page :where(button,input,select,a):focus-visible{
+ outline:3px solid var(--vesa-focus,#c8a33a);outline-offset:3px;
+}
+.vesa-admin-page .auth-message{
+ min-height:19px;margin:12px 0 0;
+ font-size:.82rem;line-height:1.45;font-weight:750;color:var(--vesa-muted,#526176);
+}
+.vesa-admin-page .auth-message.bad{color:#a02732}
+.vesa-admin-page[data-dark="true"] .auth-message.bad,
+[data-dark="true"] .vesa-admin-page .auth-message.bad{color:#ffa5a5}
+.vesa-admin-page .auth-message.good{color:#177a52}
+.vesa-admin-page .admin-panel.wide{grid-column:1 / -1}
+.vesa-admin-page .admin-panel-heading{
+ display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 17px;
+}
+.vesa-admin-page .admin-panel-caption{
+ display:inline-flex;align-items:center;
+ color:var(--vesa-muted,#526176);font-size:.79rem;font-weight:650;
+}
+.vesa-admin-page .admin-row{
+ display:flex;justify-content:space-between;align-items:center;gap:13px;
+ padding:15px 1px;
+ border-top:1px solid var(--vesa-border,#cbd6e4);min-width:0;
+}
+.vesa-admin-page .admin-row > div{min-width:0}
+.vesa-admin-page .admin-row b{
+ display:block;font-size:.9rem;line-height:1.45;overflow-wrap:anywhere;
+}
+.vesa-admin-page .admin-row small{
+ display:block;color:var(--vesa-muted,#526176);
+ margin-top:4px;font-size:.79rem;line-height:1.5;overflow-wrap:anywhere;
+}
+.vesa-admin-page .admin-row .btn{flex:0 0 auto;min-width:92px}
+.vesa-admin-page .admin-empty{
+ margin:0;padding:27px 10px 8px;color:var(--vesa-muted,#526176);
+ font-size:.86rem;line-height:1.55;
+}
+.vesa-admin-page .admin-history-head{display:flex;justify-content:space-between;align-items:center;gap:17px;flex-wrap:wrap}
+.vesa-admin-page .btn-row.compact{display:flex;align-items:center;margin:0;gap:9px}
+.vesa-admin-page .admin-history-note{margin:8px 0 15px;color:var(--vesa-muted,#526176);font-size:.82rem;line-height:1.55}
+.vesa-admin-page #eventList{max-width:100%;min-width:0}
+@media(max-width:920px){
+ .vesa-admin-page .admin-shell{width:calc(100% - 32px);padding:24px 0 60px}
+ .vesa-admin-page .admin-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+ .vesa-admin-page .admin-panel.wide{grid-column:auto}
+ .vesa-admin-page .app-centre-hero{align-items:flex-start;flex-wrap:wrap;gap:15px}
+ .vesa-admin-page .admin-context{min-width:0}
+}
+@media(max-width:540px){
+ .vesa-admin-page .admin-shell{width:calc(100% - 24px);padding:20px 0 44px}
+ .vesa-admin-page .app-centre-hero{margin-bottom:19px;padding-bottom:19px}
+ .vesa-admin-page .app-centre-hero h1{font-size:2.15rem}
+ .vesa-admin-page .admin-panel{padding:18px 16px}
+ .vesa-admin-page .admin-history-head{align-items:stretch}
+ .vesa-admin-page .admin-history-head .btn{width:100%}
+ .vesa-admin-page .admin-row{align-items:flex-start;flex-wrap:wrap}
+ .vesa-admin-page .admin-row .btn{min-width:102px}
+}
+@media(prefers-reduced-motion:reduce){
+ .vesa-admin-page *{animation:none!important;transition:none!important}
+}
