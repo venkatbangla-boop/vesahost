@@ -272,10 +272,15 @@ def main():
         # Enter/Escape must reach the real shared File menu and close its dialog.
         file_menu = page.locator('.vesa-workspace__nav [data-vesa-menu="File"]')
         file_menu.focus()
+        require(file_menu.is_visible(), 'Shared File menu remains keyboard-focusable')
         file_menu.press('Enter')
+        # Wait for the actual native dialog state; do not turn a missing
+        # keyboard event into an artificial click or silently skip the check.
+        page.locator('.costing-dialog[open]').wait_for(state='visible', timeout=8000)
         require(page.locator('.costing-dialog[open]').count() == 1,
                 'Keyboard Enter opens the shared File command dialog')
         page.keyboard.press('Escape')
+        page.locator('.costing-dialog[open]').wait_for(state='hidden', timeout=8000)
         require(page.locator('.costing-dialog[open]').count() == 0,
                 'Keyboard Escape dismisses the File command dialog')
 

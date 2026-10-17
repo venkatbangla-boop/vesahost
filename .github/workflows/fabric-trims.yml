@@ -13,6 +13,8 @@ on:
       - 'js/preferences.js'
       - 'service-worker.js'
       - 'tests/personal-demo-release.cjs'
+      - 'apps/costing/tests/costing_real_e2e.py'
+      - '.github/workflows/costing-360-verification.yml'
   workflow_dispatch:
 permissions:
   contents: read
