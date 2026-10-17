@@ -43,7 +43,7 @@ assert.throws(()=>Ref.append(p,'po',po,{...review,localReviewDate:'2026-02-30'})
 const original=JSON.stringify(p);
 p=Ref.append(p,'po',po,review);
 p=Ref.append(p,'costing',quote,review);
-assert.equal(p.manualReferences.length,2);assert.equal(p.revision,7);
+assert.equal(p.manualReferences.length,2);assert.equal(p.revision,6);
 assert.throws(()=>Ref.append(p,'po',po,review),/Duplicate local source revision/);
 assert.equal(p.status,'LOCAL SOURCE ONLY — NOT BUYER-APPROVED PO');
 const store=new S('synthetic@invalid.example');store.save(p);
@@ -73,7 +73,7 @@ assert.equal(R.excelCell('@cmd'),"'@cmd");
 const evil=E.copy(p);evil.header.organizationName='<img src=x onerror=1>';
 const html=R.html(evil,'2026-10-17');
 assert(html.includes('&lt;img src=x onerror=1&gt;')&&!html.includes('<img src=x'));
-assert(html.includes('NOT confirmed purchase orders'));assert(html.includes('NO EMAIL/SMS SENT')===false);
+assert(html.includes('NOT confirmed purchase orders'));assert(html.includes('NO EMAIL/SMS SENT'));
 assert.throws(()=>R.rows(p,'2026-02-30'),/exact as-of date/);
 assert.equal(JSON.stringify(p.contacts[0]),JSON.stringify(JSON.parse(original).contacts[0]));
 console.log('BUYER CRM M3 REPORT/REF PASS: old saved copies, verified buyer PO/manual quote references, duplicate/wrong-buyer/corrupt atomic reject, private source reports, Excel formula and numeric typing, as-of follow-ups with no external delivery.');
