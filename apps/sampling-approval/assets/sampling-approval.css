@@ -17,6 +17,13 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
 .sa-tile{background:var(--look-surface,#eef3f9);padding:13px;border:1px solid var(--line,#cbd6e4);border-radius:11px;min-width:0}
 .sa-tile strong{display:block;font-size:1.32rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .sa-tile small{color:var(--muted,#526176)}
+/* App-owned discovery: previews real sections with read-only synthetic data. */
+.sa-journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sa-journey-card{display:flex;flex-direction:column;gap:9px;min-width:0;border:1px solid var(--line,#cbd6e4);border-radius:12px;padding:14px;background:var(--look-surface,#eef3f9)}
+.sa-journey-card h3,.sa-journey-card p{margin:0}
+.sa-journey-card p{flex:1;color:var(--muted,#526176)}
+.sa-journey-step{font-size:.76rem;font-weight:800;letter-spacing:.08em;color:var(--muted,#526176)}
+.sa-journey-card .sa-btn{width:100%}
 .sa-scroll{max-width:100%;overflow:auto;border:1px solid var(--line,#cbd6e4);border-radius:10px}
 .sa-table{border-collapse:collapse;min-width:710px;width:100%;font-size:.88rem}
 .sa-table td,.sa-table th{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere}
@@ -34,8 +41,8 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
 .sa-form .sa-check{display:flex;gap:10px;align-items:center}
 .sa-check input{width:22px;min-height:22px}
 .sa-report-section{margin:16px 0;break-inside:avoid}
-@media(max-width:740px){.sa-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sa-card{padding:12px}}
-@media(max-width:470px){.sa-grid,.sa-form{grid-template-columns:1fr}.sa-form .wide,.sa-form label.wide{grid-column:1}.sa-actions .sa-btn{flex:1 1 auto}}
+@media(max-width:740px){.sa-grid,.sa-journey{grid-template-columns:repeat(2,minmax(0,1fr))}.sa-card{padding:12px}}
+@media(max-width:470px){.sa-grid,.sa-journey,.sa-form{grid-template-columns:1fr}.sa-form .wide,.sa-form label.wide{grid-column:1}.sa-actions .sa-btn{flex:1 1 auto}}
 @media print{
  .vesa-workspace,.app-user-bar,.sa-actions,.sa-tabs,.sa-dialog,.sa-hide-print{display:none!important}
  #saMain{width:100%;padding:0}.sa-card{border:0;padding:0}.sa-table{font-size:10px}.sa-table td,.sa-table th{padding:5px 6px}

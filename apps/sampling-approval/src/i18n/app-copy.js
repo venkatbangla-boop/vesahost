@@ -3,7 +3,7 @@
 'use strict';
 class SamplingCopy {
  static entries={
-  en:{
+  en:{journeyTitle:"Explore seven sampling and approval steps",journeyLead:"Open real sections with an unsaved read-only fictional request. No buyer approval, factory approval or PPM GO is created.",journeyOpen:"View practice",journeySummary:"Review required categories, rounds and outstanding issues.",journeyCategories:"Review buyer-defined sample categories with evidence.",journeyRounds:"Inspect physical samples, dispatch and buyer receipt.",journeyDecisions:"Read sourced decisions, rejections and comments.",journeyRevisions:"Compare rejection, revision request and resubmission.",journeyExceptions:"Inspect missing evidence, overdue and stale source revisions.",journeyReports:"Open real draft evidence reports and Excel/PDF.",
    title:'Sampling & Approval 360',lead:'Buyer-defined samples, submission rounds, sourced comments and approvals',
    home:'Home',new:'New Sample Request',continue:'Continue Last',open:'Open Saved',practice:'Practice Example',
    save:'Save Now',download:'Download Saved Copy',upload:'Open Saved Copy',report:'Prepare Report',
@@ -53,7 +53,7 @@ class SamplingCopy {
    statusRejected:'Rejected',statusCommented:'Comments received',
    statusNeedsInformation:'Needs Information',statusStaleReview:'Stale — review needed',
    reportNotice:'Current status is calculated from the latest documented round; all earlier rejection/comment decisions remain on record.'},
-  ta:{
+  ta:{journeyTitle:"Sampling & Approval — ஏழு வேலைப் பகுதிகள்",journeyLead:"கற்பனை Sample Request-ல் பகுதிகளைப் பாருங்கள். Buyer Approval, Factory Approval அல்லது PPM GO தானாக உருவாகாது. Save ஆகாது.",journeyOpen:"Practice திற",journeySummary:"Required Categories, Rounds, Pending, Overdue.",journeyCategories:"Buyer வரையறுத்த Category மற்றும் Source.",journeyRounds:"Sample, Dispatch, Buyer Receipt ஆதாரங்கள்.",journeyDecisions:"Buyer Decision, Reject, Comments மற்றும் தேதி.",journeyRevisions:"முந்தைய Reject, Resubmission, Revision.",journeyExceptions:"Evidence குறை, Overdue, பழைய Tech Revision.",journeyReports:"Draft Reports மற்றும் Excel/PDF.",
    title:'Sampling & Approval 360',lead:'Buyer Sample Plan, Rounds, Comments மற்றும் Approval',
    home:'Home',new:'புதிய Sample Request',continue:'கடைசி பதிவு திற',open:'Saved Request திற',practice:'Practice Example',
    save:'இப்போது Save',download:'Saved Copy Download',upload:'Saved Copy திற',report:'Report தயாரி',
@@ -103,7 +103,7 @@ class SamplingCopy {
    statusRejected:'Rejected',statusCommented:'Comments வந்துள்ளது',
    statusNeedsInformation:'தகவல் தேவை',statusStaleReview:'பழைய Revision — மீண்டும் Review',
    reportNotice:'கடைசி Round Status மட்டும் Current; முந்தைய Reject/Comments வரலாறு தொடரும்.'},
-  bn:{
+  bn:{journeyTitle:"স্যাম্পলিং ও অনুমোদনের সাত ধাপ",journeyLead:"আসল অংশ কাল্পনিক রিড-ওনলি স্যাম্পলে দেখুন। ক্রেতার অনুমোদন বা PPM GO তৈরি বা সেভ হবে না।",journeyOpen:"অনুশীলন দেখুন",journeySummary:"প্রয়োজনীয় বিভাগ, রাউন্ড ও বাকি কাজ।",journeyCategories:"ক্রেতার নির্ধারিত বিভাগ ও উৎস।",journeyRounds:"স্যাম্পল, পাঠানো ও ক্রেতার প্রাপ্তি।",journeyDecisions:"ক্রেতার সিদ্ধান্ত, বাতিল ও মন্তব্য।",journeyRevisions:"পূর্বের প্রত্যাখ্যান ও পরের সংশোধন।",journeyExceptions:"অসম্পূর্ণ প্রমাণ, বিলম্ব, পুরনো সংস্করণ।",journeyReports:"খসড়া রিপোর্ট ও Excel/PDF।",
    title:'স্যাম্পলিং ও অনুমোদন ৩৬০',lead:'ক্রেতার স্যাম্পল প্ল্যান, জমা, মন্তব্য ও অনুমোদন',
    home:'হোম',new:'নতুন স্যাম্পল অনুরোধ',continue:'সর্বশেষ খুলুন',open:'সেভ রেকর্ড খুলুন',practice:'অনুশীলন উদাহরণ',
    save:'এখন সেভ',download:'সেভ কপি ডাউনলোড',upload:'সেভ কপি খুলুন',report:'রিপোর্ট তৈরি',
@@ -150,7 +150,7 @@ class SamplingCopy {
    statusRejected:'প্রত্যাখ্যাত',statusCommented:'মন্তব্য পাওয়া গেছে',
    statusNeedsInformation:'তথ্য দরকার',statusStaleReview:'পুরনো সংস্করণ — আবার যাচাই',
    reportNotice:'সর্বশেষ রাউন্ডের অবস্থা বর্তমান; পূর্বের সিদ্ধান্ত অক্ষত থাকে।'},
-  hi:{
+  hi:{journeyTitle:"सैंपलिंग और मंजूरी के सात चरण",journeyLead:"काल्पनिक रीड-ओनली सैंपल में असली सेक्शन देखें। खरीदार की मंजूरी या PPM GO नहीं बनेगा या सेव होगा।",journeyOpen:"अभ्यास देखें",journeySummary:"आवश्यक श्रेणियां, राउंड और बकाया।",journeyCategories:"खरीदार-निर्धारित श्रेणियां और प्रमाण।",journeyRounds:"सैंपल, डिस्पैच और खरीदार प्राप्ति।",journeyDecisions:"निर्णय, अस्वीकार और टिप्पणियां।",journeyRevisions:"पुराना अस्वीकार और फिर संशोधन।",journeyExceptions:"प्रमाण की कमी, देरी, पुरानी टेक रिविजन।",journeyReports:"ड्राफ्ट रिपोर्ट और Excel/PDF।",
    title:'सैंपलिंग और अनुमोदन 360',lead:'खरीदार की सैंपल योजना, राउंड, टिप्पणियां और मंजूरी',
    home:'होम',new:'नया सैंपल अनुरोध',continue:'आखिरी खोलें',open:'सेव रिकॉर्ड खोलें',practice:'अभ्यास उदाहरण',
    save:'अभी सेव',download:'सेव कॉपी डाउनलोड',upload:'सेव कॉपी खोलें',report:'रिपोर्ट बनाएं',

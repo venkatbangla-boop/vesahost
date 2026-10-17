@@ -52,6 +52,34 @@ class SamplingBrowserProof{
    await page.locator('[data-action=new]').waitFor({timeout:9000});
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('[data-vesa-menu]').count(),6);
+   // Seven real sections are discoverable without creating buyer approvals.
+   const stages=['summary','categories','rounds','decisions','revisions','exceptions','reports'];
+   const previews=page.locator('.sa-journey [data-action="preview"]');
+   const noRequest=()=>page.evaluate(()=>Object.keys(localStorage).every(k=>!k.startsWith('vesa.sampling-approval.records.v1.')));
+   assert.equal(await previews.count(),7);
+   assert(await noRequest(),'No local request before practice');
+   fs.mkdirSync(out,{recursive:true});
+   for(const width of [320,390,1440]){
+    await page.setViewportSize({width,height:850});
+    assert.equal(await previews.count(),7,width+'px seven sample steps');
+    const geometry=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,
+      heights:[...document.querySelectorAll('.sa-journey .sa-btn')].map(x=>x.getBoundingClientRect().height)}));
+    assert(geometry.scroll<=geometry.width+1,width+'px journey does not overflow page');
+    assert(geometry.heights.every(x=>x>=44),width+'px touch controls at least 44px high');
+    await page.screenshot({path:path.join(out,'sampling-g4-home-'+width+'.png'),fullPage:true});
+   }
+   await page.setViewportSize({width:390,height:850});
+   for(const stage of stages){
+    await page.locator('.sa-journey [data-action="preview"][data-id="'+stage+'"]').click();
+    assert.equal(await page.locator('.sa-tabs [data-action="'+stage+'"]').getAttribute('aria-current'),'true',stage+' opens the real sample panel');
+    assert.match(await page.locator('#saMain').innerText(),/Practice example \(read-only\)/,stage+' remains explicitly fictional');
+    assert(await page.locator('#saMain [data-action="save"]').isDisabled(),stage+' cannot save in practice');
+    assert(await noRequest(),stage+' must not create local request');
+    if(stage==='reports')await page.screenshot({path:path.join(out,'sampling-g4-mobile-evidence-reports.png')});
+    await action('home');
+   }
+   await page.setViewportSize({width:1280,height:900});
+   assert(await noRequest(),'No record created by seven previews');
    await action('new');
    await put({buyer:'SYNTHETIC BUYER',poNo:'SYN-PO-123',style:'SYN-TEE',
      factory:'SYNTHETIC FACTORY',requirementsSource:'SYNTHETIC BUYER SAMPLE PLAN',
@@ -182,7 +210,13 @@ class SamplingBrowserProof{
     await page.waitForFunction(lang=>document.documentElement.lang===lang,language);
     await page.keyboard.press('Escape');await settings.waitFor({state:'hidden'});
     assert.match(await page.locator('.sa-tabs').innerText(),new RegExp(word));
-    assert.equal(JSON.stringify(await saved()),records,'Language switching must preserve source history.');
+    await action('home');
+    const headings={en:'Explore seven sampling and approval steps',bn:'স্যাম্পলিং ও অনুমোদনের সাত ধাপ',
+      hi:'सैंपलिंग और मंजूरी के सात चरण',ta:'Sampling & Approval — ஏழு வேலைப் பகுதிகள்'};
+    assert.equal(await page.locator('#saJourneyTitle').innerText(),headings[language]);
+    assert.equal(await page.locator('.sa-journey [data-action="preview"]').count(),7);
+    await action('continue');
+    assert.equal(JSON.stringify(await saved()),records,'Language switching and home/continue preserve source history.');
    }
    await page.reload({waitUntil:'domcontentloaded'});await action('continue');
    assert.equal((await saved())[0].decisions[0].status,'rejected');

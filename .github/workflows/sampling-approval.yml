@@ -4,11 +4,15 @@ on:
   push:
     branches:
       - feature/sampling-approval-360
+      - feature/sampling-g4-source-journey
+      - main
     paths:
       - 'apps/sampling-approval/**'
       - '.github/workflows/sampling-approval.yml'
       - 'js/app-catalogue.js'
       - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -60,5 +64,7 @@ jobs:
         if: always()
         with:
           name: sampling360-synthetic-browser
-          path: output/playwright/sampling-app04-*
+          path: |
+            output/playwright/sampling-app04-*
+            output/playwright/sampling-g4-*
           if-no-files-found: ignore

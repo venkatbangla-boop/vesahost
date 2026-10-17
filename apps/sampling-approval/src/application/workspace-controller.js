@@ -5,6 +5,8 @@
 (function(root){
 'use strict';
 class SamplingWorkspace {
+ // This controller alone owns the task order and synthetic preview navigation.
+ static steps=Object.freeze(['summary','categories','rounds','decisions','revisions','exceptions','reports']);
  constructor(){
   this.main=document.getElementById('saMain');
   this.dialog=document.getElementById('saDialog');
@@ -116,7 +118,11 @@ class SamplingWorkspace {
  action(name,id){
   try{
    if(name==='home'||name==='open'){this.current=null;this.section='summary';this.dirty=false;this.render();return;}
-   if(name==='new'){this.form('new');return;}
+   if(name==='preview'){
+     if(this.current||!SamplingWorkspace.steps.includes(id))throw Error('Return to All Requests for practice steps.');
+     this.current=this.E.demo();this.section=id;this.dirty=false;this.render();return;
+    }
+    if(name==='new'){this.form('new');return;}
    if(name==='practice'){this.current=this.E.demo();this.section='summary';this.dirty=false;this.render();return;}
    if(name==='continue'){
     const list=this.store.list();if(!list.length)throw Error('No saved sampling record in this browser.');
@@ -171,6 +177,17 @@ class SamplingWorkspace {
   link.href=url;link.download=name;document.body.append(link);link.click();link.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
  }
+ journey(t){
+  const cards=SamplingWorkspace.steps.map((name,index)=>{
+   const hint='journey'+name.charAt(0).toUpperCase()+name.slice(1);
+   return '<article class="sa-journey-card"><span class="sa-journey-step">'+String(index+1).padStart(2,'0')+
+    '</span><h3>'+t(name)+'</h3><p>'+t(hint)+'</p>'+
+    '<button type="button" class="sa-btn" data-action="preview" data-id="'+this.escape(name)+
+    '" aria-label="'+t('journeyOpen')+' · '+t(name)+'">'+t('journeyOpen')+'</button></article>';
+  });
+  return '<section class="sa-card" aria-labelledby="saJourneyTitle"><h2 id="saJourneyTitle">'+t('journeyTitle')+
+   '</h2><p class="sa-note">'+t('journeyLead')+'</p><div class="sa-journey">'+cards.join('')+'</div></section>';
+ }
  render(){
   const e=x=>this.escape(x),t=x=>e(this.t(x));
   const title='<section class="sa-card"><h1>'+t('title')+'</h1>'+
@@ -183,11 +200,11 @@ class SamplingWorkspace {
     '<h2>'+t('allRequests')+'</h2>'+
     (list.length?list.map(x=>'<div class="sa-record"><span><b>'+e(x.poNo)+'</b> · '+e(x.style)+
      '<small>Revision '+e(x.revision)+'</small></span>'+this.button('open-record','open',false,x.id)+'</div>').join(''):
-      '<p class="sa-note">'+t('none')+'</p>')+'</section>';
+      '<p class="sa-note">'+t('none')+'</p>')+'</section>'+this.journey(t);
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,calc=this.E.summarize(p,this.asOf),practice=p.mode==='practice';
-  const tabs=['summary','categories','rounds','decisions','revisions','exceptions','reports'];
+  const tabs=SamplingWorkspace.steps;
   this.main.innerHTML=title+'<section class="sa-card"><h2>'+e(p.header.poNo)+' · '+e(p.header.style)+
    '</h2><p class="sa-note">'+e(p.header.buyer)+' · '+e(p.header.factory)+' · '+
     (practice?t('practiceOnly'):t('saveState'))+'</p><div class="sa-actions">'+
