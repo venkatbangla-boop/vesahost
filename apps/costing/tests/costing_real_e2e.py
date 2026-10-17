@@ -195,6 +195,9 @@ def main():
 
         bad=tmp/'invalid-margin.xlsx';bad.write_bytes(make_input_workbook(page,6))
         upload_for_command(page,'xlsxImport',bad)
+        # The upload handler imports the XLSX asynchronously; wait for the exact
+        # validation result rather than racing the file-reader/DOM notification.
+        page.wait_for_function("() => { const node = document.querySelector('#costingToast'); return node && !node.hidden && node.textContent.includes('Margin % must be 0'); }", timeout=12000)
         require('Margin % must be 0' in page.locator('#costingToast').inner_text(), 'Non-zero Excel margin fails closed')
         require(len(record_snapshot(page))==1, 'Invalid Excel import leaves prior saved record intact')
 
