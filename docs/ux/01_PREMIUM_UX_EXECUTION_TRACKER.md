@@ -1,5 +1,16 @@
 # VESA 360 Premium Login & 19-App UX — Durable Execution Tracker
 
+## 2026-10-18 — LATEST G3 VERIFIED CHECKPOINT
+
+**Accepted release:** TNA active-order Master Sheet is now immediately accessible. Runtime `4a35070f2b6e17a69830db1c602c199ae95cc4a2`, feature Chromium/G13 [#39059962505 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059962505), main G3 [#39060152136 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152136), main TNA [#39060152231 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152231), Pages [#39060152341 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152341). Original G3 active-screen baseline [#39059572072 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059572072): 36 states / 60 screenshots / four viewport sizes, zero JS errors. The CSS-only TNA change retains 8 actions; all engines/save/print intact. **G3 overall is NOT finished.**
+
+**EXACT NEXT = G3-PPM-02**, not G0/G1/G2/G3-TNA. Audit PPM section navigation, 168 checkpoints and editor mobile ~25,986px scroll and 773 under-44px heuristic before changing its UI. Keep one top shell, preserve PPM GO/HOLD, legacy records/reports/EN/BN/HI/TA, run PPM real Chromium+TNA/AQL sibling regressions. AQL 11.78MB profiling follows. Source/readiness: `docs/ux/02_G3_ACTIVE_WORKFLOW_AUDIT.md`.
+
+**Public company homepage remains FROZEN.** Genuine human UAT still 1 PASS / 0 FAIL / 48 NOT TESTED. A bare `Continue` means resume from the latest actual GitHub SHA and this exact next action, not restart.
+
+---
+
+
 **Updated:** 2026-10-18
 **Approved UX scope:** ONLY `/login/`, `/apps/`, `/admin/` and the 19 app paths. Public `/` homepage and all assets/content/SEO are permanently FROZEN for this project. Source rules: `docs/ux/00_PREMIUM_ADAPTIVE_MASTER_PROMPT.md`.
 **Most recently published application code:** `1ef581fabe5a6aac03473eeb9c7bb33ce5cff43c` (G2 Admin); GitHub Pages #39059208861 SUCCESS. Recheck actual main when resuming.
