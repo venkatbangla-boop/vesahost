@@ -1,5 +1,14 @@
 # TNA 360 — G17 Personal-Demo Publication / Human Acceptance Gate
 
+## 2026-10-17 — G17 PERSONAL PREVIEW PROMOTED TO MAIN (NEWER OWNER DIRECTION)
+
+Owner explicitly confirmed personal static showcase only and requested verified branch work in main. The G13–G17 TNA Master Sheet, date revisions/localizations, 4-sheet XLSX/PDF and isolated worker were carried without refactoring original CPM or other apps. Integration source 0e62b45a7eb93de5d33645162f247957ba0ee335; [pre-promotion Chromium/offline/Node CI #39054935006 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39054935006), [main exact-sha CI #39055025377 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39055025377), [main Pages #39055025289 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39055025289). Published source is a personal synthetic preview; prior dated feature-branch HOLD references below are historical.
+
+Human UAT remains separately 0 TNA PASS / 12 NOT TESTED, full package 1 PASS / 0 FAIL / 48 NOT TESTED. No business/factory/user signoff is imputed from this software preview. **NEXT:** check actual public TNA asset bytes, then inspect one-app UI uniformity/feature discoverability across all 19 routes and fix proven app-owned issues in small tested patches. Never rebuild G13–G17 or modify original calculator/storage formulas to adjust presentation.
+
+---
+
+
 ## 2026-10-17 — TNA GARMENT MASTER SHEET G13–G17 VERIFIED; G17 FOUR-LANGUAGE DIALOG COMPLETE — PUBLIC RELEASE HOLD
 
 **Latest independently accepted technical source:** `feature/tna-merchandising-sheet` `d7806dcadfcc9af4dde77c21f7826614da2a22e7`, [GitHub Actions #39051371084 COMPLETE SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39051371084), [real Chromium offline/XLSX/PDF/screenshots artifact 12107073943](https://github.com/venkatbangla-boop/vesahost/actions/runs/39051371084/artifacts/12107073943). Node canonical 15 original blueprint hashes, all TNA G02/G03/G05/G07, G13 source-only knit/woven/denim, G14 revision/immutable-baseline, G15 local four-sheet XLSX/PDF/formula guard, G16 27-resource app-scoped worker manifest, older PPM/AQL/shell source guard all PASS. Installed real Chromium G13–G17 verifies new **EN/BN/HI/TA date-edit dialog labels and save button**, whole TNA sheet, source-backed planning dates, Save/Open, genuine OFFLINE network-disabled reload, offline workbook/date revision, print/PDF, 320–1440px, 200% themes/accessibility, old TNA UI/report and zero external requests or page errors. Root, PPM, AQL caches remain preserved. Previous candidate G17 #39051212270 had a stale G07 CSS version assertion, #39051273332 had uppercase CSS affecting case-sensitive English visible label test; narrow test-only fixes `b426c081` and `d7806dca` precede the accepted independent PASS. Do not relabel rejected candidates.

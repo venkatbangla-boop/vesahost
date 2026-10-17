@@ -1,5 +1,18 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## 2026-10-17 — ACTIVE OWNER DECISION AND LATEST VERIFIED MAIN (PERSONAL SHOWCASE)
+
+**Permanent direction:** The owner confirms VESA 360 is a PERSONAL SHOWCASE and wants one polished app experience. Do not repeatedly challenge or restate use/hosting questions unless the owner changes scope. Work on functional UI and preserve browser-local synthetic-only data. All 19 app routes remain registered.
+
+**Main technical progress:** App Centre now has 19 searchable, categorized, EN/BN/HI/TA responsive cards without repeated VESA prefix; code 8b82a3e6ff3d5ab08cf43ea4978463a91a33d5a0, [feature Chromium #39054659201 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39054659201), [main Chromium #39054754765 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39054754765), [main Pages #39054754247 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39054754247). Root scoped cache v84 and main sibling regressions PASS.
+
+**TNA G17 promoted for PERSONAL PREVIEW to main:** code 0e62b45a7eb93de5d33645162f247957ba0ee335, original G17 independently verified [integration browser/offline/XLSX/PDF/PPM/AQL #39054935006 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39054935006), [main G17 CI #39055025377 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39055025377), [main Pages #39055025289 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39055025289). Existing domain/CPM, other apps and saved-copy formats unchanged. Human UAT source rows still 1 PASS / 0 FAIL / 48 NOT TESTED; do NOT invent acceptance or block personal UI work due to unrelated factory signoff.
+
+**NEXT ACTION:** Follow [docs/portfolio/15_PERSONAL_DEMO_UX_FINISH_PROMPT.md](docs/portfolio/15_PERSONAL_DEMO_UX_FINISH_PROMPT.md). Inspect actual 19 app opening/feature paths, eliminate repetitive in-app branding and confusing duplicate chrome, normalize actions/labels/mobile and independently test one narrow change at a time. Do not rebuild finished apps or ask owner to reattach original ZIP.
+
+---
+
+
 ## 2026-10-17 — LATEST VERIFIED ACTIVE BRANCH: TNA G13–G17 MASTER SHEET COMPLETE IN DEVELOPMENT; HUMAN/PAGES RELEASE HOLD
 
 **This is a documentation-only `main` continuity note. It DOES NOT deploy or merge the TNA rework application.** Active branch: `feature/tna-merchandising-sheet`; exact latest independently verified runtime source `d7806dcadfcc9af4dde77c21f7826614da2a22e7`; [G17 feature Node + actual Chromium/four languages + 27-resource scoped offline + XLSX/PDF + original TNA/PPM/AQL regression #39051371084 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39051371084); [synthetic browser screenshots/workbooks/PDF artifact 12107073943](https://github.com/venkatbangla-boop/vesahost/actions/runs/39051371084/artifacts/12107073943). Most recent feature-branch documentation-only checkpoint `0b1012a9b8a6133f8734a0b6cead5c79103c3a35`. **Read the current exact source, G17 test details and next action from the active branch `VESA_PROGRESS.md`, `VESA_RESUME_PROMPT.md`, `docs/tna/06_EXECUTION_TRACKER.md`, `docs/tna/07_GARMENT_MERCHANDISING_UI_AUDIT.md` and `docs/tna/08_G17_DEMO_RELEASE_ELIGIBILITY.md`. Do not restart M1–M5 or refer to M0 as the latest.**

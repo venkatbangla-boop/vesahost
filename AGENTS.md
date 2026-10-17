@@ -1,5 +1,12 @@
 # VESA TNA 360 — Repository Instructions for VS Code Codex
 
+## 2026-10-17 — Personal Showcase and One-Product UI Owner Instruction
+
+**User-confirmed scope:** personal showcase only; do not repeatedly challenge usage or make it a recurring blocker. Never enter real confidential business data. Complete and publish independently verified personal-demo UI changes to main where authorized, without fabricating human/factory acceptance. Follow docs/portfolio/15_PERSONAL_DEMO_UX_FINISH_PROMPT.md for the cross-route design finish. Preserve all 19 app domains and the original approved blueprint sources. Main code 0e62b45a7eb93de5d33645162f247957ba0ee335 contains the App Centre U1 and TNA G17 personal preview.
+
+---
+
+
 ## Canonical 15-app portfolio source — permanent resume rule (2026-10-17)
 
 This root file historically describes TNA. **For the 15-app portfolio**, the original detailed requirements are now permanently committed in THIS repository; never require the owner to attach the same ZIP for every next app.
