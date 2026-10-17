@@ -1,0 +1,11 @@
+# Sampling & Approval 360 — Personal Demo Release Notes (2026-10-17)
+
+**Original authority:** Approved user ZIP `blueprints/APP-04_sampling-approval.md`, SHA256 `b06e7d1e3eb486f564097f754817d899b4dba5c094cef054bc4c01e5090934c8`. **Main code commit:** `6b1e4b53a7d4f7bcd7a37ea529a49a9e3903da4a`; [domain/real Chromium/sibling CI #39015967734 PASS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39015967734), [Pages #39016045454 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39016045454), [public exact HTML and all separate CSS/JS source #39016044847 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39016044847). Live https://vesaent.com/apps/sampling-approval/.
+
+**Status: DEMO LIVE** synthetic personal non-commercial only. Browser login is not secure authentication; local buyer evidence is not a digitally verified signature or external approval. No real buyer, PO, style or sample evidence may be used. Native-device UAT and third-party workflow permission remain **CONDITIONAL**.
+
+**Domain owners:** `apps/sampling-approval/src/domain/sampling-engine.js` no DOM; `data/local-record-port.js` versioned key `vesa.sampling-approval.records.v1.<user>` and FNV checksum `.vesasampling` copy (corruption detection, NOT cryptographic signature); `reports/report-model.js`; `i18n/app-copy.js`; `application/workspace-controller.js`; VESA shared shell. No TNA/PPM/AQL/private localStorage reads. Buyer category source, required applicability and approver authority explicitly entered; physical rounds preserve historical rejections; buyer vs factory status segregated; approved source becomes stale if linked tech or artwork revision changes; overdue requires dated buyer calendar. Reports XLSX/PDF and local reviewed reference (not PPM GO), EN/BN/HI/TA, responsive and no network. Tests `tests/domain.test.cjs`, `tests/browser-workflow.cjs`, dedicated GitHub Free Actions workflow.
+
+**Known limits:** Local browser records only; dependency on buyer category/authorities and material/label source evidence; exact human source authenticity not independently verified. Rollback by reverting new app/release catalogue/cache commits without touching users' local saved files, not by force-pushing or erasing data.
+
+**NEXT:** Fabric & Trims 360 `feature/fabric-trims-360`; then Shipment & Documentation 360.
