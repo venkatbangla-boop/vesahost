@@ -11,8 +11,11 @@
 <script src="./src/domain/concept-register.js"></script>
 <script src="./src/domain/board-layout.js"></script>
 <script src="./src/domain/revision-history.js"></script>
+<script src="./src/domain/reviewed-reference.js"></script>
 <script src="./src/data/saved-copy-codec.js"></script>
 <script src="./src/data/local-record-port.js"></script>
+<script src="./src/reports/report-model.js"></script>
+<script src="/js/vendor/xlsx.full.min.js"></script>
 <script src="./src/i18n/app-copy.js"></script>
 <script src="./src/application/workspace-controller.js"></script>
 <script src="./src/bootstrap.js" defer></script>
@@ -23,4 +26,5 @@
 <button id="pdDialogClose" type="button" class="pd-btn" aria-label="Close dialog">&times;</button></div>
 <div id="pdDialogBody"></div></dialog>
 <input id="pdSavedFile" type="file" accept=".vesaproduct,application/json" hidden>
+<input id="pdReferenceFile" type="file" accept=".json,application/json" hidden>
 </body></html>

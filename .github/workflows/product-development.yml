@@ -41,6 +41,10 @@ jobs:
           node --check apps/product-development/tests/save-reopen.test.cjs
           node --check apps/product-development/tests/browser-workflow.cjs
           node apps/product-development/tests/save-reopen.test.cjs
+          node --check apps/product-development/src/domain/reviewed-reference.js
+          node --check apps/product-development/src/reports/report-model.js
+          node --check apps/product-development/tests/report-reference.test.cjs
+          node apps/product-development/tests/report-reference.test.cjs
           node tests/personal-demo-release.cjs
           node tests/vesa-next-app-starter.cjs
           node apps/claims-disputes/tests/domain.test.cjs

@@ -33,3 +33,23 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
 @media(max-width:740px){.pd-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pd-card{padding:12px}}
 @media(max-width:470px){.pd-grid,.pd-form,.pd-board-cards{grid-template-columns:1fr}.pd-form .wide{grid-column:1}.pd-actions .pd-btn{flex:1 1 auto}}
 @media print{.vesa-workspace,.app-user-bar,.pd-tabs,.pd-actions,.pd-dialog{display:none!important}#pdMain{width:100%;padding:0}.pd-card{border:0}}
+
+/* M3 local-only proposed media and draft A4 report; shared universal shell remains untouched. */
+.pd-image{display:block;width:100%;max-width:100%;height:auto;max-height:400px;object-fit:contain;border-radius:9px}
+.pd-image-caption{font-size:.86rem;color:var(--muted,#526176);overflow-wrap:anywhere}
+.pd-image-frame{max-width:100%;min-width:0;overflow:hidden}
+.pd-report{min-width:0;overflow-wrap:anywhere}
+.pd-report h2{font-size:1.15rem}.pd-report h3{font-size:1.02rem}
+.pd-report-section{margin:15px 0;min-width:0}
+.pd-report-board{break-inside:avoid;margin:14px 0}
+.pd-confirm{display:flex!important;align-items:center;gap:10px}
+.pd-confirm input[type=checkbox]{width:20px;min-width:20px;max-width:20px;min-height:20px;height:20px}
+@media print{
+ #pdMain>.pd-card:not(.pd-print-card),#pdMain>.pd-tabs{display:none!important}
+ .pd-print-card{display:block!important;border:0!important;padding:0!important}
+ .pd-scroll{overflow:visible;border:0}.pd-table{width:100%;min-width:0;table-layout:fixed;font-size:8px}
+ .pd-table th,.pd-table td{padding:5px;white-space:normal;overflow-wrap:anywhere}
+ .pd-report-section{break-inside:avoid}
+ .pd-image{max-height:150mm}
+ @page{size:A4 landscape;margin:12mm}
+}

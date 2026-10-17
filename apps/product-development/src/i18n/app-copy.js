@@ -2,6 +2,8 @@
 (function(root){
 'use strict';
 const en={
+ imageBoard:'Add Local Image Board',imageFile:'Choose Local PNG/JPEG/WebP Image',rightsBasis:'Artwork Rights Basis',rightsSourceRef:'Artwork Rights Evidence',objectFit:'Image Fit',altText:'Accessible Image Description',caption:'Image Caption',sourceNotice:'This source is user-selected and only locally reviewed; it does NOT prove official tech approval or rights ownership.',referenceSelect:'Link Tech Pack Draft File',referenceConfirm:'Confirm Source Review',localReviewer:'Independent Local Reviewer',localReviewDate:'Local Source Review Date',identityConfirmed:'I checked the original draft source belongs to THIS concept. No buyer/production approval is inferred.',references:'User-Reviewed Tech Drafts',reports:'Draft Presentation & Reports',report:'Prepare Draft Report',excel:'Download Excel',print:'Print / Save PDF',
+
  title:'Product Development 360',lead:'Draft apparel ideas, colourways, board layouts and source-reviewed proposal history',
  notice:'NON-COMMERCIAL PERSONAL DEMO. Synthetic ideas only. This is NOT buyer artwork permission, Tech Pack, quote, sample approval or production release.',
  warning:'A selected concept is still a proposal. No buyer-approved tech specification, factory order, MOQ, Pantone, financial price or copyright license is inferred.',
@@ -29,7 +31,7 @@ const en={
  selectedDraft:'Selected for next draft only',rejectedProposal:'Proposal rejected'
 };
 const language={
- ta:{
+ ta:{imageBoard:'உள்ளூர் பட போர்டு சேர்',imageFile:'உள்ளூர் PNG/JPEG/WebP படம் தேர்வு செய்',rightsBasis:'பட உரிமை அடிப்படை',rightsSourceRef:'பட உரிமை ஆதாரம்',objectFit:'பட அளவமைப்பு',altText:'பட விளக்கம்',caption:'பட குறிப்பு',sourceNotice:'தேர்ந்தெடுத்த ஆதாரம் இந்த concept-க்கான மனிதர் பார்த்த வரைவு மட்டுமே; buyer/production approval அல்ல.',referenceSelect:'Tech Pack வரைவு கோப்பை சேர்',referenceConfirm:'ஆதாரம் சரிபார்',localReviewer:'உள்ளூர் சரிபார்ப்பாளர்',localReviewDate:'ஆதாரம் சரிபார்த்த தேதி',identityConfirmed:'இந்த concept-இன் Tech Pack வரைவு என்று பார்த்தேன்; buyer approval அல்ல.',references:'Tech வரைவு ஆதாரங்கள்',reports:'வரைவு அறிக்கைகள்',report:'வரைவு அறிக்கை',excel:'Excel பதிவிறக்கு',print:'PDF / அச்சு',
  title:'Product Development 360',lead:'ஆடை வடிவமைப்பு யோசனைகள், நிறங்கள், போர்டுகள் மற்றும் மாற்ற வரலாறு',
  notice:'வணிகமற்ற தனிப்பட்ட டெமோ. செயற்கை யோசனைகள் மட்டும். Buyer artwork அனுமதி, Tech Pack அல்லது உற்பத்தி ஒப்புதல் அல்ல.',
  warning:'தேர்வு செய்த concept கூட ஒரு முன்மொழிவுதான். Buyer approval, Pantone, MOQ அல்லது விலை தானாக உறுதியாகாது.',
@@ -57,7 +59,7 @@ const language={
  choose:'தேர்ந்தெடு',reviewRequested:'மதிப்பாய்வு கோரல்',changesRequested:'மாற்றம் கோரப்பட்டது',
  selectedDraft:'அடுத்த வரைவு மட்டும் தேர்வு',rejectedProposal:'முன்மொழிவு நிராகரிப்பு'
  },
- bn:{
+ bn:{imageBoard:'স্থানীয় ছবির বোর্ড যোগ',imageFile:'স্থানীয় PNG/JPEG/WebP ছবি বাছুন',rightsBasis:'ছবির অধিকার ভিত্তি',rightsSourceRef:'ছবির অধিকার প্রমাণ',objectFit:'ছবি বসানোর ধরন',altText:'ছবির বর্ণনা',caption:'ছবির মন্তব্য',sourceNotice:'এই খসড়া উৎস স্থানীয়ভাবে দেখা হয়েছে; এটি ক্রেতার বা উৎপাদনের অনুমোদন নয়।',referenceSelect:'টেক প্যাক খসড়া ফাইল যুক্ত করুন',referenceConfirm:'উৎস পর্যালোচনা নিশ্চিত করুন',localReviewer:'স্থানীয় স্বাধীন পর্যালোচক',localReviewDate:'উৎস পর্যালোচনার তারিখ',identityConfirmed:'এই খসড়া এই ধারণার সঙ্গে মেলে দেখেছি; এটি অনুমোদন নয়।',references:'টেক প্যাক খসড়া উৎস',reports:'খসড়া প্রেজেন্টেশন ও রিপোর্ট',report:'খসড়া রিপোর্ট',excel:'Excel নামান',print:'PDF / প্রিন্ট',
  title:'Product Development 360',lead:'পোশাকের খসড়া ধারণা, রং, বোর্ড ও পরিবর্তনের ইতিহাস',
  notice:'শুধুমাত্র ব্যক্তিগত অবাণিজ্যিক ডেমো ও কাল্পনিক তথ্য। এটি ক্রেতার আর্টওয়ার্ক অনুমতি, টেক প্যাক বা উৎপাদন অনুমোদন নয়।',
  warning:'নির্বাচিত ধারণাও খসড়া প্রস্তাব। ক্রেতার অনুমোদন, প্যান্টোন, MOQ বা দাম অনুমান করা হয় না।',
@@ -84,7 +86,7 @@ const language={
  choose:'বেছে নিন',reviewRequested:'পর্যালোচনা চাওয়া',changesRequested:'পরিবর্তন চাওয়া',
  selectedDraft:'শুধু পরের খসড়ার জন্য নির্বাচিত',rejectedProposal:'প্রস্তাব বাতিল'
  },
- hi:{
+ hi:{imageBoard:'स्थानीय तस्वीर बोर्ड जोड़ें',imageFile:'स्थानीय PNG/JPEG/WebP तस्वीर चुनें',rightsBasis:'चित्र अधिकार आधार',rightsSourceRef:'चित्र अधिकार प्रमाण',objectFit:'चित्र का अनुपात',altText:'चित्र का विवरण',caption:'चित्र टिप्पणी',sourceNotice:'यह स्रोत स्थानीय समीक्षा का ड्राफ्ट है; खरीदार या उत्पादन अनुमति नहीं।',referenceSelect:'टेक पैक ड्राफ्ट फ़ाइल जोड़ें',referenceConfirm:'स्रोत समीक्षा पुष्टि',localReviewer:'स्वतंत्र स्थानीय समीक्षक',localReviewDate:'स्रोत समीक्षा की तारीख',identityConfirmed:'ड्राफ्ट इसी कॉन्सेप्ट का है, जाँच लिया; कोई आधिकारिक मंजूरी नहीं।',references:'टेक पैक ड्राफ्ट स्रोत',reports:'ड्राफ्ट प्रस्तुति और रिपोर्ट',report:'ड्राफ्ट रिपोर्ट',excel:'Excel डाउनलोड',print:'PDF / प्रिंट',
  title:'Product Development 360',lead:'परिधान के प्रारूप विचार, रंग, बोर्ड और बदलाव का रिकॉर्ड',
  notice:'केवल निजी गैर-व्यावसायिक डेमो और कृत्रिम जानकारी। यह खरीदार की कलाकृति अनुमति, टेक पैक या उत्पादन स्वीकृति नहीं है।',
  warning:'चुना गया कॉन्सेप्ट भी प्रस्ताव है। खरीदार मंजूरी, पैंटोन, MOQ या कीमत का अनुमान नहीं लगाया जाता।',

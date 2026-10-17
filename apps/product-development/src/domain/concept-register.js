@@ -63,6 +63,11 @@ class VesaProductConceptRegister{
    return{ok:false,errors:['Unsupported versioned Product Development concept']};
   if(p.status!==this.draft)e.push('Concept must not infer buyer acceptance or production readiness');
   e.push(...this.header(p.header),...this.header(p.originalHeader));
+  // M3 manual source snapshots are optional; M2 saved copies continue to validate without them.
+  if(p.manualReferences!==undefined){
+   if(!root.VesaProductReviewedReference)e.push('Source review engine unavailable');
+   else e.push(...root.VesaProductReviewedReference.validateList(p));
+  }
   const counts={colourways:120,tasks:200,boards:20,revisions:300,decisions:300,audit:1000};
   for(const [kind,max] of Object.entries(counts))if(p[kind].length>max)e.push(kind+' exceeds local source limits');
   const allIds=new Set();

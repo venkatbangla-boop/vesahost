@@ -103,6 +103,81 @@ async function run(){
   await page.locator('#pdDialogClose').click();
   assert.equal(JSON.stringify(await records()),beforeInvalid,'Corrupted saved copy cannot change source records');
   await action('history');assert.match(await page.locator('.pd-table').innerText(),/Sourced concept brief revision/);
+  // M3 image file is generated synthetically on this browser, never fetched or committed as buyer art.
+  const png=await page.evaluate(()=>{
+   const canvas=document.createElement('canvas');canvas.width=64;canvas.height=36;
+   const context=canvas.getContext('2d');context.fillStyle='#264b80';
+   context.fillRect(0,0,64,36);context.fillStyle='#f6ecd5';context.fillRect(8,8,30,19);
+   return Array.from(atob(canvas.toDataURL('image/png').split(',')[1]),c=>c.charCodeAt(0));
+  });
+  const imgPath=path.join(out,'product-app15-synthetic-source.png');
+  fs.writeFileSync(imgPath,Buffer.from(png));
+  await action('boards');await action('image-board');
+  await fill({titleBoard:'SYN LOCAL PHOTO MOODBOARD',layout:'grid-2',aspect:'16:9',
+   sourceRef:'SYN SELF-DRAWN SOURCE BRIEF',sourceDate:'2026-10-17',reviewedBy:'SYN LOCAL DESIGNER',
+   rightsBasis:'self-created',rightsSourceRef:'SYN CREATOR HAND-DRAWN IDEA',
+   objectFit:'contain',altText:'SYN fictional palette collage',caption:'SYN owned concept sketch'});
+  await page.locator('#pdDialog [name=imageFile]').setInputFiles(imgPath);
+  await submit();
+  assert.equal((await records())[0].boards.length,2);
+  assert.equal((await records())[0].boards[1].cards[0].kind,'image');
+  assert(await page.locator('.pd-image').count(),'User-picked image must render on proposal board');
+  assert.equal((await records())[0].status,'DRAFT PROPOSAL — NOT BUYER APPROVED / NOT PRODUCTION READY');
+  const goodImage=JSON.stringify(await records());
+  // Rejection must preserve the current saved concept even if metadata claims a different image type.
+  await action('image-board');await fill({titleBoard:'SYN UNSAFE PHOTO',layout:'single',aspect:'16:9',
+   sourceRef:'SYN FALSE IMAGE FILE',sourceDate:'2026-10-17',reviewedBy:'SYN REVIEWER',
+   rightsBasis:'self-created',rightsSourceRef:'SYN',objectFit:'contain',altText:'SYN'});
+  const badPath=path.join(out,'product-app15-not-real-image.png');
+  fs.writeFileSync(badPath,Buffer.from('Not a PNG despite the file name'));
+  await page.locator('#pdDialog [name=imageFile]').setInputFiles(badPath);
+  await page.locator('#pdDialog form button[type=submit]').click();
+  await page.locator('#pdDialog[open]').waitFor();
+  assert.match(await page.locator('#pdDialogBody').innerText(),/image signature|local PNG/);
+  await page.locator('#pdDialogClose').click();
+  assert.equal(JSON.stringify(await records()),goodImage,'Wrong image must not mutate original');
+  // Manually prepared, source-labelled draft. Product Development never inspects Tech Pack localStorage.
+  const conceptId=(await records())[0].id;
+  const source={sourceApp:'VESA Tech Pack & Spec 360',recordType:'TechPackDraft',
+   recordId:'SYN-TECH-DRAFT-1',revisionId:'R1',sourceDate:'2026-10-17',
+   verifiedBy:'SYN TECH PACK REVIEWER',verifiedAt:'2026-10-17T08:00:00Z',
+   displaySnapshot:{style:'SYN STYLING DRAFT-1',proposedConceptId:conceptId,
+    draftOnly:true,buyerApproved:false,productionReady:false,priceConfirmed:false}};
+  const techPath=path.join(out,'product-app15-local-tech-draft.json');
+  fs.writeFileSync(techPath,JSON.stringify(source));
+  await action('references');await action('reference-select');
+  await page.locator('#pdReferenceFile').setInputFiles(techPath);
+  await page.locator('#pdDialog[open]').waitFor();
+  await fill({localReviewer:'SYN LOCAL DESIGNER',localReviewDate:'2026-10-17'});
+  await page.locator('#pdDialog [name=identityConfirmed]').check();
+  await submit();
+  assert.equal((await records())[0].manualReferences.length,1);
+  assert.match(await page.locator('.pd-table').innerText(),/SYN-TECH-DRAFT-1/);
+  const wrongTech=path.join(out,'product-app15-wrong-concept.json');
+  fs.writeFileSync(wrongTech,JSON.stringify({...source,recordId:'SYN-OTHER-DRAFT',
+   displaySnapshot:{...source.displaySnapshot,proposedConceptId:'OTHER-CONCEPT-ID'}}));
+  const snapshot=JSON.stringify(await records());
+  await action('reference-select');await page.locator('#pdReferenceFile').setInputFiles(wrongTech);
+  await page.locator('#pdDialog[open]').waitFor();
+  assert.match(await page.locator('#pdDialogBody').innerText(),/must match this concept ID/);
+  await page.locator('#pdDialogClose').click();
+  assert.equal(JSON.stringify(await records()),snapshot,'Wrong typed Tech Pack source cannot modify records');
+  await action('reports');
+  const report=await page.locator('.pd-report').innerText();
+  assert.match(report,/DRAFT BUYER PROPOSAL ONLY/);
+  assert.match(report,/SYN-TECH-DRAFT-1/);
+  assert.match(report,/SYN LOCAL PHOTO MOODBOARD/);
+  assert.match(report,/NOT AUTHENTICATED/);
+  assert.equal(await page.locator('.pd-report .pd-image').count(),1,'Report contains local synthetic image');
+  const xlsxDownload=page.waitForEvent('download');await action('excel');
+  const dl=await xlsxDownload;
+  const excelPath=path.join(out,'product-app15-line-sheet-draft.xlsx');await dl.saveAs(excelPath);
+  assert.equal(fs.readFileSync(excelPath).subarray(0,2).toString(),'PK');
+  assert(fs.statSync(excelPath).size>2500);
+  const pdf=await page.pdf({format:'A4',printBackground:true,landscape:true});
+  assert.equal(pdf.subarray(0,4).toString(),'%PDF');
+  fs.writeFileSync(path.join(out,'product-app15-board-draft.pdf'),pdf);
+  await action('history');
   for(const width of [320,360,390,640,768,1024,1280,1440]){
    await page.setViewportSize({width,height:870});
    const measured=await page.evaluate(()=>document.documentElement.scrollWidth);
@@ -130,7 +205,7 @@ async function run(){
   assert.equal((await records()).length,2,'Practice cannot silently create a record');
   assert.deepEqual(errors,[],'No uncaught Chromium errors');
   assert.deepEqual(external,[],'No remote requests or hidden media/customer uploads');
-  console.log('PRODUCT DEVELOPMENT M2 REAL CHROMIUM PASS: single VESA shell, sourced concept/colourway/board/tasks, immutable brief and local proposal decisions, Save/Continue/Download/Open separate copy, corruption rejection, EN/BN/HI/TA, 320–1440 and zero external requests.');
+  console.log('PRODUCT DEVELOPMENT M3 REAL CHROMIUM PASS: single VESA shell, sourced concept/colourway/board/tasks, immutable brief and local proposal decisions, Save/Continue/Download/Open separate copy, corruption rejection, EN/BN/HI/TA, 320–1440 and zero external requests.');
  }finally{
   await context.close();await browser.close();await new Promise(ok=>server.close(ok));
  }
