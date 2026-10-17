@@ -2,7 +2,7 @@
 'use strict';
 const fs=require('fs'),path=require('path'),assert=require('assert/strict');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
-for(const file of ['apps/packing-container/index.html','apps/order-commission/index.html','apps/tech-pack-spec/index.html','apps/purchase-order/index.html','apps/lc-payment/index.html','apps/sampling-approval/index.html','apps/fabric-trims/index.html','apps/shipment-documentation/index.html','apps/production-tracker/index.html','apps/factory-vendor/index.html','apps/label-artwork-approval/index.html']){
+for(const file of ['apps/packing-container/index.html','apps/order-commission/index.html','apps/tech-pack-spec/index.html','apps/purchase-order/index.html','apps/lc-payment/index.html','apps/sampling-approval/index.html','apps/fabric-trims/index.html','apps/shipment-documentation/index.html','apps/production-tracker/index.html','apps/factory-vendor/index.html','apps/label-artwork-approval/index.html','apps/buyer-crm/index.html']){
  const s=read(file);assert(s.includes('NON-COMMERCIAL PERSONAL DEMO.'));
  assert(s.includes('synthetic')||s.includes('Synthetic'));
  assert(s.includes('/js/auth.js')&&s.includes('/js/vesa-workspace-shell.js'));
@@ -19,7 +19,8 @@ assert.equal((catalog.match(/id:'shipment-documentation'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'production-tracker'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'factory-vendor'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'label-artwork-approval'/g)||[]).length,1);
-assert(sw.includes('vesa-v79-label-artwork-personal-demo'));
+assert.equal((catalog.match(/id:'buyer-crm'/g)||[]).length,1);
+assert(sw.includes('vesa-v80-buyer-crm-personal-demo'));
 for(const url of ['./apps/packing-container/','./apps/order-commission/',
  './apps/packing-container/index.html','./apps/order-commission/index.html',
  './apps/tech-pack-spec/','./apps/tech-pack-spec/index.html',
@@ -84,6 +85,18 @@ for(const url of ['./apps/packing-container/','./apps/order-commission/',
  './apps/label-artwork-approval/src/data/local-record-port.js',
  './apps/label-artwork-approval/src/reports/report-model.js',
  './apps/label-artwork-approval/src/i18n/app-copy.js',
- './apps/label-artwork-approval/src/application/workspace-controller.js'])
+ './apps/label-artwork-approval/src/application/workspace-controller.js',
+ './apps/buyer-crm/','./apps/buyer-crm/index.html',
+ './apps/buyer-crm/assets/buyer-crm.css',
+ './apps/buyer-crm/src/bootstrap.js',
+ './apps/buyer-crm/src/domain/buyer-directory.js',
+ './apps/buyer-crm/src/domain/opportunity-state.js',
+ './apps/buyer-crm/src/domain/followup-scheduler.js',
+ './apps/buyer-crm/src/domain/reviewed-reference.js',
+ './apps/buyer-crm/src/data/saved-copy-codec.js',
+ './apps/buyer-crm/src/data/local-record-port.js',
+ './apps/buyer-crm/src/reports/report-model.js',
+ './apps/buyer-crm/src/i18n/app-copy.js',
+ './apps/buyer-crm/src/application/workspace-controller.js'])
  assert(sw.includes("'"+url+"'"));
 console.log('VESA DEMO RELEASE SOURCE PASS: synthetic-only public disclaimer, exact catalogue routes, updated service-worker cache.');
