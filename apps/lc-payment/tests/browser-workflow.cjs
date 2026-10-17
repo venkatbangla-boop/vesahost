@@ -47,6 +47,34 @@ class LCBrowserProof{
    await page.locator('[data-action=new]').waitFor();
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('[data-vesa-menu]').count(),6);
+   // G4 real nine-section discovery is fictional and never creates a bank record.
+   const stages=['summary','lcTerms','events','amendments','obligations','documents','settlements','charges','reports'];
+   const previews=page.locator('.lc-journey [data-action="preview"]');
+   const noLC=()=>page.evaluate(()=>Object.keys(localStorage).every(k=>!k.startsWith('vesa.lc-payment.records.v1.')));
+   assert.equal(await previews.count(),9);
+   assert(await noLC(),'No saved LC before read-only practice');
+   fs.mkdirSync(out,{recursive:true});
+   for(const width of [320,390,1440]){
+    await page.setViewportSize({width,height:850});
+    assert.equal(await previews.count(),9,width+'px all nine steps available');
+    const g=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:innerWidth,
+      sizes:[...document.querySelectorAll('.lc-journey .lc-btn')].map(x=>x.getBoundingClientRect().height)}));
+    assert(g.scroll<=g.width+1,width+'px no overflow');
+    assert(g.sizes.every(x=>x>=44),width+'px at least 44px touch');
+    await page.screenshot({path:path.join(out,'lc-g4-home-'+width+'.png'),fullPage:true});
+   }
+   await page.setViewportSize({width:390,height:850});
+   for(const stage of stages){
+    await page.locator('.lc-journey [data-action="preview"][data-id="'+stage+'"]').click();
+    assert.equal(await page.locator('.lc-tabs [data-action="'+stage+'"]').getAttribute('aria-current'),'true',stage+' real LC panel opened');
+    assert.match(await page.locator('#lcMain').innerText(),/SYNTHETIC PRACTICE/,stage+' visibly fictional');
+    assert(await page.locator('#lcMain [data-action="save"]').isDisabled(),stage+' practice save blocked');
+    assert(await noLC(),stage+' preview has not created any LC record');
+    if(stage==='reports')await page.screenshot({path:path.join(out,'lc-g4-mobile-draft-reports.png')});
+    await act('home');
+   }
+   await page.setViewportSize({width:1280,height:900});
+   assert(await noLC(),'Nine source previews preserve empty local LC store');
    await act('new');
    await enter({lcType:'master',lcNo:'SYN-MASTER-LC-001',applicant:'SYNTHETIC BUYER',
      beneficiary:'SYNTHETIC FACTORY',issuingBank:'SYNTHETIC BANK A',
@@ -158,6 +186,12 @@ class LCBrowserProof{
     await page.waitForFunction(x=>document.documentElement.lang===x,lang);
     await page.keyboard.press('Escape');await settings.waitFor({state:'hidden'});
     assert.match(await page.locator('.lc-tabs').innerText(),new RegExp(label));
+    await act('home');
+    const headings={en:'Explore nine LC and payment work steps',bn:'LC ও পেমেন্টের নয়টি কাজের ধাপ',
+      hi:'LC और भुगतान के नौ कार्य चरण',ta:'LC & Payment-ன் ஒன்பது வேலைப் பகுதிகள்'};
+    assert.equal(await page.locator('#lcJourneyTitle').innerText(),headings[lang]);
+    assert.equal(await page.locator('.lc-journey [data-action="preview"]').count(),9);
+    await act('continue');
     assert.equal(JSON.stringify(await saved()),state);
    }
    await page.reload({waitUntil:'domcontentloaded'});await act('continue');

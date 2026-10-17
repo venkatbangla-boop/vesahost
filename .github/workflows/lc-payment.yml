@@ -4,11 +4,15 @@ on:
   push:
     branches:
       - feature/lc-payment-360
+      - feature/lc-g4-source-journey
+      - main
     paths:
       - 'apps/lc-payment/**'
       - '.github/workflows/lc-payment.yml'
       - 'js/app-catalogue.js'
       - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -54,5 +58,7 @@ jobs:
         if: always()
         with:
           name: lc360-synthetic-evidence
-          path: output/playwright/lc-app05-*
+          path: |
+            output/playwright/lc-app05-*
+            output/playwright/lc-g4-*
           if-no-files-found: ignore

@@ -21,6 +21,13 @@
 .lc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
 .lc-tile{padding:14px;border:1px solid var(--line,#cbd6e4);background:var(--look-surface,#eef3f9);border-radius:11px;min-width:0}
 .lc-tile strong{display:block;font-size:1.33rem;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.lc-tile small{color:var(--muted,#526176)}
+/* LC Home: source-section discovery only, rendered against the read-only original fixture. */
+.lc-journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.lc-journey-card{display:flex;flex-direction:column;gap:9px;min-width:0;padding:14px;border:1px solid var(--line,#cbd6e4);border-radius:12px;background:var(--look-surface,#eef3f9)}
+.lc-journey-card h3,.lc-journey-card p{margin:0}
+.lc-journey-card p{flex:1;color:var(--muted,#526176)}
+.lc-journey-step{font-size:.76rem;font-weight:800;letter-spacing:.08em;color:var(--muted,#526176)}
+.lc-journey-card .lc-btn{width:100%}
 .lc-scroll{max-width:100%;overflow:auto;border:1px solid var(--line,#cbd6e4);border-radius:10px}
 .lc-table{width:100%;min-width:690px;border-collapse:collapse;font-size:.89rem}
 .lc-table th,.lc-table td{text-align:left;vertical-align:top;padding:10px 11px;border-bottom:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere}
@@ -34,8 +41,8 @@
 .lc-record{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid var(--line,#cbd6e4)}
 .lc-record:last-child{border-bottom:0}.lc-record small{display:block;color:var(--muted,#526176)}
 .lc-report section{margin:15px 0;break-inside:avoid}
-@media(max-width:720px){.lc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lc-card{padding:12px}}
-@media(max-width:470px){.lc-grid,.lc-form{grid-template-columns:1fr}.lc-form .wide,.lc-form label.wide{grid-column:1}.lc-actions>.lc-btn{flex:1 1 auto}}
+@media(max-width:720px){.lc-grid,.lc-journey{grid-template-columns:repeat(2,minmax(0,1fr))}.lc-card{padding:12px}}
+@media(max-width:470px){.lc-grid,.lc-journey,.lc-form{grid-template-columns:1fr}.lc-form .wide,.lc-form label.wide{grid-column:1}.lc-actions>.lc-btn{flex:1 1 auto}}
 @media print{.vesa-workspace,.app-user-bar,.lc-tabs,.lc-actions,.lc-dialog{display:none!important}#lcMain{width:100%;padding:0}.lc-card{border:0;padding:0}.lc-table{font-size:10px}.lc-table td,.lc-table th{padding:5px 6px}@page{size:A4 landscape;margin:12mm}}
 </style></head><body>
 <main id="lcMain" tabindex="-1"><p role="status">Opening VESA LC &amp; Payment 360…</p></main>
@@ -393,7 +400,7 @@ class LCReport{
  }
 }
 const TXT={
- en:{localReviewer:'Local PO source reviewer',localReviewedAt:'Local review date',sourceApp:'Source application',recordType:'Record type',recordId:'Source record ID',revisionId:'Source revision',sourceDate:'Source date',verifiedBy:'Source reviewer',verifiedAt:'Source reviewed on',displaySnapshot:'Reviewed PO snapshot (JSON)',title:'LC & Payment 360',lead:'Source-based LC terms, maturity, bank documents and settlements',
+ en:{journeyTitle:"Explore nine LC and payment work steps",journeyLead:"Open real sections with a fictional read-only LC. No bank approval, transfer or record is created.",journeyOpen:"View practice",journeySummary:"Check LC totals, open dues and discrepancies.",journeyLcTerms:"Inspect written LC terms and origin.",journeyEvents:"Inspect dated BL and document events.",journeyAmendments:"Compare pending and approved LC amendments.",journeyObligations:"Check event, day convention and maturity.",journeyDocuments:"Inspect bank documents and source discrepancies.",journeySettlements:"Inspect payments, credits and reversals.",journeyCharges:"See bank charges without automatic netting.",journeyReports:"Open real draft reports and Excel/PDF.",localReviewer:'Local PO source reviewer',localReviewedAt:'Local review date',sourceApp:'Source application',recordType:'Record type',recordId:'Source record ID',revisionId:'Source revision',sourceDate:'Source date',verifiedBy:'Source reviewer',verifiedAt:'Source reviewed on',displaySnapshot:'Reviewed PO snapshot (JSON)',title:'LC & Payment 360',lead:'Source-based LC terms, maturity, bank documents and settlements',
  home:'Home',new:'New LC Register',continue:'Continue Last',open:'Open Saved',
  practice:'Practice Example',save:'Save Now',download:'Download Saved Copy',
  upload:'Open Saved Copy',report:'Prepare Report',excel:'Download Excel',print:'Print / PDF',
@@ -427,7 +434,7 @@ const TXT={
  guard:'No default usance days, FX, business calendar, bank acceptance or bank fees.',
  acknowledged:'User-entered bank status is not independently authenticated',
  chargeNote:'Bank charges are reported separately, never automatically deducted from an obligation.'},
- ta:{localReviewer:'PO ஆதாரம் சரிபார்த்தவர்',localReviewedAt:'சரிபார்த்த தேதி',sourceApp:'ஆதார App',recordType:'பதிவு வகை',recordId:'பதிவு ID',revisionId:'Revision ID',sourceDate:'ஆதார தேதி',verifiedBy:'ஆதாரம் சரிபார்த்தவர்',verifiedAt:'சரிபார்த்த தேதி',displaySnapshot:'PO ஆதார Snapshot',title:'LC & Payment 360',lead:'ஆதாரத்துடன் LC, Maturity, Bank Documents, Payment',
+ ta:{journeyTitle:"LC & Payment-ன் ஒன்பது வேலைப் பகுதிகள்",journeyLead:"கற்பனை LC உதாரணத்தில் பகுதிகளைப் பாருங்கள். Bank Approval, Payment, Record எதுவும் தானாக உருவாகாது.",journeyOpen:"Practice பகுதி பார்",journeySummary:"LC Value, Due மற்றும் Discrepancy.",journeyLcTerms:"ஆதார LC Terms மற்றும் விவரங்கள்.",journeyEvents:"BL மற்றும் ஆவண தேதி ஆதாரங்கள்.",journeyAmendments:"Pending / Approved Amendment.",journeyObligations:"Event, Day Convention, Maturity.",journeyDocuments:"Bank Documents மற்றும் பிழைகள்.",journeySettlements:"Payment, Credit, Reversal பதிவுகள்.",journeyCharges:"தனியான Bank Charges.",journeyReports:"Draft Reports மற்றும் Excel/PDF.",localReviewer:'PO ஆதாரம் சரிபார்த்தவர்',localReviewedAt:'சரிபார்த்த தேதி',sourceApp:'ஆதார App',recordType:'பதிவு வகை',recordId:'பதிவு ID',revisionId:'Revision ID',sourceDate:'ஆதார தேதி',verifiedBy:'ஆதாரம் சரிபார்த்தவர்',verifiedAt:'சரிபார்த்த தேதி',displaySnapshot:'PO ஆதார Snapshot',title:'LC & Payment 360',lead:'ஆதாரத்துடன் LC, Maturity, Bank Documents, Payment',
  home:'Home',new:'புதிய LC',continue:'கடைசி பதிவு திற',open:'Saved LC திற',
  practice:'Practice Example',save:'இப்போது Save',download:'Saved Copy Download',
  upload:'Saved Copy திற',report:'Report தயாரி',excel:'Excel Download',print:'Print / PDF',
@@ -459,7 +466,7 @@ const TXT={
  guard:'Usance, FX, Calendar, Bank Approval எதையும் ஊகிக்க மாட்டோம்.',
  acknowledged:'Bank status உண்மையில் சரிபார்க்கப்படவில்லை.',
  chargeNote:'Bank Charge தனியாக இருக்கும்; Obligation-லிருந்து தானாக கழிக்காது.'},
- bn:{localReviewer:'PO উৎস পর্যালোচক',localReviewedAt:'পর্যালোচনার তারিখ',sourceApp:'উৎস অ্যাপ',recordType:'রেকর্ডের ধরন',recordId:'রেকর্ড ID',revisionId:'সংস্করণ ID',sourceDate:'উৎস তারিখ',verifiedBy:'সংশ্লিষ্ট পর্যালোচক',verifiedAt:'যাচাই তারিখ',displaySnapshot:'PO উৎস স্ন্যাপশট',title:'এলসি ও পেমেন্ট ৩৬০',lead:'উৎসভিত্তিক LC, মেয়াদ, ব্যাংক নথি ও পেমেন্ট',
+ bn:{journeyTitle:"LC ও পেমেন্টের নয়টি কাজের ধাপ",journeyLead:"কাল্পনিক LC দিয়ে আসল অংশ দেখুন। ব্যাংক অনুমোদন, টাকা বা রেকর্ড তৈরি হবে না।",journeyOpen:"অনুশীলন দেখুন",journeySummary:"LC মূল্য, বাকি ও নথির অমিল।",journeyLcTerms:"লিখিত LC শর্ত ও উৎস।",journeyEvents:"BL ও প্রমাণের তারিখ।",journeyAmendments:"অপেক্ষমাণ ও অনুমোদিত সংশোধন।",journeyObligations:"দিননীতি ও মেয়াদ।",journeyDocuments:"ব্যাংক নথি ও অসংগতি।",journeySettlements:"পেমেন্ট, ক্রেডিট, রিভার্সাল।",journeyCharges:"আলাদা ব্যাংক চার্জ।",journeyReports:"খসড়া রিপোর্ট ও Excel/PDF।",localReviewer:'PO উৎস পর্যালোচক',localReviewedAt:'পর্যালোচনার তারিখ',sourceApp:'উৎস অ্যাপ',recordType:'রেকর্ডের ধরন',recordId:'রেকর্ড ID',revisionId:'সংস্করণ ID',sourceDate:'উৎস তারিখ',verifiedBy:'সংশ্লিষ্ট পর্যালোচক',verifiedAt:'যাচাই তারিখ',displaySnapshot:'PO উৎস স্ন্যাপশট',title:'এলসি ও পেমেন্ট ৩৬০',lead:'উৎসভিত্তিক LC, মেয়াদ, ব্যাংক নথি ও পেমেন্ট',
  home:'হোম',new:'নতুন LC',continue:'শেষটি খুলুন',open:'সেভ LC খুলুন',
  practice:'অনুশীলন উদাহরণ',save:'এখন সংরক্ষণ',download:'সেভ কপি ডাউনলোড',
  upload:'সেভ কপি খুলুন',report:'রিপোর্ট তৈরি',excel:'এক্সেল ডাউনলোড',print:'প্রিন্ট / PDF',
@@ -491,7 +498,7 @@ const TXT={
  guard:'উসান্স, FX, ক্যালেন্ডার বা ব্যাংক অনুমোদন অনুমান নয়',
  acknowledged:'স্থানীয় ব্যাংক অবস্থা প্রকৃত ব্যাংক অনুমোদন নয়',
  chargeNote:'ব্যাংক চার্জ আলাদা; পাওনা থেকে নিজে বাদ দেয় না।'},
- hi:{localReviewer:'PO स्रोत समीक्षक',localReviewedAt:'समीक्षा की तारीख',sourceApp:'स्रोत ऐप',recordType:'रिकॉर्ड प्रकार',recordId:'रिकॉर्ड ID',revisionId:'संस्करण ID',sourceDate:'स्रोत तारीख',verifiedBy:'स्रोत समीक्षक',verifiedAt:'समीक्षा तारीख',displaySnapshot:'PO स्रोत स्नैपशॉट',title:'एलसी और भुगतान 360',lead:'स्रोत आधारित LC, अवधि, दस्तावेज और भुगतान',
+ hi:{journeyTitle:"LC और भुगतान के नौ कार्य चरण",journeyLead:"काल्पनिक LC में असली भाग खोलें। बैंक मंजूरी, भुगतान या सेव रिकॉर्ड नहीं बनता।",journeyOpen:"अभ्यास देखें",journeySummary:"LC राशि, बकाया और विसंगति।",journeyLcTerms:"लिखित LC शर्तें और स्रोत।",journeyEvents:"BL व प्रमाणित तारीखें।",journeyAmendments:"लंबित और मंजूर संशोधन।",journeyObligations:"दिन नीति और मैच्योरिटी।",journeyDocuments:"बैंक दस्तावेज और अंतर।",journeySettlements:"पेमेंट, क्रेडिट, रिवर्सल।",journeyCharges:"अलग बैंक शुल्क।",journeyReports:"ड्राफ्ट रिपोर्ट और Excel/PDF।",localReviewer:'PO स्रोत समीक्षक',localReviewedAt:'समीक्षा की तारीख',sourceApp:'स्रोत ऐप',recordType:'रिकॉर्ड प्रकार',recordId:'रिकॉर्ड ID',revisionId:'संस्करण ID',sourceDate:'स्रोत तारीख',verifiedBy:'स्रोत समीक्षक',verifiedAt:'समीक्षा तारीख',displaySnapshot:'PO स्रोत स्नैपशॉट',title:'एलसी और भुगतान 360',lead:'स्रोत आधारित LC, अवधि, दस्तावेज और भुगतान',
  home:'होम',new:'नया LC',continue:'पिछला खोलें',open:'सेव LC खोलें',
  practice:'अभ्यास उदाहरण',save:'अभी सेव',download:'सेव कॉपी डाउनलोड',
  upload:'सेव कॉपी खोलें',report:'रिपोर्ट बनाएं',excel:'एक्सेल डाउनलोड',print:'प्रिंट / PDF',
@@ -524,6 +531,7 @@ const TXT={
  acknowledged:'स्थानीय बैंक स्थिति वास्तविक बैंक मंजूरी नहीं',
  chargeNote:'बैंक शुल्क अलग, दायित्व से स्वतः नहीं घटता।'}
 };
+const LC_STAGES=Object.freeze(['summary','lcTerms','events','amendments','obligations','documents','settlements','charges','reports']);
 /**
  * LC controller owns only LC view state and local user entry. VESA shell owns
  * global logo, login account and ordered Home/File/Edit/View/Tools/Help menu.
@@ -624,7 +632,11 @@ class LCWorkspace{
  action(action,id){
   try{
    if(action==='home'||action==='open'){this.current=null;this.section='summary';this.dirty=false;this.render();return;}
-   if(action==='new')return this.form('new');
+   if(action==='preview'){
+     if(this.current||!LC_STAGES.includes(id))throw Error('Return to All LCs for a valid practice step.');
+     this.current=LCPolicyEngine.sample();this.section=id;this.dirty=false;this.render();return;
+    }
+    if(action==='new')return this.form('new');
    if(action==='practice'){this.current=LCPolicyEngine.sample();this.section='summary';this.dirty=false;this.render();return;}
    if(action==='continue'){const list=this.store.list();if(!list.length)throw Error('No LC saved on this device.');
     return this.action('open-record',list[0].id);}
@@ -655,7 +667,17 @@ class LCWorkspace{
   if(this.store.load(next.id))this.store.save(next);else this.dirty=true;
   this.current=next;this.render();
  }
- render(){
+ journey(t){
+   const cards=LC_STAGES.map((name,index)=>{
+    const hint='journey'+name.charAt(0).toUpperCase()+name.slice(1);
+    return '<article class="lc-journey-card"><span class="lc-journey-step">'+String(index+1).padStart(2,'0')+
+     '</span><h3>'+t(name)+'</h3><p>'+t(hint)+'</p><button class="lc-btn" type="button" data-action="preview" data-id="'+safe(name)+
+     '" aria-label="'+t('journeyOpen')+' · '+t(name)+'">'+t('journeyOpen')+'</button></article>';
+   });
+   return '<section class="lc-card" aria-labelledby="lcJourneyTitle"><h2 id="lcJourneyTitle">'+t('journeyTitle')+
+    '</h2><p class="lc-note">'+t('journeyLead')+'</p><div class="lc-journey">'+cards.join('')+'</div></section>';
+  }
+  render(){
   const t=k=>safe(this.tr(k)),heading='<section class="lc-card"><h1>'+t('title')+'</h1>'+
    '<p class="lc-note">'+t('lead')+'</p><p class="lc-alert">'+safe(NOTICE)+'</p></section>';
   if(!this.current){
@@ -667,11 +689,11 @@ class LCWorkspace{
     '<h2>'+t('open')+'</h2>'+(saved.length?saved.map(x=>'<div class="lc-record"><span><b>'+safe(x.lcNo)+
       '</b> · '+safe(x.type)+'<small>Local revision '+safe(x.revision)+'</small></span>'+
       '<button class="lc-btn" data-action="open-record" data-id="'+safe(x.id)+'">'+t('open')+'</button></div>').join(''):
-      '<p class="lc-note">'+t('none')+'</p>')+'</section>';
+      '<p class="lc-note">'+t('none')+'</p>')+'</section>'+this.journey(t);
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,x=LCPolicyEngine.calculate(p,this.asOf),practice=p.mode==='practice';
-  const sections=['summary','lcTerms','events','amendments','obligations','documents','settlements','charges','reports'];
+  const sections=LC_STAGES;
   this.main.innerHTML=heading+'<section class="lc-card"><h2>'+safe(p.header.lcNo)+' · '+safe(p.header.lcType)+
     '</h2><p class="lc-note">'+safe(p.header.currency)+' · '+safe(p.header.applicant)+
     ' → '+safe(p.header.beneficiary)+' · '+(practice?'SYNTHETIC PRACTICE':

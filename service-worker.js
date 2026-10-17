@@ -1,4 +1,4 @@
-const CACHE='vesa-v93-po-g4-guided-workflow';
+const CACHE='vesa-v94-lc-g4-source-journey';
 const ASSETS=[
   './',
   './index.html',
