@@ -156,7 +156,10 @@ class SamplingEngine {
   if(!category)return {status:'needs-information',issue:'Buyer category missing'};
   const relevant=p.rounds.filter(r=>r.categoryId===categoryId).sort((a,b)=>a.round-b.round);
   const last=relevant.at(-1);
-  if(!last)return {status:'needs-information',issue:'No sample requested',round:null,overdue:null};
+  if(!last)return {categoryId,category:category.name,required:category.required,
+   status:'needs-information',issue:'No sample requested',round:null,roundId:null,
+   overdue:null,stale:false,requiredDate:null,calendarBasis:null,lastDecisionId:null,
+   approver:null,approvedOn:null};
   const linked=p.decisions.filter(d=>d.roundId===last.id);
   const decision=linked.at(-1)||null;
   let status='pending',issue='',stale=false;
