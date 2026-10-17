@@ -625,10 +625,10 @@ class TechSpecWorkspace{
     '<details class="sp-local-info"><summary>'+escape(copy.info)+'</summary>'+
     '<p class="sp-warning">'+escape(DISCLAIMER)+'</p></details></section>';
   const demo=GarmentSpecEngine.practice();
-  const projection=GarmentSpecEngine.project(demo);
+  const sampleProjection=GarmentSpecEngine.project(demo);
   const demoPOM=demo.poms[0];
   const chartRow=demo.meta.sizes.map(size=>{
-    const item=projection.cells.find(x=>x.pomId===demoPOM.id&&x.size===size);
+    const item=sampleProjection.cells.find(x=>x.pomId===demoPOM.id&&x.size===size);
     return '<td>'+escape(item?.target??this.tr('missing'))+'</td>';
   }).join('');
   const lab='<section class="sp-card sp-lab" aria-labelledby="techLabTitle">'+
