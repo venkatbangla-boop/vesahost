@@ -1,13 +1,19 @@
-# APP-09 development-only pure-domain gate. Does not publish a route.
+# APP-09 full release candidate gate; verifies domain, live catalogue integration and Chromium before public claim.
 name: VESA Production Tracker 360 verification
 on:
   push:
     branches:
       - feature/production-tracker-360
+      - main
     paths:
       - 'apps/production-tracker/**'
       - 'docs/production-tracker/**'
       - '.github/workflows/production-tracker.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
+      - '.github/workflows/vesa-costing-demo-live-smoke.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,6 +32,10 @@ jobs:
         run: |
           set -euo pipefail
           node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
+          node --check service-worker.js
+          node --check js/app-catalogue.js
+          node --check js/preferences.js
           node --check apps/production-tracker/src/domain/stage-flow.js
           node --check apps/production-tracker/src/domain/wip-balance.js
           node --check apps/production-tracker/src/domain/daily-output-ledger.js
@@ -69,6 +79,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: production360-m3-synthetic-browser
+          name: production360-m4-synthetic-browser
           path: output/playwright/prod-app09-*
           if-no-files-found: ignore
