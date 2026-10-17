@@ -29,7 +29,13 @@ async function run(){
  const records=()=>page.evaluate(()=>{const k=Object.keys(localStorage).find(x=>x.startsWith('vesa.label-artwork-approval.records.v1.'));return k?JSON.parse(localStorage.getItem(k)).records:[];});
  try{
   fs.mkdirSync(out,{recursive:true});
-  await page.goto(base+'/apps/label-artwork-approval/',{waitUntil:'domcontentloaded'});
+  await page.goto(base+'/apps/',{waitUntil:'domcontentloaded'});
+  const route=page.locator('#appCatalogue a[href="/apps/label-artwork-approval/"]');
+  await route.waitFor({timeout:12000});
+  assert.equal(await route.count(),1,'One and only one Artwork App Centre card');
+  assert.match(await route.innerText(),/Label.*Artwork/i);
+  await route.click();
+  assert(page.url().endsWith('/apps/label-artwork-approval/'),'App Centre opens approved Label Artwork route');
   await page.locator('[data-action="new"]').waitFor({timeout:12000});
   assert.equal(await page.locator('.vesa-workspace').count(),1,'One VESA shared shell');
   assert.equal(await page.locator('[data-vesa-menu]').count(),6,'Six global menus');
