@@ -1,0 +1,316 @@
+/* TNA M1: source-only garment merchandising master-sheet presenter.
+ * Owner: this class renders an existing VesaTnaDomain plan; it NEVER changes
+ * task dates, buyer approval, CPM, user storage, source evidence or an app sibling.
+ * Caller supplies only user-selected as-of date and the unchanged scheduling-engine
+ * result; calculated critical flags never substitute for a human approval.
+ */
+(function(root){
+'use strict';
+class VesaTnaMerchandisingSheet{
+ static COPY=Object.freeze({
+  en:{title:'Garment TNA Master Sheet',subtitle:'One order, every applicable activity. Dates and approvals need their original source.',
+   buyer:'Buyer',factory:'Factory',po:'PO / Order',style:'Style',product:'Garment',fabric:'Fabric specification',
+   gsm:'GSM',colour:'Colour / size',quantity:'Order quantity',lc:'Master LC opened',
+   lcStatus:'LC evidence',exFactory:'Required ex-factory',shipment:'Required shipment ETD',
+   remark:'Order remarks',notes:'Missing source stays Needs Information. LC date is a user entry, not bank authentication.',
+   asOf:'As-of review date (user entered)',all:'All Activities',overdue:'Overdue',
+   week:'Due Next 7 Days',buyerWait:'Waiting Buyer',localWait:'Waiting Local Office',
+   factoryWait:'Waiting Factory',ontrack:'On Track',critical:'Critical Path',
+   section:'Section / activity',owner:'Responsible party',baseline:'Baseline plan',
+   target:'Current target',forecast:'Forecast',actual:'Actual',delay:'Delay (calendar days)',
+   state:'Status',source:'Source / approval evidence',criticalCol:'Calculated critical',
+   comment:'Remarks',edit:'Edit status',editDates:'Edit dates',
+    dateTitle:"Edit sourced planning dates",
+    dateOpen:"Open a locally saved order before changing its planning dates.",
+    dateMissing:"This activity is not in the current order.",
+    dateBaseline:"Original baseline finish (before baseline confirmation)",
+    dateTarget:"Current target finish",
+    dateForecast:"Forecast finish",
+    dateRef:"Source document / dated meeting note",
+    dateReview:"Source review date",
+    dateReason:"Reason for changing the date",
+    dateHelp:"Enter separate baseline, target and forecast dates. Actual completion and buyer approval are not changed here.",
+    dateBlank:"Blank date fields keep the existing dates.",
+    dateLock:"Confirmed baseline is locked. Only target and forecast can be revised with a new source.",
+    dateDraft:"A draft baseline date is not approval; confirm the baseline separately.",
+    dateSave:"Save reviewed date change",
+    dateFailed:"Planning date not saved",
+    dateRejected:"Check the dates, source reference, review date and reason. A confirmed baseline cannot be changed.",
+    dateUnchanged:"The original order remains unchanged.",excel:'Download Excel',print:'Print / Save PDF',unverified:'Needs Information',
+   noRows:'No sourced activities match this filter.',notCalculated:'Not calculated',
+   calculated:'Critical',noncritical:'Not critical',pending:'Evidence not supplied',
+   total:'applicable activities',shown:'shown',noAsOf:'Enter an as-of date to use overdue / due-next-week filters.',
+   localInfo:'Local office must be explicitly named as task owner; it cannot be assumed from merchandiser or factory roles.',
+   draft:'DRAFT / SOURCE REVIEW REQUIRED — NOT A BUYER APPROVAL OR SHIPMENT RELEASE.',
+   currentInfo:'Dates displayed as separate source fields; forecast is not an approved revised target. Edit activity uses the existing controlled status/actual dialog.',
+   sizeMissing:'No colour/size breakdown entered',schedulingMissing:'Critical Path needs an explicit order start and buyer required ex-factory date.'},
+  bn:{title:'গার্মেন্টস TNA মাস্টার শিট',subtitle:'একটি অর্ডারের সব প্রযোজ্য কাজ; তারিখ ও অনুমোদনের উৎস লাগবে।',
+   buyer:'বায়ার',factory:'ফ্যাক্টরি',po:'PO / অর্ডার',style:'স্টাইল',product:'পোশাক',fabric:'ফ্যাব্রিক বিবরণ',
+   gsm:'GSM',colour:'রং / সাইজ',quantity:'অর্ডার পরিমাণ',lc:'মাস্টার LC খোলা',
+   lcStatus:'LC প্রমাণ',exFactory:'এক্স-ফ্যাক্টরি তারিখ',shipment:'শিপমেন্ট ETD',
+   remark:'অর্ডার মন্তব্য',notes:'উৎস না থাকলে Needs Information; LC তারিখ ব্যাংকের সত্যায়ন নয়।',
+   asOf:'পর্যালোচনার তারিখ (নিজে দিন)',all:'সব কাজ',overdue:'সময় পার হয়েছে',
+   week:'আগামী ৭ দিনের কাজ',buyerWait:'বায়ারের অপেক্ষা',localWait:'লোকাল অফিসের অপেক্ষা',
+   factoryWait:'ফ্যাক্টরির অপেক্ষা',ontrack:'অন ট্র্যাক',critical:'ক্রিটিক্যাল পাথ',
+   section:'সেকশন / কাজ',owner:'দায়িত্বপ্রাপ্ত',baseline:'মূল পরিকল্পনা',
+   target:'বর্তমান লক্ষ্য',forecast:'পূর্বাভাস',actual:'আসল তারিখ',delay:'দেরি (ক্যালেন্ডার দিন)',
+   state:'অবস্থা',source:'উৎস / অনুমোদনের প্রমাণ',criticalCol:'গণনাকৃত ক্রিটিক্যাল',
+   comment:'মন্তব্য',edit:'অবস্থা বদলান',editDates:'তারিখ বদলান',
+    dateTitle:"উৎস যাচাই করে পরিকল্পনার তারিখ বদলান",
+    dateOpen:"পরিকল্পনার তারিখ বদলানোর আগে এই ব্রাউজারে সেভ করা অর্ডার খুলুন।",
+    dateMissing:"এই কাজটি বর্তমান অর্ডারে নেই।",
+    dateBaseline:"মূল পরিকল্পনার শেষ তারিখ (অনুমোদনের আগে)",
+    dateTarget:"বর্তমান লক্ষ্য শেষ তারিখ",
+    dateForecast:"পূর্বাভাস শেষ তারিখ",
+    dateRef:"উৎস নথি / তারিখসহ মিটিং নোট",
+    dateReview:"উৎস যাচাইয়ের তারিখ",
+    dateReason:"তারিখ পরিবর্তনের কারণ",
+    dateHelp:"মূল, লক্ষ্য ও পূর্বাভাসের তারিখ আলাদা দিন। আসল সমাপ্তি বা বায়ারের অনুমোদন এখানে বদলাবে না।",
+    dateBlank:"ফাঁকা তারিখ আগের মতোই থাকবে।",
+    dateLock:"নিশ্চিত মূল পরিকল্পনা লক করা আছে; নতুন উৎস দিয়ে শুধু লক্ষ্য বা পূর্বাভাস বদলানো যাবে।",
+    dateDraft:"খসড়ায় তারিখ লেখা অনুমোদন নয়; মূল পরিকল্পনা আলাদা নিশ্চিত করুন।",
+    dateSave:"যাচাই করা তারিখ সেভ করুন",
+    dateFailed:"পরিকল্পনার তারিখ সেভ হয়নি",
+    dateRejected:"তারিখ, উৎস নথি, যাচাইয়ের তারিখ ও কারণ দেখুন। নিশ্চিত মূল পরিকল্পনা বদলানো যাবে না।",
+    dateUnchanged:"আগের অর্ডারের তথ্য অপরিবর্তিত রয়েছে।",excel:'Excel নামান',print:'PDF / প্রিন্ট',unverified:'Needs Information',
+   noRows:'এই ফিল্টারে কোনো কাজ নেই।',notCalculated:'গণনা হয়নি',
+   calculated:'ক্রিটিক্যাল',noncritical:'ক্রিটিক্যাল নয়',pending:'প্রমাণ নেই',
+   total:'প্রযোজ্য কাজ',shown:'দেখানো',noAsOf:'দেরি ও আগামী সপ্তাহ দেখতে পর্যালোচনার তারিখ দিন।',
+   localInfo:'কাজের মালিক হিসেবে লোকাল অফিস স্পষ্ট লেখা থাকতে হবে; অনুমান নয়।',
+   draft:'খসড়া / উৎস যাচাই দরকার — বায়ার অনুমোদন বা শিপমেন্ট রিলিজ নয়।',
+   currentInfo:'মূল/বর্তমান/পূর্বাভাস/আসল তারিখ আলাদা; পূর্বাভাস অনুমোদন নয়।',
+   sizeMissing:'রং ও সাইজের বিবরণ নেই',schedulingMissing:'শুরুর তারিখ ও বায়ার এক্স-ফ্যাক্টরি তারিখ প্রয়োজন।'},
+  hi:{title:'गारमेंट TNA मास्टर शीट',subtitle:'एक ऑर्डर के सभी लागू काम; तारीख और मंजूरी का स्रोत चाहिए।',
+   buyer:'बायर',factory:'फैक्ट्री',po:'PO / ऑर्डर',style:'स्टाइल',product:'गारमेंट',fabric:'फैब्रिक विवरण',
+   gsm:'GSM',colour:'रंग / साइज',quantity:'ऑर्डर मात्रा',lc:'मास्टर LC खुला',
+   lcStatus:'LC प्रमाण',exFactory:'एक्स-फैक्ट्री तारीख',shipment:'शिपमेंट ETD',
+   remark:'ऑर्डर टिप्पणी',notes:'स्रोत न हो तो Needs Information; LC तारीख बैंक सत्यापन नहीं है।',
+   asOf:'समीक्षा की तारीख (खुद भरें)',all:'सभी काम',overdue:'देरी से',
+   week:'अगले ७ दिन',buyerWait:'बायर के इंतजार में',localWait:'लोकल ऑफिस के इंतजार में',
+   factoryWait:'फैक्ट्री के इंतजार में',ontrack:'समय पर',critical:'क्रिटिकल पाथ',
+   section:'सेक्शन / काम',owner:'जिम्मेदार',baseline:'मूल योजना',
+   target:'वर्तमान लक्ष्य',forecast:'पूर्वानुमान',actual:'वास्तविक',delay:'देरी (कैलेंडर दिन)',
+   state:'स्थिति',source:'स्रोत / मंजूरी प्रमाण',criticalCol:'गणना किया क्रिटिकल',
+   comment:'टिप्पणी',edit:'स्थिति बदलें',editDates:'तारीख बदलें',
+    dateTitle:"स्रोत देखकर योजना की तारीख बदलें",
+    dateOpen:"योजना की तारीख बदलने से पहले इसी ब्राउज़र का सेव किया हुआ ऑर्डर खोलें।",
+    dateMissing:"यह गतिविधि मौजूदा ऑर्डर में नहीं है।",
+    dateBaseline:"मूल योजना खत्म होने की तारीख (पुष्टि से पहले)",
+    dateTarget:"वर्तमान लक्ष्य खत्म होने की तारीख",
+    dateForecast:"अनुमानित खत्म होने की तारीख",
+    dateRef:"स्रोत दस्तावेज़ / तारीख वाला मीटिंग नोट",
+    dateReview:"स्रोत की समीक्षा की तारीख",
+    dateReason:"तारीख बदलने का कारण",
+    dateHelp:"मूल योजना, लक्ष्य और पूर्वानुमान अलग लिखें। वास्तविक काम या बायर की मंजूरी यहाँ नहीं बदलती।",
+    dateBlank:"खाली तारीख में पुरानी तारीख बनी रहेगी।",
+    dateLock:"पुष्टि की गई मूल योजना लॉक है। नए स्रोत से सिर्फ लक्ष्य या पूर्वानुमान बदलें।",
+    dateDraft:"ड्राफ्ट में तारीख भरना मंजूरी नहीं है; मूल योजना अलग पुष्टि करें।",
+    dateSave:"समीक्षित तारीख सेव करें",
+    dateFailed:"योजना की तारीख सेव नहीं हुई",
+    dateRejected:"तारीख, स्रोत, समीक्षा की तारीख और कारण जाँचें। पुष्टि की गई मूल योजना नहीं बदली जा सकती।",
+    dateUnchanged:"मूल ऑर्डर का डेटा नहीं बदला है।",excel:'Excel डाउनलोड',print:'PDF / प्रिंट',unverified:'Needs Information',
+   noRows:'इस फिल्टर में काम नहीं मिले।',notCalculated:'गणना नहीं',
+   calculated:'क्रिटिकल',noncritical:'क्रिटिकल नहीं',pending:'प्रमाण नहीं',
+   total:'लागू काम',shown:'दिखाए',noAsOf:'देरी/अगले सप्ताह के लिए समीक्षा की तारीख भरें।',
+   localInfo:'लोकल ऑफिस को स्पष्ट तौर पर मालिक लिखना होगा; अनुमान नहीं।',
+   draft:'ड्राफ्ट / स्रोत जांच बाकी — बायर मंजूरी या शिपमेंट रिलीज नहीं।',
+   currentInfo:'मूल/वर्तमान/पूर्वानुमान/वास्तविक तारीख अलग हैं; पूर्वानुमान मंजूरी नहीं।',
+   sizeMissing:'रंग व साइज की जानकारी नहीं',schedulingMissing:'ऑर्डर शुरू और बायर एक्स-फैक्ट्री तारीख जरूरी।'},
+  ta:{title:'கார்மெண்ட் TNA மாஸ்டர் ஷீட்',subtitle:'ஒரே ஆர்டரில் பொருந்தும் எல்லா வேலைகளும்; தேதி மற்றும் approval-க்கு ஆதாரம் தேவை.',
+   buyer:'பையர்',factory:'ஃபேக்டரி',po:'PO / ஆர்டர்',style:'ஸ்டைல்',product:'கார்மெண்ட்',fabric:'ஃபேப்ரிக் விவரம்',
+   gsm:'GSM',colour:'கலர் / சைஸ்',quantity:'ஆர்டர் எண்ணிக்கை',lc:'மாஸ்டர் LC திறந்த தேதி',
+   lcStatus:'LC ஆதாரம்',exFactory:'எக்ஸ்-ஃபேக்டரி தேதி',shipment:'ஷிப்மெண்ட் ETD',
+   remark:'ஆர்டர் குறிப்புகள்',notes:'ஆதாரம் இல்லாதது Needs Information; LC தேதி என்பது வங்கி உறுதிப்படுத்தல் அல்ல.',
+   asOf:'ரிவியூ தேதி (நீங்கள் உள்ளிடவும்)',all:'எல்லா வேலைகளும்',overdue:'தாமதமானவை',
+   week:'அடுத்த 7 நாட்கள்',buyerWait:'பையர் பதில் நிலுவை',localWait:'லோக்கல் ஆஃபீஸ் நிலுவை',
+   factoryWait:'ஃபேக்டரி நிலுவை',ontrack:'சரியான நேரத்தில்',critical:'கிரிட்டிக்கல் பாத்',
+   section:'பிரிவு / வேலை',owner:'பொறுப்பாளர்',baseline:'முதல் திட்டம்',
+   target:'தற்போதைய இலக்கு',forecast:'ஃபோர்காஸ்ட்',actual:'நடந்த தேதி',delay:'தாமதம் (காலண்டர் நாள்)',
+   state:'நிலை',source:'ஆதாரம் / ஒப்புதல்',criticalCol:'கணக்கிட்ட கிரிட்டிக்கல்',
+   comment:'குறிப்புகள்',edit:'நிலை திருத்து',editDates:'தேதி திருத்து',
+    dateTitle:"ஆதாரத்துடன் திட்டத் தேதியை மாற்று",
+    dateOpen:"திட்டத் தேதியை மாற்ற இந்த browser-ல் சேமித்த ஆர்டரைத் திறக்கவும்.",
+    dateMissing:"இந்த வேலை தற்போதைய ஆர்டரில் இல்லை.",
+    dateBaseline:"முதல் திட்ட முடிவுத் தேதி (உறுதிப்படுத்தும் முன்)",
+    dateTarget:"தற்போதைய இலக்கு முடிவுத் தேதி",
+    dateForecast:"எதிர்பார்க்கப்படும் முடிவுத் தேதி",
+    dateRef:"ஆதார ஆவணம் / தேதியிட்ட மீட்டிங் குறிப்பு",
+    dateReview:"ஆதாரம் சரிபார்த்த தேதி",
+    dateReason:"தேதி மாற்றுவதற்கான காரணம்",
+    dateHelp:"Baseline, target, forecast தேதிகளைத் தனித்தனியாக உள்ளிடவும். Actual completion அல்லது Buyer approval இங்கு மாறாது.",
+    dateBlank:"காலியான தேதி பழையபடியே இருக்கும்.",
+    dateLock:"உறுதிசெய்த baseline மாற்ற முடியாது. புதிய ஆதாரத்துடன் target அல்லது forecast மட்டும் மாற்றலாம்.",
+    dateDraft:"Draft-ல் தேதி உள்ளிடுவது approval அல்ல; baseline-ஐத் தனியாக உறுதிப்படுத்த வேண்டும்.",
+    dateSave:"சரிபார்த்த தேதியைச் சேமி",
+    dateFailed:"திட்ட தேதி சேமிக்கப்படவில்லை",
+    dateRejected:"தேதி, ஆதாரம், சரிபார்த்த தேதி மற்றும் காரணத்தைச் சரிபார்க்கவும். உறுதிசெய்த baseline மாற்ற முடியாது.",
+    dateUnchanged:"பழைய ஆர்டர் விவரங்கள் மாற்றப்படவில்லை.",excel:'Excel பதிவிறக்கு',print:'PDF / அச்சு',unverified:'Needs Information',
+   noRows:'இந்த ஃபில்டரில் வேலை இல்லை.',notCalculated:'கணக்கிடவில்லை',
+   calculated:'கிரிட்டிக்கல்',noncritical:'கிரிட்டிக்கல் இல்லை',pending:'ஆதாரம் இல்லை',
+   total:'பொருந்தும் வேலைகள்',shown:'காட்டியது',noAsOf:'தாமதம் / அடுத்த வாரம் பார்க்க ரிவியூ தேதியை உள்ளிடவும்.',
+   localInfo:'Local office பொறுப்பை நேரடியாக பதிவு செய்ய வேண்டும்; ஊகிக்க முடியாது.',
+   draft:'வரைவு / ஆதாரம் சரிபார்க்க வேண்டும் — பையர் approval அல்லது shipment release அல்ல.',
+   currentInfo:'Baseline, target, forecast, actual தேதிகள் தனித்தனி; forecast என்பது approval அல்ல.',
+   sizeMissing:'கலர் / சைஸ் விவரம் இல்லை',schedulingMissing:'ஆர்டர் தொடக்கமும் பையர் ex-factory தேதியும் தேவை.'}
+ });
+ static FILTERS=Object.freeze(['all','overdue','week','buyerWait','localWait','factoryWait','ontrack','critical']);
+ static FACTORY_ROLES=new Set(['factory','cutting','sewing','finishing','packing','wash']);
+ static esc(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+ static date(value){
+  if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;
+  const n=Date.parse(value+'T00:00:00Z');
+  return Number.isFinite(n)&&new Date(n).toISOString().slice(0,10)===value?value:null;
+ }
+ static day(value){const d=this.date(value);return d===null?null:Date.parse(d+'T00:00:00Z')/86400000;}
+ static daysBetween(start,end){const a=this.day(start),b=this.day(end);return a===null||b===null?null:b-a;}
+ static explicit(row,key){return this.date(row?.dates?.[key]);}
+ static rows(plan,schedule){
+  const valid=!!schedule&&schedule.validity==='valid'&&schedule.taskResults;
+  return (plan?.tasks||[]).map((task,index)=>{
+   const baseline=this.explicit(task,'baselineFinish');
+   const target=this.explicit(task,'currentTargetFinish');
+   const forecast=this.explicit(task,'forecastFinish');
+   const actual=this.explicit(task,'actualFinish');
+   const due=target||forecast||baseline;
+   const delay=this.daysBetween(baseline,actual||forecast||target);
+   const proof=Array.isArray(task.proofRefs)?task.proofRefs.filter(x=>typeof x==='string'&&x.trim()).join(' · '):'';
+   const calculated=valid?schedule.taskResults[task.taskId]||null:null;
+   return {task,index,baseline,target,forecast,actual,due,delay,proof,
+    critical:calculated?calculated.isCritical===true:null};
+  });
+ }
+ static filterRows(rows,kind,asOf){
+  if(!this.FILTERS.includes(kind))kind='all';
+  if(kind==='all')return rows;
+  const asOfDay=this.day(asOf);
+  return rows.filter(r=>{
+   const task=r.task,owner=task.ownerParty;
+   const open=!['approved','completed','waived','not-applicable'].includes(task.status);
+   const day=this.day(r.due),diff=day===null||asOfDay===null?null:day-asOfDay;
+   if(kind==='overdue')return open&&diff!==null&&diff<0;
+   if(kind==='week')return open&&diff!==null&&diff>=0&&diff<=7;
+   if(kind==='buyerWait')return owner==='buyer'&&['awaiting-approval','submitted','blocked'].includes(task.status);
+   if(kind==='localWait')return owner==='local-office'&&open;
+   if(kind==='factoryWait')return this.FACTORY_ROLES.has(owner)&&
+    ['blocked','awaiting-approval','submitted','in-progress'].includes(task.status);
+   if(kind==='ontrack')return task.riskStatus==='on-track';
+   if(kind==='critical')return r.critical===true;
+   return true;
+  });
+ }
+ /*
+  * Source-only M3 spreadsheet data port. It prepares typed, deterministic
+  * sheet rows for the already bundled local XLSX library; it does not save,
+  * request external media, authenticate third-party signatures, invoke print or mutate records.
+  * Strings beginning with spreadsheet formula operators are quoted as text.
+  * Actual and calculated dates remain separate; unentered values are explicit.
+  */
+ static excelCell(value){
+  if(value===null||value===undefined||value==='')return'Needs Information';
+  if(typeof value==='number'&&Number.isFinite(value))return value;
+  const string=String(value);
+  return /^\s*[=+\-@]|^[\t\r\n]/u.test(string)?"'"+string:string;
+ }
+ static workbookTables(plan,scheduled){
+  const safe=v=>this.excelCell(v),order=plan?.order||{},c=plan?.commitments||{};
+  const style=order.styles?.[0]||{},records=this.rows(plan,scheduled);
+  const summary=[['Field','Source-entered value'],['Buyer',safe(order.buyerName)],
+   ['Factory',safe(order.factoryName)],['PO / Order',safe(order.poNumbers?.join(', '))],
+   ['Style',safe(style.styleNo)],['Garment',safe(order.construction||order.productProfile)],
+   ['Fabric specification',safe(order.fabricSpec)],['GSM — separately verified', 'Needs Information'],
+   ['Quantity',safe(order.totalQty)],['Unit',safe(order.unit)],
+   ['Master LC opened (entered, not authenticated)',safe(c.masterLcOpenedOn)],
+   ['Buyer required ex-factory',safe(c.buyerRequiredExFactory)],
+   ['Buyer required ETD',safe(c.buyerRequiredETD)],['Buyer required ETA',safe(c.buyerRequiredETA)],
+   ['Original order notes',safe(order.commercialNotes)],
+   ['Document status','DRAFT, NOT BUYER APPROVED OR PRODUCTION RELEASED']];
+  const activity=[['Task ID','Section','Activity','Responsible party','Baseline finish',
+   'Current target finish','Forecast finish','Actual finish','Delay (calendar days)',
+   'Task status','Human source references','Engine-calculated critical','Remarks']];
+  for(const r of records)activity.push([
+   safe(r.task.templateRef),safe(r.task.stage),safe(r.task.title),safe(r.task.ownerParty),
+   safe(r.baseline),safe(r.target),safe(r.forecast),safe(r.actual),safe(r.delay),
+   safe(r.task.status),safe(r.proof),r.critical===null?'Not calculated':
+    r.critical?'Critical':'Not critical',
+   safe([r.task.delayReason,r.task.recoveryAction].filter(Boolean).join(' · '))
+  ]);
+  const colour=[['Colour','Size','Quantity','Unit','Source status']];
+  for(const row of order.colorSizeBreakdown||[])colour.push([
+   safe(row.color),safe(row.size),safe(row.quantity),safe(order.unit),'Source-entered only']);
+  const revisions=[['Revision','Activity','Date field','Before','After','Source reference',
+   'Source date','Reason','Local reviewer','Recorded at']];
+  for(const event of plan?.revisionEvents||[]){
+   if(event.eventType!=='sourced-task-finish-dates-revised')continue;
+   for(const change of event.details?.changes||[])revisions.push([
+    safe(event.revision),safe(event.details.templateRef),safe(change.field),
+    safe(change.before),safe(change.after),safe(event.details.sourceRef),
+    safe(event.details.sourceDate),safe(event.details.reason),
+    safe(event.actorId),safe(event.createdAt)
+   ]);
+  }
+  return {'Order Summary':summary,'Activity Master':activity,
+   'Colour Size':colour,'Planning Revisions':revisions};
+ }
+ static render(plan,scheduled,options={}){
+  const lang=['en','bn','hi','ta'].includes(options.language)?options.language:'en',t=this.COPY[lang];
+  const kind=this.FILTERS.includes(options.filter)?options.filter:'all',asOf=this.date(options.asOf)||'';
+  const rows=this.rows(plan,scheduled),visible=this.filterRows(rows,kind,asOf);
+  const e=this.esc,display=v=>e(v===0?0:(v??t.unverified)),order=plan?.order||{},dates=plan?.commitments||{};
+  const style=order.styles?.[0]||{},size=Array.isArray(order.colorSizeBreakdown)?order.colorSizeBreakdown:[];
+  const field=(label,value)=>'<div class="tna-merch-field"><dt>'+e(label)+'</dt><dd>'+display(value||null)+'</dd></div>';
+  const info=[
+   [t.buyer,order.buyerName],[t.factory,order.factoryName],[t.po,order.poNumbers?.join(', ')],
+   [t.style,style.styleNo],[t.product,order.construction||order.productProfile],
+   [t.fabric,order.fabricSpec],[t.gsm,null],[t.quantity,
+    order.totalQty===null||order.totalQty===undefined?null:String(order.totalQty)+' '+(order.unit||'pcs')],
+   [t.lc,dates.masterLcOpenedOn],[t.lcStatus,dates.masterLcOpenedOn?'Date entered; bank source unverified':null],
+   [t.exFactory,dates.buyerRequiredExFactory],[t.shipment,dates.buyerRequiredETD],
+   [t.remark,order.commercialNotes]
+  ];
+  const tableRows=visible.map(r=>{
+   const x=r.task,refs=r.proof||t.pending,comment=[x.delayReason,x.recoveryAction].filter(Boolean).join(' · ');
+   return '<tr data-tna-sheet-task="'+e(x.taskId)+'"><td><strong>'+e(x.templateRef)+
+    '</strong><span class="tna-merch-stage">'+e(x.stage||x.stageCode)+'</span><span>'+e(x.title)+'</span></td>'+
+    '<td>'+display(x.ownerParty)+'</td><td>'+display(r.baseline)+'</td><td>'+display(r.target)+'</td>'+
+    '<td>'+display(r.forecast)+'</td><td>'+display(r.actual)+'</td><td class="tna-merch-days">'+
+    display(r.delay)+'</td><td>'+display(x.status)+'</td><td>'+display(refs)+'</td><td>'+
+    (r.critical===null?e(t.notCalculated):r.critical?e(t.calculated):e(t.noncritical))+'</td>'+
+    '<td>'+display(comment)+'</td><td class="tna-merch-actions"><button type="button" class="tna-mini-btn" data-edit-task-dates="'+
+    e(x.taskId)+'">'+e(t.editDates)+'</button><button type="button" class="tna-mini-btn" data-edit-task="'+
+    e(x.taskId)+'">'+e(t.edit)+'</button></td></tr>';
+  }).join('');
+  const filterLabel={all:t.all,overdue:t.overdue,week:t.week,buyerWait:t.buyerWait,
+   localWait:t.localWait,factoryWait:t.factoryWait,ontrack:t.ontrack,critical:t.critical};
+  const headings=[t.section,t.owner,t.baseline,t.target,t.forecast,t.actual,t.delay,
+   t.state,t.source,t.criticalCol,t.comment,t.edit];
+  return '<section class="tna-merch-sheet" aria-label="Garment merchandising master sheet" id="tnaMerchSheet">'+
+   '<header class="tna-merch-header"><div><span class="tna-kicker">VESA TNA 360</span><h3>'+
+   e(t.title)+'</h3><p>'+e(t.subtitle)+'</p></div><strong>'+rows.length+' '+e(t.total)+'</strong></header>'+
+   '<dl class="tna-merch-order">'+info.map(([label,value])=>field(label,value)).join('')+'</dl>'+
+   '<details class="tna-merch-sizes"><summary>'+e(t.colour)+' · '+size.length+'</summary>'+
+   (size.length?'<ul>'+size.map(x=>'<li>'+e(x.color)+' / '+e(x.size)+' — '+
+    display(x.quantity)+' '+e(order.unit||'pcs')+'</li>').join('')+'</ul>':
+    '<p>'+e(t.sizeMissing)+'</p>')+'</details>'+
+   '<p class="tna-note">'+e(t.notes)+'</p>'+
+   '<div class="tna-merch-controls"><label>'+e(t.asOf)+
+    ' <input type="date" id="tnaMerchAsOf" value="'+e(asOf)+'"></label>'+
+   '<nav class="tna-merch-filters" aria-label="Master sheet filters">'+
+   this.FILTERS.map(k=>'<button type="button" data-tna-merch-filter="'+k+
+    '" aria-pressed="'+(kind===k?'true':'false')+'">'+e(filterLabel[k])+'</button>').join('')+
+   '</nav><div class="tna-merch-outputs">'+
+   '<button type="button" data-tna-merch-excel'+(plan?.mode==='practice'?' disabled':'')+'>'+e(t.excel)+'</button>'+
+   '<button type="button" data-tna-merch-print'+(plan?.mode==='practice'?' disabled':'')+'>'+e(t.print)+'</button></div></div><p class="tna-merch-count" role="status">'+visible.length+' '+e(t.shown)+
+   ' / '+rows.length+' '+e(t.total)+'</p>'+
+   (!asOf&&['overdue','week'].includes(kind)?'<p class="tna-note">'+e(t.noAsOf)+'</p>':'')+
+   (kind==='localWait'?'<p class="tna-note">'+e(t.localInfo)+'</p>':'')+
+   (!scheduled?'<p class="tna-note">'+e(t.schedulingMissing)+'</p>':'')+
+   '<div class="tna-merch-scroll" role="region" tabindex="0" aria-label="Full garment TNA activity sheet">'+
+   '<table class="tna-merch-table"><thead><tr>'+headings.map(h=>'<th scope="col">'+e(h)+'</th>').join('')+
+   '</tr></thead><tbody>'+(visible.length?tableRows:'<tr><td colspan="12">'+e(t.noRows)+'</td></tr>')+
+   '</tbody></table></div><p class="tna-note">'+e(t.currentInfo)+'</p>'+
+   '<p class="tna-merch-warning">'+e(t.draft)+'</p></section>';
+ }
+}
+root.VesaTnaMerchandisingSheet=VesaTnaMerchandisingSheet;
+if(typeof module!=='undefined'&&module.exports)module.exports=VesaTnaMerchandisingSheet;
+})(typeof globalThis!=='undefined'?globalThis:this);

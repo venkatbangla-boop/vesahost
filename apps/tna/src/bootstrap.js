@@ -56,7 +56,7 @@
     }
   };
 
-  const state={dialog:null,language:'en',currentPlan:null,workspaceFilter:{owner:null,stage:null},workspaceView:'timeline',portfolioFilter:{buyer:null,factory:null,po:null},scenarioDraft:null,scenarioPreview:null};
+  const state={dialog:null,language:'en',currentPlan:null,workspaceFilter:{owner:null,stage:null},workspaceView:'timeline',merchFilter:'all',merchAsOf:'',portfolioFilter:{buyer:null,factory:null,po:null},scenarioDraft:null,scenarioPreview:null};
   const domain=globalThis.VesaTnaDomain;
   const scheduling=globalThis.VesaTnaScheduling;
   const operations=globalThis.VesaTnaOperations;
@@ -113,6 +113,7 @@
     return `<div class="tna-panel tna-plan-panel"><div class="tna-plan-head"><div><span class="tna-kicker">${esc(text('workspace'))}</span><h2>${esc(plan.order.styles[0]?.styleNo||'Untitled TNA')} · ${esc(plan.order.buyerName||'Buyer unknown')}</h2><p>${esc(plan.order.factoryName||'Factory unknown')} · ${esc(plan.order.poNumbers[0]||'PO unknown')} · ${esc(plan.order.totalQty??'Qty unknown')} ${esc(plan.order.unit)}</p></div><span class="tna-status-pill">${esc((domain.TEMPLATE_PROFILES[plan.templateId]||{}).name||plan.templateId)}</span></div>
       <div class="tna-metrics"><b>${plan.tasks.length}</b><span>${esc(text('tasks'))}</span><b>${plan.baselineSnapshots.length}</b><span>${esc(text('baseline'))}</span><b>${unknown.length+warnings.length+errors.length}</b><span>${esc(text('validation'))}</span></div>
       <p class="tna-note">${esc(savedNote)}</p>
+      ${globalThis.VesaTnaMerchandisingSheet?.render(plan,planSchedule(plan),{language:state.language,filter:state.merchFilter,asOf:state.merchAsOf})||'<p class="tna-note">Master sheet renderer is unavailable. Original TNA activities are preserved.</p>'}
       ${orderMasterPanel(plan)}
       ${unknown.length?`<h3>${esc(text('unknown'))}</h3><ul>${unknown.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
       ${errors.length?`<h3>Errors</h3><ul>${errors.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`:''}
@@ -139,7 +140,7 @@
     document.body.classList.add('tna-vesa-adapted');
     window.__tnaWorkspaceShell=shell;
   }
-  function render(){state.language=language();ensureWorkspaceShell();const records=readRecords();const offline=offlineSummary();const portfolioPlans=readSavedPlans(records);if(state.currentPlan&&!portfolioPlans.some(plan=>plan.recordId===state.currentPlan.recordId))portfolioPlans.unshift(state.currentPlan);const root=document.getElementById('tnaMain');root.innerHTML=`
+  function render(){state.language=language();ensureWorkspaceShell();document.body.classList.toggle('tna-has-active-order',!!state.currentPlan);const records=readRecords();const offline=offlineSummary();const portfolioPlans=readSavedPlans(records);if(state.currentPlan&&!portfolioPlans.some(plan=>plan.recordId===state.currentPlan.recordId))portfolioPlans.unshift(state.currentPlan);const root=document.getElementById('tnaMain');root.innerHTML=`
     <section class="tna-hero">
       <div class="tna-hero-card"><span class="tna-kicker">${esc(text('tag'))}</span><h1>${esc(text('title'))}</h1><p class="tna-lead">${esc(text('lead'))}</p><p class="tna-note">${esc(text('privacy'))}</p></div>
       <aside class="tna-status-card"><span class="tna-status-pill">${esc(text('mode'))}</span><p class="tna-muted">${esc(text('modeText'))}</p><p class="tna-muted">${esc(text('cloud'))}</p></aside>
@@ -171,6 +172,15 @@
     root.querySelectorAll('[data-add-shipment-lot]').forEach(btn=>btn.onclick=openShipmentLotEntry);
     const scenarioForm=document.getElementById('tnaScenarioForm');if(scenarioForm)scenarioForm.onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());state.scenarioDraft={...data,durationUnits:Number(data.durationUnits),verifiedDailyOutput:data.verifiedDailyOutput};state.scenarioPreview=scenarios.previewScenario(state.currentPlan,{name:data.name,durationAdjustments:[{taskId:data.taskId,durationUnits:Number(data.durationUnits),reason:data.name}],capacity:data.verifiedDailyOutput?{plannedQty:state.currentPlan.order.totalQty,completedQty:0,verifiedDailyOutput:Number(data.verifiedDailyOutput)}:undefined},{actorId:userKey()});render();};
     root.querySelectorAll('[data-apply-scenario]').forEach(btn=>btn.onclick=openScenarioApply);
+    // M1 view-only state. Neither sheet filter nor review date writes into the source plan.
+    root.querySelectorAll('[data-tna-merch-excel]').forEach(btn=>btn.onclick=downloadMerchSheetExcel);
+    root.querySelectorAll('[data-tna-merch-print]').forEach(btn=>btn.onclick=printMerchSheet);
+    root.querySelectorAll('[data-tna-merch-filter]').forEach(btn=>btn.onclick=()=>{
+      state.merchFilter=btn.dataset.tnaMerchFilter||'all';render();
+    });
+    const merchAsOf=root.querySelector('#tnaMerchAsOf');
+    if(merchAsOf)merchAsOf.onchange=event=>{state.merchAsOf=event.currentTarget.value||'';render();};
+    root.querySelectorAll('[data-edit-task-dates]').forEach(btn=>btn.onclick=()=>openTaskPlanningEdit(btn.dataset.editTaskDates));
     root.querySelectorAll('[data-edit-task]').forEach(btn=>btn.onclick=()=>openTaskEdit(btn.dataset.editTask));
   }
   function openDialog(title,body){document.getElementById('tnaDialogTitle').textContent=title;document.getElementById('tnaDialogBody').innerHTML=body;if(!state.dialog.open)state.dialog.showModal();}
@@ -271,6 +281,101 @@
     if(!state.currentPlan||!state.scenarioPreview?.branch)return openDialog('Apply scenario','<p>Preview a recovery option before applying it.</p>');
     openDialog('Confirm scenario revision',`<form class="tna-wizard" id="tnaScenarioApply"><p>This creates a new local revision and keeps the original baseline snapshots. It does not claim buyer approval or cloud collaboration.</p>${state.scenarioPreview.branch.violations.length?`<p class="tna-note">Review first: ${esc(state.scenarioPreview.branch.violations.join(' '))}</p>`:''}<label class="tna-wide"><span>Revision reason *</span><textarea name="reason" rows="4" required placeholder="Explain the verified recovery decision"></textarea></label><label><input type="checkbox" name="confirm" required> I confirm this scenario should create a new revision.</label><button class="tna-btn" type="submit">Confirm and apply</button></form>`);
     document.getElementById('tnaScenarioApply').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());const result=scenarios.applyScenario(state.currentPlan,state.scenarioPreview.branch,{actorId:userKey(),reason:data.reason,confirm:data.confirm==='on'});if(!result.ok)return openDialog('Apply scenario',`<p>${esc(result.error)}</p>`);state.currentPlan=result.plan;if(storage)storage.autosave(state.currentPlan,userKey());state.scenarioPreview=null;state.scenarioDraft=null;render();openDialog('Scenario applied',`<p>Recovery option applied as revision ${esc(result.plan.revision)}. Baseline snapshots remain preserved.</p>`);};
+  }
+  /*
+   * TNA M2: explicit human source -> domain-owned immutable planning revision.
+   * This dialog is NOT an approval action. Existing status/actual and CPM logic
+   * stay owned by updateTaskStatus and VesaTnaScheduling respectively.
+   */
+  /*
+   * TNA M3: local XLSX exporter and browser-native print. MasterSheet owns rows;
+   * the controller owns file I/O only. No cloud, report schema change or approval.
+   */
+  function downloadMerchSheetExcel(){
+    if(!state.currentPlan||state.currentPlan.mode==='practice')
+      return openDialog('Master Sheet Excel','<p>Open a local non-practice TNA before exporting.</p>');
+    const XLSX=globalThis.XLSX,Sheet=globalThis.VesaTnaMerchandisingSheet;
+    if(!XLSX?.utils?.book_new||!Sheet?.workbookTables)
+      return openDialog('Master Sheet Excel','<p>Bundled offline workbook library is unavailable.</p>');
+    try{
+      const tables=Sheet.workbookTables(state.currentPlan,planSchedule(state.currentPlan));
+      const workbook=XLSX.utils.book_new();
+      const widths={'Order Summary':[42,65],
+       'Activity Master':[14,31,52,22,18,18,18,18,22,19,40,23,45],
+       'Colour Size':[25,16,18,12,35],
+       'Planning Revisions':[14,18,24,18,18,40,19,45,30,28]};
+      for(const [name,rows] of Object.entries(tables)){
+        const sheet=XLSX.utils.aoa_to_sheet(rows);
+        sheet['!cols']=(widths[name]||[]).map(wch=>({wch}));
+        if(sheet['!ref'])sheet['!autofilter']={ref:sheet['!ref']};
+        XLSX.utils.book_append_sheet(workbook,sheet,name);
+      }
+      const output=XLSX.write(workbook,{bookType:'xlsx',type:'array'});
+      const blob=new Blob([output],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const url=URL.createObjectURL(blob);
+      const style=(state.currentPlan.order.styles?.[0]?.styleNo||'DRAFT').replace(/[^a-z0-9_.-]+/gi,'-');
+      const link=document.createElement('a');
+      link.href=url;link.download='VESA-TNA-MERCH-DRAFT-'+style+'.xlsx';
+      document.body.appendChild(link);link.click();link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }catch(error){openDialog('Master Sheet Excel','<p>'+esc(error.message)+'</p>');}
+  }
+  function printMerchSheet(){
+    if(!state.currentPlan||state.currentPlan.mode==='practice')
+      return openDialog('Master Sheet PDF','<p>Open a local non-practice TNA before printing.</p>');
+    document.body.classList.add('tna-printing-merch-sheet');
+    const clear=()=>document.body.classList.remove('tna-printing-merch-sheet');
+    window.addEventListener('afterprint',clear,{once:true});setTimeout(clear,2000);
+    window.print();
+  }
+  /*
+   * M5: a single four-language presentation adapter for the already-verified
+   * source-backed domain revision. Language never enters business data, date
+   * validation, saved-copy schema, approval authority or CPM calculations.
+   */
+  function openTaskPlanningEdit(taskId){
+    const sheetCopy=globalThis.VesaTnaMerchandisingSheet?.COPY||{};
+    const t=sheetCopy[state.language]||sheetCopy.en;
+    const plan=state.currentPlan;
+    if(!plan||plan.mode==='practice')
+      return openDialog(t.dateTitle,'<p>'+esc(t.dateOpen)+'</p>');
+    const task=plan.tasks.find(item=>item.taskId===taskId);
+    if(!task)return openDialog(t.dateTitle,'<p>'+esc(t.dateMissing)+'</p>');
+    const baselineLocked=plan.recordStatus==='baselined'||(plan.baselineSnapshots||[]).length>0;
+    const baselineField=field('baselineFinish',t.dateBaseline,
+      'date',task.dates?.baselineFinish||'');
+    openDialog(t.dateTitle,
+      '<form class="tna-wizard" id="tnaPlanningDateForm">'+
+      '<p><b>'+esc(task.templateRef)+'</b> · '+esc(task.title)+'</p>'+
+      '<p class="tna-note">'+esc(t.dateHelp)+'</p>'+
+      '<div class="tna-form-grid">'+
+      (baselineLocked?baselineField.replace('name="baselineFinish"',
+        'name="baselineFinish" disabled'):baselineField)+
+      field('currentTargetFinish',t.dateTarget,'date',task.dates?.currentTargetFinish||'')+
+      field('forecastFinish',t.dateForecast,'date',task.dates?.forecastFinish||'')+
+      field('sourceRef',t.dateRef,'text','',true)+
+      field('sourceDate',t.dateReview,'date','',true)+
+      field('reason',t.dateReason,'text','',true)+
+      '</div><p class="tna-note">'+esc(t.dateBlank)+' '+
+      esc(baselineLocked?t.dateLock:t.dateDraft)+'</p>'+
+      '<button class="tna-btn" type="submit">'+esc(t.dateSave)+'</button></form>');
+    document.getElementById('tnaPlanningDateForm').onsubmit=event=>{
+      event.preventDefault();
+      const values=Object.fromEntries(new FormData(event.currentTarget).entries());
+      const changes={};
+      for(const key of ['baselineFinish','currentTargetFinish','forecastFinish'])
+        if(values[key])changes[key]=values[key];
+      const result=domain.reviseTaskPlanningDates(state.currentPlan,taskId,changes,{
+        sourceRef:values.sourceRef,sourceDate:values.sourceDate,reason:values.reason,
+        actorId:userKey()
+      });
+      if(!result.ok)return openDialog(t.dateFailed,
+        '<p>'+esc(t.dateRejected)+'</p><p>'+esc(t.dateUnchanged)+'</p>');
+      state.currentPlan=result.plan;
+      if(storage)storage.autosave(state.currentPlan,userKey());
+      state.dialog.close();
+      render();
+    };
   }
   function openTaskEdit(taskId){if(!state.currentPlan)return openDialog('Edit Activity','<p>Create or open a TNA draft before editing activities.</p>');const task=state.currentPlan.tasks.find(item=>item.taskId===taskId);if(!task)return openDialog('Edit Activity','<p>Activity not found in this draft.</p>');openDialog('Edit Activity',`<form class="tna-wizard" id="tnaTaskEdit"><p><b>${esc(task.templateRef)}</b> · ${esc(task.title)}</p><div class="tna-form-grid">${selectField('nextStatus','Status',domain.STATUSES.map(status=>[status,status]),task.status)}${field('actualDate','Actual finish date','date')}${field('evidenceRef','Evidence reference')}${field('reason','Reason / note')}</div><p class="tna-note">Choose Completed only with the actual finish date, Approved only with evidence, and Waived only with a reason. The original approved plan stays unchanged.</p><button class="tna-btn" type="submit">Save activity edit</button></form>`);document.getElementById('tnaTaskEdit').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());const result=domain.updateTaskStatus(state.currentPlan,taskId,data.nextStatus,{actualDate:data.actualDate,evidenceRef:data.evidenceRef,reason:data.reason,actorId:userKey()});if(result.ok){state.currentPlan=result.plan;if(storage)storage.autosave(state.currentPlan,userKey());state.dialog.close();render();}else openDialog('Edit Activity',`<p>${esc(result.error)}</p>`);};}
   function openCustomTask(){if(!state.currentPlan)return openDialog('Add Activity',`<p>Create a draft TNA first, then add custom checkpoints to that draft.</p>`);

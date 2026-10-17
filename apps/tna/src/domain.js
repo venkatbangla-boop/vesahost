@@ -234,6 +234,66 @@
     next.updatedAt=timestamp;
     return {ok:true,plan:next};
   }
+  /*
+   * Purpose: revise only the source-labelled initial baseline, current-target and
+   * forecast finish dates of one garment activity without calculating a date.
+   * Owner/access: VesaTnaDomain owns dated task evidence; TNA UI passes a typed
+   * date with human source, reviewer and reason. No sibling or external writes.
+   * Inputs: existing plan/taskId, keyed finish dates and source review context.
+   * Outputs: cloned, validated plan + append-only before/after revision event.
+   * Side effects: none on inputs, browser storage, buyer decisions or CPM.
+   * Failure: invalid date/source, unsupported field, unchanged entry, locked
+   * baseline or practice plan returns an error and leaves input plan intact.
+   * Lifecycle: initial baseline is editable only before freezeBaseline(); all
+   * post-freeze target/forecast revisions retain immutable dated snapshots.
+   */
+  function reviseTaskPlanningDates(plan,taskId,changes={},context={}){
+    const fields=['baselineFinish','currentTargetFinish','forecastFinish'];
+    if(!plan||plan.schemaVersion!==SCHEMA_VERSION||!Array.isArray(plan.tasks)||
+      plan.mode==='practice')return {ok:false,error:'Use a valid local non-practice TNA draft.'};
+    if(!changes||typeof changes!=='object'||Array.isArray(changes)||
+      Object.keys(changes).some(key=>!fields.includes(key)))
+      return {ok:false,error:'Only baseline, current-target and forecast finish dates may be revised here.'};
+    const task=plan.tasks.find(item=>item.taskId===taskId);
+    if(!task)return {ok:false,error:'Selected activity was not found.'};
+    const sourceRef=clean(context.sourceRef),sourceDate=clean(context.sourceDate);
+    const reason=clean(context.reason),actorId=clean(context.actorId);
+    if(!sourceRef||sourceRef.length>350||!validDateOnly(sourceDate)||
+      !reason||reason.length>1500||!actorId||actorId.length>180)
+      return {ok:false,error:'Enter source reference, source date, reviewer and change reason.'};
+    const entries=[];
+    for(const key of fields){
+      if(!Object.prototype.hasOwnProperty.call(changes,key))continue;
+      const value=clean(changes[key]);
+      if(!validDateOnly(value))return {ok:false,error:key+' needs a real YYYY-MM-DD source date.'};
+      const previous=task.dates?.[key]||null;
+      if(previous!==value)entries.push({field:key,before:previous,after:value});
+    }
+    if(!entries.length)return {ok:false,error:'Enter at least one changed sourced activity date.'};
+    if(entries.some(entry=>entry.field==='baselineFinish')&&
+      (plan.recordStatus==='baselined'||(plan.baselineSnapshots||[]).length>0))
+      return {ok:false,error:'Confirmed baseline is locked; only target or forecast can be revised.'};
+    const next=clone(plan),target=next.tasks.find(item=>item.taskId===taskId);
+    for(const entry of entries)target.dates[entry.field]=entry.after;
+    target.proofRefs=[...(target.proofRefs||[]),sourceRef];
+    const timestamp=now(),revision=(Number(next.revision)||0)+1;
+    target.lastChangedBy=actorId;target.lastChangedAt=timestamp;
+    next.revision=revision;next.updatedAt=timestamp;
+    next.revisionEvents=[...(next.revisionEvents||[]),{
+      eventId:makeId('revision'),eventType:'sourced-task-finish-dates-revised',
+      revision,actorId,createdAt:timestamp,
+      details:{taskId,templateRef:task.templateRef,sourceRef,sourceDate,reason,
+       changes:entries}
+    }];
+    next.auditEvents=[...(next.auditEvents||[]),{
+      eventId:makeId('audit'),eventType:'sourced-task-finish-dates-revised',
+      actorId,createdAt:timestamp,details:{taskId,revision,sourceRef,sourceDate}
+    }];
+    next.validation=validatePlan(next);
+    if(!next.validation.ok)
+      return {ok:false,error:next.validation.errors.join(' '),errors:next.validation.errors};
+    return {ok:true,plan:next,changes:entries};
+  }
   function updateTaskStatus(plan,taskId,nextStatus,context={}){
     if(!STATUSES.includes(nextStatus))return {ok:false,error:'Invalid status.'};
     const next=clone(plan),task=next.tasks.find(item=>item.taskId===taskId);
@@ -353,7 +413,7 @@
     if(!next.validation.ok)return {ok:false,error:next.validation.errors.join(' '),errors:next.validation.errors};
     return {ok:true,plan:next,lot,warnings:next.validation.warnings};
   }
-  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,normalizeColorSizeBreakdown,createPlan,validatePlan,freezeBaseline,updateTaskStatus,addCustomTask,addCapacityEntry,addShipmentLot};
+  const api={SCHEMA_VERSION,TEMPLATE_VERSION,DATE_KEYS,STATUSES,RISK_STATUSES,STAGE_LABELS,ACTIVITY_LIBRARY,TEMPLATE_PROFILES,normalizeColorSizeBreakdown,createPlan,validatePlan,freezeBaseline,reviseTaskPlanningDates,updateTaskStatus,addCustomTask,addCapacityEntry,addShipmentLot};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.VesaTnaDomain=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
