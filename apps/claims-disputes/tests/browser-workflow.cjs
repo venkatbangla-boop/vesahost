@@ -37,7 +37,13 @@ async function run(){
   return key?JSON.parse(localStorage.getItem(key)).records:[];});
  try{
   fs.mkdirSync(out,{recursive:true});
-  await page.goto(base+'/apps/claims-disputes/',{waitUntil:'domcontentloaded'});
+  await page.goto(base+'/apps/',{waitUntil:'domcontentloaded'});
+  const route=page.locator('#appCatalogue a[href="/apps/claims-disputes/"]');
+  await route.waitFor({timeout:14000});
+  assert.equal(await route.count(),1,'Claims App Centre must contain exactly one published card');
+  assert.match(await route.innerText(),/Claims|Disputes/i);
+  await route.click();
+  assert(page.url().endsWith('/apps/claims-disputes/'),'App Centre must navigate to correct source route');
   await page.locator('[data-action=new]').waitFor({timeout:14000});
   assert.equal(await page.locator('.vesa-workspace').count(),1,'One shared VESA global shell');
   assert.equal(await page.locator('[data-vesa-menu]').count(),6,'One six-command universal menu');
@@ -183,7 +189,7 @@ async function run(){
   assert.equal(await page.evaluate(()=>document.activeElement?.dataset?.action),'new','Escape restores opener focus');
   assert.deepEqual(errors,[],'No uncaught Chromium errors');
   assert.deepEqual(external,[],'No outside requests or uploads of case records');
-  console.log('CLAIMS M3 REAL CHROMIUM PASS: case/finding/AQL evidence and disputed reply, separate signed agreement/draft credit/documented partial receipt, explicit decision, no auto-close, Save/Open/corrupt copy, four languages, 320–1440px, shared shell, zero remote providers.');
+  console.log('CLAIMS M4 REAL CHROMIUM PASS: case/finding/AQL evidence and disputed reply, separate signed agreement/draft credit/documented partial receipt, explicit decision, no auto-close, Save/Open/corrupt copy, four languages, 320–1440px, shared shell, zero remote providers.');
  }finally{await context.close();await browser.close();await new Promise(ok=>server.close(ok));}
 }
 run().catch(err=>{console.error(err);process.exitCode=1;});
