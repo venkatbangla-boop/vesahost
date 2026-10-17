@@ -1,5 +1,11 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## CURRENT APP-08 VERIFIED M1 — RESUME FACTORY M2 (2026-10-17)
+
+Latest verified feature `feature/factory-vendor-360`: code `011f87c218daf7017b121d6ec2d815e61598380f`, [Node source-vendor/certificate/legacy CI #39024016996 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39024016996). M1 pure source-only Factory vendor/site/capacity and certificate-date engine accepted. **CURRENT NEXT:** M2 browser-local one-header four-language vendor workspace, portable records, actual Chromium and sibling checks; M3 source reports; M4 non-commercial synthetic release only if eligibility/public source checks pass. Original `blueprints/APP-08_factory-vendor.md` is in repo and backed up; never re-request the 15-App ZIP. Current `main` Production Tracker verified personal demo source `2b060a027776ee7ab7a2355ed8f1ca493529a0cf`; do not rebuild prior completed apps.
+
+---
+
 ## CURRENT VERIFIED AUTO-RESUME — PRODUCTION DEMO LIVE; FACTORY & VENDOR NEXT (2026-10-17)
 
 **Verified source:** `main` `2b060a027776ee7ab7a2355ed8f1ca493529a0cf`. APP-09 Production Tracker 360 personal non-commercial synthetic demo published at https://vesaent.com/apps/production-tracker/. [Main real Chromium/sibling CI #39023609749 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39023609749), [Pages #39023609518 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39023609518), [public exact served module/source smoke #39023609761 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39023609761). All nine previous personal portfolio demos including Costing remain unchanged. Detailed M4 evidence `docs/production-tracker/01_EXECUTION_TRACKER.md` and `VESA_PROGRESS.md`. User previously provided approved original ZIP; committed source `blueprints/APP-01...APP-15`, `docs/portfolio/`; verify with `node tests/vesa-blueprint-integrity.cjs`. **Do not request ZIP reattachment or restart previous apps.**
