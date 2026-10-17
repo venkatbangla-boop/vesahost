@@ -1,5 +1,17 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+## 2026-10-17 — TNA G13 M1 MERCHANDISING MASTER SHEET DEVELOPMENT CANDIDATE
+
+**Starting main and branch:** `dae3aa42b5f24adc7805c7a67090e20916672dab` and `feature/tna-merchandising-sheet`. **Scope:** new source-only pure `apps/tna/src/merchandising-sheet.js`, UI registration in `apps/tna/index.html` + `apps/tna/src/bootstrap.js`, app-specific responsive `apps/tna/assets/tna.css`, focused Node/real Chromium G13 tests + dedicated CI and scoped evidence docs. Full exact file-level ownership/impact/rollback matrix in `docs/tna/07_GARMENT_MERCHANDISING_UI_AUDIT.md`.
+
+**What changed:** The TNA UI now renders a first-screen single garment Master Sheet with ALL applicable original TNA tasks; buyer/factory/style/PO/fabric/qty/LC/ex-factory/ETD and eight source-constrained filters, separate date columns, actual vs planned calendar variance, human-source proof and existing controlled Edit Activity. Default original large dashboard remains below, schema/stores/scheduling and all 168 PPM/AQL frozen rules untouched. The sheet does not invent standalone GSM, bank opening verification, local/buyer approval, or production finish dates. Review date & filter are ephemeral; no data migration.
+
+**Verdict currently:** `M1 IMPLEMENTED / TEST PENDING` until exact SHA GitHub Node/Chromium/sibling CI genuinely succeeds. NO PUBLIC RELEASE; NO HUMAN UAT PASS; G11 and G12 production HOLD remain.
+
+**NEXT ACTION:** Verify M1 exact SHA Node / actual Chromium and screenshots, repair independently proven failures if present, update both trackers with complete evidence. Then only after acceptance perform bounded M2 date-target revision UX audit and plan before coding. Do not replace existing TNA domain/CPM/storage/reports or force-push main.
+
+---
+
 **THIS FILE IS THE RESUMPTION SOURCE OF TRUTH FOR VS CODE CODEX.** Keep it in Git. Reconcile it with real code/commits/tests before advancing; do not mark boxes from confidence or narrative alone.
 
 **Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` governs platform choices. Hosted backend/identity/database/object storage, remote multiuser synchronization and external notification delivery are `DEFERRED_BY_SCOPE`, not failed or accepted. Local planning, references, in-app alerts, saved-copy safety and regression work remain active.

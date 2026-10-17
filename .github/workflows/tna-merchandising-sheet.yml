@@ -1,0 +1,69 @@
+# TNA 360 G13 M1 garment master-sheet preview, synthetic only.
+# Source branch only until domain, browser, existing-app regressions and human gates pass.
+name: VESA TNA Merchandising Master Sheet verification
+on:
+  push:
+    branches:
+      - feature/tna-merchandising-sheet
+      - main
+    paths:
+      - 'apps/tna/**'
+      - 'docs/tna/07_GARMENT_MERCHANDISING_UI_AUDIT.md'
+      - '.github/workflows/tna-merchandising-sheet.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tna-merchandising-m1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Canonical blueprints, source M1, TNA domains, immutable PPM and AQL
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/vesa-local-uat-package.cjs
+          node --check apps/tna/src/merchandising-sheet.js
+          node --check apps/tna/src/bootstrap.js
+          node --check apps/tna/tests/g13-merchandising-sheet.test.cjs
+          node --check apps/tna/tests/g13-merchandising-sheet-browser.cjs
+          node apps/tna/tests/g13-merchandising-sheet.test.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g03-scheduling.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/tna/tests/g07-reports.test.js
+          node apps/tna/tests/g11-garment-scenarios.test.js
+          node apps/tna/tests/g10-integration-references.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          node tests/personal-demo-release.cjs
+          git diff --check HEAD~1 HEAD
+      - name: Install actual Chromium for TNA merchandising screen
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Real Chromium G13 sheet, previous TNA locales, shell and saved-copy workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/tna/tests/g13-merchandising-sheet-browser.cjs
+          node apps/tna/tests/g11-unified-shell-browser.cjs
+          node apps/tna/tests/g11-localization-accessibility.cjs
+          node apps/tna/tests/g11-f06-order-master.cjs
+          node apps/tna/tests/g10-linked-ui.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tna-g13-m1-synthetic-chromium
+          path: output/playwright/tna-g13-merch-sheet-*
+          if-no-files-found: ignore
