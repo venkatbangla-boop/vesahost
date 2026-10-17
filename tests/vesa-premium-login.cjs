@@ -90,7 +90,8 @@ async function preferenceAndFailure(browser,base){
    assert.equal(await page.locator('html').getAttribute('data-vesa-theme'),theme,'theme '+theme);
    assert.equal(await page.locator('.auth-card').evaluate(n=>getComputedStyle(n).borderRadius),'14px','card theme '+theme);
  }
- await page.screenshot({path:path.join(out,'login-dark-390.png'),fullPage:true,animations:'disabled'});
+ await page.locator('[data-pref-theme]').selectOption('midnight-mono');
+ await page.screenshot({path:path.join(out,'login-midnight-mono-390.png'),fullPage:true,animations:'disabled'});
  await page.locator('#password').fill('incorrect-demo');
  await page.locator('#loginSubmit').click();
  await page.locator('#authMessage.bad').waitFor({state:'visible'});
