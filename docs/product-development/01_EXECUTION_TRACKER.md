@@ -25,4 +25,6 @@
 
 **M0 verdict:** ACCEPTED to perform narrowly scoped M1; unresolved authentic buyer image rights, board-specific requested dimensions and concept-to-Tech-Pack final promotion criteria are `Needs Information` and cannot be auto-filled.
 
+**M1 PATCH SUBMISSION:** Domain implementation and app-owned verification files are in exactly the six M1 paths above. Submitted source must be independently proven by GitHub Actions; until a completed exact-SHA PASS, this remains CONDITIONAL, not accepted. Next after M1 acceptance is the local four-language M2 workspace; M2 is NOT yet implemented.
+
 **PRECISE NEXT ACTION:** Implement one M1 patch on this branch, run real independent Node/full frozen siblings CI, inspect failing logs, record verified exact SHA/result. If accepted audit M2 single VESA UI/EN-BN-HI-TA/browser-local Save/Open patch and actual Chromium; M3 source-controlled boards/draft PDF/Excel and read-only Tech Pack draft review; M4 release only after full CI/Pages/live exact sources and personal demo gate. Never require original ZIP again.
