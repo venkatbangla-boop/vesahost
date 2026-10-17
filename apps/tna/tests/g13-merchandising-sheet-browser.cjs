@@ -87,6 +87,16 @@ async function run(){
   for(const width of [320,360,390,768,1024,1280,1440]){
    await page.setViewportSize({width,height:880});
    const measure=await page.evaluate(()=>document.documentElement.scrollWidth);
+   if(measure>width+1){
+    const culprits=await page.evaluate(()=>[...document.querySelectorAll('body *')]
+     .filter(el=>{const b=el.getBoundingClientRect();return b.right>innerWidth+1&&
+       !el.closest('.tna-merch-scroll')&&getComputedStyle(el).display!=='none'})
+     .slice(0,18).map(el=>{const b=el.getBoundingClientRect();return {
+       tag:el.tagName,selector:el.className?.toString()?.slice(0,90),
+       left:b.left,right:b.right,width:b.width,scrollWidth:el.scrollWidth,
+       parent:el.parentElement?.className?.toString()?.slice(0,65)};}));
+    console.error('MOBILE OVERFLOW DEBUG',JSON.stringify({width,measure,culprits}));
+   }
    assert(measure<=width+1,width+'px page overflow: '+measure);
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await sheet.locator('table').count(),1);
