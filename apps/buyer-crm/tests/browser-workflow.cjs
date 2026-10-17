@@ -26,7 +26,13 @@ async function run(){
  const submit=async()=>{await page.locator('#crmDialog form button[type=submit]').click();await page.locator('#crmDialog[open]').waitFor({state:'hidden',timeout:10000});};
  const records=()=>page.evaluate(()=>{const key=Object.keys(localStorage).find(x=>x.startsWith('vesa.buyer-crm.records.v1.'));return key?JSON.parse(localStorage.getItem(key)).records:[];});
  try{
-  fs.mkdirSync(output,{recursive:true});await page.goto(base+'/apps/buyer-crm/',{waitUntil:'domcontentloaded'});
+  fs.mkdirSync(output,{recursive:true});await page.goto(base+'/apps/',{waitUntil:'domcontentloaded'});
+  const crmRoute=page.locator('#appCatalogue a[href="/apps/buyer-crm/"]');
+  await crmRoute.waitFor({timeout:12000});
+  assert.equal(await crmRoute.count(),1,'Buyer CRM must have exactly one shared App Centre card');
+  assert.match(await crmRoute.innerText(),/Buyer CRM/i);
+  await crmRoute.click();
+  assert(page.url().endsWith('/apps/buyer-crm/'),'App Centre navigates to approved Buyer CRM route');
   await page.locator('[data-action="new"]').waitFor({timeout:12000});
   assert.equal(await page.locator('.vesa-workspace').count(),1,'Exactly one global VESA shell');
   assert.equal(await page.locator('[data-vesa-menu]').count(),6,'Six universal menu commands');
