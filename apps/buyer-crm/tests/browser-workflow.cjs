@@ -41,15 +41,15 @@ async function run(){
   const beforeDup=JSON.stringify(await records());await page.locator('#crmDialog form button[type=submit]').click();
   assert.match(await page.locator('#crmDialog [role=alert]').innerText(),/Possible duplicate contact/);
   await page.locator('#crmDialogClose').click();assert.equal(JSON.stringify(await records()),beforeDup,'No silent contact merge');
-  await act('add-enquiry');await fill({category:'Knit Polo',styleRequest:'SYN POLO STYLE',sourceDate:'2026-10-16',sourceRef:'SYN ENQUIRY',requestedQuantity:'1000',unit:'pieces'});await submit();
+  await act('enquiries');await act('add-enquiry');await fill({category:'Knit Polo',styleRequest:'SYN POLO STYLE',sourceDate:'2026-10-16',sourceRef:'SYN ENQUIRY',requestedQuantity:'1000',unit:'pieces'});await submit();
   const eq=(await records())[0].enquiries[0];assert.equal(eq.requestedQuantity,1000);
-  await act('add-opportunity');await fill({enquiryId:eq.id,stage:'Buyer costing request',stageSourceRef:'SYN STAGE DOC',reviewedBy:'SYN PLANNER',reviewDate:'2026-10-17',
+  await act('pipeline');await act('add-opportunity');await fill({enquiryId:eq.id,stage:'Buyer costing request',stageSourceRef:'SYN STAGE DOC',reviewedBy:'SYN PLANNER',reviewDate:'2026-10-17',
    amount:'1250.50',currency:'USD',amountSourceRef:'SYN BUYER ESTIMATE',amountReviewedBy:'SYN REVIEWER',amountReviewDate:'2026-10-17'});await submit();
   const o=(await records())[0].opportunities[0];assert.equal(o.amount,'1250.50');
   assert.match(await page.locator('.crm-table').first().innerText(),/1250\.50/);
   await act('add-stage');await fill({opportunityId:o.id,stage:'Buyer discussion',sourceRef:'SYN CALL NOTES',reviewedBy:'SYN OWNER',reviewDate:'2026-10-17'});await submit();
   assert.equal((await records())[0].opportunities[0].stage,'Buyer costing request','Stage amendment must not rewrite source');
-  await act('add-followup');await fill({linkedItem:'opportunity|'+o.id,owner:'SYN FOLLOWUP OWNER',createdDate:'2026-10-15',dueDate:'2026-10-16',sourceRef:'SYN FOLLOWUP REGISTER',followupStatus:'open'});await submit();
+  await act('followups');await act('add-followup');await fill({linkedItem:'opportunity|'+o.id,owner:'SYN FOLLOWUP OWNER',createdDate:'2026-10-15',dueDate:'2026-10-16',sourceRef:'SYN FOLLOWUP REGISTER',followupStatus:'open'});await submit();
   await page.evaluate(()=>{window.VesaBuyerCRM360.asOf='2026-10-17';window.VesaBuyerCRM360.render();});
   assert.match(await page.locator('.crm-table').innerText(),/overdue/);
   assert.match(await page.locator('body').innerText(),/does not send reminders, emails or SMS/);
