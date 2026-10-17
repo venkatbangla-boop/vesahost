@@ -29,6 +29,7 @@ jobs:
           node --check apps/tech-pack-spec/tests/domain.test.cjs
           node --check apps/tech-pack-spec/tests/browser-workflow.cjs
           node apps/tech-pack-spec/tests/domain.test.cjs
+          node tests/personal-demo-release.cjs
           node apps/packing-container/tests/domain.test.cjs
           node apps/order-commission/tests/domain.test.cjs
           node apps/tna/tests/g02-domain.test.js
