@@ -6,8 +6,11 @@ on:
       - feature/vesa-app-centre-unified
       - feature/premium-app-centre-desktop
       - fix/app-centre-link-label-regression
+      - feature/premium-admin-integrated
       - main
     paths:
+      - 'admin/index.html'
+      - 'css/vesa-admin.css'
       - 'apps/index.html'
       - 'css/vesa-app-centre.css'
       - 'js/vesa-app-centre.js'
