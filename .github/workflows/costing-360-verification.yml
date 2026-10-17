@@ -6,6 +6,7 @@ on:
       - feature/costing-360
       - feature/costing-g4-mobile-dialog
       - feature/fabric-g4-source-journey
+      - feature/costing-g4-settings-focus-race
       - main
     paths:
       - '.github/workflows/costing-360-verification.yml'

@@ -266,13 +266,24 @@ def main():
         require(page.locator('html').get_attribute('data-dark') == 'false',
                 'Actual VESA Settings restores the shared light theme')
         page.locator('.vesa-settings-dialog button[aria-label="Close settings"]').click()
+        page.locator('.vesa-settings-dialog[open]').wait_for(state='hidden', timeout=8000)
         require(not page.locator('.vesa-settings-dialog[open]').count(),
                 'Settings closes without a second workspace owner')
+        # The shared Settings native-dialog 'close' event restores focus to its
+        # opening button asynchronously. Wait for that lifecycle before moving
+        # focus to File; otherwise the pending restoration steals Enter.
+        page.wait_for_function(
+            "() => document.activeElement === document.querySelector('.vesa-workspace [data-vesa-user]')",
+            timeout=8000)
+        require(record_snapshot(page) == before_corruption,
+                'Settings close/focus restoration never alters Costing records')
 
         # Enter/Escape must reach the real shared File menu and close its dialog.
         file_menu = page.locator('.vesa-workspace__nav [data-vesa-menu="File"]')
         file_menu.focus()
         require(file_menu.is_visible(), 'Shared File menu remains keyboard-focusable')
+        require(file_menu.evaluate('(node) => document.activeElement === node'),
+                'Keyboard File button owns focus after Settings close')
         file_menu.press('Enter')
         # Wait for the actual native dialog state; do not turn a missing
         # keyboard event into an artificial click or silently skip the check.
