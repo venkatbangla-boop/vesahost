@@ -44,6 +44,11 @@ class VesaArtworkRevision {
    return{ok:false,errors:['Unsupported artwork revision record/version']};
   if(p.status!=='DRAFT — SOURCE REVIEW ONLY')errors.push('Cannot invent buyer approval or legal label release');
   errors.push(...this.checkHeader(p.header));
+  // M3 optional local source snapshots: legacy M2 records stay unchanged and valid.
+  if(p.manualReferences!==undefined){
+   if(!root.VesaArtworkReviewedReference)errors.push('Artwork source review module unavailable');
+   else errors.push(...root.VesaArtworkReviewedReference.validateList(p));
+  }
   try{if(JSON.stringify(p).length>2097152)errors.push('Artwork source record exceeds 2MB bound');}catch{errors.push('Artwork record is not serializable');}
   if(p.revisions.length>200||p.comments.length>2000||p.decisions.length>2000||p.audit.length>5000)errors.push('Artwork evidence count too large');
   const seen=new Set();
