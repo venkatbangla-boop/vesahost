@@ -59,7 +59,29 @@ async function run(){
   await act('performance');await act('add-performance');await fill({siteId:site.id,metric:'On-time reviewed count',unit:'orders',
    sourceRef:'SYN PERFORMANCE REGISTER',reviewer:'SYN REVIEWER',periodFrom:'2026-09-01',periodTo:'2026-09-30',
    reviewDate:'2026-10-17',numerator:'8',denominator:'10'});await submit();
-  const record=(await rows())[0];assert.equal(record.revision,5);assert.equal(record.certificates.length,1);assert.equal(record.reviews.length,1);assert.equal(record.performance.length,1);
+  // User-selected, explicit local reviewed source. No sibling browser storage reads.
+  const goodRef={sourceApp:'VESA Purchase Order 360',recordType:'PurchaseOrder',recordId:'SYN-PO-LOCAL-1',
+   revisionId:'R1',sourceDate:'2026-10-16',verifiedBy:'SYN SOURCE CHECKER',verifiedAt:'2026-10-17T08:00:00Z',
+   displaySnapshot:{factory:'SYNTHETIC SITE A',poNo:'SYN-PO-10'}};
+  const refFile=path.join(out,'factory-app08-reviewed-po.json');fs.writeFileSync(refFile,JSON.stringify(goodRef));
+  await act('references');await act('reference-select');
+  await fill({refKind:'po'});await submit();
+  await page.locator('#fvReferenceFile').setInputFiles(refFile);
+  await page.locator('#fvDialog[open]').waitFor();
+  await fill({siteId:site.id,localReviewer:'SYN LOCAL REFERENCE REVIEWER',localReviewDate:'2026-10-17'});
+  await page.locator('#fvDialog [name="identityConfirmed"]').check();
+  await submit();assert.equal((await rows())[0].manualReferences.length,1);
+  assert.match(await page.locator('body').innerText(),/SYN-PO-LOCAL-1/);
+  const incorrect={...goodRef,sourceApp:'FAKE BUYER APPROVAL',recordId:'UNSUPPORTED'};
+  const badRef=path.join(out,'factory-app08-unapproved-source.json');fs.writeFileSync(badRef,JSON.stringify(incorrect));
+  const sourceBefore=JSON.stringify(await rows());
+  await act('reference-select');await fill({refKind:'po'});await submit();
+  await page.locator('#fvReferenceFile').setInputFiles(badRef);
+  await page.locator('#fvDialog[open]').waitFor();
+  assert.match(await page.locator('#fvDialogBody').innerText(),/Source owner or evidence fields are incomplete/);
+  await page.locator('#fvDialogClose').click();
+  assert.equal(JSON.stringify(await rows()),sourceBefore,'Bad source must never alter saved vendor data');
+  const record=(await rows())[0];assert.equal(record.revision,6);assert.equal(record.certificates.length,1);assert.equal(record.reviews.length,1);assert.equal(record.performance.length,1);
   const initial=JSON.stringify(record);await act('save');await page.reload({waitUntil:'domcontentloaded'});await act('continue');
   assert.equal(JSON.stringify((await rows())[0]),initial,'Reload and Continue do not change source');
   const download=page.waitForEvent('download');await act('download');
@@ -73,7 +95,17 @@ async function run(){
   await page.locator('#fvDialog[open]').waitFor();assert.match(await page.locator('#fvDialogBody').innerText(),/altered\/unsupported/);
   await page.locator('#fvDialogClose').click();assert.equal(JSON.stringify(await rows()),saved);
   await act('history');assert.match(await page.locator('.fv-table').innerText(),/Recorded sourced/);
-  await act('reports');assert.match(await page.locator('body').innerText(),/Draft reports and controlled read-only references/);
+  await act('reports');await page.evaluate(()=>{window.VesaFactoryVendor360.asOf='2026-10-17';window.VesaFactoryVendor360.render();});
+  const reportText=await page.locator('.fv-report').innerText();
+  assert.match(reportText,/DRAFT \/ INTERNAL REVIEW ONLY/);
+  assert.match(reportText,/expired-by-dates/);
+  assert.match(reportText,/DECLARED ONLY/);
+  assert.match(reportText,/SYN-PO-LOCAL-1/);
+  const xlsxPromise=page.waitForEvent('download');
+  await act('excel');const xlsx=await xlsxPromise;
+  const xlsxPath=path.join(out,'factory-app08-draft-report.xlsx');await xlsx.saveAs(xlsxPath);
+  assert(fs.readFileSync(xlsxPath).subarray(0,2).toString()==='PK','Excel workbook must be a ZIP-based xlsx');
+  assert(fs.statSync(xlsxPath).size>2500,'Excel workbook must contain data');
   const pdf=await page.pdf({printBackground:true,format:'A4',landscape:true});
   assert(pdf.subarray(0,4).toString()==='%PDF'&&pdf.length>10000);
   fs.writeFileSync(path.join(out,'factory-app08-workspace-draft.pdf'),pdf);
@@ -100,7 +132,7 @@ async function run(){
   assert.equal(await page.evaluate(()=>document.activeElement?.dataset?.action),'new','Escape restores opening button focus');
   assert.equal((await rows()).length,tested.length);
   assert.deepEqual(errors,[],'No JS page errors');assert.deepEqual(external,[],'Never make external requests');
-  console.log('FACTORY VENDOR M2 CHROMIUM PASS: sourced site/capability/certificate expiry/internal review/period metric, duplicate atomicity, save/reload, portable copy/corrupt isolation, 4 languages, one shell, 320-1440 px, no third-party approval or hidden requests.');
+  console.log('FACTORY VENDOR M3 CHROMIUM PASS: sourced vendor, expiring certificate as date-only, internal onboarding, optional reviewed PO reference, bad-source atomicity, XLSX numeric workbook, PDF, Save/Open, EN BN HI TA, 320-1440 widths, no third-party approval or network.');
  }finally{await context.close();await browser.close();await new Promise(ok=>server.close(ok));}
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});
