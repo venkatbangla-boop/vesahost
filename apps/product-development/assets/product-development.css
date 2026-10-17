@@ -1,0 +1,35 @@
+/* APP-15 app-only concept cards; universal header/menu/account owned by existing VESA shell. */
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14px/1.52 var(--ui,Arial,sans-serif)}
+#pdMain{width:min(1280px,calc(100% - 24px));margin:0 auto;padding:18px 0 76px;min-width:0}
+.pd-card{margin:0 0 14px;padding:16px;background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:13px;min-width:0}
+.pd-card h1{margin:0 0 6px;font-size:clamp(1.38rem,3vw,2rem)}.pd-card h2{font-size:1.15rem;margin:0 0 8px}
+.pd-muted{color:var(--muted,#526176);margin:7px 0;overflow-wrap:anywhere}
+.pd-warning{padding:10px 12px;margin:9px 0;border:1px solid var(--line,#cbd6e4);border-left:4px solid #a63250;border-radius:9px;background:var(--look-surface,#eef3f9);overflow-wrap:anywhere}
+.pd-actions,.pd-tabs{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.pd-tabs{border-bottom:1px solid var(--line,#cbd6e4);padding-bottom:11px}
+.pd-btn{min-height:44px;max-width:100%;border:1px solid var(--line,#cbd6e4);padding:9px 13px;border-radius:9px;cursor:pointer;background:var(--paper,#fff);color:var(--ink,#17263d);font:inherit;font-weight:650;overflow-wrap:anywhere}
+.pd-btn.primary,.pd-tabs .pd-btn[aria-current=true]{background:var(--blue,#244fd6);color:var(--look-on-accent,#fff);border-color:var(--blue,#244fd6)}
+.pd-btn:disabled{opacity:.55;cursor:not-allowed}
+.pd-btn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--gold,#d5ad45);outline-offset:2px}
+.pd-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.pd-stat{border:1px solid var(--line,#cbd6e4);background:var(--look-surface,#eef3f9);padding:13px;border-radius:9px}
+.pd-stat strong{display:block;font-size:1.34rem}.pd-stat small{display:block;color:var(--muted,#526176)}
+.pd-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--line,#cbd6e4);border-radius:8px}
+.pd-table{border-collapse:collapse;width:100%;min-width:680px;font-size:.9rem}
+.pd-table td,.pd-table th{text-align:left;padding:10px 11px;border-bottom:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere;vertical-align:top}
+.pd-table th{background:var(--look-surface,#eef3f9)}
+.pd-record{border-bottom:1px solid var(--line,#cbd6e4);padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:11px;overflow-wrap:anywhere}
+.pd-record small{display:block;color:var(--muted,#526176)}
+.pd-dialog{width:min(820px,calc(100vw - 18px));max-height:92vh;overflow:auto;border-radius:13px;border:1px solid var(--line,#cbd6e4);padding:17px;background:var(--paper,#fff);color:var(--ink,#17263d);box-shadow:0 18px 50px #0006}
+.pd-dialog::backdrop{background:#06162eaf}
+.pd-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:12px}.pd-dialog-header h2{margin:0}
+.pd-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:13px 0}
+.pd-form label{min-width:0;display:grid;gap:5px;font-weight:600}.pd-form .wide{grid-column:1/-1}
+.pd-form input,.pd-form textarea,.pd-form select{width:100%;min-width:0;min-height:44px;padding:9px 10px;color:var(--ink,#17263d);background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:8px;font:inherit}
+.pd-form textarea{min-height:100px}
+.pd-board{border:1px dashed var(--line,#cbd6e4);border-radius:12px;padding:12px;background:var(--look-surface,#eef3f9)}
+.pd-board-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.pd-board-card{border-radius:8px;background:var(--paper,#fff);padding:11px;border:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere}
+@media(max-width:740px){.pd-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pd-card{padding:12px}}
+@media(max-width:470px){.pd-grid,.pd-form,.pd-board-cards{grid-template-columns:1fr}.pd-form .wide{grid-column:1}.pd-actions .pd-btn{flex:1 1 auto}}
+@media print{.vesa-workspace,.app-user-bar,.pd-tabs,.pd-actions,.pd-dialog{display:none!important}#pdMain{width:100%;padding:0}.pd-card{border:0}}
