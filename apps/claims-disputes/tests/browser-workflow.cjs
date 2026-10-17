@@ -105,6 +105,31 @@ async function run(){
    externalAuthorityRef:'SYN EXTERNAL SIGNED AUTHORITY',externallyNamedParty:'SYN BUYER+SUPPLIER',
    closureBasis:''});await submit();
   assert.equal(await page.evaluate(()=>window.VesaClaims360.E.localStatus(window.VesaClaims360.current).state),'agreed');
+  // M3 user-selected AQL InspectionRef envelope: no sibling private storage and no AQL alteration.
+  const source={sourceApp:'aql',recordType:'InspectionRef',recordId:'SYN-AQL-1',
+   revisionId:'R2',sourceDate:'2026-10-16',verifiedBy:'SYN AQL REVIEWER',
+   verifiedAt:'2026-10-17T08:00:00Z',
+   displaySnapshot:{buyer:'SYN BUYER',poNo:'SYN-PO-1',inspectionId:'SYN-INSPECTION-1',
+    stageId:'FINAL',outcome:'FAIL',evidenceOnly:true,notBuyerApproved:true}};
+  const sourcePath=path.join(out,'claims-app14-aql-envelope.json');
+  fs.writeFileSync(sourcePath,JSON.stringify(source));
+  await action('references');await action('reference-select');await fill({refKind:'aql'});await submit();
+  await page.locator('#clmReferenceFile').setInputFiles(sourcePath);
+  await page.locator('#clmDialog[open]').waitFor();
+  await fill({localReviewer:'SYN INDEPENDENT LOCAL REVIEWER',localReviewDate:'2026-10-17'});
+  await page.locator('#clmDialog [name="identityConfirmed"]').check();await submit();
+  assert.equal((await records())[0].manualReferences.length,1);
+  assert.match(await page.locator('.clm-table').innerText(),/SYN-AQL-1/);
+  const wrongPath=path.join(out,'claims-app14-wrong-case.json');
+  fs.writeFileSync(wrongPath,JSON.stringify({...source,recordId:'SYN-FALSE',
+   displaySnapshot:{...source.displaySnapshot,buyer:'UNRELATED BUYER'}}));
+  const beforeInvalid=JSON.stringify(await records());
+  await action('reference-select');await fill({refKind:'aql'});await submit();
+  await page.locator('#clmReferenceFile').setInputFiles(wrongPath);
+  await page.locator('#clmDialog[open]').waitFor();
+  assert.match(await page.locator('#clmDialogBody').innerText(),/Typed source owner, buyer identity or PO does not match/);
+  await page.locator('#clmDialogClose').click();
+  assert.equal(JSON.stringify(await records()),beforeInvalid,'Wrong source case cannot change saved claim');
   const saved=JSON.stringify((await records())[0]);await action('save');
   await page.reload({waitUntil:'domcontentloaded'});await action('continue');
   assert.equal(JSON.stringify((await records())[0]),saved,'Full claim evidence must survive reload');
@@ -123,7 +148,17 @@ async function run(){
   await page.locator('#clmDialogClose').click();
   assert.equal(JSON.stringify(await records()),before,'Forged source must not change saved cases');
   await action('history');assert.match(await page.locator('.clm-table').innerText(),/Source-reviewed finding/);
-  await action('reports');assert.match(await page.locator('body').innerText(),/report|அறிக்கை|রিপোর্ট|रिपोर्ट/i);
+  await action('reports');
+  const report=await page.locator('.clm-report').innerText();
+  assert.match(report,/DRAFT \/ SOURCE REVIEW ONLY/);
+  assert.match(report,/SYN-AQL-1/);
+  assert.match(report,/125\.50/);
+  assert.match(report,/50\.00/);
+  assert.match(report,/NOT legal liability|NOT actual receipt/);
+  const excelDownload=page.waitForEvent('download');await action('excel');const excel=await excelDownload;
+  const excelPath=path.join(out,'claims-app14-draft.xlsx');await excel.saveAs(excelPath);
+  assert.equal(fs.readFileSync(excelPath).subarray(0,2).toString(),'PK','Real Excel workbook ZIP');
+  assert(fs.statSync(excelPath).size>2500);
   const pdf=await page.pdf({format:'A4',printBackground:true,landscape:true});
   assert.equal(pdf.subarray(0,4).toString(),'%PDF');
   fs.writeFileSync(path.join(out,'claims-app14-workspace-draft.pdf'),pdf);
@@ -148,7 +183,7 @@ async function run(){
   assert.equal(await page.evaluate(()=>document.activeElement?.dataset?.action),'new','Escape restores opener focus');
   assert.deepEqual(errors,[],'No uncaught Chromium errors');
   assert.deepEqual(external,[],'No outside requests or uploads of case records');
-  console.log('CLAIMS M2 REAL CHROMIUM PASS: case/finding/AQL evidence and disputed reply, separate signed agreement/draft credit/documented partial receipt, explicit decision, no auto-close, Save/Open/corrupt copy, four languages, 320–1440px, shared shell, zero remote providers.');
+  console.log('CLAIMS M3 REAL CHROMIUM PASS: case/finding/AQL evidence and disputed reply, separate signed agreement/draft credit/documented partial receipt, explicit decision, no auto-close, Save/Open/corrupt copy, four languages, 320–1440px, shared shell, zero remote providers.');
  }finally{await context.close();await browser.close();await new Promise(ok=>server.close(ok));}
 }
 run().catch(err=>{console.error(err);process.exitCode=1;});
