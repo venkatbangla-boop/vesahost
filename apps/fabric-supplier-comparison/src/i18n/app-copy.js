@@ -31,7 +31,13 @@ const en={
  sourcePrice:'Source Quoted Price',landedInput:'Sourced Landed Input',issues:'Unresolved Source Gaps',
  missing:'Not Yet Sourced',amount:'Amount',notApplicable:'Not Applicable — Sourced',
  stage:'Internal Note State',reviewer:'Reviewer',decision:'Local Decision Note',
- asOf:'Comparison As-Of',selectAsOf:'Choose Comparison Date',reportPlanned:'Draft comparison and source-reference reports will be added after independent reporting tests.',
+ asOf:'Comparison As-Of',selectAsOf:'Choose Comparison Date',references:'Manually Reviewed Sources',referenceSelect:'Add Reviewed Spec Source',
+ refKind:'Source Kind',sourceApp:'Source App',sourceRecord:'Source Record',
+ localReviewer:'Locally Reviewed By',localReviewDate:'Independent Review Date',
+ identityConfirmed:'I reviewed this exact fabric article, composition, GSM, width/unit, construction and shrinkage against the document. This is NOT supplier approval.',
+ sourceNotice:'Choose a locally prepared Tech Pack fabric snapshot or Fabric & Trims MaterialReadiness with complete matching source fabric details. No automatic cross-app reads or official approval.',
+ excel:'Download Excel',print:'Print / Save PDF',report:'Prepare Draft Report',
+ reportPlanned:'Draft comparison and source-reference reports will be added after independent reporting tests.',
  showMatrix:'Compare Source Offers',practiceOnly:'Synthetic practice is read-only. Create a new comparison to save your own sources.',
  formError:'Original source data incomplete. No records were changed.',
  noEmail:'No external request, vendor approval, purchase instruction or automatic FX service.',
@@ -39,7 +45,7 @@ const en={
  noAutomatic:'Prices are illustrative SOURCE ONLY; no lowest-cost supplier is automatically approved.'
 };
 const other={
-ta:{
+ta:{references:'சரிபார்த்த ஆதாரங்கள்',referenceSelect:'Fabric spec ஆதாரம் சேர்',refKind:'ஆதார வகை',sourceApp:'ஆதார ஆப்',sourceRecord:'ஆதார பதிவு',localReviewer:'உள்ளூர் சரிபார்ப்பாளர்',localReviewDate:'சரிபார்த்த தேதி',identityConfirmed:'இந்த fabric-ன் article, composition, GSM, width/unit, construction, shrinkage எல்லாம் ஆதார ஆவணத்துடன் பொருந்துகிறது. இது Supplier ஒப்புதல் அல்ல.',sourceNotice:'முழு விவரங்கள் கொண்ட Tech Pack அல்லது Fabric & Trims ஆதாரக் கோப்பை இந்த சாதனத்தில் இருந்து தேர்வு செய்யவும். மற்ற ஆப் data தானாக வராது.',excel:'Excel பதிவிறக்கு',print:'PDF / அச்சு',report:'வரைவு அறிக்கை',
 title:'Fabric & Supplier Comparison 360',lead:'ஆதாரமுள்ள fabric quotes, terms மற்றும் landed input-ஐ supplier ஒப்புதல் இல்லாமல் ஒப்பிடுங்கள்',
 notice:'வணிகமற்ற தனிப்பட்ட டெமோ. உதாரணத் தகவல்கள் மட்டும். Browser records சட்டபூர்வ supplier approval அல்ல.',
 warning:'GSM, rate, freight, duty, tax, LC, FX அனைத்துக்கும் ஆதாரம் வேண்டும். குறைந்த விலை மட்டும் supplier ஒப்புதல் அல்ல.',
@@ -74,7 +80,7 @@ noEmail:'வெளி request, supplier ஒப்புதல், PO, automatic 
 requireTwo:'பயனுள்ள comparison-க்கு இரண்டு supplier விலைகள் தேவை.',
 noAutomatic:'குறைந்த விலை supplier தானாக approve ஆகாது.'
 },
-bn:{
+bn:{references:'পর্যালোচিত উৎস',referenceSelect:'ফ্যাব্রিক স্পেক উৎস যোগ',refKind:'উৎস ধরন',sourceApp:'উৎস অ্যাপ',sourceRecord:'উৎস রেকর্ড',localReviewer:'স্থানীয় পর্যালোচক',localReviewDate:'পর্যালোচনার তারিখ',identityConfirmed:'এই ফ্যাব্রিকের আর্টিকেল, কম্পোজিশন, GSM, প্রস্থ, কনস্ট্রাকশন ও shrinkage দলিলের সঙ্গে মেলে। এটি সাপ্লায়ার অনুমোদন নয়।',sourceNotice:'সম্পূর্ণ ফ্যাব্রিক তথ্যসহ স্থানীয় Tech Pack বা Fabric & Trims উৎস ফাইল বেছে নিন। অন্য অ্যাপ থেকে তথ্য স্বয়ংক্রিয়ভাবে আসে না।',excel:'Excel ডাউনলোড',print:'PDF / প্রিন্ট',report:'খসড়া রিপোর্ট',
 title:'ফ্যাব্রিক ও সাপ্লায়ার তুলনা 360',lead:'প্রমাণভিত্তিক ফ্যাব্রিক অফার, শর্ত এবং landed input তুলনা',
 notice:'শুধু ব্যক্তিগত অবাণিজ্যিক ডেমো। সিনথেটিক তথ্য। ব্রাউজার রেকর্ড সরবরাহকারী অনুমোদন নয়।',
 warning:'GSM, FX, freight, duty, tax ও LC খরচের নথি চাই। কম দাম মানে অনুমোদিত সাপ্লায়ার নয়।',
@@ -109,7 +115,7 @@ noEmail:'কোনো বাহ্যিক অনুরোধ, অনুমো�
 requireTwo:'অর্থপূর্ণ তুলনার জন্য অন্তত দুইটি অফার প্রয়োজন।',
 noAutomatic:'সবচেয়ে কম দাম স্বয়ংক্রিয় সাপ্লায়ার অনুমোদন নয়।'
 },
-hi:{
+hi:{references:'समीक्षित स्रोत',referenceSelect:'फैब्रिक स्पेक स्रोत जोड़ें',refKind:'स्रोत प्रकार',sourceApp:'स्रोत ऐप',sourceRecord:'स्रोत रिकॉर्ड',localReviewer:'स्थानीय समीक्षक',localReviewDate:'समीक्षा तारीख',identityConfirmed:'इस फैब्रिक का आर्टिकल, कंपोजिशन, GSM, चौड़ाई, कंस्ट्रक्शन और shrinkage स्रोत से मेल खाते हैं। यह सप्लायर मंजूरी नहीं है।',sourceNotice:'पूरे फैब्रिक विवरण के साथ स्थानीय Tech Pack या Fabric & Trims स्रोत फ़ाइल चुनें। दूसरे ऐप के रिकॉर्ड अपने-आप नहीं पढ़े जाते।',excel:'Excel डाउनलोड',print:'PDF / प्रिंट',report:'ड्राफ्ट रिपोर्ट',
 title:'फैब्रिक व सप्लायर तुलना 360',lead:'दस्तावेज़ आधारित फैब्रिक ऑफर और landed input की तुलना',
 notice:'केवल व्यक्तिगत गैर-व्यावसायिक डेमो। सिंथेटिक डेटा। ब्राउज़र रिकॉर्ड सप्लायर मंजूरी नहीं है।',
 warning:'GSM, FX, freight, duty, tax और LC के प्रमाण चाहिए। कम कीमत सप्लायर मंजूरी नहीं।',
