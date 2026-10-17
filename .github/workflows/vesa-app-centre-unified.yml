@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/vesa-app-centre-unified
+      - feature/premium-app-centre-desktop
       - main
     paths:
       - 'apps/index.html'
