@@ -1,5 +1,31 @@
 # APP-12 Fabric & Supplier Comparison 360 — Execution Tracker
 
+## 2026-10-17 — M3 NODE/REAL CHROMIUM ACCEPTED; M4 RELEASE SOURCE PATCH LOCK
+
+**M3 verdict: ACCEPTED for personal synthetic locally entered comparison and draft reporting, NOT certified quotes or commercial procurement.** Exact feature source `6237541d79e4faec3d6dce82e248173cf1adc1d5`; [independent Node + all existing app regressions + real Chromium source import/Excel/PDF #39040115531 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39040115531). Initial #39040064208 correctly rejected a synthetic test expecting different reviewer/date warning text; only test assertion wording changed; source gates unchanged. Original blueprints and legacy saved copies remained compatible. Typed Tech Pack or Fabric & Trims JSON references require explicit complete matching article, composition, GSM, width+unit, construction and shrinkage; wrong source rejected atomically. Synthetic quotations, source-only landed components/explicit FX+ratios, formula-injection-safe numeric Excel, escaped A4 PDF, EN/BN/HI/TA and responsive 320–1440 / keyboard and no remote data uploads passed.
+
+### M4 release file map, ownership, risk, verification and rollback
+
+**Exact M4 IN-SCOPE files** (directly inspected `main` equivalents after APP-11 release):
+- `js/app-catalogue.js`: one appended `fabric-supplier-comparison` source-only personal demo descriptor, order after Buyer CRM, no other app cards altered.
+- `js/preferences.js`: one `openFabricSupplier` dictionary label each EN/BN/HI/TA only, preserve stored language and theme.
+- `service-worker.js`: next distinct static cache name and all APP-12 HTML/CSS/JS modules, no client supplier data.
+- `tests/personal-demo-release.cjs`: unique app path/disclaimer, one catalogue card and full static SW cache list.
+- `.github/workflows/vesa-costing-demo-live-smoke.yml`: exact PUBLIC bytes of Buyer CRM **and** newly added comparison HTML/CSS/JS, preserve all earlier apps and App Centre/login/source checks.
+- `.github/workflows/fabric-supplier-comparison.yml`: independent candidate/main complete Node + Chromium + legacy gate.
+- `apps/fabric-supplier-comparison/tests/browser-workflow.cjs`: real Chromium App Centre dynamic descriptor navigation to APP-12 then complete existing synthetic workflow.
+- This tracker; only AFTER externally verified release add `VESA_PROGRESS.md`, `VESA_RESUME_PROMPT.md`, `apps/fabric-supplier-comparison/RELEASE_NOTES.md`.
+
+**WATCHED/frozen:** `apps/index.html` dynamic catalogue, root `js/auth.js`, shared shell `js/vesa-workspace-shell.js`, `css/vesa-workspace.css`, common XLSX JS (NO changes), all prior BuyerCRM, Artwork, Factory, Production, Shipment, Fabric/Trims, Sampling, Costing, Commission, PO, LC, Tech Pack, TNA, PPM/AQL business/record contracts (FROZEN). Original 15 blueprint + manifest untouched.
+
+**Dependency/call/state:** App Centre single descriptor → shared VESA auth convenience/header → APP-12 own pure comparison + source-reviewed reference + own `vesa.fabric-supplier-comparison.records.v1` local-only state → draft Excel/PDF or copied JSON downloads. Static service-worker caches only publicly safe source modules. No physical stock, supplier accreditation, official duties/FX, automatic winner, commercial SaaS, bank credentials, remote communications or private real quote records. Publishing personal synthetic static page does not establish commercial Pages eligibility or third-party authority.
+
+**M4 gate:** candidate CI exact SHA full blueprints/Node/Chromium/all siblings, route + four-language + static cache source guard independent SUCCESS → only then CAS fast-forward to `main` (never force). Independently verify main full CI, GitHub Pages deployment and live actual public source-byte smoke SUCCESS at exact source SHA including previous demos. If any fail, HOLD/revert only M4 release wiring, preserve app-local saved copies and all earlier published routes.
+
+**PRECISE NEXT ACTION:** patch only M4 named files, independently CI; publish personal non-commercial synthetic demo conditionally after verified Pages/live checks, then automatically start next W4 `APP-14 Claims & Disputes 360` original `blueprints/APP-14_claims-disputes.md`, never require prior master ZIP again.
+
+---
+
 ## 2026-10-17 — M2 REAL CHROMIUM ACCEPTED; M3 SOURCE-ONLY REPORT PATCH LOCK
 
 **M2 verdict: ACCEPTED for synthetic browser-local supplier comparison technical functionality, not real verified quotes.** Exact feature code `e7821dacea0b81c35af2f4d7aeced3e7a8162cd2`; [independent Node/full sibling + real Chromium #39039559148 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39039559148). Browser tests created requirement, two supplier offers, blocked different GSM, sourced freight/duty/tax/LC landed cost and missing-source warning, manual internal note never vendor/PO approval, Save/reload/export/import separate restored copy, checksum/old-revision rejection, 4-language EN/BN/HI/TA, keyboard/modal Escape, responsive 320–1440px and zero off-host requests. All existing portfolio/TNA/PPM/AQL Node tests passed. No App Centre public route yet.
