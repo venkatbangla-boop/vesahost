@@ -24,7 +24,7 @@ async function run(){
     await anonPage.waitForURL(url=>url.pathname==='/login/'&&url.searchParams.get('next')==='/apps/tna/');
     const loginText=await anonPage.locator('body').innerText();
     assert.match(loginText,/APP CENTRE/i,'anonymous TNA entry must show the App Centre login context.');
-    assert.match(loginText,/Login/i,'anonymous TNA entry must reach the visible login page.');
+    assert.equal(await anonPage.locator('#loginForm').count(),1,'anonymous TNA entry must reach the accessible premium sign-in form.');
     await anonymous.close();
 
     const context=await browser.newContext({viewport:{width:1280,height:800}});
@@ -34,9 +34,15 @@ async function run(){
     page.on('request',request=>{if(!request.url().startsWith(base))external.push(request.url());});
     await page.goto(`${base}/apps/`,{waitUntil:'domcontentloaded'});
     const routes=await page.locator('#appCatalogue a').evaluateAll(nodes=>nodes.map(node=>new URL(node.href).pathname).sort());
-    assert.deepEqual(routes,['/apps/aql/','/apps/costing/','/apps/ppm/','/apps/tna/'],'App Centre must expose the four approved AQL, Costing, PPM and TNA routes.');
+    // The catalogue expanded from four entries to 19; keep the four original
+    // cross-app navigation probes without treating the other approved apps as drift.
+    const expected=await page.evaluate(()=>window.VesaAppCatalogue.enabled().map(app=>app.route).sort());
+    assert.equal(expected.length,19,'the unified catalogue must register all 19 approved demo routes.');
+    assert.deepEqual(routes,expected,'App Centre must expose every registered application exactly once.');
+    const coreRoutes=['/apps/aql/','/apps/costing/','/apps/ppm/','/apps/tna/'];
+    for(const route of coreRoutes)assert.ok(routes.includes(route),route+' must remain available.');
 
-    for(const route of routes){
+    for(const route of coreRoutes){
       await page.goto(`${base}${route}`,{waitUntil:'domcontentloaded',timeout:120000});
       if(route==='/apps/aql/'){
         const enter=page.locator('#vesa-enter');
@@ -50,10 +56,10 @@ async function run(){
     }
     await page.locator('.vesa-workspace__app-centre').click();
     await page.waitForURL(url=>url.pathname==='/apps/');
-    assert.equal(await page.locator('#appCatalogue .app-tile').count(),4,'the in-app App Centre link must return to all four approved apps.');
+    assert.equal(await page.locator('#appCatalogue .app-tile').count(),expected.length,'the in-app App Centre link must return to all 19 approved apps.');
     assert.deepEqual(errors,[],'route regression must have no uncaught page errors');
     assert.deepEqual(external,[],'route regression must make no external requests');
-    console.log('TNA G11 route regression passed: anonymous login return, App Centre AQL/Costing/PPM/TNA cards, direct routes, Home/App Centre links, zero external requests/page errors');
+    console.log('TNA G11 route regression passed: premium login return, 19 app catalogue, four core direct routes, Home/App Centre links, zero external requests/page errors');
     await context.close();
   }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 }
