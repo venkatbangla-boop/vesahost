@@ -619,8 +619,31 @@ class TechSpecWorkspace{
  }
  render(){
   const t=k=>escape(this.tr(k));
+  const language=global.VesaPrefs?.read?.()?.language||'en';
+  const copy=TECH_LAB_COPY[language]||TECH_LAB_COPY.en;
   const title='<section class="sp-card"><h1>'+t('title')+'</h1><p class="sp-note">'+t('subtitle')+'</p>'+
-    '<p class="sp-warning">'+escape(DISCLAIMER)+'</p></section>';
+    '<details class="sp-local-info"><summary>'+escape(copy.info)+'</summary>'+
+    '<p class="sp-warning">'+escape(DISCLAIMER)+'</p></details></section>';
+  const demo=GarmentSpecEngine.practice();
+  const projection=GarmentSpecEngine.project(demo);
+  const demoPOM=demo.poms[0];
+  const chartRow=demo.meta.sizes.map(size=>{
+    const item=projection.cells.find(x=>x.pomId===demoPOM.id&&x.size===size);
+    return '<td>'+escape(item?.target??this.tr('missing'))+'</td>';
+  }).join('');
+  const lab='<section class="sp-card sp-lab" aria-labelledby="techLabTitle">'+
+    '<header class="sp-lab-head"><span class="sp-lab-tag">'+escape(copy.kicker)+'</span>'+
+    '<h2 id="techLabTitle">'+escape(copy.title)+'</h2><p>'+escape(copy.lead)+'</p></header>'+
+    '<div class="sp-lab-grid"><div class="sp-lab-chart">'+
+    '<p class="sp-lab-chart-title">'+escape(copy.chart)+'</p>'+
+    '<table class="sp-lab-table"><thead><tr><th scope="col">'+t('poms')+'</th>'+
+    demo.meta.sizes.map(size=>'<th scope="col">'+escape(size)+'</th>').join('')+'</tr></thead>'+
+    '<tbody><tr><th scope="row">'+escape(demoPOM.code)+'</th>'+chartRow+'</tr></tbody></table>'+
+    '<p class="sp-lab-chart-note">'+escape(copy.hint)+'</p></div>'+
+    '<nav class="sp-lab-actions" aria-label="'+escape(copy.title)+'">'+TECH_LAB_TABS.map(tab=>
+      '<button type="button" class="sp-lab-action" data-action="preview-'+escape(tab)+'">'+
+      '<span>'+t(tab)+'</span><span class="sp-lab-action-arrow" aria-hidden="true">→</span>'+
+      '</button>').join('')+'</nav></div></section>';
   if(!this.current){
    const list=this.store.list();
    this.main.innerHTML=title+'<section class="sp-card"><div class="sp-actions">'+
