@@ -40,8 +40,14 @@ async function runCase(browser,base,width){
   assert(heights.every(h=>h>=44),width+'px preview touch buttons are usable '+heights);
   const pageSize=await page.evaluate(()=>document.documentElement.scrollWidth);
   assert(pageSize<=width+1,width+'px home horizontal overflow '+pageSize);
-  assert.equal(await page.getByText('NON-COMMERCIAL PERSONAL DEMO.',{exact:true}).count(),0,
-   'No oversized repeated warning displacing actual app work');
+  const privacy=page.locator('.pack-local-info');
+  assert.equal(await privacy.count(),1,'Important local-data limitations are still accessible');
+  assert.equal(await page.getByText('NON-COMMERCIAL PERSONAL DEMO.',{exact:true}).isVisible(),false,
+   'Long warning is collapsed rather than occupying the active workspace');
+  await privacy.locator('summary').click();
+  assert.equal(await page.getByText('NON-COMMERCIAL PERSONAL DEMO.',{exact:true}).isVisible(),true,
+   'Local data/approval scope remains readable by an intentional click');
+  await privacy.locator('summary').click();
   const stored=()=>page.evaluate(()=>JSON.stringify(Object.fromEntries(Object.entries(localStorage)
    .filter(([key])=>key.startsWith('vesa.packing-container.records.v1.')))));
   const baseline=await stored();
