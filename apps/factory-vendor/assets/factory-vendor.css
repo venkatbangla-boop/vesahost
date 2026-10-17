@@ -21,3 +21,19 @@
 @media(max-width:740px){.fv-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fv-card{padding:12px}}
 @media(max-width:470px){.fv-grid,.fv-form{grid-template-columns:1fr}.fv-form .wide{grid-column:1}.fv-actions .fv-btn{flex:1 1 auto}}
 @media print{.vesa-workspace,.app-user-bar,.fv-tabs,.fv-actions,.fv-dialog{display:none!important}#fvMain{width:100%;padding:0}.fv-card{border:0;padding:0}.fv-table th,.fv-table td{font-size:10px;padding:5px}}
+
+
+/* M3: only the source-reviewed report prints; never print application chrome. */
+.fv-report{min-width:0;overflow-wrap:anywhere}.fv-report h2{font-size:1.12rem}
+.fv-report-section{margin:14px 0;min-width:0}.fv-report-section h3{font-size:1rem}
+.fv-form .fv-confirm{display:flex;align-items:center;gap:12px;font-weight:500}
+.fv-form .fv-confirm input[type="checkbox"]{width:20px;height:20px;min-height:20px;flex:0 0 20px}
+@media print{
+ #fvMain>.fv-card:not(.fv-print-card),#fvMain>.fv-tabs{display:none!important}
+ .fv-print-card{display:block!important;border:0!important}
+ .fv-report-section{break-inside:avoid}
+ .fv-scroll{overflow:visible;border:0}
+ .fv-table{min-width:0;width:100%;table-layout:fixed;font-size:8px}
+ .fv-table th,.fv-table td{overflow-wrap:anywhere;white-space:normal}
+ @page{size:A4 landscape;margin:12mm}
+}
