@@ -7,6 +7,8 @@ class FactoryVendorWorkspace{
  constructor(){
   this.main=document.getElementById('fvMain');this.dialog=document.getElementById('fvDialog');
   this.body=document.getElementById('fvDialogBody');this.file=document.getElementById('fvCopyFile');
+  this.refFile=document.getElementById('fvReferenceFile');this.pendingRef=null;this.refKind='po';
+  this.Ref=root.VesaFactoryVendorReviewedReference;this.R=root.VesaFactoryVendorReportModel;
   this.E=root.VesaFactoryVendorProfile;this.C=root.VesaFactoryCertificationEvidence;
   this.Match=root.VesaFactoryCapabilityMatcher;this.Codec=root.VesaFactoryVendorCopyCodec;this.T=root.VesaFactoryVendorCopy;
   const user=root.VesaAuth?.session?.()||{};
@@ -40,15 +42,31 @@ class FactoryVendorWorkspace{
     this.modal(this.t('upload'),'<p class="fv-note">Saved vendor copy opened separately; your earlier reviews remain unchanged.</p>');
    }catch(error){this.error(error.message);}
   });
+  this.refFile.addEventListener('change',async()=>{const file=this.refFile.files?.[0];this.refFile.value='';if(!file)return;
+   try{if(file.size>120000)throw Error('Reviewed source file must be less than 120 KB');
+    const source=JSON.parse(await file.text());
+    if(!this.Ref.sourceValid(source,this.refKind))throw Error('Source owner or evidence fields are incomplete. Use a reviewed PO or Production source.');
+    this.pendingRef=this.E.clone(source);this.form('source-confirm');
+   }catch(error){this.error(error.message);}
+  });
   root.addEventListener('vesa-preferences-change',()=>this.render());root.VesaFactoryVendor360=this;this.render();
  }
  menu(name){const menu={Home:[['home','back'],['new','new'],['continue','continue'],['practice','practice']],
   File:[['save','save'],['download','download'],['upload','upload']],
   Edit:[['add-site','addSite'],['add-capability','addCapability'],['add-certificate','addCertificate'],['add-review','addReview'],['add-performance','addPerformance']],
-  View:[['summary','summary'],['sites','sites'],['capabilities','capabilities'],['documents','documents'],['onboarding','onboarding'],['performance','performance'],['history','history']],
-  Tools:[['report','report']],Help:[['help','help']]};
+  View:[['summary','summary'],['sites','sites'],['capabilities','capabilities'],['documents','documents'],['onboarding','onboarding'],['performance','performance'],['references','references'],['reports','reports'],['history','history']],
+  Tools:[['report','report'],['excel','excel'],['print','print'],['reference-select','referenceSelect']],Help:[['help','help']]};
   this.modal(name,'<div class="fv-actions">'+(menu[name]||[]).map(([action,label])=>'<button type="button" class="fv-btn" data-dialog-action="'+this.e(action)+'">'+this.e(this.t(label))+'</button>').join('')+'</div>');
   this.body.querySelectorAll('[data-dialog-action]').forEach(x=>x.onclick=()=>{this.dialog.close();this.action(x.dataset.dialogAction);});
+ }
+ excel(){if(!this.current)throw Error('Open a saved vendor record first');
+  if(!root.XLSX)throw Error('Local Excel workbook library unavailable');
+  const check=this.E.validate(this.current);if(!check.ok)throw Error(check.errors.join('; '));
+  const book=root.XLSX.utils.book_new();
+  for(const [name,rows] of Object.entries(this.R.rows(this.current,this.asOf))){
+   root.XLSX.utils.book_append_sheet(book,root.XLSX.utils.aoa_to_sheet(this.R.excelRows(name,rows)),name.slice(0,31));
+  }
+  root.XLSX.writeFile(book,'VESA-FACTORY-'+this.current.id+'.xlsx');
  }
  download(text,name,type){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([text],{type}));a.href=url;a.download=name;
   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1300);}
@@ -64,9 +82,14 @@ class FactoryVendorWorkspace{
   if(name==='download'){if(!this.current||this.current.mode==='practice')throw Error('Open a saved local vendor record first');
    this.download(this.Codec.encode(this.current),'VESA-FACTORY-'+this.current.id+'.vesavendor','application/json');return;}
   if(name==='upload'){this.file.click();return;}
-  if(['summary','sites','capabilities','documents','onboarding','performance','reports','history'].includes(name)){
+  if(['summary','sites','capabilities','documents','onboarding','performance','references','reports','history'].includes(name)){
    if(!this.current)throw Error('Open a vendor record first');this.section=name;this.render();return;}
   if(name==='report'){if(!this.current)throw Error('Open a vendor record first');this.section='reports';this.render();return;}
+  if(name==='excel'){this.excel();return;}
+  if(name==='print'){if(!this.current)throw Error('Open a vendor record before printing');
+   this.section='reports';this.render();root.print();return;}
+  if(name==='reference-select'){if(!this.current||this.current.mode==='practice')throw Error('Open a saved vendor record first');
+   this.form('reference-select');return;}
   if(name==='help'){this.modal(this.t('help'),'<p class="fv-warning">'+this.e(this.t('warning'))+'</p><p>'+this.e(this.t('noApproval'))+'</p>');return;}
   if(['add-site','add-capability','add-certificate','add-review','add-performance'].includes(name)){
    if(!this.current||this.current.mode==='practice')throw Error('Open a saved vendor record for editing');this.form(name);return;}
@@ -78,7 +101,7 @@ class FactoryVendorWorkspace{
    this.main.innerHTML=banner+'<section class="fv-card"><div class="fv-actions">'+this.btn('new','new',true)+this.btn('continue','continue')+this.btn('upload','upload')+this.btn('practice','practice')+'</div><h2>'+t('openRecords')+'</h2>'+
     (saved.length?saved.map(x=>'<div class="fv-record"><span><b>'+e(x.vendorName)+'</b> · '+e(x.country)+'<small>Revision '+e(x.revision)+'</small></span>'+this.btn('load','open',false,x.id)+'</div>').join(''):'<p class="fv-note">'+t('none')+'</p>')+'</section>';this.shell?.setSavedState('unsaved');return;}
   const p=this.current,practice=p.mode==='practice',review=this.E.validate(p);
-  const tabs=['summary','sites','capabilities','documents','onboarding','performance','reports','history'];
+  const tabs=['summary','sites','capabilities','documents','onboarding','performance','references','reports','history'];
   this.main.innerHTML=banner+'<section class="fv-card"><h2>'+e(p.header.vendorName)+' · '+e(p.header.country)+'</h2><p class="fv-note">'+(practice?'SYNTHETIC PRACTICE':t('localOnly'))+' · '+t('status')+'</p>'+
    '<div class="fv-actions">'+this.btn('home','back')+this.btn('save','save',true,'',practice)+this.btn('download','download',false,'',practice)+this.btn('report','report')+'</div></section>'+
    '<nav class="fv-tabs" aria-label="Factory & Vendor sections">'+tabs.map(tab=>'<button type="button" class="fv-btn" data-action="'+tab+'" aria-current="'+(this.section===tab)+'">'+t(tab)+'</button>').join('')+'</nav>'+
@@ -94,14 +117,31 @@ class FactoryVendorWorkspace{
   if(this.section==='documents')return '<section class="fv-card">'+head('documents','add-certificate','addCertificate')+this.table([t('siteId'),t('scheme'),t('issuer'),t('expiryDate'),t('documentStatus'),'Date-only state'],p.certificates.map(x=>[p.sites.find(s=>s.id===x.siteId)?.siteName,x.scheme,x.issuer,x.expiryDate,x.documentStatus,this.C.dateState(x,this.asOf).dateState]))+'<p class="fv-warning">'+e(t('warning'))+'</p></section>';
   if(this.section==='onboarding')return '<section class="fv-card">'+head('onboarding','add-review','addReview')+this.table([t('siteId'),t('reviewer'),t('reviewDate'),t('checklistRef'),t('internalOutcome')],p.reviews.map(x=>[p.sites.find(s=>s.id===x.siteId)?.siteName,x.reviewer,x.reviewDate,x.checklistRef,x.internalOutcome]))+'</section>';
   if(this.section==='performance')return '<section class="fv-card">'+head('performance','add-performance','addPerformance')+this.table([t('siteId'),t('metric'),t('periodFrom'),t('periodTo'),t('numerator'),t('denominator'),t('sourceRef')],p.performance.map(x=>[p.sites.find(s=>s.id===x.siteId)?.siteName,x.metric,x.periodFrom,x.periodTo,x.numerator,x.denominator,x.sourceRef]))+'</section>';
-  if(this.section==='reports')return '<section class="fv-card">'+head('reports')+'<p class="fv-warning">'+e(t('reportPlanned'))+'</p><p>'+e(t('noApproval'))+'</p></section>';
+  if(this.section==='references')return '<section class="fv-card">'+head('references','reference-select','referenceSelect')+
+   '<p class="fv-warning">'+e(t('sourceNotice'))+'</p>'+
+   this.table([t('siteId'),t('sourceType'),t('sourceApp'),t('sourceRecord'),t('localReviewer'),t('localReviewDate')],
+    (p.manualReferences||[]).map(r=>[p.sites.find(s=>s.id===r.siteId)?.siteName,r.kind,r.source.sourceApp,
+     r.source.recordId,r.localReviewer,r.localReviewDate]))+'</section>';
+  if(this.section==='reports')return '<section class="fv-card fv-print-card"><div class="fv-actions">'+
+   this.btn('excel','excel',true)+this.btn('print','print')+'</div>'+this.R.html(p,this.asOf)+'</section>';
   return '<section class="fv-card">'+head('history')+this.table(['Revision','Action','Date/Time','Evidence ID'],p.audit.map(x=>[x.revision,x.action,x.at,x.recordId]))+'<p class="fv-note">'+e(t('noApproval'))+'</p></section>';
  }
  form(kind){const h=this.current?.header||{},e=x=>this.e(x),f=(key,required=true,type='text',wide=false)=>this.field(key,'',type,(required?'required ':'')+'maxlength="250"',wide);
   const begin='<form class="fv-form" data-form="'+e(kind)+'">',end='<div class="wide fv-actions"><button type="submit" class="fv-btn primary">'+e(this.t('submit'))+'</button></div></form>';
   const sites=this.current?.sites||[],options=sites.map(x=>[x.id,x.siteName+' / '+x.country]);let body='';
   if(kind==='new')for(const key of ['vendorName','country','sourceRef'])body+=f(key,true,'text',key==='sourceRef');
-  else{
+  else if(kind==='reference-select'){
+   body='<p class="wide fv-warning">'+e(this.t('sourceNotice'))+'</p>'+
+    this.choose('refKind',[['po','VESA Purchase Order 360'],['production','VESA Production Tracker 360']],'po',true);
+  }else if(kind==='source-confirm'){
+   if(!this.pendingRef)throw Error('Select a reviewed source document first');
+   if(!sites.length)throw Error('Record a factory site before linking evidence');
+   body='<p class="wide fv-warning">'+e(this.t('sourceNotice'))+'</p>'+
+    '<p class="wide">'+e(this.pendingRef.sourceApp)+' / '+e(this.pendingRef.recordId)+' / '+e(this.pendingRef.revisionId)+'</p>'+
+    this.choose('siteId',options,options[0][0])+
+    f('localReviewer',true)+f('localReviewDate',true,'date')+
+    '<label class="wide fv-confirm"><input type="checkbox" name="identityConfirmed" value="yes" required><span>'+e(this.t('identityConfirmed'))+'</span></label>';
+  }else{
    if(kind!=='add-site'){
     if(!options.length)throw Error('Record factory site first');body+=this.choose('siteId',options,options[0][0]);
    }
@@ -126,7 +166,7 @@ class FactoryVendorWorkspace{
      this.number('numerator','',true)+this.number('denominator','',true);
    }
   }
-  const headings={'new':'new','add-site':'addSite','add-capability':'addCapability','add-certificate':'addCertificate','add-review':'addReview','add-performance':'addPerformance'};
+  const headings={'new':'new','add-site':'addSite','add-capability':'addCapability','add-certificate':'addCertificate','add-review':'addReview','add-performance':'addPerformance','reference-select':'referenceSelect','source-confirm':'referenceSelect'};
   this.modal(this.t(headings[kind]||'new'),begin+body+end);
  }
  submit(form){const get=k=>String(new FormData(form).get(k)??'').trim(),kind=form.dataset.form;
@@ -134,6 +174,16 @@ class FactoryVendorWorkspace{
   try{
    if(kind==='new'){const next=this.E.create({vendorName:get('vendorName'),country:get('country'),sourceRef:get('sourceRef')});next.mode='local';
     const check=this.E.validate(next);if(!check.ok)throw Error(check.errors.join('; '));this.store.save(next);this.current=next;this.section='summary';
+   }else if(kind==='reference-select'){
+    if(!this.current||this.current.mode==='practice')throw Error('Open a local vendor record first');
+    this.refKind=get('refKind');this.dialog.close();this.refFile.click();return;
+   }else if(kind==='source-confirm'){
+    if(!this.current||this.current.mode==='practice'||!this.pendingRef)throw Error('Choose reviewed evidence first');
+    const next=this.Ref.append(this.current,this.refKind,this.pendingRef,{
+     siteId:get('siteId'),localReviewer:get('localReviewer'),localReviewDate:get('localReviewDate'),
+     identityConfirmed:get('identityConfirmed')==='yes'
+    });
+    this.store.save(next);this.current=next;this.pendingRef=null;this.section='references';
    }else{
     if(!this.current||this.current.mode==='practice')throw Error('Practice is read only');
     const id=this.E.id('FVD-'+kind.replace('add-','').toUpperCase()),siteId=get('siteId');let entry;
