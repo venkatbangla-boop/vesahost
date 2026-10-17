@@ -1,0 +1,43 @@
+/* APP-04 owns domain content only. Shared VESA shell owns all global header/menus/settings. */
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14px/1.55 var(--ui,Arial,sans-serif)}
+#ftMain{width:min(1280px,calc(100vw - 24px));min-width:0;margin:0 auto;padding:18px 0 72px}
+.ft-card{background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:14px;padding:17px;margin-bottom:14px;min-width:0}
+.ft-card h1{font-size:clamp(1.3rem,3vw,1.9rem);margin:0 0 4px;line-height:1.25}
+.ft-card h2{font-size:1.17rem;margin:0 0 9px}.ft-card h3{font-size:1rem;margin:10px 0}
+.ft-note{color:var(--muted,#526176);font-size:.9rem;margin:7px 0}
+.ft-alert{border:1px solid var(--line,#cbd6e4);border-left:4px solid var(--action,#ab2b49);padding:10px 12px;border-radius:9px;background:var(--look-surface,#eef3f9);margin:10px 0;white-space:pre-wrap}
+.ft-actions,.ft-tabs{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:10px 0}
+.ft-tabs{border-bottom:1px solid var(--line,#cbd6e4);padding-bottom:10px}
+.ft-btn{font:inherit;min-height:44px;padding:10px 14px;cursor:pointer;border:1px solid var(--line,#cbd6e4);border-radius:9px;color:var(--ink,#17263d);background:var(--paper,#fff);font-weight:700}
+.ft-btn.primary,.ft-tabs [aria-current=true]{background:var(--blue,#244fd6);border-color:var(--blue,#244fd6);color:#fff}
+.ft-btn:disabled{opacity:.45;cursor:not-allowed}
+.ft-btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold,#a58a42);outline-offset:2px}
+.ft-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ft-tile{background:var(--look-surface,#eef3f9);padding:13px;border:1px solid var(--line,#cbd6e4);border-radius:11px;min-width:0}
+.ft-tile strong{display:block;font-size:1.32rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ft-tile small{color:var(--muted,#526176)}
+.ft-scroll{max-width:100%;overflow:auto;border:1px solid var(--line,#cbd6e4);border-radius:10px}
+.ft-table{border-collapse:collapse;min-width:710px;width:100%;font-size:.88rem}
+.ft-table td,.ft-table th{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere}
+.ft-table th{background:var(--look-surface,#eef3f9);white-space:nowrap}
+.ft-table tr:last-child td{border-bottom:0}
+.ft-record{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line,#cbd6e4)}
+.ft-record:last-child{border-bottom:0}.ft-record small{display:block;color:var(--muted,#526176)}
+.ft-dialog{max-height:92vh;overflow:auto;width:min(790px,calc(100vw - 16px));padding:18px;color:var(--ink,#17263d);background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:14px;box-shadow:0 18px 70px #0004}
+.ft-dialog::backdrop{background:#091728ae}.ft-dialog-head{display:flex;gap:15px;align-items:center;justify-content:space-between}.ft-dialog-head h2{font-size:1.18rem;margin:0}
+.ft-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.ft-form label{display:grid;gap:5px;min-width:0;font-size:.9rem;font-weight:700}
+.ft-form label.wide,.ft-form .wide{grid-column:1/-1}
+.ft-form input,.ft-form select,.ft-form textarea{font:inherit;color:var(--ink,#17263d);background:var(--paper,#fff);width:100%;min-width:0;min-height:44px;border:1px solid var(--line,#cbd6e4);border-radius:9px;padding:10px 12px}
+.ft-form textarea{min-height:75px}
+.ft-form .ft-check{display:flex;gap:10px;align-items:center}
+.ft-check input{width:22px;min-height:22px}
+.ft-report-section{margin:16px 0;break-inside:avoid}
+@media(max-width:740px){.ft-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ft-card{padding:12px}}
+@media(max-width:470px){.ft-grid,.ft-form{grid-template-columns:1fr}.ft-form .wide,.ft-form label.wide{grid-column:1}.ft-actions .ft-btn{flex:1 1 auto}}
+@media print{
+ .vesa-workspace,.app-user-bar,.ft-actions,.ft-tabs,.ft-dialog,.ft-hide-print{display:none!important}
+ #ftMain{width:100%;padding:0}.ft-card{border:0;padding:0}.ft-table{font-size:10px}.ft-table td,.ft-table th{padding:5px 6px}
+ @page{size:A4 landscape;margin:12mm}
+}
