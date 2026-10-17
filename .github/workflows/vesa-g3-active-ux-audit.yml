@@ -1,0 +1,49 @@
+name: VESA G3 active workspace visual audit
+on:
+  push:
+    branches:
+      - feature/g3-active-workflow-ux-audit
+    paths:
+      - 'tests/vesa-g3-active-ux-audit.cjs'
+      - 'docs/ux/02_G3_ACTIVE_WORKFLOW_AUDIT.md'
+      - '.github/workflows/vesa-g3-active-ux-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: vesa-g3-ux-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  active-workflow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax, blueprint and frozen-domain proof
+        run: |
+          set -euo pipefail
+          node --check tests/vesa-g3-active-ux-audit.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          git diff --check HEAD~1 HEAD
+      - name: Install real Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Inspect 3 actual workspaces at 4 viewport sizes
+        run: node tests/vesa-g3-active-ux-audit.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-g3-active-workflows-synthetic-screenshots
+          path: output/g3-active-ux/
+          if-no-files-found: error
+          retention-days: 7
