@@ -1,5 +1,24 @@
 # APP-09 Production Tracker 360 — Execution Tracker
 
+## 2026-10-17 — M1 pure domain verification checkpoint (accepted)
+
+**Commit:** `45b08317b0c8b649381b7858d35a2a708d1ae01e`. [Actual GitHub Actions #39021308588 — SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39021308588) for Node syntax, `tests/domain.test.cjs`, canonical blueprint SHA-256/ZIP, next-app starter, Shipment/Fabric/Sampling/LC/PO/Packing/Commission/TechPack domain tests, TNA G02/G05, PPM baseline, AQL baseline and sampling, shared VESA shell contract.
+
+**M1 files directly implemented and tested:**
+- `apps/production-tracker/src/domain/stage-flow.js`: explicit PO/style/colour/size/lot/factory/source, production stage, date/shift/line/unit and review/evidence constraints.
+- `apps/production-tracker/src/domain/wip-balance.js`: stage-only `opening + locally reviewed in - locally reviewed out - locally reviewed rejects`, negative source balances fail; missing opening and target remain `null`.
+- `apps/production-tracker/src/domain/daily-output-ledger.js`: immutable append-and-revise source evidence, duplicate-day/shift prevention, source target amendment chain, stage-specific good totals and draft-only status; unreviewed observations never become verified output or movement.
+- `apps/production-tracker/tests/domain.test.cjs`: synthetic multi-line/day, cutting and sewing separate, stale/invalid corrections, atomic failure, source target revisions and no AQL/TNA release.
+- `.github/workflows/production-tracker.yml`: Node M1 and sibling verification on this feature branch only.
+
+**Drift:** No changes to any previous app, `js/app-catalogue.js`, global shell, auth, local storage or real third-party records. This does **not** verify user-specific definitions of good/rework/shift-close, physical goods, browser Save/Open or any commercial release.
+
+**Verdict:** M1 `accepted` for narrow pure-domain technical scope based on independent CI. M2 `not started`; full app `conditional` until local/browser and third-party gates.
+
+**PRECISE NEXT ACTION:** M2 file-level audit and implement `apps/production-tracker/index.html`, `assets/production-tracker.css`, `src/bootstrap.js`, `src/application/workspace-controller.js`, `src/data/local-record-port.js` and `src/data/saved-copy-codec.js`, `src/i18n/app-copy.js`. Reuse shared shell, versioned isolated browser storage and checksum-verified saved copies. Verify real Chromium creating stage daily records, local save/reopen, corrupt-copy atomicity, EN/BN/HI/TA and 320/390/768/1280. Do not register in public App Centre or call M2 complete until proven.
+
+---
+
 ## 2026-10-17 — M0 file-level source audit
 
 **Objective:** Resume approved APP-09 after permanent original blueprint recovery. Source: `blueprints/APP-09_production-tracker.md`, original SHA256 `f1e03a4069e294df90101888e74a24777e38a17303667837b3d54262224cfd06`. Baseline `main` `10d11ba3cda6fdeb8dc40c5413a2aa667ed08f08`, audited `feature/production-tracker-360` at same documentation checkpoint. Repository source CI #39020959490 and Pages #39020959600 SUCCESS. No APP-09 runtime app previously existed; GitHub code search found no `vesa.production-tracker.records.v1` storage key.
