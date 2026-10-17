@@ -2,8 +2,8 @@
 
 **Updated:** 2026-10-18
 **Approved UX scope:** ONLY `/login/`, `/apps/`, `/admin/` and the 19 app paths. Public `/` homepage and all assets/content/SEO are permanently FROZEN for this project. Source rules: `docs/ux/00_PREMIUM_ADAPTIVE_MASTER_PROMPT.md`.
-**Last verified main (G1):** `0cc389a25beb8f426017eda3afd24c63200a98f6`; recheck latest main before release.
-**Development branch:** `feature/premium-app-centre-desktop` (G2).
+**Most recently published application code:** `1ef581fabe5a6aac03473eeb9c7bb33ce5cff43c` (G2 Admin); GitHub Pages #39059208861 SUCCESS. Recheck actual main when resuming.
+**Next work:** G3, actual active TNA/PPM/AQL workflow review. Branch to be created safely from latest main.
 **Demo login already implemented in js/auth.js:** `user@vesa` / `vesa` (synthetic public user, NOT admin). No change to `js/auth.js` needed.
 
 ## G0 — Correct scope and retain original screenshots
@@ -21,11 +21,15 @@
 **Verification:** JavaScript check, fresh isolated Chromium at 320/360/390/768/1024/1280/1440/1920, five themes, EN/BN/HI/TA, skip link/focus, wrong password, one-click real login/session/logout, deep-link + external next, minimum 44px touch; existing platform/accessibility/uniform/domain tests.
 **Rollback:** abandon feature branch or revert only login-owned files/worker asset update. No force push.
 
-## G2 — App Centre & Admin premium usability
-**Status:** APP CENTRE DESKTOP PATCHED on `feature/premium-app-centre-desktop`; awaiting independent Chromium proof and release. Admin remains NOT STARTED.
-- Real desktop screenshot from app-only inventory showed public-home `css/style.css` leaking a two-column `.app-catalogue` grid, squeezing six cards side by side and wrapping app-button labels.
-- App Centre-only patch removes the home stylesheet link, explicitly makes each category full-width and standardizes localized card action to `Open workspace`. It changes only the App Centre-owned HTML/CSS/JS, root cache namespace/asset URLs and related regression assertions. Root homepage source/code/images remain unchanged. Workflow CI started at [#39058181360](https://github.com/venkatbangla-boop/vesahost/actions/runs/39058181360); check actual conclusion before main promotion.
-- **EXACT NEXT ACTION:** complete Chromium visual/sibling CI for G2, inspect desktop screenshot, fast-forward main only if PASS and verify Pages. Then audit and redesign `/admin/` (not the company homepage), followed by G3 TNA/PPM/AQL active workflow UX.
+## G2 — App Centre and Admin premium usability
+**Status:** DONE IN MAIN for the personal showcase, with source-pinned browser evidence.
+
+- **App Centre desktop fix:** old public company CSS inadvertently made two category sections share a row, squeezing cards/actions. Removed `/css/style.css` import from `/apps/`, kept the public stylesheet itself unchanged, and made category groups full-width. Initial branch Chromium [#39058181360 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39058181360), Pages [#39058323153 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39058323153).
+- **Sibling compatibility correction:** generic card action `Open workspace` broke five app-specific label assertions. Restored existing localized app-specific link names without reverting the full-width premium card layout. Tested all five browser workflows together in [#39058838363 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39058838363); published source `5d12ca22758aac356b1063582ce17ca21c9b3c66`; main per-app suites and [Pages #39058970672 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39058970672).
+- **Admin redesign:** existing `/admin/` unnecessarily imported company homepage CSS. Implemented standalone, theme-based `css/vesa-admin.css`, responsive form/users/history sections, familiar buttons/fields and mobile width. **All original JS handlers for Create User, role, Block/Reactivate, login history and CSV remain byte-for-byte unchanged.** Real screenshots inspected at desktop 1280 and phone 390 (artifact in #39058691029). Merged safely onto corrected App Centre main and passed isolated 19-app/sibling Chromium [#39059094672 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059094672). Promoted to main at `1ef581fabe5a6aac03473eeb9c7bb33ce5cff43c`; [Pages #39059208861 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059208861); [main App Centre browser #39059209116 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059209116). Separate external public HTTP byte probe not available.
+- User's prohibited company homepage (`/`, root `index.html`, `css/style.css`, `js/main.js`, images/videos/SEO) **was never changed**. Only app/login/admin UI, independent tests and service worker asset-version namespace were modified.
+
+**EXACT NEXT ACTION:** G3 — create isolated read-only Chromium screenshot / interaction / performance baseline for **active** TNA, PPM and AQL internal forms (not just first landing cards) at desktop 1440/1920 and phone 390/320. Compare screen density, field labels, button hierarchy, scroll lag, save/open/report and menu states. Use genuine synthetic fixtures and existing approved app test commands. Patch one proved presentation fault at a time after file-level ownership audit; preserve TNA CPM/G17/locale dates, PPM 168 and GO/HOLD, AQL SamplingEngine/Ac-Re/AR11, local saved-copy compatibility and print/offline. Do not touch the public homepage.
 
 ## G3 — TNA / PPM / AQL active-workflow redesign
 **Status:** NOT STARTED
@@ -40,4 +44,4 @@
 - Cover genuine forms/buttons/links/dialogs/exports and device widths with Playwright/screenshots and measured scroll/render metrics, then safe sequential main promotion + Pages verification.
 
 ## Durable CONTINUE command
-In any new chat, the user may write only **Continue**. Fetch actual GitHub branches/main/CI; read `AGENTS.md`, `VESA_PROGRESS.md`, `VESA_RESUME_PROMPT.md`, `docs/ux/00_PREMIUM_ADAPTIVE_MASTER_PROMPT.md` and THIS tracker. Resume at **G2, or the first actually unfinished gate after latest GitHub SHA**, not at the beginning, and do not change public homepage or previously completed app engines. Work one auditable patch at a time; test, commit, record exact SHA and next action, then proceed inside available session. Do not claim background execution.
+In any new chat, the user may write only **Continue**. Fetch actual GitHub branches/main/CI; read `AGENTS.md`, `VESA_PROGRESS.md`, `VESA_RESUME_PROMPT.md`, `docs/ux/00_PREMIUM_ADAPTIVE_MASTER_PROMPT.md` and THIS tracker. Resume at **G3, or the first actually unfinished gate after latest GitHub SHA**, not at the beginning, and do not change public homepage or previously completed app engines. Work one auditable patch at a time; test, commit, record exact SHA and next action, then proceed inside available session. Do not claim background execution.
