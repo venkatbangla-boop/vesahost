@@ -102,6 +102,24 @@ async function run(){
     document.querySelector('#tnaMerchSheet h3')?.textContent===title,{title,lang});
    await page.keyboard.press('Escape');await settings.waitFor({state:'hidden'});
    assert.equal(JSON.stringify(await stored()),beforeLang,'Language cannot translate source records');
+   // G17: the actual source-backed date editor, not just the sheet heading,
+   // must switch language while preserving task IDs, dates and buyer decisions.
+   const labelByLanguage={
+    en:['Edit sourced planning dates','Source document / dated meeting note','Save reviewed date change'],
+    bn:['উৎস যাচাই করে পরিকল্পনার তারিখ বদলান','উৎস নথি / তারিখসহ মিটিং নোট','যাচাই করা তারিখ সেভ করুন'],
+    hi:['स्रोत देखकर योजना की तारीख बदलें','स्रोत दस्तावेज़ / तारीख वाला मीटिंग नोट','समीक्षित तारीख सेव करें'],
+    ta:['ஆதாரத்துடன் திட்டத் தேதியை மாற்று','ஆதார ஆவணம் / தேதியிட்ட மீட்டிங் குறிப்பு','சரிபார்த்த தேதியைச் சேமி']
+   };
+   await sheet.locator('[data-edit-task-dates]').first().click();
+   const dialog=page.locator('#tnaDialog');
+   const form=dialog.locator('#tnaPlanningDateForm');await form.waitFor();
+   const visible=await dialog.innerText();
+   for(const label of labelByLanguage[lang])
+    assert(visible.includes(label),lang+': missing translated date-dialog label: '+label);
+   for(const name of ['baselineFinish','currentTargetFinish','forecastFinish',
+    'sourceRef','sourceDate','reason'])assert.equal(await form.locator('[name="'+name+'"]').count(),1);
+   await page.keyboard.press('Escape');await form.waitFor({state:'hidden'});
+   assert.equal(JSON.stringify(await stored()),beforeLang,lang+': opening translated dialog must not alter order');
   }
   // M3: actual device-local XLSX and isolated Chromium A4 print proof; never a real buyer file.
   await page.setViewportSize({width:1280,height:900});

@@ -12,13 +12,13 @@
  * This is an offline personal synthetic demo, not server-side authentication.
  */
 class TnaOfflineBundle {
-  static VERSION='20261017-g16-merch-v1';
+  static VERSION='20261017-g17-merch-v1';
   static CACHE='vesa-tna-'+TnaOfflineBundle.VERSION;
   static FILES=Object.freeze([
     './',
     './index.html',
     './service-worker.js',
-    './assets/tna.css?v=0.12.0-merch-g16',
+    './assets/tna.css?v=0.12.1-merch-g17',
     './src/domain.js?v=1.1.2-merch-g16',
     './src/scheduling.js?v=0.3.0',
     './src/operations.js?v=0.4.0',
@@ -27,11 +27,11 @@ class TnaOfflineBundle {
     './src/integration-references.js?v=0.10.0',
     './src/notification-rules.js?v=0.10.2',
     './src/storage.js?v=0.11.0',
-    './src/merchandising-sheet.js?v=0.3.0-merch-g16',
+    './src/merchandising-sheet.js?v=0.3.1-merch-g17',
     './src/reports.js?v=0.7.2',
     './src/scenarios.js?v=0.8.0',
     './src/remote-api.js?v=0.11.0',
-    './src/bootstrap.js?v=0.12.0-merch-g16',
+    './src/bootstrap.js?v=0.12.1-merch-g17',
     './src/offline-register.js?v=0.1.0-merch-g16',
     '../../favicon.ico',
     '../../assets/vesa-logo-black.png',

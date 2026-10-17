@@ -68,11 +68,11 @@ class TnaOfflineChromiumProof {
         await aql.put('/synthetic-tna-worker-aql-preservation',new Response('aql preserved'));
       });
       const pre=await page.evaluate(async()=>{
-        const cache=await caches.open('vesa-tna-20261017-g16-merch-v1');
+        const cache=await caches.open('vesa-tna-20261017-g17-merch-v1');
         return (await cache.keys()).map(request=>request.url);
       });
       assert(pre.length>=25,'Install must precache complete bundle before claiming clients');
-      assert(pre.some(x=>x.includes('/apps/tna/src/merchandising-sheet.js?v=0.3.0-merch-g16')));
+      assert(pre.some(x=>x.includes('/apps/tna/src/merchandising-sheet.js?v=0.3.1-merch-g17')));
       assert(pre.some(x=>x.includes('/apps/tna/src/offline-register.js?v=0.1.0-merch-g16')));
       assert(pre.some(x=>x.endsWith('/assets/vesa-logo-black.png')));
       await page.evaluate(()=>{

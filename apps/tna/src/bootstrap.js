@@ -328,16 +328,37 @@
     window.addEventListener('afterprint',clear,{once:true});setTimeout(clear,2000);
     window.print();
   }
+  /*
+   * M5: a single four-language presentation adapter for the already-verified
+   * source-backed domain revision. Language never enters business data, date
+   * validation, saved-copy schema, approval authority or CPM calculations.
+   */
   function openTaskPlanningEdit(taskId){
+    const sheetCopy=globalThis.VesaTnaMerchandisingSheet?.COPY||{};
+    const t=sheetCopy[state.language]||sheetCopy.en;
     const plan=state.currentPlan;
     if(!plan||plan.mode==='practice')
-      return openDialog('Edit Planning Dates','<p>Open a locally saved non-practice order before revising sourced planning dates.</p>');
+      return openDialog(t.dateTitle,'<p>'+esc(t.dateOpen)+'</p>');
     const task=plan.tasks.find(item=>item.taskId===taskId);
-    if(!task)return openDialog('Edit Planning Dates','<p>Selected TNA activity is missing.</p>');
+    if(!task)return openDialog(t.dateTitle,'<p>'+esc(t.dateMissing)+'</p>');
     const baselineLocked=plan.recordStatus==='baselined'||(plan.baselineSnapshots||[]).length>0;
-    const baselineField=field('baselineFinish','Original baseline finish (before baseline lock only)',
+    const baselineField=field('baselineFinish',t.dateBaseline,
       'date',task.dates?.baselineFinish||'');
-    openDialog('Edit Sourced Planning Dates',`<form class="tna-wizard" id="tnaPlanningDateForm"><p><b>${esc(task.templateRef)}</b> · ${esc(task.title)}</p><p class="tna-note">Separate user-entered dates: baseline, current target and forecast. Nothing here changes actual completion, approval, buyer acceptance or the critical-path engine.</p><div class="tna-form-grid">${baselineLocked?baselineField.replace('name="baselineFinish"','name="baselineFinish" disabled'):baselineField}${field('currentTargetFinish','Current target finish','date',task.dates?.currentTargetFinish||'')}${field('forecastFinish','Forecast finish','date',task.dates?.forecastFinish||'')}${field('sourceRef','Source document or dated meeting note','text','',true)}${field('sourceDate','Source review date','date','',true)}${field('reason','Reason for changed planning date','text','',true)}</div><p class="tna-note">Empty date inputs do not clear existing dates. ${baselineLocked?'Confirmed baseline is locked. Current target/forecast may be reviewed with new source only.':'Confirm the original baseline separately; entering a draft date here does not itself approve it.'}</p><button class="tna-btn" type="submit">Save source-backed revision</button></form>`);
+    openDialog(t.dateTitle,
+      '<form class="tna-wizard" id="tnaPlanningDateForm">'+
+      '<p><b>'+esc(task.templateRef)+'</b> · '+esc(task.title)+'</p>'+
+      '<p class="tna-note">'+esc(t.dateHelp)+'</p>'+
+      '<div class="tna-form-grid">'+
+      (baselineLocked?baselineField.replace('name="baselineFinish"',
+        'name="baselineFinish" disabled'):baselineField)+
+      field('currentTargetFinish',t.dateTarget,'date',task.dates?.currentTargetFinish||'')+
+      field('forecastFinish',t.dateForecast,'date',task.dates?.forecastFinish||'')+
+      field('sourceRef',t.dateRef,'text','',true)+
+      field('sourceDate',t.dateReview,'date','',true)+
+      field('reason',t.dateReason,'text','',true)+
+      '</div><p class="tna-note">'+esc(t.dateBlank)+' '+
+      esc(baselineLocked?t.dateLock:t.dateDraft)+'</p>'+
+      '<button class="tna-btn" type="submit">'+esc(t.dateSave)+'</button></form>');
     document.getElementById('tnaPlanningDateForm').onsubmit=event=>{
       event.preventDefault();
       const values=Object.fromEntries(new FormData(event.currentTarget).entries());
@@ -348,8 +369,8 @@
         sourceRef:values.sourceRef,sourceDate:values.sourceDate,reason:values.reason,
         actorId:userKey()
       });
-      if(!result.ok)return openDialog('Source-date revision not saved',
-        '<p>'+esc(result.error)+'</p><p>Original TNA plan was not changed.</p>');
+      if(!result.ok)return openDialog(t.dateFailed,
+        '<p>'+esc(t.dateRejected)+'</p><p>'+esc(t.dateUnchanged)+'</p>');
       state.currentPlan=result.plan;
       if(storage)storage.autosave(state.currentPlan,userKey());
       state.dialog.close();
