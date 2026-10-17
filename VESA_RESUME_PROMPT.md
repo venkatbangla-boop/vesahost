@@ -1,5 +1,12 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## CURRENT VERIFIED AUTO-RESUME (2026-10-17): THREE DEMOS LIVE, PURCHASE ORDER NEXT
+
+**`main` release:** source `bd08adb9a52a36f8f2c7a7c5cb5eb43b3a7d1b3f`; Pages [#39011835741 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39011835741), public live-byte [#39011836033 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39011836033). Personal non-commercial synthetic-only **DEMO LIVE**: Packing & Container, Order & Commission, Tech Pack & Spec, in addition to previous Costing. TNA rework separate and still CONDITIONAL; no security/real business claims. User approved continuing automatically from repository, not returning to TNA/Costing or keeping new apps unverified. Original roadmap ZIP is mounted / attached with full dedicated blueprints. `feature/purchase-order-360` already created from the verified app sources. **NEXT ACTION:** Finish Purchase Order 360 from `blueprints/APP-13_purchase-order.md` using new branch, no invented buyer signatures, FOB prices, incoterms, currency or shipment fulfillment. Verify full local save/reopen/Excel/PDF/EN-BN-HI-TA and siblings, then personal-demo release only upon evidence, and continue to LC & Payment 360. Keep one shared VESA shell and local records. No commercial Pages SaaS or insecure browser login claims. History below retained verbatim.
+
+---
+
+
 ## Latest verified Work execution — APP-02 complete locally, APP-03 next (2026-10-16)
 
 On branch `feature/order-commission-360` APP-02 source SHA `c20f4fa483db6a53fa2978ceccb020185a68cf37` passed [real Node/Chromium and sibling CI #38926604880](https://github.com/venkatbangla-boop/vesahost/actions/runs/38926604880). APP-01 also source-verified on parent; both apps are browser-local DEVELOPMENT VERIFIED, independent real-world permissions and publishing CONDITIONAL. `main` unchanged. Original user ZIP `VESA_360_15_APP_MASTER_ROADMAP_HANDOVER(1).zip` SHA256 `8daef867196c6fd423f63b01c796e52a3c8a2fdb52346a4bbefd6e24beae3c8e` is accessible; APP-03 source `blueprints/APP-03_tech-pack-spec.md` SHA256 `536f38b117d664b5c363939185ffb855a2078fa2120ede8e16c27f7631c69ade`. **NEXT:** execute APP-03 Tech Pack & Spec 360 (one entry HTML, shared VESA UI, explicit source POM/grades/tolerances, local signed snapshots, reports). Do not ask for NEXT between independent code and tests. No assumed size grading, brand approval or paid service; do not deploy main without authorization.
