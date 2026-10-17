@@ -1,4 +1,4 @@
-const CACHE='vesa-v78-factory-vendor-personal-demo';
+const CACHE='vesa-v79-label-artwork-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -73,6 +73,19 @@ const ASSETS=[
   './apps/factory-vendor/src/reports/report-model.js',
   './apps/factory-vendor/src/i18n/app-copy.js',
   './apps/factory-vendor/src/application/workspace-controller.js',
+  './apps/label-artwork-approval/',
+  './apps/label-artwork-approval/index.html',
+  './apps/label-artwork-approval/assets/label-artwork-approval.css',
+  './apps/label-artwork-approval/src/bootstrap.js',
+  './apps/label-artwork-approval/src/domain/label-spec.js',
+  './apps/label-artwork-approval/src/domain/artwork-revision.js',
+  './apps/label-artwork-approval/src/domain/review-state.js',
+  './apps/label-artwork-approval/src/domain/reviewed-reference.js',
+  './apps/label-artwork-approval/src/data/saved-copy-codec.js',
+  './apps/label-artwork-approval/src/data/local-record-port.js',
+  './apps/label-artwork-approval/src/reports/report-model.js',
+  './apps/label-artwork-approval/src/i18n/app-copy.js',
+  './apps/label-artwork-approval/src/application/workspace-controller.js',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
