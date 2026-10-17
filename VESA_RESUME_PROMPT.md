@@ -1,5 +1,21 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## PERMANENT REPOSITORY BLUEPRINT RESOLUTION — NO REPEATED ZIP UPLOAD (2026-10-17)
+
+The user's original 15-app handover source is now committed permanently in `venkatbangla-boop/vesahost`:
+- Individual authoritative app specs: `blueprints/APP-01_packing-container.md` through `blueprints/APP-15_product-development.md` (all **15** are present, numbering nonsequential by approval priority).
+- Original portfolio, ownership, governance, acceptance standards, SHA manifest: `docs/portfolio/`.
+- Exact source proof: `node tests/vesa-blueprint-integrity.cjs` and `.github/workflows/vesa-blueprint-integrity.yml`. Original ZIP SHA256: `8daef867196c6fd423f63b01c796e52a3c8a2fdb52346a4bbefd6e24beae3c8e`; this is an identity anchor, not a substitute for verifying files.
+- Repository guide: `docs/portfolio/README.md`.
+
+**Mandatory new-session / NEXT / CONTINUE command:** inspect actual `main`, feature branch and latest CI; read `AGENTS.md`, the top current section of `VESA_PROGRESS.md` and the present file; run the source manifest test, then read the exact blueprint at `blueprints/APP-XX_slug.md`. Continue the current feature from its last verified action. For APP-09 read `blueprints/APP-09_production-tracker.md` and resume `feature/production-tracker-360`. Do not restart APP-01 through APP-07 or re-request ZIP.
+
+**Fallback only if the committed blueprint is really unavailable:** inspect GitHub `main` and all refs/history for the file first, then the user's private Library `/VESA_360_Approved_Master_Handover/`; only if all confirmed sources are inaccessible identify the precise missing file. This is not a promise that accidentally deleted files magically reappear; git history and integrity tests are the intended protection.
+
+**Current status:** The earlier APP-09 "missing blueprint" blocker was resolved from the user's original ZIP and rechecked against manifest; source file now in GitHub. Resume M0 scope audit → M1 domain, preserving old verified releases. Any CI or production acceptance still requires separate evidence.
+
+---
+
 ## CURRENT VERIFIED RESUME — SHIPMENT PERSONAL DEMO LIVE; PRODUCTION TRACKER NEXT (2026-10-17)
 
 **Verified source:** `main` `948ecfd5658c6e05ddcb8138c1a5ea7fa64d85b9` for Shipment & Documentation 360 personal non-commercial synthetic demo at https://vesaent.com/apps/shipment-documentation/. [Final full real Chromium/domain/sibling CI #39019228939 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39019228939); [Pages #39019286281 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39019286281); [exact public source module and existing app smoke #39019286539 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39019286539). Earlier personal demos Costing, Packing, Commission, Tech Pack, PO, LC, Sampling and Fabric remain preserved. Review `VESA_PROGRESS.md` for detailed shipment source and test matrix. **NEXT:** APP-09 Production Tracker 360; read the actual original ZIP blueprint `blueprints/APP-09_production-tracker.md` first. No guessed production efficiency or actuals, no TNA/AQL/PPM automatic approval; local records and four-language workspace. Commercial Pages/private buyer data and real cross-app authenticated access remain blocked/conditional.
