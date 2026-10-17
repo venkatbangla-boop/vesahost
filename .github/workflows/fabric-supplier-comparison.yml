@@ -1,13 +1,19 @@
-# APP-12 source-only pure comparison M1, synthetic only. Not an FX/tax/FOB authority or vendor purchase.
+# APP-12 complete source-only personal demo: exact registry/cache/route, Node, real Chromium and sibling parity.
 name: VESA Fabric Supplier Comparison 360 verification
 on:
   push:
     branches:
       - feature/fabric-supplier-comparison-360
+      - main
     paths:
       - 'apps/fabric-supplier-comparison/**'
       - 'docs/fabric-supplier-comparison/**'
       - '.github/workflows/fabric-supplier-comparison.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
+      - '.github/workflows/vesa-costing-demo-live-smoke.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -44,6 +50,9 @@ jobs:
           node --check apps/fabric-supplier-comparison/tests/report-reference.test.cjs
           node apps/fabric-supplier-comparison/tests/report-reference.test.cjs
           node tests/personal-demo-release.cjs
+          node --check js/app-catalogue.js
+          node --check js/preferences.js
+          node --check service-worker.js
           node tests/vesa-next-app-starter.cjs
           node apps/buyer-crm/tests/domain.test.cjs
           node apps/buyer-crm/tests/save-reopen.test.cjs
@@ -82,6 +91,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: supplier-app12-m3-synthetic-browser
+          name: supplier-app12-m4-synthetic-browser
           path: output/playwright/supplier-app12-*
           if-no-files-found: ignore
