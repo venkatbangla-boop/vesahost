@@ -70,6 +70,11 @@ class VesaClaimRegister{
    return{ok:false,errors:['Unsupported Claims record, version or append-only state']};
   if(p.authority!=='LOCAL CLAIM SOURCE ONLY — NO LIABILITY, BANK SETTLEMENT OR AQL ALTERATION')
    errors.push('A Claims local record cannot certify liability, AQL results or actual bank transfer');
+  // M3 optional manually reviewed typed source envelopes; all old M2 saved copies remain valid.
+  if(p.manualReferences!==undefined){
+   if(!root.VesaClaimReviewedReference)errors.push('Claim manual source validator is unavailable');
+   else errors.push(...root.VesaClaimReviewedReference.validateList(p));
+  }
   for(const k of ['caseNumber','buyer','supplier','poNo','shipmentRef','claimCategory',
    'sourceRef','allegationSummary','reviewedBy'])
    if(!this.valid(p.header?.[k],800))errors.push('Claim header needs sourced '+k);
