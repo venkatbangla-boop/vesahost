@@ -488,6 +488,27 @@ const L={
  newNote:'ஏற்கெனவே Earned, Invoice, Receipt தொகை மாற்றப்படாது',
  allocation:'Invoice ஒதுக்கீடு அல்லது ஒதுக்காத Receipt',latest:'தற்போதைய கணக்கு நிலை'}
 };
+/* APP-02 workbench translation only. User-entered records are never translated. */
+const COMMISSION_DESK_COPY={
+ en:{note:'About local data',kicker:'FINANCE WORKFLOW',title:'Follow the commission cycle',
+  lead:'Open any real work area using a fictional example. Your saved records will stay unchanged.',
+  lanes:['Set up the agreement','Earn and reconcile','Review the outcome']},
+ bn:{note:'স্থানীয় তথ্য সম্পর্কে',kicker:'কমিশন কাজের ধাপ',title:'কমিশনের কাজের ধাপ দেখুন',
+  lead:'কাল্পনিক উদাহরণে যেকোনো অংশ খুলুন। আপনার সংরক্ষিত নথি অপরিবর্তিত থাকবে।',
+  lanes:['চুক্তি ও অর্ডার','আয় ও হিসাব মিলানো','ফলাফল পর্যালোচনা']},
+ hi:{note:'स्थानीय डेटा के बारे में',kicker:'कमीशन कार्यप्रवाह',title:'कमीशन के चरण देखें',
+  lead:'काल्पनिक उदाहरण में कोई भी कार्य खोलें। आपके सहेजे हुए रिकॉर्ड नहीं बदलेंगे।',
+  lanes:['अनुबंध और ऑर्डर','अर्जन और मिलान','परिणाम की समीक्षा']},
+ ta:{note:'உள்ளூர் தரவு விவரம்',kicker:'கமிஷன் வேலைநடை',title:'கமிஷன் வேலைப் படிகள்',
+  lead:'கற்பனை மாதிரியில் எந்தப் பகுதியையும் திறந்து பார்க்கலாம். சேமித்த பதிவுகள் மாறாது.',
+  lanes:['ஒப்பந்தம் மற்றும் ஆர்டர்','வருவாய் மற்றும் கணக்குச் சரிபார்ப்பு','முடிவை மதிப்பாய்வு செய்']}
+};
+const COMMISSION_DESK_LANES=[
+ [['summary','summary'],['agreement','agreement'],['lines','lines'],['exclusions','exclude']],
+ [['earnings','earnings'],['invoices','invoices'],['receipts','receipts'],['adjustments','adjustments']],
+ [['history','history'],['reports','reports']]
+];
+const COMMISSION_DESK_SECTIONS=Object.freeze(COMMISSION_DESK_LANES.flat().map(x=>x[0]));
 /** Controller owns DOM and active local record. Domain and stores remain class owners. */
 class CommissionWorkspace{
  constructor(){
