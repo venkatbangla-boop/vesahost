@@ -1,4 +1,4 @@
-const CACHE='vesa-v81-fabric-supplier-personal-demo';
+const CACHE='vesa-v82-claims-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -112,6 +112,19 @@ const ASSETS=[
   './apps/fabric-supplier-comparison/src/reports/report-model.js',
   './apps/fabric-supplier-comparison/src/i18n/app-copy.js',
   './apps/fabric-supplier-comparison/src/application/workspace-controller.js',
+  './apps/claims-disputes/',
+  './apps/claims-disputes/index.html',
+  './apps/claims-disputes/assets/claims-disputes.css',
+  './apps/claims-disputes/src/bootstrap.js',
+  './apps/claims-disputes/src/domain/claim-register.js',
+  './apps/claims-disputes/src/domain/exposure-ledger.js',
+  './apps/claims-disputes/src/domain/settlement-history.js',
+  './apps/claims-disputes/src/domain/reviewed-reference.js',
+  './apps/claims-disputes/src/data/saved-copy-codec.js',
+  './apps/claims-disputes/src/data/local-record-port.js',
+  './apps/claims-disputes/src/reports/report-model.js',
+  './apps/claims-disputes/src/i18n/app-copy.js',
+  './apps/claims-disputes/src/application/workspace-controller.js',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
