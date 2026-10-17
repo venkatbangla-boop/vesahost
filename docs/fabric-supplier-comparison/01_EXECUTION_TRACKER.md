@@ -1,5 +1,21 @@
 # APP-12 Fabric & Supplier Comparison 360 — Execution Tracker
 
+## 2026-10-17 — M1 NODE DOMAIN ACCEPTED; M2 single-shell/source-local patch lock
+
+**M1 verdict: ACCEPTED for deterministic synthetic supplier analysis, never buyer/vendor approval.** Exact source `e2cc12016d04cfa1dbe0aee33a16cd523183fc5f`; [GitHub independent original 15-blueprint + all frozen sibling + M1 Node #39038913215 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39038913215). Pure `quote-normalization.js`, `comparability-gate.js`, `landed-scenario.js` and deterministic tests cover dated offers, composition/GSM/width/construction/shrinkage/term and source-quality gating, expired quotes, documentary required freight/duty/tax/LC, per-unit/FX source-only math, no auto vendor ranking when incomparable, and NEVER change Costing FOB or supplier selection.
+
+**M2 file-level audit/source:** Original APP-12, shared `js/vesa-workspace-shell.js` and `docs/platform/VESA_UNIFIED_UI_CONTRACT.md`; directly inspected precedent `apps/buyer-crm/index.html`, `src/bootstrap.js`, `src/data/saved-copy-codec.js`, `src/data/local-record-port.js`, `tests/browser-workflow.cjs`. The app controls only local quote requirements/scenarios and reports. Any user-entered synthetic source values remain exactly stored; text and SQL-like formulas are not sent to providers. The shared header owns the only Home/File/Edit/View/Tools/Help menus and account.
+
+**Exact M2 patch group:** NEW `apps/fabric-supplier-comparison/index.html`, `assets/fabric-supplier-comparison.css`, `src/bootstrap.js`, `src/application/workspace-controller.js`, `src/data/local-record-port.js`, `src/data/saved-copy-codec.js`, `src/i18n/app-copy.js`, `tests/save-reopen.test.cjs`, `tests/browser-workflow.cjs`; modify only `.github/workflows/fabric-supplier-comparison.yml` and this tracker. **FROZEN:** all prior 12+ published demo domain/business rules, `js/auth.js`, root shared shell, global catalogue/languages, service worker, original blueprints and manifest, any existing local browser records. No public route App Centre card yet.
+
+**Incoming/outgoing flows:** existing browser-auth convenience + shared shell → APP-12 form/controller → three M1 pure engines → APP-12 per-session-identity key `vesa.fabric-supplier-comparison.records.v1.` + bounded portable checksum saved copy. No cross-app store reads. Local records include supplied original quote source, applicability and currency, not certified purchase decisions. M2 UI: New/Continue/Open Saved/Practice; requirement summary, add source-backed offers, source-gated scenario, human internal note, comparison matrix/as-of; local Save Now/Download Saved Copy/Open Saved Copy and history; EN/BN/HI/TA UI, no hidden network. Reports/Excel/PDF and typed external Tech Pack/Costing snapshots postponed to M3. No auto-read of sibling data. Invalid copy/mismatched source atomically rejected without clearing local records.
+
+**Verification:** New Node storage/forged restore/duplicate/stale preservation + actual GitHub Chromium synthetic create two supplier offers, blocked mismatched specs, missing freight/FX, source-only valid landed cost, backup/reopen, keyboard, 4 languages, 320–1440 width with zero external requests, all other app regressions. **Rollback:** revert M2 APP-12-only changes and never delete local copies. No publication until M4 source/live gates.
+
+**PRECISE NEXT ACTION:** implement M2 app-only group, prove independent Chromium full CI; M3 draft comparison reports and locally reviewed bounded source imports next.
+
+---
+
 ## 2026-10-17 — M0 SOURCE-OF-TRUTH AND FILE-LEVEL AUDIT, M1 SCOPE LOCK
 
 **Baseline:** `main` `0df3c2d0ba5ad34c921b01c3b01772b8ef67f4e2`, immediately after the independently verified APP-11 Buyer CRM personal-demo publication. Exact original `blueprints/APP-12_fabric-supplier-comparison.md` is already permanently committed in repo (priority 13/15, W4) with source-preserved 15-app integrity manifest; never ask user to upload ZIP again. No pre-existing feature branch/folder `apps/fabric-supplier-comparison/`, no code search result for `vesa.fabric-supplier-comparison.records.v1`. Created `feature/fabric-supplier-comparison-360` from latest main; no previous apps restarted.
