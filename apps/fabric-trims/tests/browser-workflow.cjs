@@ -95,7 +95,20 @@ class FabricBrowserTest {
    await act('allocations');await act('allocation');
    await fill({allocationQty:'300.0000',date:'2026-11-09',
     sourceRef:'SYNTHETIC MATERIAL ALLOCATION'});await submit();
-   await act('reservations');await act('reservation');
+   await act('reservations');
+   // Browser-proven DOM and controller state, not a guessed fix for a disappearing control.
+   const debugReserve=await page.evaluate(()=>({
+    section:window.VesaFabric360?.section,
+    qa:window.VesaFabric360?.current?.receipts?.map(r=>r.qaStatus),
+    receipts:window.VesaFabric360?.current?.receipts?.length,
+    allocations:window.VesaFabric360?.current?.allocations?.length,
+    actions:[...document.querySelectorAll('#ftMain [data-action]')].map(n=>n.dataset.action),
+    alerts:[...document.querySelectorAll('[role=alert]')].map(n=>n.textContent.slice(0,240)),
+    title:document.querySelector('#ftMain .ft-card:last-child h2')?.textContent
+   }));
+   assert(await page.locator('[data-action="reservation"]').count(),
+    'Material reserve action missing: '+JSON.stringify(debugReserve));
+   await act('reservation');
    await fill({otherPo:'SYN-OTHER-PO-02',reservationQty:'80.0000',
     date:'2026-11-10',sourceRef:'SYNTHETIC OTHER PO RESERVE'});await submit();
    await act('exceptions');
