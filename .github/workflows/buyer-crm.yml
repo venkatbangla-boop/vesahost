@@ -39,6 +39,10 @@ jobs:
           node --check apps/buyer-crm/tests/save-reopen.test.cjs
           node --check apps/buyer-crm/tests/browser-workflow.cjs
           node apps/buyer-crm/tests/save-reopen.test.cjs
+          node --check apps/buyer-crm/src/domain/reviewed-reference.js
+          node --check apps/buyer-crm/src/reports/report-model.js
+          node --check apps/buyer-crm/tests/report-reference.test.cjs
+          node apps/buyer-crm/tests/report-reference.test.cjs
           node tests/personal-demo-release.cjs
           node tests/vesa-next-app-starter.cjs
           node apps/label-artwork-approval/tests/domain.test.cjs
@@ -70,11 +74,11 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
           echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
-      - name: Real Chromium CRM local-only workflow and privacy/sibling guard
+      - name: Real Chromium CRM reviewed PO source, report Excel/PDF and privacy proof
         run: node apps/buyer-crm/tests/browser-workflow.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: buyercrm360-m2-synthetic-browser
+          name: buyercrm360-m3-synthetic-browser
           path: output/playwright/crm-app11-*
           if-no-files-found: ignore
