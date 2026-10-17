@@ -73,6 +73,10 @@ async function runCase(browser,base,width){
    await preview.first().waitFor({state:'visible'});
   }
   if(width===390){
+   // Shared-shell Settings belongs inside the mobile drawer at 390px.
+   await page.locator('[data-vesa-mobile-menu]').click();
+   await page.locator('[data-vesa-mobile-menu]').waitFor({state:'visible'});
+   assert.equal(await page.locator('[data-vesa-mobile-menu]').getAttribute('aria-expanded'),'true');
    await page.locator('[data-vesa-user]').click();
    const preferences=page.locator('[data-vesa-settings]');
    await preferences.waitFor({state:'visible'});
