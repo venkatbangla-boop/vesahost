@@ -4,7 +4,7 @@
 (function(root){
 'use strict';
 class SamplingReports {
- static safe(text){return String(text??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;',"'":'&#39;'}[c]));}
+ static safe(text){return String(text??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
  static excelSafe(value){if(typeof value==='number'&&Number.isFinite(value))return value;
    return /^[=+\-@\t\r]/.test(String(value??''))?"'"+String(value):String(value??'');}
  static rows(p,analysis){
