@@ -1,0 +1,53 @@
+# APP-03 development and independent verification only; no Pages release.
+name: VESA Tech Pack Spec 360 verification
+on:
+  push:
+    branches:
+      - feature/tech-pack-spec-360
+    paths:
+      - 'apps/tech-pack-spec/**'
+      - '.github/workflows/tech-pack-spec.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-techspec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Domain and sibling regressions
+        run: |
+          set -e
+          node --check apps/tech-pack-spec/tests/domain.test.cjs
+          node --check apps/tech-pack-spec/tests/browser-workflow.cjs
+          node apps/tech-pack-spec/tests/domain.test.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          git diff --check HEAD~2..HEAD
+      - name: Browser dependencies
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Browser Tech Pack workflow
+        run: node apps/tech-pack-spec/tests/browser-workflow.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: app03-synthetic-evidence
+          path: output/playwright/techspec-app03-*
+          if-no-files-found: ignore
