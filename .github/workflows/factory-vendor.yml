@@ -39,6 +39,10 @@ jobs:
           node --check apps/factory-vendor/tests/save-reopen.test.cjs
           node --check apps/factory-vendor/tests/browser-workflow.cjs
           node apps/factory-vendor/tests/save-reopen.test.cjs
+          node --check apps/factory-vendor/src/domain/reviewed-reference.js
+          node --check apps/factory-vendor/src/reports/report-model.js
+          node --check apps/factory-vendor/tests/report-reference.test.cjs
+          node apps/factory-vendor/tests/report-reference.test.cjs
           node tests/personal-demo-release.cjs
           node tests/vesa-next-app-starter.cjs
           node apps/production-tracker/tests/domain.test.cjs
@@ -64,11 +68,11 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
           echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
-      - name: Factory actual browser workflow (synthetic only)
+      - name: Factory reviewed PO references, local Excel/PDF and Chromium journey
         run: node apps/factory-vendor/tests/browser-workflow.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: factory360-m2-synthetic-browser
+          name: factory360-m3-synthetic-browser
           path: output/playwright/factory-app08-*
           if-no-files-found: ignore
