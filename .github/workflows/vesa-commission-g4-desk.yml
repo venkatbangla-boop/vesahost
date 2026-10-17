@@ -1,0 +1,59 @@
+name: VESA Commission G4 guided financial workflow verification
+on:
+  push:
+    branches:
+      - feature/commission-g4-guided-desk
+      - main
+    paths:
+      - 'apps/order-commission/index.html'
+      - 'apps/order-commission/tests/workflow-discovery-browser.cjs'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
+      - '.github/workflows/vesa-commission-g4-desk.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  commission-g4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Frozen blueprints, original finance engine and sibling Node baseline
+        run: |
+          set -euo pipefail
+          node --check apps/order-commission/tests/workflow-discovery-browser.cjs
+          node --check service-worker.js
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node apps/tna/tests/g02-domain.test.js
+          git diff --check
+          git diff --exit-code origin/main...HEAD -- index.html css/style.css js/main.js privacy.html terms.html
+      - name: Install real Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Real lifecycle, financial PDF/XLSX, saved-copy and sibling regression
+        run: |
+          set -euo pipefail
+          node apps/order-commission/tests/workflow-discovery-browser.cjs
+          node apps/order-commission/tests/browser-workflow.cjs
+          node apps/packing-container/tests/browser-workflow.cjs
+          node tests/vesa-platform-pages.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-commission-10-stage-desktop-mobile-proof
+          path: output/playwright/commission-g4-workbench/
+          if-no-files-found: ignore
+          retention-days: 7
