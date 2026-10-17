@@ -1,5 +1,12 @@
 # VESA 360 Premium Login & 19-App UX — Durable Execution Tracker
 
+## 2026-10-18 — TNA G3 CSS CACHE REFRESH CLOSED
+
+Source regression: G3 TNA stylesheet code was published, but existing app-scoped cache `vesa-tna-20261017-g17-merch-v1` retained the previous exact CSS URL. A returning browser could continue to show old styling. **Small reversible fix** on `main` SHA `9feaf2cd577125de1f9d000fed7ff0cad6e5e168`: bumped only the TNA CSS query in `apps/tna/index.html`, the isolated TNA worker cache namespace and manifest, and the matching offline Node/Chromium assertions; domain and G13–G17 engines unchanged. [Feature real Chromium offline/saved XLSX/PDF #39060843140 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060843140), [main identical offline/UI #39060958773 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958773), [main Pages #39060958901 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958901). Test planted a **legacy named CSS cache** and verified the sheet-first design loads while entirely offline and all eight commands remain. Old named caches are preserved. **NEXT remains G3-PPM-02**, app-owned mobile editor task-first navigation with all 168 checkpoints, Save/Open and print untouched. AQL performance profile follows. Homepage untouched.
+
+---
+
+
 ## 2026-10-18 — LATEST G3 VERIFIED CHECKPOINT
 
 **Accepted release:** TNA active-order Master Sheet is now immediately accessible. Runtime `4a35070f2b6e17a69830db1c602c199ae95cc4a2`, feature Chromium/G13 [#39059962505 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059962505), main G3 [#39060152136 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152136), main TNA [#39060152231 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152231), Pages [#39060152341 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152341). Original G3 active-screen baseline [#39059572072 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059572072): 36 states / 60 screenshots / four viewport sizes, zero JS errors. The CSS-only TNA change retains 8 actions; all engines/save/print intact. **G3 overall is NOT finished.**
