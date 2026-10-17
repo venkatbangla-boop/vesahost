@@ -55,6 +55,12 @@ class FactoryVendorProfile{
    !['sites','capabilities','certificates','reviews','performance','audit'].every(k=>Array.isArray(record[k])))
    return{ok:false,errors:['Unsupported Factory & Vendor record/version']};
   errors.push(...this.validateHeader(record.header));
+  // M3 optional source copies do not migrate or rewrite M2 legacy saved records.
+  // If present they MUST be validated before Save/Open or portable decode.
+  if(record.manualReferences!==undefined){
+   if(!root.VesaFactoryVendorReviewedReference)errors.push('Reviewed-source module unavailable');
+   else errors.push(...root.VesaFactoryVendorReviewedReference.validateList(record));
+  }
   if(record.status!=='INTERNAL DRAFT — NOT CERTIFIED')errors.push('Factory profile cannot claim certification or final buyer approval');
   try{if(JSON.stringify(record).length>2097152)errors.push('Factory profile exceeds local copy limit');}catch{errors.push('Factory profile is not a portable record');}
   const caps={sites:500,capabilities:2500,certificates:2000,reviews:2000,performance:4000,audit:10000};
