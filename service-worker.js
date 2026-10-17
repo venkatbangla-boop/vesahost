@@ -1,4 +1,4 @@
-const CACHE='vesa-v76-shipment-documentation-personal-demo';
+const CACHE='vesa-v77-production-tracker-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -47,6 +47,19 @@ const ASSETS=[
   './apps/shipment-documentation/src/reports/report-model.js',
   './apps/shipment-documentation/src/i18n/app-copy.js',
   './apps/shipment-documentation/src/application/workspace-controller.js',
+  './apps/production-tracker/',
+  './apps/production-tracker/index.html',
+  './apps/production-tracker/assets/production-tracker.css',
+  './apps/production-tracker/src/bootstrap.js',
+  './apps/production-tracker/src/domain/stage-flow.js',
+  './apps/production-tracker/src/domain/wip-balance.js',
+  './apps/production-tracker/src/domain/reviewed-reference.js',
+  './apps/production-tracker/src/domain/daily-output-ledger.js',
+  './apps/production-tracker/src/data/saved-copy-codec.js',
+  './apps/production-tracker/src/data/local-record-port.js',
+  './apps/production-tracker/src/reports/report-model.js',
+  './apps/production-tracker/src/i18n/app-copy.js',
+  './apps/production-tracker/src/application/workspace-controller.js',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
