@@ -12,13 +12,13 @@
  * This is an offline personal synthetic demo, not server-side authentication.
  */
 class TnaOfflineBundle {
-  static VERSION='20261017-g17-merch-v1';
+  static VERSION='20261018-g3-sheet-first-v1';
   static CACHE='vesa-tna-'+TnaOfflineBundle.VERSION;
   static FILES=Object.freeze([
     './',
     './index.html',
     './service-worker.js',
-    './assets/tna.css?v=0.12.1-merch-g17',
+    './assets/tna.css?v=0.12.2-g3-sheet-first',
     './src/domain.js?v=1.1.2-merch-g16',
     './src/scheduling.js?v=0.3.0',
     './src/operations.js?v=0.4.0',
