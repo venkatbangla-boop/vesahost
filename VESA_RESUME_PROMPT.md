@@ -1,5 +1,14 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## 2026-10-18 — AUTO-RESUME PREMIUM UI G3 (SITE HOME FROZEN)
+
+Latest verified application main SHA before documentation commits: `1ef581fabe5a6aac03473eeb9c7bb33ce5cff43c`. Premium Login done (user `user@vesa`, password `vesa`, publicly visible prefilled one-click), App Centre desktop category layout fixed and five sibling labels restored; premium Admin user/history UI implemented. Branch Chromium admin #39059094672 SUCCESS; main Chromium #39059209116 SUCCESS; Pages #39059208861 SUCCESS. Previously original 15 app demos, TNA G17 and PPM/AQL engines must be preserved. **NEVER modify public vesaent.com/ homepage** or its root HTML/CSS/JS/imagery/SEO; this UX program owns only /login/, /apps/, /admin/, and 19 app routes.
+
+**NEXT actionable task: G3 active TNA/PPM/AQL forms / desktop/mobile screens / performance measurement (especially large AQL HTML), then smallest safe independent UI fix.** Read `docs/ux/00_PREMIUM_ADAPTIVE_MASTER_PROMPT.md` and `docs/ux/01_PREMIUM_UX_EXECUTION_TRACKER.md` plus AGENTS.md and latest main/branch CI. A bare user **Continue** means resume the first uncompleted real gate from these GitHub files and keep moving in the current session; never restart, ask for ZIP, rewrite homepage, or invent approval/background work.
+
+---
+
+
 ## 2026-10-18 — LOGIN/APPS ONLY (OVERRIDES OLDER PROMPTS)
 
 The user expressly forbids changes to public vesaent.com/ homepage, root index.html/css/style.css/js/main.js, assets, SEO and legal pages. Only /login/, /apps/, /admin/ and 19 apps may be redesigned. Root service-worker may add/refresh a login asset but cannot change homepage content. Public demo user@vesa with password vesa is already in js/auth.js; present visible, prefilled, one-click on premium Login, preserving VesaAuth. For any "Continue", fetch newest GitHub branch/CI, read docs/ux/00_PREMIUM_ADAPTIVE_MASTER_PROMPT.md and docs/ux/01_PREMIUM_UX_EXECUTION_TRACKER.md, and resume exact next unfinished gate. No restart, no request for ZIP, no background claims. Preserve all completed apps/engines.
