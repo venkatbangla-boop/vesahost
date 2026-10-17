@@ -109,7 +109,27 @@ async function authenticatedProbe(browser,base,width,route,id){
     await page.locator('[data-app-group="all"]').click();
     assert.equal(await page.locator('.app-tile').count(),19,'all group restores all apps');
   }
-  if(id==='admin')assert.equal(await page.locator('.admin-grid').count(),1,`${id}@${width}: admin content retained`);
+  if(id==='admin'){
+    assert.equal(await page.locator('.admin-grid').count(),1,'admin content retained');
+    assert.equal(await page.locator('.admin-panel').count(),3,'three usable panels');
+    assert.equal(await page.locator('#userForm input').count(),3,'all existing form inputs remain');
+    assert.equal(await page.locator('#userForm select').count(),1,'role selector remains');
+    assert.equal(await page.locator('#downloadEvents').count(),1,'history export remains');
+    const design=await page.evaluate(()=>{
+      const grid=document.querySelector('.admin-grid');
+      const card=document.querySelector('.admin-panel');
+      return {
+        columns:getComputedStyle(grid).gridTemplateColumns.split(' ').length,
+        css:[...document.querySelectorAll('link[rel=stylesheet]')].map(x=>x.getAttribute('href')),
+        actionHeight:document.querySelector('#userForm button[type=submit]').getBoundingClientRect().height,
+        cardWidth:card.getBoundingClientRect().width
+      };
+    });
+    assert.equal(design.css.some(x=>x.includes('/css/style.css')),false,'admin cannot load homepage CSS');
+    assert.equal(design.columns,width>920?2:1,'desktop and mobile use intentional panel grids');
+    assert.ok(design.actionHeight>=44,'admin create action is touch accessible');
+    assert.ok(design.cardWidth>=Math.min(260,width-48),'admin form is readable width');
+  }
   await geometry(page,width,id);
   if(width===390||width===1280)await page.screenshot({path:path.join(output,`vesa-platform-${id}-${width}.png`),fullPage:true});
   if(width<=900){
