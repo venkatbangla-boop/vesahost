@@ -244,11 +244,75 @@ class PurchaseOrderEngine {
        value:lineVal.has(line.id)?this.money(lineVal.get(line.id)):null};
     })};
  }
+ /**
+  * Compare the immutable signed source against the working copy. Stable
+  * style/colour/size/split keys prevent order-of-entry from fabricating a
+  * change. Money delta is withheld across currencies/rounding conventions.
+  */
  static compare(p,rev){
   if(!rev)return [];
-  const from=rev.snapshot||{},current={header:p.header,lines:p.lines,cancelled:p.cancelled,shipments:p.shipments};
-  return Object.keys(current).filter(k=>JSON.stringify(from[k]??null)!==JSON.stringify(current[k]??null))
-   .map(field=>({field,previous:from[field]??null,current:current[field]}));
+  const from=rev.snapshot||{},oldHead=from.header||{},newHead=p.header||{};
+  const changes=[];
+  for(const field of ['header','cancelled','shipments','factoryConfirmation']){
+   const before=from[field]??null,after=(field==='factoryConfirmation'?p.factoryConfirmation:p[field])??null;
+   if(JSON.stringify(before)!==JSON.stringify(after))
+    changes.push({field,previous:before,current:after,changeType:'updated'});
+  }
+  if(oldHead.shipFrom!==newHead.shipFrom||oldHead.shipToDate!==newHead.shipToDate)
+   changes.push({field:'shipment-window',changeType:'dates changed',
+     previous:{from:oldHead.shipFrom,to:oldHead.shipToDate},
+     current:{from:newHead.shipFrom,to:newHead.shipToDate}});
+  const key=x=>JSON.stringify([trim(x.style).toLowerCase(),trim(x.color).toLowerCase(),
+    trim(x.size).toLowerCase(),trim(x.splitId).toLowerCase()]);
+  const oldLines=new Map((from.lines||[]).map(line=>[key(line),line]));
+  const newLines=new Map(p.lines.map(line=>[key(line),line]));
+  for(const name of [...new Set([...oldLines.keys(),...newLines.keys()])].sort()){
+   const before=oldLines.get(name)||null,after=newLines.get(name)||null;
+   if(JSON.stringify(before)===JSON.stringify(after))continue;
+   const representative=after||before;
+   const oldAmount=before?this.lineValue(before,oldHead.rounding):0n;
+   const newAmount=after?this.lineValue(after,newHead.rounding):0n;
+   const comparable=oldHead.currency===newHead.currency&&oldHead.rounding===newHead.rounding&&
+     oldAmount!==null&&newAmount!==null;
+   changes.push({field:'size-line',key:name,style:representative.style,color:representative.color,
+     size:representative.size,splitId:representative.splitId||'',
+     changeType:!before?'added':!after?'removed':'modified',
+     previous:before,current:after,quantityDelta:(after?.quantity||0)-(before?.quantity||0),
+     fobDelta:comparable?this.money(newAmount-oldAmount):null,
+     currency:comparable?newHead.currency:null});
+  }
+  return changes;
+ }
+ /**
+  * A read-only source reference, never an approval token. Its display data
+  * always comes from the last immutable revision rather than a draft edit.
+  */
+ static reviewedReference(p,review){
+  const revision=p?.revisions?.at(-1);
+  if(!revision||!revision.snapshot||review?.checked!==true||
+      !trim(review.verifiedBy)||!this.date(review.verifiedAt))
+   throw Error('Signed-source revision and explicit dated local review are required.');
+  const s=revision.snapshot;
+  const asSigned={...p,header:deep(s.header),lines:deep(s.lines),
+    cancelled:deep(s.cancelled||[]),shipments:deep(s.shipments||[]),
+    factoryConfirmation:deep(s.factoryConfirmation??null)};
+  const analysis=this.validate(asSigned);
+  if(!analysis.ok||!analysis.controlReconciled)
+   throw Error('Referenced PO revision has unreconciled buyer control or invalid source.');
+  const reference={sourceApp:'VESA Purchase Order 360',recordType:'PurchaseOrder',
+    recordId:p.id,revisionId:revision.id,sourceDate:revision.effectiveDate,
+    verifiedBy:trim(review.verifiedBy),verifiedAt:review.verifiedAt,
+    displaySnapshot:{poNo:s.header.poNo,buyer:s.header.buyer,factory:s.header.factory,
+     currency:s.header.currency,incoterm:s.header.incoterm,
+     shipFrom:s.header.shipFrom,shipToDate:s.header.shipToDate,
+     totalPieces:analysis.quantity,totalAmount:analysis.amount,
+     signedSource:s.header.sourceRef,revisionDocument:revision.documentRef,
+     factoryEvidence:s.factoryConfirmation?.sourceRef||'Needs Information',
+     sourceLines:s.lines.map(x=>({style:x.style,color:x.color,size:x.size,splitId:x.splitId||'',
+       quantity:x.quantity,unitFob:x.unitFob,sourceRef:x.sourceRef})),
+     localReviewOnly:true,externalAcceptanceNotVerified:true}};
+  if(JSON.stringify(reference).length>MAX_BYTES)throw Error('Reviewed reference exceeds size limit.');
+  return reference;
  }
 }
 /** Atomic browser-local saved records; portable hash is corruption detection, not buyer authenticity. */
@@ -326,8 +390,13 @@ class PurchaseOrderReport {
        p.factoryConfirmation?.reviewedBy||'Needs Information',
        p.factoryConfirmation?.reviewedOn||'Needs Information',
        p.factoryConfirmation?.sourceRef||'Needs Information']],
-   'PO Version Comparison':[['Changed field','Previous recorded revision','Current draft'],
-    ...changes.map(x=>[x.field,JSON.stringify(x.previous),JSON.stringify(x.current)])],
+   'PO Version Comparison':[['Change type','Line/style/colour/size','Previous','Current','Quantity delta','FOB delta','Currency','Change detail'],
+    ...changes.map(x=>[x.field,
+      x.field==='size-line'?[x.style,x.color,x.size,x.splitId||''].join(' / '):
+        x.field==='shipment-window'?'Shipment window':x.field,
+      JSON.stringify(x.previous),JSON.stringify(x.current),
+      x.quantityDelta??'Not applicable',x.fobDelta??'Needs Information',
+      x.currency??'Needs Information',x.changeType||'updated'])],
    'Source Revisions':[['Revision','Authority on source','Effective date','Document source','Local record at'],
     ...p.revisions.map(x=>[x.recordRevision,x.authority,x.effectiveDate,x.documentRef,x.at])],
    'Manual Shipment Sources':[['Kind','PO line','Pieces','Recorded date','Source','Document'],
@@ -798,7 +867,7 @@ class PurchaseOrderWorkspace {
      p.revisions.push({id:identifier('REV'),recordRevision:p.revision+1,at:new Date().toISOString(),
       authority:get('authority'),effectiveDate:get('effective'),documentRef:get('document'),
       reason:get('reason'),snapshot:{header:deep(p.header),lines:deep(p.lines),
-        cancelled:deep(p.cancelled),shipments:deep(p.shipments)}});
+        cancelled:deep(p.cancelled),shipments:deep(p.shipments),factoryConfirmation:deep(p.factoryConfirmation??null)}});
     });
    }else if(kind==='reference'){
     this.update('Explicit manual cross-app PO source reference recorded',p=>{

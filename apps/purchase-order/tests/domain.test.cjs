@@ -86,6 +86,25 @@ class PurchaseOrderDomainProof{
   p.header.packingInstructionRef='UPDATED SYNTHETIC PACKING SOURCE';
   assert.equal(JSON.stringify(p.revisions[0]),frozen,'Signed source snapshots never mutate with working header.');
   assert(E.compare(p,p.revisions[0]).some(x=>x.field==='header'));
+  p.header.shipToDate='2026-11-12';
+  p.lines[0].quantity=38;p.header.declaredQty=58;p.header.declaredAmount='160.00';
+  assert.equal(E.validate(p).controlReconciled,true);
+  const granular=E.compare(p,p.revisions[0]);
+  const lineChange=granular.find(x=>x.field==='size-line'&&x.size==='M');
+  assert(lineChange,'Size-wise change must be visible.');
+  assert.equal(lineChange.quantityDelta,-2);assert.equal(lineChange.fobDelta,'-5.00');
+  assert(granular.some(x=>x.field==='shipment-window'));
+  assert.equal(JSON.stringify(p.revisions[0]),frozen,
+    'A current PO revision may not rewrite its previous signed values.');
+  assert.throws(()=>E.reviewedReference(p,{verifiedBy:'Test operator',verifiedAt:'2026-10-17'}),
+    /explicit dated local review/);
+  const ref=E.reviewedReference(p,{verifiedBy:'Synthetic reviewer',verifiedAt:'2026-10-17',checked:true});
+  assert.equal(ref.recordType,'PurchaseOrder');assert.equal(ref.revisionId,'R1');
+  assert.equal(ref.displaySnapshot.totalPieces,60,'Reference must use immutable 60, not current revised 58.');
+  assert.equal(ref.displaySnapshot.totalAmount,'165.00','Old signed-source FOB cannot be replaced by draft values.');
+  assert.equal(ref.displaySnapshot.sourceLines[0].quantity,40);
+  assert.deepEqual(Object.keys(ref),['sourceApp','recordType','recordId','revisionId','sourceDate',
+    'verifiedBy','verifiedAt','displaySnapshot']);
   const store=new S('synthetic@vesa.test');store.save(p);assert.equal(store.load(p.id).revisions.length,1);
   const originalStore=memory.get(store.key),packet=S.encode(p);
   assert.deepEqual(JSON.parse(JSON.stringify(S.decode(packet))),p);
