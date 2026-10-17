@@ -1,5 +1,13 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## CURRENT VERIFIED AUTO-RESUME — FACTORY & VENDOR DEMO LIVE; LABEL & ARTWORK NEXT (2026-10-17)
+
+**Verified Factory release** `main` `11dab3a0248191a2e0c2303819f5d2bbf4b9ce92`. Demo https://vesaent.com/apps/factory-vendor/ — **personal non-commercial synthetic only**. [Main Factory real Chromium/source+all siblings #39033283539 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39033283539), [Pages #39033283319 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39033283319), [public exact-source smoke #39033283567 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39033283567), details `docs/factory-vendor/01_EXECUTION_TRACKER.md`. Earlier Costing, Packing, Order & Commission, Tech Pack, PO, LC, Sampling, Fabric & Trims, Shipment, Production personal demos unaffected.
+
+**NEXT:** APP-10 Label & Artwork Approval 360. Inspect actual `main`, feature refs, tests; create/resume `feature/label-artwork-approval-360` and read ORIGINAL `blueprints/APP-10_label-artwork-approval.md`, under `docs/portfolio/` ownership, `AGENTS.md`, unified UI/GitHub-free contracts. Build M0→M1→M2→M3→M4 through independent verification; no assumed buyer approval, no original copyrighted buyer artwork in git, no generated official GS1. Original 15-app ZIP already in repository and private library; never ask to reattach without checking it. Do not restart completed apps. Exact NEXT ACTION and CI evidence are at the *top* of `VESA_PROGRESS.md`.
+
+---
+
 ## CURRENT APP-08 VERIFIED M1 — RESUME FACTORY M2 (2026-10-17)
 
 Latest verified feature `feature/factory-vendor-360`: code `011f87c218daf7017b121d6ec2d815e61598380f`, [Node source-vendor/certificate/legacy CI #39024016996 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39024016996). M1 pure source-only Factory vendor/site/capacity and certificate-date engine accepted. **CURRENT NEXT:** M2 browser-local one-header four-language vendor workspace, portable records, actual Chromium and sibling checks; M3 source reports; M4 non-commercial synthetic release only if eligibility/public source checks pass. Original `blueprints/APP-08_factory-vendor.md` is in repo and backed up; never re-request the 15-App ZIP. Current `main` Production Tracker verified personal demo source `2b060a027776ee7ab7a2355ed8f1ca493529a0cf`; do not rebuild prior completed apps.
