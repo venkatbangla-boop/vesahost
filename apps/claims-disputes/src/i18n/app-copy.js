@@ -36,6 +36,13 @@ const en={
  status:'LOCAL SOURCE ONLY — NO LIABILITY OR PAYMENT VERIFIED',
  needs:'Needs Information',submit:'Save Source Entry',localOnly:'Browser-local evidence only',
  practiceOnly:'Practice is synthetic and read-only. Open a new case to save.',
+ references:'User-Reviewed Sources',referenceSelect:'Add Original Case Source',
+ refKind:'Original Source Type',sourceRecord:'Source Record ID',localReviewer:'Local Human Reviewer',
+ localReviewDate:'Independent Review Date',
+ identityConfirmed:'I checked that this original source belongs to the same Buyer and PO. This does NOT verify liability, AQL inspection or bank payment.',
+ sourceNotice:'Choose a user-provided AQL InspectionRef envelope, ShipmentFile or PurchaseOrder document. AQL references may require a manually prepared local envelope. No automatic app import or external authentication.',
+ excel:'Download Excel',print:'Print / Save PDF',report:'Prepare Draft Report',
+ selectAsOf:'Select Source As-Of Date',asOf:'Report As-Of Date',
  reportPlanned:'Draft source-only PDF/Excel reports will be enabled after separate independent reporting tests.',
  noApproval:'No automatic admission, financial collection, outside-party decision, AQL rewrite or legal settlement is performed.',
  invalid:'Please review sourced information',sourceOnly:'Local entry is not independently verified',
@@ -45,7 +52,7 @@ const en={
  disputed:'Disputed',notLiability:'Not admitted supplier liability',open:'Open'
 };
 const language={
-ta:{
+ta:{references:'சரிபார்த்த ஆதாரங்கள்',referenceSelect:'Case ஆதாரத்தை சேர்',refKind:'ஆதார வகை',sourceRecord:'ஆதார பதிவு ID',localReviewer:'உள்ளூர் சரிபார்ப்பாளர்',localReviewDate:'சரிபார்ப்பு தேதி',identityConfirmed:'இந்த Buyer மற்றும் PO-க்கு இதே ஆதாரம் என்பதை சரிபார்த்தேன். இது liability, AQL அல்லது payment ஒப்புதல் அல்ல.',sourceNotice:'இந்த சாதனத்தில் உள்ள AQL InspectionRef, Shipment அல்லது PO ஆதார கோப்பைத் தேர்வு செய். AQL-க்கு மனிதர் தயாரித்த உள்ளூர் envelope தேவைப்படலாம்.',excel:'Excel பதிவிறக்கு',print:'PDF / அச்சு',report:'வரைவு அறிக்கை',selectAsOf:'அறிக்கை தேதி தேர்வு',asOf:'அறிக்கை தேதி',
 title:'Claims & Disputes 360',lead:'ஆதாரமுள்ள claim, finding, correspondence, settlement பதிவு',
 notice:'வணிகமற்ற தனிப்பட்ட டெமோ. செயற்கைத் தகவல் மட்டும். இது சட்டபூர்வ liability, AQL மாற்றம் அல்லது bank payment ஒப்புதல் அல்ல.',
 warning:'AQL FAIL, short shipment அல்லது draft credit காரணமாக claim தானாக close அல்லது supplier liability ஆகாது.',
@@ -78,7 +85,7 @@ noApproval:'Claim liability, AQL, payment தானாக ஒப்புதல�
 sourceOnly:'உள்ளூர் ஆதாரம் மட்டும்',noEmail:'Email/SMS அனுப்பப்படவில்லை',actual:'Receipt ஆதாரம்',
 draft:'Draft credit — payment அல்ல',disputed:'மறுக்கப்பட்டது',notLiability:'Liability ஒப்புதல் அல்ல'
 },
-bn:{
+bn:{references:'পর্যালোচিত উৎস',referenceSelect:'মামলার প্রমাণ যোগ',refKind:'উৎস ধরন',sourceRecord:'উৎস রেকর্ড ID',localReviewer:'স্থানীয় পর্যালোচক',localReviewDate:'স্বাধীন পর্যালোচনার তারিখ',identityConfirmed:'এটি একই বায়ার ও PO-র দলিল কিনা যাচাই করেছি। এটি দায়, AQL বা ব্যাংক পেমেন্ট অনুমোদন নয়।',sourceNotice:'স্থানীয় AQL InspectionRef, ShipmentFile বা PO উৎস বেছে নিন। AQL-এর জন্য মানব পর্যালোচিত আলাদা উৎস ফাইল দরকার হতে পারে।',excel:'Excel ডাউনলোড',print:'PDF / প্রিন্ট',report:'খসড়া রিপোর্ট',selectAsOf:'রিপোর্ট তারিখ',asOf:'রিপোর্ট তারিখ',
 title:'ক্লেইম ও বিরোধ 360',lead:'উৎসভিত্তিক দাবি, তথ্য, জবাব এবং সমঝোতা নথি',
 notice:'শুধু ব্যক্তিগত অবাণিজ্যিক ডেমো; সিনথেটিক তথ্য। এটি বৈধ দায়, AQL পরিবর্তন বা ব্যাংক পেমেন্ট নয়।',
 warning:'AQL ব্যর্থ, কম শিপমেন্ট বা ড্রাফট ক্রেডিট থেকে স্বয়ংক্রিয় দায় বা মামলা বন্ধ হয় না।',
@@ -111,7 +118,7 @@ noApproval:'স্বয়ংক্রিয় দায়, AQL পরিব�
 invalid:'উৎস যাচাই করুন',sourceOnly:'স্থানীয় উৎস মাত্র',noEmail:'ইমেইল/SMS পাঠানো হয়নি',
 actual:'রসিদ উৎস',draft:'ড্রাফট ক্রেডিট — পেমেন্ট নয়',disputed:'বিতর্কিত',notLiability:'স্বীকৃত দায় নয়'
 },
-hi:{
+hi:{references:'समीक्षित स्रोत',referenceSelect:'मूल केस स्रोत जोड़ें',refKind:'स्रोत प्रकार',sourceRecord:'स्रोत रिकॉर्ड ID',localReviewer:'स्थानीय समीक्षक',localReviewDate:'स्वतंत्र समीक्षा तारीख',identityConfirmed:'यह वही बायर और PO स्रोत है; यह दायित्व, AQL या बैंक भुगतान की मंजूरी नहीं है।',sourceNotice:'स्थानीय AQL InspectionRef, ShipmentFile या PO स्रोत चुनें। AQL के लिए अलग मानव-समीक्षित स्रोत फ़ाइल जरूरी हो सकती है।',excel:'Excel डाउनलोड',print:'PDF / प्रिंट',report:'ड्राफ्ट रिपोर्ट',selectAsOf:'रिपोर्ट तारीख चुनें',asOf:'रिपोर्ट तारीख',
 title:'दावे व विवाद 360',lead:'स्रोत आधारित क्लेम, प्रमाण, उत्तर और समझौते का रिकॉर्ड',
 notice:'केवल व्यक्तिगत गैर-व्यावसायिक डेमो। सिंथेटिक डेटा। यह कानूनी दायित्व, AQL संशोधन या बैंक भुगतान नहीं है।',
 warning:'AQL असफल होने, कम शिपमेंट या ड्राफ्ट क्रेडिट से अपने-आप दायित्व या केस समाप्त नहीं होता।',
