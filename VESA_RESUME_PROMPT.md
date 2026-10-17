@@ -1,5 +1,12 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## 2026-10-18 — VERIFIED G3 TNA DONE / PPM EDITOR NEXT
+
+Newest known released runtime `4a35070f2b6e17a69830db1c602c199ae95cc4a2`. G3 real 60-screenshot active-workflow audit succeeded [#39059572072](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059572072). TNA first-screen Master Sheet CSS-only improvement passed [#39059962505](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059962505), exact main G3 + G13–G17 CI [#39060152136](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152136) and [#39060152231](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152231), Pages [#39060152341](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152341). **NEXT G3-PPM-02**: audit/read all PPM editor action/section/form ownership, reduce 26kpx mobile scrolling and improve small touch controls with one safe app-only reversible patch; test 168 identities, GO/HOLD, forms, print, EN/BN/HI/TA, saved copies and TNA/AQL. Then profile AQL 11.78MB HTML. Read `docs/ux/02_G3_ACTIVE_WORKFLOW_AUDIT.md` and `docs/ux/01_PREMIUM_UX_EXECUTION_TRACKER.md`. `Continue` resumes exactly this point using actual latest GitHub state; no restart/ZIP requests. Public vesaent.com/ homepage and its files remain frozen.
+
+---
+
+
 ## 2026-10-18 — AUTO-RESUME PREMIUM UI G3 (SITE HOME FROZEN)
 
 Latest verified application main SHA before documentation commits: `1ef581fabe5a6aac03473eeb9c7bb33ce5cff43c`. Premium Login done (user `user@vesa`, password `vesa`, publicly visible prefilled one-click), App Centre desktop category layout fixed and five sibling labels restored; premium Admin user/history UI implemented. Branch Chromium admin #39059094672 SUCCESS; main Chromium #39059209116 SUCCESS; Pages #39059208861 SUCCESS. Previously original 15 app demos, TNA G17 and PPM/AQL engines must be preserved. **NEVER modify public vesaent.com/ homepage** or its root HTML/CSS/JS/imagery/SEO; this UX program owns only /login/, /apps/, /admin/, and 19 app routes.
