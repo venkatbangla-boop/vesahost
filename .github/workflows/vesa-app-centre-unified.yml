@@ -5,8 +5,11 @@ on:
     branches:
       - feature/vesa-app-centre-unified
       - feature/premium-app-centre-desktop
+      - feature/premium-admin-workspace
       - main
     paths:
+      - 'admin/index.html'
+      - 'css/vesa-admin.css'
       - 'apps/index.html'
       - 'css/vesa-app-centre.css'
       - 'js/vesa-app-centre.js'
