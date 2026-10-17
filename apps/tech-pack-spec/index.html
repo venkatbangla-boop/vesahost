@@ -62,7 +62,7 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
 (function(global){
 'use strict';
 const VERSION='VESA-TECHSPEC-1',FORMAT='VESA-TECHSPEC-COPY-1',KEY='vesa.tech-pack-spec.records.v1.',MAX_BYTES=2097152;
-const DISCLAIMER='Local technical draft and user-entered document references only. Buyer approval and approved samples are not inferred. Public personal demonstration: synthetic inputs only.';
+const DISCLAIMER='Local technical draft and user-entered document references only. Buyer approval and approved samples are not inferred. NON-COMMERCIAL PERSONAL DEMO. Synthetic inputs only. No confidential buyer tech packs or sensitive records.';
 const trim=v=>String(v??'').trim(),clone=v=>JSON.parse(JSON.stringify(v));
 const escape=v=>String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
 const sheetSafe=v=>typeof v==='number'&&Number.isFinite(v)?v:/^[=+\-@\t\r]/.test(String(v??''))?"'"+String(v):String(v??'');

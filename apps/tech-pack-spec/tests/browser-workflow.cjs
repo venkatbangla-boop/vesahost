@@ -41,7 +41,10 @@ class TechPackBrowserProof {
     return JSON.parse(localStorage.getItem(key)).records[0];
   });
   try{
-   await page.goto(host+'/apps/tech-pack-spec/',{waitUntil:'domcontentloaded'});
+   await page.goto(host+'/apps/',{waitUntil:'domcontentloaded'});
+   const link=page.locator('a[href="/apps/tech-pack-spec/"]');
+   assert.equal(await link.count(),1,'New tech pack route must be listed once in VESA App Centre.');
+   await link.click();
    await page.locator('[data-action=new]').waitFor();
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('[data-vesa-menu]').count(),6);
