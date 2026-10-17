@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/factory-vendor-360
+      - feature/factory-g4-guided-practice
       - main
     paths:
       - 'apps/factory-vendor/**'

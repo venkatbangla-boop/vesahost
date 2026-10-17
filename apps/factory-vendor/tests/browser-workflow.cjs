@@ -40,6 +40,51 @@ async function run(){
   assert.equal(await page.locator('.vesa-workspace').count(),1,'Only one VESA shared shell');
   assert.equal(await page.locator('[data-vesa-menu]').count(),6,'Six global menus in one header');
   assert.match(await page.locator('body').innerText(),/NON-COMMERCIAL PERSONAL DEMO/i);
+  // G4 read-only nine-stage discovery. Never turn a document into compliance.
+  const stageNames=['summary','sites','capabilities','documents','onboarding','performance','references','reports','history'];
+  const previews=page.locator('.fv-journey [data-action="preview"]');
+  assert.equal(await previews.count(),9);
+  assert.equal((await rows()).length,0,'No stored vendor before practice');
+  for(const width of [320,390,1440]){
+   await page.setViewportSize({width,height:860});
+   const g=await page.evaluate(()=>({w:innerWidth,scroll:document.documentElement.scrollWidth,
+    actions:[...document.querySelectorAll('.fv-journey .fv-btn')].map(x=>x.getBoundingClientRect().height)}));
+   assert(g.scroll<=g.w+1,width+'px no overflow');
+   assert(g.actions.length===9&&g.actions.every(x=>x>=44),width+'px nine touch targets');
+   await page.screenshot({path:path.join(out,'factory-app08-g4-home-'+width+'.png'),fullPage:true});
+  }
+  await page.setViewportSize({width:390,height:860});
+  for(const stage of stageNames){
+   await page.locator('.fv-journey [data-action="preview"][data-id="'+stage+'"]').click();
+   assert.equal(await page.locator('.fv-tabs [data-action="'+stage+'"]').getAttribute('aria-current'),'true');
+   assert.match(await page.locator('#fvMain').innerText(),/SYNTHETIC PRACTICE/);
+   assert(await page.locator('#fvMain [data-action="save"]').isDisabled());
+   const facts=await page.evaluate(()=>{
+    const app=window.VesaFactoryVendor360,p=app.current;
+    return {status:p.status,check:app.E.validate(p).ok,sites:p.sites.length,
+     capability:app.Match.match(p,{category:'Knit Polo',siteId:'DEMO-SITE-1'},'2026-10-18'),
+     documents:app.C.evaluateRecord(p,'2026-10-18'),
+     internalOutcome:p.reviews[0].internalOutcome,performance:app.Match.metric(p,'DEMO-PERF-1')};
+   });
+   assert(facts.check,stage+' practice must validate');
+   assert.equal(facts.status,'INTERNAL DRAFT — NOT CERTIFIED');
+   assert.equal(facts.sites,1);assert.equal(facts.capability.declaredCapacity,100000);
+   assert.equal(facts.capability.buyerApproved,false);
+   assert.equal(facts.documents[0].documentStatus,'source-unconfirmed');
+   assert.equal(facts.documents[0].dateState,'expired-by-dates');
+   assert.equal(facts.documents[0].authorityVerified,false);
+   assert.equal(facts.documents[0].buyerAccepted,false);
+   assert.equal(facts.internalOutcome,'needs-information');
+   assert.equal(facts.performance.ratio,0.8);
+   assert.equal((await rows()).length,0,stage+' preview must not save any vendor');
+   if(stage==='reports')await page.screenshot({path:path.join(out,'factory-app08-g4-mobile-report.png'),fullPage:true});
+   await act('home');
+  }
+  await act('practice');
+  assert.equal(await page.locator('.fv-tabs [data-action="summary"]').getAttribute('aria-current'),'true');
+  assert.equal((await rows()).length,0);
+  await act('home');await page.setViewportSize({width:1280,height:900});
+
   await act('new');await fill({vendorName:'SYNTHETIC VENDOR LTD',country:'BD',sourceRef:'SYNTHETIC DECLARATION DOC'});await submit();
   assert.equal((await rows()).length,1);assert.equal((await rows())[0].status,'INTERNAL DRAFT — NOT CERTIFIED');
   await act('add-site');await fill({siteName:'SYNTHETIC SITE A',country:'BD',process:'Knit garment manufacturing',sourceRef:'SYN SITE DOCUMENT'});await submit();
@@ -131,7 +176,13 @@ async function run(){
    await page.waitForFunction(l=>document.documentElement.lang===l,language);
    await page.keyboard.press('Escape');await settings.waitFor({state:'hidden'});
    assert((await page.locator('.fv-tabs').innerText()).includes(label),'Missing app localization for '+language);
-   assert.equal(JSON.stringify(await rows()),before,'Language must not translate or mutate evidence');
+   await act('home');
+   const headings={en:'Explore nine factory and vendor steps',bn:'ফ্যাক্টরি ও ভেন্ডরের নয়টি ধাপ',
+    hi:'फैक्ट्री और वेंडर के नौ चरण',ta:'Factory & Vendor — ஒன்பது வேலைப் பகுதிகள்'};
+   assert.equal(await page.locator('#fvJourneyTitle').innerText(),headings[language]);
+   assert.equal(await page.locator('.fv-journey [data-action="preview"]').count(),9);
+   await act('continue');
+   assert.equal(JSON.stringify(await rows()),before,'Languages and Home/Continue preserve source evidence');
   }
   await act('home');await act('new');await page.locator('#fvDialog[open]').waitFor();
   await page.keyboard.press('Escape');await page.locator('#fvDialog[open]').waitFor({state:'hidden'});

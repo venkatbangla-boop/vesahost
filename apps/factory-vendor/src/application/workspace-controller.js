@@ -4,6 +4,8 @@
 (function(root){
 'use strict';
 class FactoryVendorWorkspace{
+ // The controller owns only task navigation, not external compliance verification.
+ static steps=Object.freeze([["summary","hintSummary"],["sites","hintSites"],["capabilities","hintCapabilities"],["documents","hintDocuments"],["onboarding","hintOnboarding"],["performance","hintPerformance"],["references","hintReferences"],["reports","hintReports"],["history","hintHistory"]]);
  constructor(){
   this.main=document.getElementById('fvMain');this.dialog=document.getElementById('fvDialog');
   this.body=document.getElementById('fvDialogBody');this.file=document.getElementById('fvCopyFile');
@@ -73,9 +75,12 @@ class FactoryVendorWorkspace{
  action(name,id=''){try{
   if(name==='home'){this.current=null;this.section='summary';this.render();return;}
   if(name==='new'){this.form('new');return;}
-  if(name==='practice'){let p=this.E.create({vendorName:'SYNTHETIC VENDOR',country:'BD',sourceRef:'SYNTHETIC DECLARATION'});
-   p=this.E.append(p,'site',{id:'SITE-DEMO',siteName:'SYNTHETIC SITE',country:'BD',process:'Knitwear',sourceRef:'SYNTHETIC SITE DECLARATION'});
-   p.mode='practice';this.current=p;this.section='summary';this.render();return;}
+  if(name==='practice'||name==='preview'){
+   if(name==='preview'&&(this.current||!FactoryVendorWorkspace.steps.some(([s])=>s===id)))
+    throw Error('Return to All Vendors for a valid practice step');
+   this.current=this.practiceExample();
+   this.section=name==='practice'?'summary':id;this.render();return;
+  }
   if(name==='continue'){const list=this.store.list();if(!list.length)throw Error(this.t('none'));this.action('load',list[0].id);return;}
   if(name==='load'){const p=this.store.load(id);if(!p)throw Error('Saved vendor record not found');this.current=p;this.section='summary';this.render();return;}
   if(name==='save'){if(!this.current||this.current.mode==='practice')throw Error('Open a local vendor record first');this.store.save(this.current);this.render();return;}
@@ -95,13 +100,64 @@ class FactoryVendorWorkspace{
    if(!this.current||this.current.mode==='practice')throw Error('Open a saved vendor record for editing');this.form(name);return;}
  }catch(error){this.error(error.message);}}
  table(headers,rows){return '<div class="fv-scroll"><table class="fv-table"><thead><tr>'+headers.map(h=>'<th>'+this.e(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(v=>'<td>'+this.e(v??this.t('needs'))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
+
+ /**
+  * Build source-valid but wholly fictional vendor evidence by using the
+  * existing append-only domain. Never treat a received document as verified
+  * certification, or declared capacity as guaranteed availability.
+  */
+ practiceExample(){
+  let p=this.E.create({vendorName:'SYNTHETIC TRAINING VENDOR',country:'BD',
+   sourceRef:'SYNTHETIC VENDOR DECLARATION — UNVERIFIED'});
+  const siteId='DEMO-SITE-1';
+  p=this.E.append(p,'site',{id:siteId,siteName:'SYNTHETIC KNIT SITE',country:'BD',
+   process:'DEMO KNIT GARMENTS',sourceRef:'SYNTHETIC FACTORY SITE DECLARATION'});
+  p=this.E.append(p,'capability',{id:'DEMO-CAP-1',siteId,category:'Knit Polo',
+   unit:'pieces',declaredMonthlyCapacity:100000,sourceRef:'SYNTHETIC CAPABILITY CATEGORY',
+   capacitySourceRef:'SYNTHETIC UNVERIFIED MONTHLY CAPACITY DOCUMENT',
+   asOfDate:'2026-10-16',reviewedBy:'SYNTHETIC LOCAL REVIEWER',
+   reviewDate:'2026-10-17',moq:5000,leadDays:60,
+   leadDaysSource:'SYNTHETIC DECLARED LEAD TIME LETTER'});
+  p=this.E.append(p,'certificate',{id:'DEMO-DOC-1',siteId,
+   scheme:'FICTIONAL TRAINING DOCUMENT',issuer:'SYNTHETIC UNVERIFIED ISSUER',
+   documentRef:'DEMO-DOCUMENT-2026',sourceRef:'SYNTHETIC DOCUMENT PHOTO',
+   issueDate:'2026-01-01',expiryDate:'2026-09-30',
+   reviewedBy:'SYNTHETIC LOCAL REVIEWER',reviewDate:'2026-10-17',
+   documentStatus:'source-unconfirmed'});
+  p=this.E.append(p,'review',{id:'DEMO-REVIEW-1',siteId,
+   reviewer:'SYNTHETIC INTERNAL CHECKER',reviewDate:'2026-10-17',
+   checklistRef:'SYNTHETIC UNFINISHED ONBOARDING CHECKLIST',
+   sourceRef:'SYNTHETIC INTERNAL REVIEW NOTES',internalOutcome:'needs-information'});
+  p=this.E.append(p,'performance',{id:'DEMO-PERF-1',siteId,
+   metric:'SYNTHETIC ON-TIME COUNT',unit:'orders',numerator:8,denominator:10,
+   periodFrom:'2026-09-01',periodTo:'2026-09-30',
+   sourceRef:'SYNTHETIC PERIOD LOG',
+   reviewer:'SYNTHETIC LOCAL REVIEWER',reviewDate:'2026-10-17'});
+  const result=this.E.validate(p);
+  if(!result.ok)throw Error('Fictional vendor example invalid: '+result.errors.join('; '));
+  p.mode='practice';
+  return p;
+ }
+ /**
+  * Discover each original vendor section from Home. These links create no
+  * saved profiles, contacts, buyer permissions or compliance approvals.
+  */
+ journey(t){
+  const cards=FactoryVendorWorkspace.steps.map(([step,hint],index)=>
+   '<article class="fv-journey-card"><span class="fv-journey-step">'+String(index+1).padStart(2,'0')+
+   '</span><h3>'+t(step)+'</h3><p>'+t(hint)+'</p>'+
+   '<button class="fv-btn" type="button" data-action="preview" data-id="'+this.e(step)+
+   '" aria-label="'+t('journeyOpen')+' · '+t(step)+'">'+t('journeyOpen')+'</button></article>');
+  return '<section class="fv-card" aria-labelledby="fvJourneyTitle"><h2 id="fvJourneyTitle">'+t('journeyTitle')+
+   '</h2><p class="fv-note">'+t('journeyLead')+'</p><div class="fv-journey">'+cards.join('')+'</div></section>';
+ }
  render(){const e=v=>this.e(v??this.t('needs')),t=k=>this.e(this.t(k));
   const banner='<section class="fv-card"><h1>'+t('title')+'</h1><p class="fv-note">'+t('lead')+'</p><p class="fv-warning">'+t('notice')+'</p></section>';
   if(!this.current){let saved=[];try{saved=this.store.list();}catch(error){this.main.innerHTML=banner+'<p class="fv-warning" role="alert">'+e(error.message)+'</p>'+this.btn('upload','upload');return;}
    this.main.innerHTML=banner+'<section class="fv-card"><div class="fv-actions">'+this.btn('new','new',true)+this.btn('continue','continue')+this.btn('upload','upload')+this.btn('practice','practice')+'</div><h2>'+t('openRecords')+'</h2>'+
-    (saved.length?saved.map(x=>'<div class="fv-record"><span><b>'+e(x.vendorName)+'</b> · '+e(x.country)+'<small>Revision '+e(x.revision)+'</small></span>'+this.btn('load','open',false,x.id)+'</div>').join(''):'<p class="fv-note">'+t('none')+'</p>')+'</section>';this.shell?.setSavedState('unsaved');return;}
+    (saved.length?saved.map(x=>'<div class="fv-record"><span><b>'+e(x.vendorName)+'</b> · '+e(x.country)+'<small>Revision '+e(x.revision)+'</small></span>'+this.btn('load','open',false,x.id)+'</div>').join(''):'<p class="fv-note">'+t('none')+'</p>')+'</section>'+this.journey(t);this.shell?.setSavedState('unsaved');return;}
   const p=this.current,practice=p.mode==='practice',review=this.E.validate(p);
-  const tabs=['summary','sites','capabilities','documents','onboarding','performance','references','reports','history'];
+  const tabs=FactoryVendorWorkspace.steps.map(([s])=>s);
   this.main.innerHTML=banner+'<section class="fv-card"><h2>'+e(p.header.vendorName)+' · '+e(p.header.country)+'</h2><p class="fv-note">'+(practice?'SYNTHETIC PRACTICE':t('localOnly'))+' · '+t('status')+'</p>'+
    '<div class="fv-actions">'+this.btn('home','back')+this.btn('save','save',true,'',practice)+this.btn('download','download',false,'',practice)+this.btn('report','report')+'</div></section>'+
    '<nav class="fv-tabs" aria-label="Factory & Vendor sections">'+tabs.map(tab=>'<button type="button" class="fv-btn" data-action="'+tab+'" aria-current="'+(this.section===tab)+'">'+t(tab)+'</button>').join('')+'</nav>'+
