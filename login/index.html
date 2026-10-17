@@ -2,63 +2,207 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Login | VESA App Centre</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f3f6fa">
+  <title>Enter Workspace | VESA 360</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/vesa-workspace.css?v=20261013-platform-g09">
+  <link rel="stylesheet" href="/css/vesa-login.css?v=20261018-login-r1">
   <script src="/js/preferences.js"></script>
   <script src="/js/auth.js"></script>
+  <script src="/js/app-catalogue.js?v=20261015-costing-demo"></script>
 </head>
-<body class="app-centre-page">
+<body class="app-centre-page vesa-login-page">
   <a class="vesa-skip-link" href="#vesaMainContent">Skip to main content</a>
   <main class="auth-shell" id="vesaMainContent" tabindex="-1">
-    <section class="auth-card panel">
-      <a class="auth-logo" href="/"><img src="/assets/vesa-logo-black.png" alt="VESA Enterprise Inc"></a>
-      <span class="kicker" data-i18n="appCentre">VESA App Centre</span>
-      <h1 data-i18n="login">Login</h1>
-      <p data-i18n="loginHelp">Enter your user ID and password to open the App Centre.</p>
-      <div data-vesa-preferences></div>
-      <form id="loginForm" class="auth-form">
-        <label><span data-i18n="userId">User ID</span><input class="input" id="email" type="text" autocomplete="username" required></label>
-        <label><span data-i18n="password">Password</span><span class="password-control"><input class="input" id="password" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" id="passwordToggle" aria-pressed="false">Show</button></span></label>
-        <button class="btn primary" type="submit" data-i18n="login">Login</button>
+    <section class="login-story" aria-labelledby="storyTitle">
+      <div class="login-story__top">
+        <span class="login-story__mark">VESA <span>360</span></span>
+        <span class="login-story__descriptor" data-login-copy="storyTag">APP WORKSPACE</span>
+      </div>
+      <div class="login-story__copy">
+        <span class="login-story__eyebrow" data-login-copy="storyEyebrow">EVERYTHING IN ITS PLACE</span>
+        <h2 id="storyTitle" data-login-copy="storyTitle">One place for the work that matters.</h2>
+        <p data-login-copy="storyText">Plan orders, review production and keep quality, sourcing and reports connected — in a workspace built to stay clear.</p>
+      </div>
+      <div class="login-story__foot">
+        <div class="login-story__capability">
+          <span class="login-story__number">01</span>
+          <span data-login-copy="storyWorkflows">Plan and organize</span>
+        </div>
+        <div class="login-story__capability">
+          <span class="login-story__number">02</span>
+          <span data-login-copy="storyDecisions">Review and decide</span>
+        </div>
+        <div class="login-story__capability">
+          <span class="login-story__number">03</span>
+          <span data-login-copy="storyReports">Save and report</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="auth-card" aria-labelledby="loginHeading">
+      <div class="auth-card__top">
+        <div class="auth-logo"><img src="/assets/vesa-logo-black.png" alt="VESA Enterprise Inc"></div>
+        <span class="login-availability"><span class="login-availability__dot" aria-hidden="true"></span><span data-login-copy="availability">19 workspaces</span></span>
+      </div>
+      <div class="login-welcome">
+        <span class="login-welcome__eyebrow" data-login-copy="welcome">WELCOME TO VESA 360</span>
+        <h1 id="loginHeading" data-login-copy="heading">Open your workspace.</h1>
+        <p data-login-copy="description">Your demo sign-in is ready. Open the apps in one step.</p>
+      </div>
+
+      <div class="login-demo" aria-label="Demo account">
+        <div class="login-demo__heading">
+          <span class="login-demo__icon" aria-hidden="true">&#9679;</span>
+          <strong data-login-copy="demoTitle">PUBLIC DEMO ACCESS</strong>
+        </div>
+        <dl class="login-demo__values">
+          <div><dt data-login-copy="demoUser">User ID</dt><dd id="demoUserId">user@vesa</dd></div>
+          <div><dt data-login-copy="demoPassword">Password</dt><dd id="demoPassword">vesa</dd></div>
+        </dl>
+        <p data-login-copy="demoHint">Already filled below. Choose Open App Centre to continue.</p>
+      </div>
+
+      <form id="loginForm" class="auth-form" autocomplete="on">
+        <label for="email"><span data-login-copy="userId">User ID</span></label>
+        <input class="input" id="email" type="text" value="user@vesa"
+          autocomplete="username" spellcheck="false" autocapitalize="off" required>
+        <label for="password"><span data-login-copy="password">Password</span></label>
+        <div class="password-control">
+          <input class="input" id="password" type="password" value="vesa" autocomplete="current-password" required>
+          <button class="password-toggle" type="button" id="passwordToggle" aria-controls="password" aria-pressed="false">Show</button>
+        </div>
+        <button class="btn primary login-submit" id="loginSubmit" type="submit">
+          <span data-login-copy="open">Open App Centre</span><span class="login-submit__arrow" aria-hidden="true">&#8594;</span>
+        </button>
       </form>
-      <p id="authMessage" class="auth-message" role="status"></p>
+      <p id="authMessage" class="auth-message" role="status" aria-live="polite"></p>
+      <div class="login-preferences">
+        <div class="login-preferences__heading" data-login-copy="preferences">Language & appearance</div>
+        <div data-vesa-preferences></div>
+      </div>
+      <p class="login-privacy" data-login-copy="localNote">Demo workspace. Your saved work stays in this browser.</p>
     </section>
   </main>
   <script>
-    const params=new URLSearchParams(location.search);
-    function safeNext(value){
-      try{
-        const url=new URL(value||'/apps/',location.origin);
-        const allowed=['/apps/','/apps/aql/','/apps/ppm/','/admin/'];
-        if(url.origin!==location.origin)return '/apps/';
-        return allowed.some(path=>url.pathname===path||url.pathname.startsWith(path))?url.pathname+url.search+url.hash:'/apps/';
-      }catch{return '/apps/';}
-    }
-    const next=safeNext(params.get('next'));
-    const loginForm=document.getElementById('loginForm');
-    const emailInput=document.getElementById('email');
-    const passwordInput=document.getElementById('password');
-    const message=document.getElementById('authMessage');
-    const passwordToggle=document.getElementById('passwordToggle');
-    passwordToggle.addEventListener('click',()=>{
-      const show=passwordInput.type==='password';
-      passwordInput.type=show?'text':'password';
-      passwordToggle.textContent=show?'Hide':'Show';
-      passwordToggle.setAttribute('aria-pressed',String(show));
-      passwordInput.focus();
-    });
-    function showMessage(text,bad=true){message.textContent=text;message.className='auth-message '+(bad?'bad':'good');}
-    if(VesaAuth.session()) location.replace(next);
-    loginForm.addEventListener('submit',async e=>{
-      e.preventDefault();
-      try{
-        await VesaAuth.login(emailInput.value,passwordInput.value);
-        location.replace(next);
-      }catch(err){showMessage(err.message);}
-    });
+    (function(){
+      'use strict';
+      const copy={
+        en:{storyTag:'APP WORKSPACE',storyEyebrow:'EVERYTHING IN ITS PLACE',
+          storyTitle:'One place for the work that matters.',
+          storyText:'Plan orders, review production and keep quality, sourcing and reports connected — in a workspace built to stay clear.',
+          storyWorkflows:'Plan and organize',storyDecisions:'Review and decide',storyReports:'Save and report',
+          availability:'19 workspaces',welcome:'WELCOME TO VESA 360',
+          heading:'Open your workspace.',description:'Your demo sign-in is ready. Open the apps in one step.',
+          demoTitle:'PUBLIC DEMO ACCESS',demoUser:'User ID',demoPassword:'Password',
+          demoHint:'Already filled below. Choose Open App Centre to continue.',
+          userId:'User ID',password:'Password',open:'Open App Centre',
+          show:'Show',hide:'Hide',preferences:'Language & appearance',
+          localNote:'Demo workspace. Your saved work stays in this browser.'},
+        bn:{storyTag:'অ্যাপ ওয়ার্কস্পেস',storyEyebrow:'সব কাজ এক জায়গায়',
+          storyTitle:'আপনার গুরুত্বপূর্ণ কাজ এক জায়গায়।',
+          storyText:'অর্ডার পরিকল্পনা, উৎপাদন, গুণমান, সোর্সিং ও রিপোর্ট সহজে পরিচালনা করুন।',
+          storyWorkflows:'পরিকল্পনা ও সংগঠন',storyDecisions:'পর্যালোচনা ও সিদ্ধান্ত',storyReports:'সেভ ও রিপোর্ট',
+          availability:'১৯টি ওয়ার্কস্পেস',welcome:'VESA 360-তে স্বাগতম',
+          heading:'আপনার ওয়ার্কস্পেস খুলুন।',description:'ডেমো লগইন প্রস্তুত। এক ধাপেই অ্যাপ খুলুন।',
+          demoTitle:'সবার জন্য ডেমো',demoUser:'ইউজার আইডি',demoPassword:'পাসওয়ার্ড',
+          demoHint:'তথ্য আগে থেকেই দেওয়া আছে। অ্যাপ সেন্টার খুলুন।',
+          userId:'ইউজার আইডি',password:'পাসওয়ার্ড',open:'অ্যাপ সেন্টার খুলুন',
+          show:'দেখুন',hide:'লুকান',preferences:'ভাষা ও চেহারা',
+          localNote:'ডেমো ওয়ার্কস্পেস। আপনার সেভ করা কাজ এই ব্রাউজারেই থাকবে।'},
+        hi:{storyTag:'ऐप वर्कस्पेस',storyEyebrow:'हर काम अपनी जगह',
+          storyTitle:'सारे ज़रूरी काम एक जगह।',
+          storyText:'ऑर्डर प्लान करें, प्रोडक्शन देखें और क्वालिटी, सोर्सिंग व रिपोर्ट सँभालें।',
+          storyWorkflows:'योजना और संगठन',storyDecisions:'समीक्षा और निर्णय',storyReports:'सेव और रिपोर्ट',
+          availability:'19 वर्कस्पेस',welcome:'VESA 360 में स्वागत है',
+          heading:'अपना वर्कस्पेस खोलें।',description:'डेमो लॉगिन तैयार है। एक क्लिक में ऐप खोलें।',
+          demoTitle:'सार्वजनिक डेमो',demoUser:'यूज़र आईडी',demoPassword:'पासवर्ड',
+          demoHint:'जानकारी पहले से भरी है। ऐप सेंटर खोलें।',
+          userId:'यूज़र आईडी',password:'पासवर्ड',open:'ऐप सेंटर खोलें',
+          show:'दिखाएँ',hide:'छिपाएँ',preferences:'भाषा और रूप',
+          localNote:'डेमो वर्कस्पेस। सेव किया गया काम इसी ब्राउज़र में रहेगा।'},
+        ta:{storyTag:'APP WORKSPACE',storyEyebrow:'எல்லா வேலையும் ஒரே இடத்தில்',
+          storyTitle:'முக்கியமான வேலைகளுக்கான ஒரே இடம்.',
+          storyText:'Orders, production, quality, sourcing, reports — அனைத்தையும் தெளிவாக நிர்வகிக்கலாம்.',
+          storyWorkflows:'திட்டமிட்டு நிர்வகிக்கவும்',storyDecisions:'சரிபார்த்து முடிவெடுக்கவும்',storyReports:'சேமித்து Report பெறவும்',
+          availability:'19 Workspaces',welcome:'VESA 360-க்கு வரவேற்கிறோம்',
+          heading:'உங்கள் Workspace-ஐத் திறக்கவும்.',description:'Demo login தயார். ஒரே click-ல் Apps திறக்கலாம்.',
+          demoTitle:'அனைவருக்குமான DEMO',demoUser:'User ID',demoPassword:'Password',
+          demoHint:'விவரங்கள் ஏற்கனவே நிரப்பப்பட்டுள்ளன. App Centre-ஐத் திறக்கவும்.',
+          userId:'User ID',password:'Password',open:'App Centre திறக்கவும்',
+          show:'காட்டு',hide:'மறை',preferences:'மொழி & தோற்றம்',
+          localNote:'Demo Workspace. Save செய்த வேலை இந்த browser-ல்தான் இருக்கும்.'}
+      };
+      const input=document.getElementById('email');
+      const password=document.getElementById('password');
+      const toggle=document.getElementById('passwordToggle');
+      const message=document.getElementById('authMessage');
+      const submit=document.getElementById('loginSubmit');
+      const form=document.getElementById('loginForm');
+
+      // Authoritative source for public synthetic demo account is js/auth.js.
+      const demo=VesaAuth.DEMO_USERS.find(user=>user.role==='user'&&user.demo===true);
+      if(demo){
+        input.value=demo.email;
+        password.value=VesaAuth.DEMO_PASSWORD;
+        document.getElementById('demoUserId').textContent=demo.email;
+        document.getElementById('demoPassword').textContent=VesaAuth.DEMO_PASSWORD;
+      }
+      function language(){
+        const selected=VesaPrefs?.read?.().language||'en';
+        return Object.prototype.hasOwnProperty.call(copy,selected)?selected:'en';
+      }
+      function translate(){
+        const dict=copy[language()];
+        document.querySelectorAll('[data-login-copy]').forEach(node=>{
+          const text=dict[node.dataset.loginCopy];
+          if(typeof text==='string')node.textContent=text;
+        });
+        toggle.textContent=password.type==='password'?dict.show:dict.hide;
+        toggle.setAttribute('aria-label',password.type==='password'?dict.show+' password':dict.hide+' password');
+      }
+      function safeNext(value){
+        try{
+          const url=new URL(value||'/apps/',location.origin);
+          if(url.origin!==location.origin||url.username||url.password)return '/apps/';
+          const allowed=new Set(['/apps/','/apps/index.html','/admin/','/admin/index.html']);
+          for(const app of VesaAppCatalogue.enabled()){
+            allowed.add(app.route);
+            allowed.add(app.route+'index.html');
+          }
+          return allowed.has(url.pathname)?url.pathname+url.search+url.hash:'/apps/';
+        }catch{return '/apps/';}
+      }
+      const next=safeNext(new URLSearchParams(location.search).get('next'));
+      toggle.addEventListener('click',()=>{
+        const reveal=password.type==='password';
+        password.type=reveal?'text':'password';
+        toggle.setAttribute('aria-pressed',String(reveal));
+        translate();
+        password.focus();
+      });
+      function showMessage(text,bad=true){
+        message.textContent=text;
+        message.className='auth-message '+(bad?'bad':'good');
+      }
+      window.addEventListener('vesa-preferences-change',translate);
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',translate);
+      else translate();
+      if(VesaAuth.session())location.replace(next);
+      form.addEventListener('submit',async event=>{
+        event.preventDefault();
+        if(submit.disabled)return;
+        submit.disabled=true;
+        try{
+          await VesaAuth.login(input.value,password.value);
+          location.replace(next);
+        }catch(error){
+          showMessage(error.message);
+          submit.disabled=false;
+        }
+      });
+    })();
   </script>
 </body>
 </html>
