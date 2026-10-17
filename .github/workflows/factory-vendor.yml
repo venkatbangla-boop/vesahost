@@ -1,13 +1,19 @@
-# APP-08 source-only factory/vendor domain acceptance; no public route or customer data.
+# APP-08 full personal synthetic demo gate: domain, static registration, Chromium and legacy.
 name: VESA Factory Vendor 360 verification
 on:
   push:
     branches:
       - feature/factory-vendor-360
+      - main
     paths:
       - 'apps/factory-vendor/**'
       - 'docs/factory-vendor/**'
       - '.github/workflows/factory-vendor.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
+      - '.github/workflows/vesa-costing-demo-live-smoke.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -44,6 +50,10 @@ jobs:
           node --check apps/factory-vendor/tests/report-reference.test.cjs
           node apps/factory-vendor/tests/report-reference.test.cjs
           node tests/personal-demo-release.cjs
+          node --check js/app-catalogue.js
+          node --check js/preferences.js
+          node --check service-worker.js
+          grep -Fq 'factory-vendor' .github/workflows/vesa-costing-demo-live-smoke.yml
           node tests/vesa-next-app-starter.cjs
           node apps/production-tracker/tests/domain.test.cjs
           node apps/production-tracker/tests/save-reopen.test.cjs
@@ -73,6 +83,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: factory360-m3-synthetic-browser
+          name: factory360-m4-synthetic-browser
           path: output/playwright/factory-app08-*
           if-no-files-found: ignore
