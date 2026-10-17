@@ -7,6 +7,8 @@ class VesaSupplierWorkspace{
  constructor(){
   this.main=document.getElementById('fsMain');this.dialog=document.getElementById('fsDialog');
   this.body=document.getElementById('fsDialogBody');this.file=document.getElementById('fsCopyFile');
+  this.refFile=document.getElementById('fsReferenceFile');this.Ref=root.VesaSupplierReviewedReference;
+  this.R=root.VesaSupplierReportModel;this.refKind='tech';this.pendingRef=null;
   this.E=root.VesaSupplierQuote;this.G=root.VesaSupplierComparability;this.L=root.VesaSupplierLanded;
   this.C=root.VesaSupplierCopyCodec;this.T=root.VesaSupplierCopy;
   const u=root.VesaAuth?.session?.()||{};
@@ -56,6 +58,16 @@ class VesaSupplierWorkspace{
     this.modal(this.t('upload'),'<p class="fs-note">A local copy was opened separately; earlier source data remains saved.</p>');
    }catch(err){this.error(err.message);}
   });
+  this.refFile.addEventListener('change',async()=>{
+   const file=this.refFile.files?.[0];this.refFile.value='';if(!file)return;
+   try{
+    if(file.size>120000)throw Error('User-selected source file larger than allowed 120 KB');
+    const ref=JSON.parse(await file.text());
+    if(!this.Ref.sourceValid(ref,this.refKind)||!this.Ref.matchesRequirement(ref,this.current))
+     throw Error('Source type or exact fabric article/GSM/width/composition does not match requirement');
+    this.pendingRef=this.E.copy(ref);this.form('source-confirm');
+   }catch(err){this.error(err.message);}
+  });
   root.addEventListener('vesa-preferences-change',()=>this.render());
   root.VesaFabricSupplier360=this;this.render();
  }
@@ -63,8 +75,8 @@ class VesaSupplierWorkspace{
   const items={Home:[['home','back'],['new','new'],['continue','continue'],['practice','practice']],
    File:[['save','save'],['download','download'],['upload','upload']],
    Edit:[['add-offer','addOffer'],['add-scenario','addScenario'],['add-decision','addDecision']],
-   View:[['summary','summary'],['offers','offers'],['scenarios','scenarios'],['matrix','matrix'],['decisions','decisions'],['history','history'],['reports','reports']],
-   Tools:[['asof','selectAsOf'],['matrix','showMatrix']],Help:[['help','help']]};
+   View:[['summary','summary'],['offers','offers'],['scenarios','scenarios'],['matrix','matrix'],['decisions','decisions'],['references','references'],['history','history'],['reports','reports']],
+   Tools:[['asof','selectAsOf'],['matrix','showMatrix'],['reference-select','referenceSelect'],['report','report'],['excel','excel'],['print','print']],Help:[['help','help']]};
   this.modal(name,'<div class="fs-actions">'+(items[name]||[]).map(([a,k])=>'<button type="button" class="fs-btn" data-menu-action="'+this.e(a)+'">'+this.e(this.t(k))+'</button>').join('')+'</div>');
   this.body.querySelectorAll('[data-menu-action]').forEach(el=>el.onclick=()=>{this.dialog.close();this.action(el.dataset.menuAction);});
  }
@@ -92,14 +104,28 @@ class VesaSupplierWorkspace{
   if(name==='download'){if(!this.current||this.current.mode==='practice')throw Error('Open a saved comparison before downloading');
    this.download(this.C.encode(this.current),'VESA-SUPPLIER-'+this.current.id+'.vesasup');return;}
   if(name==='upload'){this.file.click();return;}
-  if(['summary','offers','scenarios','matrix','decisions','history','reports'].includes(name)){
+  if(['summary','offers','scenarios','matrix','decisions','references','history','reports'].includes(name)){
    if(!this.current)throw Error('Open source comparison first');this.section=name;this.render();return;}
   if(name==='asof'){if(!this.current)throw Error('Open comparison first');this.form('asof');return;}
+  if(name==='reference-select'){if(!this.current||this.current.mode==='practice')throw Error('Open an editable local comparison first');this.form('reference-select');return;}
+  if(name==='report'){if(!this.current)throw Error('Open comparison first');this.section='reports';this.render();return;}
+  if(name==='excel'){this.excel();return;}
+  if(name==='print'){if(!this.current)throw Error('Open comparison before Print');this.section='reports';this.render();root.print();return;}
   if(name==='help'){this.modal(this.t('help'),'<p class="fs-warning">'+this.e(this.t('warning'))+'</p><p>'+this.e(this.t('noApproval'))+'</p>');return;}
   if(['add-offer','add-scenario','add-decision'].includes(name)){
    if(!this.current||this.current.mode==='practice')throw Error(this.t('practiceOnly'));
    this.form(name);return;}
  }catch(err){this.error(err.message);}}
+ excel(){
+  if(!this.current)throw Error('Open a local comparison first');
+  if(!root.XLSX)throw Error('Bundled Excel library not available');
+  const valid=this.E.validate(this.current);if(!valid.ok)throw Error(valid.errors.join('; '));
+  const book=root.XLSX.utils.book_new();
+  for(const [name,rows]of Object.entries(this.R.rows(this.current,this.asOf))){
+   root.XLSX.utils.book_append_sheet(book,root.XLSX.utils.aoa_to_sheet(this.R.excelRows(name,rows)),name.slice(0,31));
+  }
+  root.XLSX.writeFile(book,'VESA-SUPPLIER-COMPARISON-'+this.current.id+'.xlsx');
+ }
  table(head,rows){return '<div class="fs-scroll"><table class="fs-table"><thead><tr>'+
    head.map(x=>'<th>'+this.e(x)+'</th>').join('')+'</tr></thead><tbody>'+
    rows.map(row=>'<tr>'+row.map(x=>'<td>'+this.e(x??this.t('needs'))+'</td>').join('')+'</tr>').join('')+
@@ -118,7 +144,7 @@ class VesaSupplierWorkspace{
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,practice=p.mode==='practice',valid=this.E.validate(p);
-  const tabs=['summary','offers','scenarios','matrix','decisions','reports','history'];
+  const tabs=['summary','offers','scenarios','matrix','decisions','references','reports','history'];
   this.main.innerHTML=banner+'<section class="fs-card"><h2>'+e(p.requirement.article)+' / '+e(p.requirement.gsm)+' GSM / '+e(p.requirement.width)+' '+e(p.requirement.widthUnit)+'</h2>'+
    '<p class="fs-note">'+(practice?t('practiceOnly'):t('localOnly'))+' / '+t('status')+'</p>'+
    '<div class="fs-actions">'+this.btn('home','back')+this.btn('save','save',true,'',practice)+this.btn('download','download',false,'',practice)+'</div></section>'+
@@ -162,7 +188,12 @@ class VesaSupplierWorkspace{
    this.table([t('offerId'),t('stage'),t('reviewer'),t('reviewDate'),t('sourceRef')],
    p.decisions.map(d=>[d.offerId,d.state,d.reviewer,d.reviewDate,d.sourceRef]))+
    '<p class="fs-warning">'+e(t('noApproval'))+'</p></section>';
-  if(this.section==='reports')return '<section class="fs-card">'+title('reports')+'<p class="fs-warning">'+e(t('reportPlanned'))+'</p></section>';
+  if(this.section==='references')return '<section class="fs-card">'+title('references','reference-select','referenceSelect')+
+   '<p class="fs-warning">'+e(t('sourceNotice'))+'</p>'+
+   this.table([t('refKind'),t('sourceApp'),t('sourceRecord'),t('localReviewer'),t('localReviewDate')],
+    (p.manualReferences||[]).map(x=>[x.kind,x.source.sourceApp,x.source.recordId,x.localReviewer,x.localReviewDate]))+'</section>';
+  if(this.section==='reports')return '<section class="fs-card fs-print-card"><div class="fs-actions">'+
+   this.btn('excel','excel',true)+this.btn('print','print')+'</div>'+this.R.html(p,this.asOf)+'</section>';
   return '<section class="fs-card">'+title('history')+this.table(['Rev',t('reviewDate'),'Action','Evidence'],
    p.audit.map(a=>[a.revision,a.at,a.action,a.recordId||'']))+'</section>';
  }
@@ -214,8 +245,19 @@ class VesaSupplierWorkspace{
     this.field('reviewer',true)+this.field('reviewDate',true,'date')+this.field('sourceRef',true,'text',true);
   }
   if(kind==='asof')body=this.field('asOf',true,'date',true,this.asOf);
+  if(kind==='reference-select')body='<p class="wide fs-warning">'+e(t('sourceNotice'))+'</p>'+
+   this.select('refKind',[['tech','Manually sourced Tech Pack fabric spec'],['material','Fabric & Trims MaterialReadiness with matched sourced fabric specs']],true);
+  if(kind==='source-confirm'){
+   if(!this.pendingRef)throw Error('Select a local source file first');
+   body='<p class="wide fs-warning">'+e(t('sourceNotice'))+'</p>'+
+    '<p class="wide">'+e(this.pendingRef.sourceApp)+' / '+e(this.pendingRef.recordId)+
+    ' / '+e(this.pendingRef.revisionId)+'</p>'+
+    this.field('localReviewer',true)+this.field('localReviewDate',true,'date')+
+    '<label class="wide fs-confirm"><input type="checkbox" name="identityConfirmed" value="yes" required>'+
+    '<span>'+e(t('identityConfirmed'))+'</span></label>';
+  }
   if(!body)throw Error('Unknown source form');
-  const title={new:'new','add-offer':'addOffer','add-scenario':'addScenario','add-decision':'addDecision',asof:'selectAsOf'}[kind];
+  const title={new:'new','add-offer':'addOffer','add-scenario':'addScenario','add-decision':'addDecision',asof:'selectAsOf','reference-select':'referenceSelect','source-confirm':'referenceSelect'}[kind];
   this.modal(this.t(title),'<form class="fs-form" data-form="'+e(kind)+'">'+body+
    '<div class="fs-actions wide"><button type="submit" class="fs-btn primary">'+e(t('submit'))+'</button></div></form>');
  }
@@ -223,7 +265,16 @@ class VesaSupplierWorkspace{
   const data=new FormData(form),get=k=>String(data.get(k)??'').trim(),kind=form.dataset.form;
   try{
    if(kind==='asof'){if(!this.E.date(get('asOf')))throw Error('Choose valid comparison date');this.asOf=get('asOf');this.section='matrix';}
-   else if(kind==='new'){
+   else if(kind==='reference-select'){
+    if(!this.current||this.current.mode==='practice')throw Error('Open an editable local comparison');
+    this.refKind=get('refKind');this.dialog.close();this.refFile.click();return;
+   }else if(kind==='source-confirm'){
+    if(!this.current||!this.pendingRef||this.current.mode==='practice')throw Error('Select source for editable comparison first');
+    const proposed=this.Ref.append(this.current,this.refKind,this.pendingRef,{
+     localReviewer:get('localReviewer'),localReviewDate:get('localReviewDate'),
+     identityConfirmed:get('identityConfirmed')==='yes'});
+    this.store.save(proposed);this.current=proposed;this.pendingRef=null;this.section='references';
+   }else if(kind==='new'){
     const base={};for(const k of ['article','composition','gsm','width','widthUnit','construction','shrinkageBasis','shrinkage',
      'sourceRef','reviewedBy','reviewDate','requestedTradeTerm','requestedDeliveryTerm'])base[k]=get(k);
     const record=this.E.create(base),existing=this.store.read();
