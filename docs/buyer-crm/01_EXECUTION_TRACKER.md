@@ -1,5 +1,19 @@
 # APP-11 Buyer CRM 360 — Execution Tracker
 
+## 2026-10-17 — M1 NODE DOMAIN ACCEPTED; M2 bounded browser-only patch
+
+**M1 accepted for pure synthetic source-domain technical scope.** Exact `feature/buyer-crm-360` code `504ef86c815300045a5d983093498602d8574491`; [independent GitHub Actions #39036474965 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39036474965). Node tests verified organization/source, consent evidence as a local claim, cautious duplicate contact refusal (no merge), enquiry quantity+unit, exact per-currency quoted opportunity amounts (no guessed conversion/probability), immutable stage changes, explicit as-of followup classification (no email/SMS/notification), no CRM-generated confirmed PO or buyer approval. Original 15 source SHA256, Label/Factory/Production and all other portfolio/TNA/PPM/AQL Node baselines passed. No live CRM App Centre route or browser persistence yet.
+
+**M2 single patch group — exact files IN SCOPE:** new `apps/buyer-crm/index.html`, `assets/buyer-crm.css`, `src/bootstrap.js`, `src/application/workspace-controller.js`, `src/data/local-record-port.js`, `src/data/saved-copy-codec.js`, `src/i18n/app-copy.js`, `tests/save-reopen.test.cjs`, `tests/browser-workflow.cjs`; modify only `.github/workflows/buyer-crm.yml` and this tracker to gate M2. No global shared files/code edits in M2.
+
+**Calls/state/ownership:** existing VESA shared shell/auth/menu → new Buyer CRM controller → existing pure M1 directory/opportunity/follow-up engines → app-only per-browser user-key local storage and portable checksum copy. Browser session is not trusted server identity; no real contact data in fixtures/Git. On-screen local followup dates are not automated email/SMS or background reminders. No remote provider calls; no auto confirmed PO, no FX cross-currency addition, no opportunity probability. Record and contact source privacy evidence/consent status remain claims and do not establish lawful collection. Enquiries/opportunities/stage amendments/followups append-only; corrupt imports and older revisions fail without deleting local records. Practice synthetic only.
+
+**M2 workflow:** New/Continue/Open/Practice, sections Organization/Contacts/Enquiries/Pipeline/Follow-ups/History, explicit source and evidence entry, duplicate warnings, browser Save/Open/Download/Open Saved Copy with separate recovery, EN/BN/HI/TA labels, 320–1440 responsive and keyboard/modal escape focus. Reports/typed external PO references postponed to M3, public App Centre and service-worker changes to M4. **FROZEN:** TNA/PPM/AQL and all previous apps, `blueprints/`, portfolio docs, shared header, auth, static catalogue, service worker, other browser-storage namespaces.
+
+**M2 tests:** Node pure/saved-copy isolation+tampering/duplicate/stale guard, exact as-of dates, actual GitHub-hosted Chromium local CRUD and human UI navigation, four language switching with data invariance, mobile CSS widths, zero external requests, all existing sibling regressions. Restore rollback by reverting only app M2 changes; preserve earlier browser copies. **PRECISE NEXT ACTION:** implement M2, push, run independent real Chromium CI at exact commit, repair regressions, then M3 source reports.
+
+---
+
 ## 2026-10-17 — M0 original blueprint/source/privacy audit
 
 **Repository baseline:** current `main` `4bb14c7892624379db6381deebf633aca05c501e`, immediately after independently verified APP-10 personal-demo Pages + source bytes. Dedicated feature `feature/buyer-crm-360` created from this exact head. Original approved source `blueprints/APP-11_buyer-crm.md` priority 12/15 W4; `docs/portfolio/03_CROSS_APP_DATA_OWNERSHIP.md`, `AGENTS.md`, `VESA_PROGRESS.md`, `VESA_RESUME_PROMPT.md`, `docs/platform/VESA_UNIFIED_UI_CONTRACT.md` and `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` inspected. Live repo had **no** `apps/buyer-crm/` and code search found no `vesa.buyer-crm.records.v1` key; do not restart/overwrite a prior CRM.
