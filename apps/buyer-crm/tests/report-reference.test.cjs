@@ -70,7 +70,7 @@ assert.equal(R.excelRows('Source Amounts by Currency',rows['Source Amounts by Cu
 assert.equal(R.excelRows('Local Follow-up Calendar',rows['Local Follow-up Calendar'])[1][6],-1);
 assert.equal(R.excelCell('=HYPERLINK("bad")'),"\'=HYPERLINK(\"bad\")");
 assert.equal(R.excelCell('@cmd'),"'@cmd");
-const evil=E.copy(p);evil.header.organizationName='<img src=x onerror=1>';
+const evil=E.copy(p);evil.header.sourceRef='<img src=x onerror=1>'; // Keep independently reviewed buyer identity unchanged.
 const html=R.html(evil,'2026-10-17');
 assert(html.includes('&lt;img src=x onerror=1&gt;')&&!html.includes('<img src=x'));
 assert(html.includes('NOT confirmed purchase orders'));assert(html.includes('NO EMAIL/SMS SENT'));
