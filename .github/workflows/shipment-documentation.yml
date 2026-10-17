@@ -33,6 +33,7 @@ jobs:
           node apps/shipment-documentation/tests/domain.test.cjs
           node tests/personal-demo-release.cjs
           node --check service-worker.js
+          grep -Fq 'shipment-documentation' .github/workflows/vesa-costing-demo-live-smoke.yml
           node --check apps/shipment-documentation/src/application/workspace-controller.js
           node --check apps/shipment-documentation/src/i18n/app-copy.js
           node --check apps/shipment-documentation/src/bootstrap.js
