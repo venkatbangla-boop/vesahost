@@ -1,4 +1,4 @@
-const CACHE='vesa-v79-label-artwork-personal-demo';
+const CACHE='vesa-v80-buyer-crm-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -86,6 +86,19 @@ const ASSETS=[
   './apps/label-artwork-approval/src/reports/report-model.js',
   './apps/label-artwork-approval/src/i18n/app-copy.js',
   './apps/label-artwork-approval/src/application/workspace-controller.js',
+  './apps/buyer-crm/',
+  './apps/buyer-crm/index.html',
+  './apps/buyer-crm/assets/buyer-crm.css',
+  './apps/buyer-crm/src/bootstrap.js',
+  './apps/buyer-crm/src/domain/buyer-directory.js',
+  './apps/buyer-crm/src/domain/opportunity-state.js',
+  './apps/buyer-crm/src/domain/followup-scheduler.js',
+  './apps/buyer-crm/src/domain/reviewed-reference.js',
+  './apps/buyer-crm/src/data/saved-copy-codec.js',
+  './apps/buyer-crm/src/data/local-record-port.js',
+  './apps/buyer-crm/src/reports/report-model.js',
+  './apps/buyer-crm/src/i18n/app-copy.js',
+  './apps/buyer-crm/src/application/workspace-controller.js',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
