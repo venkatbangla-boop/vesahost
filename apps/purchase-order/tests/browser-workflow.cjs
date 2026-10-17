@@ -81,6 +81,17 @@ class PurchaseOrderBrowserProof{
     await submit();
     p=(await records())[0];assert.equal(p.amendments[0].status,'acknowledged');
     assert.equal(p.acknowledgments.length,1);
+    await act('confirmation');
+    assert.match(await page.locator('.po-card').last().innerText(),/Needs Information/);
+    await act('factory-entry');
+    await enter({factoryQty:'58',factoryAmount:'164.00',factoryCurrency:'USD',
+      factoryShipFrom:'2026-10-22',factoryShipTo:'2026-11-15',
+      ackBy:'SYNTHETIC FACTORY',ackDate:'2026-10-18',
+      document:'SYNTHETIC FACTORY LETTER',source:'SYNTHETIC FACTORY STATEMENT',
+      reviewer:'Synthetic reviewer',reviewedOn:'2026-10-18'});await submit();
+    await act('confirmation');
+    assert.match(await page.locator('.po-card').last().innerText(),/Dates differ/);
+    assert.equal((await records())[0].factoryConfirmation.quantity,58);
     await act('shipments');await act('add-shipment');
     await enter({quantity:'10',date:'2026-10-19',document:'SYNTHETIC INVOICE BL',
       source:'SYNTHETIC SHIP SOURCE',actor:'SYNTHETIC REVIEWER'});await submit();
