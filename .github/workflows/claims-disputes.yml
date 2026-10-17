@@ -39,6 +39,10 @@ jobs:
           node --check apps/claims-disputes/tests/save-reopen.test.cjs
           node --check apps/claims-disputes/tests/browser-workflow.cjs
           node apps/claims-disputes/tests/save-reopen.test.cjs
+          node --check apps/claims-disputes/src/domain/reviewed-reference.js
+          node --check apps/claims-disputes/src/reports/report-model.js
+          node --check apps/claims-disputes/tests/report-reference.test.cjs
+          node apps/claims-disputes/tests/report-reference.test.cjs
           node tests/personal-demo-release.cjs
           node tests/vesa-next-app-starter.cjs
           node apps/fabric-supplier-comparison/tests/domain.test.cjs
@@ -77,11 +81,11 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
           echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
-      - name: Real Chromium AQL-immutable claim, settlement, copies and four-language workflow
+      - name: Real Chromium local reviewed AQL/Shipment/PO, source draft Excel/PDF and regressions
         run: node apps/claims-disputes/tests/browser-workflow.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: claims-app14-m2-synthetic-browser
+          name: claims-app14-m3-synthetic-browser
           path: output/playwright/claims-app14-*
           if-no-files-found: ignore
