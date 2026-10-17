@@ -27,7 +27,7 @@ class TnaOfflineManifestAudit {
       }
     };
     const Worker=vm.runInNewContext(workerCode+'\nTnaOfflineBundle;',sandbox);
-    assert.equal(Worker.CACHE,'vesa-tna-20261017-g17-merch-v1');
+    assert.equal(Worker.CACHE,'vesa-tna-20261018-g3-sheet-first-v1');
     assert(Worker.FILES.length>=25,'Fully specified offline dependency set');
     const urls=Worker.FILES.map(asset=>new URL(asset,scope).href);
     const cacheSet=new Set(urls);
@@ -40,7 +40,7 @@ class TnaOfflineManifestAudit {
     }
     // The release must version-bump every modified M1-M3 TNA source, not
     // allow old browser-cache queries to load a mismatched domain/controller.
-    const markers=['./assets/tna.css?v=0.12.1-merch-g17',
+    const markers=['./assets/tna.css?v=0.12.2-g3-sheet-first',
       './src/domain.js?v=1.1.2-merch-g16',
       './src/merchandising-sheet.js?v=0.3.1-merch-g17',
       './src/bootstrap.js?v=0.12.1-merch-g17',
