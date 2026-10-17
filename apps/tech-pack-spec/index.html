@@ -572,6 +572,12 @@ class TechSpecWorkspace{
    if(action==='home'||action==='open'){this.current=null;this.section='summary';this.dirty=false;this.render();return;}
    if(action==='new')return this.form('new');
    if(action==='practice'){this.current=GarmentSpecEngine.practice();this.section='summary';this.dirty=false;this.render();return;}
+   if(action.startsWith('preview-')){
+    const section=action.slice('preview-'.length);
+    if(!TECH_LAB_TABS.includes(section))throw Error('Unknown measurement practice section.');
+    this.current=GarmentSpecEngine.practice();this.section=section;this.dirty=false;
+    this.render();return;
+   }
    if(action==='continue'){const all=this.store.list();if(!all.length)throw Error('No saved specs on this device.');
     return this.action('open-record',all[0].id);}
    if(action==='open-record'){const p=this.store.load(id);if(!p)throw Error('Saved specification not found.');
