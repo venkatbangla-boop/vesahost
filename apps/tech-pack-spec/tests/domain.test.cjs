@@ -26,9 +26,9 @@ class TechPackUnitProof {
   assert.equal(E.date('2026-02-30'),false);assert.equal(E.date('2026-10-17'),true);
   const sample=E.practice(),original=JSON.stringify(sample),project=E.project(sample);
   assert.equal(E.validate(sample).ok,true);
-  assert.deepEqual(project.cells.map(x=>x.target),['48.00','50.00','52.00']);
-  assert.deepEqual(project.cells.map(x=>x.lower),['47.00','49.00','51.00']);
-  assert.deepEqual(project.cells.map(x=>x.upper),['49.50','51.50','53.50']);
+  assert.deepEqual(JSON.parse(JSON.stringify(project.cells.map(x=>x.target))),['48.00','50.00','52.00']);
+  assert.deepEqual(JSON.parse(JSON.stringify(project.cells.map(x=>x.lower))),['47.00','49.00','51.00']);
+  assert.deepEqual(JSON.parse(JSON.stringify(project.cells.map(x=>x.upper))),['49.50','51.50','53.50']);
   assert.equal(project.cells[0].basis,'flat');
   assert.equal(JSON.stringify(sample),original,'Pure projection cannot mutate a POM.');
   const noGrade=JSON.parse(original);noGrade.grades[0].reviewed=false;
