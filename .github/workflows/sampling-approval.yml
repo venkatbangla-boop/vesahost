@@ -1,0 +1,45 @@
+# Sampling & Approval branch-only verification. No public release from this workflow.
+name: VESA Sampling Approval 360 verification
+on:
+  push:
+    branches:
+      - feature/sampling-approval-360
+    paths:
+      - 'apps/sampling-approval/**'
+      - '.github/workflows/sampling-approval.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sampling-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Domain and sibling regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check apps/sampling-approval/src/domain/sampling-engine.js
+          node --check apps/sampling-approval/src/data/local-record-port.js
+          node --check apps/sampling-approval/src/reports/report-model.js
+          node apps/sampling-approval/tests/domain.test.cjs
+          node apps/lc-payment/tests/domain.test.cjs
+          node apps/purchase-order/tests/domain.test.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/tech-pack-spec/tests/domain.test.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          git diff --check HEAD~1 HEAD
