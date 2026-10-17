@@ -4,7 +4,7 @@
 
 This directory preserves the **original handover text, unedited**, from the user-provided 15-App Master Roadmap package. The 15 exact technical specifications live in the repository-root [`blueprints/`](../../blueprints/) folder so every new Work/Codex session can open its next app directly.
 
-**Current implementation proof:** [21_G4_COSTING_PO_PROOF_AND_NEXT.md](21_G4_COSTING_PO_PROOF_AND_NEXT.md) — Costing + Purchase Order verified; next app LC & Payment 360.
+**Latest implementation proof:** [22_G4_W2_FOUR_APP_PROOF_AND_W3.md](22_G4_W2_FOUR_APP_PROOF_AND_W3.md) — PO, LC, Sampling, Fabric G4-W2 verified; next Production Tracker G4-W3. Previous proof: [21_G4_COSTING_PO_PROOF_AND_NEXT.md](21_G4_COSTING_PO_PROOF_AND_NEXT.md).
 
 ## Reliable lookup for every new session
 
