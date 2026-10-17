@@ -1,0 +1,46 @@
+# Fabric/Trims development verification only. No public deployment from branch.
+name: VESA Fabric Trims 360 verification
+on:
+  push:
+    branches:
+      - feature/fabric-trims-360
+    paths:
+      - 'apps/fabric-trims/**'
+      - '.github/workflows/fabric-trims.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-materials:
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Material and sibling domain regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check apps/fabric-trims/src/domain/material-engine.js
+          node --check apps/fabric-trims/src/data/local-record-port.js
+          node --check apps/fabric-trims/src/reports/report-model.js
+          node apps/fabric-trims/tests/domain.test.cjs
+          node apps/sampling-approval/tests/domain.test.cjs
+          node apps/lc-payment/tests/domain.test.cjs
+          node apps/purchase-order/tests/domain.test.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/tech-pack-spec/tests/domain.test.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          git diff --check HEAD~1 HEAD
