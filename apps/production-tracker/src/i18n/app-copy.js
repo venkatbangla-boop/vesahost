@@ -3,7 +3,7 @@
 'use strict';
 const en={
  title:'Production Tracker 360',lead:'Daily production, stage-wise WIP and documented corrections',
- notice:'PERSONAL NON-COMMERCIAL DEMO. Synthetic information only. This is not a buyer approval, AQL acceptance or factory-certified production record.',
+ notice:'NON-COMMERCIAL PERSONAL DEMO. Synthetic information only. This is not a buyer approval, AQL acceptance or factory-certified production record.',
  warning:'Missing source remains Needs Information. Cutting, sewing and finishing outputs are separate; do not add them together as finished pieces.',
  new:'New Production Record',continue:'Continue Last',open:'Open Saved',practice:'Practice Example',back:'All Records',
  save:'Save Now',download:'Download Saved Copy',upload:'Open Saved Copy',report:'Prepare Report',help:'Help',

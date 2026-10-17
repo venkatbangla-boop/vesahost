@@ -26,7 +26,9 @@ async function run(){
  const submit=async()=>{await page.locator('#ptDialog form button[type=submit]').click();await page.locator('#ptDialog[open]').waitFor({state:'hidden',timeout:10000});};
  const rows=()=>page.evaluate(()=>{const key=Object.keys(localStorage).find(k=>k.startsWith('vesa.production-tracker.records.v1.'));return JSON.parse(localStorage.getItem(key)).records;});
  try{
-  await page.goto(host+'/apps/production-tracker/',{waitUntil:'domcontentloaded'});
+  await page.goto(host+'/apps/',{waitUntil:'domcontentloaded'});
+  const appLink=page.locator('#appCatalogue a[href="/apps/production-tracker/"]');
+  await appLink.waitFor({timeout:12000});await appLink.click();
   await page.locator('[data-action="new"]').waitFor({timeout:12000});
   assert.equal(await page.locator('.vesa-workspace').count(),1);
   assert.equal(await page.locator('[data-vesa-menu]').count(),6);
@@ -83,6 +85,22 @@ async function run(){
   assert.match(await page.locator('#ptDialog [role=alert]').innerText(),/Matching reviewed local PO\/TNA source/i);
   await page.locator('#ptDialogClose').click();
   assert.equal(JSON.stringify(await rows()),beforeBad,'Unmatched external PO must not overwrite local record');
+  // M4: a separately reviewed TNA snapshot remains reference-only.
+  const tnaRef={sourceApp:'VESA TNA 360',recordType:'TnaMilestoneSnapshot',recordId:'SYN-TNA-REF',
+   revisionId:'V3',sourceDate:'2026-10-16',verifiedBy:'SYN TNA REVIEWER',verifiedAt:'2026-10-17',
+   displaySnapshot:{poNo:'SYN-PROD-PO',milestone:'SYN PRODUCTION',notTnaCompletion:true}};
+  const tnaPath=path.join(out,'prod-app09-synthetic-tna-reference.json');
+  fs.writeFileSync(tnaPath,JSON.stringify(tnaRef));
+  await act('reference-select');await fill({sourceType:'tna'});await submit();
+  await page.locator('#ptReferenceFile').setInputFiles(tnaPath);
+  await page.locator('#ptDialog[open]').waitFor();
+  await fill({localReviewer:'SYN INDEPENDENT REVIEWER',localReviewDate:'2026-10-17'});await submit();
+  assert.equal((await rows())[0].manualReferences.length,2);
+  assert.equal(await page.locator('.vesa-workspace').count(),1,'Never stack application top-level headers');
+  // Keyboard Escape closes a native modal and returns focus to its initiating control.
+  await act('reference-select');await page.locator('#ptDialog[open]').waitFor();
+  await page.keyboard.press('Escape');await page.locator('#ptDialog[open]').waitFor({state:'hidden'});
+  assert.equal(await page.evaluate(()=>document.activeElement?.dataset?.action),'reference-select');
   const dStage=page.waitForEvent('download');await act('reference-export');
   await fill({groupIndex:'0',verifiedBy:'SYN STAGE REVIEWER',verifiedAt:'2026-10-17'});await submit();
   const stagePath=path.join(out,'prod-app09-production-stage-reference.json');
@@ -116,13 +134,13 @@ async function run(){
   const dCopy=page.waitForEvent('download');await act('download');
   const newCopy=path.join(out,'prod-app09-synthetic-with-reference.vesaprod');
   await(await dCopy).saveAs(newCopy);
-  assert.equal(JSON.parse(fs.readFileSync(newCopy,'utf8')).record.manualReferences.length,1);
+  assert.equal(JSON.parse(fs.readFileSync(newCopy,'utf8')).record.manualReferences.length,2);
   await page.reload({waitUntil:'domcontentloaded'});await act('continue');
-  assert.equal((await rows())[0].manualReferences.length,1);
+  assert.equal((await rows())[0].manualReferences.length,2);
   for(const width of [320,360,390,640,768,1024,1280,1440]){
    await page.setViewportSize({width,height:850});const scroll=await page.evaluate(()=>document.documentElement.scrollWidth);
    assert(scroll<=width+1,width+'px viewport overflow: '+scroll);
-   if(width===390||width===768)await page.screenshot({path:path.join(out,'prod-app09-'+width+'.png')});
+   if([390,640,768,1280,1440].includes(width))await page.screenshot({path:path.join(out,'prod-app09-'+width+'.png')});
   }
   await page.setViewportSize({width:1280,height:900});
   for(const [language,label] of [['en','Daily Output'],['bn','দৈনিক উৎপাদন'],['hi','दैनिक उत्पादन'],['ta','தினசரி உற்பத்தி']]){
@@ -134,7 +152,7 @@ async function run(){
    assert.equal(JSON.stringify(await rows()),state,'Language switch must not change original production evidence');
   }
   assert.deepEqual(errors,[]);assert.deepEqual(outside,[]);
-  console.log('PRODUCTION M3 CHROMIUM PASS: one shared shell, saved daily/WIP corrections, reviewed PO source/mismatch rejection, stage reference, numeric Excel, PDF, portable reference round-trip, 4 languages, 320-1440 and no outside requests.');
+  console.log('PRODUCTION M3 CHROMIUM PASS: one shared shell, saved daily/WIP corrections, reviewed PO/TNA sources/mismatch rejection, keyboard focus, stage reference, numeric Excel, PDF, portable reference round-trip, 4 languages, 320-1440 and no outside requests.');
  }finally{await context.close();await browser.close();await new Promise(done=>server.close(done));}
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});
