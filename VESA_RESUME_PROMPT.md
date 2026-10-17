@@ -1,5 +1,13 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## CURRENT VERIFIED AUTO-RESUME — APP-12 LIVE; CLAIMS & DISPUTES APP-14 NEXT (2026-10-17)
+
+**Latest independently verified APP-12 personal NON-COMMERCIAL SYNTHETIC demo** https://vesaent.com/apps/fabric-supplier-comparison/ ; published source `main` `fb4a4e75145322d7994a515b416f9364e70a1e4d`. [APP-12 real Chromium main #39040870697 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39040870697), [GitHub Pages #39040870787 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39040870787), [public exact HTML/CSS/JS including all previous demos #39040870750 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39040870750). No source price/duty/FX or QA is externally authenticated. APP-12 M0–M4: `docs/fabric-supplier-comparison/01_EXECUTION_TRACKER.md`. All previous static personal-demo routes and original blueprints remain preserved.
+
+**PRECISE NEXT ACTION:** APP-14 Claims & Disputes 360 approved wave W4 priority 14/15 (APP-13 PO already exists), resume/create `feature/claims-disputes-360` from CURRENT `main`, read original `blueprints/APP-14_claims-disputes.md` and `docs/portfolio/03_CROSS_APP_DATA_OWNERSHIP.md` and shared platform/Free scopes; inspect existing AQL inspection, Shipment source, PO revisions, LC and Commission and only then define M1 exact file scope. Claims owns source-only alleged case lines/correspondence/explicit dated settlements; may NOT edit AQL, bank ledger, credit note or buyer liability. Follow independent Node/Chromium proof M1→M4; public release only if Pages and exact live byte checks succeed. The original ZIP/15 blueprints are permanent repository assets — never request again.
+
+---
+
 ## CURRENT VERIFIED AUTO-RESUME — BUYER CRM DEMO LIVE; FABRIC SUPPLIER COMPARISON NEXT (2026-10-17)
 
 **Latest verified released APP-11 Buyer CRM source:** `main` `80e509975211d4c04e2c269a6f8c8be9bbc49060`; https://vesaent.com/apps/buyer-crm/ personal non-commercial synthetic-only. [main real Chromium + all Node/legacy #39038341663 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39038341663), [Pages deploy #39038341243 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39038341243), [public exact HTML/module bytes + prior demos #39038341676 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39038341676), full M0–M4 `docs/buyer-crm/01_EXECUTION_TRACKER.md`. APP-01 through APP-11 previously released personal demos + core Costing/TNA/PPM/AQL remain preserved; no contact data is stored in repo.
