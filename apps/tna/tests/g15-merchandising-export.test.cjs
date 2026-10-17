@@ -48,7 +48,7 @@ for(const [name,rows] of Object.entries(tables)){
  XLSX.utils.book_append_sheet(book,sheet,name);
 }
 const buffer=XLSX.write(book,{bookType:'xlsx',type:'buffer'});
-assert.equal(buffer.subarray(0,2).toString(),'PK');
+assert.equal(Buffer.from(buffer).subarray(0,2).toString(),'PK');
 const reopened=XLSX.read(buffer,{type:'buffer'});
 assert.deepEqual(reopened.SheetNames,['Order Summary','Activity Master','Colour Size','Planning Revisions']);
 assert.equal(reopened.Sheets['Activity Master'].I2.v,4);
