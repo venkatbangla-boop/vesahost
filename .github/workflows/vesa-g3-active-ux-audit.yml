@@ -3,8 +3,11 @@ on:
   push:
     branches:
       - feature/g3-active-workflow-ux-audit
+      - feature/tna-sheet-first-ux
+      - main
     paths:
       - 'tests/vesa-g3-active-ux-audit.cjs'
+      - 'apps/tna/assets/tna.css'
       - 'docs/ux/02_G3_ACTIVE_WORKFLOW_AUDIT.md'
       - '.github/workflows/vesa-g3-active-ux-audit.yml'
   workflow_dispatch:
@@ -39,7 +42,11 @@ jobs:
           npx playwright install --with-deps chromium
           echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
       - name: Inspect 3 actual workspaces at 4 viewport sizes
-        run: node tests/vesa-g3-active-ux-audit.cjs
+        run: |
+          set -euo pipefail
+          node tests/vesa-g3-active-ux-audit.cjs
+          node apps/tna/tests/g13-merchandising-sheet-browser.cjs
+          node apps/tna/tests/g11-unified-shell-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
