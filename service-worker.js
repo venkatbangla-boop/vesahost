@@ -1,4 +1,4 @@
-const CACHE='vesa-v88-admin-layout';
+const CACHE='vesa-v89-packing-workflow';
 const ASSETS=[
   './',
   './index.html',
