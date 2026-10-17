@@ -19,6 +19,7 @@ on:
       - 'apps/shipment-documentation/**'
       - 'apps/production-tracker/**'
       - 'apps/factory-vendor/**'
+      - 'apps/label-artwork-approval/**'
       - 'apps/index.html'
       - 'js/app-catalogue.js'
       - 'js/preferences.js'
@@ -75,7 +76,7 @@ jobs:
           for route in aql ppm tna; do
             curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/$route/" -o /dev/null
           done
-          for app in packing-container order-commission tech-pack-spec purchase-order lc-payment sampling-approval fabric-trims shipment-documentation production-tracker factory-vendor; do
+          for app in packing-container order-commission tech-pack-spec purchase-order lc-payment sampling-approval fabric-trims shipment-documentation production-tracker factory-vendor label-artwork-approval; do
             curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/$app/" -o "/tmp/vesa-$app-live.html"
             cmp -s "apps/$app/index.html" "/tmp/vesa-$app-live.html" || {
               echo "HOLD: $app demo live HTML does not match main" >&2
@@ -123,5 +124,13 @@ jobs:
               exit 1
             }
           done
-          printf 'LIVE PASS: Login -> App Centre -> Costing, Packing, Commission, Tech Pack, Purchase Order, LC & Payment, Sampling, Fabric & Trims, Shipment & Documentation, Production Tracker and Factory & Vendor personal demos; exact public source bytes; existing AQL/PPM/TNA intact; main=%s\n' "$(git rev-parse HEAD)"
+          # Artwork is modular. Confirm exact served source, not merely HTTP 200.
+          for asset in assets/label-artwork-approval.css src/bootstrap.js src/domain/label-spec.js src/domain/artwork-revision.js src/domain/review-state.js src/domain/reviewed-reference.js src/data/saved-copy-codec.js src/data/local-record-port.js src/reports/report-model.js src/i18n/app-copy.js src/application/workspace-controller.js; do
+            curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/label-artwork-approval/$asset" -o "/tmp/vesa-artwork-$(basename "$asset")"
+            cmp -s "apps/label-artwork-approval/$asset" "/tmp/vesa-artwork-$(basename "$asset")" || {
+              echo "HOLD: Artwork source module $asset differs from published main" >&2
+              exit 1
+            }
+          done
+          printf 'LIVE PASS: Login -> App Centre -> Costing, Packing, Commission, Tech Pack, Purchase Order, LC & Payment, Sampling, Fabric & Trims, Shipment & Documentation, Production Tracker Factory & Vendor and Label & Artwork personal demos; exact public source bytes; existing AQL/PPM/TNA intact; main=%s\n' "$(git rev-parse HEAD)"
           echo "This check does not establish server-side authentication, buyer approval or production SaaS permission."
