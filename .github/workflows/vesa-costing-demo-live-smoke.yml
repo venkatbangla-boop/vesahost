@@ -16,6 +16,7 @@ on:
       - 'apps/lc-payment/**'
       - 'apps/sampling-approval/**'
       - 'apps/fabric-trims/**'
+      - 'apps/shipment-documentation/**'
       - 'apps/index.html'
       - 'js/app-catalogue.js'
       - 'js/preferences.js'
@@ -72,7 +73,7 @@ jobs:
           for route in aql ppm tna; do
             curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/$route/" -o /dev/null
           done
-          for app in packing-container order-commission tech-pack-spec purchase-order lc-payment sampling-approval fabric-trims; do
+          for app in packing-container order-commission tech-pack-spec purchase-order lc-payment sampling-approval fabric-trims shipment-documentation; do
             curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/$app/" -o "/tmp/vesa-$app-live.html"
             cmp -s "apps/$app/index.html" "/tmp/vesa-$app-live.html" || {
               echo "HOLD: $app demo live HTML does not match main" >&2
@@ -96,5 +97,13 @@ jobs:
               exit 1
             }
           done
-          printf 'LIVE PASS: Login -> App Centre -> Costing, Packing, Commission, Tech Pack, Purchase Order, LC & Payment, Sampling and Fabric & Trims personal demos; exact public source bytes; existing AQL/PPM/TNA intact; main=%s\n' "$(git rev-parse HEAD)"
+          # Shipment source files must match published main exactly, not merely load.
+          for asset in assets/shipment-documentation.css src/bootstrap.js src/domain/shipment-engine.js src/data/local-record-port.js src/reports/report-model.js src/i18n/app-copy.js src/application/workspace-controller.js; do
+            curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/shipment-documentation/$asset" -o "/tmp/vesa-shipment-$(basename "$asset")"
+            cmp -s "apps/shipment-documentation/$asset" "/tmp/vesa-shipment-$(basename "$asset")" || {
+              echo "HOLD: shipment module $asset differs from main" >&2
+              exit 1
+            }
+          done
+          printf 'LIVE PASS: Login -> App Centre -> Costing, Packing, Commission, Tech Pack, Purchase Order, LC & Payment, Sampling, Fabric & Trims and Shipment & Documentation personal demos; exact public source bytes; existing AQL/PPM/TNA intact; main=%s\n' "$(git rev-parse HEAD)"
           echo "This check does not establish server-side authentication, buyer approval or production SaaS permission."
