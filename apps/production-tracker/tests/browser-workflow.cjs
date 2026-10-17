@@ -32,6 +32,59 @@ async function run(){
   await page.locator('[data-action="new"]').waitFor({timeout:12000});
   assert.equal(await page.locator('.vesa-workspace').count(),1);
   assert.equal(await page.locator('[data-vesa-menu]').count(),6);
+  // G4-W3: original seven source panels are shown from the Home screen.
+  // Practice records are realistic enough to show corrected stages and unknown
+  // evidence, while never entering localStorage or approving a PO/AQL/TNA.
+  const steps=['summary','daily','wip','targets','references','reports','history'];
+  const previews=page.locator('.pt-journey [data-action="preview"]');
+  const noSavedProduction=()=>page.evaluate(()=>Object.keys(localStorage).every(k=>!k.startsWith('vesa.production-tracker.records.v1.')));
+  assert.equal(await previews.count(),7);
+  assert(await noSavedProduction(),'Practice Home has no production records');
+  fs.mkdirSync(out,{recursive:true});
+  for(const width of [320,390,1440]){
+   await page.setViewportSize({width,height:850});
+   assert.equal(await previews.count(),7,width+'px keeps all seven real sections');
+   const box=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:window.innerWidth,
+    heights:[...document.querySelectorAll('.pt-journey .pt-button')].map(x=>x.getBoundingClientRect().height)}));
+   assert(box.scroll<=box.width+1,width+'px Home must not overflow');
+   assert(box.heights.every(height=>height>=44),width+'px touch targets must be at least 44px');
+   await page.screenshot({path:path.join(out,'prod-app09-g4-home-'+width+'.png'),fullPage:true});
+  }
+  await page.setViewportSize({width:390,height:850});
+  for(const step of steps){
+   await page.locator('.pt-journey [data-action="preview"][data-id="'+step+'"]').click();
+   assert.equal(await page.locator('.pt-tabs [data-action="'+step+'"]').getAttribute('aria-current'),'true',step+' real section opens');
+   assert.match(await page.locator('#ptMain').innerText(),/SYNTHETIC PRACTICE/,step+' is clearly fictional');
+   assert(await page.locator('#ptMain [data-action="save"]').isDisabled(),step+' cannot save');
+   const snapshot=await page.evaluate(()=>{
+    const app=window.VesaProduction360;
+    return {record:app.current,summary:app.L.validate(app.current)};
+   });
+   assert(snapshot.summary.ok,step+' demo must pass the unchanged source engine');
+   assert.equal(snapshot.record.observations.length,5,'Fixture keeps immutable corrected and pending observations');
+   assert.equal(snapshot.record.stageTargets.length,3,'Fixture includes original and revised source target');
+   const cut=snapshot.summary.groups.find(x=>x.stage==='cutting');
+   const sew=snapshot.summary.groups.find(x=>x.stage==='sewing');
+   assert.equal(cut.locallyReviewedGood,85,'Corrected cutting total only');
+   assert.equal(cut.wip.closing,12,'Source-backed cutting closing WIP');
+   assert.equal(cut.remaining,45,'Source target revision 130 less reviewed cutting 85');
+   assert.equal(sew.locallyReviewedGood,40,'Unreviewed sewing 20 not counted');
+   assert.equal(sew.wip.closing,null,'Missing sewing opening must remain unknown');
+   assert.equal(sew.unreviewedDays,1,'One sewing review still pending');
+   assert.equal(snapshot.summary.notApprovedShipment,true,'No release is inferred');
+   assert(await noSavedProduction(),step+' preview may not create production data');
+   if(step==='reports'){
+    assert.match(await page.locator('.pt-report').innerText(),/Target vs Actual Trend/);
+    await page.screenshot({path:path.join(out,'prod-app09-g4-mobile-report.png'),fullPage:true});
+   }
+   await act('home');
+  }
+  await act('practice');
+  assert.equal(await page.locator('.pt-tabs [data-action="summary"]').getAttribute('aria-current'),'true','Practice Example starts at real summary');
+  assert(await noSavedProduction(),'Default practice also makes no saved record');
+  await act('home');
+  await page.setViewportSize({width:1280,height:900});
+  assert(await noSavedProduction(),'All seven practices remain read-only');
   await act('new');await fill({poNo:'SYN-PROD-PO',style:'SYN-POLO',colour:'Navy',size:'M',lot:'SYN-LOT-A',factory:'SYN FACTORY',unit:'pieces',sourceRef:'SYNTHETIC SIGNED PLAN'});await submit();
   assert.equal((await rows())[0].header.poNo,'SYN-PROD-PO');
   const axis={stage:'cutting',line:'SYN-LINE-01',lot:'SYN-LOT-A',unit:'pieces'};
@@ -149,7 +202,13 @@ async function run(){
    await page.waitForFunction(lang=>document.documentElement.lang===lang,language);
    await page.keyboard.press('Escape');await settings.waitFor({state:'hidden'});
    assert((await page.locator('.pt-tabs').innerText()).includes(label));
-   assert.equal(JSON.stringify(await rows()),state,'Language switch must not change original production evidence');
+   await act('home');
+   const titles={en:'Explore seven source-based production work steps',bn:'প্রোডাকশনের সাতটি কাজের ধাপ',
+    hi:'प्रोडक्शन के सात कार्य चरण',ta:'Production-ன் ஏழு வேலைப் பகுதிகள்'};
+   assert.equal(await page.locator('#ptJourneyTitle').innerText(),titles[language]);
+   assert.equal(await page.locator('.pt-journey [data-action="preview"]').count(),7);
+   await act('continue');
+   assert.equal(JSON.stringify(await rows()),state,'Language switching and Home/Continue preserve original production evidence');
   }
   assert.deepEqual(errors,[]);assert.deepEqual(outside,[]);
   console.log('PRODUCTION M3 CHROMIUM PASS: one shared shell, saved daily/WIP corrections, reviewed PO/TNA sources/mismatch rejection, keyboard focus, stage reference, numeric Excel, PDF, portable reference round-trip, 4 languages, 320-1440 and no outside requests.');

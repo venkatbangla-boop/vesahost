@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/production-tracker-360
+      - feature/production-g4-guided-practice
       - main
     paths:
       - 'apps/production-tracker/**'

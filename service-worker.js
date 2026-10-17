@@ -1,4 +1,4 @@
-const CACHE='vesa-v96-fabric-g4-source-journey';
+const CACHE='vesa-v97-production-g4-guided-practice';
 const ASSETS=[
   './',
   './index.html',

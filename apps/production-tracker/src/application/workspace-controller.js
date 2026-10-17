@@ -4,6 +4,12 @@
 (function(root){
 'use strict';
 class ProductionWorkspace {
+ // App-owned, existing panel order. Source accounting belongs to the daily ledger.
+ static steps=Object.freeze([
+  ['summary','hintSummary'],['daily','hintDaily'],['wip','hintWip'],
+  ['targets','hintTargets'],['references','hintReferences'],
+  ['reports','hintReports'],['history','hintHistory']
+ ]);
  constructor(){
   this.host=document.getElementById('ptMain');this.dialog=document.getElementById('ptDialog');
   this.body=document.getElementById('ptDialogBody');this.file=document.getElementById('ptCopyFile');
@@ -71,7 +77,12 @@ class ProductionWorkspace {
  action(name,id=''){try{
   if(name==='home'||name==='open'){this.current=null;this.section='summary';this.render();return;}
   if(name==='new'){this.form('new');return;}
-  if(name==='practice'){this.current=this.L.create({poNo:'SYN-PO-900',style:'SYN-TEE',colour:'Navy',size:'M',lot:'SYN-LOT',factory:'SYN FACTORY',unit:'pieces',sourceRef:'SYNTHETIC PLAN ONLY'});this.current.mode='practice';this.section='summary';this.render();return;}
+  if(name==='practice'||name==='preview'){
+   if(name==='preview'&&(this.current||!ProductionWorkspace.steps.some(([step])=>step===id)))
+    throw Error('Return to All Records to choose a valid practice step');
+   this.current=this.practiceExample();
+   this.section=name==='practice'?'summary':id;this.render();return;
+  }
   if(name==='continue'){const list=this.store.list();if(!list.length)throw Error(this.t('none'));this.action('load',list[0].id);return;}
   if(name==='load'){const p=this.store.load(id);if(!p)throw Error('Saved production record not found');this.current=p;this.section='summary';this.render();return;}
   if(name==='upload'){this.file.click();return;}
@@ -99,15 +110,94 @@ class ProductionWorkspace {
   const proposed=fn(this.current);this.store.save(proposed);this.current=proposed;this.render();}
  table(headers,rows){return '<div class="pt-scroll"><table class="pt-table"><thead><tr>'+headers.map(x=>'<th>'+this.e(x)+'</th>').join('')+
   '</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(v=>'<td>'+v+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
+
+ /**
+  * Create an unsaved, fictional production walkthrough using the original
+  * append-only ledger and validation. This controller owns presentation data,
+  * not WIP/target/approval arithmetic. Failure is explicit, never persisted.
+  * Cutting uses a correction and target revision; sewing intentionally has no
+  * opening-WIP source and one unreviewed observation (both stay unresolved).
+  */
+ practiceExample(){
+  const cut={stage:'cutting',line:'DEMO-CUT-L1',lot:'DEMO-LOT-A',unit:'pieces'};
+  const sew={stage:'sewing',line:'DEMO-SEW-L2',lot:'DEMO-LOT-A',unit:'pieces'};
+  let record=this.L.create({poNo:'DEMO-PO-360',style:'DEMO-POLO',colour:'Navy',
+   size:'M',lot:'DEMO-LOT-A',factory:'SYNTHETIC FACTORY',unit:'pieces',
+   sourceRef:'SYNTHETIC SIGNED PRODUCTION PLAN — NOT A REAL ORDER'});
+  record.mode='practice';
+  record=this.L.appendOpening(record,{...cut,opening:0,
+   sourceRef:'SYNTHETIC CUTTING OPENING WIP SHEET',
+   reviewedBy:'SYNTHETIC LOCAL REVIEWER',reviewDate:'2026-10-17'});
+  const firstTarget={...cut,id:'DEMO-TARGET-C1',quantity:120,
+   sourceRef:'SYNTHETIC CUTTING STAGE PLAN 120',
+   declaredAuthority:'SYNTHETIC PRODUCTION PLAN OWNER',sourceDate:'2026-10-14',
+   reviewedBy:'SYNTHETIC LOCAL REVIEWER',reviewDate:'2026-10-17'};
+  record=this.L.appendTarget(record,firstTarget);
+  record=this.L.appendTarget(record,{...firstTarget,id:'DEMO-TARGET-C2',quantity:130,
+   sourceRef:'SYNTHETIC REVISED CUTTING TARGET 130',
+   supersedes:firstTarget.id,amendmentReason:'SYNTHETIC TARGET REVISION',
+   amendmentSource:'SYNTHETIC WRITTEN TARGET CHANGE'});
+  record=this.L.appendTarget(record,{...sew,id:'DEMO-TARGET-S1',quantity:95,
+   sourceRef:'SYNTHETIC SEWING TARGET PLAN 95',
+   declaredAuthority:'SYNTHETIC PRODUCTION PLAN OWNER',sourceDate:'2026-10-14',
+   reviewedBy:'SYNTHETIC LOCAL REVIEWER',reviewDate:'2026-10-17'});
+  const firstCut={...cut,id:'DEMO-CUT-OBS-1',date:'2026-10-15',shift:'Day',
+   good:60,verifiedIn:65,verifiedOut:60,verifiedRejects:2,rework:3,
+   status:'locally-reviewed',actor:'SYNTHETIC SHIFT RECORDER',
+   sourceRef:'SYNTHETIC CUTTING DAILY SHEET 1',
+   reviewedBy:'SYNTHETIC LOCAL REVIEWER',reviewDate:'2026-10-17',
+   reviewSource:'SYNTHETIC SIGNED LOCAL REVIEW',
+   handoffRef:'SYNTHETIC CUTTING IN RECORD',
+   outRef:'SYNTHETIC CUTTING OUT RECORD',
+   rejectRef:'SYNTHETIC CUTTING REJECTION SHEET'};
+  record=this.L.appendObservation(record,firstCut);
+  record=this.L.appendObservation(record,{...firstCut,id:'DEMO-CUT-OBS-2',
+   good:55,verifiedOut:55,sourceRef:'SYNTHETIC REVISED DAILY SHEET 1',
+   supersedes:firstCut.id,correctionReason:'SYNTHETIC PIECES RECOUNT',
+   correctionSource:'SYNTHETIC CORRECTED TALLY'});
+  record=this.L.appendObservation(record,{...firstCut,id:'DEMO-CUT-OBS-3',
+   date:'2026-10-17',good:30,verifiedIn:35,verifiedOut:30,verifiedRejects:1,
+   rework:1,sourceRef:'SYNTHETIC CUTTING DAILY SHEET 2'});
+  const firstSew={...sew,id:'DEMO-SEW-OBS-1',date:'2026-10-16',shift:'Day',
+   good:40,verifiedIn:42,verifiedOut:40,verifiedRejects:1,rework:1,
+   status:'locally-reviewed',actor:'SYNTHETIC SHIFT RECORDER',
+   sourceRef:'SYNTHETIC SEWING DAILY SHEET 1',
+   reviewedBy:'SYNTHETIC LOCAL REVIEWER',reviewDate:'2026-10-17',
+   reviewSource:'SYNTHETIC SEWING REVIEW',
+   handoffRef:'SYNTHETIC SEWING IN RECORD',
+   outRef:'SYNTHETIC SEWING OUT RECORD',
+   rejectRef:'SYNTHETIC SEWING REJECTION SHEET'};
+  record=this.L.appendObservation(record,firstSew);
+  record=this.L.appendObservation(record,{...firstSew,id:'DEMO-SEW-OBS-2',
+   date:'2026-10-17',good:20,verifiedIn:0,verifiedOut:0,verifiedRejects:0,
+   rework:0,status:'recorded',sourceRef:'SYNTHETIC UNREVIEWED SEWING ENTRY',
+   reviewedBy:'',reviewDate:'',reviewSource:'',handoffRef:'',outRef:'',rejectRef:''});
+  const check=this.L.validate(record);
+  if(!check.ok)throw Error('Fictional production example invalid: '+check.errors.join('; '));
+  return record;
+ }
+ /**
+  * Render one link per genuine production section. Practice preview never
+  * triggers submit, allocation, local storage writes, or sibling app access.
+  */
+ journey(t){
+  const cards=ProductionWorkspace.steps.map(([step,hint],index)=>
+   '<article class="pt-journey-card"><span class="pt-journey-step">'+String(index+1).padStart(2,'0')+
+   '</span><h3>'+t(step)+'</h3><p>'+t(hint)+'</p>'+
+   '<button type="button" class="pt-button" data-action="preview" data-id="'+this.e(step)+
+   '" aria-label="'+t('journeyOpen')+' · '+t(step)+'">'+t('journeyOpen')+'</button></article>');
+  return '<section class="pt-card" aria-labelledby="ptJourneyTitle"><h2 id="ptJourneyTitle">'+t('journeyTitle')+
+   '</h2><p class="pt-note">'+t('journeyLead')+'</p><div class="pt-journey">'+cards.join('')+'</div></section>';
+ }
  render(){const e=x=>this.e(x??this.t('needs')),t=x=>e(this.t(x));
   const banner='<section class="pt-card"><h1>'+t('title')+'</h1><p class="pt-note">'+t('lead')+'</p><p class="pt-warning">'+t('notice')+'</p></section>';
   if(!this.current){let saved=[];try{saved=this.store.list();}catch(err){this.host.innerHTML=banner+'<p class="pt-warning" role="alert">'+e(err.message)+'</p>'+this.btn('upload','upload');return;}
    this.host.innerHTML=banner+'<section class="pt-card"><div class="pt-actions">'+this.btn('new','new',true)+this.btn('continue','continue')+this.btn('upload','upload')+this.btn('practice','practice')+'</div><h2>'+t('openRecords')+'</h2>'+
-    (saved.length?saved.map(v=>'<div class="pt-record"><span><b>'+e(v.poNo)+'</b> · '+e(v.style)+'<small>Rev '+e(v.revision)+'</small></span>'+this.btn('load','open',false,v.id)+'</div>').join(''):'<p class="pt-note">'+t('none')+'</p>')+'</section>';
+    (saved.length?saved.map(v=>'<div class="pt-record"><span><b>'+e(v.poNo)+'</b> · '+e(v.style)+'<small>Rev '+e(v.revision)+'</small></span>'+this.btn('load','open',false,v.id)+'</div>').join(''):'<p class="pt-note">'+t('none')+'</p>')+'</section>'+this.journey(t);
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,analysis=this.L.validate(p),practice=p.mode==='practice';
-  const tabs=['summary','daily','wip','targets','references','reports','history'];
+  const tabs=ProductionWorkspace.steps.map(([step])=>step);
   this.host.innerHTML=banner+'<section class="pt-card"><h2>'+e(p.header.poNo)+' · '+e(p.header.style)+' · '+e(p.header.colour)+'</h2><p class="pt-note">'+e(p.header.factory)+' · '+e(p.header.lot)+' · '+e(p.header.unit)+' · '+(practice?'SYNTHETIC PRACTICE':t('localOnly'))+'</p>'+
    '<div class="pt-actions">'+this.btn('home','back')+this.btn('save','save',true,'',practice)+this.btn('download','download',false,'',practice)+this.btn('report','report')+this.btn('excel','excel')+this.btn('reference-export','referenceExport',false,'',practice)+'</div></section>'+
    '<nav class="pt-tabs" aria-label="Production sections">'+tabs.map(tab=>'<button class="pt-button" type="button" data-action="'+tab+'" aria-current="'+(tab===this.section)+'">'+t(tab)+'</button>').join('')+'</nav>'+
