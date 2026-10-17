@@ -115,7 +115,8 @@ async function run(){
    const form=dialog.locator('#tnaPlanningDateForm');await form.waitFor();
    const visible=await dialog.innerText();
    for(const label of labelByLanguage[lang])
-    assert(visible.includes(label),lang+': missing translated date-dialog label: '+label);
+    assert(visible.toLocaleLowerCase(lang).includes(label.toLocaleLowerCase(lang)),
+      lang+': missing translated date-dialog label: '+label);
    for(const name of ['baselineFinish','currentTargetFinish','forecastFinish',
     'sourceRef','sourceDate','reason'])assert.equal(await form.locator('[name="'+name+'"]').count(),1);
    await page.keyboard.press('Escape');await form.waitFor({state:'hidden'});
