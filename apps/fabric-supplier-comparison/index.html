@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="NON-COMMERCIAL PERSONAL DEMO. Synthetic supplier and pricing source records only.">
+<title>VESA Fabric & Supplier Comparison 360</title><meta name="theme-color" content="#f3f6fa">
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/vesa-workspace.css?v=20261013-platform-g09">
+<link rel="stylesheet" href="./assets/fabric-supplier-comparison.css">
+<script src="/js/preferences.js"></script>
+<script src="/js/auth.js" data-auth-guard="app" data-auth-bar="true"></script>
+<script src="/js/vesa-workspace-shell.js"></script>
+<script src="./src/domain/quote-normalization.js"></script>
+<script src="./src/domain/comparability-gate.js"></script>
+<script src="./src/domain/landed-scenario.js"></script>
+<script src="./src/data/saved-copy-codec.js"></script>
+<script src="./src/data/local-record-port.js"></script>
+<script src="./src/i18n/app-copy.js"></script>
+<script src="./src/application/workspace-controller.js"></script>
+<script src="./src/bootstrap.js" defer></script>
+</head><body>
+<main id="fsMain" tabindex="-1"><p role="status">Opening Fabric & Supplier Comparison 360...</p></main>
+<dialog id="fsDialog" class="fs-dialog" aria-labelledby="fsDialogTitle">
+ <div class="fs-dialog-header"><h2 id="fsDialogTitle">Details</h2><button type="button" id="fsDialogClose" class="fs-btn" aria-label="Close dialog">&times;</button></div>
+ <div id="fsDialogBody"></div>
+</dialog>
+<input type="file" id="fsCopyFile" accept=".vesasup,application/json" hidden>
+</body></html>
