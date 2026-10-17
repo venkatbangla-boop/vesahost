@@ -189,13 +189,14 @@ class ShipmentBrowserProof{
     if(width===768)await page.screenshot({path:path.join(out,'ship-app07-tablet.png')});
     if(width===1440)await page.screenshot({path:path.join(out,'ship-app07-wide-desktop.png')});
    }
-   // Chromium applies 200% CSS zoom: catch crowded header/content and overflow.
-   await page.setViewportSize({width:1280,height:900});
-   await page.evaluate(()=>document.documentElement.style.zoom='2');
-   const zoomScroll=await page.evaluate(()=>document.documentElement.scrollWidth);
-   assert(zoomScroll<=641,'200% zoom produced horizontal page overflow '+zoomScroll);
-   await page.screenshot({path:path.join(out,'ship-app07-zoom-200.png')});
-   await page.evaluate(()=>document.documentElement.style.zoom='');
+   // 1280 CSS-px display at browser zoom 200% has a 640 CSS-px
+   // effective layout viewport; testing this viewport avoids CSS zoom
+   // changing scrollWidth's coordinate basis and giving a false failure.
+   await page.setViewportSize({width:640,height:900});
+   const effectiveZoomScroll=await page.evaluate(()=>document.documentElement.scrollWidth);
+   assert(effectiveZoomScroll<=641,
+    '200% effective layout width produced horizontal overflow '+effectiveZoomScroll);
+   await page.screenshot({path:path.join(out,'ship-app07-zoom-200-equivalent.png')});
    await page.setViewportSize({width:390,height:844});
    await page.screenshot({path:path.join(out,'ship-app07-mobile.png')});
    await page.setViewportSize({width:1280,height:900});
