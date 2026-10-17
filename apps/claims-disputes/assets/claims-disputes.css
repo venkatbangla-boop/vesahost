@@ -40,3 +40,19 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
 @media(max-width:740px){.clm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.clm-card{padding:12px}}
 @media(max-width:480px){.clm-form,.clm-grid{grid-template-columns:1fr}.clm-form .wide{grid-column:1}.clm-actions .clm-btn{flex:1 1 auto}}
 @media print{.vesa-workspace,.app-user-bar,.clm-tabs,.clm-actions,.clm-dialog{display:none!important}#clmMain{width:100%;padding:0}.clm-card{border:0;padding:0}.clm-table{min-width:0;table-layout:fixed}.clm-table td,.clm-table th{font-size:9px;padding:5px;white-space:normal}}
+
+
+/* M3 source-only draft report and explicit case source review. */
+.clm-report{min-width:0;overflow-wrap:anywhere}.clm-report h2{font-size:1.14rem}
+.clm-report-section{margin:15px 0;min-width:0}.clm-report-section h3{font-size:1rem}
+.clm-form .clm-confirm{display:flex;align-items:center;gap:9px;font-weight:500}
+.clm-form .clm-confirm input[type="checkbox"]{width:20px;min-width:20px;height:20px;min-height:20px;flex:0 0 20px}
+@media print{
+ .clm-card:not(.clm-print-card),#clmMain>.clm-tabs{display:none!important}
+ .clm-print-card{display:block!important;border:0!important}
+ .clm-report-section{break-inside:avoid}
+ .clm-scroll{overflow:visible;border:0}
+ .clm-table{min-width:0;width:100%;table-layout:fixed;font-size:8px}
+ .clm-table th,.clm-table td{white-space:normal;overflow-wrap:anywhere}
+ @page{size:A4 landscape;margin:12mm}
+}
