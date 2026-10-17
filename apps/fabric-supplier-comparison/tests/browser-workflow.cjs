@@ -84,6 +84,31 @@ async function run(){
    reviewDate:'2026-10-17',sourceRef:'SYN REVIEW NOTE'});await submit();
   assert.match((await records())[0].status,/NO SUPPLIER APPROVAL/);
   assert.equal((await records())[0].decisions.length,1);
+  // M3 user-selected local Tech Pack source, no reads of sibling app private storage.
+  const fabricSpec=(await records())[0].requirement;
+  const ref={sourceApp:'VESA Tech Pack & Spec 360',recordType:'TechPackSpecSnapshot',
+   recordId:'SYN-TECH-SOURCE-1',revisionId:'REV-A',sourceDate:'2026-10-16',
+   verifiedBy:'SYN TECH REVIEWER',verifiedAt:'2026-10-17T08:00:00Z',
+   displaySnapshot:{fabricSpec,sourceOnly:true}};
+  const refPath=path.join(out,'supplier-app12-reviewed-tech.json');
+  fs.writeFileSync(refPath,JSON.stringify(ref));
+  await act('references');await act('reference-select');await fill({refKind:'tech'});await submit();
+  await page.locator('#fsReferenceFile').setInputFiles(refPath);
+  await page.locator('#fsDialog[open]').waitFor();
+  await fill({localReviewer:'SYN INDEPENDENT REVIEWER',localReviewDate:'2026-10-17'});
+  await page.locator('#fsDialog [name="identityConfirmed"]').check();await submit();
+  assert.equal((await records())[0].manualReferences.length,1);
+  assert.match(await page.locator('.fs-table').innerText(),/SYN-TECH-SOURCE-1/);
+  const wrongPath=path.join(out,'supplier-app12-wrong-tech.json');
+  fs.writeFileSync(wrongPath,JSON.stringify({...ref,recordId:'SYN-WRONG',
+   displaySnapshot:{fabricSpec:{...fabricSpec,gsm:'180'}}}));
+  const safeBefore=JSON.stringify(await records());
+  await act('reference-select');await fill({refKind:'tech'});await submit();
+  await page.locator('#fsReferenceFile').setInputFiles(wrongPath);
+  await page.locator('#fsDialog[open]').waitFor();
+  assert.match(await page.locator('#fsDialogBody').innerText(),/Source type or exact fabric article\/GSM\/width\/composition does not match/);
+  await page.locator('#fsDialogClose').click();
+  assert.equal(JSON.stringify(await records()),safeBefore,'Wrong-source fabric cannot change saved comparison');
   const old=JSON.stringify((await records())[0]);await act('save');
   await page.reload({waitUntil:'domcontentloaded'});await act('continue');
   assert.equal(JSON.stringify((await records())[0]),old,'Reload must preserve source values');
@@ -104,7 +129,17 @@ async function run(){
   assert.equal(JSON.stringify(await records()),before,'Tampered saved copy cannot alter records');
   await act('matrix');assert.match(await page.locator('.fs-table').last().innerText(),/1\.6000/);
   await act('history');assert.match(await page.locator('.fs-table').innerText(),/Locally sourced offer/);
-  await act('reports');assert.match(await page.locator('body').innerText(),/report|அறிக்கை|রিপোর্ট|रिपोर्ट/i);
+  await act('reports');
+  const reportText=await page.locator('.fs-report').innerText();
+  assert.match(reportText,/DRAFT \/ SOURCE REVIEW ONLY/);
+  assert.match(reportText,/SYN-TECH-SOURCE-1/);
+  assert.match(reportText,/NOT COMPARABLE/);
+  assert.match(reportText,/1\.6000/);
+  assert.match(reportText,/No automatic|NOT supplier certification|NOT SUPPLIER APPROVAL/i);
+  const xlPromise=page.waitForEvent('download');await act('excel');const xl=await xlPromise;
+  const xlPath=path.join(out,'supplier-app12-comparison.xlsx');await xl.saveAs(xlPath);
+  assert.equal(fs.readFileSync(xlPath).subarray(0,2).toString(),'PK','Real Excel workbook requires ZIP format');
+  assert(fs.statSync(xlPath).size>2500);
   const pdf=await page.pdf({printBackground:true,format:'A4',landscape:true});
   assert(pdf.subarray(0,4).toString()==='%PDF'&&pdf.length>6500);
   fs.writeFileSync(path.join(out,'supplier-app12-workspace-draft.pdf'),pdf);
@@ -130,7 +165,7 @@ async function run(){
   assert.equal(await page.evaluate(()=>document.activeElement?.dataset?.action),'new','Escape restores opener focus');
   assert.deepEqual(errors,[],'No uncaught browser JS errors');
   assert.deepEqual(external,[],'No hidden remote network requests or supplier data uploads');
-  console.log('FABRIC SUPPLIER M2 CHROMIUM PASS: sourced offers and GSM mismatch, explicit landed/missing charge, no automatic supplier, local Save/Open and corrupt isolation, four languages, mobile CSS, single shared VESA shell and no external requests.');
+  console.log('FABRIC SUPPLIER M3 CHROMIUM PASS: sourced offers and GSM mismatch, explicit landed/missing charge, no automatic supplier, local Save/Open and corrupt isolation, four languages, mobile CSS, single shared VESA shell and no external requests.');
  }finally{await context.close();await browser.close();await new Promise(ok=>server.close(ok));}
 }
 run().catch(err=>{console.error(err);process.exitCode=1;});
