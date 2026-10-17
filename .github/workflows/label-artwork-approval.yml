@@ -1,13 +1,19 @@
-# APP-10 M1 pure-domain verification only; no published route or client records.
+# APP-10 personal demo release gate: domain/report/local copies, shared registration and real Chromium; no real client data.
 name: VESA Label Artwork 360 verification
 on:
   push:
     branches:
       - feature/label-artwork-approval-360
+      - main
     paths:
       - 'apps/label-artwork-approval/**'
       - 'docs/label-artwork-approval/**'
       - '.github/workflows/label-artwork-approval.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
+      - '.github/workflows/vesa-costing-demo-live-smoke.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -44,6 +50,9 @@ jobs:
           node --check apps/label-artwork-approval/tests/report-reference.test.cjs
           node apps/label-artwork-approval/tests/report-reference.test.cjs
           node tests/personal-demo-release.cjs
+          node --check js/app-catalogue.js
+          node --check js/preferences.js
+          node --check service-worker.js
           node tests/vesa-next-app-starter.cjs
           node apps/factory-vendor/tests/domain.test.cjs
           node apps/factory-vendor/tests/save-reopen.test.cjs
@@ -76,6 +85,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: artwork360-m3-synthetic-browser
+          name: artwork360-m4-synthetic-browser
           path: output/playwright/artwork-app10-*
           if-no-files-found: ignore
