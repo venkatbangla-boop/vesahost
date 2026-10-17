@@ -1,5 +1,21 @@
 # APP-15 Product Development 360 — Execution Tracker
 
+## 2026-10-17 — M1 INDEPENDENT PURE DOMAIN ACCEPTED; M2 BROWSER WORKSPACE PATCH LOCK
+
+**M1 verdict: ACCEPTED for source-only draft-domain engine, NOT a live/browser application.** Exact source `b2e5fe32297c0002e44ade7183318347a0a66b5e`; [independent GitHub Actions #39043639751 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39043639751), job `product-domain`, checked all 15 immutable blueprint files, new `ConceptRegister`, `BoardLayout`, `RevisionHistory` with synthetic positive/negative source/rights/aspect/budget/duplicate/event tests and every existing production/sampling/claims/TNA/PPM/AQL domain regression. Exact M1 paths remain above. No DOM, local store, route, media upload, native device or Excel/PDF yet.
+
+### M2 fresh file-level scope / ownership
+
+Directly inspected the actual prior `apps/claims-disputes/src/application/workspace-controller.js`, `src/data/local-record-port.js`, `src/data/saved-copy-codec.js`, `src/i18n/app-copy.js`, `src/bootstrap.js`, `tests/browser-workflow.cjs`, `tests/save-reopen.test.cjs`, `assets/claims-disputes.css`; also platform `js/vesa-workspace-shell.js` and `apps/claims-disputes/index.html`. These are **FROZEN precedents**, not reusable business domain imports. Existing shared shell mounts a single top header with six menus and takes app callbacks. It does not own Product Dev saved records or proposal actions. M2 app state is isolated under `vesa.product-development.records.v1.<local-user>`, with versioned, checksum-only portable copy; checksum does **not** authenticate artistic rights or buyer identity. M2 must not read other app private stores. M2 board cards are explicit local text/colourway proposals; user-selected image import/rights workflow and finalized presentation exports are separately controlled M3, not falsely accepted now.
+
+**M2 ONE EXACT PATCH GROUP:** NEW `apps/product-development/index.html`, `assets/product-development.css`, `src/bootstrap.js`, `src/application/workspace-controller.js`, `src/data/local-record-port.js`, `src/data/saved-copy-codec.js`, `src/i18n/app-copy.js`, `tests/save-reopen.test.cjs`, `tests/browser-workflow.cjs`; MODIFY ONLY `.github/workflows/product-development.yml` and this tracker. **FROZEN:** APP-15 M1 domain modules, `js/app-catalogue.js`, `js/preferences.js`, `service-worker.js`, `js/vesa-workspace-shell.js`, prior app code and original blueprints. Do not publish app route or claim release until full M4.
+
+**M2 acceptance tests:** user creates sourced concept/colourway/task/board, local revision and proposal-only review; browser Save/reload/Continue and separate portable restore, corrupted/old/mismatched copies fail without altering existing data; EN/BN/HI/TA without changing user values, six shared menus, 320/360/390/640/768/1024/1280/1440 no page overflow, keyboard focus/Escape and zero external HTTP calls; desktop Chromium screenshots. Pure Node copy tests + all prior app regression/15 original blueprint integrity. **Rollback:** revert ONLY this M2 patch group, never clear local records or rewrite APP15 M1 engines. Status stays CONDITIONAL until independent exact CI `SUCCESS`.
+
+**PRECISE NEXT ACTION:** implement M2 within named paths, check new exact GitHub Actions Node/real Chromium proof, record SHA; then independently audit/lock M3 photo-card rights, report/Excel/PDF and manual reviewed Tech Pack proposal handoff.
+
+---
+
 ## 2026-10-17 — M0 REPOSITORY SOURCE AUDIT ACCEPTED; M1 DOMAIN PATCH LOCK
 
 **APP:** 15/15, original immutable `blueprints/APP-15_product-development.md` (hash from canonical `docs/portfolio/13_FILE_INTEGRITY_SHA256.json`), approved roadmap W4. **Baseline:** `main` `6262ae62f97ecedde625403563c59c84dc04e44c`, APP-14 Claims independently demo-live at code `e5e4c108e8f450b985ff510e046c1c96958fc221`; [Claims main Node/Chromium #39042891062](https://github.com/venkatbangla-boop/vesahost/actions/runs/39042891062), [Pages #39042890792](https://github.com/venkatbangla-boop/vesahost/actions/runs/39042890792), [live exact bytes #39042891101](https://github.com/venkatbangla-boop/vesahost/actions/runs/39042891101) PASS. Branch `feature/product-development-360` created from verified main; no `apps/product-development/` or old APP-15 state in original base tree.
