@@ -1,5 +1,29 @@
 # APP-08 Factory & Vendor 360 — Execution Tracker
 
+## 2026-10-17 — M2 Chromium local workflow accepted; M3 patch group scope locked
+
+**M2 verdict: ACCEPTED for synthetic browser-local workflow, NOT commercial/buyer compliance.** Accepted commit `d7827c33841bf0732fe201b4acd25c36c08d11ba`; [independent GitHub Actions #39024684663 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39024684663). Node checks for local store, checksum/corrupt/oversize copies, isolation by user, duplicate/older revision refusal, domain, existing Production/Shipment/Fabric/Sampling/LC/PO/Packing/Commission/TechPack/TNA/PPM/AQL passed. Actual Chromium created synthetic vendor, factory site, date-only expired certificate, independently sourced capacity, internal review and performance, showed no approved certification, rejected duplicate site atomically, saved/reopened/downloaded/restored separately, rejected tampered portable copy with no writes, switched EN/BN/HI/TA without business-data changes, tested 320/360/390/640/768/1024/1280/1440 viewport widths and keyboard Escape focus; zero outside requests. CI #39024565518 initially failed because the browser script looked for an edit button on the Documents tab instead of Onboarding; test-only correction passed full run. No Factory App Centre link or public release yet.
+
+**M3 objective:** safe source-only factory/vendor profile, capability comparison, certificate date/expiry register, internal onboarding pending list and period-specific performance export, plus optional manually reviewed typed read-only PO/Production references. No self-certified compliance, no assumed capacity allocation, no transformation of Production actuals or PO master. Source docs remain frozen.
+
+**M3 exact file-level scope / dependency and state map:**
+- `apps/factory-vendor/src/domain/reviewed-reference.js` NEW: typed bounded JSON ref validation and duplicate/identity mismatch guards; only called by Factory controller + Factory profile validator. Optional `manualReferences` append-only source snapshots, not source app authority.
+- `apps/factory-vendor/src/reports/report-model.js` NEW: pure escaped HTML and safe workbook table rows, source date states/as-of, declared capacities as `DECLARED ONLY`, period denominator metrics and date-only expiration alerts; no business state mutation.
+- `apps/factory-vendor/src/domain/vendor-profile.js` WATCHED/M3 IN SCOPE only to validate optional `manualReferences`, preserving previously created source-only records.
+- `apps/factory-vendor/index.html` IN SCOPE loads approved locally bundled XLSX runtime and new reference/report modules.
+- `apps/factory-vendor/src/application/workspace-controller.js` IN SCOPE adds manual source file selection/local reviewer, read-only list, Prepare Report/Download Excel/Print Save PDF and safe independent local reference handling.
+- `apps/factory-vendor/src/i18n/app-copy.js`, `assets/factory-vendor.css` IN SCOPE only localized labels and print semantics.
+- `apps/factory-vendor/tests/report-reference.test.cjs`, `tests/browser-workflow.cjs`, `.github/workflows/factory-vendor.yml` IN SCOPE to prove malformed/tampered/oversized reference rejects, legacy .vesavendor backward compatibility, numeric Excel/formula injection, date-only document alerts, typed read-only PO/Production refs, browser PDF, regression and zero hidden network.
+- `docs/factory-vendor/01_EXECUTION_TRACKER.md` IN SCOPE updated with exact patch tests, SHA and NEXT.
+
+**FROZEN:** Other completed applications including Production/TNA/PPM/AQL, original `blueprints/`, `docs/portfolio/`, global `js/vesa-workspace-shell.js`/preferences/auth/catalogue, `service-worker.js`, user saved record keys and JSON exports. Optional reference field is backward-compatible: existing data without it continues to validate and restore. Do NOT require real factory names, employee contact data or accreditation. All new source-only evidence must be locally reviewed by an explicit human-labelled reviewer and never claim official approval.
+
+**Proof/rollback gate:** Node source + report tests, real Chromium Save/Open/reference/Excel/PDF/4 languages/responsive, all sibling baselines, no global headers added. Revert M3 commits if CI fails. M3 accepted only by independent PASS at exact SHA; M4 separate App Centre/Pages/public-source verification conditional personal demo only.
+
+**PRECISE NEXT ACTION:** Implement this M3 patch, run GitHub CI, accept or repair; then audit/apply M4 release integration without asking to reattach 15-app ZIP.
+
+---
+
 ## 2026-10-17 — M1 source-only Factory engine VERIFIED
 
 **M1 accepted for isolated pure-domain technical scope.** Exact feature code `011f87c218daf7017b121d6ec2d815e61598380f`; [actual GitHub Actions #39024016996 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39024016996). Pure `apps/factory-vendor/src/domain/vendor-profile.js`, `certification-evidence.js`, `capability-matcher.js`, and `tests/domain.test.cjs` implemented: sourced site identity, category/site monthly *declared* capacity and MOQ/lead documents, source document issuer/dates/expiry comparisons, internal-only onboarding reviews, historical performance periods with sourced numerator/denominator and immutable audit revisions. Synthetic tests reject duplicate sites/documents, missing or unmatched site/capacity source, expired evidence masquerading as compliance, fake certification outcomes, invalid dates or unmatched performance ratios. Original 15-blueprint integrity, Production/Shipment/Fabric/Sampling/LC/PO/Packing/Commission/TechPack/TNA/PPM/AQL and shared-shell Node baselines passed. No public app route, certificate authority, personal contact data or business production claim.
