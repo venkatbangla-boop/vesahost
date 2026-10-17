@@ -1,0 +1,62 @@
+# APP-12 source-only pure comparison M1, synthetic only. Not an FX/tax/FOB authority or vendor purchase.
+name: VESA Fabric Supplier Comparison 360 verification
+on:
+  push:
+    branches:
+      - feature/fabric-supplier-comparison-360
+    paths:
+      - 'apps/fabric-supplier-comparison/**'
+      - 'docs/fabric-supplier-comparison/**'
+      - '.github/workflows/fabric-supplier-comparison.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  comparison-domain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Original 15-app source, comparison M1 and all frozen sibling domains
+        run: |
+          set -euo pipefail
+          node tests/vesa-blueprint-integrity.cjs
+          node --check apps/fabric-supplier-comparison/src/domain/quote-normalization.js
+          node --check apps/fabric-supplier-comparison/src/domain/comparability-gate.js
+          node --check apps/fabric-supplier-comparison/src/domain/landed-scenario.js
+          node --check apps/fabric-supplier-comparison/tests/domain.test.cjs
+          node apps/fabric-supplier-comparison/tests/domain.test.cjs
+          node tests/personal-demo-release.cjs
+          node tests/vesa-next-app-starter.cjs
+          node apps/buyer-crm/tests/domain.test.cjs
+          node apps/buyer-crm/tests/save-reopen.test.cjs
+          node apps/buyer-crm/tests/report-reference.test.cjs
+          node apps/label-artwork-approval/tests/domain.test.cjs
+          node apps/label-artwork-approval/tests/save-reopen.test.cjs
+          node apps/label-artwork-approval/tests/report-reference.test.cjs
+          node apps/factory-vendor/tests/domain.test.cjs
+          node apps/factory-vendor/tests/save-reopen.test.cjs
+          node apps/factory-vendor/tests/report-reference.test.cjs
+          node apps/production-tracker/tests/domain.test.cjs
+          node apps/production-tracker/tests/save-reopen.test.cjs
+          node apps/production-tracker/tests/report-reference.test.cjs
+          node apps/shipment-documentation/tests/domain.test.cjs
+          node apps/fabric-trims/tests/domain.test.cjs
+          node apps/sampling-approval/tests/domain.test.cjs
+          node apps/lc-payment/tests/domain.test.cjs
+          node apps/purchase-order/tests/domain.test.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/tech-pack-spec/tests/domain.test.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          git diff --check HEAD~1 HEAD
