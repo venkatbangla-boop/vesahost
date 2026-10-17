@@ -1,5 +1,12 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## 2026-10-18 — LOGIN/APPS ONLY (OVERRIDES OLDER PROMPTS)
+
+The user expressly forbids changes to public vesaent.com/ homepage, root index.html/css/style.css/js/main.js, assets, SEO and legal pages. Only /login/, /apps/, /admin/ and 19 apps may be redesigned. Root service-worker may add/refresh a login asset but cannot change homepage content. Public demo user@vesa with password vesa is already in js/auth.js; present visible, prefilled, one-click on premium Login, preserving VesaAuth. For any "Continue", fetch newest GitHub branch/CI, read docs/ux/00_PREMIUM_ADAPTIVE_MASTER_PROMPT.md and docs/ux/01_PREMIUM_UX_EXECUTION_TRACKER.md, and resume exact next unfinished gate. No restart, no request for ZIP, no background claims. Preserve all completed apps/engines.
+
+---
+
+
 ## 2026-10-17 — ACTIVE OWNER DECISION AND LATEST VERIFIED MAIN (PERSONAL SHOWCASE)
 
 **Permanent direction:** The owner confirms VESA 360 is a PERSONAL SHOWCASE and wants one polished app experience. Do not repeatedly challenge or restate use/hosting questions unless the owner changes scope. Work on functional UI and preserve browser-local synthetic-only data. All 19 app routes remain registered.
