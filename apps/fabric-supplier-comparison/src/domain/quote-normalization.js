@@ -84,6 +84,11 @@ class VesaSupplierQuote{
     !['offers','scenarios','decisions','audit'].every(k=>Array.isArray(p[k])))
    return{ok:false,errors:['Unsupported supplier comparison version or record']};
   if(p.status!=='INTERNAL SOURCE COMPARISON — NO SUPPLIER APPROVAL')errors.push('No automatic supplier selection or compliance certification');
+  // M3 optional local human-reviewed source snapshots. Old M2 records remain unchanged and valid.
+  if(p.manualReferences!==undefined){
+   if(!root.VesaSupplierReviewedReference)errors.push('Reviewed supplier comparison source validator unavailable');
+   else errors.push(...root.VesaSupplierReviewedReference.validateList(p));
+  }
   errors.push(...this.dims(p.requirement));
   for(const k of ['reviewedBy','reviewDate','requestedTradeTerm','requestedDeliveryTerm'])
    if(!this.valid(p.requirement?.[k],350))errors.push('Requirement needs sourced review or term '+k);
