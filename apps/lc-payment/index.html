@@ -43,6 +43,7 @@
 <h2 id="lcDialogTitle">Details</h2><button class="lc-btn" type="button" id="lcClose" aria-label="Close">×</button>
 </div><div id="lcDialogBody"></div></dialog>
 <input id="lcFile" type="file" accept=".vesalc,application/json" hidden>
+<input id="lcPoRefFile" type="file" accept=".json,application/json" hidden>
 <script>
 (function(global){
 'use strict';
@@ -109,6 +110,21 @@ class LCPolicyEngine {
   if(step>=5000)return {date:null,issue:'The sourced business-day policy could not be resolved'};
   return {date,issue:null};
  }
+ static validPOReference(ref){
+  if(!ref||ref.sourceApp!=='VESA Purchase Order 360'||ref.recordType!=='PurchaseOrder'||
+    !trim(ref.recordId)||!trim(ref.revisionId)||!this.date(ref.sourceDate)||
+    !trim(ref.verifiedBy)||!this.date(ref.verifiedAt)||
+    !ref.displaySnapshot||typeof ref.displaySnapshot!=='object'||
+    !trim(ref.displaySnapshot.poNo)||!/^[A-Z]{3}$/.test(ref.displaySnapshot.currency||'')||
+    !Number.isSafeInteger(ref.displaySnapshot.totalPieces)||ref.displaySnapshot.totalPieces<0||
+    this.cents(ref.displaySnapshot.totalAmount,2,true)===null||
+    !Array.isArray(ref.displaySnapshot.sourceLines)||
+    ref.displaySnapshot.sourceLines.length>1000||
+    JSON.stringify(ref).length>200000)return false;
+  if(ref.localReview&&(!trim(ref.localReview.verifiedBy)||
+    !this.date(ref.localReview.verifiedAt)))return false;
+  return true;
+ }
  static create(seed={},practice=false){
   const now=new Date().toISOString();
   return {version:VERSION,id:uid('LC'),revision:0,mode:practice?'practice':'local',
@@ -159,6 +175,9 @@ class LCPolicyEngine {
     !Array.isArray(p.bankCharges)||!Array.isArray(p.audit))
    return {ok:false,errors:['Unsupported LC record format.'],notes,lcValue:null,obligations:[]};
   const h=p.header,required=['lcType','lcNo','applicant','beneficiary','issuingBank','advisingBank','sourceRef'];
+  if(h.poReference!==null&&h.poReference!==undefined&&!this.validPOReference(h.poReference))
+    errors.push('Linked PO needs a reviewed, versioned, bounded and sourced reference.');
+
   if(!['master','b2b','fabric','other'].includes(h.lcType)||required.some(k=>!trim(h[k]))||
      !/^[A-Z]{3}$/.test(h.currency||'')||this.cents(h.amount)===null||
      !this.date(h.openingDate)||!this.date(h.expiryDate)||h.expiryDate<h.openingDate)
@@ -512,6 +531,7 @@ const TXT={
 class LCWorkspace{
  constructor(){
   this.main=document.getElementById('lcMain');this.dialog=document.getElementById('lcDialog');
+  this.poRefFile=document.getElementById('lcPoRefFile');this.pendingPo=null;
   this.body=document.getElementById('lcDialogBody');this.file=document.getElementById('lcFile');
   this.current=null;this.section='summary';this.dirty=false;this.focus=null;this.shell=null;
   this.asOf=new Date().toISOString().slice(0,10);
@@ -565,6 +585,26 @@ class LCWorkspace{
     this.modal(this.tr('upload'),'<p>Saved LC copy opened separately without replacing original bank-source records.</p>');
    }catch(e){this.problem(e.message);}
   });
+  // Two-stage reviewed reference handoff: upload only stages a typed snapshot.
+  // Nothing touches the canonical LC until the user confirms the local review.
+  this.poRefFile.addEventListener('change',async()=>{
+   const file=this.poRefFile.files?.[0];this.poRefFile.value='';if(!file)return;
+   try{
+    if(!this.current||this.current.mode!=='local')throw Error('Open a real local LC first.');
+    if(file.size>200000)throw Error('Reviewed PO source file is too large.');
+    const reference=JSON.parse(await file.text());
+    if(!LCPolicyEngine.validPOReference(reference))throw Error('Only a valid reviewed Purchase Order 360 reference JSON may be imported.');
+    this.pendingPo=deep(reference);
+    this.modal(this.tr('openPO'),'<p class="wide lc-alert">Review this separately sourced PO before attaching it. No other app records will be read or changed.</p>'+
+     '<p><b>'+safe(reference.displaySnapshot.poNo)+'</b> · '+safe(reference.displaySnapshot.currency)+
+     ' · Revision '+safe(reference.revisionId)+'</p>'+
+     '<form class="lc-form" data-form="po-import">'+
+     this.field('localReviewer','','text','required maxlength="120"')+
+     this.field('localReviewedAt','','date','required')+
+     this.checkbox('confirm',false)+
+     '<div class="wide lc-actions"><button class="lc-btn primary" type="submit">'+safe(this.tr('review'))+'</button></div></form>');
+   }catch(e){this.problem(e.message);}
+  });
   global.addEventListener('vesa-preferences-change',()=>this.render());
   global.addEventListener('beforeunload',event=>{if(this.dirty&&this.current?.mode==='local'){event.preventDefault();event.returnValue='';}});
   this.render();
@@ -575,7 +615,7 @@ class LCWorkspace{
    Edit:[['header','lcTerms'],['event','events'],['add-obligation','obligations'],['add-amendment','amendments']],
    View:[['summary','summary'],['obligations','obligations'],['documents','documents'],['settlements','settlements']],
    Tools:[['report','report'],['add-document','documents'],['add-settlement','settlements'],
-    ['add-charge','charges'],['po-reference','poRef'],['asof','asOf']],
+    ['add-charge','charges'],['po-reference','poRef'],['import-po','openPO'],['asof','asOf']],
    Help:[['help','title'],['practice','practice']]};
   this.modal(name,'<div class="lc-actions">'+(groups[name]||[]).map(([action,k])=>
    '<button class="lc-btn" data-menu-action="'+safe(action)+'" type="button">'+safe(this.tr(k))+'</button>').join('')+'</div>');
@@ -591,6 +631,7 @@ class LCWorkspace{
    if(action==='open-record'){const p=this.store.load(id);if(!p)throw Error('LC record not found.');
     this.current=p;this.dirty=false;this.section='summary';this.render();return;}
    if(action==='upload'){this.file.click();return;}
+   if(action==='import-po'){if(!this.current||this.current.mode==='practice')throw Error('Open a real LC first.');this.poRefFile.click();return;}
    if(action==='save'){if(!this.current||this.current.mode==='practice')throw Error('Open a real local LC draft first.');
     this.store.save(this.current);this.dirty=false;this.render();return;}
    if(action==='download'){if(!this.current||this.current.mode==='practice')throw Error('Open a real LC draft first.');
@@ -661,7 +702,8 @@ class LCWorkspace{
      '<div class="lc-grid">'+tile(x.lcValue,'total')+tile(p.obligations.length,'obligations')+
      tile(totalOpen,'outstanding')+tile(x.overdue.length,'overdue')+
      tile(x.documentsDiscrepant,'discrepancy')+tile(p.amendments.length,'amendments')+'</div>'+
-     '<div class="lc-actions">'+button('asof','asOf')+button('po-reference','poRef')+'</div>'+
+     '<div class="lc-actions">'+button('asof','asOf')+button('po-reference','poRef')+
+       button('import-po','openPO')+'</div>'+
      '<p class="lc-note">'+t('guard')+' · '+t('asOf')+': '+safe(this.asOf)+'</p>'+
      (x.notes.length?'<ul>'+x.notes.map(note=>'<li>'+safe(note)+'</li>').join('')+'</ul>':'')+'</section>';
   }
@@ -814,6 +856,17 @@ class LCWorkspace{
    const data=Object.fromEntries(new FormData(form).entries()),
      get=k=>trim(data[k]),check=k=>form.querySelector('[name="'+k+'"]')?.checked||false,
      kind=form.dataset.form;
+   if(kind==='po-import'){
+    if(!this.pendingPo||!check('confirm')||!trim(get('localReviewer'))||
+      !LCPolicyEngine.date(get('localReviewedAt')))
+     throw Error('PO import requires an explicit dated local source review.');
+    const source=deep(this.pendingPo);
+    source.localReview={verifiedBy:get('localReviewer'),verifiedAt:get('localReviewedAt')};
+    this.mutate('Separately reviewed versioned PO snapshot imported',p=>{
+      p.header.poReference=source;
+    });
+    this.pendingPo=null;this.dialog.close();return;
+   }
    if(kind==='asof'){if(!LCPolicyEngine.date(get('asOf')))throw Error('Choose a valid calendar date.');
     this.asOf=get('asOf');this.dialog.close();this.render();return;}
    if(kind==='new'){

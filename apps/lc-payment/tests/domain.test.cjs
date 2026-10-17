@@ -101,6 +101,17 @@ class LCUnitProof{
     actor:'SYNTHETIC OPERATOR'});
   assert.equal(E.calculate(charges).obligations[0].open,'3800.00',
     'Fees are not automatically netted from the beneficiary obligation.');
+  const po={sourceApp:'VESA Purchase Order 360',recordType:'PurchaseOrder',
+    recordId:'TEST-PO-1',revisionId:'REV-01',sourceDate:'2026-10-17',
+    verifiedBy:'SYNTHETIC PO REVIEWER',verifiedAt:'2026-10-17',
+    displaySnapshot:{poNo:'TEST-PO',buyer:'SYNTHETIC BUYER',factory:'SYNTHETIC FACTORY',
+      currency:'USD',totalPieces:60,totalAmount:'165.00',
+      sourceLines:[{style:'TEST',color:'Navy',size:'M',quantity:40,unitFob:'2.50'}]}};
+  assert.equal(E.validPOReference(po),true);
+  const alteredRef=JSON.parse(JSON.stringify(po));alteredRef.displaySnapshot.totalAmount='-5.00';
+  assert.equal(E.validPOReference(alteredRef),false);
+  const withPo=JSON.parse(baseline);withPo.header.poReference=po;
+  assert.equal(E.calculate(withPo).ok,true);
   const store=new S('test@vesa.invalid'),valid=JSON.parse(baseline);
   valid.mode='local';store.save(valid);
   assert.equal(store.load(valid.id).obligations.length,1);

@@ -69,7 +69,7 @@ class LCBrowserProof{
    await act('documents');await act('add-document');
    await enter({docName:'SYNTHETIC BL',docStatus:'discrepant',date:'2026-10-15',
      actor:'SYNTHETIC DOC TEAM',bankRef:'SYNTHETIC BANK REF',
-     source:'SYNTHETIC BANK DISCREPANCY',discrepancy:'SYNTHETIC NAME DIFFERENCE'}); 
+     source:'SYNTHETIC BANK DISCREPANCY',discrepancy:'SYNTHETIC NAME DIFFERENCE'});
    const obValue=await page.locator('#lcDialog [name=linkedObligation] option').nth(1).getAttribute('value');
    await enter({linkedObligation:obValue,documentAmount:'5100.00',documentCurrency:'USD',
      amountSource:'SYNTHETIC INVOICE AMOUNT SOURCE'});await submit();
@@ -90,7 +90,20 @@ class LCBrowserProof{
    await act('summary');
    const stats=await page.locator('.lc-grid').innerText();
    for(const x of ['11000.00','3700.00'])assert(stats.includes(x),'Expected financial total '+x);
+   // The LC may consume only an explicitly reviewed PO reference JSON file.
+   fs.mkdirSync(out,{recursive:true});
+   const poRef={sourceApp:'VESA Purchase Order 360',recordType:'PurchaseOrder',
+     recordId:'SYN-PO-ID',revisionId:'SYN-PO-REV-1',sourceDate:'2026-10-17',
+     verifiedBy:'SYNTHETIC PO REVIEWER',verifiedAt:'2026-10-17',
+     displaySnapshot:{poNo:'SYN-PO-01',buyer:'SYNTHETIC BUYER',factory:'SYNTHETIC FACTORY',
+       currency:'USD',totalPieces:60,totalAmount:'165.00',sourceLines:[]}};
+   const poPath=path.join(out,'lc-app05-reviewed-po.json');fs.writeFileSync(poPath,JSON.stringify(poRef));
+   await act('import-po');await page.locator('#lcPoRefFile').setInputFiles(poPath);
+   await page.locator('#lcDialog form[data-form=po-import]').waitFor();
+   await enter({localReviewer:'SYNTHETIC LOCAL REVIEWER',localReviewedAt:'2026-10-17'});
+   await page.locator('#lcDialog [name=confirm]').check();await submit();
    await act('save');
+   assert.equal((await saved())[0].header.poReference.recordId,'SYN-PO-ID');
    assert.equal((await saved())[0].amendments[0].status,'approved');
    assert.equal((await saved())[0].documents[0].status,'discrepant');
    await act('reports');assert.match(await page.locator('.lc-report').innerText(),/DOCUMENT VALUE MISMATCH/);
