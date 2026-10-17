@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VESA Purchase Order 360</title><meta name="theme-color" content="#f3f6fa">
+<link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/vesa-workspace.css?v=20261013-platform-g09">
+<script src="/js/preferences.js"></script>
+<script src="/js/auth.js" data-auth-guard="app" data-auth-bar="true"></script>
+<script src="/js/vesa-workspace-shell.js"></script>
+<script src="/js/vendor/xlsx.full.min.js"></script>
+<style>
+/* PO application content only; global branding, menus and Settings belong to the VESA shell. */
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14px/1.55 var(--ui,Arial,sans-serif)}
+#poMain{width:min(1280px,calc(100vw - 24px));min-width:0;margin:0 auto;padding:18px 0 70px}
+.po-card{border:1px solid var(--line,#cbd6e4);background:var(--paper,#fff);border-radius:14px;padding:17px;margin-bottom:15px;min-width:0}
+.po-card h1{font-size:clamp(1.35rem,3vw,1.95rem);margin:0 0 5px;line-height:1.2}
+.po-card h2{font-size:1.15rem;margin:0 0 10px}
+.po-card h3{font-size:1rem;margin:8px 0}
+.po-note{font-size:.88rem;color:var(--muted,#526176);margin:7px 0}
+.po-alert{border:1px solid var(--line,#cbd6e4);border-left:4px solid var(--action,#a22643);padding:11px 12px;background:var(--look-surface,#eef3f9);border-radius:10px;margin:10px 0;white-space:pre-wrap}
+.po-actions,.po-tabs{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:10px 0}
+.po-tabs{border-bottom:1px solid var(--line,#cbd6e4);padding-bottom:11px}
+.po-btn{font:inherit;min-height:44px;cursor:pointer;padding:10px 14px;border:1px solid var(--line,#cbd6e4);border-radius:9px;background:var(--paper,#fff);color:var(--ink,#17263d);font-weight:700}
+.po-btn.primary,.po-tabs [aria-current=true]{background:var(--blue,#244fd6);border-color:var(--blue,#244fd6);color:#fff}
+.po-btn:disabled{opacity:.5;cursor:not-allowed}
+.po-btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold,#a77a26);outline-offset:2px}
+.po-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.po-tile{background:var(--look-surface,#eef3f9);border:1px solid var(--line,#cbd6e4);border-radius:10px;padding:14px;min-width:0}
+.po-tile strong{display:block;font-size:1.38rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.po-tile small{color:var(--muted,#526176)}
+.po-scroll{width:100%;max-width:100%;overflow:auto;border:1px solid var(--line,#cbd6e4);border-radius:10px}
+.po-table{min-width:690px;width:100%;border-collapse:collapse;font-size:.88rem}
+.po-table td,.po-table th{padding:9px 11px;vertical-align:top;text-align:left;border-bottom:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere}
+.po-table th{background:var(--look-surface,#eef3f9);white-space:nowrap}
+.po-table tr:last-child td{border-bottom:0}
+.po-dialog{width:min(770px,calc(100vw - 14px));max-height:91vh;overflow:auto;padding:18px;border-radius:15px;color:var(--ink,#17263d);background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);box-shadow:0 15px 80px #0004}
+.po-dialog::backdrop{background:#06172fb0}
+.po-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.po-dialog h2{font-size:1.2rem;margin:0}
+.po-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.po-form label{font-size:.89rem;font-weight:700;min-width:0;display:grid;gap:5px}
+.po-form label.wide,.po-form .wide{grid-column:1/-1}
+.po-form input,.po-form select,.po-form textarea{font:inherit;min-width:0;width:100%;min-height:44px;padding:10px 12px;border-radius:9px;border:1px solid var(--line,#cbd6e4);background:var(--paper,#fff);color:var(--ink,#17263d)}
+.po-form textarea{min-height:74px}
+.po-form .po-check{display:flex;gap:10px;align-items:center}
+.po-check input{width:22px;min-height:22px}
+.po-record{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line,#cbd6e4)}
+.po-record:last-child{border-bottom:0}
+.po-record small{display:block;color:var(--muted,#526176)}
+.po-report section{margin:15px 0;break-inside:avoid}
+@media(max-width:750px){.po-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.po-card{padding:13px}}
+@media(max-width:480px){.po-grid,.po-form{grid-template-columns:1fr}.po-form label.wide,.po-form .wide{grid-column:1}.po-actions>.po-btn{flex:1 1 auto}}
+@media print{.vesa-workspace,.app-user-bar,.po-tabs,.po-actions,.po-dialog{display:none!important}#poMain{width:100%;padding:0}.po-card{padding:0;border:0}.po-table{font-size:10px}.po-table th,.po-table td{padding:4px 6px}.po-report{display:block!important}@page{size:A4 landscape;margin:12mm}}
+</style></head><body>
+<main id="poMain" tabindex="-1"><p role="status">Opening VESA Purchase Order 360…</p></main>
+<dialog id="poDialog" class="po-dialog" aria-labelledby="poDialogTitle">
+<div class="po-dialog-head"><h2 id="poDialogTitle">Purchase Order</h2><button class="po-btn" type="button" id="poClose" aria-label="Close">×</button></div>
+<div id="poDialogBody"></div></dialog>
+<input type="file" id="poFile" accept=".vesapo,application/json" hidden>
+<script>
+(function(global){
+'use strict';
+const VERSION='VESA-PO360-PLAN-1',COPY_VERSION='VESA-PO360-COPY-1',PREFIX='vesa.purchase-order.records.v1.';
+const MAX_BYTES=2097152;
+const NOTICE='NON-COMMERCIAL PERSONAL DEMO. Synthetic inputs only. Browser login is not secure authentication. A locally recorded PO revision or buyer/factory acknowledgment is NOT a verified external buyer approval or shipment release.';
+const trim=x=>String(x??'').trim(),deep=x=>JSON.parse(JSON.stringify(x));
+const esc=x=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const sheetSafe=x=>typeof x==='number'&&Number.isFinite(x)?x:/^[=+\-@\t\r]/.test(String(x??''))?"'"+String(x):String(x??'');
+const identifier=prefix=>prefix+'-'+(global.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+/**
+ * Canonical PO quantity and money projection. Each source line owns
+ * style/colour/size, intentional split, whole-piece qty and 4-decimal FOB.
+ * The selected line-rounding convention is explicit and fixed-point. No
+ * currency exchange, incoterm, signature, shipment or acceptance inferred.
+ */
+class PurchaseOrderEngine {
+ static parse(value,decimals=4,allowZero=false){
+  if(typeof value!=='number'&&typeof value!=='string')return null;
+  const re=new RegExp('^([0-9]{1,11})(?:\\.([0-9]{1,'+decimals+'}))?$'),m=trim(value).match(re);
+  if(!m)return null;
+  const n=BigInt(m[1])*10n**BigInt(decimals)+BigInt((m[2]||'').padEnd(decimals,'0'));
+  return !allowZero&&n===0n?null:n;
+ }
+ static date(value){if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+  const t=Date.parse(value+'T00:00:00Z');return Number.isFinite(t)&&new Date(t).toISOString().slice(0,10)===value;}
+ static currency(value){return /^[A-Z]{3}$/.test(trim(value));}
+ static round(value,rule){
+  if(value<0n)throw Error('Unexpected negative order price.');
+  if(rule==='line-half-up-2')return (value+50n)/100n;
+  if(rule==='line-down-2')return value/100n;
+  return null;
+ }
+ static money(n){
+  if(n===null||n===undefined)return null;
+  const v=n<0n?-n:n;return (n<0n?'-':'')+(v/100n).toString()+'.'+(v%100n).toString().padStart(2,'0');
+ }
+ static lineValue(line,rule){
+  if(!Number.isSafeInteger(line.quantity)||line.quantity<=0||line.quantity>100000000)return null;
+  const unit=this.parse(line.unitFob);
+  if(unit===null)return null;
+  return this.round(BigInt(line.quantity)*unit,rule);
+ }
+ static create(seed={},practice=false){
+  const now=new Date().toISOString();
+  return {version:VERSION,id:identifier('PO'),revision:0,mode:practice?'practice':'local',
+    createdAt:now,updatedAt:now,status:'draft',
+    header:{poNo:trim(seed.poNo),buyer:trim(seed.buyer),issuer:trim(seed.issuer),
+     factory:trim(seed.factory),shipTo:trim(seed.shipTo),currency:trim(seed.currency),
+     incoterm:trim(seed.incoterm),orderDate:trim(seed.orderDate),shipFrom:trim(seed.shipFrom),
+     shipToDate:trim(seed.shipToDate),sourceRef:trim(seed.sourceRef),
+     rounding:trim(seed.rounding),declaredQty:seed.declaredQty??null,
+     declaredAmount:trim(seed.declaredAmount),ledgerComplete:false,ledgerSource:'',manualReference:null,
+     packingInstructionRef:'',sizeRatioRef:''},
+    lines:[],cancelled:[],shipments:[],amendments:[],acknowledgments:[],revisions:[],audit:[]};
+ }
+ static demo(){
+  const p=this.create({poNo:'DEMO-PO',buyer:'SYNTHETIC BUYER',issuer:'SYNTHETIC MERCHANDISER',
+   factory:'SYNTHETIC FACTORY',shipTo:'SYNTHETIC PORT',currency:'USD',incoterm:'FOB',
+   orderDate:'2026-10-01',shipFrom:'2026-10-20',shipToDate:'2026-11-10',
+   sourceRef:'SYNTHETIC PO SOURCE',rounding:'line-half-up-2',declaredQty:60,
+   declaredAmount:'165.00'},true);
+  p.lines=[{id:'L1',style:'DEMO-TEE',color:'Navy',size:'M',splitId:'',quantity:40,
+    unitFob:'2.5000',sourceRef:'SYNTHETIC SIGNED LINE'},
+   {id:'L2',style:'DEMO-TEE',color:'Navy',size:'L',splitId:'',quantity:20,
+    unitFob:'3.2500',sourceRef:'SYNTHETIC SIGNED LINE'}];
+  return p;
+ }
+ static validate(p){
+  const errors=[],notes=[];
+  if(!p||p.version!==VERSION||!p.header||!Array.isArray(p.lines)||!Array.isArray(p.cancelled)||
+     !Array.isArray(p.shipments)||!Array.isArray(p.amendments)||
+     !Array.isArray(p.acknowledgments)||!Array.isArray(p.revisions)||!Array.isArray(p.audit))
+    return {ok:false,errors:['Unsupported PO format.'],notes};
+  const h=p.header,mand=['poNo','buyer','issuer','factory','shipTo','incoterm','sourceRef'];
+  if(mand.some(k=>!trim(h[k]))||!this.currency(h.currency)||!['line-half-up-2','line-down-2'].includes(h.rounding)||
+     !this.date(h.orderDate)||!this.date(h.shipFrom)||!this.date(h.shipToDate)||h.shipFrom>h.shipToDate)
+    errors.push('PO needs source, buyer/issuer/factory/ship-to, entered ISO currency/incoterm, valid order and shipment dates and explicit rounding.');
+  const lineIds=new Set(),combos=new Map(),lineMap=new Map(),lineVal=new Map();
+  let quantity=0,amount=0n;
+  for(const line of p.lines){
+   if(lineIds.has(line.id))errors.push('Duplicate PO line ID.');lineIds.add(line.id);
+   const name=[trim(line.style).toLowerCase(),trim(line.color).toLowerCase(),
+     trim(line.size).toLowerCase()].join('|'),split=trim(line.splitId);
+   if(combos.has(name)){
+    const previous=combos.get(name);
+    if(!previous||!split||previous===split)errors.push('Duplicate style/colour/size; intentional splits require distinct explicit split IDs.');
+   }
+   combos.set(name,split);
+   const value=this.lineValue(line,h.rounding);
+   if(!trim(line.style)||!trim(line.color)||!trim(line.size)||!trim(line.sourceRef)||value===null)
+    errors.push('Each style/colour/size line needs sourced whole-piece quantity and 4-decimal unit FOB.');
+   else{quantity+=line.quantity;amount+=value;lineVal.set(line.id,value);}
+   lineMap.set(line.id,line);
+  }
+  if(!Number.isSafeInteger(quantity)||quantity>1000000000)errors.push('Quantity total exceeds whole-piece limit.');
+  if(h.declaredQty!==null&&h.declaredQty!==undefined&&h.declaredQty!==''){
+   if(!Number.isSafeInteger(h.declaredQty)||h.declaredQty<0||
+      h.declaredQty!==quantity)errors.push('Entered PO control quantity does not reconcile to size/colour lines.');
+  }else notes.push('Buyer PO control quantity not entered; quantity confirmation Needs Information.');
+  if(trim(h.declaredAmount)){
+   const documented=this.parse(h.declaredAmount,2,true);
+   if(documented===null||documented!==amount)errors.push('Buyer PO control amount differs from sourced line totals in the same currency.');
+  }else notes.push('Buyer PO control value missing; totals are calculated but not confirmed against source.');
+  if(!p.lines.length)notes.push('PO style/colour/size lines are not entered.');
+  const cancelled=new Map(),shipped=new Map();
+  const eventIds=new Set();
+  for(const [kind,records,map] of [['cancellation',p.cancelled,cancelled],['shipment',p.shipments,shipped]]){
+   for(const entry of records){
+    if(eventIds.has(entry.id))errors.push('Duplicate shipping/cancellation event ID.');
+    eventIds.add(entry.id);
+    if(!lineMap.has(entry.lineId)||!Number.isSafeInteger(entry.quantity)||entry.quantity<=0||
+       !this.date(entry.date)||!trim(entry.sourceRef)||!trim(entry.actor)||!trim(entry.documentRef))
+      errors.push('Each '+kind+' needs source, recorded date/actor, document and positive line quantity.');
+    else map.set(entry.lineId,(map.get(entry.lineId)||0)+entry.quantity);
+   }
+  }
+  for(const line of p.lines){
+   if((cancelled.get(line.id)||0)+(shipped.get(line.id)||0)>line.quantity)
+    errors.push('Recorded shipped + cancelled quantity exceeds the sourced PO line.');
+  }
+  const revisionIds=new Set();
+  for(const rev of p.revisions){
+   if(revisionIds.has(rev.id))errors.push('Duplicate PO revision ID.');revisionIds.add(rev.id);
+   if(!trim(rev.id)||!trim(rev.authority)||!trim(rev.documentRef)||!this.date(rev.effectiveDate)||
+      !rev.snapshot||!Array.isArray(rev.snapshot.lines))
+    errors.push('PO revision requires manual approval authority, signed document and effective date.');
+  }
+  const amendIds=new Set();
+  for(const a of p.amendments){
+   if(amendIds.has(a.id))errors.push('Duplicate PO amendment ID.');amendIds.add(a.id);
+   if(!trim(a.reason)||!trim(a.sourceRef)||!trim(a.requestedBy)||!this.date(a.date)||
+      !['pending','acknowledged'].includes(a.status))
+    errors.push('Amendment needs requested date/person, source, reason and explicit status.');
+   if(a.status==='acknowledged'&&!p.acknowledgments.some(x=>x.amendmentId===a.id))
+    errors.push('Amendment may be acknowledged only with a separate dated document.');
+  }
+  const seenAck=new Set();
+  for(const ack of p.acknowledgments){
+   if(seenAck.has(ack.amendmentId))errors.push('Duplicate amendment acknowledgment.');
+   seenAck.add(ack.amendmentId);
+   if(!p.amendments.some(x=>x.id===ack.amendmentId)||!trim(ack.actor)||!this.date(ack.date)||!trim(ack.sourceRef))
+    errors.push('Factory/buyer acknowledgment needs matching amendment, actor, source and date.');
+  }
+  if(h.ledgerComplete&&!trim(h.ledgerSource))errors.push('Complete shipment ledger requires explicit reviewed source evidence.');
+  return {ok:errors.length===0,errors,notes,quantity,amount:this.money(amount),amountCents:amount,
+    currency:h.currency,
+    balances:p.lines.map(line=>{
+     const canc=cancelled.get(line.id)||0,ship=shipped.get(line.id)||0;
+     return {lineId:line.id,style:line.style,color:line.color,size:line.size,
+       ordered:line.quantity,shipped:ship,cancelled:canc,
+       unshipped:h.ledgerComplete?line.quantity-ship-canc:null,
+       value:lineVal.has(line.id)?this.money(lineVal.get(line.id)):null};
+    })};
+ }
+ static compare(p,rev){
+  if(!rev)return [];
+  const from=rev.snapshot||{},current={header:p.header,lines:p.lines,cancelled:p.cancelled,shipments:p.shipments};
+  return Object.keys(current).filter(k=>JSON.stringify(from[k]??null)!==JSON.stringify(current[k]??null))
+   .map(field=>({field,previous:from[field]??null,current:current[field]}));
+ }
+}
+/** Atomic browser-local saved records; portable hash is corruption detection, not buyer authenticity. */
+class PurchaseOrderStore {
+ constructor(user){this.key=PREFIX+(trim(user).replace(/[^a-zA-Z0-9-]/g,'-').slice(0,100)||'local');}
+ static checksum(value){let x=2166136261;for(let i=0;i<value.length;i++){x^=value.charCodeAt(i);x=Math.imul(x,16777619);}return (x>>>0).toString(16);}
+ static verify(record){
+  const result=PurchaseOrderEngine.validate(record);
+  if(!result.ok)throw Error(result.errors.join('\n'));
+  if(!trim(record.id)||!Number.isSafeInteger(record.revision)||record.revision<0||
+     JSON.stringify(record).length>MAX_BYTES)throw Error('Invalid or oversized PO saved record.');
+  return result;
+ }
+ read(){let raw;try{raw=localStorage.getItem(this.key);}catch{throw Error('Cannot read local saved POs.');}
+  if(!raw)return [];const box=JSON.parse(raw);
+  if(box.version!==VERSION||!Array.isArray(box.records))throw Error('Unsupported local PO data version.');
+  return box.records;
+ }
+ list(){return this.read().map(x=>({id:x.id,no:x.header.poNo,buyer:x.header.buyer,revision:x.revision}));}
+ load(id){const p=this.read().find(x=>x.id===id);if(!p)return null;this.constructor.verify(p);return deep(p);}
+ save(record){
+  this.constructor.verify(record);
+  const data=JSON.stringify({version:VERSION,records:[deep(record),...this.read().filter(x=>x.id!==record.id)]});
+  if(data.length>MAX_BYTES)throw Error('Local PO records exceed safe quota. Download Saved Copy.');
+  const temp=this.key+'.tmp';
+  try{localStorage.setItem(temp,data);localStorage.setItem(this.key,data);}
+  catch{throw Error('Local save failed; previous records have not been intentionally cleared.');}
+  finally{try{localStorage.removeItem(temp);}catch{}}
+  return record.id;
+ }
+ static encode(p){this.verify(p);const text=JSON.stringify(p);
+  return JSON.stringify({format:COPY_VERSION,checksum:this.checksum(text),savedAt:new Date().toISOString(),record:p});}
+ static decode(text){
+  if(typeof text!=='string'||text.length>MAX_BYTES)throw Error('Saved copy too large or unreadable.');
+  const packet=JSON.parse(text);
+  if(packet?.format!==COPY_VERSION||!packet.record||
+    packet.checksum!==this.checksum(JSON.stringify(packet.record)))
+   throw Error('Saved copy altered or unsupported. Existing PO data was not replaced.');
+  this.verify(packet.record);return deep(packet.record);
+ }
+}
+/** Local report and typed workbook projection, with spreadsheet injection safety. */
+class PurchaseOrderReport {
+ static sheets(p,analysis,changes){
+  return {
+   'PO Summary':[['Field','Sourced value'],['PO Number',p.header.poNo],['Buyer',p.header.buyer],
+    ['Issuer',p.header.issuer],['Factory',p.header.factory],['Ship To',p.header.shipTo],
+    ['Order date',p.header.orderDate],['Shipment start',p.header.shipFrom],
+    ['Shipment end',p.header.shipToDate],['Incoterm',p.header.incoterm],
+    ['Currency',p.header.currency],['Source',p.header.sourceRef],
+    ['Total pieces',analysis.quantity],['Line value',analysis.amount??'Needs Information'],
+    ['PO control quantity',p.header.declaredQty??'Needs Information'],
+    ['Buyer PO control amount',p.header.declaredAmount||'Needs Information'],
+    ['Rounding',p.header.rounding]],
+   'Style Colour Size':[['Style','Colour','Size','Split ID','Ordered qty','Unit FOB','Line amount','Written source'],
+    ...p.lines.map(x=>[x.style,x.color,x.size,x.splitId||'',x.quantity,x.unitFob,
+      analysis.balances.find(y=>y.lineId===x.id)?.value||'Needs Information',x.sourceRef])],
+   'PO Balance':[['Style','Colour','Size','Ordered','Shipped evidence','Cancelled evidence','Unshipped','Source completeness'],
+    ...analysis.balances.map(x=>[x.style,x.color,x.size,x.ordered,x.shipped,x.cancelled,
+     x.unshipped??'Needs Information',p.header.ledgerComplete?p.header.ledgerSource:'Needs Information'])],
+   'Amendment Register':[['Reason','Requested by','Date','Source','Status'],
+    ...p.amendments.map(a=>[a.reason,a.requestedBy,a.date,a.sourceRef,a.status])],
+   'Acknowledgements':[['Amendment','Acknowledged by','Date','Evidence'],
+    ...p.acknowledgments.map(a=>[p.amendments.find(x=>x.id===a.amendmentId)?.reason||a.amendmentId,
+     a.actor,a.date,a.sourceRef])],
+   'PO Version Comparison':[['Changed field','Previous recorded revision','Current draft'],
+    ...changes.map(x=>[x.field,JSON.stringify(x.previous),JSON.stringify(x.current)])],
+   'Source Revisions':[['Revision','Authority on source','Effective date','Document source','Local record at'],
+    ...p.revisions.map(x=>[x.recordRevision,x.authority,x.effectiveDate,x.documentRef,x.at])],
+   'Manual Shipment Sources':[['Kind','PO line','Pieces','Recorded date','Source','Document'],
+    ...p.shipments.map(x=>['Shipment',x.lineId,x.quantity,x.date,x.sourceRef,x.documentRef]),
+    ...p.cancelled.map(x=>['Cancellation',x.lineId,x.quantity,x.date,x.sourceRef,x.documentRef])]
+  };
+ }
+ static html(p,calc,changes){
+  const sheets=this.sheets(p,calc,changes);
+  return '<article class="po-report"><h2>VESA Purchase Order 360 · DRAFT</h2><p class="po-note">'+esc(NOTICE)+'</p>'+
+   Object.entries(sheets).map(([name,rows])=>'<section><h3>'+esc(name)+'</h3><div class="po-scroll">'+
+   '<table class="po-table"><thead><tr>'+rows[0].map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+
+   rows.slice(1,2001).map(row=>'<tr>'+row.map(x=>'<td>'+esc(x??'Needs Information')+'</td>').join('')+'</tr>').join('')+
+   '</tbody></table></div></section>').join('')+'</article>';
+ }
+ static excelRows(name,rows){
+  return rows.map((row,i)=>row.map((x,j)=>{
+    const numeric=i>0&&(
+     name==='Style Colour Size'&&[4,5,6].includes(j)||
+     name==='PO Balance'&&[3,4,5,6].includes(j)||
+     name==='PO Summary'&&j===1&&['Total pieces','Line value','PO control quantity','Buyer PO control amount'].includes(row[0])||
+     name==='Manual Shipment Sources'&&j===2);
+    return numeric&&typeof x==='string'&&/^\d+(\.\d{1,4})?$/.test(x)?Number(x):sheetSafe(x);
+  }));
+ }
+}
+const LANG={
+ en:{title:'Purchase Order 360',lead:'Source-backed PO quantities, amendments, acknowledgments and local reports',
+ new:'New PO',continue:'Continue Last',open:'Open Saved',practice:'Practice Example',save:'Save Now',download:'Download Saved Copy',upload:'Open Saved Copy',
+ report:'Prepare Report',excel:'Download Excel',print:'Print / PDF',back:'All POs',summary:'Summary',lines:'Style / Colour / Size',amendments:'Amendments',
+ shipments:'Shipment & Cancellation',revisions:'Revisions',reports:'Reports',add:'Add',edit:'Edit',remove:'Remove',poNo:'PO Number',buyer:'Buyer',
+ issuer:'PO issuer',factory:'Factory',shipTo:'Ship-to / Port',currency:'PO currency',incoterm:'Sourced Incoterm',
+ orderDate:'PO date',shipFrom:'Shipment window start',shipToDate:'Shipment window end',source:'Written PO source',
+ rounding:'Sourced rounding method',declaredQty:'Signed PO total pieces',declaredAmount:'Signed PO value',
+ style:'Style',color:'Colour',size:'Size',quantity:'Pieces',unitFob:'Unit FOB (4 decimals)',splitId:'Explicit split lot ID',
+ document:'Manual document reference',date:'Document date',actor:'Source-recording actor',reason:'Amendment / cancellation reason',
+ approval:'Record Sourced PO Revision',authority:'Approver on signed PO',effective:'Effective source date',
+ requestedBy:'Amendment requested by',ack:'Acknowledge with document',ackBy:'Acknowledgment source actor',
+ shipment:'Manual shipment evidence',cancel:'Documented cancellation',ledger:'Complete shipment evidence reviewed',
+ ledgerSource:'Complete shipment source',ref:'Manual cross-app reference',sizeRatioRef:'Buyer size-ratio instruction source',
+ packingInstructionRef:'Buyer packing instruction source',due:'Balance',needs:'Needs Information',
+ noRules:'PO approval, FOB price, Incoterm, shipment and cancellations are never invented.',
+ warning:'A user-entered acknowledgment is not confirmed buyer/factory acceptance.',noRows:'No entries yet',
+ latest:'Last sourced version',change:'Compare last version',notApproved:'Local draft, not independently accepted',
+ note:'Source note'},
+ ta:{title:'Purchase Order 360',lead:'ஆதாரத்துடன் PO Qty, Amendment, Acknowledgment, Reports',
+ new:'புதிய PO',continue:'கடைசி PO திற',open:'Saved PO திற',practice:'Practice Example',save:'இப்போது Save',download:'Saved Copy Download',upload:'Saved Copy திற',
+ report:'Report தயாரி',excel:'Excel Download',print:'Print / PDF',back:'எல்லா PO-களும்',summary:'சுருக்கம்',lines:'Style / Colour / Size',amendments:'PO திருத்தங்கள்',
+ shipments:'Shipment & Cancellation',revisions:'Revision வரலாறு',reports:'Reports',add:'சேர்',edit:'திருத்து',remove:'நீக்கு',poNo:'PO நம்பர்',buyer:'Buyer',
+ issuer:'PO வழங்கியவர்',factory:'Factory',shipTo:'Ship-to / Port',currency:'PO Currency',incoterm:'Incoterm ஆதாரம்',
+ orderDate:'PO Date',shipFrom:'Shipment தொடக்கம்',shipToDate:'Shipment முடிவு',source:'PO ஆதார ஆவணம்',
+ rounding:'Rounding விதி',declaredQty:'Buyer PO Total Pieces',declaredAmount:'Buyer PO Value',
+ style:'Style',color:'நிறம்',size:'Size',quantity:'Pieces',unitFob:'ஒரு Piece FOB',splitId:'தனி Split Lot ID',
+ document:'ஆவண Reference',date:'ஆவண தேதி',actor:'பதிவு செய்தவர்',reason:'திருத்த / Cancellation காரணம்',
+ approval:'ஆதாரத்துடன் PO Revision',authority:'PO ஆவணத்தில் Approver',effective:'செயல்படும் தேதி',
+ requestedBy:'திருத்தம் கேட்டவர்',ack:'ஆதாரத்துடன் ஒப்புதல் பதிவு',ackBy:'ஒப்புதல் ஆவணத்தில் நபர்',
+ shipment:'Shipment ஆதாரம்',cancel:'Cancellation ஆதாரம்',ledger:'முழு Shipment ஆதாரம் சரிபார்க்கப்பட்டது',
+ ledgerSource:'முழு Shipment ஆதாரம்',ref:'வேறு App Reference',sizeRatioRef:'Buyer Size Ratio ஆதாரம்',
+ packingInstructionRef:'Packing Instruction ஆதாரம்',due:'மீதம்',needs:'தகவல் தேவை',
+ noRules:'PO Approval, FOB, Shipment எதையும் ஊகிக்க மாட்டோம்.',
+ warning:'கைமுறையாகப் பதிவிட்ட ஒப்புதல் Buyer/Factory ஒப்புதல் உறுதி அல்ல.',noRows:'பதிவு இல்லை',
+ latest:'கடைசி ஆதாரம்',change:'முந்தைய Version ஒப்பிடு',notApproved:'Local Draft; Buyer ஒப்புதல் அல்ல',
+ note:'ஆதார குறிப்பு'},
+ bn:{title:'পারচেজ অর্ডার ৩৬০',lead:'উৎসভিত্তিক PO, সংশোধন, স্বীকৃতি ও রিপোর্ট',
+ new:'নতুন PO',continue:'শেষটি খুলুন',open:'সেভ PO খুলুন',practice:'অনুশীলন উদাহরণ',save:'এখন সেভ',download:'সেভ কপি ডাউনলোড',upload:'সেভ কপি খুলুন',
+ report:'রিপোর্ট তৈরি',excel:'এক্সেল ডাউনলোড',print:'প্রিন্ট / PDF',back:'সব PO',summary:'সারাংশ',lines:'স্টাইল / রঙ / সাইজ',amendments:'সংশোধন',
+ shipments:'শিপমেন্ট ও বাতিল',revisions:'সংস্করণ',reports:'রিপোর্ট',add:'যোগ',edit:'সম্পাদনা',remove:'সরান',poNo:'PO নম্বর',buyer:'ক্রেতা',
+ issuer:'PO ইস্যুকারী',factory:'কারখানা',shipTo:'গন্তব্য',currency:'PO মুদ্রা',incoterm:'Incoterm উৎস',
+ orderDate:'PO তারিখ',shipFrom:'শিপমেন্ট শুরু',shipToDate:'শিপমেন্ট শেষ',source:'PO লিখিত উৎস',
+ rounding:'রাউন্ডিং নিয়ম',declaredQty:'PO মোট পিস',declaredAmount:'PO মোট মূল্য',
+ style:'স্টাইল',color:'রঙ',size:'সাইজ',quantity:'পিস',unitFob:'প্রতি পিস FOB',splitId:'আলাদা লট আইডি',
+ document:'দলিল',date:'দলিল তারিখ',actor:'নথিভুক্তকারী',reason:'সংশোধনের কারণ',
+ approval:'নথিভুক্ত PO সংস্করণ',authority:'দলিলের অনুমোদনকারী',effective:'কার্যকর তারিখ',
+ requestedBy:'সংশোধন আবেদনকারী',ack:'দলিলসহ স্বীকৃতি',ackBy:'স্বীকৃতি প্রদানকারী',
+ shipment:'শিপমেন্টের প্রমাণ',cancel:'বাতিলের প্রমাণ',ledger:'সম্পূর্ণ শিপমেন্ট উৎস পর্যালোচনা',
+ ledgerSource:'সম্পূর্ণ উৎস',ref:'অন্য অ্যাপ রেফারেন্স',sizeRatioRef:'সাইজ রেশিও উৎস',
+ packingInstructionRef:'প্যাকিং নির্দেশ উৎস',due:'বাকি',needs:'তথ্য প্রয়োজন',
+ noRules:'অনুমোদন/FOB/শিপমেন্ট অনুমান করা হয় না',
+ warning:'স্থানীয়ভাবে লেখা স্বীকৃতি ক্রেতার নিশ্চিত অনুমোদন নয়',noRows:'কোনো এন্ট্রি নেই',
+ latest:'শেষ দলিল',change:'সংস্করণ তুলনা',notApproved:'স্থানীয় খসড়া',note:'উৎস মন্তব্য'},
+ hi:{title:'परचेज ऑर्डर 360',lead:'स्रोत आधारित PO, संशोधन, स्वीकृति और रिपोर्ट',
+ new:'नया PO',continue:'पिछला खोलें',open:'सेव PO खोलें',practice:'अभ्यास उदाहरण',save:'अभी सेव',download:'सेव कॉपी डाउनलोड',upload:'सेव कॉपी खोलें',
+ report:'रिपोर्ट बनाएं',excel:'एक्सेल डाउनलोड',print:'प्रिंट / PDF',back:'सभी PO',summary:'सारांश',lines:'स्टाइल / रंग / साइज',amendments:'संशोधन',
+ shipments:'शिपमेंट / रद्द',revisions:'संस्करण',reports:'रिपोर्ट',add:'जोड़ें',edit:'बदलें',remove:'हटाएं',poNo:'PO नंबर',buyer:'खरीदार',
+ issuer:'PO जारीकर्ता',factory:'फैक्ट्री',shipTo:'जहाज / पोर्ट गंतव्य',currency:'PO मुद्रा',incoterm:'Incoterm स्रोत',
+ orderDate:'PO तारीख',shipFrom:'शिपमेंट शुरू',shipToDate:'शिपमेंट समाप्त',source:'लिखित PO स्रोत',
+ rounding:'राउंडिंग नियम',declaredQty:'PO कुल पीस',declaredAmount:'PO कुल मूल्य',
+ style:'स्टाइल',color:'रंग',size:'साइज',quantity:'पीस',unitFob:'प्रति पीस FOB',splitId:'अलग लॉट ID',
+ document:'दस्तावेज़',date:'दस्तावेज़ तारीख',actor:'दर्ज करने वाला',reason:'संशोधन कारण',
+ approval:'प्रमाण सहित PO संस्करण',authority:'दस्तावेज़ अनुमोदक',effective:'प्रभावी तारीख',
+ requestedBy:'संशोधन मांगकर्ता',ack:'प्रमाण के साथ स्वीकृति',ackBy:'स्वीकृति स्रोत व्यक्ति',
+ shipment:'शिपमेंट स्रोत',cancel:'रद्द स्रोत',ledger:'संपूर्ण शिपमेंट स्रोत की जांच',
+ ledgerSource:'पूरा शिपमेंट स्रोत',ref:'दूसरे ऐप का संदर्भ',sizeRatioRef:'साइज अनुपात स्रोत',
+ packingInstructionRef:'पैकिंग निर्देश स्रोत',due:'बकाया',needs:'जानकारी चाहिए',
+ noRules:'PO मंजूरी, FOB, शिपमेंट नहीं मानते',
+ warning:'स्थानीय स्वीकृति खरीदार की पुष्टि नहीं है',noRows:'कोई रिकॉर्ड नहीं',
+ latest:'अंतिम दस्तावेज़',change:'संस्करण तुलना',notApproved:'स्थानीय ड्राफ्ट',
+ note:'स्रोत टिप्पणी'}
+};
+/** Application controller, browser UI state and shared VESA command delegation. */
+class PurchaseOrderWorkspace {
+ constructor(){
+  this.main=document.getElementById('poMain');this.dialog=document.getElementById('poDialog');
+  this.body=document.getElementById('poDialogBody');this.file=document.getElementById('poFile');
+  this.current=null;this.section='summary';this.dirty=false;this.shell=null;this.focus=null;
+  this.store=new PurchaseOrderStore(trim(global.VesaAuth?.session?.()?.email||'local-browser-user'));
+ }
+ tr(key){const language=global.VesaPrefs?.read?.()?.language||'en';
+  return LANG[language]?.[key]||LANG.en[key]||key;}
+ field(k,v='',type='text',attrs='',wide=false){
+  return '<label class="'+(wide?'wide':'')+'"><span>'+esc(this.tr(k))+'</span><input name="'+esc(k)+
+   '" type="'+esc(type)+'" value="'+esc(v??'')+'" '+attrs+'></label>';
+ }
+ choose(k,values,v){
+  return '<label><span>'+esc(this.tr(k))+'</span><select name="'+esc(k)+'">'+values.map(([a,b])=>
+   '<option value="'+esc(a)+'"'+(String(a)===String(v)?' selected':'')+'>'+esc(b)+'</option>').join('')+'</select></label>';
+ }
+ note(k,v=''){return '<label class="wide"><span>'+esc(this.tr(k))+'</span><textarea name="'+esc(k)+
+  '" maxlength="350">'+esc(v)+'</textarea></label>';}
+ check(k,checked=false){return '<label class="wide po-check"><input type="checkbox" name="'+esc(k)+
+  '"'+(checked?' checked':'')+'><span>'+esc(this.tr(k))+'</span></label>';}
+ popup(title,body){
+  this.focus=document.activeElement;document.getElementById('poDialogTitle').textContent=title;
+  this.body.innerHTML=body;if(!this.dialog.open)this.dialog.showModal();
+  this.dialog.addEventListener('close',()=>this.focus?.focus?.(),{once:true});
+  this.body.querySelector('input:not([type=hidden]),select,button')?.focus?.();
+ }
+ error(message){this.popup('Please review','<p class="po-alert" role="alert">'+esc(message)+'</p>');}
+ start(){
+  const Shell=global.VesaWorkspaceShell?.VesaWorkspaceShell;
+  if(!Shell){this.main.textContent='VESA shared shell is unavailable.';return;}
+  const session=global.VesaAuth?.session?.()||{};
+  this.shell=new Shell({root:document.body,
+    descriptor:{id:'purchase-order',name:'VESA Purchase Order 360',route:'/apps/purchase-order/',
+      contentTarget:'#poMain',userLabel:session.name||session.email||'',userRole:session.role||'',
+      savedState:'Unsaved changes'},callbacks:{menu:menu=>this.menu(menu)}});
+  this.shell.mount();
+  document.getElementById('poClose').onclick=()=>this.dialog.close();
+  this.main.addEventListener('click',event=>{
+    const btn=event.target.closest('[data-action]');if(btn){event.preventDefault();this.action(btn.dataset.action,btn.dataset.id);}
+  });
+  this.dialog.addEventListener('submit',event=>{
+   if(event.target.matches('form[data-form]')){event.preventDefault();this.submit(event.target);}
+  });
+  this.file.addEventListener('change',async()=>{
+    const f=this.file.files?.[0];this.file.value='';if(!f)return;
+    try{
+     if(f.size>MAX_BYTES)throw Error('Saved PO copy is too large.');
+     const p=PurchaseOrderStore.decode(await f.text());
+     if(this.store.load(p.id)){p.id=identifier('PO-COPY');p.audit.push({at:new Date().toISOString(),
+      revision:p.revision,action:'Imported separate saved PO copy'});}
+     p.mode='local';this.store.save(p);this.current=p;this.section='summary';this.dirty=false;this.render();
+     this.popup(this.tr('upload'),'<p>Saved PO copy opened separately. The original local order has not been replaced.</p>');
+    }catch(e){this.error(e.message);}
+  });
+  global.addEventListener('vesa-preferences-change',()=>this.render());
+  global.addEventListener('beforeunload',event=>{if(this.dirty&&this.current?.mode==='local'){event.preventDefault();event.returnValue='';}});
+  this.render();
+ }
+ menu(name){
+  const groups={Home:[['home','back'],['new','new'],['continue','continue'],['practice','practice']],
+   File:[['save','save'],['download','download'],['upload','upload'],['open','open']],
+   Edit:[['meta','poNo'],['add-line','lines'],['add-amendment','amendments']],
+   View:[['summary','summary'],['lines','lines'],['shipments','shipments'],['revisions','revisions']],
+   Tools:[['report','report'],['record-revision','approval'],['add-shipment','shipment'],['add-cancel','cancel']],
+   Help:[['help','title'],['practice','practice']]};
+  this.popup(name,'<div class="po-actions">'+(groups[name]||[]).map(([action,label])=>
+   '<button class="po-btn" data-dialog-action="'+esc(action)+'" type="button">'+esc(this.tr(label))+'</button>').join('')+'</div>');
+  this.body.querySelectorAll('[data-dialog-action]').forEach(el=>el.onclick=()=>{this.dialog.close();this.action(el.dataset.dialogAction);});
+ }
+ action(action,id){
+  try{
+   if(action==='home'||action==='open'){this.current=null;this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='new')return this.form('new');
+   if(action==='practice'){this.current=PurchaseOrderEngine.demo();this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='continue'){const list=this.store.list();if(!list.length)throw Error('No saved PO in this browser.');
+    return this.action('open-record',list[0].id);}
+   if(action==='open-record'){const p=this.store.load(id);if(!p)throw Error('PO not found.');
+    this.current=p;this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='upload'){this.file.click();return;}
+   if(action==='save'){if(!this.current||this.current.mode==='practice')throw Error('Practice example is not a live PO.');
+    this.store.save(this.current);this.dirty=false;this.render();return;}
+   if(action==='download'){if(!this.current||this.current.mode==='practice')throw Error('Open a real PO.');
+    this.download(PurchaseOrderStore.encode(this.current),'VESA-PO-'+this.current.id+'.vesapo','application/json');return;}
+   if(['summary','lines','amendments','shipments','revisions','reports'].includes(action)){
+    if(!this.current)throw Error('Open a PO first.');this.section=action;this.render();return;}
+   if(action==='report'){if(!this.current)throw Error('Open a PO.');this.section='reports';this.render();return;}
+   if(action==='excel')return this.excel();
+   if(action==='print'){if(!this.current)throw Error('Open a PO.');this.section='reports';this.render();global.print();return;}
+   if(action==='help')return this.popup('Purchase Order 360 · Help','<p>'+esc(NOTICE)+'</p>'+
+    '<p>Enter exact buyer PO style/colour/size quantities and documented unit FOB. Record immutable revisions only from explicit signed source. Partial shipments, cancellation and acknowledgments require separate evidence. Download Saved Copy for recovery.</p>');
+   if(['meta','add-line','add-amendment','add-shipment','add-cancel','record-revision','acknowledge','reference','complete-ledger'].includes(action))
+    return this.form(action,id);
+   if(action.startsWith('edit-'))return this.form(action.slice(5),id);
+   if(action.startsWith('delete-'))return this.remove(action.slice(7),id);
+  }catch(e){this.error(e.message);}
+ }
+ update(action,handler){
+  if(!this.current||this.current.mode!=='local')throw Error('Practice is read-only.');
+  const p=deep(this.current);handler(p);p.revision++;p.status='draft';p.updatedAt=new Date().toISOString();
+  p.audit.push({at:p.updatedAt,revision:p.revision,action});
+  PurchaseOrderStore.verify(p);
+  if(this.store.load(p.id))this.store.save(p);else this.dirty=true;
+  this.current=p;this.render();
+ }
+ remove(kind,id){
+  const field={line:'lines',amendment:'amendments'}[kind];
+  if(!field)throw Error('Documented shipment, canceled line, signed revision or acknowledgment must not be deleted.');
+  if(kind==='line'&&this.current&&(this.current.shipments.some(x=>x.lineId===id)||
+     this.current.cancelled.some(x=>x.lineId===id)))
+    throw Error('Line has recorded shipment/cancellation and cannot be deleted.');
+  if(kind==='amendment'&&this.current.acknowledgments.some(x=>x.amendmentId===id))
+    throw Error('Already acknowledged amendment cannot be deleted.');
+  if(!global.confirm('Remove unsigned draft entry? Previous snapshots stay intact.'))return;
+  this.update('Removed unsigned '+kind,p=>p[field]=p[field].filter(x=>x.id!==id));
+ }
+ render(){
+  const t=k=>esc(this.tr(k)),title='<section class="po-card"><h1>'+t('title')+
+   '</h1><p class="po-note">'+t('lead')+'</p><p class="po-alert">'+esc(NOTICE)+'</p></section>';
+  if(!this.current){
+   const saved=this.store.list();
+   this.main.innerHTML=title+'<section class="po-card"><div class="po-actions">'+
+    '<button class="po-btn primary" data-action="new">'+t('new')+'</button>'+
+    '<button class="po-btn" data-action="continue">'+t('continue')+'</button>'+
+    '<button class="po-btn" data-action="upload">'+t('upload')+'</button>'+
+    '<button class="po-btn" data-action="practice">'+t('practice')+'</button></div>'+
+    '<h2>'+t('open')+'</h2>'+(saved.length?saved.map(x=>'<div class="po-record"><span><b>'+esc(x.no)+
+     '</b> · '+esc(x.buyer)+'<small>Revision '+esc(x.revision)+'</small></span>'+
+     '<button class="po-btn" data-action="open-record" data-id="'+esc(x.id)+'">'+t('open')+'</button></div>').join(''):
+      '<p class="po-note">'+t('noRows')+'</p>')+'</section>';
+   this.shell?.setSavedState('unsaved');return;
+  }
+  const p=this.current,analysis=PurchaseOrderEngine.validate(p),practice=p.mode==='practice',
+   names=['summary','lines','amendments','shipments','revisions','reports'];
+  this.main.innerHTML=title+'<section class="po-card"><h2>'+esc(p.header.poNo)+' · '+esc(p.header.buyer)+
+   '</h2><p class="po-note">'+esc(p.header.currency)+' · '+esc(p.header.incoterm)+
+   ' · '+(practice?'SYNTHETIC PRACTICE':this.dirty?'Unsaved local draft':'Saved locally, not independently buyer-approved')+'</p>'+
+   '<div class="po-actions"><button class="po-btn" data-action="home">'+t('back')+'</button>'+
+    '<button class="po-btn primary" data-action="save"'+(practice?' disabled':'')+'>'+t('save')+'</button>'+
+    '<button class="po-btn" data-action="download"'+(practice?' disabled':'')+'>'+t('download')+'</button>'+
+    '<button class="po-btn" data-action="report">'+t('report')+'</button>'+
+    '<button class="po-btn" data-action="record-revision"'+(practice?' disabled':'')+'>'+t('approval')+'</button></div></section>'+
+   '<nav class="po-tabs" aria-label="PO workspace sections">'+names.map(name=>
+    '<button class="po-btn" data-action="'+name+'" aria-current="'+(name===this.section)+'">'+t(name)+'</button>').join('')+'</nav>'+
+   (analysis.errors.length?'<section class="po-card" role="alert"><h2>Review source discrepancy</h2><ul>'+
+    analysis.errors.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></section>':'')+
+   this.panel(this.section,p,analysis);
+  this.shell?.setSavedState(this.dirty?'unsaved':'saved');
+ }
+ panel(tab,p,calc){
+  const t=k=>esc(this.tr(k)),practice=p.mode==='practice';
+  const button=(name,id,label='edit')=>'<button class="po-btn" data-action="'+esc(name)+'"'+
+    (id?' data-id="'+esc(id)+'"':'')+(practice?' disabled':'')+'>'+t(label)+'</button>';
+  const table=(head,rows)=>'<div class="po-scroll"><table class="po-table"><thead><tr>'+
+    head.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>
+      '<tr>'+row.map(cell=>'<td>'+cell+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+  const title=(name,action,label='add')=>'<div class="po-actions"><h2>'+t(name)+'</h2>'+
+    (action?button(action,null,label):'')+'</div>';
+  if(tab==='summary'){
+   const tile=(name,value)=>'<div class="po-tile"><strong>'+esc(value??this.tr('needs'))+
+    '</strong><small>'+t(name)+'</small></div>';
+   const known=calc.balances.every(x=>x.unshipped!==null)&&calc.balances.length?
+    calc.balances.reduce((s,x)=>s+x.unshipped,0):null;
+   return '<section class="po-card">'+title('summary','meta','edit')+
+    '<div class="po-grid">'+tile('quantity',calc.quantity)+tile('declaredAmount',
+     calc.amount===null?null:calc.amount+' '+p.header.currency)+tile('due',known)+
+    tile('lines',p.lines.length)+tile('amendments',p.amendments.length)+tile('revisions',p.revisions.length)+
+    '</div><p class="po-note">'+t('noRules')+'</p>'+
+    '<div class="po-actions">'+button('complete-ledger',null,'ledger')+
+      button('reference',null,'ref')+'</div>'+
+    (calc.notes.length?'<ul>'+calc.notes.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+'</section>';
+  }
+  if(tab==='lines')return '<section class="po-card">'+title('lines','add-line')+
+   table(['Style','Colour','Size','Split ID','Pieces','FOB/unit','Line total','Source','Action'],
+    p.lines.map(line=>[esc(line.style),esc(line.color),esc(line.size),esc(line.splitId||''),
+      esc(line.quantity),esc(line.unitFob),esc(calc.balances.find(x=>x.lineId===line.id)?.value||'Needs Information'),
+      esc(line.sourceRef),button('edit-line',line.id)+' '+button('delete-line',line.id,'remove')]))+'</section>';
+  if(tab==='amendments')return '<section class="po-card">'+title('amendments','add-amendment')+
+   table(['Reason','Requested by','Date','Source','Status','Action'],p.amendments.map(x=>[
+    esc(x.reason),esc(x.requestedBy),esc(x.date),esc(x.sourceRef),esc(x.status),
+    x.status==='pending'?button('acknowledge',x.id,'ack')+' '+button('delete-amendment',x.id,'remove'):'Acknowledgment preserved']))+
+   '<p class="po-note">'+t('warning')+'</p></section>';
+  if(tab==='shipments')return '<section class="po-card">'+title('shipments','add-shipment','shipment')+
+   '<div class="po-actions">'+button('add-cancel',null,'cancel')+
+    button('complete-ledger',null,'ledger')+'</div>'+
+   table(['Type','Line','Pieces','Date','Evidence source','Document'],
+    [...p.shipments.map(x=>['Shipment',x]),...p.cancelled.map(x=>['Cancellation',x])]
+      .map(([kind,x])=>[esc(kind),esc(p.lines.find(y=>y.id===x.lineId)?.style||'?'),
+        esc(x.quantity),esc(x.date),esc(x.sourceRef),esc(x.documentRef)]))+
+   '<p class="po-note">'+t('ledgerSource')+': '+esc(p.header.ledgerComplete?p.header.ledgerSource:this.tr('needs'))+'</p></section>';
+  if(tab==='revisions'){
+   const last=p.revisions.at(-1),changes=PurchaseOrderEngine.compare(p,last);
+   return '<section class="po-card">'+title('revisions','record-revision','approval')+
+    '<p class="po-alert">'+t('warning')+'</p>'+
+    table(['Revision','Source authority','Effective date','Document','Action'],
+      p.revisions.map(x=>[esc(x.recordRevision),esc(x.authority),esc(x.effectiveDate),
+        esc(x.documentRef),'Immutable recorded source']))+
+    '<h3>'+t('change')+'</h3>'+table(['Changed field','Explanation'],
+      changes.map(x=>[esc(x.field),'Previous source retained; full comparison is in Excel/Report']))+
+    '</section>';
+  }
+  if(tab==='reports'){
+   const changes=PurchaseOrderEngine.compare(p,p.revisions.at(-1));
+   return '<section class="po-card"><div class="po-actions"><button class="po-btn primary" data-action="excel">'+
+    t('excel')+'</button><button class="po-btn" data-action="print">'+t('print')+'</button></div>'+
+    PurchaseOrderReport.html(p,calc,changes)+'</section>';
+  }
+  return '<section class="po-card">'+t('noRows')+'</section>';
+ }
+ form(kind,id){
+  const p=this.current,t=k=>esc(this.tr(k)),start='<form class="po-form" data-form="'+esc(kind)+
+    '"><input name="id" type="hidden" value="'+esc(id||'')+'">',end='<div class="wide po-actions">'+
+    '<button class="po-btn primary" type="submit">'+t('save')+'</button></div></form>';
+  let data={},body='',title='';
+  if(kind==='new'||kind==='meta'){
+   data=kind==='meta'?p.header:{};title=kind==='new'?t('new'):t('poNo');
+   const val=(key,kind='text',more='required')=>this.field(key,data[key]??'',kind,more);
+   body=val('poNo')+val('buyer')+val('issuer')+val('factory')+val('shipTo')+
+    val('currency','text','required maxlength="3" pattern="[A-Z]{3}"')+
+    val('incoterm')+val('orderDate','date')+val('shipFrom','date')+val('shipToDate','date')+
+    val('source')+
+    this.choose('rounding',[['','Select buyer-approved policy'],['line-half-up-2','Per line half-up cents'],
+     ['line-down-2','Per line down cents']],data.rounding)+
+    this.field('declaredQty',data.declaredQty??'','number','min="0" step="1"')+
+    this.field('declaredAmount',data.declaredAmount,'text','inputmode="decimal"')+
+    this.field('sizeRatioRef',data.sizeRatioRef,'text','maxlength="160"')+
+    this.field('packingInstructionRef',data.packingInstructionRef,'text','maxlength="160"',true);
+  }else if(kind==='add-line'||kind==='line'){
+   if(!p)throw Error('Create PO header first.');
+   data=p.lines.find(x=>x.id===id)||{};title=t('lines');
+   body=this.field('style',data.style,'text','required maxlength="90"')+
+    this.field('color',data.color,'text','required maxlength="60"')+
+    this.field('size',data.size,'text','required maxlength="40"')+
+    this.field('splitId',data.splitId,'text','maxlength="70"')+
+    this.field('quantity',data.quantity,'number','min="1" step="1" required')+
+    this.field('unitFob',data.unitFob,'text','required inputmode="decimal" maxlength="20"')+
+    this.field('source',data.sourceRef,'text','required maxlength="180"',true);
+  }else if(['add-shipment','add-cancel'].includes(kind)){
+   if(!p?.lines.length)throw Error('Enter sourced PO lines first.');
+   title=kind==='add-shipment'?t('shipment'):t('cancel');
+   body=this.choose('lineId',p.lines.map(x=>[x.id,x.style+' / '+x.color+' / '+x.size]))+
+    this.field('quantity','','number','required min="1" step="1"')+
+    this.field('date','','date','required')+
+    this.field('document','','text','required maxlength="180"')+
+    this.field('source','','text','required maxlength="180"')+
+    this.field('actor','','text','required maxlength="100"');
+  }else if(kind==='complete-ledger'){
+   title=t('ledger');body='<p class="wide po-note">The unshipped balance can only be calculated if all shipments/cancellations covering this PO have been independently checked.</p>'+
+    this.field('ledgerSource',p.header.ledgerSource,'text','required maxlength="180"')+
+    this.check('ledger',p.header.ledgerComplete);
+  }else if(kind==='add-amendment'){
+   title=t('amendments');body=this.field('reason','','text','required maxlength="200"')+
+    this.field('requestedBy','','text','required maxlength="100"')+
+    this.field('date','','date','required')+this.field('source','','text','required maxlength="180"');
+  }else if(kind==='acknowledge'){
+   if(!p.amendments.some(x=>x.id===id&&x.status==='pending'))throw Error('Only pending amendments may be acknowledged.');
+   title=t('ack');body='<p class="wide po-warning">'+t('warning')+'</p>'+
+    this.field('ackBy','','text','required maxlength="100"')+
+    this.field('date','','date','required')+this.field('document','','text','required maxlength="180"');
+  }else if(kind==='record-revision'){
+   title=t('approval');body='<p class="wide po-alert">Record only explicit written buyer/issuer approval source. This app cannot independently authenticate a signature.</p>'+
+    this.field('authority','','text','required maxlength="120"')+
+    this.field('effective','','date','required')+
+    this.field('document','','text','required maxlength="180"')+
+    this.note('reason')+this.check('reviewed',false);
+  }else if(kind==='reference'){
+   data=p.header.manualReference||{};title=t('ref');
+   body=['sourceApp','recordType','recordId','revisionId','sourceDate','verifiedBy','verifiedAt','displaySnapshot']
+    .map(k=>this.field(k,data[k]||'','text','maxlength="180"')).join('');
+  }else throw Error('Unknown PO form.');
+  this.popup(title,start+body+end);
+ }
+ submit(form){
+  try{
+   const fields=Object.fromEntries(new FormData(form).entries()),
+    get=k=>trim(fields[k]),number=k=>get(k)===''?null:Number(get(k)),
+    checked=k=>form.querySelector('[name="'+k+'"]')?.checked||false,
+    kind=form.dataset.form;
+   if(kind==='new'){
+    const data={poNo:get('poNo'),buyer:get('buyer'),issuer:get('issuer'),factory:get('factory'),
+      shipTo:get('shipTo'),currency:get('currency'),incoterm:get('incoterm'),
+      orderDate:get('orderDate'),shipFrom:get('shipFrom'),shipToDate:get('shipToDate'),
+      sourceRef:get('source'),rounding:get('rounding'),declaredQty:number('declaredQty'),
+      declaredAmount:get('declaredAmount')};
+    const p=PurchaseOrderEngine.create(data);
+    p.header.sizeRatioRef=get('sizeRatioRef');p.header.packingInstructionRef=get('packingInstructionRef');
+    PurchaseOrderStore.verify(p);this.current=p;this.section='lines';this.dirty=true;
+   }else if(kind==='meta'){
+    this.update('Sourced commercial PO header updated',p=>{
+     if(p.revisions.length&&[p.header.currency,p.header.rounding].some((old,i)=>
+       old!==[get('currency'),get('rounding')][i])&&
+       (p.shipments.length||p.cancelled.length))
+      throw Error('Changing signed currency or rounding after shipment/cancellation needs a new reviewed PO revision.');
+     Object.assign(p.header,{poNo:get('poNo'),buyer:get('buyer'),issuer:get('issuer'),factory:get('factory'),
+      shipTo:get('shipTo'),currency:get('currency'),incoterm:get('incoterm'),
+      orderDate:get('orderDate'),shipFrom:get('shipFrom'),shipToDate:get('shipToDate'),
+      sourceRef:get('source'),rounding:get('rounding'),declaredQty:number('declaredQty'),
+      declaredAmount:get('declaredAmount'),sizeRatioRef:get('sizeRatioRef'),
+      packingInstructionRef:get('packingInstructionRef')});
+    });
+   }else if(kind==='add-line'||kind==='line'){
+    this.update('Style colour size commercial line updated',p=>{
+     if(p.shipments.length||p.cancelled.length)throw Error('PO line changes cannot silently replace shipped/canceled source.');
+     const id=get('id')||identifier('L');
+     const item={id,style:get('style'),color:get('color'),size:get('size'),splitId:get('splitId'),
+       quantity:number('quantity'),unitFob:get('unitFob'),sourceRef:get('source')};
+     p.lines=p.lines.filter(x=>x.id!==id).concat(item);
+    });
+   }else if(kind==='add-shipment'||kind==='add-cancel'){
+    this.update(kind==='add-shipment'?'Manual shipment evidence':'Documented cancellation evidence',p=>{
+     const item={id:identifier('EVENT'),lineId:get('lineId'),quantity:number('quantity'),
+      date:get('date'),documentRef:get('document'),sourceRef:get('source'),actor:get('actor')};
+     p[kind==='add-shipment'?'shipments':'cancelled'].push(item);
+    });
+   }else if(kind==='complete-ledger'){
+    this.update('Shipment completeness source declaration updated',p=>{
+     p.header.ledgerComplete=checked('ledger');p.header.ledgerSource=get('ledgerSource');
+    });
+   }else if(kind==='add-amendment'){
+    this.update('Signed PO amendment request source recorded',p=>{
+     p.amendments.push({id:identifier('AMD'),reason:get('reason'),requestedBy:get('requestedBy'),
+      date:get('date'),sourceRef:get('source'),status:'pending'});
+    });
+   }else if(kind==='acknowledge'){
+    this.update('Independent amendment acknowledgment evidence recorded',p=>{
+     const amendment=p.amendments.find(x=>x.id===get('id'));
+     if(!amendment||amendment.status!=='pending')throw Error('Acknowledgment must belong to a pending amendment.');
+     const ack={id:identifier('ACK'),amendmentId:amendment.id,actor:get('ackBy'),
+      date:get('date'),sourceRef:get('document')};
+     p.acknowledgments.push(ack);amendment.status='acknowledged';
+    });
+   }else if(kind==='record-revision'){
+    if(!checked('reviewed'))throw Error('Verify the actual PO document yourself before recording this source.');
+    this.update('User-referenced signed PO revision snapshot recorded',p=>{
+     if(!p.lines.length)throw Error('A sourced PO must have line quantities before a revision snapshot.');
+     if(!get('authority')||!get('document')||!PurchaseOrderEngine.date(get('effective')))
+      throw Error('Approval source, effective date and recorded authority required.');
+     p.revisions.push({id:identifier('REV'),recordRevision:p.revision+1,at:new Date().toISOString(),
+      authority:get('authority'),effectiveDate:get('effective'),documentRef:get('document'),
+      reason:get('reason'),snapshot:{header:deep(p.header),lines:deep(p.lines),
+        cancelled:deep(p.cancelled),shipments:deep(p.shipments)}});
+    });
+   }else if(kind==='reference'){
+    this.update('Explicit manual cross-app PO source reference recorded',p=>{
+     p.header.manualReference=Object.fromEntries(['sourceApp','recordType','recordId','revisionId','sourceDate',
+       'verifiedBy','verifiedAt','displaySnapshot'].map(k=>[k,get(k)]));
+    });
+   }
+   this.dialog.close();this.render();
+  }catch(error){
+   let box=form.querySelector('[role=alert]');
+   if(!box){box=document.createElement('p');box.className='po-alert wide';box.setAttribute('role','alert');form.prepend(box);}
+   box.textContent=error.message;
+  }
+ }
+ download(data,name,type){
+  const blob=data instanceof Blob?data:new Blob([data],{type});
+  const url=URL.createObjectURL(blob),anchor=document.createElement('a');
+  anchor.href=url;anchor.download=name;document.body.append(anchor);anchor.click();anchor.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1200);
+ }
+ excel(){
+  if(!this.current)throw Error('Open a PO before exporting.');
+  if(!global.XLSX?.utils?.book_new)throw Error('Local spreadsheet library is unavailable.');
+  const p=this.current,calc=PurchaseOrderEngine.validate(p),
+   rows=PurchaseOrderReport.sheets(p,calc,PurchaseOrderEngine.compare(p,p.revisions.at(-1)));
+  const wb=global.XLSX.utils.book_new();
+  for(const [name,items] of Object.entries(rows)){
+   const matrix=PurchaseOrderReport.excelRows(name,items);
+   const sheet=global.XLSX.utils.aoa_to_sheet(matrix);sheet['!cols']=items[0].map(()=>({wch:25}));
+   global.XLSX.utils.book_append_sheet(wb,sheet,name.slice(0,31));
+  }
+  const data=global.XLSX.write(wb,{bookType:'xlsx',type:'array',compression:true});
+  this.download(new Blob([data],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),
+   'VESA-PO-'+p.id+'.xlsx','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+ }
+}
+global.VesaPurchaseOrder360=Object.freeze({PurchaseOrderEngine,PurchaseOrderStore,PurchaseOrderReport,VERSION,COPY_VERSION});
+if(typeof module!=='undefined'&&module.exports)module.exports=global.VesaPurchaseOrder360;
+if(typeof document!=='undefined'){
+ const start=()=>new PurchaseOrderWorkspace().start();
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+}
+})(typeof globalThis!=='undefined'?globalThis:this);
+</script></body></html>
