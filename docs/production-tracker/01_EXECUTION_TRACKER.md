@@ -1,5 +1,19 @@
 # APP-09 Production Tracker 360 — Execution Tracker
 
+## 2026-10-17 — M2 Chromium local workspace checkpoint (accepted)
+
+**Verified development commit** `11239d42ec0b6fb4782281b46151bb467d23fb2a`; [GitHub Actions #39021964916 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39021964916). Real Chromium workflow covers source-defined Production order, reviewed opening WIP, stage target, day/shift actual and immutable correction, duplicate atomic rejection, local Save/Reload/Continue, portable `.vesaprod` restore and corrupted-copy isolation, EN/BN/HI/TA and 320/360/390/640/768/1024/1280/1440 CSS px with no page-wide overflow or foreign network requests. Pure domain and all established sibling regression tests passed. One shared top VESA shell, no App Centre/catalogue/service-worker release and no private customer data.
+
+**M2 owned files:** `apps/production-tracker/index.html`, `assets/production-tracker.css`, `src/bootstrap.js`, `src/application/workspace-controller.js`, `src/data/local-record-port.js`, `src/data/saved-copy-codec.js`, `src/i18n/app-copy.js`, `tests/save-reopen.test.cjs`, `tests/browser-workflow.cjs`, development workflow. Previous M1 pure domain is unchanged.
+
+**Proof verdict:** M2 `accepted` for synthetic local workflow, not for actual factory definitions, commercial use, native 200% device zoom or final shipping/quality authority. A synthetic source can only mean locally reviewed evidence, not buyer-approved goods.
+
+**M3 exact next patch / ownership:** `apps/production-tracker/src/domain/reviewed-reference.js` (new pure typed source validator), `apps/production-tracker/src/reports/report-model.js` (new draft-only safe HTML/workbook model), `apps/production-tracker/src/application/workspace-controller.js`, `apps/production-tracker/index.html`, `apps/production-tracker/tests/report-reference.test.cjs`, `apps/production-tracker/tests/browser-workflow.cjs`, `.github/workflows/production-tracker.yml`. Allow separate explicitly verified read-only TNA/PO references copied from user's local source file, never read or write sibling storage. Preserve old `.vesaprod` decoder and old records with optional references. Excel must escape formula cells and keep numerical counts numeric; printable report must label source-only status. No change to `apps/tna`, `apps/aql`, `apps/ppm`, global shell, service worker, or other released apps. Test Node/Chromium report/reference round-trip, tampered input rejection, old copy backward compatibility, regression. Rollback by reverting this M3 patch group.
+
+**CURRENT NEXT ACTION:** Finish bounded M3 report/manual reference patch, verify, then M4 full release eligibility/UAT assessment. No public APP-09 deploy until actual Chromium final and separate Pages suitability checks.
+
+---
+
 ## 2026-10-17 — M1 pure domain verification checkpoint (accepted)
 
 **Commit:** `45b08317b0c8b649381b7858d35a2a708d1ae01e`. [Actual GitHub Actions #39021308588 — SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39021308588) for Node syntax, `tests/domain.test.cjs`, canonical blueprint SHA-256/ZIP, next-app starter, Shipment/Fabric/Sampling/LC/PO/Packing/Commission/TechPack domain tests, TNA G02/G05, PPM baseline, AQL baseline and sampling, shared VESA shell contract.
