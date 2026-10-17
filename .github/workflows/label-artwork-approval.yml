@@ -14,7 +14,7 @@ permissions:
 jobs:
   artwork-domain:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 38
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,6 +31,14 @@ jobs:
           node --check apps/label-artwork-approval/src/domain/review-state.js
           node --check apps/label-artwork-approval/tests/domain.test.cjs
           node apps/label-artwork-approval/tests/domain.test.cjs
+          node --check apps/label-artwork-approval/src/bootstrap.js
+          node --check apps/label-artwork-approval/src/application/workspace-controller.js
+          node --check apps/label-artwork-approval/src/data/local-record-port.js
+          node --check apps/label-artwork-approval/src/data/saved-copy-codec.js
+          node --check apps/label-artwork-approval/src/i18n/app-copy.js
+          node --check apps/label-artwork-approval/tests/save-reopen.test.cjs
+          node --check apps/label-artwork-approval/tests/browser-workflow.cjs
+          node apps/label-artwork-approval/tests/save-reopen.test.cjs
           node tests/personal-demo-release.cjs
           node tests/vesa-next-app-starter.cjs
           node apps/factory-vendor/tests/domain.test.cjs
@@ -54,3 +62,16 @@ jobs:
           node apps/aql/tests/a-g03-sampling.cjs
           node tests/vesa-workspace-shell-contract.cjs
           git diff --check HEAD~1 HEAD
+      - name: Install real Chromium for artwork browser proof
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Actual Chromium artwork revision and local-copy journey
+        run: node apps/label-artwork-approval/tests/browser-workflow.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: artwork360-m2-synthetic-browser
+          path: output/playwright/artwork-app10-*
+          if-no-files-found: ignore
