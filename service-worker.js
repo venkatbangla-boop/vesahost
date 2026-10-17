@@ -1,4 +1,4 @@
-const CACHE='vesa-v86-app-centre-desktop';
+const CACHE='vesa-v87-app-centre-links';
 const ASSETS=[
   './',
   './index.html',
@@ -168,7 +168,7 @@ const ASSETS=[
   './js/preferences.js?v=20261015-costing-demo',
   './js/vesa-workspace-shell.js?v=20261013-platform-g09',
   './js/vesa-workspace-shell.js',
-  './js/vesa-app-centre.js?v=20261018-u02',
+  './js/vesa-app-centre.js?v=20261018-u03',
   './js/app-catalogue.js',
   './js/app-catalogue.js?v=20261015-costing-demo',
   './js/vendor/xlsx.full.min.js',
