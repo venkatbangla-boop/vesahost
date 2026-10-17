@@ -7,32 +7,40 @@
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/vesa-workspace.css?v=20261013-platform-g09">
+  <link rel="stylesheet" href="/css/vesa-app-centre.css?v=20261017-u01">
   <script src="/js/preferences.js?v=20261015-costing-demo"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/vesa-workspace-shell.js?v=20261013-platform-g09"></script>
   <script src="/js/app-catalogue.js?v=20261015-costing-demo"></script>
+  <script src="/js/vesa-app-centre.js?v=20261017-u01"></script>
 </head>
 <body class="app-centre-page">
   <script>VesaAuth.requireAuth();</script>
-  <main class="app-centre-shell">
-    <section class="app-centre-hero" tabindex="-1">
-      <span class="kicker" data-i18n="appCentre">VESA App Centre</span>
-      <h1 data-i18n="choose">Choose Your Workspace</h1>
-      <p class="lead" data-i18n="chooseText">Open the approved VESA tools for local forms, calculations, saved copies and reports.</p>
+  <main class="app-centre-shell" id="appCentreMain">
+    <section class="app-centre-hero" aria-labelledby="centreTitle">
+      <div>
+        <span class="app-centre-eyebrow" data-centre-copy="eyebrow">YOUR WORKSPACES</span>
+        <h1 id="centreTitle" data-centre-copy="title">Find the right tool for the job</h1>
+        <p class="app-centre-lead" data-centre-copy="intro">Planning, production, sourcing and reports in one organised place.</p>
+      </div>
+      <div class="app-centre-total">
+        <strong id="appCount">19</strong>
+        <span data-centre-copy="available">Available applications</span>
+      </div>
     </section>
+    <section class="app-centre-tools" aria-label="Find applications">
+      <div class="app-centre-search">
+        <label for="appSearch" data-centre-copy="search">Find an application</label>
+        <input id="appSearch" type="search" placeholder="Search by app, task or report…" autocomplete="off" spellcheck="false">
+      </div>
+      <button id="appClear" class="app-clear" data-centre-copy="clear" type="button" hidden>Clear search</button>
+    </section>
+    <div class="app-centre-toolbar">
+      <div id="appFilters" class="app-filters" role="group" aria-label="Filter applications"></div>
+      <p id="appResults" class="app-results" role="status" aria-live="polite"></p>
+    </div>
     <section class="app-catalogue" aria-label="Applications" id="appCatalogue" tabindex="-1">
-      <article class="app-tile panel">
-        <span>AQL</span>
-        <h2>Inspection Quality Suite</h2>
-        <p>Final inspection, stage workflows, AQL sampling, evidence, quality records and reports.</p>
-        <a class="btn primary" href="/apps/aql/" data-i18n="openAql">Open AQL</a>
-      </article>
-      <article class="app-tile panel">
-        <span>PPM</span>
-        <h2>Pre-Production Meeting</h2>
-        <p>Production readiness, approvals, measurement checks, change review and printable reports.</p>
-        <a class="btn primary" href="/apps/ppm/" data-i18n="openPpm">Open PPM</a>
-      </article>
+      <p role="status">Opening applications…</p>
     </section>
   </main>
   <script>
@@ -50,11 +58,15 @@
       }
     });
     pageShell.mount();
-    const catalogue=document.getElementById('appCatalogue');
-    if(window.VesaAppCatalogue?.enabled){
-      catalogue.innerHTML=window.VesaAppCatalogue.enabled().map(app=>`<article class="app-tile panel"><span>${VesaAuth.safeText(app.shortName)}</span><h2>${VesaAuth.safeText(app.name)}</h2><p>${VesaAuth.safeText(app.description)}</p><a class="btn primary" href="${VesaAuth.safeText(app.route)}" data-i18n="${VesaAuth.safeText(app.openLabelKey)}">${VesaAuth.safeText(VesaPrefs?.label?.(app.openLabelKey)||'Open '+app.shortName)}</a></article>`).join('');
-      VesaPrefs?.translate?.();
-    }
+    const explorer=new VesaAppCentreExplorer({
+      catalogue:document.getElementById('appCatalogue'),
+      filters:document.getElementById('appFilters'),
+      search:document.getElementById('appSearch'),
+      clear:document.getElementById('appClear'),
+      status:document.getElementById('appResults'),
+      count:document.getElementById('appCount')
+    });
+    explorer.mount();
   </script>
 </body>
 </html>
