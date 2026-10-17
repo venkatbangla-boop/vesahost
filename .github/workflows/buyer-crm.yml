@@ -1,13 +1,19 @@
-# APP-11 pure-domain Buyer CRM M1 only; no public route, real contact data or external messages.
+# APP-11 gated personal non-commercial synthetic demo: source reports, static registration, real Chromium, sibling parity.
 name: VESA Buyer CRM 360 verification
 on:
   push:
     branches:
       - feature/buyer-crm-360
+      - main
     paths:
       - 'apps/buyer-crm/**'
       - 'docs/buyer-crm/**'
       - '.github/workflows/buyer-crm.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
+      - '.github/workflows/vesa-costing-demo-live-smoke.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -44,6 +50,9 @@ jobs:
           node --check apps/buyer-crm/tests/report-reference.test.cjs
           node apps/buyer-crm/tests/report-reference.test.cjs
           node tests/personal-demo-release.cjs
+          node --check js/app-catalogue.js
+          node --check js/preferences.js
+          node --check service-worker.js
           node tests/vesa-next-app-starter.cjs
           node apps/label-artwork-approval/tests/domain.test.cjs
           node apps/label-artwork-approval/tests/save-reopen.test.cjs
@@ -79,6 +88,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: buyercrm360-m3-synthetic-browser
+          name: buyercrm360-m4-synthetic-browser
           path: output/playwright/crm-app11-*
           if-no-files-found: ignore
