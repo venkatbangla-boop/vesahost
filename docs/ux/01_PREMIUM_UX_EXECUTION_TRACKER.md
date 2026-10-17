@@ -1,5 +1,16 @@
 # VESA 360 Premium Login & 19-App UX — Durable Execution Tracker
 
+## 2026-10-18 — G3 MOBILE PPM PASS / APP DEPTH EXPANSION NEXT
+
+**PPM G3 COMPLETED + MAIN DEPLOYED:** feature `feature/ppm-g3-mobile-section-focus`, verified SHA `e7b8a549abbc7f115236952c2df04d94d49b897e`. 390px opened PPM editor scroll ~25,986px before → 9,108px after, one section visible, all 168 preserved, All sections/critical search/print/local copy preserved, mobile 44px+ navigation, Tamil verified. [Chromium/offline + TNA/AQL sibling #39061533910 PASS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39061533910), [main G3 #39063021250 PASS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063021250), [Pages #39063020350 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063020350). Desktop/tablet polish and full 19-app interactive G5 not claimed.
+
+**Depth benchmark confirmed:** `docs/portfolio/16_AQL_DEPTH_BENCHMARK_AND_19_APP_WORKPLAN.md`. Entire AQL/19 source [#39063215638 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063215638); AQL embedded-media [#39063360880 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063360880). 11.78 MB AQL source ~90.94% Base64 media, 291 PNGs, 99 classes; don't imitate its byte count. Original portfolio engines and multi-sheet XLSX are already implemented; deepen the user journey/exception/document reporting one app at a time.
+
+**EXACT NEXT:** G3-AQL-PERF actual mobile decode/scroll profile and G4-W1 APP-01 Packing source feature-depth audit. Never touch public homepage, AQL Ac/Re, PPM GO/HOLD, TNA baseline, older saved copies, no guessed rules.
+
+---
+
+
 ## 2026-10-18 — TNA G3 CSS CACHE REFRESH CLOSED
 
 Source regression: G3 TNA stylesheet code was published, but existing app-scoped cache `vesa-tna-20261017-g17-merch-v1` retained the previous exact CSS URL. A returning browser could continue to show old styling. **Small reversible fix** on `main` SHA `9feaf2cd577125de1f9d000fed7ff0cad6e5e168`: bumped only the TNA CSS query in `apps/tna/index.html`, the isolated TNA worker cache namespace and manifest, and the matching offline Node/Chromium assertions; domain and G13–G17 engines unchanged. [Feature real Chromium offline/saved XLSX/PDF #39060843140 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060843140), [main identical offline/UI #39060958773 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958773), [main Pages #39060958901 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958901). Test planted a **legacy named CSS cache** and verified the sheet-first design loads while entirely offline and all eight commands remain. Old named caches are preserved. **NEXT remains G3-PPM-02**, app-owned mobile editor task-first navigation with all 168 checkpoints, Save/Open and print untouched. AQL performance profile follows. Homepage untouched.
