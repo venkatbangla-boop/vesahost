@@ -22,7 +22,7 @@ assert.throws(()=>C.decode(source.replace('SYN BUYER','FORGED BUYER')),/altered\
 assert.throws(()=>C.decode('{broken'),/unreadable/);
 assert.throws(()=>C.decode('x'.repeat(C.maxLength+1)),/limit/);
 const spoof=JSON.parse(source);spoof.record.status='CONFIRMED BUYER PO';spoof.hash=C.hash(JSON.stringify(spoof.record));
-assert.throws(()=>C.decode(JSON.stringify(spoof)),/cannot claim confirmed PO/);
+assert.throws(()=>C.decode(JSON.stringify(spoof)),/must not claim confirmed PO/);
 const older=E.create({organizationName:'SYN BUYER',territory:'SYN TERRITORY',sourceRef:'SYN ORG SOURCE'});older.id=p.id;
 assert.throws(()=>a.save(older),/Older CRM copy/);
 const fake=E.copy(p);fake.contacts[0].consentStatus='consented';
