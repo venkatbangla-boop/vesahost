@@ -1,5 +1,10 @@
 # VESA TNA 360 — Repository Instructions for VS Code Codex
 
+## 2026-10-18 — G4 W1 exact CONTINUE checkpoint (overrides older phase pointers)
+
+**Latest verified runtime `main`:** `405143c6da61134313af90dfa26e069f7a05a779`. Completed and Pages-deployed from original code: Packing 8-section feature discovery (CI `39065169029`), Order & Commission 10-step financial workbench (CI `39065702246`), Tech Pack six tasks plus original calculation S48/M50/L52 specimen (CI `39066179944`). Reports and tests: `docs/portfolio/20_G4_W1_THREE_APP_PROOF_AND_NEXT.md`; AQL/19-depth `docs/portfolio/16_AQL_DEPTH_BENCHMARK_AND_19_APP_WORKPLAN.md`. **NEXT:** read newest GitHub/main/CI, audit **Costing 360 opened mobile/desktop feature and report UX** using actual source/Python browser E2E; patch only proven issue, then APP-13 PO, remaining W2/W3/W4, G5. Preserve frozen business domain/saved copy/approved blueprints. Homepage remains permanently untouched. Do not request ZIP/restart or ask NEXT after each app. Synthetic CI never equals human UAT (1/0/48).
+
+
 ## 2026-10-18 — Highest-priority VESA UX scope and CONTINUE command
 
 **Owner correction, permanent:** DO NOT MODIFY the public `vesaent.com/` homepage, root `index.html`, `css/style.css`, `js/main.js`, company images/video, SEO or legal/contact pages in any VESA 360 redesign. **Only `/login/`, `/apps/`, `/admin/` and the 19 existing `/apps/<slug>/` applications are in scope.** Root service-worker updates are permitted only for needed login/app asset versioning, preserving homepage byte contents. This instruction overrides older proposed homepage redesigns.
