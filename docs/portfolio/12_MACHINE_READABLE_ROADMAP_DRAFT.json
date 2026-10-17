@@ -1,0 +1,399 @@
+{
+  "schema": "vesa-portfolio-roadmap-draft-v1",
+  "createdOn": "2026-10-14",
+  "project": "VESA 360 - 15 additional applications",
+  "status": "PROPOSED_NOT_IMPLEMENTED",
+  "sourceRepo": "venkatbangla-boop/vesahost",
+  "existingApps": [
+    "tna",
+    "ppm",
+    "aql"
+  ],
+  "costing360": "separate_handover_not_in_15",
+  "architecture": "domain-first static browser-local multi-app suite",
+  "waveOrder": [
+    "W1",
+    "W2",
+    "W3",
+    "W4"
+  ],
+  "catalogueChangesAuthorized": false,
+  "publicDeploymentAuthorizedByThisPackage": false,
+  "proposedApps": [
+    {
+      "id": "APP-01",
+      "name": "Packing & Container 360",
+      "slug": "packing-container",
+      "routeCandidate": "/apps/packing-container/",
+      "priorityRank": 1,
+      "wave": "W1",
+      "complexityRelative": "L",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Cartonization plans, pack configurations, pallet/container space planning and calculated loading scenarios.",
+      "recordTypes": [
+        "CartonSpecification",
+        "PackingConfiguration",
+        "PackingPlan",
+        "ContainerLoadScenario",
+        "LoadingLine"
+      ],
+      "businessDecisionsNeeded": [
+        "Container equipment data source and permitted container catalogue",
+        "Carton handling/stacking and gross-weight policies",
+        "Whether packing ratios are mandated per buyer/style"
+      ],
+      "blueprintPath": "blueprints/APP-01_packing-container.md"
+    },
+    {
+      "id": "APP-02",
+      "name": "Order & Commission 360",
+      "slug": "order-commission",
+      "routeCandidate": "/apps/order-commission/",
+      "priorityRank": 2,
+      "wave": "W1",
+      "complexityRelative": "M",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Agent/trading office commission agreements, accrual/earned balances, invoices and commission collections against verified order values.",
+      "recordTypes": [
+        "CommissionAgreement",
+        "CommissionLine",
+        "CommissionInvoice",
+        "CommissionReceipt",
+        "CommissionReconciliation"
+      ],
+      "businessDecisionsNeeded": [
+        "Commission basis: total FOB, shipped FOB, invoiced FOB or received FOB",
+        "Earned milestone and due-date convention",
+        "Rounding by PO line/contract/invoice and treatment of credits"
+      ],
+      "blueprintPath": "blueprints/APP-02_order-commission.md"
+    },
+    {
+      "id": "APP-03",
+      "name": "Tech Pack & Spec 360",
+      "slug": "tech-pack-spec",
+      "routeCandidate": "/apps/tech-pack-spec/",
+      "priorityRank": 3,
+      "wave": "W1",
+      "complexityRelative": "L",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Versioned garment specification, POM definitions, size grading, tolerance, BOM references and change comparison.",
+      "recordTypes": [
+        "StyleSpecification",
+        "SizeChart",
+        "MeasurementPoint",
+        "GradingRule",
+        "ConstructionNote",
+        "SpecRevision"
+      ],
+      "businessDecisionsNeeded": [
+        "Buyer-specific POM master and grading increments",
+        "Accepted rounding/decimal display per unit",
+        "Flat/circumference measurements and knit/stretch adjustment policy"
+      ],
+      "blueprintPath": "blueprints/APP-03_tech-pack-spec.md"
+    },
+    {
+      "id": "APP-04",
+      "name": "Sampling & Approval 360",
+      "slug": "sampling-approval",
+      "routeCandidate": "/apps/sampling-approval/",
+      "priorityRank": 6,
+      "wave": "W2",
+      "complexityRelative": "M",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Submission rounds, sample schedules, comments, request-for-revision and explicit source-backed buyer/factory approvals.",
+      "recordTypes": [
+        "SampleRequest",
+        "SampleRound",
+        "SubmissionRecord",
+        "ApprovalDecision",
+        "RevisionRequest"
+      ],
+      "businessDecisionsNeeded": [
+        "Buyer sample categories/approval authorities",
+        "Relevant working calendar/time-window source",
+        "Required evidence fields for valid approval"
+      ],
+      "blueprintPath": "blueprints/APP-04_sampling-approval.md"
+    },
+    {
+      "id": "APP-05",
+      "name": "LC & Payment 360",
+      "slug": "lc-payment",
+      "routeCandidate": "/apps/lc-payment/",
+      "priorityRank": 5,
+      "wave": "W2",
+      "complexityRelative": "L",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Documentary credit references, payment obligations, maturity calculations from explicit terms, settlement events and exceptions.",
+      "recordTypes": [
+        "LCRegister",
+        "Amendment",
+        "PaymentObligation",
+        "PaymentEvent",
+        "BankDocumentChecklist"
+      ],
+      "businessDecisionsNeeded": [
+        "Start event and date/calendar day convention for each usance",
+        "Bank/document status authority and amendment workflow",
+        "Exchange-rate source and bank-charge allocation"
+      ],
+      "blueprintPath": "blueprints/APP-05_lc-payment.md"
+    },
+    {
+      "id": "APP-06",
+      "name": "Fabric & Trims 360",
+      "slug": "fabric-trims",
+      "routeCandidate": "/apps/fabric-trims/",
+      "priorityRank": 7,
+      "wave": "W2",
+      "complexityRelative": "L",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Material BOM demand, purchase/booking references, inbound receipt, allocations, shortages and material-readiness evidence.",
+      "recordTypes": [
+        "MaterialItem",
+        "MaterialRequirement",
+        "MaterialBooking",
+        "GoodsReceipt",
+        "MaterialAllocation"
+      ],
+      "businessDecisionsNeeded": [
+        "Quantity units and lot/shade control policy",
+        "Allocation priority and rejection/disposition authority",
+        "BOM/consumption revision precedence"
+      ],
+      "blueprintPath": "blueprints/APP-06_fabric-trims.md"
+    },
+    {
+      "id": "APP-07",
+      "name": "Shipment & Documentation 360",
+      "slug": "shipment-documentation",
+      "routeCandidate": "/apps/shipment-documentation/",
+      "priorityRank": 8,
+      "wave": "W3",
+      "complexityRelative": "L",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Draft shipment file, packing list and commercial/shipping document preparation, document status and quantity reconciliation.",
+      "recordTypes": [
+        "ShipmentFile",
+        "ShippingDocument",
+        "DocumentVersion",
+        "PackingListSnapshot",
+        "DispatchReference"
+      ],
+      "businessDecisionsNeeded": [
+        "Required country/buyer document list",
+        "Invoice rounding/tax/trade term authority",
+        "When shipment file can be marked dispatched"
+      ],
+      "blueprintPath": "blueprints/APP-07_shipment-documentation.md"
+    },
+    {
+      "id": "APP-08",
+      "name": "Factory & Vendor 360",
+      "slug": "factory-vendor",
+      "routeCandidate": "/apps/factory-vendor/",
+      "priorityRank": 10,
+      "wave": "W3",
+      "complexityRelative": "M",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Factory/supplier identity records, declared capability/capacity, audit-document evidence, onboarding status and performance snapshots.",
+      "recordTypes": [
+        "VendorProfile",
+        "FactorySite",
+        "CapabilityStatement",
+        "CertificationEvidence",
+        "VendorReview"
+      ],
+      "businessDecisionsNeeded": [
+        "Approval criteria and evidence authority",
+        "What site/product capacity means in each category",
+        "Privacy retention and real-contact handling policy"
+      ],
+      "blueprintPath": "blueprints/APP-08_factory-vendor.md"
+    },
+    {
+      "id": "APP-09",
+      "name": "Production Tracker 360",
+      "slug": "production-tracker",
+      "routeCandidate": "/apps/production-tracker/",
+      "priorityRank": 9,
+      "wave": "W3",
+      "complexityRelative": "L",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Daily stage-specific output, WIP, line capacity actuals, rework and shortfall explanations.",
+      "recordTypes": [
+        "ProductionOrderReference",
+        "LineDailyOutput",
+        "StageBalance",
+        "ProductionException",
+        "OutputRevision"
+      ],
+      "businessDecisionsNeeded": [
+        "Definition of good units, rework/reject, transfer and shift close",
+        "Measurement unit by stage and line",
+        "Target revision approval"
+      ],
+      "blueprintPath": "blueprints/APP-09_production-tracker.md"
+    },
+    {
+      "id": "APP-10",
+      "name": "Label & Artwork Approval 360",
+      "slug": "label-artwork-approval",
+      "routeCandidate": "/apps/label-artwork-approval/",
+      "priorityRank": 11,
+      "wave": "W3",
+      "complexityRelative": "M",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Controlled versions and review state for product labels, care/size labels, barcode artwork, print and embroidery files.",
+      "recordTypes": [
+        "ArtworkItem",
+        "ArtworkRevision",
+        "LabelSpecification",
+        "ReviewComment",
+        "ArtworkDecision"
+      ],
+      "businessDecisionsNeeded": [
+        "Approved care-label content/regional rules",
+        "Allowed artwork file types/size and retention",
+        "Who can approve which category"
+      ],
+      "blueprintPath": "blueprints/APP-10_label-artwork-approval.md"
+    },
+    {
+      "id": "APP-11",
+      "name": "Buyer CRM 360",
+      "slug": "buyer-crm",
+      "routeCandidate": "/apps/buyer-crm/",
+      "priorityRank": 12,
+      "wave": "W4",
+      "complexityRelative": "M",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Buyer organization profiles, contacts, enquiry/opportunity stages and owner-controlled follow-up activities.",
+      "recordTypes": [
+        "BuyerOrganization",
+        "ContactRecord",
+        "Enquiry",
+        "Opportunity",
+        "FollowUpTask"
+      ],
+      "businessDecisionsNeeded": [
+        "Consent/contact-retention basis for real records",
+        "Pipeline stage definitions",
+        "Follow-up owner/date convention"
+      ],
+      "blueprintPath": "blueprints/APP-11_buyer-crm.md"
+    },
+    {
+      "id": "APP-12",
+      "name": "Fabric & Supplier Comparison 360",
+      "slug": "fabric-supplier-comparison",
+      "routeCandidate": "/apps/fabric-supplier-comparison/",
+      "priorityRank": 13,
+      "wave": "W4",
+      "complexityRelative": "M",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Sourced material supplier offers and a comparable, provenance-rich landed-input comparison, without automatically selecting vendor.",
+      "recordTypes": [
+        "MaterialRequirementSnapshot",
+        "SupplierOffer",
+        "ComparisonScenario",
+        "ComparisonDecision"
+      ],
+      "businessDecisionsNeeded": [
+        "Which conversions are valid for fabrics and widths",
+        "Applicable landed-cost terms by Incoterm/country",
+        "Specification deviation acceptance criteria"
+      ],
+      "blueprintPath": "blueprints/APP-12_fabric-supplier-comparison.md"
+    },
+    {
+      "id": "APP-13",
+      "name": "Purchase Order 360",
+      "slug": "purchase-order",
+      "routeCandidate": "/apps/purchase-order/",
+      "priorityRank": 4,
+      "wave": "W2",
+      "complexityRelative": "L",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Version-controlled PO commercial quantities, style/colour/size allocations, official amendments and buyer/factory order references.",
+      "recordTypes": [
+        "PurchaseOrder",
+        "POLine",
+        "PORevision",
+        "POAmendment",
+        "POAcknowledgement"
+      ],
+      "businessDecisionsNeeded": [
+        "Canonical PO authority when TNA and PO app both hold order fields",
+        "Rounding and cancellation/shortfall policy",
+        "Source document acceptance/effective revision"
+      ],
+      "blueprintPath": "blueprints/APP-13_purchase-order.md"
+    },
+    {
+      "id": "APP-14",
+      "name": "Claims & Disputes 360",
+      "slug": "claims-disputes",
+      "routeCandidate": "/apps/claims-disputes/",
+      "priorityRank": 14,
+      "wave": "W4",
+      "complexityRelative": "M",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Commercial/quality/short-shipment case records, requests, evidence and explicit settlement/rejection history.",
+      "recordTypes": [
+        "ClaimCase",
+        "ClaimFinding",
+        "ClaimEvidence",
+        "ClaimResponse",
+        "ClaimSettlement"
+      ],
+      "businessDecisionsNeeded": [
+        "Who can approve or close claims",
+        "Evidence threshold for monetary exposure",
+        "Treatment of disputed/settled/cancelled amounts"
+      ],
+      "blueprintPath": "blueprints/APP-14_claims-disputes.md"
+    },
+    {
+      "id": "APP-15",
+      "name": "Product Development 360",
+      "slug": "product-development",
+      "routeCandidate": "/apps/product-development/",
+      "priorityRank": 15,
+      "wave": "W4",
+      "complexityRelative": "M",
+      "status": "PROPOSED",
+      "registeredInLiveCatalogue": false,
+      "canonicalOwner": "Style concepts, seasonal capsules, design boards, colourways, material direction and proposal-stage revision history.",
+      "recordTypes": [
+        "ProductConcept",
+        "DevelopmentBoard",
+        "ColourwayProposal",
+        "DesignRevision",
+        "ConceptDecision"
+      ],
+      "businessDecisionsNeeded": [
+        "Approved image/material sources and licenses",
+        "Required board templates and artwork dimensions",
+        "Concept-to-techpack promotion criteria"
+      ],
+      "blueprintPath": "blueprints/APP-15_product-development.md"
+    }
+  ]
+}
