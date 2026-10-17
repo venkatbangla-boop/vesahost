@@ -5,6 +5,7 @@ on:
     branches:
       - feature/vesa-app-centre-unified
       - feature/premium-app-centre-desktop
+      - fix/app-centre-link-label-regression
       - main
     paths:
       - 'apps/index.html'
@@ -53,6 +54,11 @@ jobs:
           set -euo pipefail
           node tests/vesa-platform-pages.cjs
           node tests/vesa-uniform-experience.cjs
+          node apps/buyer-crm/tests/browser-workflow.cjs
+          node apps/claims-disputes/tests/browser-workflow.cjs
+          node apps/factory-vendor/tests/browser-workflow.cjs
+          node apps/label-artwork-approval/tests/browser-workflow.cjs
+          node apps/fabric-supplier-comparison/tests/browser-workflow.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
