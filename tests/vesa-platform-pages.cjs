@@ -70,6 +70,29 @@ async function authenticatedProbe(browser,base,width,route,id){
       .evaluateAll(nodes=>nodes.map(x=>x.getAttribute('href')).sort()),
       expected,`${id}@${width}: all 19 routes retained without duplicate cards`);
     assert.equal(await page.locator('.app-tile').count(),19,'all 19 workspaces render');
+    if(width>=1280){
+      const view=await page.evaluate(()=>{
+        const catalogue=document.getElementById('appCatalogue'),
+          groups=[...catalogue.querySelectorAll('.app-group')],
+          tiles=[...catalogue.querySelectorAll('.app-tile')],
+          firstAction=tiles[0].querySelector('.app-tile-open');
+        return {
+          layout:getComputedStyle(catalogue).display,
+          firstWidth:tiles[0].getBoundingClientRect().width,
+          firstGroupBottom:groups[0].getBoundingClientRect().bottom,
+          nextGroupTop:groups[1].getBoundingClientRect().top,
+          actionHeight:firstAction.getBoundingClientRect().height,
+          actions:[...catalogue.querySelectorAll('.app-tile-open span:first-child')].map(x=>x.textContent.trim()),
+          homepageCss:[...document.querySelectorAll('link[rel=stylesheet]')].some(x=>x.href.includes('/css/style.css'))
+        };
+      });
+      assert.equal(view.layout,'block','desktop category sections must stack full width');
+      assert.ok(view.firstWidth>=280,'desktop app card must not be compressed: '+view.firstWidth);
+      assert.ok(view.nextGroupTop>=view.firstGroupBottom,'desktop groups must not share a row');
+      assert.ok(view.actionHeight>=44,'desktop app action remains clickable');
+      assert.equal(view.homepageCss,false,'App Centre must not inherit public website CSS');
+      assert.ok(view.actions.every(x=>x==='Open workspace'),'desktop app actions use one readable label');
+    }
     assert.equal(await page.locator('#appCatalogue h3').evaluateAll(nodes=>
       nodes.every(n=>!/^VESA\s/i.test(n.textContent.trim()))),true,
       'one logo in header; no repeated VESA prefix on visible card names');
