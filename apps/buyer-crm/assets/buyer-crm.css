@@ -21,3 +21,19 @@
 @media(max-width:740px){.crm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.crm-card{padding:12px}}
 @media(max-width:470px){.crm-grid,.crm-form{grid-template-columns:1fr}.crm-form .wide{grid-column:1}.crm-actions .crm-btn{flex:1 1 auto}}
 @media print{.vesa-workspace,.app-user-bar,.crm-tabs,.crm-actions,.crm-dialog{display:none!important}#crmMain{width:100%;padding:0}.crm-card{border:0;padding:0}.crm-table th,.crm-table td{font-size:10px;padding:5px}}
+
+
+/* M3 private browser-only source review, draft report and clean print. */
+.crm-report{min-width:0;overflow-wrap:anywhere}.crm-report h2{font-size:1.12rem}
+.crm-report-section{margin:14px 0;min-width:0}.crm-report-section h3{font-size:1rem}
+.crm-form .crm-confirm{display:flex;align-items:center;gap:10px;font-weight:500}
+.crm-form .crm-confirm input[type="checkbox"]{width:20px;min-width:20px;height:20px;min-height:20px;flex:0 0 20px}
+@media print{
+ .crm-card:not(.crm-print-card),#crmMain>.crm-tabs{display:none!important}
+ .crm-print-card{display:block!important;border:0!important}
+ .crm-report-section{break-inside:avoid}
+ .crm-scroll{overflow:visible;border:0}
+ .crm-table{min-width:0;width:100%;table-layout:fixed;font-size:8px}
+ .crm-table th,.crm-table td{overflow-wrap:anywhere;white-space:normal}
+ @page{size:A4 landscape;margin:12mm}
+}
