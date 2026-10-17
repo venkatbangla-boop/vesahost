@@ -5,6 +5,8 @@ class BuyerCRMWorkspace{
  constructor(){
   this.main=document.getElementById('crmMain');this.dialog=document.getElementById('crmDialog');
   this.body=document.getElementById('crmDialogBody');this.file=document.getElementById('crmCopyFile');
+  this.refFile=document.getElementById('crmReferenceFile');this.refKind='po';this.pendingRef=null;
+  this.Ref=root.VesaCRMReviewedReference;this.R=root.VesaCRMReportModel;
   this.E=root.VesaBuyerDirectory;this.O=root.VesaCRMOpportunityState;this.F=root.VesaCRMFollowupScheduler;
   this.C=root.VesaBuyerCRMCopyCodec;this.T=root.VesaBuyerCRMCopy;
   const user=root.VesaAuth?.session?.()||{};
@@ -22,6 +24,15 @@ class BuyerCRMWorkspace{
   if(!this.dialog.open)this.dialog.showModal();this.dialog.addEventListener('close',()=>this.focusBefore?.focus?.(),{once:true});
   this.body.querySelector('input:not([type=hidden]),select,textarea,button')?.focus?.();}
  error(message){this.modal(this.t('errors'),'<p class="crm-warning" role="alert">'+this.e(message)+'</p>');}
+ excel(){if(!this.current)throw Error('Open a CRM record first');
+  if(!root.XLSX)throw Error('Bundled Excel library unavailable');
+  const checked=this.E.validate(this.current);if(!checked.ok)throw Error(checked.errors.join('; '));
+  const book=root.XLSX.utils.book_new();
+  for(const [name,rows] of Object.entries(this.R.rows(this.current,this.asOf))){
+   root.XLSX.utils.book_append_sheet(book,root.XLSX.utils.aoa_to_sheet(this.R.excelRows(name,rows)),name.slice(0,31));
+  }
+  root.XLSX.writeFile(book,'VESA-BUYER-CRM-'+this.current.id+'.xlsx');
+ }
  download(text,name){const url=URL.createObjectURL(new Blob([text],{type:'application/json'}));const a=document.createElement('a');
   a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1400);}
  start(){const Shell=root.VesaWorkspaceShell?.VesaWorkspaceShell;
@@ -43,14 +54,22 @@ class BuyerCRMWorkspace{
     this.modal(this.t('upload'),'<p class="crm-note">'+this.e(this.t('openedCopy'))+'</p>');
    }catch(err){this.error(err.message);}
   });
+  this.refFile.addEventListener('change',async()=>{const file=this.refFile.files?.[0];this.refFile.value='';if(!file)return;
+   try{if(file.size>120000)throw Error('Reviewed source file exceeds the 120 KB technical cap');
+    const source=JSON.parse(await file.text());
+    if(!this.Ref.sourceValid(source,this.refKind)||!this.Ref.matchesBuyer(source,this.current))
+     throw Error('Source owner, type or buyer identity does not match this CRM organization');
+    this.pendingRef=this.E.copy(source);this.form('source-confirm');
+   }catch(error){this.error(error.message);}
+  });
   root.addEventListener('vesa-preferences-change',()=>this.render());
   root.VesaBuyerCRM360=this;this.render();
  }
  menu(name){const groups={Home:[['home','back'],['new','new'],['continue','continue'],['practice','practice']],
   File:[['save','save'],['download','download'],['upload','upload']],
   Edit:[['add-contact','addContact'],['add-enquiry','addEnquiry'],['add-opportunity','addOpportunity'],['add-stage','addStage'],['add-followup','addFollowup']],
-  View:[['summary','summary'],['contacts','contacts'],['enquiries','enquiries'],['pipeline','pipeline'],['followups','followups'],['history','history'],['reports','reports']],
-  Tools:[['asof','setAsOf'],['report','report']],Help:[['help','help']]};
+  View:[['summary','summary'],['contacts','contacts'],['enquiries','enquiries'],['pipeline','pipeline'],['followups','followups'],['references','references'],['reports','reports'],['history','history']],
+  Tools:[['asof','setAsOf'],['report','report'],['excel','excel'],['print','print'],['reference-select','referenceSelect']],Help:[['help','help']]};
   this.modal(name,'<div class="crm-actions">'+(groups[name]||[]).map(([action,k])=>'<button class="crm-btn" type="button" data-menu-action="'+this.e(action)+'">'+this.e(this.t(k))+'</button>').join('')+'</div>');
   this.body.querySelectorAll('[data-menu-action]').forEach(b=>b.onclick=()=>{this.dialog.close();this.action(b.dataset.menuAction);});
  }
@@ -66,9 +85,12 @@ class BuyerCRMWorkspace{
   if(name==='download'){if(!this.current||this.current.mode==='practice')throw Error('Open a local CRM record before downloading');
    this.download(this.C.encode(this.current),'VESA-BUYER-CRM-'+this.current.id+'.vesacrm');return;}
   if(name==='upload'){this.file.click();return;}
-  if(['summary','contacts','enquiries','pipeline','followups','history','reports'].includes(name)){
+  if(['summary','contacts','enquiries','pipeline','followups','references','history','reports'].includes(name)){
    if(!this.current)throw Error('Open a local CRM record');this.section=name;this.render();return;}
   if(name==='report'){if(!this.current)throw Error('Open a local CRM record');this.section='reports';this.render();return;}
+  if(name==='excel'){this.excel();return;}
+  if(name==='print'){if(!this.current)throw Error('Open a CRM record before printing');this.section='reports';this.render();root.print();return;}
+  if(name==='reference-select'){if(!this.current||this.current.mode==='practice')throw Error('Open a local CRM record before adding source');this.form('reference-select');return;}
   if(name==='asof'){this.form('asof');return;}
   if(name==='help'){this.modal(this.t('help'),'<p class="crm-warning">'+this.e(this.t('warning'))+'</p><p>'+this.e(this.t('noApproval'))+'</p>');return;}
   if(['add-contact','add-enquiry','add-opportunity','add-stage','add-followup'].includes(name)){
@@ -82,7 +104,7 @@ class BuyerCRMWorkspace{
     (saved.length?saved.map(v=>'<div class="crm-record"><span><b>'+e(v.name)+'</b> / '+e(v.territory)+'<small>Rev '+e(v.revision)+'</small></span>'+this.btn('load','open',false,v.id)+'</div>').join(''):'<p class="crm-note">'+t('none')+'</p>')+'</section>';
    this.shell?.setSavedState('unsaved');return;}
   const p=this.current,practice=p.mode==='practice',checked=this.E.validate(p);
-  const tabs=['summary','contacts','enquiries','pipeline','followups','reports','history'];
+  const tabs=['summary','contacts','enquiries','pipeline','followups','references','reports','history'];
   this.main.innerHTML=banner+'<section class="crm-card"><h2>'+e(p.header.organizationName)+' / '+e(p.header.territory)+'</h2><p class="crm-note">'+(practice?'SYNTHETIC PRACTICE':t('localOnly'))+' / '+t('status')+'</p>'+
    '<div class="crm-actions">'+this.btn('home','back')+this.btn('save','save',true,'',practice)+this.btn('download','download',false,'',practice)+'</div></section>'+
    '<nav class="crm-tabs" aria-label="Buyer CRM sections">'+tabs.map(k=>'<button class="crm-btn" type="button" data-action="'+k+'" aria-current="'+(this.section===k)+'">'+t(k)+'</button>').join('')+'</nav>'+
@@ -106,7 +128,12 @@ class BuyerCRMWorkspace{
    '<div class="crm-actions">'+this.btn('asof','setAsOf')+'<span class="crm-note">'+e(this.asOf)+'</span></div>'+
    this.table([t('linkType'),t('owner'),t('dueDate'),t('followupState'),t('sourceRef')],this.F.evaluate(p,this.asOf).map(f=>[f.linkType,f.owner,f.dueDate,f.localState,f.sourceRef]))+
    '<p class="crm-warning">'+e(t('followupNotice'))+'</p></section>';
-  if(this.section==='reports')return '<section class="crm-card">'+head('reports')+'<p class="crm-warning">'+e(t('reportPlanned'))+'</p></section>';
+  if(this.section==='references')return '<section class="crm-card">'+head('references','reference-select','referenceSelect')+
+   '<p class="crm-warning">'+e(t('sourceNotice'))+'</p>'+
+   this.table([t('refKind'),t('sourceApp'),t('sourceRecord'),t('localReviewer'),t('localReviewDate')],
+   (p.manualReferences||[]).map(x=>[x.kind,x.source.sourceApp,x.source.recordId,x.localReviewer,x.localReviewDate]))+'</section>';
+  if(this.section==='reports')return '<section class="crm-card crm-print-card"><div class="crm-actions">'+
+   this.btn('excel','excel',true)+this.btn('print','print')+'</div>'+this.R.html(p,this.asOf)+'</section>';
   return '<section class="crm-card">'+head('history')+this.table(['Rev','Action','Date','Evidence'],p.audit.map(a=>[a.revision,a.action,a.at,a.recordId||'']))+'</section>';
  }
  form(kind){const e=v=>this.e(v),t=k=>this.t(k);
@@ -130,15 +157,33 @@ class BuyerCRMWorkspace{
     this.field('closedDate',false,'date')+this.field('outcomeSourceRef',false,'text',true);
   }
   if(kind==='asof')body=this.field('asOf',true,'date',true,this.asOf);
+  if(kind==='reference-select')body='<p class="wide crm-warning">'+e(t('sourceNotice'))+'</p>'+
+   this.select('refKind',[['po','VESA Purchase Order 360'],['costing','Manual Costing Quote Snapshot (not an app export)']],true);
+  if(kind==='source-confirm'){
+   if(!this.pendingRef)throw Error('Select a reviewed local PO/Costing file');
+   body='<p class="wide crm-warning">'+e(t('sourceNotice'))+'</p><p class="wide">'+
+    e(this.pendingRef.sourceApp)+' / '+e(this.pendingRef.recordId)+' / '+e(this.pendingRef.revisionId)+'</p>'+
+    this.field('localReviewer',true)+this.field('localReviewDate',true,'date')+
+    '<label class="wide crm-confirm"><input type="checkbox" name="identityConfirmed" value="yes" required><span>'+e(t('identityConfirmed'))+'</span></label>';
+  }
   if(!body)throw Error('Unknown CRM form type');
-  const labels={new:'new','add-contact':'addContact','add-enquiry':'addEnquiry','add-opportunity':'addOpportunity','add-stage':'addStage','add-followup':'addFollowup',asof:'setAsOf'};
+  const labels={new:'new','add-contact':'addContact','add-enquiry':'addEnquiry','add-opportunity':'addOpportunity','add-stage':'addStage','add-followup':'addFollowup',asof:'setAsOf','reference-select':'referenceSelect','source-confirm':'referenceSelect'};
   this.modal(this.t(labels[kind]),'<form class="crm-form" data-form="'+e(kind)+'">'+body+
    '<div class="wide crm-actions"><button class="crm-btn primary" type="submit">'+e(t('submit'))+'</button></div></form>');
  }
  submit(form){const fd=new FormData(form),get=k=>String(fd.get(k)??'').trim(),kind=form.dataset.form;
   try{
    if(kind==='asof'){if(!this.E.date(get('asOf')))throw Error('Choose a real date');this.asOf=get('asOf');}
-   else if(kind==='new'){
+   else if(kind==='reference-select'){
+    if(!this.current||this.current.mode==='practice')throw Error('Open a saved CRM source');
+    this.refKind=get('refKind');this.dialog.close();this.refFile.click();return;
+   }else if(kind==='source-confirm'){
+    if(!this.pendingRef||!this.current||this.current.mode==='practice')throw Error('Choose reviewed source first');
+    const updated=this.Ref.append(this.current,this.refKind,this.pendingRef,{
+     localReviewer:get('localReviewer'),localReviewDate:get('localReviewDate'),
+     identityConfirmed:get('identityConfirmed')==='yes'});
+    this.store.save(updated);this.current=updated;this.pendingRef=null;this.section='references';
+   }else if(kind==='new'){
     const p=this.E.create({organizationName:get('organizationName'),territory:get('territory'),sourceRef:get('sourceRef')});
     const dup=this.E.potentialDuplicateOrganization(this.store.read(),p.header);
     if(dup.length)throw Error('Possible duplicate organization needs human review; choose existing record first');
