@@ -1,0 +1,59 @@
+# APP-11 pure-domain Buyer CRM M1 only; no public route, real contact data or external messages.
+name: VESA Buyer CRM 360 verification
+on:
+  push:
+    branches:
+      - feature/buyer-crm-360
+    paths:
+      - 'apps/buyer-crm/**'
+      - 'docs/buyer-crm/**'
+      - '.github/workflows/buyer-crm.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  buyer-domain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Canonical 15-app source, Buyer CRM M1 and all frozen sibling domains
+        run: |
+          set -euo pipefail
+          node tests/vesa-blueprint-integrity.cjs
+          node --check apps/buyer-crm/src/domain/buyer-directory.js
+          node --check apps/buyer-crm/src/domain/opportunity-state.js
+          node --check apps/buyer-crm/src/domain/followup-scheduler.js
+          node --check apps/buyer-crm/tests/domain.test.cjs
+          node apps/buyer-crm/tests/domain.test.cjs
+          node tests/personal-demo-release.cjs
+          node tests/vesa-next-app-starter.cjs
+          node apps/label-artwork-approval/tests/domain.test.cjs
+          node apps/label-artwork-approval/tests/save-reopen.test.cjs
+          node apps/label-artwork-approval/tests/report-reference.test.cjs
+          node apps/factory-vendor/tests/domain.test.cjs
+          node apps/factory-vendor/tests/save-reopen.test.cjs
+          node apps/factory-vendor/tests/report-reference.test.cjs
+          node apps/production-tracker/tests/domain.test.cjs
+          node apps/production-tracker/tests/save-reopen.test.cjs
+          node apps/production-tracker/tests/report-reference.test.cjs
+          node apps/shipment-documentation/tests/domain.test.cjs
+          node apps/fabric-trims/tests/domain.test.cjs
+          node apps/sampling-approval/tests/domain.test.cjs
+          node apps/lc-payment/tests/domain.test.cjs
+          node apps/purchase-order/tests/domain.test.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/tech-pack-spec/tests/domain.test.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          git diff --check HEAD~1 HEAD
