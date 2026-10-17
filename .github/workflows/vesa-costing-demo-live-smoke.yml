@@ -22,6 +22,7 @@ on:
       - 'apps/label-artwork-approval/**'
       - 'apps/buyer-crm/**'
       - 'apps/fabric-supplier-comparison/**'
+      - 'apps/claims-disputes/**'
       - 'apps/index.html'
       - 'js/app-catalogue.js'
       - 'js/preferences.js'
@@ -78,7 +79,7 @@ jobs:
           for route in aql ppm tna; do
             curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/$route/" -o /dev/null
           done
-          for app in packing-container order-commission tech-pack-spec purchase-order lc-payment sampling-approval fabric-trims shipment-documentation production-tracker factory-vendor label-artwork-approval buyer-crm fabric-supplier-comparison; do
+          for app in packing-container order-commission tech-pack-spec purchase-order lc-payment sampling-approval fabric-trims shipment-documentation production-tracker factory-vendor label-artwork-approval buyer-crm fabric-supplier-comparison claims-disputes; do
             curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/$app/" -o "/tmp/vesa-$app-live.html"
             cmp -s "apps/$app/index.html" "/tmp/vesa-$app-live.html" || {
               echo "HOLD: $app demo live HTML does not match main" >&2
@@ -150,5 +151,14 @@ jobs:
               exit 1
             }
           done
-          printf 'LIVE PASS: Login -> App Centre -> Costing, Packing, Commission, Tech Pack, Purchase Order, LC & Payment, Sampling, Fabric & Trims, Shipment & Documentation, Production Tracker Factory & Vendor, Label & Artwork Buyer CRM and Fabric & Supplier Comparison personal demos; exact public source bytes; existing AQL/PPM/TNA intact; main=%s\n' "$(git rev-parse HEAD)"
+          # Claims & Disputes source is app-owned; validate every publicly served module byte.
+          # Never request, download or upload a user's private claim record.
+          for asset in assets/claims-disputes.css src/bootstrap.js src/domain/claim-register.js src/domain/exposure-ledger.js src/domain/settlement-history.js src/domain/reviewed-reference.js src/data/saved-copy-codec.js src/data/local-record-port.js src/reports/report-model.js src/i18n/app-copy.js src/application/workspace-controller.js; do
+            curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/claims-disputes/$asset" -o "/tmp/vesa-claims-$(basename "$asset")"
+            cmp -s "apps/claims-disputes/$asset" "/tmp/vesa-claims-$(basename "$asset")" || {
+              echo "HOLD: Claims source $asset differs from published main" >&2
+              exit 1
+            }
+          done
+          printf 'LIVE PASS: Login -> App Centre -> Costing, Packing, Commission, Tech Pack, Purchase Order, LC & Payment, Sampling, Fabric & Trims, Shipment & Documentation, Production Tracker Factory & Vendor, Label & Artwork Buyer CRM, Fabric & Supplier Comparison and Claims & Disputes personal demos; exact public source bytes; existing AQL/PPM/TNA intact; main=%s\n' "$(git rev-parse HEAD)"
           echo "This check does not establish server-side authentication, buyer approval or production SaaS permission."
