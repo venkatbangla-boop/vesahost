@@ -1,13 +1,19 @@
-# APP-14 pure claims source-domain synthetic M1 only. No legal, financial or AQL control.
+# APP-14 conditional personal noncommercial source-only Claims: full Node/real Chromium+static release+sibling regressions.
 name: VESA Claims Disputes 360 verification
 on:
   push:
     branches:
       - feature/claims-disputes-360
+      - main
     paths:
       - 'apps/claims-disputes/**'
       - 'docs/claims-disputes/**'
       - '.github/workflows/claims-disputes.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
+      - '.github/workflows/vesa-costing-demo-live-smoke.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -44,6 +50,9 @@ jobs:
           node --check apps/claims-disputes/tests/report-reference.test.cjs
           node apps/claims-disputes/tests/report-reference.test.cjs
           node tests/personal-demo-release.cjs
+          node --check js/app-catalogue.js
+          node --check js/preferences.js
+          node --check service-worker.js
           node tests/vesa-next-app-starter.cjs
           node apps/fabric-supplier-comparison/tests/domain.test.cjs
           node apps/fabric-supplier-comparison/tests/save-reopen.test.cjs
@@ -86,6 +95,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: claims-app14-m3-synthetic-browser
+          name: claims-app14-m4-synthetic-browser
           path: output/playwright/claims-app14-*
           if-no-files-found: ignore
