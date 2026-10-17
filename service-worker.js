@@ -1,4 +1,4 @@
-const CACHE='vesa-v91-techpack-sizechart';
+const CACHE='vesa-v92-costing-g4-mobile-dialog';
 const ASSETS=[
   './',
   './index.html',

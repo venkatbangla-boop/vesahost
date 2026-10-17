@@ -137,6 +137,47 @@ def main():
         snapshot=record_snapshot(page)
         require(len(snapshot)==1, 'First synthetic costing saved in isolated browser storage')
 
+        # UI-only G4 proof: real touch targets and a contained keyboard-accessible
+        # comparison grid, without changing the fixture, storage or prices.
+        for width in (320, 390, 1440):
+            page.set_viewport_size({'width':width,'height':850})
+            page.locator('button[data-section="lines"]').click()
+            sizes = page.evaluate("""() => {
+              const tabs = [...document.querySelectorAll('.costing-section-tabs button')];
+              const remove = [...document.querySelectorAll('.costing-line-remove')];
+              const table = document.querySelector('.costing-table-scroll');
+              return {
+                minTabHeight:Math.min(...tabs.map(el => el.getBoundingClientRect().height)),
+                minRemoveWidth:Math.min(...remove.map(el => el.getBoundingClientRect().width)),
+                minRemoveHeight:Math.min(...remove.map(el => el.getBoundingClientRect().height)),
+                tableHasSideScroll:table.scrollWidth>table.clientWidth,
+                overflow:document.documentElement.scrollWidth>window.innerWidth+2
+              };
+            }""")
+            require(sizes['minTabHeight'] >= 44 and sizes['minRemoveWidth'] >= 44
+                    and sizes['minRemoveHeight'] >= 44,
+                    f'{width}px real Costing tabs and remove actions offer 44px touch targets')
+            require(sizes['tableHasSideScroll'] and not sizes['overflow'],
+                    f'{width}px wide Cost Lines table scrolls locally without page overflow')
+        page.set_viewport_size({'width':390,'height':850})
+        page.locator('button[data-section="commission"]').click()
+        page.locator('button[data-cmd="commissionCompare"]').click()
+        region = page.locator('.costing-dialog[open] .costing-table-scroll')
+        require(region.count()==1 and region.get_attribute('tabindex')=='0',
+                'Commission comparison uses one keyboard-focusable table viewport')
+        grid = region.evaluate("""node => ({
+          regionWidth:node.getBoundingClientRect().width,
+          scrollWidth:node.scrollWidth,
+          viewportWidth:window.innerWidth,
+          documentOverflow:document.documentElement.scrollWidth>window.innerWidth+2
+        })""")
+        require(grid['scrollWidth']>grid['regionWidth']
+                and grid['regionWidth']<grid['viewportWidth'] and not grid['documentOverflow'],
+                '390px commission table scrolls inside its dialog rather than off-screen')
+        page.locator('.costing-dialog button[data-cmd="dismiss"]').click()
+        page.set_viewport_size({'width':1280,'height':850})
+        page.locator('button[data-section="lines"]').click()
+
         with page.expect_download(timeout=20000) as dl:
             page.locator('button[data-cmd="xlsxExport"]').click()
         report_file=tmp/'synthetic-report.xlsx'
@@ -260,8 +301,13 @@ def main():
           await navigator.serviceWorker.ready;
         }""")
         page.wait_for_function("() => !!navigator.serviceWorker.controller", timeout=90000)
-        require(page.evaluate("() => caches.keys().then(keys => keys.includes('vesa-v69-costing-demo'))"),
-                'New root cache version activates for the Costing App Centre release')
+        # Compare against the actual checkout's worker version instead of the
+        # obsolete Costing launch cache from a previous release.
+        import re
+        cache_match = re.search(r"const CACHE='([^']+)'", (ROOT / 'service-worker.js').read_text(encoding='utf-8'))
+        require(cache_match is not None, 'Root worker declares a versioned local cache')
+        require(page.evaluate("(name) => caches.keys().then(keys => keys.includes(name))", cache_match.group(1)),
+                'Active root cache matches this Costing candidate and App Centre release')
 
         context.set_offline(True)
         page.goto(base+'/apps/', wait_until='domcontentloaded', timeout=25000)

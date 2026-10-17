@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - feature/costing-360
+      - feature/costing-g4-mobile-dialog
+      - main
     paths:
       - '.github/workflows/costing-360-verification.yml'
       - 'apps/costing/**'
