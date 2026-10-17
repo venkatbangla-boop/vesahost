@@ -104,3 +104,32 @@ console.log('AQL_SOURCE_BREAKDOWN '+JSON.stringify({
  styles:aql.html.inlineStyleBytes,dataUrlBytes:aql.html.dataUrlBytes,
  largeBase64:aql.html.largestBase64Runs,
  engineClasses:aql.classNames.slice(0,100),longestLines:aql.html.longestLines}));
+
+/* AQL media composition: no data URI bytes or confidential artwork are logged. */
+const crypto=require('node:crypto');
+const aqlRaw=fs.readFileSync(path.join(root,'apps/aql/index.html'),'utf8');
+const items=[...aqlRaw.matchAll(/data:([\w.+/-]+);base64,([A-Za-z0-9+/=\r\n]{120,})/gi)]
+  .map(z=>({type:z[1].toLowerCase(),bytes:Buffer.byteLength(z[0]),
+   fingerprint:crypto.createHash('sha256').update(z[2]).digest('hex')}));
+const types={};
+for(const p of items){
+ const x=types[p.type]||{count:0,bytes:0};x.count++;x.bytes+=p.bytes;types[p.type]=x;
+}
+const uniques=new Map();
+for(const p of items){
+ const x=uniques.get(p.fingerprint)||{count:0,bytes:p.bytes,type:p.type};
+ x.count++;uniques.set(p.fingerprint,x);
+}
+const repeated=[...uniques.values()].filter(x=>x.count>1)
+ .sort((a,b)=>b.bytes*(b.count-1)-a.bytes*(a.count-1));
+const media={
+ sourceBytes:Buffer.byteLength(aqlRaw),
+ dataUrlCount:items.length,dataUrlBytes:items.reduce((a,p)=>a+p.bytes,0),
+ percentOfSource:Number((100*items.reduce((a,p)=>a+p.bytes,0)/Buffer.byteLength(aqlRaw)).toFixed(2)),
+ mediaTypes:types,uniqueMediaBlobs:uniques.size,duplicateMediaBlobs:items.length-uniques.size,
+ potentiallyDuplicatedSourceBytes:repeated.reduce((n,z)=>n+z.bytes*(z.count-1),0),
+ repeatedBlobs:repeated.slice(0,12).map(z=>({type:z.type,count:z.count,bytesPerUrl:z.bytes})),
+ caveat:'Static same-file footprint only. It is NOT actual network compression saving or automatically safe deduplication.'
+};
+fs.writeFileSync(path.join(out,'aql-media-profile.json'),JSON.stringify(media,null,2));
+console.log('AQL_MEDIA_DETAIL '+JSON.stringify(media));
