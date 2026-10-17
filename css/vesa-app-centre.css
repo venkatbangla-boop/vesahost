@@ -92,7 +92,9 @@ body.app-centre-page{
  flex:0 0 auto;color:var(--vesa-muted,#526176);
  margin:12px 0 0;font-size:.81rem;line-height:1.4
 }
-.app-centre-page .app-group{margin:0 0 36px;min-width:0}
+/* Each category owns the full desktop content width. Never inherit a site-home grid. */
+.app-centre-page .app-catalogue{display:block;width:100%;min-width:0}
+.app-centre-page .app-group{margin:0 0 36px;min-width:0;width:100%}
 .app-centre-page .app-group-heading{
  display:flex;align-items:center;justify-content:space-between;gap:16px;
  margin-bottom:14px
