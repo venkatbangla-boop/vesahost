@@ -1,5 +1,16 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## 2026-10-18 — Highest-priority VESA UX scope and CONTINUE command
+
+**Owner correction, permanent:** DO NOT MODIFY the public `vesaent.com/` homepage, root `index.html`, `css/style.css`, `js/main.js`, company images/video, SEO or legal/contact pages in any VESA 360 redesign. **Only `/login/`, `/apps/`, `/admin/` and the 19 existing `/apps/<slug>/` applications are in scope.** Root service-worker updates are permitted only for needed login/app asset versioning, preserving homepage byte contents. This instruction overrides older proposed homepage redesigns.
+
+**Demo sign-in:** Current public synthetic demo account is `user@vesa` / `vesa`, as defined by `js/auth.js`; owner explicitly requested that existing demo details be shown on the Login page and a working one-click sign-in. Do not expose/invent other credentials. Preserve VesaAuth session/event handling.
+
+**Permanent work checkpoint:** `docs/ux/00_PREMIUM_ADAPTIVE_MASTER_PROMPT.md` and `docs/ux/01_PREMIUM_UX_EXECUTION_TRACKER.md`. The baseline source is GitHub; at the start of every Work session, fetch actual main + development branches, read tracker and resume first incomplete gate. A short user message **CONTINUE** means resume where the latest GitHub tracker left off, NOT restart, ask for prompt/ZIP, rewrite the website, or demand another NEXT. Do not claim background work. Preserve all completed apps and calculation engines.
+
+---
+
+
 ## 2026-10-17 — ACTIVE OWNER DECISION AND LATEST VERIFIED MAIN (PERSONAL SHOWCASE)
 
 **Permanent direction:** The owner confirms VESA 360 is a PERSONAL SHOWCASE and wants one polished app experience. Do not repeatedly challenge or restate use/hosting questions unless the owner changes scope. Work on functional UI and preserve browser-local synthetic-only data. All 19 app routes remain registered.
