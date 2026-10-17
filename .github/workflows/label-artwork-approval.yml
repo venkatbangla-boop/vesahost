@@ -1,0 +1,56 @@
+# APP-10 M1 pure-domain verification only; no published route or client records.
+name: VESA Label Artwork 360 verification
+on:
+  push:
+    branches:
+      - feature/label-artwork-approval-360
+    paths:
+      - 'apps/label-artwork-approval/**'
+      - 'docs/label-artwork-approval/**'
+      - '.github/workflows/label-artwork-approval.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  artwork-domain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Original source, revision/barcode engine and sibling domain regressions
+        run: |
+          set -euo pipefail
+          node tests/vesa-blueprint-integrity.cjs
+          node --check apps/label-artwork-approval/src/domain/label-spec.js
+          node --check apps/label-artwork-approval/src/domain/artwork-revision.js
+          node --check apps/label-artwork-approval/src/domain/review-state.js
+          node --check apps/label-artwork-approval/tests/domain.test.cjs
+          node apps/label-artwork-approval/tests/domain.test.cjs
+          node tests/personal-demo-release.cjs
+          node tests/vesa-next-app-starter.cjs
+          node apps/factory-vendor/tests/domain.test.cjs
+          node apps/factory-vendor/tests/save-reopen.test.cjs
+          node apps/factory-vendor/tests/report-reference.test.cjs
+          node apps/production-tracker/tests/domain.test.cjs
+          node apps/production-tracker/tests/save-reopen.test.cjs
+          node apps/production-tracker/tests/report-reference.test.cjs
+          node apps/shipment-documentation/tests/domain.test.cjs
+          node apps/fabric-trims/tests/domain.test.cjs
+          node apps/sampling-approval/tests/domain.test.cjs
+          node apps/lc-payment/tests/domain.test.cjs
+          node apps/purchase-order/tests/domain.test.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/tech-pack-spec/tests/domain.test.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          git diff --check HEAD~1 HEAD
