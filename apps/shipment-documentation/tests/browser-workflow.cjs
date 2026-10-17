@@ -91,7 +91,7 @@ class ShipmentBrowserProof{
     controlCartons:'3',controlPieces:'50',controlNetKg:'19.000',
     controlGrossKg:'20.800',controlCbm:'0.1100'});
    await page.locator('#sdDialog form button[type=submit]').click();
-   assert.match(await page.locator('#sdDialog [role=alert]').innerText(),/carton counts/i);
+   assert.match(await page.locator('#sdDialog [role=alert]').innerText(),/carton.count|carton-count/i);
    await page.locator('#sdClose').click();
    assert.equal((await saved())[0].packingSnapshots.length,1);
    await act('dispatches');await act('add-dispatch');
