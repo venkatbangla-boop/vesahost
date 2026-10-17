@@ -42,7 +42,7 @@ assert(!Ref.sourceValid(tech,'material'));assert(!Ref.sourceValid(mat,'tech'));
 const reviewer={localReviewer:'SYN INDEPENDENT LOCAL SOURCE REVIEWER',localReviewDate:'2026-10-17',identityConfirmed:true};
 assert.throws(()=>Ref.append(p,'tech',ref('tech',{displaySnapshot:{materialSpec:{...fabric,gsm:'180'}}}),reviewer),/Exact matching Tech Pack/);
 assert.throws(()=>Ref.append(p,'material',ref('material',{displaySnapshot:{materialSpec:{...fabric,width:'72'}}}),reviewer),/Exact matching Tech Pack/);
-assert.throws(()=>Ref.append(p,'tech',tech,{...reviewer,identityConfirmed:false}),/human reviewer/);
+assert.throws(()=>Ref.append(p,'tech',tech,{...reviewer,identityConfirmed:false}),/local reviewer\/date/);
 p=Ref.append(p,'tech',tech,reviewer);p=Ref.append(p,'material',mat,reviewer);
 assert.equal(p.manualReferences.length,2);
 assert.throws(()=>Ref.append(p,'tech',tech,reviewer),/Duplicate manually reviewed material source revision/);
