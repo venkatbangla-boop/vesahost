@@ -78,7 +78,7 @@ async function runCase(browser,base,width){
    await page.screenshot({path:path.join(out,'pack-home-tamil-390.png'),animations:'disabled'});
   }
   await page.emulateMedia({media:'print'});
-  assert.equal(await preview.first().evaluate(x=>getComputedStyle(x).display),'none',
+  assert.equal(await page.locator('.pack-explorer').evaluate(x=>getComputedStyle(x).display),'none',
    'Feature explorer must not appear in packing print report');
   assert.deepEqual(errors,[],width+' no browser script errors');
   assert.deepEqual(failed,[],width+' no local request failures');
