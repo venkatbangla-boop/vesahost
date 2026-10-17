@@ -1,5 +1,13 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## CURRENT VERIFIED AUTO-RESUME — PRODUCTION DEMO LIVE; FACTORY & VENDOR NEXT (2026-10-17)
+
+**Verified source:** `main` `2b060a027776ee7ab7a2355ed8f1ca493529a0cf`. APP-09 Production Tracker 360 personal non-commercial synthetic demo published at https://vesaent.com/apps/production-tracker/. [Main real Chromium/sibling CI #39023609749 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39023609749), [Pages #39023609518 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39023609518), [public exact served module/source smoke #39023609761 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39023609761). All nine previous personal portfolio demos including Costing remain unchanged. Detailed M4 evidence `docs/production-tracker/01_EXECUTION_TRACKER.md` and `VESA_PROGRESS.md`. User previously provided approved original ZIP; committed source `blueprints/APP-01...APP-15`, `docs/portfolio/`; verify with `node tests/vesa-blueprint-integrity.cjs`. **Do not request ZIP reattachment or restart previous apps.**
+
+**NEXT ACTION:** APP-08 **Factory & Vendor 360**. Inspect actual GitHub branches/main, create/resume `feature/factory-vendor-360`, read `blueprints/APP-08_factory-vendor.md` and original source-of-truth matrix, then audit M0 and build M1/M2/M3/M4 continuously within source and GitHub-Free/local-only guardrails. Treat all factory/site capacities as dated declared claims, certificate issuers and expiry dates as externally sourced, no inferred BSCI/WRAP/ISO approval or real contact fixtures. Preserve PPM/AQL/TNA and all existing releases. Do not call Factory live without actual Chromium/full CI plus Pages/live-source proof.
+
+---
+
 ## CURRENT APP-09 VERIFIED M1 — RESUME M2 (2026-10-17)
 
 Current development: `feature/production-tracker-360`. Exact M1 source `45b08317b0c8b649381b7858d35a2a708d1ae01e`; [real GitHub Actions Node/legacy CI #39021308588 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39021308588). `docs/production-tracker/01_EXECUTION_TRACKER.md` records M0 ownership audit, accepted M1 domain, remaining work. **NEXT:** M2 local browser workspace (EN/BN/HI/TA, shared shell, Save/Open/portable copies), then M3 reports/manual TNA reference, then M4 actual Chromium/sibling and conditional personal-demo release. No APP-09 live demo exists yet, and user approval/source-dependent production rules remain `Needs Information`.
