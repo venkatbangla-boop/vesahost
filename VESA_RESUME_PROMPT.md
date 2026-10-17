@@ -1,5 +1,13 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## CURRENT VERIFIED AUTO-RESUME — BUYER CRM DEMO LIVE; FABRIC SUPPLIER COMPARISON NEXT (2026-10-17)
+
+**Latest verified released APP-11 Buyer CRM source:** `main` `80e509975211d4c04e2c269a6f8c8be9bbc49060`; https://vesaent.com/apps/buyer-crm/ personal non-commercial synthetic-only. [main real Chromium + all Node/legacy #39038341663 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39038341663), [Pages deploy #39038341243 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39038341243), [public exact HTML/module bytes + prior demos #39038341676 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39038341676), full M0–M4 `docs/buyer-crm/01_EXECUTION_TRACKER.md`. APP-01 through APP-11 previously released personal demos + core Costing/TNA/PPM/AQL remain preserved; no contact data is stored in repo.
+
+**NEXT:** APP-12 Fabric & Supplier Comparison 360, `feature/fabric-supplier-comparison-360`; read ORIGINAL `blueprints/APP-12_fabric-supplier-comparison.md`, `docs/portfolio/03_CROSS_APP_DATA_OWNERSHIP.md`, shared UI and Github Free contracts, audit main and branch and CI. M0 source/owner/frozen contract audit, M1 pure exact source supplier quote/comparability/landed scenario engines, no invented FX/Incoterm duty, cross GSM/width/weight conversion or automatic vendor selection. M2 isolated locally saved English/Bengali/Hindi/Tamil workspace, M3 comparative source Excel/PDF & manual references, M4 independent actual Chromium/legacy release and Pages public verification before declaring live. Original blueprint ZIP already in repo; do not request reupload. See latest section at TOP of `VESA_PROGRESS.md` and per-app execution tracker for exact SHA and NEXT ACTION.
+
+---
+
 ## CURRENT VERIFIED AUTO-RESUME — LABEL & ARTWORK LIVE; BUYER CRM NEXT (2026-10-17)
 
 **Latest verified app source:** `main` `4573f14d9ee7a848f7de22b8f13eccf0cc80eebe`. APP-10 Label & Artwork Approval 360 personal synthetic demo https://vesaent.com/apps/label-artwork-approval/ . [Main full Node/real Chromium/all siblings #39035998201 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39035998201), [Pages #39035998009 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39035998009), [public source-byte smoke #39035998213 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39035998213). Exact proof and exclusions `docs/label-artwork-approval/01_EXECUTION_TRACKER.md`. All previous personal demos plus TNA/PPM/AQL retained.
