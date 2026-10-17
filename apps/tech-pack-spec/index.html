@@ -139,29 +139,38 @@ class GarmentSpecEngine{
       lower:low===null?null:this.text(low,precision,rule),
       upper:high===null?null:this.text(high,precision,rule),
       source:pom.baseSource,issue:missing||(!this.tolerance(pom)?'Asymmetric tolerance requires reviewed source':'')};
-    if(options.unit&&options.unit!==pom.unit&&t!==null){
-      if(!['in','cm'].includes(options.unit))result.issue='Unsupported output unit';
-      else{
-        result.target=this.text(this.convert(t,pom.unit,options.unit),precision,rule);
-        result.lower=low===null?null:this.text(this.convert(low,pom.unit,options.unit),precision,rule);
-        result.upper=high===null?null:this.text(this.convert(high,pom.unit,options.unit),precision,rule);
-        result.unit=options.unit;
-      }
-    }
+    // F25: transform the 4-decimal SOURCE values in a single path before the
+    // final display rounding. Never round cm->in first and multiply afterwards.
+    let convertedTarget=t,convertedLower=low,convertedUpper=high;
     if(options.basis&&options.basis!==pom.basis&&t!==null){
-      if(pom.geometry!=='girth'||pom.conversionReviewed!==true||
-        !trim(pom.conversionSource)||!trim(pom.conversionBy)){
-        result.target=null;result.lower=null;result.upper=null;
+      if(!['flat','circumference'].includes(options.basis)||pom.geometry!=='girth'||
+        pom.conversionReviewed!==true||!trim(pom.conversionSource)||!trim(pom.conversionBy)){
+        convertedTarget=null;convertedLower=null;convertedUpper=null;
         result.issue='Flat/circumference conversion needs explicit girth source';
       }else{
-        const factor=options.basis==='circumference'?2n:1n,divider=options.basis==='flat'?2n:1n;
-        const multiplier=value=>value===null?null:this.text(this.scaled(value,true)*factor/divider,precision,rule);
-        result.target=multiplier(result.target);
-        result.lower=multiplier(result.lower);
-        result.upper=multiplier(result.upper);
+        const basisConvert=value=>value===null?null:(
+          options.basis==='circumference'?value*2n:(value+1n)/2n);
+        convertedTarget=basisConvert(convertedTarget);
+        convertedLower=basisConvert(convertedLower);
+        convertedUpper=basisConvert(convertedUpper);
         result.basis=options.basis;
       }
     }
+    if(options.unit&&options.unit!==pom.unit&&convertedTarget!==null){
+      if(!['in','cm'].includes(options.unit)){
+        convertedTarget=null;convertedLower=null;convertedUpper=null;
+        result.issue='Unsupported output unit';
+      }else{
+        const unitConvert=value=>value===null?null:this.convert(value,pom.unit,options.unit);
+        convertedTarget=unitConvert(convertedTarget);
+        convertedLower=unitConvert(convertedLower);
+        convertedUpper=unitConvert(convertedUpper);
+        result.unit=options.unit;
+      }
+    }
+    result.target=convertedTarget===null?null:this.text(convertedTarget,precision,rule);
+    result.lower=convertedLower===null?null:this.text(convertedLower,precision,rule);
+    result.upper=convertedUpper===null?null:this.text(convertedUpper,precision,rule);
     cells.push(result);
    }
   }
