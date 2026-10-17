@@ -1,5 +1,23 @@
 # APP-10 Label & Artwork Approval 360 — Execution Tracker
 
+## 2026-10-17 — M1 NODE DOMAIN VERIFIED; M2 exact browser-local scope
+
+**M1 verdict: ACCEPTED for pure-domain engineering, not official buyer/regulatory approval.** Exact source `cb097496ed970ef436f4c343658fbc7b8f2daa5b`, [independent Node/15-blueprint/full sibling GitHub Actions #39033707551 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39033707551). `artwork-revision.js`: versioned source header/spec/audit and append-only revisions; `label-spec.js`: documented dimensions/unit, optional sourced repeat, supplied GTIN-8/UPC-A/EAN-13/GTIN-14 check-digit **warnings** only; `review-state.js`: revision-bound local reviewer comments and source-claimed buyer decision evidence, never third-party verification. Tests prove new revision invalidates prior decision status while retaining history, bad checksum is retained as warning, unsourced wash-care/measurement fails and no GS1 ID minted. Frozen Tech Pack/Sampling/TNA/PPM/AQL and all other demos pass sibling Node tests.
+
+### M2 file-level app-only audit and controlled patch
+
+**NEW IN-SCOPE:** `apps/label-artwork-approval/index.html`, `assets/label-artwork-approval.css`, `src/bootstrap.js`, `src/application/workspace-controller.js`, `src/data/local-record-port.js`, `src/data/saved-copy-codec.js`, `src/i18n/app-copy.js`, `tests/save-reopen.test.cjs`, `tests/browser-workflow.cjs`; modify ONLY `.github/workflows/label-artwork-approval.yml` plus this tracker for M2 proof.
+
+**Owner/dependency path:** shared `VesaWorkspaceShell` with Home/File/Edit/View/Tools/Help → app-only workspace controller → existing pure M1 Artwork/Label/Review → app-only local record + checksummed portable codec → browser localStorage and bounded download, never other apps' private localStorage. No new global header, auth claim, remote API, `js/app-catalogue.js` registration or service-worker release in M2. Preview MIME scope is **conservative technical proof only**, PNG/JPEG magic-header-validated, max 1 MiB, object URL revoked, not stored or transmitted. Official allowed artwork types/retention policies remain `Needs Information`; PDF/SVG or third-party embedded content not previewed.
+
+**M2 UX:** Create/continue/list local items; add sourced immutable revisions; attach revision-bound comments/review evidence; show current pending/source-evidence status and GTIN warning; practice record; device Save/Open/portable restored separate copy; local ephemeral image preview, four-language labels preserving entered data; responsive 320/360/390/640/768/1024/1280/1440 and keyboard focus/Escape, no hidden requests. Printing/Excel/report models and reviewed external reference imports remain M3 only.
+
+**FROZEN:** M1 source methods/record version, all earlier apps, original blueprints/manifest, `js/auth.js`, global shell/catalogue/service-worker, previous saved records, browser data isolation. **Risk:** callback duplicates, checksum bypass, persisted unsafe image bytes, stale reviewer evidence. Test all via Node copy and actual Chromium plus sibling regressions. Rollback by reverting M2 app-only commits, never clear persisted user records.
+
+**CURRENT NEXT ACTION:** implement M2, run independent full Chromium CI at exact SHA; upon accepted M2 proceed M3 source-safe reports/version comparison and M4 actual public demo eligibility. No ZIP reupload needed.
+
+---
+
 ## 2026-10-17 — M0 original blueprint and actual repository ownership audit
 
 **Baseline and scope:** `main` `a45b476ddf615753d8c4c0d5e6038f450d1c81bf` after verified Factory demo release and original permanent `blueprints/APP-10_label-artwork-approval.md`. This rank-11/W3 app had no `apps/label-artwork-approval/` folder and no `vesa.label-artwork-approval.records.v1` storage key on GitHub. `feature/label-artwork-approval-360` created directly from latest main; never overwrite prior released apps. Read `AGENTS.md`, root `VESA_RESUME_PROMPT.md`, `docs/portfolio/03_CROSS_APP_DATA_OWNERSHIP.md`, `docs/platform/VESA_UNIFIED_UI_CONTRACT.md`, `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md`.
