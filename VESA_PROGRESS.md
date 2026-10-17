@@ -1,5 +1,16 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## 2026-10-18 — Premium app-only UX G0/G1/G2 closed; G3 NEXT
+
+**Owner boundary:** Public `vesaent.com/` homepage is completely outside redesign scope. Do not change root `index.html`, `css/style.css`, `js/main.js`, home imagery/video or metadata. Only `/login/`, `/apps/`, `/admin/` and 19 apps can be changed, while app domain rules stay preserved. Synthetic demo login is visibly prefilled as `user@vesa` / `vesa` (existing auth.js user account), actual one-click VesaAuth login preserved.
+
+**Published UI:** Premium Login main `0cc389a25beb8f426017eda3afd24c63200a98f6` (Chromium + WebKit #39057737377 PASS; Pages #39057891010 SUCCESS). App Centre desktop category full-width layout; original company stylesheet removed ONLY from App Centre. App-specific localized link names restored after detecting five sibling CI failures; hotfix `5d12ca22758aac356b1063582ce17ca21c9b3c66`, combined five browser workflows #39058838363 PASS, main sibling workflows and Pages #39058970672 SUCCESS. Premium Admin standalone responsive styling with frozen user/history handlers integrated and branch Chromium #39059094672 PASS; published main application SHA `1ef581fabe5a6aac03473eeb9c7bb33ce5cff43c`, main App Centre Chromium #39059209116 SUCCESS and Pages #39059208861 SUCCESS. Homepage source bytes untouched. Historic screenshot baseline #39057142785 passed 147 app-only captures; it is not exhaustive active form UAT.
+
+**CURRENT EXACT NEXT ACTION G3:** Read `docs/ux/00_PREMIUM_ADAPTIVE_MASTER_PROMPT.md` + `docs/ux/01_PREMIUM_UX_EXECUTION_TRACKER.md`. Open actual active TNA/PPM/AQL forms, capture desktop and mobile screenshots at multiple sizes and synthetic workflows, profile scroll/loading especially AQL 11.8-MB HTML, audit UI ownership, then correct one proven small presentation defect with Node/real Chromium/sibling tests and safe main Pages promotion. All TNA CPM/G17, PPM 168/GO-HOLD, AQL SamplingEngine/Ac-Re, original 15 app rules and browser saved copies remain frozen. In any next chat a bare **Continue** must read the latest actual GitHub checkpoint and proceed to this next unfinished gate, not restart.
+
+---
+
+
 ## 2026-10-18 — Highest-priority VESA UX scope and CONTINUE command
 
 **Owner correction, permanent:** DO NOT MODIFY the public `vesaent.com/` homepage, root `index.html`, `css/style.css`, `js/main.js`, company images/video, SEO or legal/contact pages in any VESA 360 redesign. **Only `/login/`, `/apps/`, `/admin/` and the 19 existing `/apps/<slug>/` applications are in scope.** Root service-worker updates are permitted only for needed login/app asset versioning, preserving homepage byte contents. This instruction overrides older proposed homepage redesigns.
