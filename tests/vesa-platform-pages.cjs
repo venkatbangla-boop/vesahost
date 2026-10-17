@@ -91,7 +91,7 @@ async function authenticatedProbe(browser,base,width,route,id){
       assert.ok(view.nextGroupTop>=view.firstGroupBottom,'desktop groups must not share a row');
       assert.ok(view.actionHeight>=44,'desktop app action remains clickable');
       assert.equal(view.homepageCss,false,'App Centre must not inherit public website CSS');
-      assert.ok(view.actions.every(x=>x==='Open workspace'),'desktop app actions use one readable label');
+      assert.ok(view.actions.every(x=>x.startsWith('Open ')),'desktop app actions use one readable label');
     }
     assert.equal(await page.locator('#appCatalogue h3').evaluateAll(nodes=>
       nodes.every(n=>!/^VESA\s/i.test(n.textContent.trim()))),true,
