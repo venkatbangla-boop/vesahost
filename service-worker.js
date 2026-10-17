@@ -1,4 +1,4 @@
-const CACHE='vesa-v75-fabric-trims-personal-demo';
+const CACHE='vesa-v76-shipment-documentation-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -38,6 +38,15 @@ const ASSETS=[
   './apps/fabric-trims/src/reports/report-model.js',
   './apps/fabric-trims/src/i18n/app-copy.js',
   './apps/fabric-trims/src/application/workspace-controller.js',
+  './apps/shipment-documentation/',
+  './apps/shipment-documentation/index.html',
+  './apps/shipment-documentation/assets/shipment-documentation.css',
+  './apps/shipment-documentation/src/bootstrap.js',
+  './apps/shipment-documentation/src/domain/shipment-engine.js',
+  './apps/shipment-documentation/src/data/local-record-port.js',
+  './apps/shipment-documentation/src/reports/report-model.js',
+  './apps/shipment-documentation/src/i18n/app-copy.js',
+  './apps/shipment-documentation/src/application/workspace-controller.js',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
