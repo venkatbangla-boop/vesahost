@@ -31,6 +31,10 @@ jobs:
           node --check apps/shipment-documentation/src/data/local-record-port.js
           node --check apps/shipment-documentation/src/reports/report-model.js
           node apps/shipment-documentation/tests/domain.test.cjs
+          node --check apps/shipment-documentation/src/application/workspace-controller.js
+          node --check apps/shipment-documentation/src/i18n/app-copy.js
+          node --check apps/shipment-documentation/src/bootstrap.js
+          node --check apps/shipment-documentation/tests/browser-workflow.cjs
           node apps/fabric-trims/tests/domain.test.cjs
           node apps/sampling-approval/tests/domain.test.cjs
           node apps/lc-payment/tests/domain.test.cjs
@@ -45,3 +49,17 @@ jobs:
           node apps/aql/tests/a-g03-sampling.cjs
           node tests/vesa-workspace-shell-contract.cjs
           git diff --check HEAD~1 HEAD
+      - name: Install real Chromium in Github Free runner
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Shipment real browser acceptance
+        run: node apps/shipment-documentation/tests/browser-workflow.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shipment360-synthetic-browser
+          path: output/playwright/ship-app07-*
+          if-no-files-found: ignore
