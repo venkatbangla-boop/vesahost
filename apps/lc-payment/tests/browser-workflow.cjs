@@ -69,7 +69,10 @@ class LCBrowserProof{
    await act('documents');await act('add-document');
    await enter({docName:'SYNTHETIC BL',docStatus:'discrepant',date:'2026-10-15',
      actor:'SYNTHETIC DOC TEAM',bankRef:'SYNTHETIC BANK REF',
-     source:'SYNTHETIC BANK DISCREPANCY',discrepancy:'SYNTHETIC NAME DIFFERENCE'});await submit();
+     source:'SYNTHETIC BANK DISCREPANCY',discrepancy:'SYNTHETIC NAME DIFFERENCE'}); 
+   const obValue=await page.locator('#lcDialog [name=linkedObligation] option').nth(1).getAttribute('value');
+   await enter({linkedObligation:obValue,documentAmount:'5100.00',documentCurrency:'USD',
+     amountSource:'SYNTHETIC INVOICE AMOUNT SOURCE'});await submit();
    await act('settlements');await act('add-settlement');
    const opts=page.locator('#lcDialog [name=obligation] option');
    assert.equal(await opts.count(),1);
@@ -90,6 +93,7 @@ class LCBrowserProof{
    await act('save');
    assert.equal((await saved())[0].amendments[0].status,'approved');
    assert.equal((await saved())[0].documents[0].status,'discrepant');
+   await act('reports');assert.match(await page.locator('.lc-report').innerText(),/DOCUMENT VALUE MISMATCH/);
    await page.reload({waitUntil:'domcontentloaded'});await act('continue');
    assert.equal((await saved())[0].settlements.length,2);
    await act('reports');fs.mkdirSync(out,{recursive:true});

@@ -87,7 +87,8 @@ class LCPolicyEngine {
   if(!chosen||!this.date(chosen.date)||!trim(chosen.source))
    return {date:null,issue:'Needs Information: explicitly sourced '+String(event||'start')+' event date'};
   const n=Number(term.days);
-  if(term.days===null||term.days===undefined||term.days===''||!Number.isSafeInteger(n)||n<0||n>3650||
+  if(term.days===null||term.days===undefined||!/^(0|[1-9][0-9]*)$/.test(String(term.days))||
+      !Number.isSafeInteger(n)||n<0||n>3650||
       !trim(term.sourceRef)||typeof term.includeStart!=='boolean'||
       !['calendar','business'].includes(term.convention))
    return {date:null,issue:'Needs Information: sourced days, inclusion and day convention'};
@@ -142,6 +143,7 @@ class LCPolicyEngine {
   return p;
  }
  static convert(event,contractCurrency){
+  if(!/^[A-Z]{3}$/.test(event.currency||''))return null;
   const cents=this.cents(event.amount);if(cents===null)return null;
   if(event.currency===contractCurrency)return cents;
   const fx=this.cents(event.fxRate,8);
@@ -223,7 +225,7 @@ class LCPolicyEngine {
     if(this.date(asOf)&&item.maturity&&item.maturity<asOf&&total-settled>0n)
      dueOpen.push({id:o.id,due:item.maturity,open:this.signed(total-settled),direction:o.direction});}
   }
-  const docIds=new Set();
+  const docIds=new Set(),documentComparisons=[];
   for(const d of p.documents){
    if(docIds.has(d.id))errors.push('Duplicate documentary checklist ID.');docIds.add(d.id);
    if(!trim(d.name)||!['required','submitted','accepted','discrepant'].includes(d.status)||!trim(d.sourceRef))
@@ -234,6 +236,21 @@ class LCPolicyEngine {
     errors.push('Accepted document requires independent source-dated bank acceptance evidence.');
    if(d.status==='discrepant'&&!trim(d.discrepancy))
     errors.push('Discrepant document needs a written discrepancy description.');
+   let discrepancy='Needs Information';
+   if(trim(d.linkedObligationId)||trim(d.documentAmount)||trim(d.documentCurrency)){
+    const linkedAmount=obligationAmounts.get(d.linkedObligationId),stated=this.cents(d.documentAmount);
+    if(linkedAmount===undefined||stated===null||!/^[A-Z]{3}$/.test(d.documentCurrency||'')||
+       !trim(d.amountSource))errors.push('Linked invoice/document value needs its own amount, currency, obligation and source.');
+    else if(d.documentCurrency!==h.currency)
+     discrepancy='Different currencies; independently sourced FX required';
+    else if(stated!==linkedAmount){
+     discrepancy='DOCUMENT VALUE MISMATCH (not bank adjudication)';
+     notes.push('Document discrepancy: '+d.name+' value differs from its linked LC obligation.');
+    }else discrepancy='Amounts match (local comparison only)';
+   }
+   documentComparisons.push({id:d.id,document:d.name,obligationId:d.linkedObligationId||null,
+    amount:d.documentAmount||null,currency:d.documentCurrency||null,
+    amountSource:d.amountSource||null,status:discrepancy});
   }
   for(const c of p.bankCharges){
    if(this.cents(c.amount)===null||c.currency!==h.currency||!this.date(c.date)||
@@ -246,7 +263,7 @@ class LCPolicyEngine {
   return {ok:errors.length===0,errors,notes,lcValue:value<0n?null:this.signed(value),
    originalValue:h.amount,currency:h.currency,maturities,obligations:maturities,overdue:dueOpen,
    asOf:this.date(asOf)?asOf:null,
-   documentsDiscrepant:p.documents.filter(x=>x.status==='discrepant').length};
+   documentsDiscrepant:p.documents.filter(x=>x.status==='discrepant').length,documentComparisons};
  }
 }
 /** LC register persistence: browser-scoped, same versioned key and recoverable copies. */
@@ -310,10 +327,12 @@ class LCReport{
        amountOf(x.id)?.maturity||'Needs Information',x.bankDueDate||'Needs Information',
        amountOf(x.id)?.issue||'None'])],
    'Document Checklist':[['Document','Status','Source','Recorded date','Bank reference',
-      'Acceptance evidence','Discrepancy'],
+      'Acceptance evidence','Discrepancy','Linked obligation','Document amount','Source comparison'],
      ...p.documents.map(x=>[x.name,x.status,x.sourceRef,x.date||'Needs Information',
        x.bankRef||'Needs Information',x.acceptedEvidence||'Needs Information',
-       x.discrepancy||'None'])],
+       x.discrepancy||'None',x.linkedObligationId||'Needs Information',
+       x.documentAmount||'Needs Information',
+       calculated.documentComparisons.find(c=>c.id===x.id)?.status||'Needs Information'])],
    'Payment Obligations':[['Direction','Counterparty','Invoice','Shipment','Amount','Currency',
       'Settled + sourced credits net','Outstanding','Maturity','Source'],
      ...calculated.obligations.map(x=>[x.direction,x.counterparty,x.invoice,x.shipment,
@@ -377,7 +396,7 @@ const TXT={
  eventType:'Event type',date:'Date',actor:'Recorded by',document:'Document reference',
  requestedBy:'Amendment actor',approvedBy:'Bank approval actor',approvedOn:'Bank approval date',
  approvalEvidence:'Bank approval document',status:'Source-reported status',
- docName:'Bank checklist document',docStatus:'Document state',acceptedDate:'Acceptance date',
+ docName:'Bank checklist document',docStatus:'Document state',linkedObligation:'Related LC obligation',documentAmount:'Source document amount',documentCurrency:'Document currency',amountSource:'Document amount source',acceptedDate:'Acceptance date',
  acceptedEvidence:'Acceptance document',bankRef:'Bank reference',discrepancy:'Document discrepancy',
  kind:'Transaction type',obligation:'Linked obligation',reference:'Transaction reference',
  fxRate:'FX: LC currency per settlement currency',fxSource:'Explicit FX source',fxDate:'FX date',
@@ -410,7 +429,7 @@ const TXT={
  eventType:'Event வகை',date:'தேதி',actor:'பதிவு செய்தவர்',document:'ஆவணம்',
  requestedBy:'திருத்தம் பதிவு செய்தவர்',approvedBy:'Bank Approver',approvedOn:'Bank Approval தேதி',
  approvalEvidence:'Bank Approval ஆதாரம்',status:'ஆதார நிலை',
- docName:'Bank Document',docStatus:'Document Status',acceptedDate:'Acceptance தேதி',
+ docName:'Bank Document',docStatus:'Document Status',linkedObligation:'தொடர்புடைய LC Obligation',documentAmount:'ஆவண தொகை',documentCurrency:'Document Currency',amountSource:'தொகை ஆதாரம்',acceptedDate:'Acceptance தேதி',
  acceptedEvidence:'Acceptance ஆதாரம்',bankRef:'Bank Reference',discrepancy:'Document தவறு',
  kind:'Transaction வகை',obligation:'Obligation',reference:'Transaction Reference',
  fxRate:'FX Rate',fxSource:'FX ஆதாரம்',fxDate:'FX தேதி',fxRounding:'FX Rounding விதி',
@@ -442,7 +461,7 @@ const TXT={
  eventType:'ঘটনা',date:'তারিখ',actor:'নথিভুক্তকারী',document:'নথি',
  requestedBy:'সংশোধনকারী',approvedBy:'ব্যাংক অনুমোদনকারী',approvedOn:'অনুমোদন তারিখ',
  approvalEvidence:'অনুমোদন নথি',status:'অবস্থা',
- docName:'ব্যাংক নথি',docStatus:'নথির অবস্থা',acceptedDate:'গ্রহণের তারিখ',
+ docName:'ব্যাংক নথি',docStatus:'নথির অবস্থা',linkedObligation:'সংশ্লিষ্ট দায়',documentAmount:'নথির পরিমাণ',documentCurrency:'নথির মুদ্রা',amountSource:'পরিমাণের উৎস',acceptedDate:'গ্রহণের তারিখ',
  acceptedEvidence:'গ্রহণের প্রমাণ',bankRef:'ব্যাংক রেফারেন্স',discrepancy:'নথির অসঙ্গতি',
  kind:'লেনদেন ধরন',obligation:'পেমেন্ট দায়',reference:'লেনদেন রেফারেন্স',
  fxRate:'FX দর',fxSource:'FX উৎস',fxDate:'FX তারিখ',fxRounding:'FX রাউন্ডিং',
@@ -474,7 +493,7 @@ const TXT={
  eventType:'घटना',date:'तारीख',actor:'दर्ज करने वाला',document:'दस्तावेज',
  requestedBy:'संशोधन करने वाला',approvedBy:'बैंक अनुमोदक',approvedOn:'अनुमोदन तारीख',
  approvalEvidence:'अनुमोदन दस्तावेज',status:'स्थिति',
- docName:'बैंक दस्तावेज',docStatus:'दस्तावेज़ स्थिति',acceptedDate:'स्वीकृति तारीख',
+ docName:'बैंक दस्तावेज',docStatus:'दस्तावेज़ स्थिति',linkedObligation:'जुड़ा दायित्व',documentAmount:'दस्तावेज राशि',documentCurrency:'दस्तावेज मुद्रा',amountSource:'राशि स्रोत',acceptedDate:'स्वीकृति तारीख',
  acceptedEvidence:'स्वीकृति प्रमाण',bankRef:'बैंक रिफरेंस',discrepancy:'दस्तावेज समस्या',
  kind:'लेनदेन प्रकार',obligation:'जुड़ा दायित्व',reference:'लेनदेन संदर्भ',
  fxRate:'FX दर',fxSource:'FX स्रोत',fxDate:'FX तारीख',fxRounding:'FX राउंडिंग',
@@ -744,6 +763,11 @@ class LCWorkspace{
     this.field('bankRef','','text','maxlength="180"')+
     this.field('acceptedEvidence','','text','maxlength="180"')+
     this.field('source','','text','required maxlength="180"')+
+    this.select('linkedObligation',[['','No document value to reconcile'],
+      ...p.obligations.map(o=>[o.id,o.counterparty+' · '+o.amount+' '+o.currency])],'')+
+    this.field('documentAmount','','text','inputmode="decimal"')+
+    this.field('documentCurrency',p.header.currency,'text','maxlength="3"')+
+    this.field('amountSource','','text','maxlength="180"')+
     this.note('discrepancy');
   }else if(kind==='add-settlement'){
    if(!p.obligations.length)throw Error('Create a sourced obligation first.');
@@ -840,7 +864,9 @@ class LCWorkspace{
      p.documents.push({id:uid('DOC'),name:get('docName'),status:get('docStatus'),
       date:get('date'),acceptedDate:get('acceptedDate'),
       acceptedEvidence:get('acceptedEvidence'),sourceRef:get('source'),
-      actor:get('actor'),bankRef:get('bankRef'),discrepancy:get('discrepancy')});
+      actor:get('actor'),bankRef:get('bankRef'),discrepancy:get('discrepancy'),
+      linkedObligationId:get('linkedObligation'),documentAmount:get('documentAmount'),
+      documentCurrency:get('linkedObligation')?get('documentCurrency'):'',amountSource:get('amountSource')});
     });
    }else if(kind==='add-settlement'){
     this.mutate('Actual sourced financial event manually recorded',p=>{
