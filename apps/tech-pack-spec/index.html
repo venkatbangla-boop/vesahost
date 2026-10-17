@@ -52,6 +52,46 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
 @media(max-width:750px){.sp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sp-card{padding:12px}}
 @media(max-width:480px){.sp-grid,.sp-form{grid-template-columns:1fr}.sp-form label.wide,.sp-form .wide{grid-column:1}.sp-actions>.sp-btn{flex:1 1 auto}}
 @media print{.vesa-workspace,.app-user-bar,.sp-tabs,.sp-actions,.sp-dialog{display:none!important}#specMain{width:100%;padding:0}.sp-card{border:0;padding:0}.sp-table{font-size:10px}.sp-table td,.sp-table th{padding:5px 6px}.sp-report{display:block!important}@page{size:A4 landscape;margin:12mm}}
+
+/* APP-03 G4: spec-first home — real fictional engine projection, never arbitrary grading. */
+.sp-local-info{font-size:11px;color:var(--muted,#526176);margin:5px 0 0}
+.sp-local-info summary{cursor:pointer;min-height:32px;display:inline-flex;align-items:center;
+ text-decoration:underline;text-underline-offset:2px}
+.sp-local-info p{margin:4px 0;padding:10px;border-radius:9px;background:var(--look-surface,#eef3f9)}
+.sp-local-info summary:focus-visible{outline:3px solid var(--tna-gold,#a87623);outline-offset:2px}
+.sp-lab{padding:22px}
+.sp-lab-head{margin:0 0 16px}
+.sp-lab-tag{display:block;font-size:11px;font-weight:850;letter-spacing:.075em;
+ text-transform:uppercase;color:var(--blue,#244fd6)}
+.sp-lab h2{font-size:clamp(1.2rem,2.25vw,1.5rem);margin:3px 0;letter-spacing:-.026em}
+.sp-lab-head p{font-size:.89rem;color:var(--muted,#526176);margin:3px 0}
+.sp-lab-grid{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:16px;align-items:start}
+.sp-lab-chart{padding:16px;border:1px solid var(--line,#cbd6e4);
+ border-radius:13px;background:var(--look-surface,#eef3f9);min-width:0}
+.sp-lab-chart-title{font-size:.86rem;font-weight:800;margin:0 0 11px}
+.sp-lab-table{width:100%;border-collapse:collapse;background:var(--paper,#fff);
+ border-radius:9px;overflow:hidden;font-size:.85rem;table-layout:fixed}
+.sp-lab-table th,.sp-lab-table td{padding:11px 8px;text-align:center;
+ border:1px solid var(--line,#cbd6e4);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sp-lab-table thead th{color:var(--muted,#526176);font-size:.77rem}
+.sp-lab-table tbody th{text-align:left;color:var(--ink,#17263d);font-size:.78rem}
+.sp-lab-table td{font-size:clamp(.79rem,1.15vw,1.04rem);font-weight:790;color:var(--ink,#17263d)}
+.sp-lab-chart-note{margin:11px 0 0;color:var(--muted,#526176);font-size:.79rem;line-height:1.5}
+.sp-lab-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}
+.sp-lab-action{min-width:0;min-height:52px;display:flex;justify-content:space-between;gap:8px;
+ align-items:center;cursor:pointer;background:var(--paper,#fff);
+ border:1px solid var(--line,#cbd6e4);border-radius:10px;
+ color:var(--ink,#17263d);padding:11px 13px;font:inherit;font-size:.86rem;
+ line-height:1.3;font-weight:750;text-align:left}
+.sp-lab-action:hover{border-color:var(--blue,#244fd6)}
+.sp-lab-action:focus-visible{outline:3px solid var(--tna-gold,#a87623);outline-offset:2px}
+.sp-lab-action-arrow{color:var(--blue,#244fd6);font-size:17px;font-weight:850}
+@media(max-width:850px){.sp-lab-grid{grid-template-columns:minmax(0,1fr)}
+ .sp-lab{padding:17px}}
+@media(max-width:400px){.sp-lab{padding:14px 12px}.sp-lab-chart{padding:10px}
+ .sp-lab-actions{grid-template-columns:minmax(0,1fr)}
+ .sp-lab-action{min-height:45px}}
+@media print{.sp-lab,.sp-local-info{display:none!important}}
 </style></head><body>
 <main id="specMain" tabindex="-1"><p role="status">Opening VESA Tech Pack &amp; Spec 360…</p></main>
 <dialog id="specDialog" class="sp-dialog" aria-labelledby="specDialogTitle">
