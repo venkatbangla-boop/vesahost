@@ -7,6 +7,7 @@ class ProductionWorkspace {
  constructor(){
   this.host=document.getElementById('ptMain');this.dialog=document.getElementById('ptDialog');
   this.body=document.getElementById('ptDialogBody');this.file=document.getElementById('ptCopyFile');
+  this.refFile=document.getElementById('ptReferenceFile');this.refKind='po';this.pendingRef=null;this.Ref=root.VesaProductionReviewedReference;this.R=root.VesaProductionReportModel;
   this.E=root.VesaProductionStageFlow;this.L=root.VesaProductionDailyLedger;
   this.C=root.VesaProductionCopyCodec;this.T=root.VesaProductionCopy;
   const user=root.VesaAuth?.session?.()||{};
@@ -48,6 +49,13 @@ class ProductionWorkspace {
     this.modal(this.t('upload'),'<p class="pt-note">Production copy was opened separately without overwriting earlier source versions.</p>');
    }catch(error){this.error(error.message);}
   });
+  this.refFile.addEventListener('change',async()=>{
+   const file=this.refFile.files?.[0];this.refFile.value='';if(!file)return;
+   try{if(file.size>120000)throw Error('Local reviewed source file exceeds 120 KB');
+    const ref=JSON.parse(await file.text());if(!this.Ref.sourceValid(ref,this.refKind))throw Error('Wrong source owner or incomplete typed locally reviewed reference');
+    this.pendingRef=this.Ref.copy(ref);this.form('source-confirm');
+   }catch(error){this.error(error.message);}
+  });
   root.addEventListener('vesa-preferences-change',()=>this.render());
   root.VesaProduction360=this;
   this.render();
@@ -55,8 +63,8 @@ class ProductionWorkspace {
  menu(name){const groups={Home:[['home','back'],['new','new'],['continue','continue'],['practice','practice']],
   File:[['save','save'],['download','download'],['upload','upload'],['open','open']],
   Edit:[['daily-form','addDaily'],['opening-form','addOpening'],['target-form','addTarget']],
-  View:[['summary','summary'],['daily','daily'],['wip','wip'],['targets','targets'],['history','history']],
-  Tools:[['report','report']],Help:[['help','help']]};
+  View:[['summary','summary'],['daily','daily'],['wip','wip'],['targets','targets'],['references','references'],['reports','reports'],['history','history']],
+  Tools:[['report','report'],['excel','excel'],['print','print'],['reference-select','referenceSelect'],['reference-export','referenceExport']],Help:[['help','help']]};
   this.modal(name,'<div class="pt-actions">'+(groups[name]||[]).map(([id,label])=>'<button type="button" class="pt-button" data-dialog-action="'+this.e(id)+'">'+this.e(this.t(label))+'</button>').join('')+'</div>');
   this.body.querySelectorAll('[data-dialog-action]').forEach(b=>b.onclick=()=>{this.dialog.close();this.action(b.dataset.dialogAction);});
  }
@@ -71,12 +79,22 @@ class ProductionWorkspace {
   if(name==='download'){if(!this.current||this.current.mode==='practice')throw Error('Open a local production record');const data=this.C.encode(this.current);
    const link=document.createElement('a'),url=URL.createObjectURL(new Blob([data],{type:'application/json'}));link.href=url;
    link.download='VESA-PRODUCTION-'+this.current.id+'.vesaprod';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);return;}
-  if(['summary','daily','wip','targets','history'].includes(name)){if(!this.current)throw Error('Open a production record');this.section=name;this.render();return;}
-  if(name==='report'){this.modal(this.t('report'),'<p class="pt-warning">'+this.e(this.t('reportPlanned'))+'</p>');return;}
+  if(['summary','daily','wip','targets','references','reports','history'].includes(name)){if(!this.current)throw Error('Open a production record');this.section=name;this.render();return;}
+  if(name==='report'){if(!this.current)throw Error('Open a production record');this.section='reports';this.render();return;}
+  if(name==='excel'){this.excel();return;}
+  if(name==='print'){if(!this.current)throw Error('Open a production record');this.section='reports';this.render();root.print();return;}
+  if(name==='reference-select'||name==='reference-export'){if(!this.current||this.current.mode==='practice')throw Error('Open a local production record');this.form(name);return;}
   if(name==='help'){this.modal(this.t('help'),'<p class="pt-warning">'+this.e(this.t('warning'))+'</p><p>'+this.e(this.t('noApproval'))+'</p>');return;}
   if(['daily-form','opening-form','target-form','correct-form','revise-target-form'].includes(name)){
    if(!this.current||this.current.mode==='practice')throw Error('Open a local production record');this.form(name,id);return;}
  }catch(e){this.error(e.message);}}
+ excel(){if(!this.current)throw Error('Open a production record');if(!root.XLSX)throw Error('Excel workbook library is unavailable');
+  const analysis=this.L.validate(this.current);if(!analysis.ok)throw Error(analysis.errors.join('; '));
+  const book=root.XLSX.utils.book_new();for(const [name,rows] of Object.entries(this.R.rows(this.current,analysis))){
+   const sheet=root.XLSX.utils.aoa_to_sheet(this.R.excelRows(name,rows));root.XLSX.utils.book_append_sheet(book,sheet,name.slice(0,31));
+  }root.XLSX.writeFile(book,'VESA-PRODUCTION-'+this.current.id+'.xlsx');}
+ downloadData(data,name,type){const file=new Blob([data],{type}),url=URL.createObjectURL(file),a=document.createElement('a');
+  a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1400);}
  mutate(fn){if(!this.current||this.current.mode==='practice')throw Error('Practice example is read-only');
   const proposed=fn(this.current);this.store.save(proposed);this.current=proposed;this.render();}
  table(headers,rows){return '<div class="pt-scroll"><table class="pt-table"><thead><tr>'+headers.map(x=>'<th>'+this.e(x)+'</th>').join('')+
@@ -89,9 +107,9 @@ class ProductionWorkspace {
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,analysis=this.L.validate(p),practice=p.mode==='practice';
-  const tabs=['summary','daily','wip','targets','history'];
+  const tabs=['summary','daily','wip','targets','references','reports','history'];
   this.host.innerHTML=banner+'<section class="pt-card"><h2>'+e(p.header.poNo)+' · '+e(p.header.style)+' · '+e(p.header.colour)+'</h2><p class="pt-note">'+e(p.header.factory)+' · '+e(p.header.lot)+' · '+e(p.header.unit)+' · '+(practice?'SYNTHETIC PRACTICE':t('localOnly'))+'</p>'+
-   '<div class="pt-actions">'+this.btn('home','back')+this.btn('save','save',true,'',practice)+this.btn('download','download',false,'',practice)+this.btn('report','report')+'</div></section>'+
+   '<div class="pt-actions">'+this.btn('home','back')+this.btn('save','save',true,'',practice)+this.btn('download','download',false,'',practice)+this.btn('report','report')+this.btn('excel','excel')+this.btn('reference-export','referenceExport',false,'',practice)+'</div></section>'+
    '<nav class="pt-tabs" aria-label="Production sections">'+tabs.map(tab=>'<button class="pt-button" type="button" data-action="'+tab+'" aria-current="'+(tab===this.section)+'">'+t(tab)+'</button>').join('')+'</nav>'+
    (!analysis.ok?'<section class="pt-card" role="alert"><h2>'+t('errors')+'</h2><p>'+analysis.errors.map(e).join('; ')+'</p></section>':'')+
    this.panel(p,analysis,practice);
@@ -111,15 +129,31 @@ class ProductionWorkspace {
   if(this.section==='targets')return '<section class="pt-card"><div class="pt-actions"><h2>'+t('targets')+'</h2>'+this.btn('target-form','addTarget',true,'',!can)+'</div>'+
    this.table([this.t('stage'),this.t('line'),this.t('sourceTarget'),this.t('locallyReviewedGood'),this.t('remaining'),this.t('sourceRef'),this.t('reviseTarget')],a.groups.map(g=>[
     e(g.stage),e(g.line),e(g.sourceTarget),e(g.locallyReviewedGood),e(g.remaining),e(g.targetProvenance),can&&p.stageTargets.some(s=>this.E.axis(s)===this.E.axis(g))?this.btn('revise-target-form','reviseTarget',false,this.targetForGroup(g)?.id):t('needs')]))+'</section>';
+  if(this.section==='references')return '<section class="pt-card"><div class="pt-actions"><h2>'+t('references')+'</h2>'+this.btn('reference-select','referenceSelect',true,'',!can)+this.btn('reference-export','referenceExport',false,'',!can)+'</div>'+
+   '<p class="pt-warning">'+t('sourceNotice')+'</p>'+this.table([t('sourceType'),t('sourceApp'),t('sourceRecord'),t('localReviewer'),t('localReviewDate')],(p.manualReferences||[]).map(r=>[
+    e(r.kind.toUpperCase()),e(r.source.sourceApp),e(r.source.recordId),e(r.localReviewer),e(r.localReviewDate)]))+'</section>';
+  if(this.section==='reports')return '<section class="pt-card"><div class="pt-actions">'+this.btn('excel','excel',true)+this.btn('print','print')+'</div>'+this.R.html(p,a)+'</section>';
   return '<section class="pt-card"><h2>'+t('history')+'</h2>'+this.table(['Rev','Action','Source','ID'],p.audit.map(row=>[
    e(row.revision),e(row.action),e(row.at),e(row.recordId)]))+'<p class="pt-note">'+t('noApproval')+'</p></section>';
  }
  targetForGroup(group){return [...this.current.stageTargets].reverse().find(t=>this.E.axis(t)===this.E.axis(group));}
  form(kind,id=''){const e=x=>this.e(x),t=x=>this.t(x),begin='<form class="pt-form" data-form="'+e(kind)+'" data-item="'+e(id)+'">',end='<div class="wide pt-actions"><button type="submit" class="pt-button primary">'+e(t('submit'))+'</button></div></form>';
-  let heading=t(kind==='new'?'new':kind==='opening-form'?'addOpening':kind==='target-form'?'addTarget':kind==='revise-target-form'?'reviseTarget':kind==='correct-form'?'correct':'addDaily'),body='';
+  let heading=t(({new:'new','opening-form':'addOpening','target-form':'addTarget',
+   'revise-target-form':'reviseTarget','correct-form':'correct','reference-select':'referenceSelect',
+   'source-confirm':'referenceSelect','reference-export':'referenceExport'})[kind]||'addDaily'),body='';
   const h=this.current?.header||{},oldRow=kind==='correct-form'?this.current.observations.find(o=>o.id===id):null;
   const priorTarget=kind==='revise-target-form'?this.current.stageTargets.find(o=>o.id===id):null;
-  if(kind==='new'){
+  if(kind==='reference-select'){
+   body='<p class="wide pt-warning">'+e(t('sourceNotice'))+'</p>'+this.select('sourceType',[['po','VESA Purchase Order 360'],['tna','VESA TNA 360']],'po');
+  }else if(kind==='source-confirm'){
+   if(!this.pendingRef)throw Error('Choose a source file first');
+   body='<p class="wide pt-warning">'+e(t('sourceNotice'))+'</p><p class="wide">'+e(this.pendingRef.sourceApp)+' / '+e(this.pendingRef.recordId)+' / '+e(this.pendingRef.revisionId)+'</p>'+
+    this.field('localReviewer','','text','required maxlength="180"')+this.field('localReviewDate','','date','required');
+  }else if(kind==='reference-export'){
+   const analysis=this.L.validate(this.current);if(!analysis.groups.length)throw Error('No stage observation for local export');
+   body='<p class="wide pt-warning">'+e(t('sourceNotice'))+'</p>'+this.select('groupIndex',analysis.groups.map((g,i)=>[String(i),g.stage+' / '+g.line+' / '+g.lot]),'0')+
+    this.field('verifiedBy','','text','required maxlength="180"')+this.field('verifiedAt','','date','required');
+  }else if(kind==='new'){
    for(const field of ['poNo','style','colour','size','lot','factory','unit','sourceRef'])body+=this.field(field,'','text','required maxlength="180"',field==='sourceRef');
   }else{
    const source=oldRow||priorTarget||{},axis=source.stage?source:{stage:'cutting',line:'',lot:h.lot||'',unit:h.unit||''};
@@ -152,7 +186,16 @@ class ProductionWorkspace {
  }
  submit(form){const data=Object.fromEntries(new FormData(form).entries()),get=name=>String(data[name]??'').trim(),kind=form.dataset.form,item=form.dataset.item;
   try{
-   if(kind==='new'){
+   if(kind==='reference-select'){
+    this.refKind=get('sourceType');this.dialog.close();this.refFile.click();return;
+   }
+   if(kind==='source-confirm'){
+    const src=this.pendingRef;if(!src)throw Error('Choose a local source file first');
+    this.mutate(p=>this.Ref.append(p,this.refKind,src,{localReviewer:get('localReviewer'),localReviewDate:get('localReviewDate')}));this.pendingRef=null;
+   }else if(kind==='reference-export'){
+    const ref=this.Ref.exportStage(this.current,get('groupIndex'),{verifiedBy:get('verifiedBy'),verifiedAt:get('verifiedAt')});
+    this.downloadData(JSON.stringify(ref,null,2),'VESA-PRODUCTION-STAGE-REFERENCE-'+this.current.id+'.json','application/json');
+   }else if(kind==='new'){
     const h=Object.fromEntries(['poNo','style','colour','size','lot','factory','unit','sourceRef'].map(k=>[k,get(k)]));
     const p=this.L.create(h);p.mode='local';const check=this.L.validate(p);if(!check.ok)throw Error(check.errors.join('; '));
     this.store.save(p);this.current=p;this.section='summary';

@@ -1,0 +1,55 @@
+/* APP-09 report and manual source must not imply external approvals. */
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),memory=new Map(),store={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,String(v))};
+const sand={module:{exports:{}},Date,Math,JSON,localStorage:store};sand.globalThis=sand;
+for(const name of ['domain/stage-flow.js','domain/wip-balance.js','domain/reviewed-reference.js','domain/daily-output-ledger.js','data/saved-copy-codec.js','data/local-record-port.js','reports/report-model.js'])
+ vm.runInNewContext(fs.readFileSync(path.join(root,'src',name),'utf8'),sand,{filename:name});
+const E=sand.VesaProductionStageFlow,L=sand.VesaProductionDailyLedger,Ref=sand.VesaProductionReviewedReference,
+ S=sand.VesaProductionLocalStore,C=sand.VesaProductionCopyCodec,R=sand.VesaProductionReportModel;
+let rec=L.create({poNo:'SYN-PO',style:'SYN TEE',colour:'Navy',size:'M',lot:'LOT-1',factory:'SYN',unit:'pieces',sourceRef:'SYN-APPROVED-PO'});rec.mode='local';
+const prior=C.decode(C.encode(rec));assert.equal(prior.manualReferences,undefined,'Old portable copies decode without migration');
+const source={sourceApp:'VESA Purchase Order 360',recordType:'PORevision',recordId:'SYN-PO-1',revisionId:'2',sourceDate:'2026-10-16',verifiedBy:'SYN-REVIEWER',verifiedAt:'2026-10-17T08:00:00Z',displaySnapshot:{quantity:100,notApproved:true}};
+assert(Ref.sourceValid(source,'po'));assert(!Ref.sourceValid(source,'tna'));
+assert.throws(()=>Ref.append(rec,'tna',source,{localReviewer:'SYN',localReviewDate:'2026-10-17'}),/source/);
+rec=Ref.append(rec,'po',source,{localReviewer:'SYN LOCAL',localReviewDate:'2026-10-17'});
+assert.equal(rec.manualReferences.length,1);assert.equal(rec.revision,1);
+assert.equal(L.validate(rec).ok,true);const frozen=JSON.stringify(rec.manualReferences[0]);
+const wrongPo={...source,revisionId:'R-WRONG',displaySnapshot:{poNo:'OTHER-PO'}};
+assert.throws(()=>Ref.append(rec,'po',wrongPo,{localReviewer:'SYN',localReviewDate:'2026-10-17'}),/Matching reviewed/);
+assert.throws(()=>Ref.append(rec,'po',source,{localReviewer:'SYN',localReviewDate:'2026-10-17'}),/Duplicate reviewed source/);
+const mismatched=E.copy(rec);mismatched.manualReferences[0].source.displaySnapshot.poNo='OTHER-PO';
+assert.equal(L.validate(mismatched).ok,false,'Tampered saved record mismatch must fail');
+assert(!Ref.sourceValid({...source,sourceApp:'not really Purchase Order approval'},'po'),'Owner must not be an arbitrary substring');
+
+const dup=E.copy(rec);dup.manualReferences.push(E.copy(dup.manualReferences[0]));assert.equal(L.validate(dup).ok,false);
+const bad=E.copy(rec);bad.manualReferences[0].localReviewDate='invalid';assert.equal(L.validate(bad).ok,false);
+const t=new S('synthetic@example.invalid');t.save(rec);assert.equal(t.load(rec.id).manualReferences.length,1);
+assert.equal(JSON.stringify(C.decode(C.encode(rec))),JSON.stringify(rec));
+assert.throws(()=>C.decode(C.encode(rec).replace('SYN-PO-1','FORGED-PO')),/altered/);
+assert.equal(JSON.stringify(t.load(rec.id).manualReferences[0]),frozen,'Tampered copy never mutates local state');
+const axis={stage:'cutting',line:'SYN-LINE',lot:'LOT-1',unit:'pieces'};
+rec=L.appendOpening(rec,{...axis,opening:0,sourceRef:'SYN OPENING',reviewedBy:'SYN',reviewDate:'2026-10-17'});
+rec=L.appendTarget(rec,{...axis,id:'TARGET-1',quantity:100,sourceRef:'SYN SOURCE',declaredAuthority:'SYN PLANNER',sourceDate:'2026-10-16',reviewedBy:'SYN',reviewDate:'2026-10-17'});
+rec=L.appendObservation(rec,{...axis,id:'OBS-1',date:'2026-10-17',shift:'Day',good:20,verifiedIn:25,verifiedOut:20,verifiedRejects:1,rework:0,status:'locally-reviewed',sourceRef:'SYN COUNT',actor:'SYN',reviewedBy:'SYN',reviewDate:'2026-10-17',reviewSource:'SYN REVIEW',handoffRef:'SYN INPUT',outRef:'SYN OUTPUT',rejectRef:'SYN REJECT'});
+const analysis=L.validate(rec);assert(analysis.ok,analysis.errors.join('; '));
+const exported=Ref.exportStage(rec,0,{verifiedBy:'SYN REPORT REVIEWER',verifiedAt:'2026-10-17'});
+assert.equal(exported.recordType,'ProductionStageSnapshot');assert.equal(exported.displaySnapshot.locallyReviewedGood,20);
+assert.equal(exported.displaySnapshot.closingWip,4);assert.equal(exported.displaySnapshot.notAqlRelease,true);
+assert.equal(exported.displaySnapshot.notTnaCompletion,true);
+assert.throws(()=>Ref.exportStage(rec,999,{verifiedBy:'QA',verifiedAt:'2026-10-17'}),/Choose/);
+const rows=R.rows(rec,analysis),table=R.excelRows('Stage WIP & Balance',rows['Stage WIP & Balance']);
+assert.equal(table[1][4],20);assert.equal(table[1][9],4);assert.equal(table[1][10],100);assert.equal(table[1][11],80);
+assert.equal(rows['Target vs Actual Trend'][1][7],20);
+assert.equal(rows['Target vs Actual Trend'][1][8],100);
+assert.equal(R.excelRows('Target vs Actual Trend',rows['Target vs Actual Trend'])[1][9],80);
+assert.equal(rows['Exceptions & Missing Evidence'].length,1,'Complete synthetic fixture needs no invented exceptions');
+const missing=L.create({...rec.header,poNo:'SYN-MISSING'});const incomplete=L.validate(missing);
+assert.equal(incomplete.groups.length,0,'No phantom stages must be invented');
+assert.equal(R.excelCell('=HYPERLINK("malicious")'),'\'=HYPERLINK("malicious")');
+assert.equal(R.excelRows('Source & Status',[['Field','Value'],['Malicious','=SUM(1+1)']])[1][1],"'=SUM(1+1)");
+const evil=E.copy(rec);evil.header.factory='<img src=x onerror=1>';const html=R.html(evil,analysis);
+assert(html.includes('&lt;img src=x onerror=1&gt;'));assert(!html.includes('<img src=x'));
+assert(html.includes('Target vs Actual Trend'));assert(html.includes('Exceptions &amp; Missing Evidence'));
+assert(html.includes('DRAFT / SOURCE-REVIEW ONLY'));assert(html.includes('NOT APPROVAL'));
+console.log('PRODUCTION M3 REPORT/REFERENCE PASS: old portable copy, PO/TNA explicit typed guard, tamper isolation, XLSX safe numeric/formula values, HTML escape, draft source-only reviewed TNA reference.');

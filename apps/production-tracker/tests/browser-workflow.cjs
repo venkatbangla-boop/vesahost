@@ -58,6 +58,67 @@ async function run(){
   const prior=JSON.stringify(await rows());await page.locator('#ptCopyFile').setInputFiles(broken);
   await page.locator('#ptDialog[open]').waitFor();assert.match(await page.locator('#ptDialogBody').innerText(),/altered\/unsupported/);
   await page.locator('#ptDialogClose').click();assert.equal(JSON.stringify(await rows()),prior);
+  // M3: independently reviewed, typed PO reference only. No sibling storage reads.
+  await act('references');await page.locator('[data-action="reference-select"]').waitFor();
+  assert((await page.locator('.pt-tabs').innerText()).includes('Reviewed Sources'));
+  const poRef={sourceApp:'VESA Purchase Order 360',recordType:'PurchaseOrder',recordId:'SYN-PO-EXPORT',
+   revisionId:'R2',sourceDate:'2026-10-16',verifiedBy:'SYN PO REVIEWER',verifiedAt:'2026-10-17',
+   displaySnapshot:{poNo:'SYN-PROD-PO',totalPieces:50,notBuyerApproved:true}};
+  const refPath=path.join(out,'prod-app09-synthetic-po-reference.json');
+  fs.writeFileSync(refPath,JSON.stringify(poRef));
+  await act('reference-select');await fill({sourceType:'po'});await submit();
+  await page.locator('#ptReferenceFile').setInputFiles(refPath);
+  await page.locator('#ptDialog[open]').waitFor();
+  await fill({localReviewer:'SYN INDEPENDENT REVIEWER',localReviewDate:'2026-10-17'});await submit();
+  assert.equal((await rows())[0].manualReferences.length,1);
+  assert((await page.locator('.pt-tabs').innerText()).includes('Reviewed Sources'));
+  const beforeBad=JSON.stringify(await rows());
+  const wrongPo=path.join(out,'prod-app09-mismatched-po-reference.json');
+  fs.writeFileSync(wrongPo,JSON.stringify({...poRef,revisionId:'R3',displaySnapshot:{poNo:'OTHER-PO'}}));
+  await act('reference-select');await fill({sourceType:'po'});await submit();
+  await page.locator('#ptReferenceFile').setInputFiles(wrongPo);
+  await page.locator('#ptDialog[open]').waitFor();
+  await fill({localReviewer:'SYN REVIEWER',localReviewDate:'2026-10-17'});
+  await page.locator('#ptDialog form button[type=submit]').click();
+  assert.match(await page.locator('#ptDialog [role=alert]').innerText(),/Matching reviewed local PO\/TNA source/i);
+  await page.locator('#ptDialogClose').click();
+  assert.equal(JSON.stringify(await rows()),beforeBad,'Unmatched external PO must not overwrite local record');
+  const dStage=page.waitForEvent('download');await act('reference-export');
+  await fill({groupIndex:'0',verifiedBy:'SYN STAGE REVIEWER',verifiedAt:'2026-10-17'});await submit();
+  const stagePath=path.join(out,'prod-app09-production-stage-reference.json');
+  await(await dStage).saveAs(stagePath);
+  const stageRef=JSON.parse(fs.readFileSync(stagePath,'utf8'));
+  assert.equal(stageRef.sourceApp,'VESA Production Tracker 360');
+  assert.equal(stageRef.displaySnapshot.locallyReviewedGood,15);
+  assert.equal(stageRef.displaySnapshot.closingWip,9);
+  assert.equal(stageRef.displaySnapshot.notAqlRelease,true);
+  assert.equal(stageRef.displaySnapshot.notTnaCompletion,true);
+  await act('reports');await page.locator('.pt-report').waitFor();
+  const report=await page.locator('.pt-report').innerText();
+  assert(report.includes('DRAFT / SOURCE-REVIEW ONLY'));
+  assert(report.includes('Target vs Actual Trend'));
+  assert(report.includes('READ-ONLY COPY; NOT APPROVAL'));
+  const dExcel=page.waitForEvent('download');await act('excel');
+  const excelPath=path.join(out,'prod-app09-synthetic-report.xlsx');
+  await(await dExcel).saveAs(excelPath);
+  const excel=await page.evaluate(encoded=>{
+   const book=XLSX.read(encoded,{type:'base64'}),sheet=book.Sheets['Stage WIP & Balance'];
+   return {names:book.SheetNames,good:sheet.E2,wip:sheet.J2,remaining:sheet.L2};
+  },fs.readFileSync(excelPath).toString('base64'));
+  assert(excel.names.includes('Target vs Actual Trend'));
+  assert(excel.names.includes('Manual Read-Only Sources'));
+  assert.equal(excel.good.t,'n');assert.equal(excel.good.v,15);
+  assert.equal(excel.wip.v,9);assert.equal(excel.remaining.v,35);
+  const pdf=await page.pdf({printBackground:true,landscape:true,format:'A4'});
+  assert(pdf.subarray(0,4).toString()==='%PDF'&&pdf.length>10000,'Chromium print-to-PDF must be valid');
+  fs.writeFileSync(path.join(out,'prod-app09-synthetic-report.pdf'),pdf);
+  // The imported reviewed PO source remains in portable backup across reload.
+  const dCopy=page.waitForEvent('download');await act('download');
+  const newCopy=path.join(out,'prod-app09-synthetic-with-reference.vesaprod');
+  await(await dCopy).saveAs(newCopy);
+  assert.equal(JSON.parse(fs.readFileSync(newCopy,'utf8')).record.manualReferences.length,1);
+  await page.reload({waitUntil:'domcontentloaded'});await act('continue');
+  assert.equal((await rows())[0].manualReferences.length,1);
   for(const width of [320,360,390,640,768,1024,1280,1440]){
    await page.setViewportSize({width,height:850});const scroll=await page.evaluate(()=>document.documentElement.scrollWidth);
    assert(scroll<=width+1,width+'px viewport overflow: '+scroll);
@@ -73,7 +134,7 @@ async function run(){
    assert.equal(JSON.stringify(await rows()),state,'Language switch must not change original production evidence');
   }
   assert.deepEqual(errors,[]);assert.deepEqual(outside,[]);
-  console.log('PRODUCTION M2 CHROMIUM PASS: one shared shell, staged source daily/WIP/correction workflow, auto-save/reload, separate portable recovery, corrupt rejection, 4 languages, 320-1440 and no outside requests.');
+  console.log('PRODUCTION M3 CHROMIUM PASS: one shared shell, saved daily/WIP corrections, reviewed PO source/mismatch rejection, stage reference, numeric Excel, PDF, portable reference round-trip, 4 languages, 320-1440 and no outside requests.');
  }finally{await context.close();await browser.close();await new Promise(done=>server.close(done));}
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});

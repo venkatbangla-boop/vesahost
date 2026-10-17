@@ -12,6 +12,10 @@ class ProductionDailyLedger {
   if(!record||record.version!==E.version||!E.text(record.id)||!Number.isSafeInteger(record.revision)||record.revision<0||
    !['observations','stageOpenings','stageTargets','audit'].every(k=>Array.isArray(record[k]))){return {ok:false,errors:['Unsupported production ledger or version']};}
   errors.push(...E.errorsHeader(record.header));
+  if(record.manualReferences!==undefined){
+   if(!root.VesaProductionReviewedReference)errors.push('Reviewed-source validation module required');
+   else errors.push(...root.VesaProductionReviewedReference.validateList(record));
+  }
   const bytes=JSON.stringify(record);if(bytes.length>2097152)errors.push('Production ledger exceeds safe record limit');
   if(record.observations.length>5000||record.stageOpenings.length>2000||record.stageTargets.length>2000)errors.push('Production evidence row limit reached');
   const allIds=new Set(),observations=new Map(),active=new Map(),targetIds=new Set(),targetActive=new Map(),openings=new Map();
