@@ -581,6 +581,12 @@ class CommissionWorkspace{
    if(action==='home'){this.current=null;this.section='summary';this.render();return;}
    if(action==='new')return this.form('new');
    if(action==='practice'){this.current=CommissionDomain.demo();this.section='summary';this.dirty=false;this.render();return;}
+   if(action.startsWith('preview-')){
+    const section=action.slice('preview-'.length);
+    if(!COMMISSION_DESK_SECTIONS.includes(section))throw Error('Unknown commission practice section.');
+    this.current=CommissionDomain.demo();this.section=section;this.dirty=false;
+    this.render();return;
+   }
    if(action==='open'){this.current=null;this.render();return;}
    if(action==='continue'){const list=this.store.list();if(!list.length)throw Error('No saved commission record on this device.');return this.action('open-record',list[0].id);}
    if(action==='open-record'){const item=this.store.open(id);if(!item)throw Error('Saved commission record not found.');this.current=item;this.section='summary';this.dirty=false;this.render();return;}
