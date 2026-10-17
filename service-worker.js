@@ -1,4 +1,4 @@
-const CACHE='vesa-v90-commission-workbench';
+const CACHE='vesa-v91-techpack-sizechart';
 const ASSETS=[
   './',
   './index.html',
