@@ -1,0 +1,26 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VESA Sampling &amp; Approval 360</title><meta name="theme-color" content="#f3f6fa">
+<link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/vesa-workspace.css?v=20261013-platform-g09">
+<link rel="stylesheet" href="./assets/sampling-approval.css">
+<script src="/js/preferences.js"></script>
+<script src="/js/auth.js" data-auth-guard="app" data-auth-bar="true"></script>
+<script src="/js/vesa-workspace-shell.js"></script>
+<script src="/js/vendor/xlsx.full.min.js"></script>
+<script src="./src/domain/sampling-engine.js"></script>
+<script src="./src/data/local-record-port.js"></script>
+<script src="./src/reports/report-model.js"></script>
+<script src="./src/i18n/app-copy.js"></script>
+<script src="./src/application/workspace-controller.js"></script>
+<script src="./src/bootstrap.js" defer></script>
+</head><body>
+<main id="saMain" tabindex="-1"><p role="status">Opening Sampling &amp; Approval 360…</p></main>
+<dialog id="saDialog" class="sa-dialog" aria-labelledby="saDialogTitle">
+ <div class="sa-dialog-head"><h2 id="saDialogTitle">Details</h2>
+ <button class="sa-btn" id="saClose" type="button" aria-label="Close">×</button></div>
+ <div id="saDialogBody"></div>
+</dialog>
+<input id="saFile" type="file" accept=".vesasampling,application/json" hidden>
+<input id="saReferenceFile" type="file" accept=".json,application/json" hidden>
+</body></html>
