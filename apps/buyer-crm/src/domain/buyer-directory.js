@@ -56,6 +56,11 @@ class VesaBuyerDirectory{
    !['contacts','enquiries','opportunities','stageChanges','followups','audit'].every(k=>Array.isArray(p[k])))
    return{ok:false,errors:['Unsupported Buyer CRM source record/version']};
   if(p.status!=='LOCAL SOURCE ONLY — NOT BUYER-APPROVED PO')errors.push('CRM must not claim confirmed PO or buyer certification');
+  // Optional M3 manually reviewed PO/Costing source copies. Legacy M2 saved records remain valid.
+  if(p.manualReferences!==undefined){
+   if(!root.VesaCRMReviewedReference)errors.push('CRM reviewed-source engine is unavailable');
+   else errors.push(...root.VesaCRMReviewedReference.validateList(p));
+  }
   for(const key of ['organizationName','territory','sourceRef'])if(!this.valid(p.header?.[key],350))errors.push('Buyer organization needs sourced '+key);
   try{if(JSON.stringify(p).length>2097152)errors.push('CRM record exceeds local safe limit');}catch{errors.push('CRM record cannot be copied');}
   for(const [key,max]of Object.entries({contacts:500,enquiries:1000,opportunities:1000,stageChanges:4000,followups:4000,audit:10000}))
