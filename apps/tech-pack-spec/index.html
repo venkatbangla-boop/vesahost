@@ -479,6 +479,22 @@ const I18N={
  approval:'स्रोत आधारित संस्करण',approvalWarning:'असली खरीदार-मंजूरी दस्तावेज ही दर्ज करें',
  profile:'गारमेंट प्रोफ़ाइल',details:'स्रोत विवरण'}
 };
+/* Non-record G4 preview labels only; all chart numeric data comes from GarmentSpecEngine.project. */
+const TECH_LAB_COPY={
+ en:{info:'About local data',kicker:'MEASUREMENT WORKBENCH',title:'See the size chart in action',
+  lead:'Real calculation using a fictional T-shirt. Open any work area without changing saved specs.',
+  chart:'Source-reviewed fictional CHEST width · flat · cm',hint:'Illustration only; actual buyer size grading must have its own documented approval.'},
+ bn:{info:'স্থানীয় তথ্য সম্পর্কে',kicker:'মাপের কাজের ক্ষেত্র',title:'সাইজ চার্ট দেখে নিন',
+  lead:'কাল্পনিক টি-শার্টে গণনা দেখুন। সংরক্ষিত স্পেসিফিকেশন অপরিবর্তিত থাকবে।',
+  chart:'কাল্পনিক CHEST মাপ · ফ্ল্যাট · সেমি',hint:'শুধু উদাহরণ; প্রকৃত ক্রেতার গ্রেডিংয়ের অনুমোদিত উৎস প্রয়োজন।'},
+ hi:{info:'स्थानीय डेटा के बारे में',kicker:'माप कार्यक्षेत्र',title:'साइज़ चार्ट कैसे बनता है',
+  lead:'काल्पनिक टी-शर्ट पर माप की गणना देखें। सहेजे हुए स्पेक नहीं बदलेंगे।',
+  chart:'उदाहरण CHEST चौड़ाई · फ्लैट · सेमी',hint:'केवल उदाहरण; असली खरीदार की ग्रेडिंग के लिए स्वीकृत स्रोत चाहिए।'},
+ ta:{info:'உள்ளூர் தரவு விவரம்',kicker:'அளவீட்டு வேலைப்பகுதி',title:'சைஸ் சார்ட் எப்படி வருகிறது?',
+  lead:'கற்பனை டி-ஷர்ட்டில் கணக்கிட்ட அளவுகளைப் பாருங்கள். சேமித்த ஸ்பெக் மாறாது.',
+  chart:'மாதிரி CHEST அகலம் · ஃபிளாட் · செ.மீ.',hint:'இது மாதிரி மட்டும்; உண்மையான Buyer grading-க்கு அங்கீகரித்த ஆதாரம் தேவை.'}
+};
+const TECH_LAB_TABS=['summary','poms','grades','bom','revisions','reports'];
 /** Single application controller for local record editing, saved-copy and six VESA menus. */
 class TechSpecWorkspace{
  constructor(){
