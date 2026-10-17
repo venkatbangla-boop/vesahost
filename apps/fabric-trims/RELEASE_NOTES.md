@@ -1,0 +1,11 @@
+# APP-06 Fabric & Trims 360 — Verified Personal Demo (2026-10-17)
+
+**Original approval:** `blueprints/APP-06_fabric-trims.md` source ZIP SHA256 `3368b4ef21a0b1ad874454b92c353b4e5805bfb8ed10e41f7a38cdad63cae5d1`. Source `7c5c102d2a9397c55c114a25d2f3a3a19b7bc23c`. [Domain + real Chromium + sibling #39017629311 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39017629311). [Pages #39017743801 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39017743801), [exact public source #39017743896 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39017743896); https://vesaent.com/apps/fabric-trims/.
+
+**Owners:** `apps/fabric-trims/index.html`, `src/domain/material-engine.js` (pure), `src/data/local-record-port.js` (browser versioned store + checksum portable file), `src/reports/report-model.js` (safe HTML and Excel), `src/application/workspace-controller.js`, `src/i18n/app-copy.js`, `assets/fabric-trims.css`, tests and `.github/workflows/fabric-trims.yml`. Source label enforced for consumption, wastage, rounding, units, conversions, booking/receipt dates, QA, release, allocation, reservation, lot and shade. No direct reads or writes in PPM/AQL/TNA/Costing/TechPack or other app stores. All tests use synthetic evidence.
+
+**Verification:** Node checks, actual Chromium interaction from App Centre, pending QA preventing available stock, explicit QA release, receipt-specific approved amounts, out-of-stock rejection, other-order reservation conflict, stale BOM retention, Excel/PDF output, corruption-safe `.vesafabric` restore, EN/BN/HI/TA, widths 320/390/768/1280, no foreign requests, sibling regression all passed. Prior CI failed because test attempted action from wrong tab; fixed test route only in `7c5c102d` with successful proof.
+
+**Release scope:** DEMO LIVE, not bank/supplier/quality authority or commercial Pages approval. Actual supplier/BOM/lot/QA evidence and production user acceptance not verified. Browser-only login not secure production authentication.
+
+**NEXT:** Shipment & Documentation 360 using original APP-07 blueprint. Rollback by reverting Fabric release-specific commits; preserve already stored local files and unrelated app data.
