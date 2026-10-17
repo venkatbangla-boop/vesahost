@@ -68,11 +68,21 @@ class TnaOfflineChromiumProof {
         await aql.put('/synthetic-tna-worker-aql-preservation',new Response('aql preserved'));
       });
       const pre=await page.evaluate(async()=>{
-        const cache=await caches.open('vesa-tna-20261017-g17-merch-v1');
+        const cache=await caches.open('vesa-tna-20261018-g3-sheet-first-v1');
         return (await cache.keys()).map(request=>request.url);
       });
       assert(pre.length>=25,'Install must precache complete bundle before claiming clients');
       assert(pre.some(x=>x.includes('/apps/tna/src/merchandising-sheet.js?v=0.3.1-merch-g17')));
+      assert(pre.some(x=>x.includes('/apps/tna/assets/tna.css?v=0.12.2-g3-sheet-first')),
+        'G3 active-workbench CSS must be installed in the NEW app cache');
+      // Represent an existing visitor's old named cache, without installing
+      // a legacy worker or altering any record. New HTML must not use this CSS.
+      await page.evaluate(async()=>{
+        const old=await caches.open('vesa-tna-20261017-g17-merch-v1');
+        await old.put(new Request('/apps/tna/assets/tna.css?v=0.12.1-merch-g17'),
+          new Response('body.tna-has-active-order .tna-hero{display:block!important}',{
+            headers:{'Content-Type':'text/css'}}));
+      });
       assert(pre.some(x=>x.includes('/apps/tna/src/offline-register.js?v=0.1.0-merch-g16')));
       assert(pre.some(x=>x.endsWith('/assets/vesa-logo-black.png')));
       await page.evaluate(()=>{
@@ -98,6 +108,20 @@ class TnaOfflineChromiumProof {
       await page.locator('#tnaDialog .tna-dialog-head button').click();
       const sheet=page.locator('#tnaMerchSheet');
       await sheet.waitFor();
+      const newAppearance=await page.evaluate(()=>({
+        css:document.querySelector('link[href*="assets/tna.css"]')?.getAttribute('href'),
+        hero:getComputedStyle(document.querySelector('.tna-hero')).display,
+        actions:document.querySelectorAll('#tnaMain > .tna-grid [data-action]').length,
+        rail:[...document.querySelectorAll('#tnaMain > .tna-grid [data-action]')]
+          .map(el=>Math.round(el.getBoundingClientRect().height))
+      }));
+      assert.equal(newAppearance.css,'./assets/tna.css?v=0.12.2-g3-sheet-first',
+        'New offline HTML must reference the versioned G3 CSS');
+      assert.equal(newAppearance.hero,'none',
+        'An old installed CSS cache must not hide the premium sheet-first layout');
+      assert.equal(newAppearance.actions,8,
+        'All eight original action buttons remain available offline');
+      assert(newAppearance.rail.every(h=>h>=44),'New offline toolbar has 44px actions');
       assert.match(await sheet.innerText(),/SYN OFFLINE BUYER/);
       assert.match(await sheet.innerText(),/SYN OFFLINE FACTORY/);
       const count=await page.evaluate(()=>VesaTnaStorage.listPlans('qa-vesaent-com')[0].plan?.tasks?.length
