@@ -133,7 +133,7 @@ class VesaTnaMerchandisingSheet{
  /*
   * Source-only M3 spreadsheet data port. It prepares typed, deterministic
   * sheet rows for the already bundled local XLSX library; it does not save,
-  * fetch, authenticate third-party signatures, invoke print or mutate records.
+  * request external media, authenticate third-party signatures, invoke print or mutate records.
   * Strings beginning with spreadsheet formula operators are quoted as text.
   * Actual and calculated dates remain separate; unentered values are explicit.
   */
