@@ -1,5 +1,19 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## 2026-10-18 — G4-W1 PACKING / COMMISSION / TECH PACK LIVE, VERIFIED
+
+**Current verified application SHA:** `405143c6da61134313af90dfa26e069f7a05a779`. Three safe premium workflow upgrades are on `main` with real Node/Chromium, genuine original XLSX/PDF and saved-copy regression, sibling UI/engine checks and GitHub Pages SUCCESS: **Packing G4** `d3683c85` ([CI #39065169029](https://github.com/venkatbangla-boop/vesahost/actions/runs/39065169029), [Pages #39065168246](https://github.com/venkatbangla-boop/vesahost/actions/runs/39065168246)); **Commission G4** `09c96ff5` ([CI #39065702246](https://github.com/venkatbangla-boop/vesahost/actions/runs/39065702246), [Pages #39065701389](https://github.com/venkatbangla-boop/vesahost/actions/runs/39065701389)); **Tech Pack G4** `405143c6` ([CI #39066179944](https://github.com/venkatbangla-boop/vesahost/actions/runs/39066179944), [Pages #39066179493](https://github.com/venkatbangla-boop/vesahost/actions/runs/39066179493)).
+
+- Packing: eight genuine sections visible/open from Home as fictional practice, source math untouched.
+- Commission: ten genuine financial steps across three task groups; money/rates/contract versions untouched.
+- Tech Pack: six genuine sections plus **engine-calculated fictional S48/M50/L52 chest-flat/cm** diagram; buyer grading engine untouched.
+- All use EN/BN/HI/TA; 320/390/1440 Chromium screenshots independently inspected; print/XLSX and old saved copies preserved. **Original public homepage files never edited.**
+- Full results and exact rollback/next: `docs/portfolio/20_G4_W1_THREE_APP_PROOF_AND_NEXT.md`. Scope/depth benchmark: `docs/portfolio/16_AQL_DEPTH_BENCHMARK_AND_19_APP_WORKPLAN.md`. **Human UAT stays 1 PASS / 0 FAIL / 48 NOT TESTED.**
+- **EXACT NEXT when user says `Continue`: Costing 360 open-screen responsive feature audit using existing `apps/costing/tests/costing_real_e2e.py`, then smallest verified UI/report fix if proven. Do not reimplement Costing engine; next APP-13 Purchase Order; afterwards W2/W3/W4/G5. Check newest GitHub `main`/CI first. No ZIP reupload, no homepage work.**
+
+---
+
+
 ## 2026-10-18 — AFTER VERIFIED AQL PERF PROFILE: PACKING FEATURE DISCOVERABILITY NEXT
 
 AQL full source + 19 app depth audit committed and Pages source-current at `c746e48577711d0fa0b70266ee7947dd6cb5bd0e`. New AQL synthetic load/scroll measurements [#39063920076 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063920076) document 4× throttled Chromium, 11.78MB HTML, 291 PNGs and ~58MB JavaScript heap; no AQL runtime source change. Read `docs/ux/03_AQL_G3_MOBILE_LOAD_PROFILE.md`, `docs/portfolio/16_AQL_DEPTH_BENCHMARK_AND_19_APP_WORKPLAN.md`. **EXACT NEXT G4-W1 Packing:** inspect 8 existing tabs/code and original APP-01 blueprint; safe guided practice/feature discoverability patch, original math/record/print saved copies untouched. Continue all 19 apps sequentially. Public company homepage permanently frozen. Do not restart PPM, TNA, AQL already verified tasks; never claim background execution.
