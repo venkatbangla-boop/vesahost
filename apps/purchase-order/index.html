@@ -141,11 +141,10 @@ class PurchaseOrderEngine {
    if(lineIds.has(line.id))errors.push('Duplicate PO line ID.');lineIds.add(line.id);
    const name=[trim(line.style).toLowerCase(),trim(line.color).toLowerCase(),
      trim(line.size).toLowerCase()].join('|'),split=trim(line.splitId);
-   if(combos.has(name)){
-    const previous=combos.get(name);
-    if(!previous||!split||previous===split)errors.push('Duplicate style/colour/size; intentional splits require distinct explicit split IDs.');
-   }
-   combos.set(name,split);
+   const previous=combos.get(name)||new Set();
+   if(previous.size&&(!split||previous.has(split)||previous.has('')))
+    errors.push('Duplicate style/colour/size; intentional splits require distinct explicit split IDs.');
+   previous.add(split);combos.set(name,previous);
    const value=this.lineValue(line,h.rounding);
    if(!trim(line.style)||!trim(line.color)||!trim(line.size)||!trim(line.sourceRef)||value===null)
     errors.push('Each style/colour/size line needs sourced whole-piece quantity and 4-decimal unit FOB.');
@@ -155,11 +154,15 @@ class PurchaseOrderEngine {
   if(!Number.isSafeInteger(quantity)||quantity>1000000000)errors.push('Quantity total exceeds whole-piece limit.');
   if(h.declaredQty!==null&&h.declaredQty!==undefined&&h.declaredQty!==''){
    if(!Number.isSafeInteger(h.declaredQty)||h.declaredQty<0||
-      h.declaredQty!==quantity)errors.push('Entered PO control quantity does not reconcile to size/colour lines.');
+      (p.lines.length>0&&h.declaredQty!==quantity))
+      errors.push('Entered PO control quantity does not reconcile to size/colour lines.');
+   if(!p.lines.length)notes.push('Buyer PO control quantity needs sourced style/size lines to reconcile.');
   }else notes.push('Buyer PO control quantity not entered; quantity confirmation Needs Information.');
   if(trim(h.declaredAmount)){
    const documented=this.parse(h.declaredAmount,2,true);
-   if(documented===null||documented!==amount)errors.push('Buyer PO control amount differs from sourced line totals in the same currency.');
+   if(documented===null||(p.lines.length>0&&documented!==amount))
+    errors.push('Buyer PO control amount differs from sourced line totals in the same currency.');
+   if(!p.lines.length)notes.push('Buyer PO control amount needs sourced line values to reconcile.');
   }else notes.push('Buyer PO control value missing; totals are calculated but not confirmed against source.');
   if(!p.lines.length)notes.push('PO style/colour/size lines are not entered.');
   const cancelled=new Map(),shipped=new Map();
@@ -604,7 +607,7 @@ class PurchaseOrderWorkspace {
    body=val('poNo')+val('buyer')+val('issuer')+val('factory')+val('shipTo')+
     val('currency','text','required maxlength="3" pattern="[A-Z]{3}"')+
     val('incoterm')+val('orderDate','date')+val('shipFrom','date')+val('shipToDate','date')+
-    val('source')+
+    this.field('source',data.sourceRef||'','text','required maxlength="180"')+
     this.choose('rounding',[['','Select buyer-approved policy'],['line-half-up-2','Per line half-up cents'],
      ['line-down-2','Per line down cents']],data.rounding)+
     this.field('declaredQty',data.declaredQty??'','number','min="0" step="1"')+
