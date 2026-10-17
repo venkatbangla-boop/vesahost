@@ -1,0 +1,903 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VESA LC & Payment 360</title><meta name="theme-color" content="#f3f6fa">
+<link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/vesa-workspace.css?v=20261013-platform-g09">
+<script src="/js/preferences.js"></script>
+<script src="/js/auth.js" data-auth-guard="app" data-auth-bar="true"></script>
+<script src="/js/vesa-workspace-shell.js"></script>
+<script src="/js/vendor/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14px/1.55 var(--ui,Arial,sans-serif)}
+#lcMain{width:min(1270px,calc(100vw - 24px));min-width:0;margin:0 auto;padding:18px 0 65px}
+.lc-card{padding:17px;background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:14px;margin-bottom:14px;min-width:0}
+.lc-card h1{font-size:clamp(1.4rem,3vw,2rem);margin:0 0 3px}.lc-card h2{font-size:1.17rem;margin:0 0 10px}.lc-card h3{font-size:1rem;margin:9px 0}
+.lc-note{color:var(--muted,#526176);font-size:.88rem;margin:6px 0}
+.lc-alert{border:1px solid var(--line,#cbd6e4);border-left:4px solid var(--action,#a32f45);background:var(--look-surface,#eef3f9);padding:10px 12px;border-radius:9px;margin:10px 0;white-space:pre-wrap}
+.lc-actions,.lc-tabs{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.lc-tabs{border-bottom:1px solid var(--line,#cbd6e4);padding-bottom:11px}
+.lc-btn{min-height:44px;padding:10px 14px;border:1px solid var(--line,#cbd6e4);border-radius:9px;color:var(--ink,#17263d);background:var(--paper,#fff);cursor:pointer;font:inherit;font-weight:700}
+.lc-btn.primary,.lc-tabs [aria-current=true]{background:var(--blue,#244fd6);border-color:var(--blue,#244fd6);color:white}
+.lc-btn:disabled{opacity:.5;cursor:not-allowed}.lc-btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold,#997229);outline-offset:2px}
+.lc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.lc-tile{padding:14px;border:1px solid var(--line,#cbd6e4);background:var(--look-surface,#eef3f9);border-radius:11px;min-width:0}
+.lc-tile strong{display:block;font-size:1.33rem;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.lc-tile small{color:var(--muted,#526176)}
+.lc-scroll{max-width:100%;overflow:auto;border:1px solid var(--line,#cbd6e4);border-radius:10px}
+.lc-table{width:100%;min-width:690px;border-collapse:collapse;font-size:.89rem}
+.lc-table th,.lc-table td{text-align:left;vertical-align:top;padding:10px 11px;border-bottom:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere}
+.lc-table th{background:var(--look-surface,#eef3f9);white-space:nowrap}.lc-table tr:last-child td{border-bottom:0}
+.lc-dialog{max-height:91vh;overflow:auto;width:min(790px,calc(100vw - 14px));padding:17px;border-radius:14px;color:var(--ink,#17263d);background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);box-shadow:0 18px 70px #0005}
+.lc-dialog::backdrop{background:#08172fab}.lc-dialog-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.lc-dialog-head h2{font-size:1.17rem;margin:0}
+.lc-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}
+.lc-form label{display:grid;gap:5px;font-size:.89rem;font-weight:700;min-width:0}
+.lc-form label.wide,.lc-form .wide{grid-column:1/-1}.lc-form input,.lc-form select,.lc-form textarea{font:inherit;color:var(--ink,#17263d);background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:9px;min-height:44px;width:100%;min-width:0;padding:10px 11px}
+.lc-form textarea{min-height:72px}.lc-form .lc-check{display:flex;align-items:center;gap:9px}.lc-check input{width:22px;min-height:22px}
+.lc-record{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid var(--line,#cbd6e4)}
+.lc-record:last-child{border-bottom:0}.lc-record small{display:block;color:var(--muted,#526176)}
+.lc-report section{margin:15px 0;break-inside:avoid}
+@media(max-width:720px){.lc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lc-card{padding:12px}}
+@media(max-width:470px){.lc-grid,.lc-form{grid-template-columns:1fr}.lc-form .wide,.lc-form label.wide{grid-column:1}.lc-actions>.lc-btn{flex:1 1 auto}}
+@media print{.vesa-workspace,.app-user-bar,.lc-tabs,.lc-actions,.lc-dialog{display:none!important}#lcMain{width:100%;padding:0}.lc-card{border:0;padding:0}.lc-table{font-size:10px}.lc-table td,.lc-table th{padding:5px 6px}@page{size:A4 landscape;margin:12mm}}
+</style></head><body>
+<main id="lcMain" tabindex="-1"><p role="status">Opening VESA LC &amp; Payment 360…</p></main>
+<dialog id="lcDialog" class="lc-dialog" aria-labelledby="lcDialogTitle"><div class="lc-dialog-head">
+<h2 id="lcDialogTitle">Details</h2><button class="lc-btn" type="button" id="lcClose" aria-label="Close">×</button>
+</div><div id="lcDialogBody"></div></dialog>
+<input id="lcFile" type="file" accept=".vesalc,application/json" hidden>
+<script>
+(function(global){
+'use strict';
+const VERSION='VESA-LCPAY360-1',FORMAT='VESA-LCPAY360-COPY-1',KEY='vesa.lc-payment.records.v1.',MAX=2097152;
+const NOTICE='NON-COMMERCIAL PERSONAL DEMO. Synthetic data only; never enter real bank, buyer, beneficiary, account or payment credentials. Browser login is not secure authentication. This page cannot issue/confirm a real LC or bank transfer.';
+const trim=v=>String(v??'').trim(),deep=v=>JSON.parse(JSON.stringify(v));
+const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sheetSafe=v=>typeof v==='number'&&Number.isFinite(v)?v:/^[=+\-@\t\r]/.test(String(v??''))?"'"+String(v):String(v??'');
+const uid=p=>p+'-'+(global.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+/**
+ * APP-05 pure domain. Money uses integer cents/BigInt, terms require explicit
+ * start event, inclusion policy and calendar convention. No real bank, FX,
+ * maturity, settlement, weekend or holiday policy is inferred by this class.
+ */
+class LCPolicyEngine {
+ static cents(value,precision=2,zero=false){
+  if(typeof value!=='string'&&typeof value!=='number')return null;
+  const m=trim(value).match(new RegExp('^(\\d{1,11})(?:\\.(\\d{1,'+precision+'}))?$'));
+  if(!m)return null;
+  const n=BigInt(m[1])*10n**BigInt(precision)+BigInt((m[2]||'').padEnd(precision,'0'));
+  return !zero&&n===0n?null:n;
+ }
+ static signed(n){if(n===null)return null;const v=n<0n?-n:n;
+  return (n<0n?'-':'')+(v/100n).toString()+'.'+(v%100n).toString().padStart(2,'0');}
+ static date(v){if(typeof v!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(v))return false;
+  const ms=Date.parse(v+'T00:00:00Z');return Number.isFinite(ms)&&new Date(ms).toISOString().slice(0,10)===v;}
+ static dayAdd(iso,days){const d=new Date(iso+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);}
+ static businessPolicy(term){
+  return Array.isArray(term?.weekendDays)&&term.weekendDays.length>0&&term.weekendDays.length<7&&
+    new Set(term.weekendDays).size===term.weekendDays.length&&
+    term.weekendDays.every(x=>Number.isInteger(x)&&x>=0&&x<=6)&&
+    Array.isArray(term.holidays)&&term.holidays.every(d=>this.date(d))&&
+    trim(term.calendarSource)&&trim(term.calendarReviewer)&&this.date(term.calendarReviewDate);
+ }
+ static mature(obligation,plan){
+  const term=obligation?.term||{};
+  const event=term.startEvent;
+  const dates={opening:{date:plan.header.openingDate,source:plan.header.sourceRef},
+    bl:plan.events?.bl,acceptance:plan.events?.acceptance,invoice:plan.events?.invoice,
+    manual:{date:term.manualStartDate,source:term.manualStartSource}};
+  const chosen=dates[event];
+  if(!chosen||!this.date(chosen.date)||!trim(chosen.source))
+   return {date:null,issue:'Needs Information: explicitly sourced '+String(event||'start')+' event date'};
+  const n=Number(term.days);
+  if(!Number.isSafeInteger(n)||n<0||n>3650||!trim(term.sourceRef)||typeof term.includeStart!=='boolean'||
+      !['calendar','business'].includes(term.convention))
+   return {date:null,issue:'Needs Information: sourced days, inclusion and day convention'};
+  if(term.convention==='calendar')
+   return {date:this.dayAdd(chosen.date,Math.max(0,n-(term.includeStart&&n>0?1:0))),issue:null};
+  if(!this.businessPolicy(term)||!['hold','next-business'].includes(term.nonbusinessStart))
+   return {date:null,issue:'Needs Information: reviewed weekends, holidays and event-day adjustment'};
+  const excluded=new Set(term.holidays),weekends=new Set(term.weekendDays);
+  const valid=d=>!excluded.has(d)&&!weekends.has(new Date(d+'T00:00:00Z').getUTCDay());
+  let date=chosen.date,count=0,step=0;
+  if(term.includeStart&&n>0&&!valid(date)&&term.nonbusinessStart==='hold')
+   return {date:null,issue:'Event occurs on a nonbusiness day; bank roll convention is not approved'};
+  while(count<n&&step<5000){
+    if(step>0||!term.includeStart)date=this.dayAdd(date,1);
+    if(valid(date))count++;
+    step++;
+  }
+  if(step>=5000)return {date:null,issue:'The sourced business-day policy could not be resolved'};
+  return {date,issue:null};
+ }
+ static create(seed={},practice=false){
+  const now=new Date().toISOString();
+  return {version:VERSION,id:uid('LC'),revision:0,mode:practice?'practice':'local',
+   createdAt:now,updatedAt:now,
+   header:{lcType:trim(seed.lcType),lcNo:trim(seed.lcNo),applicant:trim(seed.applicant),
+    beneficiary:trim(seed.beneficiary),issuingBank:trim(seed.issuingBank),
+    advisingBank:trim(seed.advisingBank),currency:trim(seed.currency),
+    amount:trim(seed.amount),openingDate:trim(seed.openingDate),expiryDate:trim(seed.expiryDate),
+    sourceRef:trim(seed.sourceRef),poReference:null},
+   events:{bl:null,acceptance:null,invoice:null},amendments:[],obligations:[],
+   documents:[],settlements:[],bankCharges:[],audit:[]};
+ }
+ static sample(){
+  const p=this.create({lcType:'master',lcNo:'DEMO-LC-001',applicant:'SYNTHETIC BUYER',
+   beneficiary:'SYNTHETIC FACTORY',issuingBank:'SYNTHETIC ISSUING BANK',
+   advisingBank:'SYNTHETIC ADVISING BANK',currency:'USD',amount:'10000.00',
+   openingDate:'2026-10-01',expiryDate:'2027-03-31',sourceRef:'DEMO SIGNED LC'},true);
+  p.events.bl={date:'2026-10-10',source:'DEMO BL SCAN',actor:'SYNTHETIC REVIEWER'};
+  p.obligations.push({id:'O1',direction:'payable',amount:'5000.00',currency:'USD',
+   counterparty:'SYNTHETIC BENEFICIARY',invoiceRef:'DEMO INVOICE',shipmentRef:'DEMO BL',
+   sourceRef:'DEMO AGREED PAYABLE',bankDueDate:'',bankDueSource:'',
+   term:{startEvent:'bl',days:60,includeStart:false,convention:'calendar',
+    sourceRef:'SYNTHETIC 60-DAY LC TERM',manualStartDate:'',manualStartSource:'',
+    weekendDays:[],holidays:[],calendarSource:'',calendarReviewer:'',
+    calendarReviewDate:'',nonbusinessStart:''}});
+  p.documents.push({id:'D1',name:'DEMO BL',status:'submitted',date:'2026-10-11',
+   acceptedDate:'',sourceRef:'DEMO BANK SUBMISSION',actor:'DEMO DOC TEAM',
+   bankRef:'DEMO BANK REF',discrepancy:''});
+  p.settlements.push({id:'S1',obligationId:'O1',kind:'payment',amount:'1200.00',currency:'USD',
+   date:'2026-10-16',reference:'DEMO BANK STATEMENT',actor:'DEMO FINANCE',
+   sourceRef:'DEMO PAYMENT RECEIPT',fxRate:'',fxSource:'',fxDate:'',fxRounding:''});
+  return p;
+ }
+ static convert(event,contractCurrency){
+  const cents=this.cents(event.amount);if(cents===null)return null;
+  if(event.currency===contractCurrency)return cents;
+  const fx=this.cents(event.fxRate,8);
+  if(fx===null||!trim(event.fxSource)||!this.date(event.fxDate)||
+     !['half-up','down'].includes(event.fxRounding))return null;
+  const numerator=cents*fx,denominator=100000000n;
+  return event.fxRounding==='half-up'?(numerator+denominator/2n)/denominator:numerator/denominator;
+ }
+ static calculate(p,asOf=''){
+  const errors=[],notes=[],maturities=[],byId=new Map(),dueOpen=[];
+  if(!p||p.version!==VERSION||!p.header||!p.events||!Array.isArray(p.amendments)||
+    !Array.isArray(p.obligations)||!Array.isArray(p.documents)||!Array.isArray(p.settlements)||
+    !Array.isArray(p.bankCharges)||!Array.isArray(p.audit))
+   return {ok:false,errors:['Unsupported LC record format.'],notes,lcValue:null,obligations:[]};
+  const h=p.header,required=['lcType','lcNo','applicant','beneficiary','issuingBank','advisingBank','sourceRef'];
+  if(!['master','b2b','fabric','other'].includes(h.lcType)||required.some(k=>!trim(h[k]))||
+     !/^[A-Z]{3}$/.test(h.currency||'')||this.cents(h.amount)===null||
+     !this.date(h.openingDate)||!this.date(h.expiryDate)||h.expiryDate<h.openingDate)
+   errors.push('LC needs valid type, separate parties/banks, sourced positive amount/currency and opening/expiry dates.');
+  let value=this.cents(h.amount)||0n;
+  const all=new Set();
+  for(const a of p.amendments){
+   if(all.has(a.id))errors.push('Duplicate amendment ID.');all.add(a.id);
+   const amount=this.cents(a.amount);
+   if(amount===null||!['increase','decrease'].includes(a.direction)||!['pending','approved'].includes(a.status)||
+      !this.date(a.date)||!trim(a.sourceRef)||!trim(a.actor))
+    errors.push('LC amendment needs a positive amount, direction, dated author and document.');
+   if(a.status==='approved'){
+    if(!trim(a.approvedBy)||!this.date(a.approvedOn)||!trim(a.approvalEvidence))
+     errors.push('Approved LC amendment requires separate dated approval evidence.');
+    if(amount!==null)value+=a.direction==='increase'?amount:-amount;
+   }
+  }
+  if(value<0n)errors.push('Accepted LC reductions exceed the approved original amount.');
+  for(const [event,e] of Object.entries(p.events)){
+   if(e===null)continue;
+   if(!['bl','acceptance','invoice'].includes(event)||!this.date(e.date)||!trim(e.source)||!trim(e.actor))
+    errors.push('Recorded bank/shipping event requires a date, actor and source.');
+  }
+  const obligationAmounts=new Map();
+  for(const o of p.obligations){
+   if(all.has(o.id))errors.push('Duplicate obligation ID.');all.add(o.id);
+   const amount=this.cents(o.amount);
+   if(!['payable','receivable'].includes(o.direction)||amount===null||
+      o.currency!==h.currency||!trim(o.sourceRef)||!trim(o.counterparty)||!trim(o.id))
+    errors.push('Each LC obligation requires sourced positive amount, matching currency, direction and counterparty.');
+   if(o.bankDueDate&&( !this.date(o.bankDueDate)||!trim(o.bankDueSource)))
+    errors.push('Manually entered bank maturity date needs its own dated document source.');
+   obligationAmounts.set(o.id,amount||0n);
+   const maturity=this.mature(o,p);
+   if(maturity.issue)notes.push('Obligation '+o.id+': '+maturity.issue);
+   if(maturity.date&&o.bankDueDate&&o.bankDueDate!==maturity.date)
+    notes.push('LC obligation '+o.id+' calculated maturity differs from bank-entered date; bank adjudication Needs Information.');
+   maturities.push({id:o.id,direction:o.direction,amount:amount===null?null:this.signed(amount),
+    currency:o.currency,invoice:o.invoiceRef,shipment:o.shipmentRef,
+    counterparty:o.counterparty,source:o.sourceRef,maturity:maturity.date,issue:maturity.issue,
+    bankDueDate:o.bankDueDate||null,bankDueSource:o.bankDueSource||null});
+  }
+  const paid=new Map(),credited=new Map(),reversed=new Map();
+  for(const s of p.settlements){
+   if(all.has(s.id))errors.push('Duplicate financial event ID.');all.add(s.id);
+   const converted=this.convert(s,h.currency);
+   if(!obligationAmounts.has(s.obligationId)||!['payment','credit-note','reversal'].includes(s.kind)||
+      !this.date(s.date)||!trim(s.reference)||!trim(s.sourceRef)||!trim(s.actor)||converted===null)
+    errors.push('Settlement/credit/reversal requires a sourced actual transaction and explicit FX evidence when needed.');
+   if(converted!==null){
+    const target=s.kind==='credit-note'?credited:s.kind==='reversal'?reversed:paid;
+    target.set(s.obligationId,(target.get(s.obligationId)||0n)+converted);
+   }
+  }
+  for(const o of p.obligations){
+   const total=obligationAmounts.get(o.id)||0n,
+    settled=(paid.get(o.id)||0n)+(credited.get(o.id)||0n)-(reversed.get(o.id)||0n);
+   if(settled<0n)errors.push('Reversals exceed documented payments/credits.');
+   if(settled>total)errors.push('Settlements and credit notes exceed LC obligation.');
+   const item=maturities.find(x=>x.id===o.id);
+   if(item){item.settled=this.signed(settled);item.open=this.signed(total-settled);
+    item.remainingCents=total-settled;
+    if(this.date(asOf)&&item.maturity&&item.maturity<asOf&&total-settled>0n)
+     dueOpen.push({id:o.id,due:item.maturity,open:this.signed(total-settled),direction:o.direction});}
+  }
+  const docIds=new Set();
+  for(const d of p.documents){
+   if(docIds.has(d.id))errors.push('Duplicate documentary checklist ID.');docIds.add(d.id);
+   if(!trim(d.name)||!['required','submitted','accepted','discrepant'].includes(d.status)||!trim(d.sourceRef))
+    errors.push('Document checklist needs a unique code, source and known status.');
+   if(d.status!=='required'&&(!this.date(d.date)||!trim(d.actor)||!trim(d.bankRef)))
+    errors.push('Submitted/accepted/discrepant document requires a recorded actor/date/bank reference.');
+   if(d.status==='accepted'&&(!this.date(d.acceptedDate)||!trim(d.acceptedEvidence)))
+    errors.push('Accepted document requires independent source-dated bank acceptance evidence.');
+   if(d.status==='discrepant'&&!trim(d.discrepancy))
+    errors.push('Discrepant document needs a written discrepancy description.');
+  }
+  for(const c of p.bankCharges){
+   if(this.cents(c.amount)===null||c.currency!==h.currency||!this.date(c.date)||
+     !trim(c.sourceRef)||!trim(c.reference)||!trim(c.actor))
+    errors.push('Bank charges require their own amount, same currency, date, source and actor.');
+  }
+  const values=[...obligationAmounts.values()].reduce((a,b)=>a+b,0n);
+  if(value>=0n&&values>value)
+   notes.push('Combined LC obligations exceed sourced current LC face amount; reconcile invoice/document basis.');
+  return {ok:errors.length===0,errors,notes,lcValue:value<0n?null:this.signed(value),
+   originalValue:h.amount,currency:h.currency,maturities,obligations:maturities,overdue:dueOpen,
+   asOf:this.date(asOf)?asOf:null,
+   documentsDiscrepant:p.documents.filter(x=>x.status==='discrepant').length};
+ }
+}
+/** LC register persistence: browser-scoped, same versioned key and recoverable copies. */
+class LCStore{
+ constructor(user){this.key=KEY+(trim(user).replace(/[^A-Za-z0-9-]/g,'-').slice(0,100)||'local');}
+ static hash(str){let n=2166136261;for(let i=0;i<str.length;i++){n^=str.charCodeAt(i);n=Math.imul(n,16777619);}return (n>>>0).toString(16);}
+ static validate(p){
+  const x=LCPolicyEngine.calculate(p);
+  if(!x.ok)throw Error(x.errors.join('\n'));
+  if(!trim(p.id)||!Number.isSafeInteger(p.revision)||p.revision<0||JSON.stringify(p).length>MAX)
+   throw Error('Invalid or oversized LC record.');
+  return x;
+ }
+ read(){
+  let str;try{str=localStorage.getItem(this.key);}catch{throw Error('Device local storage unavailable.');}
+  if(!str)return [];
+  const data=JSON.parse(str);
+  if(data.version!==VERSION||!Array.isArray(data.records))throw Error('Unsupported local LC record version.');
+  return data.records;
+ }
+ list(){return this.read().map(p=>({id:p.id,lcNo:p.header.lcNo,type:p.header.lcType,revision:p.revision,at:p.updatedAt}));}
+ load(id){const p=this.read().find(x=>x.id===id);if(!p)return null;this.constructor.validate(p);return deep(p);}
+ save(p){
+  this.constructor.validate(p);
+  const text=JSON.stringify({version:VERSION,records:[deep(p),...this.read().filter(x=>x.id!==p.id)]});
+  if(text.length>MAX)throw Error('Local save limit exceeded. Download a saved copy.');
+  const temp=this.key+'.tmp';
+  try{localStorage.setItem(temp,text);localStorage.setItem(this.key,text);}
+  catch{throw Error('Device save failed; prior records were not intentionally cleared.');}
+  finally{try{localStorage.removeItem(temp);}catch{}}
+  return p.id;
+ }
+ static encode(p){this.validate(p);const text=JSON.stringify(p);
+  return JSON.stringify({format:FORMAT,checksum:this.hash(text),record:p,exportedAt:new Date().toISOString()});}
+ static decode(text){
+  if(typeof text!=='string'||text.length>MAX)throw Error('LC saved copy is too large.');
+  const p=JSON.parse(text);
+  if(p?.format!==FORMAT||!p.record||p.checksum!==this.hash(JSON.stringify(p.record)))
+   throw Error('LC saved copy altered or unsupported. Existing records remain intact.');
+  this.validate(p.record);return deep(p.record);
+ }
+}
+/** Report projection stays source-labelled, escapes HTML and Excel formulas. */
+class LCReport{
+ static sheets(p,calculated){
+  const amountOf=id=>calculated.obligations.find(x=>x.id===id);
+  return {
+   'LC Register':[['Field','Sourced value'],['LC ID',p.header.lcNo],['LC type',p.header.lcType],
+    ['Applicant',p.header.applicant],['Beneficiary',p.header.beneficiary],
+    ['Issuing bank',p.header.issuingBank],['Advising bank',p.header.advisingBank],
+    ['Currency',p.header.currency],['Original',p.header.amount],['Current',calculated.lcValue??'Needs Information'],
+    ['Opening date',p.header.openingDate],['Expiry',p.header.expiryDate],
+    ['Signed terms source',p.header.sourceRef]],
+   'Amendments':[['Direction','Amount','Currency','Status','Effective date','Source','Approved by','Approval evidence'],
+    ...p.amendments.map(x=>[x.direction,x.amount,p.header.currency,x.status,x.date,
+      x.sourceRef,x.approvedBy||'Needs Information',x.approvalEvidence||'Needs Information'])],
+   'Maturity Calendar':[['Obligation','Direction','Amount','Currency','Event','Usance days','Convention',
+      'Calculated maturity','Bank documented maturity','Maturity issue'],
+     ...p.obligations.map(x=>[x.id,x.direction,x.amount,x.currency,x.term?.startEvent,
+       x.term?.days??'Needs Information',x.term?.convention||'Needs Information',
+       amountOf(x.id)?.maturity||'Needs Information',x.bankDueDate||'Needs Information',
+       amountOf(x.id)?.issue||'None'])],
+   'Document Checklist':[['Document','Status','Source','Recorded date','Bank reference',
+      'Acceptance evidence','Discrepancy'],
+     ...p.documents.map(x=>[x.name,x.status,x.sourceRef,x.date||'Needs Information',
+       x.bankRef||'Needs Information',x.acceptedEvidence||'Needs Information',
+       x.discrepancy||'None'])],
+   'Payment Obligations':[['Direction','Counterparty','Invoice','Shipment','Amount','Currency',
+      'Settled + sourced credits net','Outstanding','Maturity','Source'],
+     ...calculated.obligations.map(x=>[x.direction,x.counterparty,x.invoice,x.shipment,
+       x.amount??'Needs Information',x.currency,x.settled??'Needs Information',
+       x.open??'Needs Information',x.maturity||'Needs Information',x.source])],
+   'Settlement Ledger':[['Kind','Obligation','Date','Amount','Currency','Bank/source reference','FX rate','FX source'],
+     ...p.settlements.map(x=>[x.kind,x.obligationId,x.date,x.amount,x.currency,
+       x.reference+' | '+x.sourceRef,x.fxRate||'Same currency',x.fxSource||'Needs Information'])],
+   'Overdue and Forecast':[['Obligation','Direction','Due date','Open amount','As of date'],
+     ...calculated.overdue.map(x=>[x.id,x.direction,x.due,x.open,calculated.asOf||'Needs Information'])],
+   'Bank Charges':[['Amount','Currency','Date','Bank reference','Document source','Allocation note'],
+     ...p.bankCharges.map(x=>[x.amount,x.currency,x.date,x.reference,x.sourceRef,x.note])],
+   'Manual PO Reference':[['Field','Source value'],
+     ...Object.entries(p.header.poReference||{source:'Needs Information'}).map(([key,value])=>
+       [key,typeof value==='object'?JSON.stringify(value):value])]
+  };
+ }
+ static html(p,calc){
+  const sheets=this.sheets(p,calc);
+  return '<article class="lc-report"><h2>VESA LC & Payment 360 — DRAFT / LOCAL PROJECTION</h2>'+
+   '<p class="lc-note">'+safe(NOTICE)+'</p>'+Object.entries(sheets).map(([name,rows])=>
+    '<section><h3>'+safe(name)+'</h3><div class="lc-scroll"><table class="lc-table"><thead><tr>'+
+    rows[0].map(x=>'<th>'+safe(x)+'</th>').join('')+'</tr></thead><tbody>'+
+    rows.slice(1,1501).map(row=>'<tr>'+row.map(x=>'<td>'+safe(x??'Needs Information')+'</td>').join('')+
+    '</tr>').join('')+'</tbody></table></div></section>').join('')+'</article>';
+ }
+ static excelRows(name,rows){
+  return rows.map((row,i)=>row.map((v,j)=>{
+   const numeric=i>0&&(
+    name==='LC Register'&&j===1&&['Original','Current'].includes(row[0])||
+    name==='Amendments'&&j===1||
+    name==='Maturity Calendar'&&[2,5].includes(j)||
+    name==='Payment Obligations'&&[4,6,7].includes(j)||
+    name==='Settlement Ledger'&&j===3||
+    name==='Overdue and Forecast'&&j===3||
+    name==='Bank Charges'&&j===0);
+   return numeric&&typeof v==='string'&&/^\d+(\.\d{1,8})?$/.test(v)?Number(v):sheetSafe(v);
+  }));
+ }
+}
+const TXT={
+ en:{title:'LC & Payment 360',lead:'Source-based LC terms, maturity, bank documents and settlements',
+ home:'Home',new:'New LC Register',continue:'Continue Last',open:'Open Saved',
+ practice:'Practice Example',save:'Save Now',download:'Download Saved Copy',
+ upload:'Open Saved Copy',report:'Prepare Report',excel:'Download Excel',print:'Print / PDF',
+ back:'All LCs',summary:'Summary',lcTerms:'LC Terms',events:'Date Evidence',amendments:'Amendments',
+ obligations:'Payment Obligations',documents:'Bank Documents',settlements:'Settlements',
+ charges:'Bank Charges',reports:'Reports',add:'Add',edit:'Edit',remove:'Remove',
+ lcType:'LC type',lcNo:'LC number',applicant:'Applicant',beneficiary:'Beneficiary',
+ issuingBank:'Issuing bank',advisingBank:'Advising bank',currency:'LC currency',
+ amount:'Amount (two decimals)',openingDate:'LC opening date',expiryDate:'Expiry date',
+ source:'Signed LC/source document',direction:'Payable or receivable',counterparty:'Counterparty',
+ invoiceRef:'Invoice document reference',shipmentRef:'Shipment/BL reference',
+ startEvent:'Documented start event',manualDate:'Manually documented event date',
+ manualSource:'Start event source',days:'Explicit usance days',
+ inclusion:'Event/start date counted?',convention:'Calendar or business days',
+ weekendDays:'Excluded weekdays (0=Sun to 6=Sat, comma)',holidays:'Documented holidays (YYYY-MM-DD, comma)',
+ calendarSource:'Business-day calendar document',calendarReviewer:'Calendar reviewer',
+ calendarReviewDate:'Calendar review date',nonbusinessStart:'Start-day adjustment',
+ bankDueDate:'Bank-confirmed due date (optional)',bankDueSource:'Bank maturity source',
+ eventType:'Event type',date:'Date',actor:'Recorded by',document:'Document reference',
+ requestedBy:'Amendment actor',approvedBy:'Bank approval actor',approvedOn:'Bank approval date',
+ approvalEvidence:'Bank approval document',status:'Source-reported status',
+ docName:'Bank checklist document',docStatus:'Document state',acceptedDate:'Acceptance date',
+ acceptedEvidence:'Acceptance document',bankRef:'Bank reference',discrepancy:'Document discrepancy',
+ kind:'Transaction type',obligation:'Linked obligation',reference:'Transaction reference',
+ fxRate:'FX: LC currency per settlement currency',fxSource:'Explicit FX source',fxDate:'FX date',
+ fxRounding:'Documented FX rounding rule',amountType:'Increase / decrease',
+ note:'Source remarks',asOf:'Overdue as-of date',sourceRef:'Evidence source reference',
+ outstanding:'Outstanding',maturity:'Maturity',needs:'Needs Information',none:'No records entered',
+ review:'Review locally',poRef:'Manual PO Reference',openPO:'Open Reviewed PO JSON',
+ confirm:'I reviewed original evidence',total:'Current LC Amount',overdue:'Overdue',
+ guard:'No default usance days, FX, business calendar, bank acceptance or bank fees.',
+ acknowledged:'User-entered bank status is not independently authenticated',
+ chargeNote:'Bank charges are reported separately, never automatically deducted from an obligation.'},
+ ta:{title:'LC & Payment 360',lead:'ஆதாரத்துடன் LC, Maturity, Bank Documents, Payment',
+ home:'Home',new:'புதிய LC',continue:'கடைசி பதிவு திற',open:'Saved LC திற',
+ practice:'Practice Example',save:'இப்போது Save',download:'Saved Copy Download',
+ upload:'Saved Copy திற',report:'Report தயாரி',excel:'Excel Download',print:'Print / PDF',
+ back:'எல்லா LC',summary:'சுருக்கம்',lcTerms:'LC விவரங்கள்',events:'Date ஆதாரம்',amendments:'திருத்தங்கள்',
+ obligations:'Payment Obligations',documents:'Bank Documents',settlements:'Settlements',
+ charges:'Bank Charges',reports:'Reports',add:'சேர்',edit:'திருத்து',remove:'நீக்கு',
+ lcType:'LC Type',lcNo:'LC நம்பர்',applicant:'Applicant',beneficiary:'Beneficiary',
+ issuingBank:'Issuing Bank',advisingBank:'Advising Bank',currency:'LC Currency',
+ amount:'தொகை',openingDate:'LC Open Date',expiryDate:'Expiry Date',
+ source:'LC ஆவண ஆதாரம்',direction:'Payable / Receivable',counterparty:'Counterparty',
+ invoiceRef:'Invoice Reference',shipmentRef:'Shipment / BL Reference',
+ startEvent:'Maturity தொடக்க Event',manualDate:'Event Date',manualSource:'Event ஆதாரம்',
+ days:'Usance நாட்கள்',inclusion:'தொடக்க நாளை எண்ணவா?',convention:'Calendar / Business Days',
+ weekendDays:'விடுமுறை வார நாட்கள் (0–6)',holidays:'ஆவண Holiday தேதிகள்',
+ calendarSource:'Calendar ஆதாரம்',calendarReviewer:'Calendar சரிபார்த்தவர்',
+ calendarReviewDate:'Calendar தேதி',nonbusinessStart:'Holiday Start விதி',
+ bankDueDate:'Bank Due Date',bankDueSource:'Bank Due ஆதாரம்',
+ eventType:'Event வகை',date:'தேதி',actor:'பதிவு செய்தவர்',document:'ஆவணம்',
+ requestedBy:'திருத்தம் பதிவு செய்தவர்',approvedBy:'Bank Approver',approvedOn:'Bank Approval தேதி',
+ approvalEvidence:'Bank Approval ஆதாரம்',status:'ஆதார நிலை',
+ docName:'Bank Document',docStatus:'Document Status',acceptedDate:'Acceptance தேதி',
+ acceptedEvidence:'Acceptance ஆதாரம்',bankRef:'Bank Reference',discrepancy:'Document தவறு',
+ kind:'Transaction வகை',obligation:'Obligation',reference:'Transaction Reference',
+ fxRate:'FX Rate',fxSource:'FX ஆதாரம்',fxDate:'FX தேதி',fxRounding:'FX Rounding விதி',
+ amountType:'Increase / Decrease',note:'குறிப்புகள்',asOf:'Overdue கணக்கிடும் தேதி',sourceRef:'ஆதாரம்',
+ outstanding:'மீதம்',maturity:'Maturity',needs:'தகவல் தேவை',none:'பதிவு இல்லை',
+ review:'உள்ளூர் Review',poRef:'PO Reference',openPO:'Reviewed PO JSON திற',
+ confirm:'ஆதார ஆவணம் சரிபார்க்கப்பட்டது',total:'தற்போதைய LC தொகை',overdue:'காலாவதி',
+ guard:'Usance, FX, Calendar, Bank Approval எதையும் ஊகிக்க மாட்டோம்.',
+ acknowledged:'Bank status உண்மையில் சரிபார்க்கப்படவில்லை.',
+ chargeNote:'Bank Charge தனியாக இருக்கும்; Obligation-லிருந்து தானாக கழிக்காது.'},
+ bn:{title:'এলসি ও পেমেন্ট ৩৬০',lead:'উৎসভিত্তিক LC, মেয়াদ, ব্যাংক নথি ও পেমেন্ট',
+ home:'হোম',new:'নতুন LC',continue:'শেষটি খুলুন',open:'সেভ LC খুলুন',
+ practice:'অনুশীলন উদাহরণ',save:'এখন সংরক্ষণ',download:'সেভ কপি ডাউনলোড',
+ upload:'সেভ কপি খুলুন',report:'রিপোর্ট তৈরি',excel:'এক্সেল ডাউনলোড',print:'প্রিন্ট / PDF',
+ back:'সব LC',summary:'সারাংশ',lcTerms:'LC শর্ত',events:'তারিখের প্রমাণ',amendments:'সংশোধন',
+ obligations:'পেমেন্ট দায়',documents:'ব্যাংক নথি',settlements:'পরিশোধ',
+ charges:'ব্যাংক চার্জ',reports:'রিপোর্ট',add:'যোগ',edit:'সম্পাদনা',remove:'সরান',
+ lcType:'LC ধরন',lcNo:'LC নম্বর',applicant:'আবেদনকারী',beneficiary:'সুবিধাভোগী',
+ issuingBank:'ইস্যু ব্যাংক',advisingBank:'অ্যাডভাইজিং ব্যাংক',currency:'মুদ্রা',
+ amount:'পরিমাণ',openingDate:'খোলার তারিখ',expiryDate:'মেয়াদ শেষ',
+ source:'LC দলিলের উৎস',direction:'পাওনা/দেনা',counterparty:'অপর পক্ষ',
+ invoiceRef:'ইনভয়েস',shipmentRef:'শিপমেন্ট/BL',
+ startEvent:'মেয়াদ শুরুর ঘটনা',manualDate:'ঘটনার তারিখ',manualSource:'ঘটনার উৎস',
+ days:'উসান্স দিন',inclusion:'প্রথম দিন গণনা?',convention:'ক্যালেন্ডার/কার্যদিবস',
+ weekendDays:'বন্ধ সপ্তাহের দিন (0–6)',holidays:'নথিভুক্ত ছুটি',
+ calendarSource:'ক্যালেন্ডার উৎস',calendarReviewer:'পর্যালোচক',
+ calendarReviewDate:'পর্যালোচনা তারিখ',nonbusinessStart:'বন্ধ দিনে শুরুর নিয়ম',
+ bankDueDate:'ব্যাংক নির্ধারিত তারিখ',bankDueSource:'ব্যাংক উৎস',
+ eventType:'ঘটনা',date:'তারিখ',actor:'নথিভুক্তকারী',document:'নথি',
+ requestedBy:'সংশোধনকারী',approvedBy:'ব্যাংক অনুমোদনকারী',approvedOn:'অনুমোদন তারিখ',
+ approvalEvidence:'অনুমোদন নথি',status:'অবস্থা',
+ docName:'ব্যাংক নথি',docStatus:'নথির অবস্থা',acceptedDate:'গ্রহণের তারিখ',
+ acceptedEvidence:'গ্রহণের প্রমাণ',bankRef:'ব্যাংক রেফারেন্স',discrepancy:'নথির অসঙ্গতি',
+ kind:'লেনদেন ধরন',obligation:'পেমেন্ট দায়',reference:'লেনদেন রেফারেন্স',
+ fxRate:'FX দর',fxSource:'FX উৎস',fxDate:'FX তারিখ',fxRounding:'FX রাউন্ডিং',
+ amountType:'বৃদ্ধি/হ্রাস',note:'মন্তব্য',asOf:'যে তারিখে',sourceRef:'উৎস',
+ outstanding:'বকেয়া',maturity:'মেয়াদ',needs:'তথ্য দরকার',none:'কোনো তথ্য নেই',
+ review:'স্থানীয় পর্যালোচনা',poRef:'PO রেফারেন্স',openPO:'রিভিউ PO JSON খুলুন',
+ confirm:'লিখিত দলিল যাচাই করেছি',total:'LC মোট',overdue:'অতিক্রান্ত',
+ guard:'উসান্স, FX, ক্যালেন্ডার বা ব্যাংক অনুমোদন অনুমান নয়',
+ acknowledged:'স্থানীয় ব্যাংক অবস্থা প্রকৃত ব্যাংক অনুমোদন নয়',
+ chargeNote:'ব্যাংক চার্জ আলাদা; পাওনা থেকে নিজে বাদ দেয় না।'},
+ hi:{title:'एलसी और भुगतान 360',lead:'स्रोत आधारित LC, अवधि, दस्तावेज और भुगतान',
+ home:'होम',new:'नया LC',continue:'पिछला खोलें',open:'सेव LC खोलें',
+ practice:'अभ्यास उदाहरण',save:'अभी सेव',download:'सेव कॉपी डाउनलोड',
+ upload:'सेव कॉपी खोलें',report:'रिपोर्ट बनाएं',excel:'एक्सेल डाउनलोड',print:'प्रिंट / PDF',
+ back:'सभी LC',summary:'सारांश',lcTerms:'LC शर्तें',events:'तारीख प्रमाण',amendments:'संशोधन',
+ obligations:'भुगतान दायित्व',documents:'बैंक दस्तावेज',settlements:'भुगतान',
+ charges:'बैंक शुल्क',reports:'रिपोर्ट',add:'जोड़ें',edit:'बदलें',remove:'हटाएं',
+ lcType:'LC प्रकार',lcNo:'LC संख्या',applicant:'आवेदक',beneficiary:'लाभार्थी',
+ issuingBank:'जारी बैंक',advisingBank:'सलाह बैंक',currency:'मुद्रा',
+ amount:'राशि',openingDate:'खोलने की तारीख',expiryDate:'समाप्ति',
+ source:'लिखित LC स्रोत',direction:'देय या प्राप्य',counterparty:'दूसरी पार्टी',
+ invoiceRef:'इनवॉइस',shipmentRef:'शिपमेंट/BL',
+ startEvent:'मियाद शुरू होने की घटना',manualDate:'घटना तारीख',manualSource:'घटना स्रोत',
+ days:'उसान्स दिन',inclusion:'शुरू दिन गिनें?',convention:'कैलेंडर/कार्यदिन',
+ weekendDays:'सप्ताह के बंद दिन (0–6)',holidays:'दर्ज छुट्टियां',
+ calendarSource:'कैलेंडर स्रोत',calendarReviewer:'समीक्षक',
+ calendarReviewDate:'समीक्षा तारीख',nonbusinessStart:'बंद दिन शुरू नियम',
+ bankDueDate:'बैंक बताई तारीख',bankDueSource:'बैंक स्रोत',
+ eventType:'घटना',date:'तारीख',actor:'दर्ज करने वाला',document:'दस्तावेज',
+ requestedBy:'संशोधन करने वाला',approvedBy:'बैंक अनुमोदक',approvedOn:'अनुमोदन तारीख',
+ approvalEvidence:'अनुमोदन दस्तावेज',status:'स्थिति',
+ docName:'बैंक दस्तावेज',docStatus:'दस्तावेज़ स्थिति',acceptedDate:'स्वीकृति तारीख',
+ acceptedEvidence:'स्वीकृति प्रमाण',bankRef:'बैंक रिफरेंस',discrepancy:'दस्तावेज समस्या',
+ kind:'लेनदेन प्रकार',obligation:'जुड़ा दायित्व',reference:'लेनदेन संदर्भ',
+ fxRate:'FX दर',fxSource:'FX स्रोत',fxDate:'FX तारीख',fxRounding:'FX राउंडिंग',
+ amountType:'बढ़ाना/घटाना',note:'टिप्पणी',asOf:'जिस तारीख को',sourceRef:'स्रोत',
+ outstanding:'बकाया',maturity:'मियाद',needs:'जानकारी चाहिए',none:'रिकॉर्ड नहीं',
+ review:'स्थानीय समीक्षा',poRef:'PO संदर्भ',openPO:'समीक्षित PO JSON खोलें',
+ confirm:'लिखित प्रमाण स्वयं जांचा',total:'वर्तमान LC मूल्य',overdue:'ओवरड्यू',
+ guard:'उसान्स/FX/कैलेंडर/बैंक स्वीकृति का अनुमान नहीं',
+ acknowledged:'स्थानीय बैंक स्थिति वास्तविक बैंक मंजूरी नहीं',
+ chargeNote:'बैंक शुल्क अलग, दायित्व से स्वतः नहीं घटता।'}
+};
+/**
+ * LC controller owns only LC view state and local user entry. VESA shell owns
+ * global logo, login account and ordered Home/File/Edit/View/Tools/Help menu.
+ */
+class LCWorkspace{
+ constructor(){
+  this.main=document.getElementById('lcMain');this.dialog=document.getElementById('lcDialog');
+  this.body=document.getElementById('lcDialogBody');this.file=document.getElementById('lcFile');
+  this.current=null;this.section='summary';this.dirty=false;this.focus=null;this.shell=null;
+  this.asOf=new Date().toISOString().slice(0,10);
+  this.store=new LCStore(trim(global.VesaAuth?.session?.()?.email||'local-browser-user'));
+ }
+ tr(k){const lang=global.VesaPrefs?.read?.()?.language||'en';return TXT[lang]?.[k]||TXT.en[k]||k;}
+ field(k,value='',type='text',attrs='',wide=false){
+  return '<label class="'+(wide?'wide':'')+'"><span>'+safe(this.tr(k))+'</span><input type="'+safe(type)+
+   '" name="'+safe(k)+'" value="'+safe(value??'')+'" '+attrs+'></label>';
+ }
+ select(k,values,value){
+  return '<label><span>'+safe(this.tr(k))+'</span><select name="'+safe(k)+'">'+values.map(([v,text])=>
+   '<option value="'+safe(v)+'"'+(String(value)===String(v)?' selected':'')+'>'+safe(text)+'</option>').join('')+'</select></label>';
+ }
+ note(k,v=''){return '<label class="wide"><span>'+safe(this.tr(k))+'</span><textarea name="'+safe(k)+
+  '" maxlength="400">'+safe(v)+'</textarea></label>';}
+ checkbox(k,on){return '<label class="wide lc-check"><input type="checkbox" name="'+safe(k)+'"'+(on?' checked':'')+
+  '><span>'+safe(this.tr(k))+'</span></label>';}
+ modal(title,html){this.focus=document.activeElement;
+  document.getElementById('lcDialogTitle').textContent=title;this.body.innerHTML=html;
+  if(!this.dialog.open)this.dialog.showModal();
+  this.dialog.addEventListener('close',()=>this.focus?.focus?.(),{once:true});
+  this.body.querySelector('input:not([type=hidden]),select,button')?.focus?.();
+ }
+ problem(text){this.modal('Please review','<p class="lc-alert" role="alert">'+safe(text)+'</p>');}
+ start(){
+  const Shell=global.VesaWorkspaceShell?.VesaWorkspaceShell;
+  if(!Shell){this.main.textContent='VESA shared workspace missing.';return;}
+  const session=global.VesaAuth?.session?.()||{};
+  this.shell=new Shell({root:document.body,descriptor:{id:'lc-payment',
+   name:'VESA LC & Payment 360',route:'/apps/lc-payment/',contentTarget:'#lcMain',
+   userLabel:session.name||session.email||'',userRole:session.role||'',
+   savedState:'Unsaved changes'},callbacks:{menu:n=>this.menu(n)}});
+  this.shell.mount();
+  document.getElementById('lcClose').onclick=()=>this.dialog.close();
+  this.main.addEventListener('click',event=>{
+   const b=event.target.closest('[data-action]');
+   if(b){event.preventDefault();this.action(b.dataset.action,b.dataset.id);}
+  });
+  this.dialog.addEventListener('submit',event=>{
+   if(event.target.matches('form[data-form]')){event.preventDefault();this.submit(event.target);}
+  });
+  this.file.addEventListener('change',async()=>{
+   const f=this.file.files?.[0];this.file.value='';if(!f)return;
+   try{
+    if(f.size>MAX)throw Error('Saved LC copy exceeds safe size.');
+    const p=LCStore.decode(await f.text());
+    if(this.store.load(p.id)){p.id=uid('LC-COPY');p.audit.push({at:new Date().toISOString(),
+      revision:p.revision,action:'Saved LC copy recovered separately'});}
+    p.mode='local';this.store.save(p);this.current=p;this.dirty=false;this.section='summary';this.render();
+    this.modal(this.tr('upload'),'<p>Saved LC copy opened separately without replacing original bank-source records.</p>');
+   }catch(e){this.problem(e.message);}
+  });
+  global.addEventListener('vesa-preferences-change',()=>this.render());
+  global.addEventListener('beforeunload',event=>{if(this.dirty&&this.current?.mode==='local'){event.preventDefault();event.returnValue='';}});
+  this.render();
+ }
+ menu(name){
+  const groups={Home:[['home','home'],['new','new'],['continue','continue'],['practice','practice']],
+   File:[['save','save'],['download','download'],['upload','upload'],['open','open']],
+   Edit:[['header','lcTerms'],['event','events'],['add-obligation','obligations'],['add-amendment','amendments']],
+   View:[['summary','summary'],['obligations','obligations'],['documents','documents'],['settlements','settlements']],
+   Tools:[['report','report'],['add-document','documents'],['add-settlement','settlements'],
+    ['add-charge','charges'],['po-reference','poRef'],['asof','asOf']],
+   Help:[['help','title'],['practice','practice']]};
+  this.modal(name,'<div class="lc-actions">'+(groups[name]||[]).map(([action,k])=>
+   '<button class="lc-btn" data-menu-action="'+safe(action)+'" type="button">'+safe(this.tr(k))+'</button>').join('')+'</div>');
+  this.body.querySelectorAll('[data-menu-action]').forEach(b=>b.onclick=()=>{this.dialog.close();this.action(b.dataset.menuAction);});
+ }
+ action(action,id){
+  try{
+   if(action==='home'||action==='open'){this.current=null;this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='new')return this.form('new');
+   if(action==='practice'){this.current=LCPolicyEngine.sample();this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='continue'){const list=this.store.list();if(!list.length)throw Error('No LC saved on this device.');
+    return this.action('open-record',list[0].id);}
+   if(action==='open-record'){const p=this.store.load(id);if(!p)throw Error('LC record not found.');
+    this.current=p;this.dirty=false;this.section='summary';this.render();return;}
+   if(action==='upload'){this.file.click();return;}
+   if(action==='save'){if(!this.current||this.current.mode==='practice')throw Error('Open a real local LC draft first.');
+    this.store.save(this.current);this.dirty=false;this.render();return;}
+   if(action==='download'){if(!this.current||this.current.mode==='practice')throw Error('Open a real LC draft first.');
+    this.download(LCStore.encode(this.current),'VESA-LC-'+this.current.id+'.vesalc','application/json');return;}
+   if(['summary','lcTerms','events','amendments','obligations','documents','settlements','charges','reports'].includes(action)){
+    if(!this.current)throw Error('Create or open an LC first.');this.section=action;this.render();return;}
+   if(action==='report'){if(!this.current)throw Error('Create or open an LC.');this.section='reports';this.render();return;}
+   if(action==='excel'){this.excel();return;}
+   if(action==='print'){if(!this.current)throw Error('Open an LC.');this.section='reports';this.render();global.print();return;}
+   if(action==='help'){this.modal(this.tr('title'),'<p>'+safe(NOTICE)+'</p><p>'+safe(this.tr('guard'))+'</p>'+
+      '<p>Only enter terms taken from written LC documents. Maturity does not imply a bank-agreed deadline. Payments, credits and bank acceptance require separate written evidence. Download saved copies for local recovery.</p>');return;}
+   if(['header','event','add-amendment','add-obligation','add-document','add-settlement','add-charge','po-reference','asof'].includes(action))
+    return this.form(action,id);
+  }catch(e){this.problem(e.message);}
+ }
+ mutate(action,callback){
+  if(!this.current||this.current.mode!=='local')throw Error('Practice example is read-only.');
+  const next=deep(this.current);callback(next);next.revision++;next.updatedAt=new Date().toISOString();
+  next.audit.push({at:next.updatedAt,revision:next.revision,action});
+  LCStore.validate(next);
+  if(this.store.load(next.id))this.store.save(next);else this.dirty=true;
+  this.current=next;this.render();
+ }
+ render(){
+  const t=k=>safe(this.tr(k)),heading='<section class="lc-card"><h1>'+t('title')+'</h1>'+
+   '<p class="lc-note">'+t('lead')+'</p><p class="lc-alert">'+safe(NOTICE)+'</p></section>';
+  if(!this.current){
+   const saved=this.store.list();this.main.innerHTML=heading+'<section class="lc-card"><div class="lc-actions">'+
+    '<button class="lc-btn primary" data-action="new">'+t('new')+'</button>'+
+    '<button class="lc-btn" data-action="continue">'+t('continue')+'</button>'+
+    '<button class="lc-btn" data-action="upload">'+t('upload')+'</button>'+
+    '<button class="lc-btn" data-action="practice">'+t('practice')+'</button></div>'+
+    '<h2>'+t('open')+'</h2>'+(saved.length?saved.map(x=>'<div class="lc-record"><span><b>'+safe(x.lcNo)+
+      '</b> · '+safe(x.type)+'<small>Local revision '+safe(x.revision)+'</small></span>'+
+      '<button class="lc-btn" data-action="open-record" data-id="'+safe(x.id)+'">'+t('open')+'</button></div>').join(''):
+      '<p class="lc-note">'+t('none')+'</p>')+'</section>';
+   this.shell?.setSavedState('unsaved');return;
+  }
+  const p=this.current,x=LCPolicyEngine.calculate(p,this.asOf),practice=p.mode==='practice';
+  const sections=['summary','lcTerms','events','amendments','obligations','documents','settlements','charges','reports'];
+  this.main.innerHTML=heading+'<section class="lc-card"><h2>'+safe(p.header.lcNo)+' · '+safe(p.header.lcType)+
+    '</h2><p class="lc-note">'+safe(p.header.currency)+' · '+safe(p.header.applicant)+
+    ' → '+safe(p.header.beneficiary)+' · '+(practice?'SYNTHETIC PRACTICE':
+     this.dirty?'Unsaved local changes':'Saved locally, not bank-confirmed')+'</p>'+
+    '<div class="lc-actions"><button class="lc-btn" data-action="home">'+t('back')+'</button>'+
+    '<button class="lc-btn primary" data-action="save"'+(practice?' disabled':'')+'>'+t('save')+'</button>'+
+    '<button class="lc-btn" data-action="download"'+(practice?' disabled':'')+'>'+t('download')+'</button>'+
+    '<button class="lc-btn" data-action="report">'+t('report')+'</button></div></section>'+
+    '<nav class="lc-tabs" aria-label="LC workspace sections">'+sections.map(s=>
+      '<button class="lc-btn" data-action="'+s+'" aria-current="'+(s===this.section)+'">'+t(s)+'</button>').join('')+'</nav>'+
+    (x.errors.length?'<section class="lc-card" role="alert"><h2>Review source discrepancies</h2><ul>'+
+      x.errors.map(z=>'<li>'+safe(z)+'</li>').join('')+'</ul></section>':'')+
+    this.panel(this.section,p,x);
+  this.shell?.setSavedState(this.dirty?'unsaved':'saved');
+ }
+ panel(section,p,x){
+  const t=k=>safe(this.tr(k)),readonly=p.mode==='practice',
+    button=(action,label)=>'<button class="lc-btn" data-action="'+action+'"'+(readonly?' disabled':'')+'>'+t(label)+'</button>',
+    table=(heads,rows)=>'<div class="lc-scroll"><table class="lc-table"><thead><tr>'+
+      heads.map(h=>'<th>'+safe(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>
+      '<tr>'+row.map(cell=>'<td>'+safe(cell??this.tr('needs'))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>',
+    title=(key,action)=>'<div class="lc-actions"><h2>'+t(key)+'</h2>'+(action?button(action,'add'):'')+'</div>';
+  if(section==='summary'){
+   const tile=(value,label)=>'<div class="lc-tile"><strong>'+safe(value??this.tr('needs'))+'</strong><small>'+t(label)+'</small></div>';
+   const totalOpen=x.obligations?.length&&x.obligations.every(z=>z.remainingCents!==undefined)?
+     LCPolicyEngine.signed(x.obligations.reduce((n,z)=>n+z.remainingCents,0n)):null;
+   return '<section class="lc-card">'+title('summary','header')+
+     '<div class="lc-grid">'+tile(x.lcValue,'total')+tile(p.obligations.length,'obligations')+
+     tile(totalOpen,'outstanding')+tile(x.overdue.length,'overdue')+
+     tile(x.documentsDiscrepant,'discrepancy')+tile(p.amendments.length,'amendments')+'</div>'+
+     '<div class="lc-actions">'+button('asof','asOf')+button('po-reference','poRef')+'</div>'+
+     '<p class="lc-note">'+t('guard')+' · '+t('asOf')+': '+safe(this.asOf)+'</p>'+
+     (x.notes.length?'<ul>'+x.notes.map(note=>'<li>'+safe(note)+'</li>').join('')+'</ul>':'')+'</section>';
+  }
+  if(section==='lcTerms')return '<section class="lc-card">'+title('lcTerms','header')+
+    table(['Term','Sourced value'],Object.entries(p.header).filter(([k])=>k!=='poReference')
+      .map(([k,value])=>[k,value]))+'</section>';
+  if(section==='events')return '<section class="lc-card">'+title('events','event')+
+    table(['Event','Date','Document source','Recorded by'],
+      Object.entries(p.events).map(([kind,e])=>[kind,e?.date||null,e?.source||null,e?.actor||null]))+'</section>';
+  if(section==='amendments')return '<section class="lc-card">'+title('amendments','add-amendment')+
+    table(['Direction','Amount','Source','Date','Status','Approval reference'],
+      p.amendments.map(a=>[a.direction,a.amount,a.sourceRef,a.date,a.status,a.approvalEvidence||'Needs Information']))+
+    '<p class="lc-note">'+t('acknowledged')+'</p></section>';
+  if(section==='obligations')return '<section class="lc-card">'+title('obligations','add-obligation')+
+    table(['Direction','Counterparty','Amount','Maturity','Outstanding','Source','Issue'],
+      x.obligations.map(o=>[o.direction,o.counterparty,o.amount,o.maturity,o.open,o.source,o.issue||'None']))+'</section>';
+  if(section==='documents')return '<section class="lc-card">'+title('documents','add-document')+
+    table(['Document','State','Submitted','Bank reference','Source','Discrepancy'],
+      p.documents.map(d=>[d.name,d.status,d.date,d.bankRef,d.sourceRef,d.discrepancy||'None']))+'</section>';
+  if(section==='settlements')return '<section class="lc-card">'+title('settlements','add-settlement')+
+    table(['Type','Obligation','Amount','Currency','Date','Transaction reference','Evidence'],
+      p.settlements.map(s=>[s.kind,s.obligationId,s.amount,s.currency,s.date,s.reference,s.sourceRef]))+'</section>';
+  if(section==='charges')return '<section class="lc-card">'+title('charges','add-charge')+
+    '<p class="lc-note">'+t('chargeNote')+'</p>'+
+    table(['Amount','Currency','Date','Bank reference','Evidence'],
+      p.bankCharges.map(c=>[c.amount,c.currency,c.date,c.reference,c.sourceRef]))+'</section>';
+  if(section==='reports')return '<section class="lc-card"><div class="lc-actions">'+
+    '<button class="lc-btn primary" data-action="excel">'+t('excel')+'</button>'+
+    '<button class="lc-btn" data-action="print">'+t('print')+'</button></div>'+LCReport.html(p,x)+'</section>';
+  return '<section class="lc-card">'+t('none')+'</section>';
+ }
+ form(kind){
+  const p=this.current,t=k=>safe(this.tr(k)),start='<form class="lc-form" data-form="'+safe(kind)+'">',
+    end='<div class="wide lc-actions"><button class="lc-btn primary" type="submit">'+t('save')+'</button></div></form>';
+  let content='',title=this.tr(kind),x={};
+  if(kind==='new'||kind==='header'){
+   x=kind==='new'?{}:p.header;
+   content=this.select('lcType',[['','Choose source type'],['master','Master LC'],['b2b','B2B LC'],
+     ['fabric','Fabric LC'],['other','Other documented LC']],x.lcType)+
+    this.field('lcNo',x.lcNo,'text','required maxlength="100"')+
+    this.field('applicant',x.applicant,'text','required maxlength="140"')+
+    this.field('beneficiary',x.beneficiary,'text','required maxlength="140"')+
+    this.field('issuingBank',x.issuingBank,'text','required maxlength="140"')+
+    this.field('advisingBank',x.advisingBank,'text','required maxlength="140"')+
+    this.field('currency',x.currency,'text','required maxlength="3" pattern="[A-Z]{3}"')+
+    this.field('amount',x.amount,'text','required inputmode="decimal"')+
+    this.field('openingDate',x.openingDate,'date','required')+
+    this.field('expiryDate',x.expiryDate,'date','required')+
+    this.field('source',x.sourceRef,'text','required maxlength="180"',true);
+  }else if(kind==='event'){
+   content=this.select('eventType',[['bl','Bill of lading (BL)'],['acceptance','Bank acceptance'],
+     ['invoice','Invoice issue']], 'bl')+
+    this.field('date','','date','required')+
+    this.field('actor','','text','required maxlength="100"')+
+    this.field('source','','text','required maxlength="180"',true);
+  }else if(kind==='add-amendment'){
+   content=this.select('amountType',[['increase','Increase'],['decrease','Decrease']],'increase')+
+    this.field('amount','','text','required inputmode="decimal"')+
+    this.field('date','','date','required')+
+    this.field('actor','','text','required maxlength="100"')+
+    this.field('source','','text','required maxlength="180"')+
+    this.select('status',[['pending','Pending review'],['approved','Approved with bank source']],'pending')+
+    this.field('approvedBy','','text','maxlength="100"')+
+    this.field('approvedOn','','date')+
+    this.field('approvalEvidence','','text','maxlength="180"');
+  }else if(kind==='add-obligation'){
+   content=this.select('direction',[['payable','Payable'],['receivable','Receivable']],'payable')+
+    this.field('amount','','text','required inputmode="decimal"')+
+    this.field('currency',p.header.currency,'text','required maxlength="3"')+
+    this.field('counterparty','','text','required maxlength="130"')+
+    this.field('invoiceRef','','text','maxlength="180"')+
+    this.field('shipmentRef','','text','maxlength="180"')+
+    this.field('source','','text','required maxlength="180"')+
+    this.select('startEvent',[['','Select documented event'],['opening','LC opening'],
+      ['bl','Bill of lading'],['acceptance','Bank acceptance'],['invoice','Invoice'],['manual','Manual documented date']],'')+
+    this.field('days','','number','min="0" step="1"')+
+    this.select('inclusion',[['','Select start policy'],['yes','Count event date'],['no','Start next date']],'')+
+    this.select('convention',[['','Select written calendar'],['calendar','Calendar days'],
+      ['business','Business days (source-defined weekends and holidays)']],'')+
+    this.field('manualDate','','date')+
+    this.field('manualSource','','text','maxlength="180"')+
+    this.field('bankDueDate','','date')+
+    this.field('bankDueSource','','text','maxlength="180"')+
+    this.field('weekendDays','','text','placeholder="0,6" maxlength="30"')+
+    this.field('holidays','','text','placeholder="YYYY-MM-DD,YYYY-MM-DD" maxlength="300"')+
+    this.field('calendarSource','','text','maxlength="180"')+
+    this.field('calendarReviewer','','text','maxlength="100"')+
+    this.field('calendarReviewDate','','date')+
+    this.select('nonbusinessStart',[['','Select weekend start convention'],
+      ['hold','Hold if event day is nonbusiness'],['next-business','Roll to next business day']],'')+
+    this.field('termSource','','text','required maxlength="180"',true);
+  }else if(kind==='add-document'){
+   content=this.field('docName','','text','required maxlength="120"')+
+    this.select('docStatus',[['required','Required / not submitted'],['submitted','Submitted'],
+      ['accepted','Accepted per written bank evidence'],['discrepant','Discrepant']], 'required')+
+    this.field('date','','date')+
+    this.field('acceptedDate','','date')+
+    this.field('actor','','text','maxlength="120"')+
+    this.field('bankRef','','text','maxlength="180"')+
+    this.field('acceptedEvidence','','text','maxlength="180"')+
+    this.field('source','','text','required maxlength="180"')+
+    this.note('discrepancy');
+  }else if(kind==='add-settlement'){
+   if(!p.obligations.length)throw Error('Create a sourced obligation first.');
+   content=this.select('obligation',p.obligations.map(o=>[o.id,o.counterparty+' | '+o.amount+' '+o.currency]),p.obligations[0].id)+
+    this.select('kind',[['payment','Payment / receipt'],['credit-note','Documented credit note'],
+      ['reversal','Documented reversal']], 'payment')+
+    this.field('amount','','text','required inputmode="decimal"')+
+    this.field('currency',p.header.currency,'text','required maxlength="3"')+
+    this.field('date','','date','required')+
+    this.field('reference','','text','required maxlength="180"')+
+    this.field('actor','','text','required maxlength="120"')+
+    this.field('source','','text','required maxlength="180"')+
+    this.field('fxRate','','text','inputmode="decimal"')+
+    this.field('fxSource','','text','maxlength="180"')+
+    this.field('fxDate','','date')+
+    this.select('fxRounding',[['','Sourced FX rounding'],['half-up','Nearest cent half-up'],
+      ['down','Round down to cents']],'');
+  }else if(kind==='add-charge'){
+   content=this.field('amount','','text','required inputmode="decimal"')+
+    this.field('currency',p.header.currency,'text','required maxlength="3"')+
+    this.field('date','','date','required')+
+    this.field('reference','','text','required maxlength="180"')+
+    this.field('actor','','text','required maxlength="120"')+
+    this.field('source','','text','required maxlength="180"')+
+    this.note('note');
+  }else if(kind==='po-reference'){
+   x=p.header.poReference||{};
+   content='<p class="wide lc-note">Paste a manually reviewed immutable PO reference; no sibling app storage is read. Source app, record, revision and dated reviewer are required.</p>'+
+    this.field('sourceApp',x.sourceApp,'text','required maxlength="100"')+
+    this.field('recordType',x.recordType,'text','required maxlength="100"')+
+    this.field('recordId',x.recordId,'text','required maxlength="100"')+
+    this.field('revisionId',x.revisionId,'text','required maxlength="100"')+
+    this.field('sourceDate',x.sourceDate,'date','required')+
+    this.field('verifiedBy',x.verifiedBy,'text','required maxlength="100"')+
+    this.field('verifiedAt',x.verifiedAt,'date','required')+
+    this.note('displaySnapshot',typeof x.displaySnapshot==='object'?JSON.stringify(x.displaySnapshot):x.displaySnapshot);
+  }else if(kind==='asof'){
+   content=this.field('asOf',this.asOf,'date','required');
+  }else throw Error('Unknown LC form.');
+  this.modal(title,start+content+end);
+ }
+ submit(form){
+  try{
+   const data=Object.fromEntries(new FormData(form).entries()),
+     get=k=>trim(data[k]),check=k=>form.querySelector('[name="'+k+'"]')?.checked||false,
+     kind=form.dataset.form;
+   if(kind==='asof'){if(!LCPolicyEngine.date(get('asOf')))throw Error('Choose a valid calendar date.');
+    this.asOf=get('asOf');this.dialog.close();this.render();return;}
+   if(kind==='new'){
+    const seed={lcType:get('lcType'),lcNo:get('lcNo'),applicant:get('applicant'),
+     beneficiary:get('beneficiary'),issuingBank:get('issuingBank'),advisingBank:get('advisingBank'),
+     currency:get('currency'),amount:get('amount'),openingDate:get('openingDate'),
+     expiryDate:get('expiryDate'),sourceRef:get('source')};
+    const p=LCPolicyEngine.create(seed);LCStore.validate(p);
+    this.current=p;this.dirty=true;this.section='lcTerms';
+   }else if(kind==='header'){
+    this.mutate('LC header reviewed from written source',p=>{
+     if((p.amendments.some(a=>a.status==='approved')||p.settlements.length)&&
+       ['amount','currency','lcNo'].some(k=>p.header[k]!==get(k)))
+      throw Error('Cannot rewrite original LC commercial terms after accepted amendments or payment events.');
+     Object.assign(p.header,{lcType:get('lcType'),lcNo:get('lcNo'),applicant:get('applicant'),
+      beneficiary:get('beneficiary'),issuingBank:get('issuingBank'),advisingBank:get('advisingBank'),
+      currency:get('currency'),amount:get('amount'),openingDate:get('openingDate'),
+      expiryDate:get('expiryDate'),sourceRef:get('source')});
+    });
+   }else if(kind==='event'){
+    this.mutate('External dated LC event entered from source',p=>{
+     p.events[get('eventType')]={date:get('date'),source:get('source'),actor:get('actor')};
+    });
+   }else if(kind==='add-amendment'){
+    this.mutate('Dated LC bank amendment evidence recorded',p=>{
+     p.amendments.push({id:uid('AMD'),direction:get('amountType'),amount:get('amount'),
+      date:get('date'),actor:get('actor'),sourceRef:get('source'),status:get('status'),
+      approvedBy:get('approvedBy'),approvedOn:get('approvedOn'),
+      approvalEvidence:get('approvalEvidence')});
+    });
+   }else if(kind==='add-obligation'){
+    this.mutate('Payment obligation and documentary usance terms entered',p=>{
+     const term={startEvent:get('startEvent'),days:get('days')===''?null:Number(get('days')),
+      includeStart:get('inclusion')==='yes'?true:get('inclusion')==='no'?false:null,
+      convention:get('convention'),sourceRef:get('termSource'),
+      manualStartDate:get('manualDate'),manualStartSource:get('manualSource'),
+      weekendDays:get('weekendDays')?get('weekendDays').split(',').map(x=>Number(x.trim())):[],
+      holidays:get('holidays')?get('holidays').split(',').map(x=>x.trim()):[],
+      calendarSource:get('calendarSource'),calendarReviewer:get('calendarReviewer'),
+      calendarReviewDate:get('calendarReviewDate'),nonbusinessStart:get('nonbusinessStart')};
+     p.obligations.push({id:uid('OB'),direction:get('direction'),amount:get('amount'),
+      currency:get('currency'),counterparty:get('counterparty'),invoiceRef:get('invoiceRef'),
+      shipmentRef:get('shipmentRef'),sourceRef:get('source'),
+      bankDueDate:get('bankDueDate'),bankDueSource:get('bankDueSource'),term});
+    });
+   }else if(kind==='add-document'){
+    this.mutate('Bank checklist status recorded from separate manual evidence',p=>{
+     p.documents.push({id:uid('DOC'),name:get('docName'),status:get('docStatus'),
+      date:get('date'),acceptedDate:get('acceptedDate'),
+      acceptedEvidence:get('acceptedEvidence'),sourceRef:get('source'),
+      actor:get('actor'),bankRef:get('bankRef'),discrepancy:get('discrepancy')});
+    });
+   }else if(kind==='add-settlement'){
+    this.mutate('Actual sourced financial event manually recorded',p=>{
+     p.settlements.push({id:uid('SET'),obligationId:get('obligation'),kind:get('kind'),
+      amount:get('amount'),currency:get('currency'),date:get('date'),reference:get('reference'),
+      actor:get('actor'),sourceRef:get('source'),fxRate:get('fxRate'),fxSource:get('fxSource'),
+      fxDate:get('fxDate'),fxRounding:get('fxRounding')});
+    });
+   }else if(kind==='add-charge'){
+    this.mutate('Source-labelled bank charge registered separately',p=>{
+     p.bankCharges.push({id:uid('CHG'),amount:get('amount'),currency:get('currency'),
+      date:get('date'),reference:get('reference'),actor:get('actor'),
+      sourceRef:get('source'),note:get('note')});
+    });
+   }else if(kind==='po-reference'){
+    this.mutate('Reviewed manual external PO source attached',p=>{
+     const keys=['sourceApp','recordType','recordId','revisionId','sourceDate','verifiedBy','verifiedAt'];
+     if(keys.some(k=>!get(k))||!LCPolicyEngine.date(get('sourceDate'))||
+        !LCPolicyEngine.date(get('verifiedAt')))
+      throw Error('Manual PO source requires version, original source date and recorded review.');
+     const raw=get('displaySnapshot');
+     if(raw.length>10000)throw Error('Local reviewed PO display snapshot too large.');
+     p.header.poReference={...Object.fromEntries(keys.map(k=>[k,get(k)])),
+      displaySnapshot:raw?JSON.parse(raw):null};
+    });
+   }
+   this.dialog.close();this.render();
+  }catch(e){
+   let box=form.querySelector('[role=alert]');
+   if(!box){box=document.createElement('p');box.className='lc-alert wide';box.setAttribute('role','alert');form.prepend(box);}
+   box.textContent=e.message;
+  }
+ }
+ download(data,name,mime){
+  const blob=data instanceof Blob?data:new Blob([data],{type:mime}),url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1200);
+ }
+ excel(){
+  if(!this.current)throw Error('Open an LC before exporting.');
+  if(!global.XLSX?.utils?.book_new)throw Error('Local Excel exporter unavailable.');
+  const rows=LCReport.sheets(this.current,LCPolicyEngine.calculate(this.current,this.asOf));
+  const book=global.XLSX.utils.book_new();
+  for(const [name,sheetRows] of Object.entries(rows)){
+   const sheet=global.XLSX.utils.aoa_to_sheet(LCReport.excelRows(name,sheetRows));
+   sheet['!cols']=sheetRows[0].map(()=>({wch:26}));
+   global.XLSX.utils.book_append_sheet(book,sheet,name.slice(0,31));
+  }
+  const out=global.XLSX.write(book,{bookType:'xlsx',type:'array',compression:true});
+  this.download(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),
+   'VESA-LC-'+this.current.id+'.xlsx','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+ }
+}
+global.VesaLCPayment360=Object.freeze({LCPolicyEngine,LCStore,LCReport,VERSION,FORMAT});
+if(typeof module!=='undefined'&&module.exports)module.exports=global.VesaLCPayment360;
+if(typeof document!=='undefined'){
+ const start=()=>new LCWorkspace().start();
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+}
+})(typeof globalThis!=='undefined'?globalThis:this);
+</script></body></html>
