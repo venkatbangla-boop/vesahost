@@ -42,7 +42,7 @@ class PurchaseOrderDomainProof{
   assert(E.validate(duplicate).errors.some(x=>x.includes('Duplicate style/colour/size')));
   const intentional=JSON.parse(copy);
   intentional.lines[0].splitId='A';intentional.lines[1].size='M';intentional.lines[1].splitId='B';
-  assert.equal(E.validate(intentional).ok,false,'Documented buyer control no longer matches if line FOB changes.');
+  assert.equal(E.validate(intentional).ok,true,'Distinct sourced split IDs permit a legitimate intentional split.');
   intentional.lines.push({...intentional.lines[1],id:'L3',splitId:'B'});
   assert(E.validate(intentional).errors.some(x=>x.includes('Duplicate style/colour/size')),
     'Three-way split cannot reuse a lot ID.');
