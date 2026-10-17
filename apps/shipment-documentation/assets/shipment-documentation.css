@@ -1,0 +1,36 @@
+/* APP-07: no duplicated brand/header; only flowing domain panels. */
+*{box-sizing:border-box}body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14px/1.55 var(--ui,Arial,sans-serif)}
+#sdMain{width:min(1280px,calc(100vw - 24px));min-width:0;margin:0 auto;padding:18px 0 72px}
+.sd-card{background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:14px;padding:17px;margin-bottom:14px;min-width:0}
+.sd-card h1{font-size:clamp(1.3rem,3vw,1.9rem);line-height:1.25;margin:0 0 4px}
+.sd-card h2{font-size:1.2rem;margin:0 0 9px}.sd-card h3{font-size:1rem;margin:10px 0}
+.sd-note{font-size:.9rem;color:var(--muted,#526176);margin:8px 0}
+.sd-alert{border:1px solid var(--line,#cbd6e4);border-left:4px solid var(--action,#ad2945);background:var(--look-surface,#eef3f9);padding:10px 12px;border-radius:9px;margin:10px 0;white-space:pre-wrap}
+.sd-actions,.sd-tabs{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.sd-tabs{border-bottom:1px solid var(--line,#cbd6e4);padding-bottom:10px}
+.sd-btn{font:inherit;min-height:44px;padding:10px 14px;cursor:pointer;border:1px solid var(--line,#cbd6e4);border-radius:9px;color:var(--ink,#17263d);background:var(--paper,#fff);font-weight:700}
+.sd-btn.primary,.sd-tabs [aria-current=true]{background:var(--blue,#244fd6);border-color:var(--blue,#244fd6);color:#fff}
+.sd-btn:disabled{opacity:.45;cursor:not-allowed}
+.sd-btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold,#ac8e4b);outline-offset:2px}
+.sd-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sd-tile{background:var(--look-surface,#eef3f9);padding:14px;border:1px solid var(--line,#cbd6e4);border-radius:11px;min-width:0}
+.sd-tile strong{display:block;font-size:1.3rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sd-tile small{color:var(--muted,#526176)}
+.sd-scroll{max-width:100%;overflow:auto;border:1px solid var(--line,#cbd6e4);border-radius:10px}
+.sd-table{width:100%;min-width:710px;border-collapse:collapse;font-size:.89rem}
+.sd-table td,.sd-table th{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere}
+.sd-table th{background:var(--look-surface,#eef3f9);white-space:nowrap}.sd-table tr:last-child td{border-bottom:0}
+.sd-record{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line,#cbd6e4)}
+.sd-record:last-child{border-bottom:0}.sd-record small{display:block;color:var(--muted,#526176)}
+.sd-dialog{max-height:92vh;overflow:auto;width:min(795px,calc(100vw - 16px));padding:18px;border-radius:14px;border:1px solid var(--line,#cbd6e4);background:var(--paper,#fff);color:var(--ink,#17263d);box-shadow:0 16px 65px #0005}
+.sd-dialog::backdrop{background:#07162cb3}.sd-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.sd-dialog-head h2{font-size:1.18rem;margin:0}
+.sd-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}
+.sd-form label{display:grid;gap:5px;font-size:.9rem;font-weight:700;min-width:0}
+.sd-form label.wide,.sd-form .wide{grid-column:1/-1}
+.sd-form input,.sd-form select,.sd-form textarea{font:inherit;color:var(--ink,#17263d);background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:9px;min-height:44px;width:100%;min-width:0;padding:10px 12px}
+.sd-form textarea{min-height:75px}.sd-form label.sd-check{display:flex;gap:10px;align-items:center}
+.sd-check input{width:22px;min-height:22px}
+.sd-report-section{margin:16px 0;break-inside:avoid}
+@media(max-width:740px){.sd-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sd-card{padding:12px}}
+@media(max-width:470px){.sd-grid,.sd-form{grid-template-columns:1fr}.sd-form .wide,.sd-form label.wide{grid-column:1}.sd-actions .sd-btn{flex:1 1 auto}}
+@media print{.vesa-workspace,.app-user-bar,.sd-actions,.sd-tabs,.sd-dialog{display:none!important}#sdMain{width:100%;padding:0}.sd-card{border:0;padding:0}.sd-table{font-size:10px}.sd-table th,.sd-table td{padding:5px 6px}@page{size:A4 landscape;margin:12mm}}
