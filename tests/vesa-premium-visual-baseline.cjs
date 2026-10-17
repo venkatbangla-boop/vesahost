@@ -72,7 +72,8 @@ class VesaPremiumVisualBaseline {
       catch{res.writeHead(400).end();return;}
       if(url.pathname.includes('\0')){res.writeHead(400).end();return;}
       let file=path.resolve(VesaPremiumVisualBaseline.ROOT,'.'+decodeURIComponent(url.pathname));
-      if(!file.startsWith(VesaPremiumVisualBaseline.ROOT+path.sep)){
+      if(file!==VesaPremiumVisualBaseline.ROOT &&
+         !file.startsWith(VesaPremiumVisualBaseline.ROOT+path.sep)){
         res.writeHead(403).end();return;
       }
       try{
