@@ -370,7 +370,7 @@ class VesaProductWorkspace{
    this.table([t('kind'),t('description'),t('state'),t('sourceRef')],
     p.tasks.map(x=>[x.kind,x.description,x.state,x.sourceRef]))+'</section>';
   if(this.section==='boards')return'<section class="pd-card">'+top('boards','add-board','addBoard')+
-   '<div class="pd-actions">'+this.btn('image-board','imageBoard',false,'',disabled)+'</div>'
+   '<div class="pd-actions">'+this.btn('image-board','imageBoard',false,'',disabled)+'</div>'+ 
    (p.boards.length?p.boards.map(b=>'<div class="pd-board"><h3>'+e(b.title)+'</h3>'+
     '<p class="pd-muted">'+e(b.layout)+' · '+e(b.aspect)+' · '+e(b.sourceRef)+'</p>'+
     '<div class="pd-board-cards">'+b.cards.map(c=>'<div class="pd-board-card">'+
