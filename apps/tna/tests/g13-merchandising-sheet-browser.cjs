@@ -58,6 +58,23 @@ async function run(){
   await page.locator('[data-tna-merch-filter=all]').click();
   assert.equal(JSON.stringify(await stored()),before,'Filters may not change a TNA plan');
   assert.equal(await sheet.locator('[data-tna-sheet-task]').count(),total);
+  // G14: the date button owns a human-source planning revision, never a buyer approval.
+  await sheet.locator('[data-edit-task-dates]').first().click();
+  await page.locator('#tnaPlanningDateForm [name=baselineFinish]').fill('2026-10-14');
+  await page.locator('#tnaPlanningDateForm [name=currentTargetFinish]').fill('2026-10-15');
+  await page.locator('#tnaPlanningDateForm [name=forecastFinish]').fill('2026-10-18');
+  await page.locator('#tnaPlanningDateForm [name=sourceRef]').fill('SYN MERCH SOURCE NOTE-01');
+  await page.locator('#tnaPlanningDateForm [name=sourceDate]').fill('2026-10-17');
+  await page.locator('#tnaPlanningDateForm [name=reason]').fill('SYN internal order planning update');
+  await page.locator('#tnaPlanningDateForm button[type=submit]').click();
+  await page.locator('#tnaPlanningDateForm').waitFor({state:'hidden'});
+  assert.equal((await stored()).tasks[0].dates.baselineFinish,'2026-10-14');
+  assert.equal((await stored()).tasks[0].dates.currentTargetFinish,'2026-10-15');
+  assert.equal((await stored()).tasks[0].dates.forecastFinish,'2026-10-18');
+  assert.equal((await stored()).tasks[0].dates.actualFinish,null);
+  assert.equal((await stored()).tasks[0].status,'not-started');
+  assert.equal((await stored()).revisionEvents.at(-1).eventType,'sourced-task-finish-dates-revised');
+  assert.match(await sheet.innerText(),/SYN MERCH SOURCE NOTE-01/);
   await sheet.locator('[data-edit-task]').first().click();
   await page.locator('#tnaTaskEdit [name=nextStatus]').selectOption('completed');
   await page.locator('#tnaTaskEdit [name=actualDate]').fill('2026-10-18');
@@ -72,6 +89,8 @@ async function run(){
   await page.locator('[data-open-record]').first().click();
   await page.locator('#tnaDialog .tna-dialog-head button').click();
   assert.match(await sheet.innerText(),/2026-10-18/);
+  assert.equal((await stored()).tasks[0].dates.currentTargetFinish,'2026-10-15');
+  assert.equal((await stored()).revisionEvents.at(-2).eventType,'sourced-task-finish-dates-revised');
   assert.equal(await sheet.locator('[data-tna-sheet-task]').count(),total);
   for(const [lang,title] of [['en','Garment TNA Master Sheet'],['bn','গার্মেন্টস TNA মাস্টার শিট'],
    ['hi','गारमेंट TNA मास्टर शीट'],['ta','கார்மெண்ட் TNA மாஸ்டர் ஷீட்']]){

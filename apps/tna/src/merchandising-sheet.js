@@ -19,7 +19,7 @@ class VesaTnaMerchandisingSheet{
    section:'Section / activity',owner:'Responsible party',baseline:'Baseline plan',
    target:'Current target',forecast:'Forecast',actual:'Actual',delay:'Delay (calendar days)',
    state:'Status',source:'Source / approval evidence',criticalCol:'Calculated critical',
-   comment:'Remarks',edit:'Edit activity',unverified:'Needs Information',
+   comment:'Remarks',edit:'Edit status',editDates:'Edit dates',unverified:'Needs Information',
    noRows:'No sourced activities match this filter.',notCalculated:'Not calculated',
    calculated:'Critical',noncritical:'Not critical',pending:'Evidence not supplied',
    total:'applicable activities',shown:'shown',noAsOf:'Enter an as-of date to use overdue / due-next-week filters.',
@@ -38,7 +38,7 @@ class VesaTnaMerchandisingSheet{
    section:'সেকশন / কাজ',owner:'দায়িত্বপ্রাপ্ত',baseline:'মূল পরিকল্পনা',
    target:'বর্তমান লক্ষ্য',forecast:'পূর্বাভাস',actual:'আসল তারিখ',delay:'দেরি (ক্যালেন্ডার দিন)',
    state:'অবস্থা',source:'উৎস / অনুমোদনের প্রমাণ',criticalCol:'গণনাকৃত ক্রিটিক্যাল',
-   comment:'মন্তব্য',edit:'কাজ সম্পাদনা',unverified:'Needs Information',
+   comment:'মন্তব্য',edit:'অবস্থা বদলান',editDates:'তারিখ বদলান',unverified:'Needs Information',
    noRows:'এই ফিল্টারে কোনো কাজ নেই।',notCalculated:'গণনা হয়নি',
    calculated:'ক্রিটিক্যাল',noncritical:'ক্রিটিক্যাল নয়',pending:'প্রমাণ নেই',
    total:'প্রযোজ্য কাজ',shown:'দেখানো',noAsOf:'দেরি ও আগামী সপ্তাহ দেখতে পর্যালোচনার তারিখ দিন।',
@@ -57,7 +57,7 @@ class VesaTnaMerchandisingSheet{
    section:'सेक्शन / काम',owner:'जिम्मेदार',baseline:'मूल योजना',
    target:'वर्तमान लक्ष्य',forecast:'पूर्वानुमान',actual:'वास्तविक',delay:'देरी (कैलेंडर दिन)',
    state:'स्थिति',source:'स्रोत / मंजूरी प्रमाण',criticalCol:'गणना किया क्रिटिकल',
-   comment:'टिप्पणी',edit:'काम संपादित करें',unverified:'Needs Information',
+   comment:'टिप्पणी',edit:'स्थिति बदलें',editDates:'तारीख बदलें',unverified:'Needs Information',
    noRows:'इस फिल्टर में काम नहीं मिले।',notCalculated:'गणना नहीं',
    calculated:'क्रिटिकल',noncritical:'क्रिटिकल नहीं',pending:'प्रमाण नहीं',
    total:'लागू काम',shown:'दिखाए',noAsOf:'देरी/अगले सप्ताह के लिए समीक्षा की तारीख भरें।',
@@ -76,7 +76,7 @@ class VesaTnaMerchandisingSheet{
    section:'பிரிவு / வேலை',owner:'பொறுப்பாளர்',baseline:'முதல் திட்டம்',
    target:'தற்போதைய இலக்கு',forecast:'ஃபோர்காஸ்ட்',actual:'நடந்த தேதி',delay:'தாமதம் (காலண்டர் நாள்)',
    state:'நிலை',source:'ஆதாரம் / ஒப்புதல்',criticalCol:'கணக்கிட்ட கிரிட்டிக்கல்',
-   comment:'குறிப்புகள்',edit:'வேலையைத் திருத்து',unverified:'Needs Information',
+   comment:'குறிப்புகள்',edit:'நிலை திருத்து',editDates:'தேதி திருத்து',unverified:'Needs Information',
    noRows:'இந்த ஃபில்டரில் வேலை இல்லை.',notCalculated:'கணக்கிடவில்லை',
    calculated:'கிரிட்டிக்கல்',noncritical:'கிரிட்டிக்கல் இல்லை',pending:'ஆதாரம் இல்லை',
    total:'பொருந்தும் வேலைகள்',shown:'காட்டியது',noAsOf:'தாமதம் / அடுத்த வாரம் பார்க்க ரிவியூ தேதியை உள்ளிடவும்.',
@@ -154,7 +154,8 @@ class VesaTnaMerchandisingSheet{
     '<td>'+display(r.forecast)+'</td><td>'+display(r.actual)+'</td><td class="tna-merch-days">'+
     display(r.delay)+'</td><td>'+display(x.status)+'</td><td>'+display(refs)+'</td><td>'+
     (r.critical===null?e(t.notCalculated):r.critical?e(t.calculated):e(t.noncritical))+'</td>'+
-    '<td>'+display(comment)+'</td><td><button type="button" class="tna-mini-btn" data-edit-task="'+
+    '<td>'+display(comment)+'</td><td class="tna-merch-actions"><button type="button" class="tna-mini-btn" data-edit-task-dates="'+
+    e(x.taskId)+'">'+e(t.editDates)+'</button><button type="button" class="tna-mini-btn" data-edit-task="'+
     e(x.taskId)+'">'+e(t.edit)+'</button></td></tr>';
   }).join('');
   const filterLabel={all:t.all,overdue:t.overdue,week:t.week,buyerWait:t.buyerWait,

@@ -178,6 +178,7 @@
     });
     const merchAsOf=root.querySelector('#tnaMerchAsOf');
     if(merchAsOf)merchAsOf.onchange=event=>{state.merchAsOf=event.currentTarget.value||'';render();};
+    root.querySelectorAll('[data-edit-task-dates]').forEach(btn=>btn.onclick=()=>openTaskPlanningEdit(btn.dataset.editTaskDates));
     root.querySelectorAll('[data-edit-task]').forEach(btn=>btn.onclick=()=>openTaskEdit(btn.dataset.editTask));
   }
   function openDialog(title,body){document.getElementById('tnaDialogTitle').textContent=title;document.getElementById('tnaDialogBody').innerHTML=body;if(!state.dialog.open)state.dialog.showModal();}
@@ -278,6 +279,39 @@
     if(!state.currentPlan||!state.scenarioPreview?.branch)return openDialog('Apply scenario','<p>Preview a recovery option before applying it.</p>');
     openDialog('Confirm scenario revision',`<form class="tna-wizard" id="tnaScenarioApply"><p>This creates a new local revision and keeps the original baseline snapshots. It does not claim buyer approval or cloud collaboration.</p>${state.scenarioPreview.branch.violations.length?`<p class="tna-note">Review first: ${esc(state.scenarioPreview.branch.violations.join(' '))}</p>`:''}<label class="tna-wide"><span>Revision reason *</span><textarea name="reason" rows="4" required placeholder="Explain the verified recovery decision"></textarea></label><label><input type="checkbox" name="confirm" required> I confirm this scenario should create a new revision.</label><button class="tna-btn" type="submit">Confirm and apply</button></form>`);
     document.getElementById('tnaScenarioApply').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());const result=scenarios.applyScenario(state.currentPlan,state.scenarioPreview.branch,{actorId:userKey(),reason:data.reason,confirm:data.confirm==='on'});if(!result.ok)return openDialog('Apply scenario',`<p>${esc(result.error)}</p>`);state.currentPlan=result.plan;if(storage)storage.autosave(state.currentPlan,userKey());state.scenarioPreview=null;state.scenarioDraft=null;render();openDialog('Scenario applied',`<p>Recovery option applied as revision ${esc(result.plan.revision)}. Baseline snapshots remain preserved.</p>`);};
+  }
+  /*
+   * TNA M2: explicit human source -> domain-owned immutable planning revision.
+   * This dialog is NOT an approval action. Existing status/actual and CPM logic
+   * stay owned by updateTaskStatus and VesaTnaScheduling respectively.
+   */
+  function openTaskPlanningEdit(taskId){
+    const plan=state.currentPlan;
+    if(!plan||plan.mode==='practice')
+      return openDialog('Edit Planning Dates','<p>Open a locally saved non-practice order before revising sourced planning dates.</p>');
+    const task=plan.tasks.find(item=>item.taskId===taskId);
+    if(!task)return openDialog('Edit Planning Dates','<p>Selected TNA activity is missing.</p>');
+    const baselineLocked=plan.recordStatus==='baselined'||(plan.baselineSnapshots||[]).length>0;
+    const baselineField=field('baselineFinish','Original baseline finish (before baseline lock only)',
+      'date',task.dates?.baselineFinish||'');
+    openDialog('Edit Sourced Planning Dates',`<form class="tna-wizard" id="tnaPlanningDateForm"><p><b>${esc(task.templateRef)}</b> · ${esc(task.title)}</p><p class="tna-note">Separate user-entered dates: baseline, current target and forecast. Nothing here changes actual completion, approval, buyer acceptance or the critical-path engine.</p><div class="tna-form-grid">${baselineLocked?baselineField.replace('name="baselineFinish"','name="baselineFinish" disabled'):baselineField}${field('currentTargetFinish','Current target finish','date',task.dates?.currentTargetFinish||'')}${field('forecastFinish','Forecast finish','date',task.dates?.forecastFinish||'')}${field('sourceRef','Source document or dated meeting note','text','',true)}${field('sourceDate','Source review date','date','',true)}${field('reason','Reason for changed planning date','text','',true)}</div><p class="tna-note">Empty date inputs do not clear existing dates. ${baselineLocked?'Confirmed baseline is locked. Current target/forecast may be reviewed with new source only.':'Confirm the original baseline separately; entering a draft date here does not itself approve it.'}</p><button class="tna-btn" type="submit">Save source-backed revision</button></form>`);
+    document.getElementById('tnaPlanningDateForm').onsubmit=event=>{
+      event.preventDefault();
+      const values=Object.fromEntries(new FormData(event.currentTarget).entries());
+      const changes={};
+      for(const key of ['baselineFinish','currentTargetFinish','forecastFinish'])
+        if(values[key])changes[key]=values[key];
+      const result=domain.reviseTaskPlanningDates(state.currentPlan,taskId,changes,{
+        sourceRef:values.sourceRef,sourceDate:values.sourceDate,reason:values.reason,
+        actorId:userKey()
+      });
+      if(!result.ok)return openDialog('Source-date revision not saved',
+        '<p>'+esc(result.error)+'</p><p>Original TNA plan was not changed.</p>');
+      state.currentPlan=result.plan;
+      if(storage)storage.autosave(state.currentPlan,userKey());
+      state.dialog.close();
+      render();
+    };
   }
   function openTaskEdit(taskId){if(!state.currentPlan)return openDialog('Edit Activity','<p>Create or open a TNA draft before editing activities.</p>');const task=state.currentPlan.tasks.find(item=>item.taskId===taskId);if(!task)return openDialog('Edit Activity','<p>Activity not found in this draft.</p>');openDialog('Edit Activity',`<form class="tna-wizard" id="tnaTaskEdit"><p><b>${esc(task.templateRef)}</b> · ${esc(task.title)}</p><div class="tna-form-grid">${selectField('nextStatus','Status',domain.STATUSES.map(status=>[status,status]),task.status)}${field('actualDate','Actual finish date','date')}${field('evidenceRef','Evidence reference')}${field('reason','Reason / note')}</div><p class="tna-note">Choose Completed only with the actual finish date, Approved only with evidence, and Waived only with a reason. The original approved plan stays unchanged.</p><button class="tna-btn" type="submit">Save activity edit</button></form>`);document.getElementById('tnaTaskEdit').onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());const result=domain.updateTaskStatus(state.currentPlan,taskId,data.nextStatus,{actualDate:data.actualDate,evidenceRef:data.evidenceRef,reason:data.reason,actorId:userKey()});if(result.ok){state.currentPlan=result.plan;if(storage)storage.autosave(state.currentPlan,userKey());state.dialog.close();render();}else openDialog('Edit Activity',`<p>${esc(result.error)}</p>`);};}
   function openCustomTask(){if(!state.currentPlan)return openDialog('Add Activity',`<p>Create a draft TNA first, then add custom checkpoints to that draft.</p>`);

@@ -112,3 +112,8 @@ body.tna-has-active-order .tna-action-card p{display:none}
  .tna-merch-table th,.tna-merch-table td{padding:3px;overflow-wrap:anywhere}
  .tna-merch-sheet{break-inside:auto}
 }
+
+/* M2 planning-date action stays inside the already-contained scrollable sheet. */
+.tna-merch-actions{white-space:normal}
+.tna-merch-actions .tna-mini-btn{display:inline-flex;min-height:31px;margin:2px 3px 2px 0;
+ max-width:100%;white-space:normal;justify-content:center}

@@ -35,6 +35,8 @@ jobs:
           node --check apps/tna/tests/g13-merchandising-sheet.test.cjs
           node --check apps/tna/tests/g13-merchandising-sheet-browser.cjs
           node apps/tna/tests/g13-merchandising-sheet.test.cjs
+          node --check apps/tna/tests/g14-task-planning-date-revision.test.cjs
+          node apps/tna/tests/g14-task-planning-date-revision.test.cjs
           node apps/tna/tests/g02-domain.test.js
           node apps/tna/tests/g03-scheduling.test.js
           node apps/tna/tests/g05-storage.test.js
