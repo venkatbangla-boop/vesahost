@@ -26,14 +26,20 @@ followupStatus:'Local Follow-Up State',closedDate:'Closed Date (if completed)',o
 linkType:'Source Type',followupState:'Due Status',authority:'Authority Warning',sourcedTotal:'Entered Source Total',
 pipelineNotice:'Sourced values are grouped by currency. No FX conversion, win probability, order confirmation or expected revenue is assumed.',
 followupNotice:'Follow-up dates are shown locally. This app does not send reminders, emails or SMS.',
-reportPlanned:'Controlled pipeline, contact-privacy and follow-up draft reports are planned for the independently tested reporting stage.',
+references:'Read-Only Local Sources',referenceSelect:'Add Reviewed Source',
+ refKind:'Source Type',sourceApp:'Source App',sourceRecord:'Source Record',localReviewer:'Local Reviewer',
+ localReviewDate:'Local Review Date',
+ identityConfirmed:'I checked that the source has this exact buyer name. This does not confirm a PO, quotation or contact consent.',
+ sourceNotice:'Select user-provided local Purchase Order evidence or explicitly prepared manual Costing quote snapshot. No app data is read automatically; no order is confirmed.',
+ excel:'Download Excel',print:'Print / Save PDF',report:'Prepare Report',
+ reportPlanned:'Controlled pipeline, contact-privacy and follow-up draft reports are planned for the independently tested reporting stage.',
 openedCopy:'Saved copy opened locally without deleting earlier records.',
 status:'LOCAL SOURCE ONLY — NOT CONFIRMED ORDER',needs:'Needs Information',
 errors:'Please Review',submit:'Save Source Record',localOnly:'Stored Only on This Device',
 noApproval:'This app never confirms a purchase order, sends outreach, assumes consent, or signs a buyer agreement.'
 };
 const languages={
-ta:{
+ta:{references:'படிக்க மட்டும் ஆதாரங்கள்',referenceSelect:'சரிபார்த்த ஆதாரம் சேர்',refKind:'ஆதார வகை',sourceApp:'ஆதார ஆப்',sourceRecord:'ஆதார பதிவு',localReviewer:'உள்ளூர் சரிபார்ப்பாளர்',localReviewDate:'சரிபார்ப்பு தேதி',identityConfirmed:'இந்த ஆதாரம் இதே Buyer பெயருக்கு என சரிபார்த்தேன். PO, quotation அல்லது consent அங்கீகாரம் அல்ல.',sourceNotice:'Purchase Order ஆதாரம் அல்லது தனியாகத் தயாரித்த Costing quote source file-ஐ தேர்ந்தெடுக்கவும். மற்ற ஆப் data-வை தானாகப் படிக்காது.',excel:'Excel பதிவிறக்கு',print:'PDF / அச்சு',report:'அறிக்கை தயாரி',
 title:'Buyer CRM 360',lead:'ஆதாரமுள்ள Buyer விவரங்கள், enquiries, opportunities மற்றும் உள்ளூர் follow-up',
 notice:'வணிகமற்ற தனிப்பட்ட பயிற்சி டெமோ. உண்மையான contacts-ஐ சேமிக்க சட்டபூர்வ அனுமதி தேவை. Browser பதிவு encrypted அல்லது server authentication செய்யப்பட்டதல்ல.',
 warning:'Buyer contact, pipeline value, stage அனைத்தும் உள்ளூர் ஆதாரம் மட்டுமே. இது உறுதியான PO அல்லது email/SMS அனுப்புதல் அல்ல.',
@@ -54,7 +60,7 @@ pipelineNotice:'வேறுபட்ட நாணயங்களைச் ச�
 followupNotice:'Follow-up இந்த சாதனத்தில் மட்டும் தெரியும்; email/SMS அனுப்பாது.',
 reportPlanned:'வரைவு அறிக்கைகள் அடுத்த தனி சோதனை கட்டத்தில் வரும்.',openedCopy:'முந்தைய பதிவை அழிக்காமல் Saved Copy திறக்கப்பட்டது.',
 status:'உள்ளூர் ஆதாரம் மட்டும் — உறுதியான PO அல்ல',needs:'தகவல் தேவை',errors:'சரிபார்க்கவும்',submit:'ஆதார பதிவை சேமி',localOnly:'இந்த சாதனத்தில் மட்டும்',noApproval:'இந்த ஆப் PO உறுதி அல்லது consent வழங்காது.'},
-bn:{
+bn:{references:'শুধু-পাঠযোগ্য উৎস',referenceSelect:'পর্যালোচিত উৎস যোগ',refKind:'উৎস ধরন',sourceApp:'উৎস অ্যাপ',sourceRecord:'উৎস রেকর্ড',localReviewer:'স্থানীয় পর্যালোচক',localReviewDate:'পর্যালোচনার তারিখ',identityConfirmed:'উৎসটি এই একই বায়ারের কিনা যাচাই করেছি। এটি PO, কোট বা সম্মতির অনুমোদন নয়।',sourceNotice:'স্থানীয় PO প্রমাণ অথবা ম্যানুয়ালি তৈরি Costing উৎস বেছে নিন। অন্য অ্যাপের রেকর্ড স্বয়ংক্রিয়ভাবে পড়া হবে না।',excel:'Excel ডাউনলোড',print:'PDF / প্রিন্ট',report:'রিপোর্ট তৈরি',
 title:'বায়ার CRM 360',lead:'উৎসভিত্তিক বায়ার তালিকা, অনুসন্ধান, সুযোগ এবং স্থানীয় ফলো-আপ',
 notice:'শুধু ব্যক্তিগত অবাণিজ্যিক অনুশীলন ডেমো। প্রকৃত যোগাযোগের তথ্যের জন্য বৈধ গোপনীয়তার ভিত্তি লাগবে। ব্রাউজার ডেটা এনক্রিপ্টেড বা সার্ভার-প্রমাণিত নয়।',
 warning:'যোগাযোগ, পাইপলাইন এবং স্টেজ স্থানীয় উৎসের তথ্য, নিশ্চিত PO বা ইমেইল/SMS নয়।',
@@ -75,7 +81,7 @@ pipelineNotice:'ভিন্ন মুদ্রা যোগ হয় না; �
 followupNotice:'ফলো-আপ শুধুমাত্র এই ডিভাইসে; ইমেইল/SMS পাঠানো হয় না।',
 reportPlanned:'খসড়া রিপোর্টের স্বতন্ত্র যাচাই পরবর্তী ধাপে।',openedCopy:'পুরনো রেকর্ড না মুছে কপি খোলা হয়েছে।',
 status:'শুধু স্থানীয় উৎস — নিশ্চিত PO নয়',needs:'তথ্য দরকার',errors:'তথ্য যাচাই করুন',submit:'উৎস রেকর্ড সেভ',localOnly:'এই ডিভাইসে সেভ',noApproval:'এই অ্যাপ PO বা সম্মতি নিশ্চিত করে না।'},
-hi:{
+hi:{references:'केवल पढ़ने योग्य स्रोत',referenceSelect:'समीक्षित स्रोत जोड़ें',refKind:'स्रोत प्रकार',sourceApp:'स्रोत ऐप',sourceRecord:'स्रोत रिकॉर्ड',localReviewer:'स्थानीय समीक्षक',localReviewDate:'समीक्षा तारीख',identityConfirmed:'यह स्रोत इसी बायर का है। यह PO, कोटेशन या सहमति की मंजूरी नहीं है।',sourceNotice:'स्थानीय PO साक्ष्य या अलग तैयार Costing स्रोत फ़ाइल चुनें। अन्य ऐप का डेटा अपने-आप नहीं पढ़ा जाता।',excel:'Excel डाउनलोड',print:'PDF / प्रिंट',report:'रिपोर्ट बनाएं',
 title:'बायर CRM 360',lead:'स्रोत आधारित बायर विवरण, पूछताछ, अवसर और स्थानीय फॉलो-अप',
 notice:'केवल व्यक्तिगत गैर-व्यावसायिक डेमो। असली संपर्क के लिए वैध गोपनीयता आधार जरूरी है। ब्राउजर रिकॉर्ड एन्क्रिप्टेड या सर्वर प्रमाणित नहीं हैं।',
 warning:'कॉन्टैक्ट, पाइपलाइन और चरण स्थानीय साक्ष्य हैं; पुष्टि किया PO या ईमेल/SMS नहीं।',
