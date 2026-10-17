@@ -1,5 +1,14 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## 2026-10-18 — CONTINUE AFTER PPM G3 AND AQL/19 DEPTH AUDIT
+
+Latest actually released app code when recorded: `e7b8a549abbc7f115236952c2df04d94d49b897e`. PPM mobile section-focus/main Chromium [#39063021250 PASS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063021250), Pages [#39063020350 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063020350). Its 168 source checkpoints, GO/HOLD, saved records, printable PDF/offline remain unchanged.
+
+The full 11.78MB AQL source + all 19 app actual source files were audited in [#39063215638](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063215638) and media-profile [#39063360880](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063360880); AQL's 294 Base64 image URLs account for 90.94% of raw HTML source. **Read FIRST** `docs/portfolio/16_AQL_DEPTH_BENCHMARK_AND_19_APP_WORKPLAN.md` and `docs/ux/02_G3_ACTIVE_WORKFLOW_AUDIT.md`; inspect newest main/CI, then **NEXT G3-AQL-PERF read-only load/scroll analysis, alongside APP-01 Packing G4-W1 exact blueprint/source gap inspection**, one reversible proven app-only patch at a time. Continue G4-W2/3/4 and G5 across 19 applications. Do not reimplement existing engines or claim synthetic UAT as human. Root corporate homepage permanently frozen. A bare **Continue** resumes from these exact GitHub artifacts, not a historical handover.
+
+---
+
+
 ## 2026-10-18 — RESUME G3-PPM-02 AFTER VERIFIED TNA OFFLINE STYLE REFRESH
 
 Newest known verified TNA application SHA `9feaf2cd577125de1f9d000fed7ff0cad6e5e168`. Returning-client stylesheet cache issue closed: [feature #39060843140 PASS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060843140), [main #39060958773 PASS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958773), [Pages #39060958901 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958901). No domain/file loss. **EXACT NEXT G3-PPM-02:** review PPM `apps/ppm/index.html`, `core.js`, `workspace.js`, `workspace.css`, app worker and original PPM tests; safely shorten mobile long-form task flow and make controls usable, preserve all 168 status IDs and four languages. After PPM, AQL 11.78MB source/performance profile. Public company homepage remains FROZEN. `Continue` means read newest GitHub and pick up at PPM, not restart.
