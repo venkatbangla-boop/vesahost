@@ -1,4 +1,4 @@
-const CACHE='vesa-v83-product-development-personal-demo';
+const CACHE='vesa-v84-unified-app-centre';
 const ASSETS=[
   './',
   './index.html',
@@ -158,6 +158,7 @@ const ASSETS=[
   './admin/index.html',
   './llms.txt',
   './css/style.css',
+  './css/vesa-app-centre.css?v=20261017-u01',
   './css/vesa-workspace.css?v=20261013-platform-g09',
   './css/vesa-workspace.css',
   './js/main.js',
@@ -166,6 +167,7 @@ const ASSETS=[
   './js/preferences.js?v=20261015-costing-demo',
   './js/vesa-workspace-shell.js?v=20261013-platform-g09',
   './js/vesa-workspace-shell.js',
+  './js/vesa-app-centre.js?v=20261017-u01',
   './js/app-catalogue.js',
   './js/app-catalogue.js?v=20261015-costing-demo',
   './js/vendor/xlsx.full.min.js',
