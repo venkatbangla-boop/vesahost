@@ -516,7 +516,7 @@ class PackingWorkspace {
  }
  render(){
    const l=k=>this.tr(k),records=this.store.list();
-   const title='<div class="pack-title"><div><h1>'+safe(l('title'))+'</h1><p>'+safe(l('lead'))+'</p><p class="pack-note">'+safe(l('privacy'))+'</p></div></div>';
+   const title='<div class="pack-title"><div><h1>'+safe(l('title'))+'</h1><p>'+safe(l('lead'))+'</p><p class="pack-note">'+safe(l('privacy'))+'</p><p class="pack-alert" role="note"><b>NON-COMMERCIAL PERSONAL DEMO.</b> Use synthetic examples only. Do not enter real buyer/factory orders, personal information, payment data or passwords. Browser-local login is not secure authentication; shipment approval is not provided.</p></div></div>';
    if(!this.current){this.main.innerHTML=title+'<section class="pack-card">'+
      '<div class="pack-toolbar"><button class="pack-btn primary" data-action="new">'+safe(l('new'))+'</button>'+
      '<button class="pack-btn" data-action="continue">'+safe(l('continue'))+'</button>'+

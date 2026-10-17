@@ -567,7 +567,7 @@ class CommissionWorkspace{
  render(){
   const l=k=>esc(this.tr(k)),list=this.store.list();
   const title='<section class="com-card"><h1>'+l('title')+'</h1><p class="com-muted">'+l('subtitle')+'</p>'+
-    '<p class="com-muted">'+l('privacy')+' · '+l('draft')+'</p></section>';
+    '<p class="com-muted">'+l('privacy')+' · '+l('draft')+'</p><p class="com-warning" role="note"><b>NON-COMMERCIAL PERSONAL DEMO.</b> Synthetic records only. Never enter actual commissions, contracts, bank information, buyer records or passwords. Browser login is not secure authentication; financial settlement is not certified.</p></section>';
   if(!this.current){
    this.main.innerHTML=title+'<section class="com-card"><div class="com-actions">'+
     '<button class="com-btn primary" data-action="new">'+l('new')+'</button>'+

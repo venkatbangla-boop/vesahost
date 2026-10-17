@@ -9,6 +9,8 @@ on:
     paths:
       - '.github/workflows/vesa-costing-demo-live-smoke.yml'
       - 'apps/costing/**'
+      - 'apps/packing-container/**'
+      - 'apps/order-commission/**'
       - 'apps/index.html'
       - 'js/app-catalogue.js'
       - 'js/preferences.js'
@@ -65,5 +67,13 @@ jobs:
           for route in aql ppm tna; do
             curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/$route/" -o /dev/null
           done
-          printf 'LIVE PASS: Login -> App Centre -> Costing static assets, exact hosted source bytes, existing three app routes intact; main=%s\n' "$(git rev-parse HEAD)"
+          for app in packing-container order-commission; do
+            curl --fail --silent --show-error --location --max-time 25 "https://vesaent.com/apps/$app/" -o "/tmp/vesa-$app-live.html"
+            cmp -s "apps/$app/index.html" "/tmp/vesa-$app-live.html" || {
+              echo "HOLD: $app demo live HTML does not match main" >&2
+              exit 1
+            }
+            grep -Fq 'NON-COMMERCIAL PERSONAL DEMO.' "/tmp/vesa-$app-live.html"
+          done
+          printf 'LIVE PASS: Login -> App Centre -> Costing, Packing and Commission personal demos; exact public source bytes; existing AQL/PPM/TNA intact; main=%s\n' "$(git rev-parse HEAD)"
           echo "This check does not establish server-side authentication, buyer approval or production SaaS permission."
