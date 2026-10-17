@@ -1,4 +1,4 @@
-const CACHE='vesa-v92-costing-g4-mobile-dialog';
+const CACHE='vesa-v93-po-g4-guided-workflow';
 const ASSETS=[
   './',
   './index.html',

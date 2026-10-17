@@ -52,6 +52,34 @@ class PurchaseOrderBrowserProof{
     await page.locator('[data-action="new"]').waitFor();
     assert.equal(await page.locator('.vesa-workspace').count(),1);
     assert.equal(await page.locator('[data-vesa-menu]').count(),6);
+    // G4: the seven real sections are reachable from Home in fictional read-only mode.
+    const stages=['summary','lines','confirmation','amendments','shipments','revisions','reports'];
+    const previews=page.locator('.po-journey [data-action="preview"]');
+    const noPO=()=>page.evaluate(()=>Object.keys(localStorage).every(k=>!k.startsWith('vesa.purchase-order.records.v1.')));
+    assert.equal(await previews.count(),7);
+    assert(await noPO(),'No PO is saved before exploring practice.');
+    fs.mkdirSync(output,{recursive:true});
+    for(const width of [320,390,1440]){
+      await page.setViewportSize({width,height:850});
+      assert.equal(await previews.count(),7,width+'px seven task controls visible.');
+      const box=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:innerWidth,
+        heights:[...document.querySelectorAll('.po-journey .po-btn')].map(el=>el.getBoundingClientRect().height)}));
+      assert(box.scroll<=box.width+1,width+'px no body overflow');
+      assert(box.heights.every(v=>v>=44),width+'px touch controls at least 44px');
+      await page.screenshot({path:path.join(output,'po-g4-home-'+width+'.png'),fullPage:true});
+    }
+    await page.setViewportSize({width:390,height:850});
+    for(const stage of stages){
+      await page.locator('.po-journey [data-action="preview"][data-id="'+stage+'"]').click();
+      assert.equal(await page.locator('.po-tabs [data-action="'+stage+'"]').getAttribute('aria-current'),'true',stage+' opens the genuine section');
+      assert.match(await page.locator('#poMain').innerText(),/SYNTHETIC PRACTICE/,stage+' visibly fictional');
+      assert(await page.locator('#poMain [data-action="save"]').isDisabled(),stage+' practice cannot save');
+      assert(await noPO(),stage+' never creates a browser PO');
+      if(stage==='reports')await page.screenshot({path:path.join(output,'po-g4-mobile-draft-reports.png')});
+      await act('home');
+    }
+    await page.setViewportSize({width:1280,height:900});
+    assert(await noPO(),'No business records after seven practice previews');
     await act('new');
     await enter({poNo:'SYN-PO-01',buyer:'SYNTHETIC BUYER',issuer:'SYNTHETIC MERCHANDISER',
       factory:'SYNTHETIC FACTORY',shipTo:'SYNTHETIC PORT',
@@ -183,7 +211,13 @@ class PurchaseOrderBrowserProof{
       await page.waitForFunction(x=>document.documentElement.lang===x,language);
       await page.keyboard.press('Escape');await settings.waitFor({state:'hidden'});
       assert.match(await page.locator('.po-tabs').innerText(),new RegExp(label));
-      assert.equal(JSON.stringify(await records()),before,'Language switches must preserve immutable PO data.');
+      await act('home');
+      const titles={en:'Explore seven PO work steps',bn:'PO-এর সাতটি কাজের ধাপ',
+        hi:'PO के सात कार्य चरण',ta:'PO-வின் ஏழு வேலைப் பகுதிகள்'};
+      assert.equal(await page.locator('#poJourneyTitle').innerText(),titles[language]);
+      assert.equal(await page.locator('.po-journey [data-action="preview"]').count(),7);
+      await act('continue');
+      assert.equal(JSON.stringify(await records()),before,'Language/Home/Continue preserve immutable PO data.');
     }
     await page.reload({waitUntil:'domcontentloaded'});await act('continue');
     assert.equal((await records())[0].revisions.length,1);

@@ -28,6 +28,13 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
 .po-tile{background:var(--look-surface,#eef3f9);border:1px solid var(--line,#cbd6e4);border-radius:10px;padding:14px;min-width:0}
 .po-tile strong{display:block;font-size:1.38rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .po-tile small{color:var(--muted,#526176)}
+/* Home-only practice discovery of existing PO panels; original engines are frozen. */
+.po-journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.po-journey-card{display:flex;flex-direction:column;gap:9px;min-width:0;padding:14px;border:1px solid var(--line,#cbd6e4);border-radius:12px;background:var(--look-surface,#eef3f9)}
+.po-journey-card h3,.po-journey-card p{margin:0}
+.po-journey-card p{flex:1;color:var(--muted,#526176)}
+.po-journey-step{font-size:.76rem;font-weight:800;letter-spacing:.09em;color:var(--muted,#526176)}
+.po-journey-card .po-btn{width:100%}
 .po-scroll{width:100%;max-width:100%;overflow:auto;border:1px solid var(--line,#cbd6e4);border-radius:10px}
 .po-table{min-width:690px;width:100%;border-collapse:collapse;font-size:.88rem}
 .po-table td,.po-table th{padding:9px 11px;vertical-align:top;text-align:left;border-bottom:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere}
@@ -48,8 +55,8 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
 .po-record:last-child{border-bottom:0}
 .po-record small{display:block;color:var(--muted,#526176)}
 .po-report section{margin:15px 0;break-inside:avoid}
-@media(max-width:750px){.po-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.po-card{padding:13px}}
-@media(max-width:480px){.po-grid,.po-form{grid-template-columns:1fr}.po-form label.wide,.po-form .wide{grid-column:1}.po-actions>.po-btn{flex:1 1 auto}}
+@media(max-width:750px){.po-grid,.po-journey{grid-template-columns:repeat(2,minmax(0,1fr))}.po-card{padding:13px}}
+@media(max-width:480px){.po-grid,.po-journey,.po-form{grid-template-columns:1fr}.po-form label.wide,.po-form .wide{grid-column:1}.po-actions>.po-btn{flex:1 1 auto}}
 @media print{.vesa-workspace,.app-user-bar,.po-tabs,.po-actions,.po-dialog{display:none!important}#poMain{width:100%;padding:0}.po-card{padding:0;border:0}.po-table{font-size:10px}.po-table th,.po-table td{padding:4px 6px}.po-report{display:block!important}@page{size:A4 landscape;margin:12mm}}
 </style></head><body>
 <main id="poMain" tabindex="-1"><p role="status">Opening VESA Purchase Order 360…</p></main>
@@ -424,7 +431,7 @@ class PurchaseOrderReport {
  }
 }
 const LANG={
- en:{refExport:'Download Reviewed PO Reference',refNotice:'Exports the last signed-source revision, not later draft changes. Local review is not third-party approval.',verifiedBy:'Local evidence reviewer',verifiedAt:'Local review date',sourceReviewed:'I reviewed the signed PO document independently',confirmation:'Buyer vs Factory',confirmNote:'A factory statement requires a separate document. An amendment ACK is not buyer or factory order confirmation.',factoryQty:'Factory-stated pieces',factoryAmount:'Factory order value',factoryCurrency:'Factory currency',factoryShipFrom:'Factory ship from',factoryShipTo:'Factory ship until',ackDate:'Factory acknowledgment date',reviewer:'Local evidence reviewer',reviewedOn:'Local review date',title:'Purchase Order 360',lead:'Source-backed PO quantities, amendments, acknowledgments and local reports',
+ en:{journeyTitle:"Explore seven PO work steps",journeyLead:"Open any real PO section with a read-only fictional example. No buyer/factory approval, shipment or saved order is created.",journeyOpen:"View practice",journeySummary:"Review sourced totals and reconciliation holds.",journeyLines:"See sourced style, colour, size and unit FOB.",journeyConfirmation:"Compare the buyer PO with separate factory evidence.",journeyAmendments:"Inspect changes and dated acknowledgments.",journeyShipments:"Inspect shipment, cancellation and ledger sources.",journeyRevisions:"Compare immutable source versions.",journeyReports:"Open the genuine draft reports and Excel/PDF.",refExport:'Download Reviewed PO Reference',refNotice:'Exports the last signed-source revision, not later draft changes. Local review is not third-party approval.',verifiedBy:'Local evidence reviewer',verifiedAt:'Local review date',sourceReviewed:'I reviewed the signed PO document independently',confirmation:'Buyer vs Factory',confirmNote:'A factory statement requires a separate document. An amendment ACK is not buyer or factory order confirmation.',factoryQty:'Factory-stated pieces',factoryAmount:'Factory order value',factoryCurrency:'Factory currency',factoryShipFrom:'Factory ship from',factoryShipTo:'Factory ship until',ackDate:'Factory acknowledgment date',reviewer:'Local evidence reviewer',reviewedOn:'Local review date',title:'Purchase Order 360',lead:'Source-backed PO quantities, amendments, acknowledgments and local reports',
  new:'New PO',continue:'Continue Last',open:'Open Saved',practice:'Practice Example',save:'Save Now',download:'Download Saved Copy',upload:'Open Saved Copy',
  report:'Prepare Report',excel:'Download Excel',print:'Print / PDF',back:'All POs',summary:'Summary',lines:'Style / Colour / Size',amendments:'Amendments',
  shipments:'Shipment & Cancellation',revisions:'Revisions',reports:'Reports',add:'Add',edit:'Edit',remove:'Remove',poNo:'PO Number',buyer:'Buyer',
@@ -442,7 +449,7 @@ const LANG={
  warning:'A user-entered acknowledgment is not confirmed buyer/factory acceptance.',noRows:'No entries yet',
  latest:'Last sourced version',change:'Compare last version',notApproved:'Local draft, not independently accepted',
  note:'Source note'},
- ta:{refExport:'சரிபார்த்த PO Reference Download',refNotice:'கடைசி ஆதார Revision மட்டும் Export. Buyer approval அல்ல.',verifiedBy:'ஆதாரம் சரிபார்த்தவர்',verifiedAt:'சரிபார்த்த தேதி',sourceReviewed:'PO ஆவணத்தை தனியாக சரிபார்த்தேன்',confirmation:'Buyer / Factory ஒப்பீடு',confirmNote:'Factory கொடுத்த தனியான ஆதாரம் மட்டும். Buyer Approval அல்ல.',factoryQty:'Factory Pieces',factoryAmount:'Factory Value',factoryCurrency:'Factory Currency',factoryShipFrom:'Factory Shipment தொடக்கம்',factoryShipTo:'Factory Shipment முடிவு',ackDate:'Factory ஒப்புதல் தேதி',reviewer:'ஆதாரம் சரிபார்த்தவர்',reviewedOn:'சரிபார்த்த தேதி',title:'Purchase Order 360',lead:'ஆதாரத்துடன் PO Qty, Amendment, Acknowledgment, Reports',
+ ta:{journeyTitle:"PO-வின் ஏழு வேலைப் பகுதிகள்",journeyLead:"உண்மையான பகுதிகளை கற்பனை PO உதாரணத்தில் பாருங்கள். இது Save ஆகாது; Buyer/Factory approval அல்லது Shipment அல்ல.",journeyOpen:"Practice பகுதியைப் பார்",journeySummary:"PO Qty, Value மற்றும் பொருந்தாத கணக்கு.",journeyLines:"Style, Colour, Size, FOB மற்றும் Line Total.",journeyConfirmation:"Buyer PO-வையும் தனி Factory ஆதாரத்தையும் ஒப்பிடு.",journeyAmendments:"திருத்தங்கள் மற்றும் தேதியிட்ட ACK.",journeyShipments:"Shipment, Cancellation மற்றும் Ledger ஆதாரம்.",journeyRevisions:"மாற்றமுடியாத Source Revision ஒப்பீடு.",journeyReports:"Draft Reports மற்றும் Excel/PDF பகுதி.",refExport:'சரிபார்த்த PO Reference Download',refNotice:'கடைசி ஆதார Revision மட்டும் Export. Buyer approval அல்ல.',verifiedBy:'ஆதாரம் சரிபார்த்தவர்',verifiedAt:'சரிபார்த்த தேதி',sourceReviewed:'PO ஆவணத்தை தனியாக சரிபார்த்தேன்',confirmation:'Buyer / Factory ஒப்பீடு',confirmNote:'Factory கொடுத்த தனியான ஆதாரம் மட்டும். Buyer Approval அல்ல.',factoryQty:'Factory Pieces',factoryAmount:'Factory Value',factoryCurrency:'Factory Currency',factoryShipFrom:'Factory Shipment தொடக்கம்',factoryShipTo:'Factory Shipment முடிவு',ackDate:'Factory ஒப்புதல் தேதி',reviewer:'ஆதாரம் சரிபார்த்தவர்',reviewedOn:'சரிபார்த்த தேதி',title:'Purchase Order 360',lead:'ஆதாரத்துடன் PO Qty, Amendment, Acknowledgment, Reports',
  new:'புதிய PO',continue:'கடைசி PO திற',open:'Saved PO திற',practice:'Practice Example',save:'இப்போது Save',download:'Saved Copy Download',upload:'Saved Copy திற',
  report:'Report தயாரி',excel:'Excel Download',print:'Print / PDF',back:'எல்லா PO-களும்',summary:'சுருக்கம்',lines:'Style / Colour / Size',amendments:'PO திருத்தங்கள்',
  shipments:'Shipment & Cancellation',revisions:'Revision வரலாறு',reports:'Reports',add:'சேர்',edit:'திருத்து',remove:'நீக்கு',poNo:'PO நம்பர்',buyer:'Buyer',
@@ -460,7 +467,7 @@ const LANG={
  warning:'கைமுறையாகப் பதிவிட்ட ஒப்புதல் Buyer/Factory ஒப்புதல் உறுதி அல்ல.',noRows:'பதிவு இல்லை',
  latest:'கடைசி ஆதாரம்',change:'முந்தைய Version ஒப்பிடு',notApproved:'Local Draft; Buyer ஒப்புதல் அல்ல',
  note:'ஆதார குறிப்பு'},
- bn:{refExport:'পর্যালোচিত PO রেফারেন্স ডাউনলোড',refNotice:'শুধু আগের উৎসভিত্তিক সংস্করণ; ক্রেতার অনুমোদন নয়।',verifiedBy:'স্থানীয় পর্যালোচক',verifiedAt:'পর্যালোচনার তারিখ',sourceReviewed:'PO উৎস আলাদাভাবে যাচাই করেছি',confirmation:'ক্রেতা বনাম কারখানা',confirmNote:'কারখানার আলাদা লিখিত উৎস লাগবে। এটি ক্রেতার অনুমোদন নয়।',factoryQty:'কারখানার পিস',factoryAmount:'কারখানার মূল্য',factoryCurrency:'কারখানার মুদ্রা',factoryShipFrom:'শিপমেন্ট শুরু',factoryShipTo:'শিপমেন্ট শেষ',ackDate:'স্বীকৃতি তারিখ',reviewer:'স্থানীয় পর্যালোচক',reviewedOn:'পর্যালোচনা তারিখ',title:'পারচেজ অর্ডার ৩৬০',lead:'উৎসভিত্তিক PO, সংশোধন, স্বীকৃতি ও রিপোর্ট',
+ bn:{journeyTitle:"PO-এর সাতটি কাজের ধাপ",journeyLead:"প্রতিটি আসল অংশে কাল্পনিক PO দেখুন। এতে ক্রেতা/কারখানার অনুমোদন, শিপমেন্ট বা সেভড রেকর্ড তৈরি হয় না।",journeyOpen:"অনুশীলন দেখুন",journeySummary:"পরিমাণ, মূল্য ও উৎসের অমিল দেখুন।",journeyLines:"স্টাইল, রং, সাইজ ও উৎস FOB দেখুন।",journeyConfirmation:"ক্রেতা ও কারখানার আলাদা দলিল তুলনা করুন।",journeyAmendments:"সংশোধন ও তারিখসহ স্বীকৃতি দেখুন।",journeyShipments:"শিপমেন্ট, বাতিল ও লেজার উৎস দেখুন।",journeyRevisions:"পুরোনো উৎস সংস্করণ তুলনা করুন।",journeyReports:"খসড়া রিপোর্ট ও Excel/PDF দেখুন।",refExport:'পর্যালোচিত PO রেফারেন্স ডাউনলোড',refNotice:'শুধু আগের উৎসভিত্তিক সংস্করণ; ক্রেতার অনুমোদন নয়।',verifiedBy:'স্থানীয় পর্যালোচক',verifiedAt:'পর্যালোচনার তারিখ',sourceReviewed:'PO উৎস আলাদাভাবে যাচাই করেছি',confirmation:'ক্রেতা বনাম কারখানা',confirmNote:'কারখানার আলাদা লিখিত উৎস লাগবে। এটি ক্রেতার অনুমোদন নয়।',factoryQty:'কারখানার পিস',factoryAmount:'কারখানার মূল্য',factoryCurrency:'কারখানার মুদ্রা',factoryShipFrom:'শিপমেন্ট শুরু',factoryShipTo:'শিপমেন্ট শেষ',ackDate:'স্বীকৃতি তারিখ',reviewer:'স্থানীয় পর্যালোচক',reviewedOn:'পর্যালোচনা তারিখ',title:'পারচেজ অর্ডার ৩৬০',lead:'উৎসভিত্তিক PO, সংশোধন, স্বীকৃতি ও রিপোর্ট',
  new:'নতুন PO',continue:'শেষটি খুলুন',open:'সেভ PO খুলুন',practice:'অনুশীলন উদাহরণ',save:'এখন সেভ',download:'সেভ কপি ডাউনলোড',upload:'সেভ কপি খুলুন',
  report:'রিপোর্ট তৈরি',excel:'এক্সেল ডাউনলোড',print:'প্রিন্ট / PDF',back:'সব PO',summary:'সারাংশ',lines:'স্টাইল / রঙ / সাইজ',amendments:'সংশোধন',
  shipments:'শিপমেন্ট ও বাতিল',revisions:'সংস্করণ',reports:'রিপোর্ট',add:'যোগ',edit:'সম্পাদনা',remove:'সরান',poNo:'PO নম্বর',buyer:'ক্রেতা',
@@ -477,7 +484,7 @@ const LANG={
  noRules:'অনুমোদন/FOB/শিপমেন্ট অনুমান করা হয় না',
  warning:'স্থানীয়ভাবে লেখা স্বীকৃতি ক্রেতার নিশ্চিত অনুমোদন নয়',noRows:'কোনো এন্ট্রি নেই',
  latest:'শেষ দলিল',change:'সংস্করণ তুলনা',notApproved:'স্থানীয় খসড়া',note:'উৎস মন্তব্য'},
- hi:{refExport:'समीक्षित PO संदर्भ डाउनलोड',refNotice:'केवल पुराना दस्तावेज़-आधारित संस्करण; खरीदार मंजूरी नहीं।',verifiedBy:'स्थानीय समीक्षक',verifiedAt:'समीक्षा तिथि',sourceReviewed:'लिखित PO स्रोत स्वयं जांचा',confirmation:'खरीदार बनाम फैक्ट्री',confirmNote:'फैक्ट्री का अलग लिखित स्रोत आवश्यक है; यह खरीदार की मंजूरी नहीं है।',factoryQty:'फैक्ट्री पीस',factoryAmount:'फैक्ट्री मूल्य',factoryCurrency:'फैक्ट्री मुद्रा',factoryShipFrom:'शिपमेंट शुरू',factoryShipTo:'शिपमेंट अंत',ackDate:'स्वीकृति तिथि',reviewer:'स्थानीय समीक्षक',reviewedOn:'समीक्षा तारीख',title:'परचेज ऑर्डर 360',lead:'स्रोत आधारित PO, संशोधन, स्वीकृति और रिपोर्ट',
+ hi:{journeyTitle:"PO के सात कार्य चरण",journeyLead:"हर असली भाग में काल्पनिक PO देखें। खरीदार/फैक्ट्री मंजूरी, शिपमेंट या सेव रिकॉर्ड अपने आप नहीं बनते।",journeyOpen:"अभ्यास देखें",journeySummary:"स्रोत मात्रा, कीमत और अंतर देखें।",journeyLines:"स्टाइल, रंग, साइज और स्रोत FOB देखें।",journeyConfirmation:"खरीदार PO और अलग फैक्ट्री दस्तावेज़ तुलना।",journeyAmendments:"बदलाव और तारीख वाली स्वीकृति देखें।",journeyShipments:"शिपमेंट, रद्द और लेजर स्रोत देखें।",journeyRevisions:"पिछले स्रोत संस्करणों की तुलना।",journeyReports:"ड्राफ्ट रिपोर्ट और Excel/PDF खोलें।",refExport:'समीक्षित PO संदर्भ डाउनलोड',refNotice:'केवल पुराना दस्तावेज़-आधारित संस्करण; खरीदार मंजूरी नहीं।',verifiedBy:'स्थानीय समीक्षक',verifiedAt:'समीक्षा तिथि',sourceReviewed:'लिखित PO स्रोत स्वयं जांचा',confirmation:'खरीदार बनाम फैक्ट्री',confirmNote:'फैक्ट्री का अलग लिखित स्रोत आवश्यक है; यह खरीदार की मंजूरी नहीं है।',factoryQty:'फैक्ट्री पीस',factoryAmount:'फैक्ट्री मूल्य',factoryCurrency:'फैक्ट्री मुद्रा',factoryShipFrom:'शिपमेंट शुरू',factoryShipTo:'शिपमेंट अंत',ackDate:'स्वीकृति तिथि',reviewer:'स्थानीय समीक्षक',reviewedOn:'समीक्षा तारीख',title:'परचेज ऑर्डर 360',lead:'स्रोत आधारित PO, संशोधन, स्वीकृति और रिपोर्ट',
  new:'नया PO',continue:'पिछला खोलें',open:'सेव PO खोलें',practice:'अभ्यास उदाहरण',save:'अभी सेव',download:'सेव कॉपी डाउनलोड',upload:'सेव कॉपी खोलें',
  report:'रिपोर्ट बनाएं',excel:'एक्सेल डाउनलोड',print:'प्रिंट / PDF',back:'सभी PO',summary:'सारांश',lines:'स्टाइल / रंग / साइज',amendments:'संशोधन',
  shipments:'शिपमेंट / रद्द',revisions:'संस्करण',reports:'रिपोर्ट',add:'जोड़ें',edit:'बदलें',remove:'हटाएं',poNo:'PO नंबर',buyer:'खरीदार',
@@ -496,6 +503,7 @@ const LANG={
  latest:'अंतिम दस्तावेज़',change:'संस्करण तुलना',notApproved:'स्थानीय ड्राफ्ट',
  note:'स्रोत टिप्पणी'}
 };
+const PO_STAGES=Object.freeze(['summary','lines','confirmation','amendments','shipments','revisions','reports']);
 /** Application controller, browser UI state and shared VESA command delegation. */
 class PurchaseOrderWorkspace {
  constructor(){
@@ -570,6 +578,10 @@ class PurchaseOrderWorkspace {
  action(action,id){
   try{
    if(action==='home'||action==='open'){this.current=null;this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='preview'){
+    if(this.current||!PO_STAGES.includes(id))throw Error('Return to All POs and select a practice section.');
+    this.current=PurchaseOrderEngine.demo();this.section=id;this.dirty=false;this.render();return;
+   }
    if(action==='new')return this.form('new');
    if(action==='practice'){this.current=PurchaseOrderEngine.demo();this.section='summary';this.dirty=false;this.render();return;}
    if(action==='continue'){const list=this.store.list();if(!list.length)throw Error('No saved PO in this browser.');
@@ -613,6 +625,16 @@ class PurchaseOrderWorkspace {
   if(!global.confirm('Remove unsigned draft entry? Previous snapshots stay intact.'))return;
   this.update('Removed unsigned '+kind,p=>p[field]=p[field].filter(x=>x.id!==id));
  }
+ journey(t){
+  const cards=PO_STAGES.map((name,index)=>{
+   const hint='journey'+name.charAt(0).toUpperCase()+name.slice(1);
+   return '<article class="po-journey-card"><span class="po-journey-step">'+String(index+1).padStart(2,'0')+
+    '</span><h3>'+t(name)+'</h3><p>'+t(hint)+'</p><button class="po-btn" type="button" data-action="preview" data-id="'+esc(name)+
+    '" aria-label="'+t('journeyOpen')+' · '+t(name)+'">'+t('journeyOpen')+'</button></article>';
+  });
+  return '<section class="po-card" aria-labelledby="poJourneyTitle"><h2 id="poJourneyTitle">'+t('journeyTitle')+
+   '</h2><p class="po-note">'+t('journeyLead')+'</p><div class="po-journey">'+cards.join('')+'</div></section>';
+ }
  render(){
   const t=k=>esc(this.tr(k)),title='<section class="po-card"><h1>'+t('title')+
    '</h1><p class="po-note">'+t('lead')+'</p><p class="po-alert">'+esc(NOTICE)+'</p></section>';
@@ -626,11 +648,11 @@ class PurchaseOrderWorkspace {
     '<h2>'+t('open')+'</h2>'+(saved.length?saved.map(x=>'<div class="po-record"><span><b>'+esc(x.no)+
      '</b> · '+esc(x.buyer)+'<small>Revision '+esc(x.revision)+'</small></span>'+
      '<button class="po-btn" data-action="open-record" data-id="'+esc(x.id)+'">'+t('open')+'</button></div>').join(''):
-      '<p class="po-note">'+t('noRows')+'</p>')+'</section>';
+      '<p class="po-note">'+t('noRows')+'</p>')+'</section>'+this.journey(t);
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,analysis=PurchaseOrderEngine.validate(p),practice=p.mode==='practice',
-   names=['summary','lines','confirmation','amendments','shipments','revisions','reports'];
+   names=PO_STAGES;
   this.main.innerHTML=title+'<section class="po-card"><h2>'+esc(p.header.poNo)+' · '+esc(p.header.buyer)+
    '</h2><p class="po-note">'+esc(p.header.currency)+' · '+esc(p.header.incoterm)+
    ' · '+(practice?'SYNTHETIC PRACTICE':this.dirty?'Unsaved local draft':'Saved locally, not independently buyer-approved')+'</p>'+

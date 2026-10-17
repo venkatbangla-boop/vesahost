@@ -4,11 +4,15 @@ on:
   push:
     branches:
       - feature/purchase-order-360
+      - feature/po-g4-guided-workflow
+      - main
     paths:
       - 'apps/purchase-order/**'
       - '.github/workflows/purchase-order.yml'
       - 'js/app-catalogue.js'
       - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -53,5 +57,7 @@ jobs:
         if: always()
         with:
           name: po360-synthetic-browser
-          path: output/playwright/po-app04-*
+          path: |
+            output/playwright/po-app04-*
+            output/playwright/po-g4-*
           if-no-files-found: ignore
