@@ -39,6 +39,11 @@ jobs:
           node apps/tna/tests/g14-task-planning-date-revision.test.cjs
           node --check apps/tna/tests/g15-merchandising-export.test.cjs
           node apps/tna/tests/g15-merchandising-export.test.cjs
+          node --check apps/tna/service-worker.js
+          node --check apps/tna/src/offline-register.js
+          node --check apps/tna/tests/g16-offline-bundle.test.cjs
+          node --check apps/tna/tests/g16-offline-browser.cjs
+          node apps/tna/tests/g16-offline-bundle.test.cjs
           node apps/tna/tests/g02-domain.test.js
           node apps/tna/tests/g03-scheduling.test.js
           node apps/tna/tests/g05-storage.test.js
@@ -56,11 +61,12 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
           echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
-      - name: Real Chromium G13 to G15 local XLSX/PDF, former TNA locales and saved copies
+      - name: Real Chromium G13 to G16 local XLSX/PDF/offline, former TNA locales and saved copies
         shell: bash
         run: |
           set -euo pipefail
           node apps/tna/tests/g13-merchandising-sheet-browser.cjs
+          node apps/tna/tests/g16-offline-browser.cjs
           node apps/tna/tests/g11-unified-shell-browser.cjs
           node apps/tna/tests/g11-localization-accessibility.cjs
           node apps/tna/tests/g11-f06-order-master.cjs
@@ -69,5 +75,7 @@ jobs:
         if: always()
         with:
           name: tna-g13-m1-synthetic-chromium
-          path: output/playwright/tna-g13-merch-sheet-*
+          path: |
+            output/playwright/tna-g13-merch-sheet-*
+            output/playwright/tna-g16-*
           if-no-files-found: ignore
