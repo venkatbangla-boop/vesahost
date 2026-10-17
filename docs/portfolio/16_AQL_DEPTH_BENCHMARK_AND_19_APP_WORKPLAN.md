@@ -1,5 +1,19 @@
 # VESA 360 — AQL Depth Benchmark and 19-App Product Completion Plan
 
+## 2026-10-18 — G4-W1 PACKING / COMMISSION / TECH PACK LIVE, VERIFIED
+
+**Current verified application SHA:** `405143c6da61134313af90dfa26e069f7a05a779`. Three safe premium workflow upgrades are on `main` with real Node/Chromium, genuine original XLSX/PDF and saved-copy regression, sibling UI/engine checks and GitHub Pages SUCCESS: **Packing G4** `d3683c85` ([CI #39065169029](https://github.com/venkatbangla-boop/vesahost/actions/runs/39065169029), [Pages #39065168246](https://github.com/venkatbangla-boop/vesahost/actions/runs/39065168246)); **Commission G4** `09c96ff5` ([CI #39065702246](https://github.com/venkatbangla-boop/vesahost/actions/runs/39065702246), [Pages #39065701389](https://github.com/venkatbangla-boop/vesahost/actions/runs/39065701389)); **Tech Pack G4** `405143c6` ([CI #39066179944](https://github.com/venkatbangla-boop/vesahost/actions/runs/39066179944), [Pages #39066179493](https://github.com/venkatbangla-boop/vesahost/actions/runs/39066179493)).
+
+- Packing: eight genuine sections visible/open from Home as fictional practice, source math untouched.
+- Commission: ten genuine financial steps across three task groups; money/rates/contract versions untouched.
+- Tech Pack: six genuine sections plus **engine-calculated fictional S48/M50/L52 chest-flat/cm** diagram; buyer grading engine untouched.
+- All use EN/BN/HI/TA; 320/390/1440 Chromium screenshots independently inspected; print/XLSX and old saved copies preserved. **Original public homepage files never edited.**
+- Full results and exact rollback/next: `docs/portfolio/20_G4_W1_THREE_APP_PROOF_AND_NEXT.md`. Scope/depth benchmark: `docs/portfolio/16_AQL_DEPTH_BENCHMARK_AND_19_APP_WORKPLAN.md`. **Human UAT stays 1 PASS / 0 FAIL / 48 NOT TESTED.**
+- **EXACT NEXT when user says `Continue`: Costing 360 open-screen responsive feature audit using existing `apps/costing/tests/costing_real_e2e.py`, then smallest verified UI/report fix if proven. Do not reimplement Costing engine; next APP-13 Purchase Order; afterwards W2/W3/W4/G5. Check newest GitHub `main`/CI first. No ZIP reupload, no homepage work.**
+
+---
+
+
 ## 2026-10-18 — NEW G3-AQL PERFORMANCE VERIFICATION
 
 **Real tested lab:** [Chromium #39063920076 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063920076). Full raw 11,783,142-byte AQL HTML; 390px synthetic 4× CPU throttle two runs DOMContentLoaded 1,169–1,189ms, inspection-ready 1,779–1,832ms, 646–659ms of long tasks, ~58MB JS heap; 1440px 1× CPU two runs DOMContentLoaded 315–320ms, inspection-ready 544–572ms. Current inspected DOM has 2 image elements; 291 base64 PNGs in source may be consumed in other workflows and **MUST NOT be stripped without use-case map and PDF/offline parity**. This confirms measurable startup cost, not a production Pages/iOS speed grade. Exact proof/limits: `docs/ux/03_AQL_G3_MOBILE_LOAD_PROFILE.md`. **G3 AQL profiling is complete, optimization is CONDITIONAL** pending dependency map. **NEXT G4-W1 APP-01 Packing: show its eight already-built modules clearly and test complete guided practice click paths.** Main AQL engine source untouched.
