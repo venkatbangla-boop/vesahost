@@ -1,5 +1,15 @@
 # TNA 360 — Garment Merchandising Sheet Rework M0 Source Audit
 
+## 2026-10-17 — TNA G13 M1 MERCHANDISING SHEET VERIFIED ON FEATURE BRANCH
+
+**Verdict: M1 ACCEPTED for synthetic development/browser use, NOT live release.** Exact UI source `539ea4c6baf1244aaccc6cf2fc399c9ad4970f80` on `feature/tna-merchandising-sheet`; [Node + installed real Chromium + frozen TNA/PPM/AQL CI #39047831358 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39047831358), [synthetic screenshots artifact](https://github.com/venkatbangla-boop/vesahost/actions/runs/39047831358/artifacts/12106223721). Tests verify all applicable original knit/woven/denim tasks, exact separate source-only baseline/current/forecast/actual, eight honest filters using user-entered as-of, data escaping, no source mutation, existing controlled status+actual edit, Save/Reload/Open, EN/BN/HI/TA and 320/360/390/768/1024/1280/1440px no overflow, single VESA menu owner and zero external requests. Prior M1 #39047628528 Chromium FAIL at 320px overflow; diagnostic #39047734048 established the exact offending Tamil action card; final CSS-only mobile single-column repair `539ea4c6baf1244aaccc6cf2fc399c9ad4970f80` passed. No false historical pass claim. Node suite includes immutable old TNA calculation/storage/reports, canonical 15 blueprint hash, 49-row unchanged UAT, PPM/AQL and older demo guards.
+
+**Scope:** M1's new `apps/tna/src/merchandising-sheet.js`, feature-local index/controller/CSS/test/workflow; TNA domain/schedule/storage/reports, PPM/AQL, old SW/cache, previous live HTML, all personal demo files on `main`, original handover/blueprints unchanged. Sheets use source-only draft evidence; no buyer/bank/factory or real copyright/licensing UAT. Existing 49 human rows remain **1 PASS / 0 FAIL / 48 NOT TESTED**.
+
+**NEXT ACTION:** audited M2 controlled activity planning-date revision, supporting explicit source/reviewer/reason, unchanged baseline, actual and engine critical path; then separate workbook/print and offline/precache gate before even considering a public demo patch. First inspect `src/domain.js` `freezeBaseline` and `updateTaskStatus`, `src/bootstrap.js` Edit Activity and date/forms, tests and `src/storage.js` compatibility. Do not add a second schema or infer dates; status of this M2 step is NOT YET ACCEPTED. Preserve feature SHA and browser evidence. No fast-forward to `main` on M1.
+
+---
+
 ## 2026-10-17 — G13/M1 IMPLEMENTATION PATCH, INDEPENDENT CI PENDING
 
 **Base:** `main` `dae3aa42b5f24adc7805c7a67090e20916672dab`; development branch `feature/tna-merchandising-sheet`. Completed direct file-level audit of `apps/tna/index.html`, `src/bootstrap.js` event/list/show/edit handlers, `src/domain.js` task and order source fields, `src/scheduling.js` schedule function, `src/storage.js` migration keys, `src/reports.js`, existing responsive CSS, current knit/woven/denim and four-language browser tests. No application source changed on `main` by this patch.
