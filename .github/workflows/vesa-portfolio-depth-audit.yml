@@ -32,6 +32,6 @@ jobs:
         if: always()
         with:
           name: vesa-aql-versus-19-source-audit
-          path: output/portfolio-depth-audit/manifest.json
+          path: output/portfolio-depth-audit/
           if-no-files-found: error
           retention-days: 7
