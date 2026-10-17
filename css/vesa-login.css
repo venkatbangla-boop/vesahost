@@ -1,0 +1,418 @@
+/*
+ * VESA 360: Login only.
+ * No root-site selectors. Does not modify the company homepage, App Centre,
+ * admin pages or any authenticated app business/control styling.
+ * All actual login/session behavior remains owned by js/auth.js.
+ */
+.vesa-login-page,
+.vesa-login-page * { box-sizing:border-box; }
+html { scroll-behavior:auto; }
+.vesa-login-page {
+  margin:0;
+  min-height:100vh;
+  min-height:100dvh;
+  color:var(--vesa-text, #17263d);
+  background:var(--vesa-bg, #f3f6fa);
+  font:400 15px/1.5 var(--vesa-font-body, Inter, system-ui, -apple-system, "Segoe UI", sans-serif);
+  -webkit-font-smoothing:antialiased;
+}
+.vesa-login-page a { color:inherit; }
+.vesa-login-page button,
+.vesa-login-page input,
+.vesa-login-page select { font:inherit; }
+.vesa-login-page .auth-shell {
+  width:min(1190px, calc(100% - 44px));
+  min-width:0;
+  min-height:100vh;
+  min-height:100dvh;
+  margin:0 auto;
+  padding:clamp(18px, 2.4vw, 36px) 0;
+  display:grid;
+  grid-template-columns:minmax(0, 1.08fr) minmax(390px, .92fr);
+  gap:18px;
+  align-items:stretch;
+}
+.vesa-login-page .auth-shell > * { min-width:0; }
+
+/* Editorial left panel - static by design, no canvas/video/parallax. */
+.vesa-login-page .login-story {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  min-height:674px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:clamp(29px,4vw,52px);
+  border:1px solid #263d59;
+  border-radius:18px;
+  color:#f5f7fc;
+  background:linear-gradient(145deg,#0b1e37 0%,#132b49 55%,#0e253b 100%);
+}
+.vesa-login-page .login-story::before {
+  content:"";
+  pointer-events:none;
+  position:absolute;
+  z-index:-1;
+  right:-28%; bottom:-29%;
+  width:92%; aspect-ratio:1;
+  border-radius:50%;
+  border:1px solid rgba(235,211,165,.18);
+  box-shadow:0 0 0 60px rgba(235,211,165,.025),0 0 0 130px rgba(235,211,165,.02);
+}
+.vesa-login-page .login-story::after {
+  content:"";
+  pointer-events:none;
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  opacity:.36;
+  background-image:linear-gradient(90deg,transparent 98%,rgba(255,255,255,.06) 100%);
+  background-size:56px 56px;
+  mask-image:linear-gradient(to bottom,transparent 10%,#000 100%);
+}
+.vesa-login-page .login-story__top,
+.vesa-login-page .login-story__foot {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+}
+.vesa-login-page .login-story__top {
+  color:#eff4fa;
+  font-size:.83rem;
+  font-weight:720;
+  letter-spacing:.13em;
+}
+.vesa-login-page .login-story__mark span { color:#d8bd88; }
+.vesa-login-page .login-story__descriptor {
+  color:#becbd9;
+  font-size:.68rem;
+  letter-spacing:.14em;
+  text-align:right;
+  font-weight:700;
+}
+.vesa-login-page .login-story__copy { max-width:495px;padding:42px 0 64px; }
+.vesa-login-page .login-story__eyebrow {
+  display:inline-block;
+  margin-bottom:21px;
+  color:#e4c994;
+  font-size:.72rem;
+  font-weight:780;
+  line-height:1.5;
+  letter-spacing:.16em;
+}
+.vesa-login-page .login-story__copy h2 {
+  margin:0 0 22px;
+  font:740 clamp(2.75rem,3.8vw,4.25rem)/1.06 var(--vesa-font-heading, var(--vesa-font-body));
+  letter-spacing:-.055em;
+  color:#fff;
+  text-wrap:balance;
+}
+.vesa-login-page .login-story__copy p {
+  margin:0;
+  max-width:450px;
+  color:#c7d2df;
+  font-size:1.01rem;
+  line-height:1.75;
+}
+.vesa-login-page .login-story__foot {
+  padding-top:21px;
+  border-top:1px solid rgba(233,240,249,.22);
+  align-items:flex-start;
+  gap:13px;
+}
+.vesa-login-page .login-story__capability {
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:.76rem;
+  line-height:1.5;
+  color:#e1e8f2;
+  font-weight:650;
+}
+.vesa-login-page .login-story__number {
+  display:block;
+  color:#bca576;
+  font:690 .75rem/1.2 var(--vesa-font-body);
+  letter-spacing:.08em;
+}
+
+/* Focused, high-quality sign-in pane. */
+.vesa-login-page .auth-card {
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  min-width:0;
+  min-height:674px;
+  padding:clamp(26px,3.5vw,45px);
+  border:1px solid var(--vesa-border, #cbd6e4);
+  border-radius:14px;
+  color:var(--vesa-text,#17263d);
+  background:var(--vesa-surface,#fff);
+  box-shadow:0 9px 38px rgba(10,30,55,.055);
+}
+.vesa-login-page .auth-card__top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.vesa-login-page .auth-logo { display:inline-flex;flex:0 0 auto;align-items:center; }
+.vesa-login-page .auth-logo img {
+  display:block;
+  width:150px;
+  max-width:100%;
+  max-height:55px;
+  object-fit:contain;
+}
+[data-dark="true"] .vesa-login-page .auth-logo img,
+.vesa-login-page[data-dark="true"] .auth-logo img { filter:invert(1) brightness(1.15); }
+.vesa-login-page .login-availability {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  flex:0 0 auto;
+  min-height:28px;
+  padding:5px 9px;
+  border:1px solid var(--vesa-border,#cbd6e4);
+  border-radius:100px;
+  color:var(--vesa-muted,#526176);
+  font-size:.70rem;
+  font-weight:760;
+  line-height:1.25;
+}
+.vesa-login-page .login-availability__dot {
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#23805e;
+}
+.vesa-login-page .login-welcome { margin:36px 0 22px; }
+.vesa-login-page .login-welcome__eyebrow {
+  display:block;
+  margin-bottom:10px;
+  color:var(--vesa-muted,#526176);
+  font-size:.7rem;
+  line-height:1.45;
+  font-weight:800;
+  letter-spacing:.135em;
+}
+.vesa-login-page .login-welcome h1 {
+  margin:0;
+  font:770 clamp(2rem,2.75vw,2.65rem)/1.12 var(--vesa-font-heading,var(--vesa-font-body));
+  letter-spacing:-.044em;
+  color:var(--vesa-text,#17263d);
+  text-wrap:balance;
+}
+.vesa-login-page .login-welcome p {
+  margin:12px 0 0;
+  color:var(--vesa-muted,#526176);
+  font-size:.93rem;
+  line-height:1.6;
+}
+/* The public/demo account is explicit so login requires zero guesswork. */
+.vesa-login-page .login-demo {
+  padding:16px 17px 14px;
+  background:var(--vesa-surface-soft,#eef3f9);
+  border:1px solid var(--vesa-border,#cbd6e4);
+  border-radius:12px;
+}
+.vesa-login-page .login-demo__heading {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:.70rem;
+  letter-spacing:.12em;
+  color:var(--vesa-text,#17263d);
+}
+.vesa-login-page .login-demo__icon { color:#23805e;font-size:11px;line-height:1; }
+.vesa-login-page .login-demo__values {
+  margin:15px 0 8px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,.68fr);
+  gap:11px;
+}
+.vesa-login-page .login-demo__values > div { min-width:0; }
+.vesa-login-page .login-demo dt {
+  margin-bottom:4px;
+  font-size:.73rem;
+  font-weight:690;
+  color:var(--vesa-muted,#526176);
+}
+.vesa-login-page .login-demo dd {
+  margin:0;
+  color:var(--vesa-text,#17263d);
+  font-size:.95rem;
+  font-weight:800;
+  letter-spacing:-.015em;
+  overflow-wrap:anywhere;
+  font-variant-ligatures:none;
+}
+.vesa-login-page .login-demo p {
+  margin:7px 0 0;
+  color:var(--vesa-muted,#526176);
+  font-size:.78rem;
+  line-height:1.48;
+}
+.vesa-login-page .auth-form { display:grid; gap:8px; margin:23px 0 0; }
+.vesa-login-page .auth-form label {
+  display:block;
+  font-size:.85rem;
+  font-weight:800;
+  color:var(--vesa-text,#17263d);
+}
+.vesa-login-page .auth-form label:not(:first-child){margin-top:5px}
+.vesa-login-page .input,
+.vesa-login-page .password-toggle {
+  width:100%;
+  min-width:0;
+  min-height:48px;
+  padding:11px 14px;
+  border:1px solid var(--vesa-border,#cbd6e4);
+  border-radius:10px;
+  background:var(--vesa-field,#fff);
+  color:var(--vesa-text,#17263d);
+  font-size:.94rem;
+  font-weight:570;
+  line-height:1.4;
+  outline:none;
+}
+.vesa-login-page .input:focus {
+  border-color:var(--vesa-action,#244fd6);
+  outline:2px solid var(--vesa-focus,#7ea6ff);
+  outline-offset:2px;
+}
+.vesa-login-page .password-control {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+}
+.vesa-login-page .password-toggle {
+  width:auto;
+  min-width:78px;
+  padding:10px 12px;
+  cursor:pointer;
+  background:var(--vesa-surface-soft,#eef3f9);
+  font-size:.83rem;
+  font-weight:750;
+}
+.vesa-login-page .btn.primary.login-submit {
+  margin-top:13px;
+  width:100%;
+  min-height:50px;
+  border:1px solid var(--vesa-action,#244fd6);
+  border-radius:10px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:12px 18px;
+  background:var(--vesa-action,#244fd6);
+  color:var(--vesa-action-text,#fff);
+  font-size:.93rem;
+  line-height:1.3;
+  font-weight:800;
+  cursor:pointer;
+  text-align:left;
+  box-shadow:none;
+  transition:filter .15s ease, transform .15s ease;
+}
+.vesa-login-page .login-submit__arrow { font-size:1.15rem;font-weight:500;line-height:1; }
+.vesa-login-page .login-submit:hover:not(:disabled) { filter:brightness(.95); transform:translateY(-1px); }
+.vesa-login-page .login-submit:disabled { opacity:.66;cursor:wait; }
+.vesa-login-page :where(button,a,input,select):focus-visible {
+  outline:3px solid var(--vesa-focus,#c8a33a);
+  outline-offset:3px;
+}
+.vesa-login-page .auth-message {
+  min-height:18px;
+  margin:9px 0 0;
+  color:var(--vesa-muted,#526176);
+  font-size:.82rem;
+  line-height:1.5;
+  font-weight:680;
+}
+.vesa-login-page .auth-message.bad { color:#b3272c; }
+[data-dark="true"] .vesa-login-page .auth-message.bad { color:#ff9e9e; }
+.vesa-login-page .login-preferences {
+  margin-top:auto;
+  padding-top:18px;
+  border-top:1px solid var(--vesa-border,#cbd6e4);
+}
+.vesa-login-page .login-preferences__heading {
+  margin-bottom:8px;
+  color:var(--vesa-muted,#526176);
+  font-size:.72rem;
+  line-height:1.4;
+  font-weight:770;
+}
+.vesa-login-page .vesa-pref-controls {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:10px;
+}
+.vesa-login-page .vesa-pref-controls label {
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width:0;
+  color:var(--vesa-text,#17263d);
+  font-size:.75rem;
+  font-weight:680;
+}
+.vesa-login-page .vesa-pref-controls select {
+  width:100%;
+  min-width:0;
+  min-height:44px;
+  padding:9px 12px;
+  border-radius:9px;
+  color:var(--vesa-text,#17263d);
+  background:var(--vesa-field,#fff);
+  border:1px solid var(--vesa-border,#cbd6e4);
+  font-size:.81rem;
+}
+.vesa-login-page .login-privacy {
+  margin:15px 0 0;
+  color:var(--vesa-muted,#526176);
+  font-size:.73rem;
+  line-height:1.5;
+}
+@media(max-width:900px) {
+  .vesa-login-page .auth-shell {
+    width:min(548px,calc(100% - 32px));
+    min-height:100dvh;
+    grid-template-columns:minmax(0,1fr);
+    padding:18px 0;
+  }
+  .vesa-login-page .login-story {display:none;}
+  .vesa-login-page .auth-card {min-height:0;padding:clamp(23px,4vw,36px);}
+  .vesa-login-page .login-welcome {margin:30px 0 18px;}
+}
+@media(max-width:480px) {
+  .vesa-login-page .auth-shell {width:calc(100% - 20px);padding:10px 0;}
+  .vesa-login-page .auth-card {padding:23px 19px 21px;border-radius:14px;}
+  .vesa-login-page .auth-logo img {width:128px;}
+  .vesa-login-page .login-availability {font-size:.64rem;min-height:26px;}
+  .vesa-login-page .login-welcome {margin:27px 0 17px;}
+  .vesa-login-page .login-welcome h1 {font-size:2rem;}
+  .vesa-login-page .login-demo {padding:14px;}
+  .vesa-login-page .login-demo__values {gap:8px;}
+  .vesa-login-page .login-preferences {padding-top:13px;}
+}
+@media(max-width:345px) {
+  .vesa-login-page .auth-card__top {align-items:flex-start;}
+  .vesa-login-page .auth-logo img {width:115px;}
+  .vesa-login-page .login-availability {font-size:.60rem;max-width:125px;}
+  .vesa-login-page .login-welcome h1 {font-size:1.82rem;}
+  .vesa-login-page .login-demo__values {grid-template-columns:1fr 1fr;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .vesa-login-page *,
+  .vesa-login-page *::before,
+  .vesa-login-page *::after {transition-duration:0s!important;animation-duration:0s!important;}
+  .vesa-login-page .vesa-skip-link {transition-duration:0s!important;}
+}
