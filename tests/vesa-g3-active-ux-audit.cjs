@@ -111,6 +111,29 @@ async function runTNA(page,size){
  }
  await page.locator('#tnaWizard button[type=submit]').click();
  await page.locator('#tnaMerchSheet [data-tna-sheet-task]').first().waitFor({state:'attached',timeout:30000});
+ const active=await page.evaluate(()=>{
+  const main=document.getElementById('tnaMain'),
+    grid=main.querySelector('.tna-grid'),
+    panel=main.querySelector('.tna-plan-panel'),
+    sheet=document.getElementById('tnaMerchSheet'),
+    hero=main.querySelector('.tna-hero');
+  return {
+   heroDisplay:getComputedStyle(hero).display,
+   flow:getComputedStyle(main).display,
+   planTop:Math.round(panel.getBoundingClientRect().top),
+   sheetTop:Math.round(sheet.getBoundingClientRect().top),
+   actions:grid.querySelectorAll('[data-action]').length,
+   toolbarClientWidth:grid.clientWidth,
+   toolbarScrollWidth:grid.scrollWidth,
+   minActionHeight:Math.round(Math.min(...[...grid.querySelectorAll('[data-action]')].map(el=>el.getBoundingClientRect().height))),
+   pageWidth:document.documentElement.scrollWidth,
+   width:innerWidth
+  };
+ });
+ console.log('G3_TNA_ACTIVE_GEOMETRY '+JSON.stringify({viewport:size.name,...active}));
+ if(active.heroDisplay!=='none'||active.flow!=='flex'||active.planTop>300||
+    active.sheetTop>950||active.actions!==8||active.minActionHeight<44||
+    active.pageWidth>active.width+1)throw Error('Active TNA workbench geometry failed: '+JSON.stringify(active));
  await visit(page,'tna','master-sheet',size);
  await page.locator('#tnaMerchSheet [data-edit-task-dates]').first().click();
  await page.locator('#tnaPlanningDateForm').waitFor({state:'visible'});
