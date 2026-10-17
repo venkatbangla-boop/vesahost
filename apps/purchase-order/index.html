@@ -111,7 +111,7 @@ class PurchaseOrderEngine {
      rounding:trim(seed.rounding),declaredQty:seed.declaredQty??null,
      declaredAmount:trim(seed.declaredAmount),ledgerComplete:false,ledgerSource:'',manualReference:null,
      packingInstructionRef:'',sizeRatioRef:''},
-    lines:[],cancelled:[],shipments:[],amendments:[],acknowledgments:[],revisions:[],audit:[]};
+    lines:[],cancelled:[],shipments:[],amendments:[],acknowledgments:[],revisions:[],audit:[],factoryConfirmation:null};
  }
  static demo(){
   const p=this.create({poNo:'DEMO-PO',buyer:'SYNTHETIC BUYER',issuer:'SYNTHETIC MERCHANDISER',
@@ -210,9 +210,32 @@ class PurchaseOrderEngine {
     errors.push('Factory/buyer acknowledgment needs matching amendment, actor, source and date.');
   }
   if(h.ledgerComplete&&!trim(h.ledgerSource))errors.push('Complete shipment ledger requires explicit reviewed source evidence.');
+  // A separate factory statement never follows automatically from amendment
+  // acknowledgement or the buyer-signed order.
+  const fc=p.factoryConfirmation??null;
+  if(fc!==null&&(!Number.isSafeInteger(fc.quantity)||fc.quantity<0||fc.quantity>1000000000||
+     this.parse(fc.amount,2,true)===null||!this.currency(fc.currency)||
+     !this.date(fc.shipFrom)||!this.date(fc.shipToDate)||fc.shipFrom>fc.shipToDate||
+     !trim(fc.sourceRef)||!trim(fc.documentRef)||!trim(fc.acknowledgedBy)||
+     !this.date(fc.acknowledgedOn)||!trim(fc.reviewedBy)||!this.date(fc.reviewedOn)))
+    errors.push('Factory statement needs its own documented quantity, value, currency, window, acknowledgment and reviewer.');
+  const comparable=fc!==null&&fc.currency===h.currency&&this.currency(fc.currency);
+  const factoryComparison=[
+   {field:'Total pieces',buyer:h.declaredQty??null,factory:fc?.quantity??null,
+     difference:fc&&Number.isSafeInteger(h.declaredQty)?fc.quantity-h.declaredQty:null},
+   {field:'PO value',buyer:h.declaredAmount||null,factory:fc?.amount??null,
+     difference:comparable&&declaredCents!==null&&this.parse(fc.amount,2,true)!==null?
+      this.money(this.parse(fc.amount,2,true)-declaredCents):null},
+   {field:'Currency',buyer:h.currency,factory:fc?.currency??null,
+     difference:fc?(comparable?'Same currency':'Different currencies; no implied FX'):null},
+   {field:'Shipment from',buyer:h.shipFrom,factory:fc?.shipFrom??null,
+     difference:fc?(h.shipFrom===fc.shipFrom?'Matches':'Dates differ'):null},
+   {field:'Shipment to',buyer:h.shipToDate,factory:fc?.shipToDate??null,
+     difference:fc?(h.shipToDate===fc.shipToDate?'Matches':'Dates differ'):null}
+  ];
   return {ok:errors.length===0,errors,notes,controlReconciled:quantityReconciled&&amountReconciled,
     quantity,amount:this.money(amount),amountCents:amount,
-    currency:h.currency,
+    currency:h.currency,factoryComparison,
     balances:p.lines.map(line=>{
      const canc=cancelled.get(line.id)||0,ship=shipped.get(line.id)||0;
      return {lineId:line.id,style:line.style,color:line.color,size:line.size,
@@ -291,6 +314,18 @@ class PurchaseOrderReport {
    'Acknowledgements':[['Amendment','Acknowledged by','Date','Evidence'],
     ...p.acknowledgments.map(a=>[p.amendments.find(x=>x.id===a.amendmentId)?.reason||a.amendmentId,
      a.actor,a.date,a.sourceRef])],
+   'Buyer vs Factory Confirmation':[['Check','Buyer PO document','Factory statement','Difference / status','Separate factory evidence'],
+     ...analysis.factoryComparison.map(row=>[row.field,row.buyer??'Needs Information',
+       row.factory??'Needs Information',row.difference??'Needs Information',
+       p.factoryConfirmation?.sourceRef||'Needs Information']),
+     ['Factory acknowledgment actor','Buyer approval not inferred',
+       p.factoryConfirmation?.acknowledgedBy||'Needs Information',
+       p.factoryConfirmation?.acknowledgedOn||'Needs Information',
+       p.factoryConfirmation?.documentRef||'Needs Information'],
+     ['Local source reviewer','Not independently authenticated',
+       p.factoryConfirmation?.reviewedBy||'Needs Information',
+       p.factoryConfirmation?.reviewedOn||'Needs Information',
+       p.factoryConfirmation?.sourceRef||'Needs Information']],
    'PO Version Comparison':[['Changed field','Previous recorded revision','Current draft'],
     ...changes.map(x=>[x.field,JSON.stringify(x.previous),JSON.stringify(x.current)])],
    'Source Revisions':[['Revision','Authority on source','Effective date','Document source','Local record at'],

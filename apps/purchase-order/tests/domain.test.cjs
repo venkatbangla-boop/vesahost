@@ -96,7 +96,28 @@ class PurchaseOrderDomainProof{
   assert.equal(memory.get(store.key),originalStore,'Malformed copy must not replace local PO.');
   const sheets=R.sheets(p,E.validate(p),E.compare(p,p.revisions[0]));
   assert.deepEqual(Object.keys(sheets),['PO Summary','Style Colour Size','PO Balance','Amendment Register',
-    'Acknowledgements','PO Version Comparison','Source Revisions','Manual Shipment Sources']);
+    'Acknowledgements','Buyer vs Factory Confirmation','PO Version Comparison','Source Revisions','Manual Shipment Sources']);
+  assert.equal(E.validate(demo).factoryComparison[0].factory,null);
+  const separate=JSON.parse(copy);
+  separate.factoryConfirmation={quantity:58,amount:'164.00',currency:'USD',
+    shipFrom:'2026-10-22',shipToDate:'2026-11-10',acknowledgedBy:'SYNTHETIC FACTORY',
+    acknowledgedOn:'2026-10-17',documentRef:'SYNTHETIC FACTORY ACK',
+    sourceRef:'SYNTHETIC FACTORY STATEMENT',reviewedBy:'SYNTHETIC REVIEWER',reviewedOn:'2026-10-17'};
+  const result=E.validate(separate);
+  assert.equal(result.ok,true,result.errors.join('; '));
+  assert.equal(result.factoryComparison[0].difference,-2);
+  assert.equal(result.factoryComparison[1].difference,'-1.00');
+  assert.equal(result.factoryComparison[3].difference,'Dates differ');
+  const missing=JSON.parse(JSON.stringify(separate));missing.factoryConfirmation.sourceRef='';
+  assert.equal(E.validate(missing).ok,false,'Factory statement must have a distinct source.');
+  const differentCurrency=JSON.parse(JSON.stringify(separate));
+  differentCurrency.factoryConfirmation.currency='EUR';
+  assert.equal(E.validate(differentCurrency).factoryComparison[1].difference,null,
+    'Different factory currency is not automatically converted.');
+  const factorySheet=R.sheets(separate,result,[])['Buyer vs Factory Confirmation'];
+  assert.equal(factorySheet[1][3],-2);assert.equal(factorySheet[2][3],'-1.00');
+  const legacy=JSON.parse(copy);delete legacy.factoryConfirmation;
+  assert.equal(E.validate(legacy).ok,true,'Previous saved PO versions remain supported.');
   const numeric=R.excelRows('Style Colour Size',sheets['Style Colour Size']);
   assert.equal(numeric[1][4],40);assert.equal(numeric[1][5],2.5);assert.equal(numeric[1][6],100);
   assert.equal(R.excelRows('PO Summary',[['Field','Value'],['PO Number','=FAKE']])[1][1],"'=FAKE");

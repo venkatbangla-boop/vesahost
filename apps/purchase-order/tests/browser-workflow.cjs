@@ -113,7 +113,7 @@ class PurchaseOrderBrowserProof{
     await dl.saveAs(excelPath);
     const book=XLSX.read(fs.readFileSync(excelPath),{type:'buffer'});
     assert.deepEqual(book.SheetNames,['PO Summary','Style Colour Size','PO Balance','Amendment Register',
-      'Acknowledgements','PO Version Comparison','Source Revisions','Manual Shipment Sources']);
+      'Acknowledgements','Buyer vs Factory Confirmation','PO Version Comparison','Source Revisions','Manual Shipment Sources']);
     assert.equal(book.Sheets['Style Colour Size'].E2.t,'n');
     assert.equal(book.Sheets['Style Colour Size'].E2.v,40);
     assert.equal(book.Sheets['Style Colour Size'].F2.v,2.5);
