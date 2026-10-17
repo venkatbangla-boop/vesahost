@@ -29,7 +29,13 @@ async function run(){
  const rows=()=>page.evaluate(()=>{const k=Object.keys(localStorage).find(x=>x.startsWith('vesa.factory-vendor.records.v1.'));return k?JSON.parse(localStorage.getItem(k)).records:[];});
  try{
   fs.mkdirSync(out,{recursive:true});
-  await page.goto(host+'/apps/factory-vendor/',{waitUntil:'domcontentloaded'});
+  await page.goto(host+'/apps/',{waitUntil:'domcontentloaded'});
+  const route=page.locator('#appCatalogue a[href="/apps/factory-vendor/"]');
+  await route.waitFor({timeout:12000});
+  assert.equal(await route.count(),1,'One exact Factory App Centre card');
+  assert.match(await route.innerText(),/Factory.*Vendor/i);
+  await route.click();
+  assert(page.url().endsWith('/apps/factory-vendor/'),'App Centre must open the Factory workspace');
   await page.locator('[data-action="new"]').waitFor({timeout:12000});
   assert.equal(await page.locator('.vesa-workspace').count(),1,'Only one VESA shared shell');
   assert.equal(await page.locator('[data-vesa-menu]').count(),6,'Six global menus in one header');
