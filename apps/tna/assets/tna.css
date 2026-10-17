@@ -96,6 +96,7 @@ body.tna-has-active-order .tna-action-card p{display:none}
  .tna-merch-header{flex-wrap:wrap}
 }
 @media(max-width:420px){
+ body.tna-has-active-order .tna-grid{grid-template-columns:minmax(0,1fr)}
  .tna-merch-sheet{padding:8px}
  .tna-merch-order{gap:5px}
  .tna-merch-field{padding:7px}
