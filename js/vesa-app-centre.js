@@ -167,7 +167,7 @@ class VesaAppCentreExplorer {
     '<div class="app-group-heading"><h2 id="app-group-'+escape(group.id)+'">'+escape(heading)+
     '</h2><span>'+chosen.length+'</span></div><div class="app-grid">'+chosen.map(app=>{
      const name=app.name.replace(/^VESA\s+/i,'');
-     const open=copy.open;
+     const open=global.VesaPrefs?.label?.(app.openLabelKey)||copy.open;
      return '<article class="app-tile" data-app-id="'+escape(app.id)+'">'+
       '<div class="app-tile-head"><span class="app-tile-short">'+escape(app.shortName)+'</span></div>'+
       '<h3 title="'+escape(app.name)+'">'+escape(name)+'</h3>'+
