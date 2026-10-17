@@ -114,7 +114,21 @@ class PurchaseOrderBrowserProof{
     await act('meta');
     await enter({packingInstructionRef:'SYNTHETIC REVISED PACK REF'});await submit();
     p=(await records())[0];assert.equal(JSON.stringify(p.revisions[0]),frozen);
-    await act('revisions');assert.match(await page.locator('.po-card').last().innerText(),/Previous source retained/);
+    await act('revisions');
+    const referenceEvent=page.waitForEvent('download');
+    await act('export-reference');
+    await enter({verifiedBy:'SYNTHETIC SOURCE REVIEWER',verifiedAt:'2026-10-20'});
+    await page.locator('#poDialog [name=sourceReviewed]').check();await submit();
+    const reviewFile=path.join(output,'po-app04-reviewed-reference.json');
+    fs.mkdirSync(output,{recursive:true});
+    await (await referenceEvent).saveAs(reviewFile);
+    const ref=JSON.parse(fs.readFileSync(reviewFile,'utf8'));
+    assert.deepEqual(Object.keys(ref),['sourceApp','recordType','recordId','revisionId','sourceDate',
+      'verifiedBy','verifiedAt','displaySnapshot']);
+    assert.equal(ref.displaySnapshot.totalPieces,60);
+    assert.equal(ref.displaySnapshot.totalAmount,'165.00');
+    assert.equal(ref.displaySnapshot.sourceLines[0].quantity,40);
+    assert.equal(ref.displaySnapshot.localReviewOnly,true);
     await page.reload({waitUntil:'domcontentloaded'});await act('continue');
     p=(await records())[0];assert.equal(p.header.packingInstructionRef,'SYNTHETIC REVISED PACK REF');
     await act('reports');
