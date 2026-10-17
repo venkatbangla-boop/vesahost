@@ -1,0 +1,63 @@
+# Isolated premium Login proof. No website homepage/runtime/source changes.
+name: VESA Premium Login and Workspace regression
+on:
+  push:
+    branches:
+      - feature/premium-responsive-ux-baseline
+      - main
+    paths:
+      - 'login/**'
+      - 'css/vesa-login.css'
+      - 'service-worker.js'
+      - 'tests/vesa-premium-login.cjs'
+      - 'tests/personal-demo-release.cjs'
+      - '.github/workflows/vesa-premium-login.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  login-ux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate frozen source and login regression contracts
+        run: |
+          set -euo pipefail
+          node --check tests/vesa-premium-login.cjs
+          node --check service-worker.js
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          git diff --check HEAD~1 HEAD
+      - name: Install Chromium and WebKit browser engines
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium webkit
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Real browser premium Login and sibling UI journeys
+        run: |
+          set -euo pipefail
+          node tests/vesa-premium-login.cjs
+          node tests/vesa-platform-pages.cjs
+          node tests/vesa-uniform-experience.cjs
+          node tests/vesa-accessibility.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-premium-login-browser-screenshots
+          path: |
+            output/playwright/premium-login/
+            output/playwright/vesa-platform-login-*.png
+            output/playwright/vesa-uniform-login-*.png
+            output/playwright/vesa-accessibility-login-*.png
+          if-no-files-found: ignore
+          retention-days: 7
