@@ -1,5 +1,16 @@
 # 06 — TNA 360 Continuity, Execution Ledger, Full-Scope Checklist & Acceptance
 
+## 2026-10-17 — 19-App Closeout Audit Cross-Reference (Documentation Only)
+
+**Audit report:** [docs/portfolio/14_FULL_REPO_CLOSEOUT_AUDIT.md](../portfolio/14_FULL_REPO_CLOSEOUT_AUDIT.md) in `feature/portfolio-closeout-audit`. Current accepted feature-only G17 runtime `d7806dcadfcc9af4dde77c21f7826614da2a22e7`, active G17 branch documentation checkpoint `0b1012a9b8a6133f8734a0b6cead5c79103c3a35`, [real Chromium/four-language/Excel/PDF/offline CI #39051371084 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39051371084), [newer documentation-head CI #39051576668 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39051576668). `main=e6552065452dddb90734ab3b5f1115b5a2a798dc` publishes **prior TNA only**, with [Pages #39051647514 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39051647514). This cross-reference **does not alter the active G17 development-branch tracker or runtime**; read the current tracker from `feature/tna-merchandising-sheet` before any TNA implementation.
+
+**Current gates:** TNA G13–G17 technically verified **in development only**; TNA human UAT 0 PASS / 0 FAIL / 12 NOT TESTED; full 49-case baseline remains **1 PASS / 0 FAIL / 48 NOT TESTED**. Corporate-domain personal-noncommercial Pages eligibility unconfirmed; no business/buyer/factory signoff or server-side secure identity. **PUBLIC TNA G17 RELEASE HOLD.** Do not merge feature runtime into `main`, change CPM/baselines, rewrite PPM/AQL or invent approval.
+
+**Exact next action:** Named merchandiser performs UAT-TNA-01..12 with source SHA, synthetic data, device/browser and evidence; release authority separately documents noncommercial showcase eligibility. Engineering may read-only compare historic TNA branches and should modify code only for a freshly reproduced, file-audited defect with Node/real Chromium/sibling proof. Original fifteen demo apps remain frozen. This checkpoint itself changes only documentation and supplies **no new automated browser PASS**.
+
+---
+
+
 **THIS FILE IS THE RESUMPTION SOURCE OF TRUTH FOR VS CODE CODEX.** Keep it in Git. Reconcile it with real code/commits/tests before advancing; do not mark boxes from confidence or narrative alone.
 
 **Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` governs platform choices. Hosted backend/identity/database/object storage, remote multiuser synchronization and external notification delivery are `DEFERRED_BY_SCOPE`, not failed or accepted. Local planning, references, in-app alerts, saved-copy safety and regression work remain active.
