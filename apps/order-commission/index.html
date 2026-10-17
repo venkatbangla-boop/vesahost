@@ -632,8 +632,24 @@ class CommissionWorkspace{
  }
  render(){
   const l=k=>esc(this.tr(k)),list=this.store.list();
+  const language=global.VesaPrefs?.read?.()?.language||'en';
+  const workCopy=COMMISSION_DESK_COPY[language]||COMMISSION_DESK_COPY.en;
   const title='<section class="com-card"><h1>'+l('title')+'</h1><p class="com-muted">'+l('subtitle')+'</p>'+
-    '<p class="com-muted">'+l('privacy')+' · '+l('draft')+'</p><p class="com-warning" role="note"><b>NON-COMMERCIAL PERSONAL DEMO.</b> Synthetic records only. Never enter actual commissions, contracts, bank information, buyer records or passwords. Browser login is not secure authentication; financial settlement is not certified.</p></section>';
+    '<p class="com-muted">'+l('privacy')+' · '+l('draft')+'</p>'+
+    '<details class="com-local-info"><summary>'+esc(workCopy.note)+'</summary>'+
+    '<p role="note"><b>NON-COMMERCIAL PERSONAL DEMO.</b> Synthetic records only. Never enter actual commissions, contracts, bank information, buyer records or passwords. Browser login is not secure authentication; financial settlement is not certified.</p></details></section>';
+  let stepNumber=0;
+  const desk='<section class="com-card com-desk com-hide-print" aria-labelledby="commissionWorkTitle">'+
+    '<header class="com-desk-head"><div><span class="com-desk-kicker">'+esc(workCopy.kicker)+'</span>'+
+    '<h2 id="commissionWorkTitle">'+esc(workCopy.title)+'</h2><p>'+esc(workCopy.lead)+'</p></div></header>'+
+    '<div class="com-desk-lanes">'+COMMISSION_DESK_LANES.map((items,g)=>
+      '<section class="com-desk-lane" aria-label="'+esc(workCopy.lanes[g])+'">'+
+      '<div class="com-desk-lane-title"><span class="com-desk-lane-id">0'+(g+1)+'</span><h3>'+
+      esc(workCopy.lanes[g])+'</h3></div><ol class="com-desk-list">'+
+      items.map(([id,label])=>'<li><button type="button" class="com-desk-step" data-action="preview-'+esc(id)+'">'+
+        '<span class="com-desk-step-num">'+String(++stepNumber).padStart(2,'0')+'</span>'+
+        '<span class="com-desk-step-label">'+l(label)+'</span><span class="com-desk-step-arrow" aria-hidden="true">→</span>'+
+        '</button></li>').join('')+'</ol></section>').join('')+'</div></section>';
   if(!this.current){
    this.main.innerHTML=title+'<section class="com-card"><div class="com-actions">'+
     '<button class="com-btn primary" data-action="new">'+l('new')+'</button>'+
