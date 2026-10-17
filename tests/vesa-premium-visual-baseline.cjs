@@ -35,7 +35,6 @@ class VesaPremiumVisualBaseline {
     'fabric-supplier-comparison','claims-disputes','product-development'
   ]);
   static PAGES=Object.freeze([
-    {id:'website-home',route:'/',isPublic:true},
     {id:'login',route:'/login/',isPublic:true},
     {id:'app-centre',route:'/apps/',isPublic:false},
     {id:'admin',route:'/admin/',isPublic:false},
@@ -285,7 +284,7 @@ class VesaPremiumVisualBaseline {
       // Additional edge viewport previews do not multiply every heavy route.
       for(const viewport of VesaPremiumVisualBaseline.EXTRAS){
         for(const entry of VesaPremiumVisualBaseline.PAGES.filter(x=>
-          ['website-home','app-centre','aql','ppm','tna'].includes(x.id)
+          ['login','app-centre','aql','ppm','tna'].includes(x.id)
         )){
           await this.capture(browser,base,entry,viewport,{positions:['top']});
         }
@@ -294,7 +293,7 @@ class VesaPremiumVisualBaseline {
       const total=this.results.reduce((sum,x)=>sum+x.shotCount,0);
       const manifest={
         title:'VESA 360 premium design baseline, NOT acceptance',
-        scope:'public home/login/App Centre/admin plus 19 app routes',
+        scope:'Login and authenticated workspaces only: public home excluded',
         expectedScreenshots:expected,actualScreenshots:total,
         sourceSha:process.env.GITHUB_SHA||'local',
         generatedAt:new Date().toISOString(),
