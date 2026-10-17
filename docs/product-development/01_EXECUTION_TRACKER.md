@@ -1,5 +1,17 @@
 # APP-15 Product Development 360 — Execution Tracker
 
+## 2026-10-17 — APP-15 M4 VERIFIED LIVE PERSONAL NON-COMMERCIAL DEMO — ACCEPTED
+
+**APP-15 personal synthetic demo M4 ACCEPTED, not production/human sign-off.** Feature M4 release source `feb076269c130e0b50cfe247cc09c7312e6c9d09`; [feature exact-sha domain + full prior apps + real Chromium #39046020409 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39046020409); [main Product Development #39046102188 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39046102188); [GitHub Pages main deployment #39046101944 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39046101944); [public exact HTML, CSS, 11 owned JavaScript sources + all earlier published demos and App Centre/cache #39046102155 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39046102155), with confirmed `LIVE PASS` log `main=feb076269c130e0b50cfe247cc09c7312e6c9d09`. Current public route https://vesaent.com/apps/product-development/ . All triggered main frozen regressions Claims #39046102216, Supplier #39046102237, Label #39046102164, Production #39046102135, Buyer #39046102109 and Factory #39046102100 SUCCESS.
+
+**M4 change surface:** additive descriptor at order 190, EN/BN/HI/TA App Centre label, `vesa-v83-product-development-personal-demo` cache paths preserving previous apps, synthetic personal-demo guard, full served-byte smoke and app-specific release notes. APP-15 domain, older apps, user records, immutable roadmap, original ZIP/blueprints remained unchanged. Release's companion post-verification documentation updates do not alter the published application source.
+
+**Scope verdict:** `DEMO PUBLISHED` for public personal non-commercial **synthetic source-only** use. No real buyer artwork ownership, copyright authorization, actual Tech Pack/sample approval, certified commercial quote/PO, bank liability or server-side commercial hosting is established. No real customer data in public repository. Human approval/UAT and physical manufacturing verification remain `NOT TESTED / Needs Information`; no false promotion to BUSINESS_APPROVED.
+
+**Next verified handoff:** Main master `VESA_PROGRESS.md` and universal `VESA_RESUME_PROMPT.md` must direct the next session to post-release portfolio UAT/evidence audit; original 15/15 demo build wave complete, not 100% production acceptance. Preserve last known human UAT 49 rows = 1 PASS, 0 FAIL, 48 NOT TESTED; do not silently relabel. Rollback if necessary by reverting APP-15 additive route/catalogue/cache only, preserving frozen apps and locally saved user records. No new unapproved application.
+
+---
+
 ## 2026-10-17 — M4 FEATURE RELEASE REGISTRATION SUBMITTED (CONDITIONAL)
 
 **Exact implementation scope:** `js/app-catalogue.js`, `js/preferences.js`, `service-worker.js`, `tests/personal-demo-release.cjs`, `.github/workflows/vesa-costing-demo-live-smoke.yml`, NEW `apps/product-development/RELEASE_NOTES.md` plus tracker only. APP-15 M1–M3 original domains and all other app files untouched. Registration adds one `product-development` id/route and four locale labels, SW `vesa-v83-product-development-personal-demo` cache preserving all previous paths, exact public asset checks and strict synthetic disclaimer. Scope and patch gates follow M4 audit already recorded below.
