@@ -67,7 +67,7 @@ class FabricEngine{
    factory:'SYNTHETIC FACTORY',bomRevision:'BOM-V1',bomSource:'SYNTHETIC SIGNED BOM',
    requiredDate:'2026-11-15',calendarBasis:'calendar',calendarSource:'DEMO DELIVERY CALENDAR'},true);
   p.items.push({id:'FAB1',kind:'fabric',description:'SYNTHETIC 100% COTTON JERSEY',
-   composition:'100% cotton',gsm:'180',width:'68',construction:'Single Jersey',
+   composition:'100% cotton',gsm:'180',width:'68',widthUnit:'in',construction:'Single Jersey',
    unit:'kg',sourceRef:'SYNTHETIC TECH PACK'});
   p.requirements.push({id:'REQ1',itemId:'FAB1',colour:'Navy',size:'M',unit:'kg',
    approvedRequired:'560.0000',sourceRef:'SYNTHETIC BUYER BOM',
