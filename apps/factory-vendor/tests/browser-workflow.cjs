@@ -54,9 +54,9 @@ async function run(){
   assert.match(await page.locator('.fv-table').innerText(),/expired-by-dates/);
   assert.match(await page.locator('body').innerText(),/NOT independent compliance verification/i);
   assert(!(await page.locator('.fv-table').innerText()).includes('COMPLIANT'));
-  await act('add-review');await fill({siteId:site.id,reviewer:'SYN LOCAL REVIEWER',checklistRef:'SYN ONBOARD CHECKLIST',
+  await act('onboarding');await act('add-review');await fill({siteId:site.id,reviewer:'SYN LOCAL REVIEWER',checklistRef:'SYN ONBOARD CHECKLIST',
    sourceRef:'SYN REVIEW REPORT',reviewDate:'2026-10-17',internalOutcome:'needs-information'});await submit();
-  await act('add-performance');await fill({siteId:site.id,metric:'On-time reviewed count',unit:'orders',
+  await act('performance');await act('add-performance');await fill({siteId:site.id,metric:'On-time reviewed count',unit:'orders',
    sourceRef:'SYN PERFORMANCE REGISTER',reviewer:'SYN REVIEWER',periodFrom:'2026-09-01',periodTo:'2026-09-30',
    reviewDate:'2026-10-17',numerator:'8',denominator:'10'});await submit();
   const record=(await rows())[0];assert.equal(record.revision,5);assert.equal(record.certificates.length,1);assert.equal(record.reviews.length,1);assert.equal(record.performance.length,1);
