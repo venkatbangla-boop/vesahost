@@ -1,5 +1,12 @@
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
+## 2026-10-18 — TNA G3 STYLESHEET CACHE REFRESH VERIFIED; PPM MOBILE NEXT
+
+TNA sheet-first source had old exact CSS/cache identity; returning users could see a cached earlier design. Narrow TNA-only release fix `9feaf2cd577125de1f9d000fed7ff0cad6e5e168` changes versioned index CSS reference, app worker manifest/cache and isolated tests; no TNA domain, records, reports or public homepage edits. Feature Chromium offline/legacy-cache and original save/XLSX/PDF [#39060843140 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060843140); main offline suite [#39060958773 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958773); Pages [#39060958901 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060958901). **NEXT G3-PPM-02** mobile 168-checkpoint editor task flow and legible buttons; AQL performance source profiling afterwards. Human UAT unchanged.
+
+---
+
+
 ## 2026-10-18 — G3 TNA SHEET-FIRST UI RELEASED; PPM NEXT
 
 **Latest verified application SHA**: `4a35070f2b6e17a69830db1c602c199ae95cc4a2`. Active TNA/PPM/AQL Playwright evidence 36 opened-screen cases / 60 screenshots [G3 baseline #39059572072 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059572072). TNA sheet-first scoped CSS safely merged after G13 browser + saved-copy + four-language proof [feature #39059962505 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39059962505), [main TNA #39060152231 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152231), [main G3 #39060152136 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152136), [Pages #39060152341 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39060152341). Preserved all 8 TNA actions, domain dates/CPM, PDF/XLSX/print, PPM/AQL and original 19 apps. No public homepage file changed. **EXACT NEXT:** PPM mobile active editor 26k-pixel scroll and undersized controls; inspect PPM controllers/navigation/print before task-first UI patch. After PPM profile AQL 11.78MB HTML. Evidence and next action: `docs/ux/02_G3_ACTIVE_WORKFLOW_AUDIT.md`. Human UAT remains 1 PASS / 0 FAIL / 48 NOT TESTED; no fabrication. Continue automatically from newest GitHub checkpoint.
