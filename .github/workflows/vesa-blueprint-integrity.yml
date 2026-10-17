@@ -1,0 +1,32 @@
+# Repository master-hand-over continuity proof; no deployment or user records.
+name: VESA canonical blueprint integrity
+on:
+  push:
+    branches:
+      - main
+      - feature/production-tracker-360
+    paths:
+      - 'blueprints/**'
+      - 'docs/portfolio/**'
+      - 'tests/vesa-blueprint-integrity.cjs'
+      - 'AGENTS.md'
+      - 'VESA_RESUME_PROMPT.md'
+      - 'VESA_PROGRESS.md'
+      - '.github/workflows/vesa-blueprint-integrity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-source-handover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check exact original source integrity and APP-09 presence
+        run: |
+          node --check tests/vesa-blueprint-integrity.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          git diff --check HEAD~1 HEAD
