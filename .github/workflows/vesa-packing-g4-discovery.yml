@@ -1,0 +1,60 @@
+name: VESA Packing G4 real-feature discovery verification
+on:
+  push:
+    branches:
+      - feature/packing-g4-feature-discovery
+      - main
+    paths:
+      - 'apps/packing-container/index.html'
+      - 'apps/packing-container/tests/feature-discovery-browser.cjs'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
+      - '.github/workflows/vesa-packing-g4-discovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  packing-workflow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 34
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source, frozen blueprint, checkout and domain integrity
+        run: |
+          set -euo pipefail
+          node --check apps/packing-container/tests/feature-discovery-browser.cjs
+          node --check service-worker.js
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node apps/tna/tests/g02-domain.test.js
+          git diff --check
+          git diff --exit-code origin/main...HEAD -- index.html css/style.css js/main.js privacy.html terms.html
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Real 8-stage home traversal, records, workbook and sibling regression
+        run: |
+          set -euo pipefail
+          node apps/packing-container/tests/feature-discovery-browser.cjs
+          node apps/packing-container/tests/browser-workflow.cjs
+          node apps/order-commission/tests/browser-workflow.cjs
+          node tests/vesa-platform-pages.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-packing-g4-real-8-section-workflows
+          path: |
+            output/playwright/packing-feature-discovery/
+            output/playwright/packing-container-*
+          if-no-files-found: ignore
+          retention-days: 7
