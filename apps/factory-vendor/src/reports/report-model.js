@@ -4,7 +4,7 @@
 (function(root){
 'use strict';
 class FactoryVendorReportModel{
- static escape(v){return String(v??'Needs Information').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;',"'":'&#39;'}[c]));}
+ static escape(v){return String(v??'Needs Information').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
  static safeCell(v){const s=String(v??'');return /^[=+\-@\t\r\n]/.test(s)?"'"+s:s;}
  static rows(record,asOf){
   const P=root.VesaFactoryVendorProfile,C=root.VesaFactoryCertificationEvidence;
