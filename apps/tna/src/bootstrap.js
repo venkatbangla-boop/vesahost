@@ -173,6 +173,8 @@
     const scenarioForm=document.getElementById('tnaScenarioForm');if(scenarioForm)scenarioForm.onsubmit=event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget).entries());state.scenarioDraft={...data,durationUnits:Number(data.durationUnits),verifiedDailyOutput:data.verifiedDailyOutput};state.scenarioPreview=scenarios.previewScenario(state.currentPlan,{name:data.name,durationAdjustments:[{taskId:data.taskId,durationUnits:Number(data.durationUnits),reason:data.name}],capacity:data.verifiedDailyOutput?{plannedQty:state.currentPlan.order.totalQty,completedQty:0,verifiedDailyOutput:Number(data.verifiedDailyOutput)}:undefined},{actorId:userKey()});render();};
     root.querySelectorAll('[data-apply-scenario]').forEach(btn=>btn.onclick=openScenarioApply);
     // M1 view-only state. Neither sheet filter nor review date writes into the source plan.
+    root.querySelectorAll('[data-tna-merch-excel]').forEach(btn=>btn.onclick=downloadMerchSheetExcel);
+    root.querySelectorAll('[data-tna-merch-print]').forEach(btn=>btn.onclick=printMerchSheet);
     root.querySelectorAll('[data-tna-merch-filter]').forEach(btn=>btn.onclick=()=>{
       state.merchFilter=btn.dataset.tnaMerchFilter||'all';render();
     });
@@ -285,6 +287,47 @@
    * This dialog is NOT an approval action. Existing status/actual and CPM logic
    * stay owned by updateTaskStatus and VesaTnaScheduling respectively.
    */
+  /*
+   * TNA M3: local XLSX exporter and browser-native print. MasterSheet owns rows;
+   * the controller owns file I/O only. No cloud, report schema change or approval.
+   */
+  function downloadMerchSheetExcel(){
+    if(!state.currentPlan||state.currentPlan.mode==='practice')
+      return openDialog('Master Sheet Excel','<p>Open a local non-practice TNA before exporting.</p>');
+    const XLSX=globalThis.XLSX,Sheet=globalThis.VesaTnaMerchandisingSheet;
+    if(!XLSX?.utils?.book_new||!Sheet?.workbookTables)
+      return openDialog('Master Sheet Excel','<p>Bundled offline workbook library is unavailable.</p>');
+    try{
+      const tables=Sheet.workbookTables(state.currentPlan,planSchedule(state.currentPlan));
+      const workbook=XLSX.utils.book_new();
+      const widths={'Order Summary':[42,65],
+       'Activity Master':[14,31,52,22,18,18,18,18,22,19,40,23,45],
+       'Colour Size':[25,16,18,12,35],
+       'Planning Revisions':[14,18,24,18,18,40,19,45,30,28]};
+      for(const [name,rows] of Object.entries(tables)){
+        const sheet=XLSX.utils.aoa_to_sheet(rows);
+        sheet['!cols']=(widths[name]||[]).map(wch=>({wch}));
+        if(sheet['!ref'])sheet['!autofilter']={ref:sheet['!ref']};
+        XLSX.utils.book_append_sheet(workbook,sheet,name);
+      }
+      const output=XLSX.write(workbook,{bookType:'xlsx',type:'array'});
+      const blob=new Blob([output],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const url=URL.createObjectURL(blob);
+      const style=(state.currentPlan.order.styles?.[0]?.styleNo||'DRAFT').replace(/[^a-z0-9_.-]+/gi,'-');
+      const link=document.createElement('a');
+      link.href=url;link.download='VESA-TNA-MERCH-DRAFT-'+style+'.xlsx';
+      document.body.appendChild(link);link.click();link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }catch(error){openDialog('Master Sheet Excel','<p>'+esc(error.message)+'</p>');}
+  }
+  function printMerchSheet(){
+    if(!state.currentPlan||state.currentPlan.mode==='practice')
+      return openDialog('Master Sheet PDF','<p>Open a local non-practice TNA before printing.</p>');
+    document.body.classList.add('tna-printing-merch-sheet');
+    const clear=()=>document.body.classList.remove('tna-printing-merch-sheet');
+    window.addEventListener('afterprint',clear,{once:true});setTimeout(clear,2000);
+    window.print();
+  }
   function openTaskPlanningEdit(taskId){
     const plan=state.currentPlan;
     if(!plan||plan.mode==='practice')

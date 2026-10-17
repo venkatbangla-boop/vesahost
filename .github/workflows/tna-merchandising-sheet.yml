@@ -37,6 +37,8 @@ jobs:
           node apps/tna/tests/g13-merchandising-sheet.test.cjs
           node --check apps/tna/tests/g14-task-planning-date-revision.test.cjs
           node apps/tna/tests/g14-task-planning-date-revision.test.cjs
+          node --check apps/tna/tests/g15-merchandising-export.test.cjs
+          node apps/tna/tests/g15-merchandising-export.test.cjs
           node apps/tna/tests/g02-domain.test.js
           node apps/tna/tests/g03-scheduling.test.js
           node apps/tna/tests/g05-storage.test.js
@@ -54,7 +56,7 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
           echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
-      - name: Real Chromium G13 sheet, previous TNA locales, shell and saved-copy workflows
+      - name: Real Chromium G13 to G15 local XLSX/PDF, former TNA locales and saved copies
         shell: bash
         run: |
           set -euo pipefail

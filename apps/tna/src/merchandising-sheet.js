@@ -19,7 +19,7 @@ class VesaTnaMerchandisingSheet{
    section:'Section / activity',owner:'Responsible party',baseline:'Baseline plan',
    target:'Current target',forecast:'Forecast',actual:'Actual',delay:'Delay (calendar days)',
    state:'Status',source:'Source / approval evidence',criticalCol:'Calculated critical',
-   comment:'Remarks',edit:'Edit status',editDates:'Edit dates',unverified:'Needs Information',
+   comment:'Remarks',edit:'Edit status',editDates:'Edit dates',excel:'Download Excel',print:'Print / Save PDF',unverified:'Needs Information',
    noRows:'No sourced activities match this filter.',notCalculated:'Not calculated',
    calculated:'Critical',noncritical:'Not critical',pending:'Evidence not supplied',
    total:'applicable activities',shown:'shown',noAsOf:'Enter an as-of date to use overdue / due-next-week filters.',
@@ -38,7 +38,7 @@ class VesaTnaMerchandisingSheet{
    section:'সেকশন / কাজ',owner:'দায়িত্বপ্রাপ্ত',baseline:'মূল পরিকল্পনা',
    target:'বর্তমান লক্ষ্য',forecast:'পূর্বাভাস',actual:'আসল তারিখ',delay:'দেরি (ক্যালেন্ডার দিন)',
    state:'অবস্থা',source:'উৎস / অনুমোদনের প্রমাণ',criticalCol:'গণনাকৃত ক্রিটিক্যাল',
-   comment:'মন্তব্য',edit:'অবস্থা বদলান',editDates:'তারিখ বদলান',unverified:'Needs Information',
+   comment:'মন্তব্য',edit:'অবস্থা বদলান',editDates:'তারিখ বদলান',excel:'Excel নামান',print:'PDF / প্রিন্ট',unverified:'Needs Information',
    noRows:'এই ফিল্টারে কোনো কাজ নেই।',notCalculated:'গণনা হয়নি',
    calculated:'ক্রিটিক্যাল',noncritical:'ক্রিটিক্যাল নয়',pending:'প্রমাণ নেই',
    total:'প্রযোজ্য কাজ',shown:'দেখানো',noAsOf:'দেরি ও আগামী সপ্তাহ দেখতে পর্যালোচনার তারিখ দিন।',
@@ -57,7 +57,7 @@ class VesaTnaMerchandisingSheet{
    section:'सेक्शन / काम',owner:'जिम्मेदार',baseline:'मूल योजना',
    target:'वर्तमान लक्ष्य',forecast:'पूर्वानुमान',actual:'वास्तविक',delay:'देरी (कैलेंडर दिन)',
    state:'स्थिति',source:'स्रोत / मंजूरी प्रमाण',criticalCol:'गणना किया क्रिटिकल',
-   comment:'टिप्पणी',edit:'स्थिति बदलें',editDates:'तारीख बदलें',unverified:'Needs Information',
+   comment:'टिप्पणी',edit:'स्थिति बदलें',editDates:'तारीख बदलें',excel:'Excel डाउनलोड',print:'PDF / प्रिंट',unverified:'Needs Information',
    noRows:'इस फिल्टर में काम नहीं मिले।',notCalculated:'गणना नहीं',
    calculated:'क्रिटिकल',noncritical:'क्रिटिकल नहीं',pending:'प्रमाण नहीं',
    total:'लागू काम',shown:'दिखाए',noAsOf:'देरी/अगले सप्ताह के लिए समीक्षा की तारीख भरें।',
@@ -76,7 +76,7 @@ class VesaTnaMerchandisingSheet{
    section:'பிரிவு / வேலை',owner:'பொறுப்பாளர்',baseline:'முதல் திட்டம்',
    target:'தற்போதைய இலக்கு',forecast:'ஃபோர்காஸ்ட்',actual:'நடந்த தேதி',delay:'தாமதம் (காலண்டர் நாள்)',
    state:'நிலை',source:'ஆதாரம் / ஒப்புதல்',criticalCol:'கணக்கிட்ட கிரிட்டிக்கல்',
-   comment:'குறிப்புகள்',edit:'நிலை திருத்து',editDates:'தேதி திருத்து',unverified:'Needs Information',
+   comment:'குறிப்புகள்',edit:'நிலை திருத்து',editDates:'தேதி திருத்து',excel:'Excel பதிவிறக்கு',print:'PDF / அச்சு',unverified:'Needs Information',
    noRows:'இந்த ஃபில்டரில் வேலை இல்லை.',notCalculated:'கணக்கிடவில்லை',
    calculated:'கிரிட்டிக்கல்',noncritical:'கிரிட்டிக்கல் இல்லை',pending:'ஆதாரம் இல்லை',
    total:'பொருந்தும் வேலைகள்',shown:'காட்டியது',noAsOf:'தாமதம் / அடுத்த வாரம் பார்க்க ரிவியூ தேதியை உள்ளிடவும்.',
@@ -130,6 +130,59 @@ class VesaTnaMerchandisingSheet{
    return true;
   });
  }
+ /*
+  * Source-only M3 spreadsheet data port. It prepares typed, deterministic
+  * sheet rows for the already bundled local XLSX library; it does not save,
+  * fetch, authenticate third-party signatures, invoke print or mutate records.
+  * Strings beginning with spreadsheet formula operators are quoted as text.
+  * Actual and calculated dates remain separate; unentered values are explicit.
+  */
+ static excelCell(value){
+  if(value===null||value===undefined||value==='')return'Needs Information';
+  if(typeof value==='number'&&Number.isFinite(value))return value;
+  const string=String(value);
+  return /^\s*[=+\-@]|^[\t\r\n]/u.test(string)?"'"+string:string;
+ }
+ static workbookTables(plan,scheduled){
+  const safe=v=>this.excelCell(v),order=plan?.order||{},c=plan?.commitments||{};
+  const style=order.styles?.[0]||{},records=this.rows(plan,scheduled);
+  const summary=[['Field','Source-entered value'],['Buyer',safe(order.buyerName)],
+   ['Factory',safe(order.factoryName)],['PO / Order',safe(order.poNumbers?.join(', '))],
+   ['Style',safe(style.styleNo)],['Garment',safe(order.construction||order.productProfile)],
+   ['Fabric specification',safe(order.fabricSpec)],['GSM — separately verified', 'Needs Information'],
+   ['Quantity',safe(order.totalQty)],['Unit',safe(order.unit)],
+   ['Master LC opened (entered, not authenticated)',safe(c.masterLcOpenedOn)],
+   ['Buyer required ex-factory',safe(c.buyerRequiredExFactory)],
+   ['Buyer required ETD',safe(c.buyerRequiredETD)],['Buyer required ETA',safe(c.buyerRequiredETA)],
+   ['Original order notes',safe(order.commercialNotes)],
+   ['Document status','DRAFT, NOT BUYER APPROVED OR PRODUCTION RELEASED']];
+  const activity=[['Task ID','Section','Activity','Responsible party','Baseline finish',
+   'Current target finish','Forecast finish','Actual finish','Delay (calendar days)',
+   'Task status','Human source references','Engine-calculated critical','Remarks']];
+  for(const r of records)activity.push([
+   safe(r.task.templateRef),safe(r.task.stage),safe(r.task.title),safe(r.task.ownerParty),
+   safe(r.baseline),safe(r.target),safe(r.forecast),safe(r.actual),safe(r.delay),
+   safe(r.task.status),safe(r.proof),r.critical===null?'Not calculated':
+    r.critical?'Critical':'Not critical',
+   safe([r.task.delayReason,r.task.recoveryAction].filter(Boolean).join(' · '))
+  ]);
+  const colour=[['Colour','Size','Quantity','Unit','Source status']];
+  for(const row of order.colorSizeBreakdown||[])colour.push([
+   safe(row.color),safe(row.size),safe(row.quantity),safe(order.unit),'Source-entered only']);
+  const revisions=[['Revision','Activity','Date field','Before','After','Source reference',
+   'Source date','Reason','Local reviewer','Recorded at']];
+  for(const event of plan?.revisionEvents||[]){
+   if(event.eventType!=='sourced-task-finish-dates-revised')continue;
+   for(const change of event.details?.changes||[])revisions.push([
+    safe(event.revision),safe(event.details.templateRef),safe(change.field),
+    safe(change.before),safe(change.after),safe(event.details.sourceRef),
+    safe(event.details.sourceDate),safe(event.details.reason),
+    safe(event.actorId),safe(event.createdAt)
+   ]);
+  }
+  return {'Order Summary':summary,'Activity Master':activity,
+   'Colour Size':colour,'Planning Revisions':revisions};
+ }
  static render(plan,scheduled,options={}){
   const lang=['en','bn','hi','ta'].includes(options.language)?options.language:'en',t=this.COPY[lang];
   const kind=this.FILTERS.includes(options.filter)?options.filter:'all',asOf=this.date(options.asOf)||'';
@@ -176,7 +229,9 @@ class VesaTnaMerchandisingSheet{
    '<nav class="tna-merch-filters" aria-label="Master sheet filters">'+
    this.FILTERS.map(k=>'<button type="button" data-tna-merch-filter="'+k+
     '" aria-pressed="'+(kind===k?'true':'false')+'">'+e(filterLabel[k])+'</button>').join('')+
-   '</nav></div><p class="tna-merch-count" role="status">'+visible.length+' '+e(t.shown)+
+   '</nav><div class="tna-merch-outputs">'+
+   '<button type="button" data-tna-merch-excel'+(plan?.mode==='practice'?' disabled':'')+'>'+e(t.excel)+'</button>'+
+   '<button type="button" data-tna-merch-print'+(plan?.mode==='practice'?' disabled':'')+'>'+e(t.print)+'</button></div></div><p class="tna-merch-count" role="status">'+visible.length+' '+e(t.shown)+
    ' / '+rows.length+' '+e(t.total)+'</p>'+
    (!asOf&&['overdue','week'].includes(kind)?'<p class="tna-note">'+e(t.noAsOf)+'</p>':'')+
    (kind==='localWait'?'<p class="tna-note">'+e(t.localInfo)+'</p>':'')+

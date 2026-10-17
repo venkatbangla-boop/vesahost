@@ -103,6 +103,54 @@ async function run(){
    await page.keyboard.press('Escape');await settings.waitFor({state:'hidden'});
    assert.equal(JSON.stringify(await stored()),beforeLang,'Language cannot translate source records');
   }
+  // M3: actual device-local XLSX and isolated Chromium A4 print proof; never a real buyer file.
+  await page.setViewportSize({width:1280,height:900});
+  const xlsxWait=page.waitForEvent('download');
+  await sheet.locator('[data-tna-merch-excel]').click();
+  const xlsxDownload=await xlsxWait;
+  const workbookFile=path.join(out,'tna-g13-merch-sheet-draft.xlsx');
+  await xlsxDownload.saveAs(workbookFile);
+  const workbookBytes=fs.readFileSync(workbookFile);
+  assert.equal(workbookBytes.subarray(0,2).toString(),'PK','Must be an actual XLSX ZIP');
+  const XLSX=require('../vendor/xlsx.full.min.js');
+  const book=XLSX.read(workbookBytes,{type:'buffer'});
+  assert.deepEqual(book.SheetNames,['Order Summary','Activity Master','Colour Size','Planning Revisions']);
+  const activity=XLSX.utils.sheet_to_json(book.Sheets['Activity Master'],{header:1,raw:true});
+  assert.equal(activity.length,total+1,'Every existing garment task must be in the local XLSX');
+  assert.equal(activity[1][4],'2026-10-14');
+  assert.equal(activity[1][5],'2026-10-15');
+  assert.equal(activity[1][6],'2026-10-18');
+  assert.equal(activity[1][7],'2026-10-18');
+  assert.equal(activity[1][8],4,'Actual calendar delay calculated only from entered dates');
+  assert.match(activity[1][10],/SYN MERCH SOURCE NOTE-01/);
+  const revisions=XLSX.utils.sheet_to_json(book.Sheets['Planning Revisions'],{header:1,raw:true});
+  assert.equal(revisions.length,4,'All dated before/after human revisions appear');
+  const localBeforePrint=JSON.stringify(await stored());
+  await page.emulateMedia({media:'print'});
+  await page.evaluate(()=>document.body.classList.add('tna-printing-merch-sheet'));
+  const paper=await page.evaluate(()=>{
+   const visible=el=>!!el&&getComputedStyle(el).display!=='none'&&el.getClientRects().length>0;
+   const target=document.getElementById('tnaMerchSheet');
+   return {sheet:visible(target),hero:visible(document.querySelector('.tna-hero')),
+    oldReport:visible(document.querySelector('.tna-report-preview')),
+    rows:document.querySelectorAll('.tna-merch-table tbody tr').length,
+    controls:visible(document.querySelector('.tna-merch-outputs')),
+    tableRight:document.querySelector('.tna-merch-table')?.getBoundingClientRect().right,
+    pageRight:document.getElementById('tnaMain')?.getBoundingClientRect().right};
+  });
+  assert.equal(paper.sheet,true,'Only Master Sheet visible on local print');
+  assert.equal(paper.hero,false,'Decorative TNA home must not print');
+  assert.equal(paper.oldReport,false,'Older R01–R12 previews must not mix with sheet');
+  assert.equal(paper.rows,total,'All garment activities remain printable');
+  assert.equal(paper.controls,false,'Download/Print controls hidden in PDF');
+  assert(paper.tableRight<=paper.pageRight+2,'Printed activity table must fit the local document width');
+  const pdf=await page.pdf({format:'A4',landscape:true,printBackground:true});
+  assert.equal(pdf.subarray(0,4).toString(),'%PDF');
+  assert(pdf.length>7000,'A4 PDF must be nonempty');
+  fs.writeFileSync(path.join(out,'tna-g13-merch-sheet-draft.pdf'),pdf);
+  await page.evaluate(()=>document.body.classList.remove('tna-printing-merch-sheet'));
+  await page.emulateMedia({media:'screen'});
+  assert.equal(JSON.stringify(await stored()),localBeforePrint,'Export/print never mutate plan');
   for(const width of [320,360,390,768,1024,1280,1440]){
    await page.setViewportSize({width,height:880});
    const measure=await page.evaluate(()=>document.documentElement.scrollWidth);
