@@ -24,7 +24,7 @@ const COPY=Object.freeze({
   all:'All apps',showing:'Showing {shown} of {total} apps',
   clear:'Clear search',emptyTitle:'No applications found',
   emptyText:'Try another keyword or show all applications.',
-  reset:'Show all apps',open:'Open app',
+  reset:'Show all apps',open:'Open workspace',
   groups:{planning:'Planning & quality',orders:'Orders & finance',
    product:'Product & sourcing',shipping:'Shipping & claims',partners:'Buyer & factory'}
  },
@@ -167,7 +167,7 @@ class VesaAppCentreExplorer {
     '<div class="app-group-heading"><h2 id="app-group-'+escape(group.id)+'">'+escape(heading)+
     '</h2><span>'+chosen.length+'</span></div><div class="app-grid">'+chosen.map(app=>{
      const name=app.name.replace(/^VESA\s+/i,'');
-     const open=global.VesaPrefs?.label?.(app.openLabelKey)||copy.open;
+     const open=copy.open;
      return '<article class="app-tile" data-app-id="'+escape(app.id)+'">'+
       '<div class="app-tile-head"><span class="app-tile-short">'+escape(app.shortName)+'</span></div>'+
       '<h3 title="'+escape(app.name)+'">'+escape(name)+'</h3>'+
