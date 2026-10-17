@@ -14,7 +14,7 @@ permissions:
 jobs:
   claims-domain:
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 38
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,6 +31,14 @@ jobs:
           node --check apps/claims-disputes/src/domain/settlement-history.js
           node --check apps/claims-disputes/tests/domain.test.cjs
           node apps/claims-disputes/tests/domain.test.cjs
+          node --check apps/claims-disputes/src/bootstrap.js
+          node --check apps/claims-disputes/src/data/saved-copy-codec.js
+          node --check apps/claims-disputes/src/data/local-record-port.js
+          node --check apps/claims-disputes/src/i18n/app-copy.js
+          node --check apps/claims-disputes/src/application/workspace-controller.js
+          node --check apps/claims-disputes/tests/save-reopen.test.cjs
+          node --check apps/claims-disputes/tests/browser-workflow.cjs
+          node apps/claims-disputes/tests/save-reopen.test.cjs
           node tests/personal-demo-release.cjs
           node tests/vesa-next-app-starter.cjs
           node apps/fabric-supplier-comparison/tests/domain.test.cjs
@@ -64,3 +72,16 @@ jobs:
           node apps/aql/tests/a-g09-cross-app-boundaries.cjs
           node tests/vesa-workspace-shell-contract.cjs
           git diff --check HEAD~1 HEAD
+      - name: Install Chromium for APP-14 actual browser proof
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Real Chromium AQL-immutable claim, settlement, copies and four-language workflow
+        run: node apps/claims-disputes/tests/browser-workflow.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: claims-app14-m2-synthetic-browser
+          path: output/playwright/claims-app14-*
+          if-no-files-found: ignore
