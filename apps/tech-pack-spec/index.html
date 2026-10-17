@@ -650,7 +650,8 @@ class TechSpecWorkspace{
     '<button class="sp-btn primary" data-action="new">'+t('new')+'</button>'+
     '<button class="sp-btn" data-action="continue">'+t('continue')+'</button>'+
     '<button class="sp-btn" data-action="upload">'+t('upload')+'</button>'+
-    '<button class="sp-btn" data-action="practice">'+t('practice')+'</button></div><h2>'+t('open')+'</h2>'+
+    '<button class="sp-btn" data-action="practice">'+t('practice')+'</button></div></section>'+lab+
+    '<section class="sp-card"><h2>'+t('open')+'</h2>'+
     (list.length?list.map(x=>'<div class="sp-record"><span><b>'+escape(x.style)+'</b> · '+
      escape(x.category)+'<small>Revision '+escape(x.revision)+'</small></span>'+
      '<button class="sp-btn" data-action="open-record" data-id="'+escape(x.id)+'">'+t('open')+'</button></div>').join('')
