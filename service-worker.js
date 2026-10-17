@@ -1,4 +1,4 @@
-const CACHE='vesa-v77-production-tracker-personal-demo';
+const CACHE='vesa-v78-factory-vendor-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -60,6 +60,19 @@ const ASSETS=[
   './apps/production-tracker/src/reports/report-model.js',
   './apps/production-tracker/src/i18n/app-copy.js',
   './apps/production-tracker/src/application/workspace-controller.js',
+  './apps/factory-vendor/',
+  './apps/factory-vendor/index.html',
+  './apps/factory-vendor/assets/factory-vendor.css',
+  './apps/factory-vendor/src/bootstrap.js',
+  './apps/factory-vendor/src/domain/vendor-profile.js',
+  './apps/factory-vendor/src/domain/certification-evidence.js',
+  './apps/factory-vendor/src/domain/capability-matcher.js',
+  './apps/factory-vendor/src/domain/reviewed-reference.js',
+  './apps/factory-vendor/src/data/saved-copy-codec.js',
+  './apps/factory-vendor/src/data/local-record-port.js',
+  './apps/factory-vendor/src/reports/report-model.js',
+  './apps/factory-vendor/src/i18n/app-copy.js',
+  './apps/factory-vendor/src/application/workspace-controller.js',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
