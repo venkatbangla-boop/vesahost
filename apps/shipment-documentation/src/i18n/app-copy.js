@@ -1,7 +1,7 @@
 /* APP-07 localized human-facing labels. Evidence strings remain unchanged. */
 (function(root){
 'use strict';
-const EN={
+const EN={journeyTitle:"Explore eight shipping work steps",journeyLead:"Open real sections with a fictional read-only shipment: no buyer, customs, carrier, bank or AQL acceptance is created.",journeyOpen:"View practice",hintSummary:"Compare draft invoice, packed and actually dispatched pieces.",hintInvoice:"Check PO-sourced invoice quantities and prices.",hintPacking:"Review carton weights, CBM and packing version.",hintDispatches:"Show sourced dispatch; it is not a completed shipment.",hintDocuments:"Inspect document revisions and separate acknowledgments.",hintTransport:"Show sourced booking details or unresolved fields.",hintRevisions:"See immutable packing and document version history.",hintReports:"Open real draft reports, Excel and PDF.",
  title:'Shipment & Documentation 360',lead:'Draft commercial invoice, packing list, dispatch evidence and controlled document versions',
  notice:'NON-COMMERCIAL PERSONAL DEMO. Synthetic data only. This is not a customs declaration, bank original or a carrier-certified document. Browser login is not secure commercial authentication.',
  warning:'Never infer carrier departure, customs clearance, buyer acceptance, AQL release or bank acknowledgement. Missing evidence stays Needs Information.',
@@ -55,7 +55,7 @@ const EN={
  statusRevised:'Revised',select:'Select',close:'Close',review:'Record Review',submit:'Save Now'
 };
 const map={
- ta:{
+ ta:{journeyTitle:"Shipment Documents — எட்டு வேலைப் பகுதிகள்",journeyLead:"கற்பனை Shipment பதிவில் மட்டும் பாருங்கள். Buyer, Customs, Carrier, Bank அல்லது AQL Approval உருவாகாது.",journeyOpen:"Practice திற",hintSummary:"Invoice, Packing, Dispatch Qty ஒப்பீடு.",hintInvoice:"PO ஆதார Draft Invoice, Price.",hintPacking:"Carton, Weight, CBM, Packing Version.",hintDispatches:"உண்மையாகப் பதிவு செய்த Dispatch Qty.",hintDocuments:"Document Revision, ACK Evidence.",hintTransport:"Booking ஆதாரம்; தெரியாத தகவல் காலி.",hintRevisions:"பழைய Packing & Documents History.",hintReports:"Draft Reports, Excel, PDF.",
  title:'Shipment & Documentation 360',lead:'Draft Invoice, Packing List, Dispatch மற்றும் ஆவண Version',
  new:'புதிய Shipment',continue:'கடைசிப் பதிவு திற',open:'Saved Shipment திற',practice:'Practice Example',
  save:'இப்போது Save',download:'Saved Copy Download',upload:'Saved Copy திற',
@@ -92,7 +92,7 @@ const map={
  localReviewer:'Local Reviewer',localReviewDate:'Review தேதி',
  confirm:'ஆதார ஆவணத்தைச் சரிபார்த்தேன்',localOnly:'இந்த Device-ல் Save'
  },
- bn:{
+ bn:{journeyTitle:"শিপমেন্টের আটটি কাজের ধাপ",journeyLead:"কাল্পনিক রিড-ওনলি শিপমেন্ট খুলুন। ক্রেতা, কাস্টমস, ক্যারিয়ার, ব্যাংক বা AQL অনুমোদন তৈরি হয় না।",journeyOpen:"অনুশীলন দেখুন",hintSummary:"ইনভয়েস, প্যাকিং ও পাঠানো পরিমাণ।",hintInvoice:"উৎসসহ খসড়া ইনভয়েস ও মূল্য।",hintPacking:"কার্টন, ওজন, CBM, প্যাকিং সংস্করণ।",hintDispatches:"শুধু প্রমাণসহ পাঠানো পরিমাণ।",hintDocuments:"নথি সংস্করণ ও আলাদা স্বীকৃতি।",hintTransport:"বুকিং উৎস অথবা অনিশ্চিত তথ্য।",hintRevisions:"প্যাকিং ও নথির পুরনো সংস্করণ।",hintReports:"খসড়া রিপোর্ট, Excel, PDF।",
  title:'শিপমেন্ট ও নথিপত্র ৩৬০',lead:'খসড়া ইনভয়েস, প্যাকিং লিস্ট, ডিসপ্যাচ ও ডকুমেন্ট সংস্করণ',
  new:'নতুন শিপমেন্ট',continue:'শেষটি খুলুন',open:'সেভ ফাইল খুলুন',practice:'অনুশীলন উদাহরণ',
  save:'এখন সেভ',download:'সেভ কপি ডাউনলোড',upload:'সেভ কপি খুলুন',
@@ -131,7 +131,7 @@ const map={
  localReviewer:'স্থানীয় পর্যালোচক',localReviewDate:'স্থানীয় পর্যালোচনা তারিখ',
  confirm:'আমি উৎস নথি যাচাই করেছি',localOnly:'এই ডিভাইসে সেভ'
  },
- hi:{
+ hi:{journeyTitle:"शिपमेंट के आठ कार्य चरण",journeyLead:"काल्पनिक रीड-ओनली शिपमेंट देखें। खरीदार, कस्टम्स, कैरीयर, बैंक या AQL मंजूरी नहीं बनती।",journeyOpen:"अभ्यास देखें",hintSummary:"इनवॉइस, पैकिंग, डिस्पैच की तुलना।",hintInvoice:"स्रोत ड्राफ्ट इनवॉइस और कीमत।",hintPacking:"कार्टन, वजन, CBM, पैकिंग वर्जन।",hintDispatches:"केवल प्रमाण वाला डिस्पैच।",hintDocuments:"डॉक्यूमेंट वर्जन और ACK प्रमाण।",hintTransport:"बुकिंग स्रोत या अधूरी जानकारी।",hintRevisions:"पैकिंग और डॉक्यूमेंट इतिहास।",hintReports:"ड्राफ्ट रिपोर्ट, Excel, PDF।",
  title:'शिपमेंट और दस्तावेज़ 360',lead:'ड्राफ्ट इनवॉइस, पैकिंग लिस्ट, डिस्पैच और दस्तावेज़ इतिहास',
  new:'नया शिपमेंट',continue:'पिछला खोलें',open:'सेव फाइल खोलें',practice:'अभ्यास उदाहरण',
  save:'अभी सेव',download:'सेव कॉपी डाउनलोड',upload:'सेव कॉपी खोलें',

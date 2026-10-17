@@ -51,6 +51,39 @@ class ShipmentBrowserProof{
    await page.locator('[data-action=new]').waitFor({timeout:12000});
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('[data-vesa-menu]').count(),6);
+   // Eight real panels from Home. Fictional draft data never creates a
+   // customer order, shipping release, bank evidence or local saved record.
+   const stages=['summary','invoice','packing','dispatches','documents','transport','revisions','reports'];
+   const previews=page.locator('.sd-journey [data-action="preview"]');
+   const noStoredShipment=()=>page.evaluate(()=>Object.keys(localStorage).every(k=>!k.startsWith('vesa.shipment-documentation.records.v1.')));
+   assert.equal(await previews.count(),8);
+   assert(await noStoredShipment(),'Home starts without persisted shipment');
+   fs.mkdirSync(out,{recursive:true});
+   for(const width of [320,390,1440]){
+    await page.setViewportSize({width,height:850});
+    assert.equal(await previews.count(),8,width+'px eight original stages');
+    const g=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,
+     actions:[...document.querySelectorAll('.sd-journey .sd-btn')].map(x=>x.getBoundingClientRect().height)}));
+    assert(g.scroll<=g.width+1,width+'px no document overflow');
+    assert(g.actions.every(n=>n>=44),width+'px touch actions at least 44px');
+    await page.screenshot({path:path.join(out,'ship-app07-g4-home-'+width+'.png'),fullPage:true});
+   }
+   await page.setViewportSize({width:390,height:850});
+   for(const stage of stages){
+    await page.locator('.sd-journey [data-action="preview"][data-id="'+stage+'"]').click();
+    assert.equal(await page.locator('.sd-tabs [data-action="'+stage+'"]').getAttribute('aria-current'),'true',stage+' original panel');
+    assert.match(await page.locator('#sdMain').innerText(),/SYNTHETIC PRACTICE/,stage+' is fictional');
+    assert(await page.locator('#sdMain [data-action="save"]').isDisabled(),stage+' cannot save');
+    if(stage==='invoice')assert.match(await page.locator('.sd-card').last().innerText(),/DEMO-PO-LINE-M/);
+    if(stage==='packing')assert.match(await page.locator('.sd-card').last().innerText(),/CTN-001/);
+    if(stage==='documents')assert.match(await page.locator('.sd-card').last().innerText(),/DEMO-INVOICE-V1/);
+    if(stage==='revisions')assert.match(await page.locator('.sd-card').last().innerText(),/PACK-REV1/);
+    if(stage==='reports')await page.screenshot({path:path.join(out,'ship-app07-g4-mobile-report.png'),fullPage:true});
+    assert(await noStoredShipment(),stage+' does not create shipment records');
+    await act('home');
+   }
+   await page.setViewportSize({width:1280,height:900});
+   assert(await noStoredShipment(),'Practice previews never write saved records');
    await act('new');
    await fill({poNo:'SYN-PO-SHIP-001',buyer:'SYNTHETIC BUYER',
     shipper:'SYNTHETIC FACTORY',consignee:'SYNTHETIC CONSIGNEE',
@@ -209,7 +242,13 @@ class ShipmentBrowserProof{
     await page.waitForFunction(x=>document.documentElement.lang===x,language);
     await page.keyboard.press('Escape');await settings.waitFor({state:'hidden'});
     assert.match(await page.locator('.sd-tabs').innerText(),new RegExp(label));
-    assert.equal(JSON.stringify(await saved()),stateBefore,'Language switch must not mutate source.');
+    await act('home');
+    const headings={en:'Explore eight shipping work steps',bn:'শিপমেন্টের আটটি কাজের ধাপ',
+     hi:'शिपमेंट के आठ कार्य चरण',ta:'Shipment Documents — எட்டு வேலைப் பகுதிகள்'};
+    assert.equal(await page.locator('#sdJourneyTitle').innerText(),headings[language]);
+    assert.equal(await page.locator('.sd-journey [data-action="preview"]').count(),8);
+    await act('continue');
+    assert.equal(JSON.stringify(await saved()),stateBefore,'Switching language, Home and Continue does not mutate source.');
    }
    await page.reload({waitUntil:'domcontentloaded'});await act('continue');
    assert.equal((await saved())[0].documents.length,2);

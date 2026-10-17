@@ -16,6 +16,13 @@
 .sd-tile{background:var(--look-surface,#eef3f9);padding:14px;border:1px solid var(--line,#cbd6e4);border-radius:11px;min-width:0}
 .sd-tile strong{display:block;font-size:1.3rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .sd-tile small{color:var(--muted,#526176)}
+/* Guided source sections flow beneath the sole shared workspace header. */
+.sd-journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sd-journey-card{display:flex;flex-direction:column;gap:9px;min-width:0;border:1px solid var(--line,#cbd6e4);border-radius:12px;padding:14px;background:var(--look-surface,#eef3f9)}
+.sd-journey-card h3,.sd-journey-card p{margin:0}
+.sd-journey-card p{flex:1;color:var(--muted,#526176)}
+.sd-journey-step{font-size:.76rem;font-weight:800;letter-spacing:.08em;color:var(--muted,#526176)}
+.sd-journey-card .sd-btn{width:100%}
 .sd-scroll{max-width:100%;overflow:auto;border:1px solid var(--line,#cbd6e4);border-radius:10px}
 .sd-table{width:100%;min-width:710px;border-collapse:collapse;font-size:.89rem}
 .sd-table td,.sd-table th{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere}
@@ -31,6 +38,6 @@
 .sd-form textarea{min-height:75px}.sd-form label.sd-check{display:flex;gap:10px;align-items:center}
 .sd-check input{width:22px;min-height:22px}
 .sd-report-section{margin:16px 0;break-inside:avoid}
-@media(max-width:740px){.sd-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sd-card{padding:12px}}
-@media(max-width:470px){.sd-grid,.sd-form{grid-template-columns:1fr}.sd-form .wide,.sd-form label.wide{grid-column:1}.sd-actions .sd-btn{flex:1 1 auto}}
+@media(max-width:740px){.sd-grid,.sd-journey{grid-template-columns:repeat(2,minmax(0,1fr))}.sd-card{padding:12px}}
+@media(max-width:470px){.sd-grid,.sd-journey,.sd-form{grid-template-columns:1fr}.sd-form .wide,.sd-form label.wide{grid-column:1}.sd-actions .sd-btn{flex:1 1 auto}}
 @media print{.vesa-workspace,.app-user-bar,.sd-actions,.sd-tabs,.sd-dialog{display:none!important}#sdMain{width:100%;padding:0}.sd-card{border:0;padding:0}.sd-table{font-size:10px}.sd-table th,.sd-table td{padding:5px 6px}@page{size:A4 landscape;margin:12mm}}

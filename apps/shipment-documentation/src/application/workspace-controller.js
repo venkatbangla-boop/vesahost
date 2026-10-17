@@ -4,6 +4,12 @@
 (function(root){
 'use strict';
 class ShipmentWorkspace {
+ // The app controller owns stage navigation. Source approvals remain domain-owned.
+ static steps=Object.freeze([
+  ['summary','hintSummary'],['invoice','hintInvoice'],['packing','hintPacking'],
+  ['dispatches','hintDispatches'],['documents','hintDocuments'],
+  ['transport','hintTransport'],['revisions','hintRevisions'],['reports','hintReports']
+ ]);
  constructor(){
   this.main=document.getElementById('sdMain');
   this.dialog=document.getElementById('sdDialog');
@@ -123,7 +129,12 @@ class ShipmentWorkspace {
     this.current=null;this.section='summary';this.dirty=false;this.render();return;
    }
    if(action==='new'){this.form('new');return;}
-   if(action==='practice'){this.current=this.E.demo();this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='preview'){
+     if(this.current||!ShipmentWorkspace.steps.some(([step])=>step===id))
+      throw Error('Return to All Shipments for a valid practice step.');
+     this.current=this.E.demo();this.section=id;this.dirty=false;this.render();return;
+    }
+    if(action==='practice'){this.current=this.E.demo();this.section='summary';this.dirty=false;this.render();return;}
    if(action==='continue'){
     const list=this.store.list();if(!list.length)throw Error('No saved shipment record on this device.');
     this.action('open-record',list[0].id);return;
@@ -185,6 +196,19 @@ class ShipmentWorkspace {
    rows.map(row=>'<tr>'+row.map(value=>'<td>'+value+'</td>').join('')+'</tr>').join('')+
    '</tbody></table></div>';
  }
+ /**
+  * Render app-only workflow discovery from the original fictional shipment.
+  * No storage, AQL, customs, carrier, buyer or bank approval is produced.
+  */
+ journey(t){
+  const cards=ShipmentWorkspace.steps.map(([step,hint],index)=>
+   '<article class="sd-journey-card"><span class="sd-journey-step">'+String(index+1).padStart(2,'0')+
+   '</span><h3>'+t(step)+'</h3><p>'+t(hint)+'</p>'+
+   '<button class="sd-btn" type="button" data-action="preview" data-id="'+this.e(step)+
+   '" aria-label="'+t('journeyOpen')+' · '+t(step)+'">'+t('journeyOpen')+'</button></article>');
+  return '<section class="sd-card" aria-labelledby="sdJourneyTitle"><h2 id="sdJourneyTitle">'+t('journeyTitle')+
+   '</h2><p class="sd-note">'+t('journeyLead')+'</p><div class="sd-journey">'+cards.join('')+'</div></section>';
+ }
  render(){
   const e=v=>this.e(v??this.tr('needs')),t=k=>e(this.tr(k));
   const banner='<section class="sd-card"><h1>'+t('title')+'</h1><p class="sd-note">'+
@@ -198,11 +222,11 @@ class ShipmentWorkspace {
     (saved.length?saved.map(s=>'<div class="sd-record"><span><b>'+e(s.poNo)+'</b> · '+
        e(s.invoiceNo)+'<small>Revision '+e(s.revision)+'</small></span>'+
        this.button('open-record','open',false,s.id)+'</div>').join(''):
-      '<p class="sd-note">'+t('none')+'</p>')+'</section>';
+      '<p class="sd-note">'+t('none')+'</p>')+'</section>'+this.journey(t);
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,cal=this.E.analyze(p,this.asOf),practice=p.mode==='practice';
-  const tabs=['summary','invoice','packing','dispatches','documents','transport','revisions','reports'];
+  const tabs=ShipmentWorkspace.steps.map(([step])=>step);
   this.main.innerHTML=banner+'<section class="sd-card"><h2>'+e(p.header.poNo)+' · '+e(p.header.invoiceNo)+
    '</h2><p class="sd-note">'+e(p.header.buyer)+' · '+e(p.header.currency)+
     ' · '+(practice?'SYNTHETIC PRACTICE':t('localOnly'))+'</p>'+

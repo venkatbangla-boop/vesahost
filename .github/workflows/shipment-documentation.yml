@@ -4,11 +4,15 @@ on:
   push:
     branches:
       - feature/shipment-documentation-360
+      - feature/shipment-g4-guided-workflow
+      - main
     paths:
       - 'apps/shipment-documentation/**'
       - '.github/workflows/shipment-documentation.yml'
       - 'js/app-catalogue.js'
       - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
   workflow_dispatch:
 permissions:
   contents: read
