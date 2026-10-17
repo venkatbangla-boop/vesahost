@@ -1,5 +1,33 @@
 # APP-11 Buyer CRM 360 — Execution Tracker
 
+## 2026-10-17 — M3 NODE AND REAL CHROMIUM ACCEPTED; M4 PERSONAL-DEMO RELEASE PATCH LOCK
+
+**M3 verdict: ACCEPTED for synthetic source-only browser-local CRM reports, no buyer/privacy/commercial approval.** Exact feature SHA `b2a352ba43e60aeecce55e2052738c7a0bcfdd7a`; [independent Node, real Chromium and all frozen sibling GitHub Actions #39037997041 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39037997041). Initial #39037844509 was REJECTED because HTML-escaping fixture forged buyer organization name, correctly invalidating a previously human-reviewed PO reference; changed only the fixture to place injected HTML in source description without rewriting buyer. New independently verified run passed blueprint checksum, all existing-app regressions, escaped private/source draft, exact numeric and formula-safe Excel, real PDF, wrong-buyer source import atomicity, old saved copies, 4 languages and 320–1440 desktop/mobile Chromium. Contact privacy basis, authentication and actual approved PO remain `Needs Information`.
+
+### M4 file-level public synthetic-demo release impact, ownership and rollback
+
+**Scope and baseline:** `main` code `4bb14c7892624379db6381deebf633aca05c501e` (verified Label & Artwork release and documentation), `feature/buyer-crm-360` M3 accepted as above. Reviewed actual `js/app-catalogue.js`, `js/preferences.js`, `service-worker.js`, `tests/personal-demo-release.cjs`, `.github/workflows/vesa-costing-demo-live-smoke.yml`, `.github/workflows/buyer-crm.yml`, `apps/index.html`, `apps/buyer-crm/index.html` plus original `blueprints/APP-11_buyer-crm.md`, shared shell and GitHub-free-only constraints.
+
+**IN SCOPE M4 (one controlled reversible group):**
+- `js/app-catalogue.js` — one enabled synthetic, non-commercial Buyer CRM route descriptor with unique ID/order. Incoming catalogue from App Centre; outgoing local browser link. No other card rewrites.
+- `js/preferences.js` — only `openBuyerCRM` EN/BN/HI/TA menu wording. No language preference migration.
+- `service-worker.js` — next unique versioned cache key and exact static public Buyer CRM HTML/CSS/JS assets list; never cache customer data, files or contact exports.
+- `tests/personal-demo-release.cjs` — explicit CRM disclaimer, unique route and complete list/cache/version release guard, preserve existing 11 demos.
+- `.github/workflows/vesa-costing-demo-live-smoke.yml` — existing main/PAGES exact-byte public smoke extended to Buyer CRM HTML and **all CRM CSS/JS modules**; existing site and demo exact checks remain.
+- `.github/workflows/buyer-crm.yml` — feature and main release branch gate and shared static regression tests, actual Chromium.
+- `apps/buyer-crm/tests/browser-workflow.cjs` — actual login session → App Centre card → Buyer CRM route → full existing privacy, source, Excel/PDF and responsive journey.
+- This `docs/buyer-crm/01_EXECUTION_TRACKER.md` only to record scope/proof. After independent public release, update `VESA_PROGRESS.md`, `VESA_RESUME_PROMPT.md` and NEW `apps/buyer-crm/RELEASE_NOTES.md`.
+
+**WATCHED/frozen:** `apps/index.html` consumes descriptor dynamically (no edits), `js/auth.js` and shared `js/vesa-workspace-shell.js` plus common CSS/XLSX (no edits), all `apps/label-artwork-approval`, Factory, Production, Shipment, Fabric, Sampling, Costing, PO, LC, Packing, Tech Pack, TNA/PPM/AQL (NO edits). Original ZIP/15 blueprint files and private browser namespace immutable. Publishing a static demo does not establish consent/legal privacy compliance, provider login/security, approval authority or commercial Pages terms.
+
+**Call flow and risks:** App Centre dynamic route descriptor → shared VESA shell → app-only local browser controllers and typed reviewed sources → private per-browser localStorage (not server-secure, not encrypted) → local downloaded reports only. Risks: registry mismatch, stale service worker, accidentally publishing real buyer data, language label drift, public web cache stale, broken existing demo URLs. No remote buyers/contacts or hidden network.
+
+**Gate:** independent candidate full Node/actual Chromium, root release guard, previous apps regression, four-language, mobile, zero external requests SUCCESS at exact feature SHA. Only then fast-forward main with expected SHA and no force. Afterwards independently accept GitHub Pages SUCCESS **plus exact public main-source-byte smoke success** for all Buyer CRM files and legacy demos. Otherwise HOLD/rollback M4 only, preserve existing local saved records. Release permitted ONLY personal non-commercial synthetic demo, not production/commercial SaaS.
+
+**PRECISE NEXT ACTION:** implement this exact M4 file group, run candidate CI. If verified and live checks pass, write permanent tracker/current SHA and automatically start approved next rank-13 portfolio blueprint (never ask for already committed master ZIP).
+
+---
+
 ## 2026-10-17 — M2 REAL CHROMIUM ACCEPTED; M3 source-report patch locked
 
 **M2 verdict: accepted for SYNTHETIC browser-local technical workflow; no privacy/security certification.** Verified feature code `35bfc1803acf5a0f564f632eb0a713b4f37a5112`; [independent real Chromium/Node/all previous apps GitHub Actions #39037387695 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39037387695). The earlier runs #39037152757 and #39037197351 exposed test assertion wording and wrong test-tab navigation; *only tests* were corrected. Domain still rejects forged confirmed PO and duplicate contacts. Browser created synthetic org/contact, enquiry, opportunity+stage revision and overdue local follow-up, isolated per-user local storage, Save/Reload/portable backup/atomic forged restore, EN/BN/HI/TA, 320/360/390/640/768/1024/1280/1440 no overflow and zero external requests. All APP-10/08/09, TNA, PPM, AQL and portfolio sibling Node tests passed. Not a public CRM app.
