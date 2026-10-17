@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/label-artwork-approval-360
+      - feature/label-g4-guided-practice
       - main
     paths:
       - 'apps/label-artwork-approval/**'

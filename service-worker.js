@@ -1,4 +1,4 @@
-const CACHE='vesa-v99-factory-g4-guided-practice';
+const CACHE='vesa-v100-label-g4-guided-practice';
 const ASSETS=[
   './',
   './index.html',

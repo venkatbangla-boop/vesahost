@@ -9,6 +9,13 @@
 .la-btn.primary,.la-tabs [aria-current=true]{background:var(--blue,#244fd6);color:var(--look-on-accent,#fff);border-color:var(--blue,#244fd6)}.la-btn:disabled{opacity:.55;cursor:not-allowed}
 .la-btn:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold,#e0b65f);outline-offset:2px}
 .la-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.la-stat{padding:13px;background:var(--look-surface,#eef3f9);border:1px solid var(--line,#cbd6e4);border-radius:9px}.la-stat strong{display:block;font-size:1.3rem}.la-stat small{color:var(--muted,#526176)}
+/* Home-only source guidance, no duplicate VESA workspace chrome. */
+.la-journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.la-journey-card{display:flex;flex-direction:column;gap:9px;min-width:0;padding:14px;border:1px solid var(--line,#cbd6e4);border-radius:12px;background:var(--look-surface,#eef3f9)}
+.la-journey-card h3,.la-journey-card p{margin:0}
+.la-journey-card p{flex:1;color:var(--muted,#526176)}
+.la-journey-step{font-size:.76rem;font-weight:800;letter-spacing:.08em;color:var(--muted,#526176)}
+.la-journey-card .la-btn{width:100%}
 .la-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--line,#cbd6e4);border-radius:8px}.la-table{border-collapse:collapse;min-width:750px;width:100%;font-size:.9rem}
 .la-table th,.la-table td{padding:10px 11px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere}.la-table th{background:var(--look-surface,#eef3f9);white-space:nowrap}.la-table tr:last-child td{border:0}
 .la-record{display:flex;justify-content:space-between;align-items:center;gap:9px;padding:11px 0;border-bottom:1px solid var(--line,#cbd6e4)}.la-record small{display:block;color:var(--muted,#526176)}
@@ -18,8 +25,8 @@
 .la-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:13px 0}.la-form label{min-width:0;display:grid;gap:5px;font-weight:600}.la-form .wide{grid-column:1/-1}
 .la-form input,.la-form select,.la-form textarea{font:inherit;width:100%;min-width:0;min-height:44px;padding:10px;color:var(--ink,#17263d);background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:8px}
 .la-form textarea{min-height:88px}.la-screenonly{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
-@media(max-width:740px){.la-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.la-card{padding:12px}}
-@media(max-width:470px){.la-grid,.la-form{grid-template-columns:1fr}.la-form .wide{grid-column:1}.la-actions .la-btn{flex:1 1 auto}}
+@media(max-width:740px){.la-grid,.la-journey{grid-template-columns:repeat(2,minmax(0,1fr))}.la-card{padding:12px}}
+@media(max-width:470px){.la-grid,.la-journey,.la-form{grid-template-columns:1fr}.la-form .wide{grid-column:1}.la-actions .la-btn{flex:1 1 auto}}
 @media print{.vesa-workspace,.app-user-bar,.la-tabs,.la-actions,.la-dialog{display:none!important}#laMain{width:100%;padding:0}.la-card{border:0;padding:0}.la-table th,.la-table td{font-size:10px;padding:5px}}
 
 /* APP-10 M3: source-only draft report and explicit local reference confirmation. */

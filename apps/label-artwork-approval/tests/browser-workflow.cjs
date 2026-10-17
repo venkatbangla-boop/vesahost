@@ -40,6 +40,52 @@ async function run(){
   assert.equal(await page.locator('.vesa-workspace').count(),1,'One VESA shared shell');
   assert.equal(await page.locator('[data-vesa-menu]').count(),6,'Six global menus');
   assert.match(await page.locator('body').innerText(),/NON-COMMERCIAL PERSONAL DEMO/i);
+  // G4: genuine read-only panels, two revision chronology and source-only claims.
+  const stages=['summary','revisions','reviews','preview','references','reports','history'];
+  const guided=page.locator('.la-journey [data-action="guided-preview"]');
+  assert.equal(await guided.count(),7);
+  assert.equal((await records()).length,0,'No saved artwork before practice');
+  for(const width of [320,390,1440]){
+   await page.setViewportSize({width,height:860});
+   const m=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,
+    controls:[...document.querySelectorAll('.la-journey .la-btn')].map(x=>x.getBoundingClientRect().height)}));
+   assert(m.scroll<=m.width+1,width+'px home no overflow');
+   assert(m.controls.length===7&&m.controls.every(x=>x>=44),width+'px touch actions');
+   await page.screenshot({path:path.join(out,'artwork-app10-g4-home-'+width+'.png'),fullPage:true});
+  }
+  await page.setViewportSize({width:390,height:860});
+  for(const stage of stages){
+   await page.locator('.la-journey [data-action="guided-preview"][data-id="'+stage+'"]').click();
+   assert.equal(await page.locator('.la-tabs [data-action="'+stage+'"]').getAttribute('aria-current'),'true');
+   assert.match(await page.locator('#laMain').innerText(),/SYNTHETIC PRACTICE/);
+   assert(await page.locator('#laMain [data-action="save"]').isDisabled());
+   const facts=await page.evaluate(()=>{
+    const app=window.VesaArtwork360,p=app.current;
+    return {status:p.status,ok:app.E.validate(p).ok,revisions:p.revisions.length,
+     comments:p.comments.length,decisions:p.decisions.length,
+     originalDecision:p.decisions[0].revisionId,
+     current:app.D.effective(p),
+     checkDigit:app.L.barcodeStatus(p.revisions[0].spec.barcode)};
+   });
+   assert(facts.ok,stage+' practice must pass unchanged domain validation');
+   assert.equal(facts.status,'DRAFT — SOURCE REVIEW ONLY');
+   assert.equal(facts.revisions,2);assert.equal(facts.comments,1);assert.equal(facts.decisions,1);
+   assert.equal(facts.originalDecision,'DEMO-ART-REV1');
+   assert.equal(facts.current.revisionId,'DEMO-ART-REV2');
+   assert.match(facts.current.status,/PENDING/);
+   assert.equal(facts.current.buyerAuthorityVerified,false);
+   assert.equal(facts.checkDigit.valid,false);
+   assert.equal(facts.checkDigit.gs1OwnershipVerified,false);
+   assert.equal((await records()).length,0,stage+' must never persist the demo');
+   if(stage==='preview')assert.match(await page.locator('.la-card').last().innerText(),/No temporary image selected/);
+   if(stage==='reports')await page.screenshot({path:path.join(out,'artwork-app10-g4-mobile-report.png'),fullPage:true});
+   await act('home');
+  }
+  await act('practice');
+  assert.equal(await page.locator('.la-tabs [data-action="summary"]').getAttribute('aria-current'),'true');
+  assert.equal((await records()).length,0);
+  await act('home');await page.setViewportSize({width:1280,height:900});
+
   await act('new');await fill({style:'SYN-STYLE-01',colour:'Navy',size:'M',itemType:'care-label',placement:'left-neck seam',sourceRef:'SYN TECHPACK'});await submit();
   assert.equal((await records()).length,1);assert.equal((await records())[0].status,'DRAFT — SOURCE REVIEW ONLY');
   await act('add-revision');await fill({artworkRef:'SYN ARTWORK REV 1',sourceDate:'2026-10-17',sourceRef:'SYN FILE REGISTER',
@@ -137,7 +183,13 @@ async function run(){
    await page.waitForFunction(lang=>document.documentElement.lang===lang,language);
    await page.keyboard.press('Escape');await settings.waitFor({state:'hidden'});
    assert((await page.locator('.la-tabs').innerText()).includes(label),'Missing localized artwork tabs for '+language);
-   assert.equal(JSON.stringify(await records()),oldData,'Language cannot alter customer values/IDs');
+   await act('home');
+   const expected={en:'Explore seven label and artwork steps',bn:'লেবেল ও আর্টওয়ার্কের সাতটি ধাপ',
+    hi:'लेबल और आर्टवर्क के सात चरण',ta:'Label & Artwork — ஏழு வேலைப் பகுதிகள்'};
+   assert.equal(await page.locator('#laJourneyTitle').innerText(),expected[language]);
+   assert.equal(await page.locator('.la-journey [data-action="guided-preview"]').count(),7);
+   await act('continue');
+   assert.equal(JSON.stringify(await records()),oldData,'Four languages and Home/Continue preserve original evidence');
   }
   await act('home');await act('new');await page.locator('#laDialog[open]').waitFor();
   await page.keyboard.press('Escape');await page.locator('#laDialog[open]').waitFor({state:'hidden'});

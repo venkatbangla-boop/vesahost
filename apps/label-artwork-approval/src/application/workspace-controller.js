@@ -4,6 +4,10 @@
 (function(root){
 'use strict';
 class ArtworkWorkspace{
+ // Original panel ownership stays here; legal, barcode and review policy is frozen.
+ static steps=Object.freeze([['summary','hintSummary'],['revisions','hintRevisions'],
+  ['reviews','hintReviews'],['preview','hintPreview'],['references','hintReferences'],
+  ['reports','hintReports'],['history','hintHistory']]);
  constructor(){
   this.main=document.getElementById('laMain');this.dialog=document.getElementById('laDialog');
   this.body=document.getElementById('laDialogBody');this.file=document.getElementById('laCopyFile');
@@ -92,10 +96,12 @@ class ArtworkWorkspace{
  action(name,id=''){try{
   if(name==='home'){this.current=null;this.clearPreview();this.section='summary';this.render();return;}
   if(name==='new'){this.form('new');return;}
-  if(name==='practice'){let p=this.E.create({style:'SYN STYLE',colour:'Navy',size:'M',itemType:'label',placement:'inside neck',sourceRef:'SYN SPEC'});
-   p=this.E.appendRevision(p,{id:'SYN-REV-1',sourceDate:'2026-10-17',artworkRef:'SYN ARTWORK FILE',sourceRef:'SYN FILE SOURCE',
-    spec:{width:'4',height:'5',unit:'cm',dimensionSourceRef:'SYN MEASURED SPEC',barcode:{symbology:'ean-13',value:'4006381333932',sourceRef:'SYN NUMBER'}}});
-   p.mode='practice';this.current=p;this.clearPreview();this.section='summary';this.render();return;}
+  if(name==='practice'||name==='guided-preview'){
+   if(name==='guided-preview'&&(this.current||!ArtworkWorkspace.steps.some(([section])=>section===id)))
+    throw Error('Return to All Artwork to select a practice section');
+   this.current=this.practiceExample();this.clearPreview();
+   this.section=name==='practice'?'summary':id;this.render();return;
+  }
   if(name==='continue'){const list=this.store.list();if(!list.length)throw Error(this.t('none'));this.action('load',list[0].id);return;}
   if(name==='load'){const p=this.store.load(id);if(!p)throw Error('Saved artwork not found');this.current=p;this.section='summary';this.clearPreview();this.render();return;}
   if(name==='save'){if(!this.current||this.current.mode==='practice')throw Error('Open a local artwork record first');this.store.save(this.current);this.render();return;}
@@ -115,16 +121,63 @@ class ArtworkWorkspace{
    if(!this.current||this.current.mode==='practice')throw Error('Practice is read only');this.form(name);return;}
  }catch(err){this.error(err.message);}}
  table(headers,rows){return '<div class="la-scroll"><table class="la-table"><thead><tr>'+headers.map(h=>'<th>'+this.e(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(v=>'<td>'+this.e(v??this.t('needs'))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
+
+ /**
+  * Create completely fictional, source-labelled old and new label revisions.
+  * Preserve an earlier buyer-role evidence claim without authenticating it.
+  * A new revision must remain pending; never issue GS1 data or load artwork.
+  */
+ practiceExample(){
+  let p=this.E.create({style:'DEMO-LABEL-TEE',colour:'Navy',size:'M',
+   itemType:'care-label',placement:'left-neck seam',
+   sourceRef:'SYNTHETIC LABEL SPECIFICATION — NOT LEGAL APPROVAL'});
+  p=this.E.appendRevision(p,{id:'DEMO-ART-REV1',sourceDate:'2026-10-14',
+   artworkRef:'SYNTHETIC LABEL DRAWING V1',sourceRef:'SYNTHETIC ARTWORK SOURCE',
+   spec:{width:'4',height:'5',unit:'cm',dimensionSourceRef:'SYNTHETIC DIMENSION SOURCE',
+    washCareText:'SYNTHETIC TEXT — NOT LEGAL CARE INSTRUCTIONS',
+    contentSourceRef:'SYNTHETIC UNVERIFIED TEXT SOURCE',
+    barcode:{symbology:'ean-13',value:'4006381333932',
+     sourceRef:'SYNTHETIC NUMBER, NOT GS1 OWNERSHIP'}}});
+  p=this.D.append(p,'comment',{id:'DEMO-COMMENT-1',revisionId:'DEMO-ART-REV1',
+   reviewer:'SYNTHETIC INTERNAL REVIEWER',reviewerRole:'internal',
+   reviewDate:'2026-10-15',sourceRef:'SYNTHETIC COMMENTS LOG',
+   comment:'SYNTHETIC: revise dimensions and source-check barcode'});
+  p=this.D.append(p,'decision',{id:'DEMO-DECISION-1',revisionId:'DEMO-ART-REV1',
+   reviewer:'SYNTHETIC BUYER-ROLE CLAIM',reviewerRole:'buyer',
+   reviewDate:'2026-10-16',sourceRef:'SYNTHETIC UNVERIFIED EMAIL',
+   authorityRef:'SYNTHETIC UNVERIFIED AUTHORITY',
+   decision:'buyer-approval-evidence-recorded'});
+  p=this.E.appendRevision(p,{id:'DEMO-ART-REV2',sourceDate:'2026-10-17',
+   artworkRef:'SYNTHETIC LABEL DRAWING V2',sourceRef:'SYNTHETIC RESUBMISSION',
+   spec:{width:'42',height:'55',unit:'mm',
+    dimensionSourceRef:'SYNTHETIC UPDATED LABEL DIMENSIONS'}});
+  const checked=this.E.validate(p);
+  if(!checked.ok)throw Error('Fictional artwork invalid: '+checked.errors.join('; '));
+  p.mode='practice';return p;
+ }
+ /**
+  * Home task links open only the genuine source and history panels; ephemeral
+  * image preview still requires a validated user-selected local PNG/JPEG.
+  */
+ journey(t){
+  const cards=ArtworkWorkspace.steps.map(([step,hint],index)=>
+   '<article class="la-journey-card"><span class="la-journey-step">'+String(index+1).padStart(2,'0')+
+   '</span><h3>'+t(step)+'</h3><p>'+t(hint)+'</p>'+
+   '<button class="la-btn" type="button" data-action="guided-preview" data-id="'+this.e(step)+
+   '" aria-label="'+t('journeyOpen')+' · '+t(step)+'">'+t('journeyOpen')+'</button></article>');
+  return '<section class="la-card" aria-labelledby="laJourneyTitle"><h2 id="laJourneyTitle">'+t('journeyTitle')+
+   '</h2><p class="la-note">'+t('journeyLead')+'</p><div class="la-journey">'+cards.join('')+'</div></section>';
+ }
  render(){const t=k=>this.e(this.t(k)),e=v=>this.e(v??this.t('needs'));
   const banner='<section class="la-card"><h1>'+t('title')+'</h1><p class="la-note">'+t('lead')+'</p><p class="la-warning">'+t('notice')+'</p></section>';
   if(!this.current){let saved=[];try{saved=this.store.list();}catch(err){this.main.innerHTML=banner+'<section class="la-card" role="alert">'+e(err.message)+'</section>'+this.button('upload','upload');return;}
    this.main.innerHTML=banner+'<section class="la-card"><div class="la-actions">'+this.button('new','new',true)+this.button('continue','continue')+
     this.button('upload','upload')+this.button('practice','practice')+'</div><h2>'+t('openRecords')+'</h2>'+
-    (saved.length?saved.map(x=>'<div class="la-record"><span><b>'+e(x.style)+'</b> / '+e(x.itemType)+'<small>Revision '+e(x.revision)+'</small></span>'+this.button('load','open',false,x.id)+'</div>').join(''):'<p class="la-note">'+t('none')+'</p>')+'</section>';
+    (saved.length?saved.map(x=>'<div class="la-record"><span><b>'+e(x.style)+'</b> / '+e(x.itemType)+'<small>Revision '+e(x.revision)+'</small></span>'+this.button('load','open',false,x.id)+'</div>').join(''):'<p class="la-note">'+t('none')+'</p>')+'</section>'+this.journey(t);
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,practice=p.mode==='practice',analysis=this.E.validate(p);
-  const tabs=['summary','revisions','reviews','preview','references','reports','history'];
+  const tabs=ArtworkWorkspace.steps.map(([step])=>step);
   this.main.innerHTML=banner+'<section class="la-card"><h2>'+e(p.header.style)+' / '+e(p.header.colour)+' / '+e(p.header.size)+'</h2><p class="la-note">'+(practice?'SYNTHETIC PRACTICE':t('localOnly'))+' / '+t('status')+'</p>'+
    '<div class="la-actions">'+this.button('home','back')+this.button('save','save',true,'',practice)+this.button('download','download',false,'',practice)+'</div></section>'+
    '<nav class="la-tabs" aria-label="Artwork sections">'+tabs.map(k=>'<button type="button" class="la-btn" data-action="'+k+'" aria-current="'+(this.section===k)+'">'+t(k)+'</button>').join('')+'</nav>'+
