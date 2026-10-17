@@ -34,7 +34,13 @@ async function run(){
   return key?JSON.parse(localStorage.getItem(key)).records:[];});
  try{
   fs.mkdirSync(out,{recursive:true});
-  await page.goto(base+'/apps/fabric-supplier-comparison/',{waitUntil:'domcontentloaded'});
+  await page.goto(base+'/apps/',{waitUntil:'domcontentloaded'});
+  const appLink=page.locator('#appCatalogue a[href="/apps/fabric-supplier-comparison/"]');
+  await appLink.waitFor({timeout:14000});
+  assert.equal(await appLink.count(),1,'Exactly one supplier comparison App Centre card');
+  assert.match(await appLink.innerText(),/Fabric & Supplier Comparison|Supplier Compare/i);
+  await appLink.click();
+  assert(page.url().endsWith('/apps/fabric-supplier-comparison/'));
   await page.locator('[data-action="new"]').waitFor({timeout:14000});
   assert.equal(await page.locator('.vesa-workspace').count(),1,'Only shared VESA header');
   assert.equal(await page.locator('[data-vesa-menu]').count(),6,'Global Home/File/Edit/View/Tools/Help');
