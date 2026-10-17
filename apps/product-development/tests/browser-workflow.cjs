@@ -132,7 +132,8 @@ async function run(){
   fs.writeFileSync(badPath,Buffer.from('Not a PNG despite the file name'));
   await page.locator('#pdDialog [name=imageFile]').setInputFiles(badPath);
   await page.locator('#pdDialog form button[type=submit]').click();
-  await page.locator('#pdDialog[open]').waitFor();
+  await page.waitForFunction(()=>/image signature|local PNG/.test(
+   document.getElementById('pdDialogBody')?.innerText||''),null,{timeout:12000});
   assert.match(await page.locator('#pdDialogBody').innerText(),/image signature|local PNG/);
   await page.locator('#pdDialogClose').click();
   assert.equal(JSON.stringify(await records()),goodImage,'Wrong image must not mutate original');
