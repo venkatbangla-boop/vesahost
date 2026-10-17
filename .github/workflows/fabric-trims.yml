@@ -35,6 +35,8 @@ jobs:
           node --check apps/fabric-trims/src/bootstrap.js
           node --check apps/fabric-trims/tests/browser-workflow.cjs
           node apps/fabric-trims/tests/domain.test.cjs
+          node tests/personal-demo-release.cjs
+          node --check service-worker.js
           node apps/sampling-approval/tests/domain.test.cjs
           node apps/lc-payment/tests/domain.test.cjs
           node apps/purchase-order/tests/domain.test.cjs

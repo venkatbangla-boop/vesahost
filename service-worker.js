@@ -1,4 +1,4 @@
-const CACHE='vesa-v74-sampling-personal-demo';
+const CACHE='vesa-v75-fabric-trims-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -29,6 +29,15 @@ const ASSETS=[
   './apps/sampling-approval/src/reports/report-model.js',
   './apps/sampling-approval/src/i18n/app-copy.js',
   './apps/sampling-approval/src/application/workspace-controller.js',
+  './apps/fabric-trims/',
+  './apps/fabric-trims/index.html',
+  './apps/fabric-trims/assets/fabric-trims.css',
+  './apps/fabric-trims/src/bootstrap.js',
+  './apps/fabric-trims/src/domain/material-engine.js',
+  './apps/fabric-trims/src/data/local-record-port.js',
+  './apps/fabric-trims/src/reports/report-model.js',
+  './apps/fabric-trims/src/i18n/app-copy.js',
+  './apps/fabric-trims/src/application/workspace-controller.js',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',
