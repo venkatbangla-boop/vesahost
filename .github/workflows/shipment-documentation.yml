@@ -1,0 +1,47 @@
+# APP-07 local branch acceptance. Cannot deploy public site from this workflow.
+name: VESA Shipment Documentation 360 verification
+on:
+  push:
+    branches:
+      - feature/shipment-documentation-360
+    paths:
+      - 'apps/shipment-documentation/**'
+      - '.github/workflows/shipment-documentation.yml'
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  shipment-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Shipment and legacy engine domain checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check apps/shipment-documentation/src/domain/shipment-engine.js
+          node --check apps/shipment-documentation/src/data/local-record-port.js
+          node --check apps/shipment-documentation/src/reports/report-model.js
+          node apps/shipment-documentation/tests/domain.test.cjs
+          node apps/fabric-trims/tests/domain.test.cjs
+          node apps/sampling-approval/tests/domain.test.cjs
+          node apps/lc-payment/tests/domain.test.cjs
+          node apps/purchase-order/tests/domain.test.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/tech-pack-spec/tests/domain.test.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          git diff --check HEAD~1 HEAD
