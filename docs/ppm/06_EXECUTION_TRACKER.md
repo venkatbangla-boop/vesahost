@@ -1,5 +1,12 @@
 # 06 — PPM 360 Continuous Execution Tracker, Gates, Tests & Resume State
 
+## 2026-10-18 — G3 PREMIUM MOBILE EDITOR (APP UI ONLY) COMPLETE
+
+User-authorized UX patch **PPM G3-P-G11** was independently tested and safely published to `main` runtime `e7b8a549abbc7f115236952c2df04d94d49b897e`. `apps/ppm/section-focus.js` is presentation-only: keep all 168 source checkpoint IDs/records mounted while focusing one section on phones; All sections restores the full checklist. `apps/ppm/workspace.css` adds >=44px mobile navigation/status touch areas and readable PPM buttons. `apps/ppm/index.html` includes versioned assets; its own service-worker bundle refresh is isolated. Domain `core.js`, `workspace.js`, decisions, GO/HOLD, record/storage/report/schema/print/locale strings were not changed. Real 390px synthetic editor height ~25,986px before to 9,108px after (same 168 DOM identities). Old saved-copy reopened, real offline/PDF, filter, language and TNA/AQL sibling tests PASS: [feature #39061533910](https://github.com/venkatbangla-boop/vesahost/actions/runs/39061533910), [main #39063021250](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063021250), [Pages #39063020350](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063020350). Genuine UAT NOT updated. **NEXT:** PPM desktop/tablet targeted form usability during G5; first remaining VESA development is AQL perf profile and APP-01 capability depth in `docs/portfolio/16_AQL_DEPTH_BENCHMARK_AND_19_APP_WORKPLAN.md`.
+
+---
+
+
 **MANDATORY living ledger for VS Code Codex.** Update in Git after every verified patch. Do not fabricate a completed checkbox, percent, screenshot, test or push. Scope includes Phase 1+2+3; each gate is reversible and independently tested. External backend work may remain BLOCKED while other gates complete.
 
 **Current scope overlay (2026-10-11):** `docs/platform/VESA_GITHUB_FREE_ONLY_SCOPE.md` makes hosted identity/backend/database, remote collaboration and external notification delivery `DEFERRED_BY_SCOPE`. PPM local records, all 168 checkpoint identities, GO/signature rules, saved-copy compatibility, reports and local cross-app references remain active and frozen.
