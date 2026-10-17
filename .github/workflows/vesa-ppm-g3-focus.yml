@@ -1,0 +1,73 @@
+# Personal synthetic browser-local PPM task-first usability regression.
+name: VESA PPM G3 mobile focus verification
+on:
+  push:
+    branches:
+      - feature/ppm-g3-mobile-section-focus
+      - main
+    paths:
+      - 'apps/ppm/index.html'
+      - 'apps/ppm/workspace.css'
+      - 'apps/ppm/section-focus.js'
+      - 'apps/ppm/service-worker.js'
+      - 'apps/ppm/tests/p-g11-*.cjs'
+      - '.github/workflows/vesa-ppm-g3-focus.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ppm-g3-focus-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real-mobile-and-desktop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Frozen 168-checkpoint and sibling Node rules
+        run: |
+          set -euo pipefail
+          node --check apps/ppm/section-focus.js
+          node --check apps/ppm/service-worker.js
+          node --check apps/ppm/tests/p-g11-mobile-section-focus.cjs
+          node --check apps/ppm/tests/p-g11-offline-focus.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/ppm/tests/p-g04-decisions.cjs
+          node apps/ppm/tests/p-g05-followups.cjs
+          node apps/ppm/tests/p-g07-reports.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/aql/tests/a-g03-sampling.cjs
+          git diff --check HEAD~1 HEAD
+      - name: Install actual Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Real mobile, 168 identities, PPM apps and offline/browser regressions
+        run: |
+          set -euo pipefail
+          node apps/ppm/tests/p-g11-mobile-section-focus.cjs
+          node apps/ppm/tests/p-g11-offline-focus.cjs
+          node apps/ppm/tests/p-g01-unified-ui.cjs
+          node apps/ppm/tests/p-g02-home.cjs
+          node apps/ppm/tests/p-g03-workflow.cjs
+          node apps/ppm/tests/p-g05-localization.cjs
+          node apps/ppm/tests/p-g06-recovery.cjs
+          node apps/ppm/tests/p-g07-reports.cjs
+          node apps/tna/tests/g11-unified-shell-browser.cjs
+          node apps/aql/tests/a-g01-unified-ui.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-ppm-g3-section-focus-mobile-and-desktop
+          path: |
+            output/playwright/ppm-g3-focus/
+            output/playwright/vesa-unified-ppm-*
+          if-no-files-found: ignore
+          retention-days: 7
