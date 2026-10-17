@@ -19,7 +19,7 @@ async function run(){
  await context.addInitScript(()=>localStorage.setItem('vesa.appcentre.session.v1',JSON.stringify({email:'synthetic-artwork@vesaent.com',name:'SYNTHETIC ARTWORK',role:'admin',userKey:'synthetic-artwork-vesaent-com',loginAt:'2026-10-17T00:00:00Z',expiresAt:'2099-01-01T00:00:00Z'})));
  const page=await context.newPage(),errors=[],external=[];
  page.on('pageerror',e=>errors.push(e.message));
- page.on('request',req=>{if(!req.url().startsWith(base))external.push(req.url());});
+ page.on('request',req=>{const url=req.url();if(!url.startsWith(base)&&!url.startsWith('blob:'+base+'/'))external.push(url);});
  const act=async name=>page.locator('[data-action="'+name+'"]').first().click();
  const fill=async data=>{for(const [key,value] of Object.entries(data)){
   const el=page.locator('#laDialog [name="'+key+'"]');if(!await el.count())throw Error('Artwork form missing '+key);
