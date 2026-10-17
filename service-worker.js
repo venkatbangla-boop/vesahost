@@ -1,4 +1,4 @@
-const CACHE='vesa-v71-techspec-personal-demo';
+const CACHE='vesa-v72-purchase-order-personal-demo';
 const ASSETS=[
   './',
   './index.html',
@@ -16,6 +16,8 @@ const ASSETS=[
   './apps/order-commission/index.html',
   './apps/tech-pack-spec/',
   './apps/tech-pack-spec/index.html',
+  './apps/purchase-order/',
+  './apps/purchase-order/index.html',
   './apps/tna/',
   './apps/tna/index.html',
   './apps/tna/assets/tna.css',

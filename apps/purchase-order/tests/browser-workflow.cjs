@@ -45,7 +45,10 @@ class PurchaseOrderBrowserProof{
     return JSON.parse(localStorage.getItem(key)).records;
   });
   try{
-    await page.goto(host+'/apps/purchase-order/',{waitUntil:'domcontentloaded'});
+    await page.goto(host+'/apps/',{waitUntil:'domcontentloaded'});
+    const link=page.locator('a[href="/apps/purchase-order/"]');
+    assert.equal(await link.count(),1,'The purchase order personal demo must appear exactly once.');
+    await link.click();
     await page.locator('[data-action="new"]').waitFor();
     assert.equal(await page.locator('.vesa-workspace').count(),1);
     assert.equal(await page.locator('[data-vesa-menu]').count(),6);
