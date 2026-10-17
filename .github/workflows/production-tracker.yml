@@ -39,6 +39,10 @@ jobs:
           node --check apps/production-tracker/tests/save-reopen.test.cjs
           node --check apps/production-tracker/tests/browser-workflow.cjs
           node apps/production-tracker/tests/save-reopen.test.cjs
+          node --check apps/production-tracker/src/domain/reviewed-reference.js
+          node --check apps/production-tracker/src/reports/report-model.js
+          node --check apps/production-tracker/tests/report-reference.test.cjs
+          node apps/production-tracker/tests/report-reference.test.cjs
           node tests/vesa-next-app-starter.cjs
           node apps/shipment-documentation/tests/domain.test.cjs
           node apps/fabric-trims/tests/domain.test.cjs
@@ -60,11 +64,11 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
           echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
-      - name: Real browser Production daily and local-copy workflow
+      - name: Real browser Production daily, PO/TNA reference and XLSX/PDF workflow
         run: node apps/production-tracker/tests/browser-workflow.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: production360-m2-synthetic-browser
+          name: production360-m3-synthetic-browser
           path: output/playwright/prod-app09-*
           if-no-files-found: ignore
