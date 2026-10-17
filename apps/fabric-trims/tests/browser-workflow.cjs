@@ -114,7 +114,9 @@ class FabricBrowserTest {
    await act('exceptions');
    assert.match(await page.locator('.ft-card').last().innerText(),/260.0000/);
    assert.match(await page.locator('.ft-card').last().innerText(),/10.0000/);
-   // An overreservation must fail atomically.
+   // Move back from Exceptions to the reservation register before editing.
+   // The action button exists only inside its own inline VESA workspace section.
+   await act('reservations');
    await act('reservation');
    await fill({otherPo:'SYN-OTHER-PO-03',reservationQty:'20.0000',
     date:'2026-11-11',sourceRef:'SYNTHETIC EXCESS RESERVATION'});
