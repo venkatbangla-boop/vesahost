@@ -1,0 +1,41 @@
+name: VESA AQL full-HTML mobile parse and scroll laboratory
+on:
+  push:
+    branches:
+      - audit/aql-g3-load-scroll-20261018
+    paths:
+      - 'tests/vesa-aql-g3-load-scroll.cjs'
+      - '.github/workflows/vesa-aql-g3-performance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  aql-perf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Engine guard and audit syntax
+        run: |
+          set -euo pipefail
+          node --check tests/vesa-aql-g3-load-scroll.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node tests/vesa-blueprint-integrity.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Measure actual 11.8MB AQL page and synthetic inspection
+        run: |
+          node tests/vesa-aql-g3-load-scroll.cjs
+          node apps/aql/tests/a-g01-unified-ui.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-aql-g3-mobile-desktop-perf-metrics
+          path: output/aql-g3-perf/
+          if-no-files-found: error
