@@ -1,5 +1,12 @@
 # VESA 360 — AQL Depth Benchmark and 19-App Product Completion Plan
 
+## 2026-10-18 — NEW G3-AQL PERFORMANCE VERIFICATION
+
+**Real tested lab:** [Chromium #39063920076 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063920076). Full raw 11,783,142-byte AQL HTML; 390px synthetic 4× CPU throttle two runs DOMContentLoaded 1,169–1,189ms, inspection-ready 1,779–1,832ms, 646–659ms of long tasks, ~58MB JS heap; 1440px 1× CPU two runs DOMContentLoaded 315–320ms, inspection-ready 544–572ms. Current inspected DOM has 2 image elements; 291 base64 PNGs in source may be consumed in other workflows and **MUST NOT be stripped without use-case map and PDF/offline parity**. This confirms measurable startup cost, not a production Pages/iOS speed grade. Exact proof/limits: `docs/ux/03_AQL_G3_MOBILE_LOAD_PROFILE.md`. **G3 AQL profiling is complete, optimization is CONDITIONAL** pending dependency map. **NEXT G4-W1 APP-01 Packing: show its eight already-built modules clearly and test complete guided practice click paths.** Main AQL engine source untouched.
+
+---
+
+
 **2026-10-18 — code-backed engineering audit, not a claim of human acceptance**
 
 **Repository:** \`venkatbangla-boop/vesahost\`. **Audited runtime baseline:** \`main\` \`e7b8a549abbc7f115236952c2df04d94d49b897e\` (premium PPM G3 mobile section focus). **Source inventory:** [full-code GitHub Actions #39063215638 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063215638); [AQL media-composition #39063360880 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39063360880). Download artifact \`vesa-aql-versus-19-source-audit\` for complete machine-readable 19-app file lists, class names and blueprint excerpts. The scanner actually read the complete 11.78 MB AQL HTML and all app-owned text/code files in a clean checkout.
