@@ -1,4 +1,4 @@
-const CACHE='vesa-v84-unified-app-centre';
+const CACHE='vesa-v85-premium-login';
 const ASSETS=[
   './',
   './index.html',
@@ -6,6 +6,7 @@ const ASSETS=[
   './terms.html',
   './login/',
   './login/index.html',
+  './css/vesa-login.css?v=20261018-login-r1',
   './apps/',
   './apps/index.html',
   './apps/costing/',
