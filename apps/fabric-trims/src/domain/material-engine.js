@@ -114,7 +114,8 @@ class FabricEngine{
      !this.trim(item.description)||!this.trim(item.unit)||!this.trim(item.sourceRef))
     errors.push('Item needs explicit type, identity, purchase unit and specification source.');
    if(item.gsm&&this.parse(item.gsm,2)===null)errors.push('GSM must be a positive sourced value.');
-   if(item.width&&this.parse(item.width,2)===null)errors.push('Fabric width must be a positive sourced value.');
+   if(item.width&&(this.parse(item.width,2)===null||!['cm','in'].includes(item.widthUnit)))
+     errors.push('Fabric width must be sourced with explicit cm or inch unit.');
   }
   for(const req of p.requirements){
    uniq(req,'BOM requirement');requirements.set(req.id,req);
@@ -137,6 +138,8 @@ class FabricEngine{
      !this.trim(booking.unit))errors.push('Booking needs documented supplier, reference, material, source, quantity and unit.');
    if(booking.committedDate&&!this.date(booking.committedDate))
     errors.push('Supplier committed date must be an actual source date.');
+   if(booking.actualDate&&(!this.date(booking.actualDate)||!this.trim(booking.actualSource)))
+    errors.push('Actual delivery date cannot be used without separate dated receipt/source.');
    if(item&&booking.unit!==item.unit&&this.convert(10000n,booking.unit,item.unit,booking.conversion)===null)
     notes.push('HOLD: supplier quantity unit conversion needs sourced factor and rounding.');
   }
@@ -183,8 +186,10 @@ class FabricEngine{
   }
   for(const reserve of p.reservations){
    uniq(reserve,'reservation');const rc=receipts.get(reserve.receiptId),q=this.parse(reserve.qty);
+   const book=rc&&bookings.get(rc.bookingId),item=book&&items.get(book.itemId);
    if(!rc||q===null||!this.trim(reserve.otherPo)||
-      reserve.otherPo===h.poNo||!this.trim(reserve.sourceRef)||!this.date(reserve.date))
+      reserve.otherPo===h.poNo||!this.trim(reserve.sourceRef)||!this.date(reserve.date)||
+      reserve.unit!==item?.unit)
     errors.push('Other-order reservation needs actual receipt, separate PO, quantity, date and evidence.');
    if(rc&&rc.qaStatus!=='approved')errors.push('Unreleased receipt cannot be reserved.');
    if(rc&&q!==null)reservationsByReceipt.set(rc.id,(reservationsByReceipt.get(rc.id)||0n)+q);
@@ -207,13 +212,14 @@ class FabricEngine{
   const requirementsStatus=p.requirements.map(req=>{
    const target=this.parse(req.approvedRequired),confirmed=allocatedByRequirement.get(req.id)||0n,
     raw=target===null?null:target>confirmed?target-confirmed:0n,
-    estimate=this.demand(req),stale=req.bomRevision!==h.bomRevision;
+    estimate=this.demand(req),stale=req.bomRevision!==h.bomRevision,
+    mismatch=target!==null&&estimate!==null&&target!==estimate;
    if(target!==null&&confirmed>target)
     errors.push('Allocated order quantity exceeds approved requirement '+req.id);
    return {requirementId:req.id,itemId:req.itemId,colour:req.colour,size:req.size,
     unit:req.unit,approved:target===null?null:this.qty(target),confirmed:this.qty(confirmed),
     shortage:raw===null?null:this.qty(raw),consumptionEstimate:estimate===null?null:this.qty(estimate),
-    staleBom:stale,readiness:stale?'review-needed':raw===0n?'allocated':'shortage',
+    staleBom:stale,readiness:(stale||mismatch)?'review-needed':raw===0n?'allocated':'shortage',
     targetLot:req.targetLot||null,targetShade:req.targetShade||null,source:req.sourceRef};
   });
   const deliveryExceptions=p.bookings.map(b=>{
