@@ -4,6 +4,12 @@
 (function(root){
 'use strict';
 class FabricWorkspace{
+ // One app controller owns the nine read-only task links; material source rules remain independent.
+ static steps=Object.freeze([
+  ['summary','openShortages'],['materials','totalItems'],['requirements','demand'],
+  ['bookings','addBooking'],['receipts','qaReview'],['allocations','allocationQty'],
+  ['reservations','reservationQty'],['exceptions','openShortages'],['reports','report']
+ ]);
  constructor(){
   this.main=document.getElementById('ftMain');
   this.dialog=document.getElementById('ftDialog');
@@ -114,7 +120,11 @@ class FabricWorkspace{
    if(action==='home'||action==='open'){
     this.current=null;this.section='summary';this.dirty=false;this.render();return;
    }
-   if(action==='new'){this.form('new');return;}
+   if(action==='preview'){
+     if(this.current||!FabricWorkspace.steps.some(([step])=>step===id))throw Error('Return to All Registers for practice.');
+     this.current=this.E.sample();this.section=id;this.dirty=false;this.render();return;
+    }
+    if(action==='new'){this.form('new');return;}
    if(action==='practice'){
     this.current=this.E.sample();this.section='summary';this.dirty=false;this.render();return;
    }
@@ -177,6 +187,15 @@ class FabricWorkspace{
     rows.map(row=>'<tr>'+row.map(v=>'<td>'+v+'</td>').join('')+'</tr>').join('')+
     '</tbody></table></div>';
  }
+ journey(t){
+  const cards=FabricWorkspace.steps.map(([step,hint],index)=>
+   '<article class="ft-journey-card"><span class="ft-journey-step">'+String(index+1).padStart(2,'0')+
+   '</span><h3>'+t(step)+'</h3><p>'+t(hint)+'</p>'+
+   '<button type="button" class="ft-btn" data-action="preview" data-id="'+this.esc(step)+
+   '" aria-label="'+t('journeyOpen')+' · '+t(step)+'">'+t('journeyOpen')+'</button></article>');
+  return '<section class="ft-card" aria-labelledby="ftJourneyTitle"><h2 id="ftJourneyTitle">'+t('journeyTitle')+
+   '</h2><p class="ft-note">'+t('journeyLead')+'</p><div class="ft-journey">'+cards.join('')+'</div></section>';
+ }
  render(){
   const e=x=>this.esc(x),t=k=>e(this.t(k));
   const heading='<section class="ft-card"><h1>'+t('title')+'</h1><p class="ft-note">'+t('lead')+
@@ -189,12 +208,11 @@ class FabricWorkspace{
     '<h2>'+t('open')+'</h2>'+
     (records.length?records.map(r=>'<div class="ft-record"><span><b>'+e(r.poNo)+'</b> · '+e(r.style)+
      '<small>Revision '+e(r.revision)+'</small></span>'+this.button('open-record','open',false,r.id)+'</div>').join(''):
-      '<p class="ft-note">'+t('none')+'</p>')+'</section>';
+      '<p class="ft-note">'+t('none')+'</p>')+'</section>'+this.journey(t);
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,x=this.E.calculate(p,this.asOf),practice=p.mode==='practice';
-  const sections=['summary','materials','requirements','bookings','receipts','allocations',
-    'reservations','exceptions','reports'];
+  const sections=FabricWorkspace.steps.map(([step])=>step);
   this.main.innerHTML=heading+'<section class="ft-card"><h2>'+e(p.header.poNo)+' · '+e(p.header.style)+
     '</h2><p class="ft-note">'+e(p.header.buyer)+' · '+e(p.header.factory)+' · '+
       (practice?'SYNTHETIC PRACTICE':t('save'))+'</p><div class="ft-actions">'+

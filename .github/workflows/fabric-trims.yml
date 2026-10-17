@@ -4,11 +4,15 @@ on:
   push:
     branches:
       - feature/fabric-trims-360
+      - feature/fabric-g4-source-journey
+      - main
     paths:
       - 'apps/fabric-trims/**'
       - '.github/workflows/fabric-trims.yml'
       - 'js/app-catalogue.js'
       - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/personal-demo-release.cjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -61,5 +65,7 @@ jobs:
         if: always()
         with:
           name: fabric360-synthetic-browser
-          path: output/playwright/fabric-app06-*
+          path: |
+            output/playwright/fabric-app06-*
+            output/playwright/fabric-g4-*
           if-no-files-found: ignore

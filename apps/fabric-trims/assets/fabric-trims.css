@@ -17,6 +17,13 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
 .ft-tile{background:var(--look-surface,#eef3f9);padding:13px;border:1px solid var(--line,#cbd6e4);border-radius:11px;min-width:0}
 .ft-tile strong{display:block;font-size:1.32rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .ft-tile small{color:var(--muted,#526176)}
+/* App-owned task discovery; the original QC, quantity and storage owners stay separate. */
+.ft-journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ft-journey-card{display:flex;flex-direction:column;gap:9px;min-width:0;padding:14px;border:1px solid var(--line,#cbd6e4);border-radius:12px;background:var(--look-surface,#eef3f9)}
+.ft-journey-card h3,.ft-journey-card p{margin:0}
+.ft-journey-card p{flex:1;color:var(--muted,#526176)}
+.ft-journey-step{font-size:.76rem;font-weight:800;letter-spacing:.08em;color:var(--muted,#526176)}
+.ft-journey-card .ft-btn{width:100%}
 .ft-scroll{max-width:100%;overflow:auto;border:1px solid var(--line,#cbd6e4);border-radius:10px}
 .ft-table{border-collapse:collapse;min-width:710px;width:100%;font-size:.88rem}
 .ft-table td,.ft-table th{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line,#cbd6e4);overflow-wrap:anywhere}
@@ -34,8 +41,8 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
 .ft-form .ft-check{display:flex;gap:10px;align-items:center}
 .ft-check input{width:22px;min-height:22px}
 .ft-report-section{margin:16px 0;break-inside:avoid}
-@media(max-width:740px){.ft-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ft-card{padding:12px}}
-@media(max-width:470px){.ft-grid,.ft-form{grid-template-columns:1fr}.ft-form .wide,.ft-form label.wide{grid-column:1}.ft-actions .ft-btn{flex:1 1 auto}}
+@media(max-width:740px){.ft-grid,.ft-journey{grid-template-columns:repeat(2,minmax(0,1fr))}.ft-card{padding:12px}}
+@media(max-width:470px){.ft-grid,.ft-journey,.ft-form{grid-template-columns:1fr}.ft-form .wide,.ft-form label.wide{grid-column:1}.ft-actions .ft-btn{flex:1 1 auto}}
 @media print{
  .vesa-workspace,.app-user-bar,.ft-actions,.ft-tabs,.ft-dialog,.ft-hide-print{display:none!important}
  #ftMain{width:100%;padding:0}.ft-card{border:0;padding:0}.ft-table{font-size:10px}.ft-table td,.ft-table th{padding:5px 6px}

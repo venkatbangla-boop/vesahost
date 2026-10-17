@@ -54,6 +54,34 @@ class FabricBrowserTest {
    await page.locator('[data-action=new]').waitFor({timeout:9000});
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('[data-vesa-menu]').count(),6);
+   // Original stage previews cannot fabricate QC release or change stock.
+   const steps=['summary','materials','requirements','bookings','receipts','allocations','reservations','exceptions','reports'];
+   const previews=page.locator('.ft-journey [data-action="preview"]');
+   const noStoredRecords=()=>page.evaluate(()=>Object.keys(localStorage).every(k=>!k.startsWith('vesa.fabric-trims.records.v1.')));
+   assert.equal(await previews.count(),9);
+   assert(await noStoredRecords(),'No material record before preview');
+   fs.mkdirSync(out,{recursive:true});
+   for(const width of [320,390,1440]){
+    await page.setViewportSize({width,height:850});
+    assert.equal(await previews.count(),9,width+'px all nine task links');
+    const bounds=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,
+      heights:[...document.querySelectorAll('.ft-journey .ft-btn')].map(n=>n.getBoundingClientRect().height)}));
+    assert(bounds.scroll<=bounds.width+1,width+'px home no overflow');
+    assert(bounds.heights.every(h=>h>=44),width+'px touch actions');
+    await page.screenshot({path:path.join(out,'fabric-g4-home-'+width+'.png'),fullPage:true});
+   }
+   await page.setViewportSize({width:390,height:850});
+   for(const step of steps){
+    await page.locator('.ft-journey [data-action="preview"][data-id="'+step+'"]').click();
+    assert.equal(await page.locator('.ft-tabs [data-action="'+step+'"]').getAttribute('aria-current'),'true',step+' real section');
+    assert.match(await page.locator('#ftMain').innerText(),/SYNTHETIC PRACTICE/,step+' remains fictional');
+    assert(await page.locator('#ftMain [data-action="save"]').isDisabled(),step+' cannot save');
+    assert(await noStoredRecords(),step+' does not create stock');
+    if(step==='reports')await page.screenshot({path:path.join(out,'fabric-g4-mobile-report.png')});
+    await act('home');
+   }
+   await page.setViewportSize({width:1280,height:900});
+   assert(await noStoredRecords(),'Nine previews never create stock or QC data');
    await act('new');
    await fill({poNo:'SYN-PO-FAB-01',style:'SYN-TEE',buyer:'SYNTHETIC BUYER',
     factory:'SYNTHETIC FACTORY',bomRevision:'BOM-V1',
@@ -192,6 +220,12 @@ class FabricBrowserTest {
     await page.waitForFunction(x=>document.documentElement.lang===x,lang);
     await page.keyboard.press('Escape');await settings.waitFor({state:'hidden'});
     assert.match(await page.locator('.ft-tabs').innerText(),new RegExp(label));
+    await act('home');
+    const titles={en:'Explore nine Fabric & Trims work steps',bn:'ফ্যাব্রিক ও ট্রিমসের নয়টি ধাপ',
+      hi:'फैब्रिक और ट्रिम्स के नौ चरण',ta:'Fabric & Trims — ஒன்பது வேலைப் பகுதிகள்'};
+    assert.equal(await page.locator('#ftJourneyTitle').innerText(),titles[lang]);
+    assert.equal(await page.locator('.ft-journey [data-action="preview"]').count(),9);
+    await act('continue');
     assert.equal(JSON.stringify(await saved()),history);
    }
    await page.reload({waitUntil:'domcontentloaded'});await act('continue');

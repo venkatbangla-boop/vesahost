@@ -1,4 +1,4 @@
-const CACHE='vesa-v95-sampling-g4-source-journey';
+const CACHE='vesa-v96-fabric-g4-source-journey';
 const ASSETS=[
   './',
   './index.html',

@@ -3,7 +3,7 @@
 'use strict';
 class FabricCopy {
  static translations={
- en:{
+ en:{journeyTitle:"Explore nine Fabric & Trims work steps",journeyLead:"Open real sections using unsaved, read-only fictional data. This does not create a booking, stock receipt, QC release or order allocation.",journeyOpen:"View practice",
   title:'Fabric & Trims 360',lead:'Source-based BOM demand, supplier booking, receipt QC, lot allocations and shortages',
   new:'New Material Register',continue:'Continue Last',open:'Open Saved',practice:'Practice Example',
   save:'Save Now',download:'Download Saved Copy',upload:'Open Saved Copy',back:'All Registers',
@@ -49,7 +49,7 @@ class FabricCopy {
   reportNotice:'Readiness is calculated from actual order allocations, not future supplier promises. TNA and PPM are never changed automatically.',
   sourceNotice:'Select and independently review an exported source file; sibling application records stay untouched.',
   current:'Current',stale:'Outdated BOM — review needed'},
- ta:{
+ ta:{journeyTitle:"Fabric & Trims — ஒன்பது வேலைப் பகுதிகள்",journeyLead:"கற்பனை Material Register-ல் மட்டும் பாருங்கள். Booking, QC Approval, Allocation அல்லது Stock தானாக உருவாகாது; Save ஆகாது.",journeyOpen:"Practice திற",
   title:'Fabric & Trims 360',lead:'BOM Qty, Fabric Booking, Receipt, QC, Lot Allocation & Shortage',
   new:'புதிய Material Register',continue:'கடைசி பதிவு திற',open:'Saved Register திற',practice:'Practice Example',
   save:'இப்போது Save',download:'Saved Copy Download',upload:'Saved Copy திற',back:'எல்லா Registers',
@@ -95,7 +95,7 @@ class FabricCopy {
   reportNotice:'Future Booking-ஐ stock எனக் கணக்கிட மாட்டோம்; TNA/PPM மாற்றமில்லை.',
   sourceNotice:'வேறு App-ன் ஆதாரத்தை தனியாக சரிபார்க்கவும்.',
   current:'தற்போதைய',stale:'பழைய BOM — மீண்டும் Review'},
- bn:{
+ bn:{journeyTitle:"ফ্যাব্রিক ও ট্রিমসের নয়টি ধাপ",journeyLead:"কাল্পনিক রিড-ওনলি রেকর্ডে আসল অংশ খুলুন। বুকিং, QC ছাড়পত্র, মজুত বা বরাদ্দ তৈরি বা সেভ হয় না।",journeyOpen:"অনুশীলন দেখুন",
   title:'ফ্যাব্রিক ও ট্রিমস ৩৬০',lead:'বিওএম চাহিদা, বুকিং, পণ্য প্রাপ্তি, QC, লট বরাদ্দ ও ঘাটতি',
   new:'নতুন ম্যাটেরিয়াল রেজিস্টার',continue:'শেষটি খুলুন',open:'সেভ রেকর্ড খুলুন',practice:'অনুশীলন উদাহরণ',
   save:'এখন সেভ',download:'সেভ কপি ডাউনলোড',upload:'সেভ কপি খুলুন',back:'সব রেজিস্টার',
@@ -140,7 +140,7 @@ class FabricCopy {
   reportNotice:'ভবিষ্যৎ বুকিংকে স্টক ধরা হয় না; TNA/PPM পরিবর্তন হয় না।',
   sourceNotice:'অন্য অ্যাপের উৎস আলাদাভাবে যাচাই করুন।',
   current:'বর্তমান',stale:'পুরনো BOM — আবার যাচাই'},
- hi:{
+ hi:{journeyTitle:"फैब्रिक और ट्रिम्स के नौ चरण",journeyLead:"काल्पनिक रीड-ओनली सामग्री में असली भाग खोलें। बुकिंग, QC मंजूरी, स्टॉक या आवंटन नहीं बनेगा या सेव होगा।",journeyOpen:"अभ्यास देखें",
   title:'फैब्रिक और ट्रिम्स 360',lead:'BOM मांग, बुकिंग, माल प्राप्ति, QC, लॉट और कमी',
   new:'नया मैटेरियल रजिस्टर',continue:'पिछला खोलें',open:'सेव रिकॉर्ड खोलें',practice:'अभ्यास उदाहरण',
   save:'अभी सेव',download:'सेव कॉपी डाउनलोड',upload:'सेव कॉपी खोलें',back:'सभी रजिस्टर',
