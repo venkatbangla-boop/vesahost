@@ -1,0 +1,55 @@
+/* APP-09 M1 pure synthetic domain: source boundaries, WIP and revisions. */
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const dir=path.resolve(__dirname,'..');
+const sandbox={module:{exports:{}},Date,Math,JSON};sandbox.globalThis=sandbox;
+vm.createContext(sandbox);
+for(const f of ['stage-flow.js','wip-balance.js','daily-output-ledger.js'])
+ vm.runInContext(fs.readFileSync(path.join(dir,'src/domain',f),'utf8'),sandbox,{filename:f});
+const E=sandbox.VesaProductionStageFlow,W=sandbox.VesaProductionWipBalance,L=sandbox.VesaProductionDailyLedger;
+assert.equal(E.version,'VESA-PROD-360-1');
+assert(E.date('2026-10-17'));assert(!E.date('2026-02-30'));assert(!E.whole(-1));
+assert.equal(W.calculate(null,[]).closing,null,'Unknown opening cannot mean zero');
+assert.equal(W.targetBalance(null,5),null,'Missing reviewed target cannot imply zero');
+assert.throws(()=>W.calculate(0,[{status:'locally-reviewed',verifiedIn:0,verifiedOut:1,verifiedRejects:0}]),/negative/);
+const header={poNo:'SYN-PO-001',style:'SYN-TOP',colour:'Navy',size:'M',lot:'SYN-LOT-A',factory:'SYN FACTORY',unit:'pieces',sourceRef:'SYN PO PLAN SOURCE'};
+const before=L.create(header);
+assert(L.validate(before).ok);
+assert.equal(L.validate(before).groups.length,0);
+const axis={stage:'cutting',line:'SYN-LINE-1',lot:'SYN-LOT-A',unit:'pieces'};
+let p=L.appendOpening(before,{...axis,opening:0,sourceRef:'SYN OPENING WIP 0',reviewedBy:'SYN REVIEWER',reviewDate:'2026-10-17'});
+assert.equal(before.stageOpenings.length,0,'Opening append must not mutate original');
+const target={...axis,id:'TARGET-1',quantity:50,sourceRef:'SYN SIGNED TARGET',declaredAuthority:'SYN BUYER PLAN',sourceDate:'2026-10-15',reviewedBy:'SYN REVIEWER',reviewDate:'2026-10-17'};
+p=L.appendTarget(p,target);assert.equal(L.validate(p).groups[0].sourceTarget,50);
+const row={...axis,id:'OBS-1',date:'2026-10-17',shift:'Day',good:20,verifiedIn:25,verifiedOut:20,verifiedRejects:1,rework:2,
+ sourceRef:'SYN DAILY STAGE RECORD',actor:'SYN SHIFT LEAD',status:'locally-reviewed',reviewedBy:'SYN REVIEWER',reviewDate:'2026-10-17',
+ reviewSource:'SYN REVIEW SHEET',handoffRef:'SYN MATERIAL RELEASE',outRef:'SYN OUT RECORD',rejectRef:'SYN REJECT RECORD'};
+const oldP=p;p=L.appendObservation(p,row);assert.equal(oldP.observations.length,0);
+let x=L.validate(p);assert(x.ok,x.errors.join('\n'));
+assert.equal(x.groups[0].locallyReviewedGood,20);assert.equal(x.groups[0].wip.closing,4);
+assert.equal(x.groups[0].remaining,30);assert.equal(x.groups[0].notAQLRelease,true);
+assert.equal(x.notApprovedShipment,true);
+assert.throws(()=>L.appendObservation(p,{...row,id:'DUPLICATE'}),/Duplicate stage\/day\/shift/);
+assert.throws(()=>L.appendObservation(p,{...row,id:'BAD-CORRECTION',supersedes:row.id,correctionReason:'',correctionSource:''}),/Correction/);
+const corrected={...row,id:'OBS-2',good:15,verifiedOut:15,supersedes:'OBS-1',correctionReason:'Correct counted pieces',correctionSource:'SYN CORRECTED TALLY'};
+const preCorrect=p;p=L.appendObservation(p,corrected);
+assert.equal(preCorrect.observations[0].good,20);assert.equal(p.observations[0].good,20);
+x=L.validate(p);assert(x.ok);assert.equal(x.groups[0].locallyReviewedGood,15);assert.equal(x.groups[0].wip.closing,9);assert.equal(x.groups[0].remaining,35);
+assert.throws(()=>L.appendObservation(p,{...row,id:'STALE',supersedes:'OBS-1',correctionReason:'stale',correctionSource:'SYN'}),/Duplicate/);
+assert.throws(()=>L.appendObservation(p,{...corrected,id:'NOT-REVIEWED',supersedes:'OBS-2',status:'recorded',correctionReason:'pending',correctionSource:'SYN'}),/silently replace/);
+const illegal={...row,id:'NEG',date:'2026-10-18',good:100,verifiedIn:0,verifiedOut:100,verifiedRejects:0};
+const prev=JSON.stringify(p);assert.throws(()=>L.appendObservation(p,illegal),/negative/);assert.equal(JSON.stringify(p),prev,'Failed append must be atomic');
+const other={...row,id:'SEW-1',date:'2026-10-18',stage:'sewing',line:'SYN-LINE-2',good:7,verifiedIn:8,verifiedOut:7,verifiedRejects:1};
+p=L.appendObservation(p,other);x=L.validate(p);
+const cut=x.groups.find(g=>g.stage==='cutting'),sew=x.groups.find(g=>g.stage==='sewing');
+assert.equal(cut.locallyReviewedGood,15);assert.equal(sew.locallyReviewedGood,7);
+assert.equal(sew.wip.closing,null,'Missing stage opening is unknown');assert.equal(sew.remaining,null,'Missing stage target is unknown');
+const pending={...row,id:'RECORD-ONLY',date:'2026-10-18',status:'recorded',reviewedBy:'',reviewDate:'',reviewSource:'',verifiedIn:0,verifiedOut:0,verifiedRejects:0,good:99};
+p=L.appendObservation(p,pending);x=L.validate(p);assert.equal(x.groups.find(g=>g.stage==='cutting').locallyReviewedGood,15);
+assert.equal(x.groups.find(g=>g.stage==='cutting').unreviewedDays,1);
+const firstTarget=p.stageTargets[0];const updated={...firstTarget,id:'TARGET-2',quantity:60,supersedes:firstTarget.id,amendmentReason:'New reviewed production target',amendmentSource:'SYN TARGET AMENDMENT'};
+p=L.appendTarget(p,updated);x=L.validate(p);assert.equal(x.groups.find(g=>g.stage==='cutting').remaining,45);
+assert.equal(p.stageTargets[0].quantity,50,'Old target source must remain in history');
+assert.throws(()=>L.appendTarget(p,{...updated,id:'TARGET-3',supersedes:'TARGET-1'}),/revision/);
+assert.throws(()=>L.appendObservation(p,{...row,id:'BAD-DATE',date:'2026-02-30'}),/date|day/i);
+console.log('PRODUCTION M1 DOMAIN PASS: explicit stage/line/date/shift/lot units, append-only corrections and targets, source-reviewed output, WIP null/negative guard, atomic duplicate rejection, no stage double count or AQL/TNA release.');
