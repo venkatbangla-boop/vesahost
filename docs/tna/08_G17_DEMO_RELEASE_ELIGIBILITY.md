@@ -1,0 +1,50 @@
+# TNA 360 — G17 Personal-Demo Publication / Human Acceptance Gate
+
+## 2026-10-17 — TNA GARMENT MASTER SHEET G13–G17 VERIFIED; G17 FOUR-LANGUAGE DIALOG COMPLETE — PUBLIC RELEASE HOLD
+
+**Latest independently accepted technical source:** `feature/tna-merchandising-sheet` `d7806dcadfcc9af4dde77c21f7826614da2a22e7`, [GitHub Actions #39051371084 COMPLETE SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39051371084), [real Chromium offline/XLSX/PDF/screenshots artifact 12107073943](https://github.com/venkatbangla-boop/vesahost/actions/runs/39051371084/artifacts/12107073943). Node canonical 15 original blueprint hashes, all TNA G02/G03/G05/G07, G13 source-only knit/woven/denim, G14 revision/immutable-baseline, G15 local four-sheet XLSX/PDF/formula guard, G16 27-resource app-scoped worker manifest, older PPM/AQL/shell source guard all PASS. Installed real Chromium G13–G17 verifies new **EN/BN/HI/TA date-edit dialog labels and save button**, whole TNA sheet, source-backed planning dates, Save/Open, genuine OFFLINE network-disabled reload, offline workbook/date revision, print/PDF, 320–1440px, 200% themes/accessibility, old TNA UI/report and zero external requests or page errors. Root, PPM, AQL caches remain preserved. Previous candidate G17 #39051212270 had a stale G07 CSS version assertion, #39051273332 had uppercase CSS affecting case-sensitive English visible label test; narrow test-only fixes `b426c081` and `d7806dca` precede the accepted independent PASS. Do not relabel rejected candidates.
+
+**Engineering checkpoint verdict:** G13 M1 one garment sheet `ACCEPTED`; G14 M2 human-source-validated baseline/current/forecast editing with locked accepted baseline `ACCEPTED`; G15 M3 real synthetic four-sheet Excel + isolated landscape A4 PDF `ACCEPTED`; G16 M4 complete scoped offline `ACCEPTED`; G17 final four-language planning date dialog `ACCEPTED`. These are all **development-branch-only personal synthetic demo technical checks**. Original 15 portfolio demos remain previously released, and live `main` source still `dae3aa42b5f24adc7805c7a67090e20916672dab` when checked. **NO feature code merged into `main` and NO new live TNA feature published.** All old app and TNA saved-copy/domain/CPM/buyer approval/source artifact contracts preserved; do not restart any accepted app.
+
+**Human and hosting gate remains a genuine HOLD:** `docs/uat/01_TNA_LOCAL_UAT.md` has **all 12 TNA human cases NOT TESTED**; entire UAT package remains **1 PASS / 0 FAIL / 48 NOT TESTED**. Browser and Node CI do NOT count as human UAT or factory/buyer/bank acceptance. GitHub Pages may showcase noncommercial static projects, but GitHub expressly prohibits free Pages operation of online businesses/commercial SaaS (https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits); suitability of this business-domain project is not independently certified. See `docs/tna/08_G17_DEMO_RELEASE_ELIGIBILITY.md`. Real buyer/PO/LC/cost/photo/production data, commercial backends and server-side login remain out of scope.
+
+**PRECISE NEXT ACTION (not another TNA rebuild):** Conduct user/human `UAT-TNA-01..12` on an approved preview, retaining tester/date/device and exact source SHA; obtain a clear noncommercial personal-project showcase eligibility determination (GitHub Support if business-domain ambiguity persists). Do **not** fast-forward `main` or declare this TNA rework DEMO LIVE until these gates are satisfied. Once release is explicitly eligible, run narrow reviewed integration, independent main Node/Chromium/sibling CI, Pages SUCCESS and exact publicly-served HTML/CSS/domain/bootstrap/presenter/offline-worker bytes plus all prior 15 demo routes. Then record SHA/links and preserve production HOLD without factory/buyer signoff. Until then continue only audit-proved, safely scoped engineering improvements. No ZIP reattachment, new paid service, credential upload, forced push or false status.
+
+---
+
+**Recorded:** 2026-10-17. **Status:** `PUBLIC RELEASE HOLD / TECHNICAL BRANCH DEMO ONLY`. This file is release evidence and scope control, not a request to publish, a human signature or a Pages compliance certification.
+
+## Source of truth and accepted automated tests
+
+- Repository `venkatbangla-boop/vesahost`. Development `feature/tna-merchandising-sheet`; last independently accepted technical source `0cebc1e1687fc4bd8e36537faa89521e24ef5b5b`, [G16 real disconnected Chromium and TNA/PPM/AQL CI #39050718169 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39050718169), [XLSX/PDF/offline browser artifact 12107801523](https://github.com/venkatbangla-boop/vesahost/actions/runs/39050718169/artifacts/12107801523).
+- Prior technical releases within **feature only**: G13/M1 garment sheet / task and four-language headings; G14/M2 human-sourced separate baseline/current/forecast revisions and immutable confirmed baseline; G15/M3 real 4-sheet XLSX, formula-safety, isolated real Chromium print/PDF; G16/M4 offline reload with independent scoped worker, offline Excel, Save/Open, preserved old-app caches.
+- `main` was `dae3aa42b5f24adc7805c7a67090e20916672dab` when the release audit began and is the current LIVE baseline until explicitly verified otherwise. Public `https://vesaent.com/apps/tna/` must **NOT** be described as already serving this feature branch.
+- G17: finish four-language source-backed planning-date dialog, actual Chromium EN/BN/HI/TA, cache-busted version and offline regression. G17 status is `NOT ACCEPTED` before its own exact-sha CI success.
+- The original 15 personal-demo portfolio apps and PPM/AQL domain/state/test contracts stay frozen. No existing browser records, server-backed identities or schemas are migrated or deleted.
+
+## GitHub Pages eligibility and data policy
+
+Authoritative published GitHub documents:
+- https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
+- https://docs.github.com/en/site-policy/github-terms/github-terms-for-additional-products-and-features
+
+GitHub Pages is primarily a public static showcase host, and its terms **do not allow** using Pages free hosting to run an online business, commercial transactions or commercial SaaS. It also should not host sensitive transactions. Personal noncommercial synthetic project showcases can be appropriate, but **this corporate-domain context does not automatically prove eligibility**. Product code being static, offline-capable, or in a public GitHub repository is insufficient. No Pages deployment of the TNA rework until its specific intended use is confirmed to be demonstrably noncommercial; seek GitHub Support guidance if the corporate use remains ambiguous. No real buyer/factory artwork, PO, bank LC, contact details, proprietary cost or photos, or production log should be committed to Pages or treated as permitted application data. Current browser-visible login is NOT secure server-side authentication and must not be represented otherwise.
+
+## Human UAT and independent approval
+
+`docs/uat/00_READ_ME_FIRST.md`, `01_TNA_LOCAL_UAT.md`, `05_RESULTS_AND_SIGNOFF.md` are the frozen human evidence source. Last verified 49 human rows = **1 PASS / 0 FAIL / 48 NOT TESTED**. Every TNA human row, **UAT-TNA-01..12, remains NOT TESTED**. Actual named tester, browser/device/reader, exact source commit, screenshot or reproducible output, any failures, and sign-off are mandatory. A synthetic Chromium artifact does not substitute for buyer/factory acceptance, local merchandise user feedback or real Excel desktop reader output.
+
+Focused UAT risk: Can a Bangladesh knit/woven merchandiser find Buyer/Factory/Style/PO/LC/approvals/cutting/sewing/shipment and maintain source-backed dates in the new sheet without confusion? Can a human open saved copies, use all 4 languages, print 100+ rows without clipped data, understand that factory/LC/buyer decisions are **not** automated, and use a real mobile? This needs user confirmation, not a lab-only inferred PASS.
+
+## Exact future publication decision gate (all required, sequential)
+
+1. **Technical CI:** independent G17 exact head source Node/real Chromium/legacy sibling tests `SUCCESS`, no scope drift, genuine offline after reload, actual 4-sheet XLSX, print PDF and zero page errors.
+2. **Human workflow UAT:** approved tester conducts UAT-TNA-01..12 with concrete proof, or explicitly documents which original app defects are open. Do not convert NOT TESTED to PASS without evidence.
+3. **Hosting suitability:** confirm the entire requested use is personal noncommercial showcase only and eligible under GitHub's official Pages terms; otherwise keep commercial deployment on hold and use a separately authorized host (not assumed available).
+4. **Release integration:** only after gates 1–3, compare exact `main` to accepted feature SHA; do not force-push. Build/test minimal merge without rebuilding sibling apps or changing original blueprints.
+5. **Public proof:** require GitHub Pages successful deployment + byte-for-byte published HTML, versioned domain/controller/presenter/CSS, app-scoped worker, offline-registration and previous 15 live demo files, App Centre/shared scripts/old root cache. Verify personal-synthetic disclaimer and no real order data. A `LIVE` claim is prohibited until these independently pass.
+6. **After release:** update `VESA_PROGRESS.md`, `VESA_RESUME_PROMPT.md`, G17 tracker, deployed SHA, exact CI and smoke links, exclusions and NEXT ACTION. Keep production approval `HOLD` unless new permissions/evidence exist.
+
+**Current explicit verdict:** `NOT READY TO PUBLISH`, even when M1–M4 automatic tests pass. This is an evidence gate, not permission to restart TNA or block unrelated locally scoped defect fixes.
+
+**Rollback:** preserve currently published TNA main asset versions and original service worker until a separate verified release; if a future public personal-demo release fails, revert its exact TNA-only integration/source cache registration without deleting PPM/AQL caches or user local records.
