@@ -87,7 +87,8 @@ class LCPolicyEngine {
   if(!chosen||!this.date(chosen.date)||!trim(chosen.source))
    return {date:null,issue:'Needs Information: explicitly sourced '+String(event||'start')+' event date'};
   const n=Number(term.days);
-  if(!Number.isSafeInteger(n)||n<0||n>3650||!trim(term.sourceRef)||typeof term.includeStart!=='boolean'||
+  if(term.days===null||term.days===undefined||term.days===''||!Number.isSafeInteger(n)||n<0||n>3650||
+      !trim(term.sourceRef)||typeof term.includeStart!=='boolean'||
       !['calendar','business'].includes(term.convention))
    return {date:null,issue:'Needs Information: sourced days, inclusion and day convention'};
   if(term.convention==='calendar')
