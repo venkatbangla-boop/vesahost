@@ -7,6 +7,9 @@ class VesaClaimsWorkspace{
  constructor(){
   this.main=document.getElementById('clmMain');this.dialog=document.getElementById('clmDialog');
   this.body=document.getElementById('clmDialogBody');this.file=document.getElementById('clmCopyFile');
+  this.refFile=document.getElementById('clmReferenceFile');this.Ref=root.VesaClaimReviewedReference;
+  this.R=root.VesaClaimsReportModel;this.refKind='aql';this.pendingRef=null;
+  this.asOf=new Date().toISOString().slice(0,10);
   this.E=root.VesaClaimRegister;this.M=root.VesaClaimExposure;this.S=root.VesaClaimSettlementHistory;
   this.C=root.VesaClaimsCopyCodec;this.T=root.VesaClaimsCopy;
   const u=root.VesaAuth?.session?.()||{};
@@ -64,6 +67,16 @@ class VesaClaimsWorkspace{
     this.modal(this.t('upload'),'<p class="clm-muted">Source copy opened separately. Other cases remain on this device.</p>');
    }catch(err){this.error(err.message);}
   });
+  this.refFile.addEventListener('change',async()=>{
+   const file=this.refFile.files?.[0];this.refFile.value='';if(!file)return;
+   try{
+    if(!this.current||file.size>120000)throw Error('Select an open case and source file under 120 KB');
+    const ref=JSON.parse(await file.text());
+    if(!this.Ref.sourceValid(ref,this.refKind)||!this.Ref.matchesCase(ref,this.current))
+     throw Error('Typed source owner, buyer identity or PO does not match this claim');
+    this.pendingRef=this.E.copy(ref);this.form('source-confirm');
+   }catch(err){this.error(err.message);}
+  });
   root.addEventListener('vesa-preferences-change',()=>this.render());
   root.VesaClaims360=this;this.render();
  }
@@ -73,8 +86,8 @@ class VesaClaimsWorkspace{
    Edit:[['add-finding','addFinding'],['add-evidence','addEvidence'],['add-response','addResponse'],
     ['add-agreement','addAgreement'],['add-settlement','addSettlement'],['add-decision','addDecision']],
    View:[['summary','summary'],['findings','findings'],['evidence','evidence'],['responses','responses'],
-    ['agreements','agreements'],['settlements','settlements'],['decisions','decisions'],['history','history'],['reports','reports']],
-   Tools:[['summary','summary'],['reports','reports']],Help:[['help','help']]};
+    ['agreements','agreements'],['settlements','settlements'],['decisions','decisions'],['references','references'],['history','history'],['reports','reports']],
+   Tools:[['summary','summary'],['asof','selectAsOf'],['report','report'],['excel','excel'],['print','print'],['reference-select','referenceSelect']],Help:[['help','help']]};
   this.modal(name,'<div class="clm-actions">'+(menu[name]||[]).map(([a,k])=>'<button type="button" class="clm-btn" data-menu-action="'+this.e(a)+'">'+this.e(this.t(k))+'</button>').join('')+'</div>');
   this.body.querySelectorAll('[data-menu-action]').forEach(x=>x.onclick=()=>{this.dialog.close();this.action(x.dataset.menuAction);});
  }
@@ -101,14 +114,29 @@ class VesaClaimsWorkspace{
   if(name==='download'){if(!this.current||this.current.mode==='practice')throw Error(this.t('practiceOnly'));
    this.download(this.C.encode(this.current),'VESA-CLAIM-'+this.current.id+'.vesaclaim');return;}
   if(name==='upload'){this.file.click();return;}
-  if(['summary','findings','evidence','responses','agreements','settlements','decisions','reports','history'].includes(name)){
+  if(['summary','findings','evidence','responses','agreements','settlements','decisions','references','reports','history'].includes(name)){
    if(!this.current)throw Error('Open a claim case first');this.section=name;this.render();return;}
+  if(name==='asof'){if(!this.current)throw Error('Open case first');this.form('asof');return;}
+  if(name==='reference-select'){if(!this.current||this.current.mode==='practice')throw Error('Open editable claim first');this.form('reference-select');return;}
+  if(name==='report'){if(!this.current)throw Error('Open case first');this.section='reports';this.render();return;}
+  if(name==='excel'){this.excel();return;}
+  if(name==='print'){if(!this.current)throw Error('Open case before Print');this.section='reports';this.render();root.print();return;}
   if(name==='help'){this.modal(this.t('help'),'<p class="clm-warning">'+this.e(this.t('warning'))+'</p>'+
    '<p>'+this.e(this.t('noApproval'))+'</p><p>'+this.e(this.t('noEmail'))+'</p>');return;}
   if(['add-finding','add-evidence','add-response','add-agreement','add-settlement','add-decision'].includes(name)){
    if(!this.current||this.current.mode==='practice')throw Error(this.t('practiceOnly'));
    this.form(name);return;}
  }catch(err){this.error(err.message);}}
+ excel(){
+  if(!this.current)throw Error('Open a source claim case first');
+  if(!root.XLSX)throw Error('Bundled Excel library unavailable');
+  const valid=this.E.validate(this.current);if(!valid.ok)throw Error(valid.errors.join('; '));
+  const book=root.XLSX.utils.book_new();
+  for(const [name,rows]of Object.entries(this.R.rows(this.current,this.asOf))){
+   root.XLSX.utils.book_append_sheet(book,root.XLSX.utils.aoa_to_sheet(this.R.excelRows(name,rows)),name.slice(0,31));
+  }
+  root.XLSX.writeFile(book,'VESA-CLAIMS-'+this.current.id+'.xlsx');
+ }
  table(head,rows){return'<div class="clm-scroll"><table class="clm-table"><thead><tr>'+
   head.map(x=>'<th>'+this.e(x)+'</th>').join('')+'</tr></thead><tbody>'+
   rows.map(row=>'<tr>'+row.map(v=>'<td>'+this.e(v===undefined||v===null||v===''?this.t('needs'):v)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
@@ -129,7 +157,7 @@ class VesaClaimsWorkspace{
   }
   const p=this.current,practice=p.mode==='practice',checked=this.E.validate(p),
    status=checked.ok?this.E.localStatus(p):{state:'Needs Information'};
-  const tabs=['summary','findings','evidence','responses','agreements','settlements','decisions','reports','history'];
+  const tabs=['summary','findings','evidence','responses','agreements','settlements','decisions','references','reports','history'];
   this.main.innerHTML=banner+'<section class="clm-card"><h2>'+e(p.header.caseNumber)+
    ' — '+e(p.header.claimCategory)+'</h2><p class="clm-muted">'+e(p.header.buyer)+' / '+
    e(p.header.supplier)+' / '+t('state')+': '+e(status.state)+'</p>'+
@@ -180,8 +208,13 @@ class VesaClaimsWorkspace{
   if(this.section==='decisions')return'<section class="clm-card">'+head('decisions','add-decision','addDecision')+
    this.table([t('newState'),t('decisionDate'),t('decisionSourceRef'),t('externalAuthorityRef')],
     p.decisions.map(x=>[x.newState,x.decisionDate,x.decisionSourceRef,x.externalAuthorityRef||null]))+'</section>';
-  if(this.section==='reports')return'<section class="clm-card">'+head('reports')+
-   '<p class="clm-warning">'+e(t('reportPlanned'))+'</p></section>';
+  if(this.section==='references')return'<section class="clm-card">'+head('references','reference-select','referenceSelect')+
+   '<p class="clm-warning">'+e(t('sourceNotice'))+'</p>'+
+   this.table([t('refKind'),t('sourceApp'),t('sourceRecord'),t('localReviewer'),t('localReviewDate')],
+    (p.manualReferences||[]).map(x=>[x.kind,x.source.sourceApp,x.source.recordId,x.localReviewer,x.localReviewDate]))+
+   '</section>';
+  if(this.section==='reports')return'<section class="clm-card clm-print-card"><div class="clm-actions">'+
+   this.btn('excel','excel',true)+this.btn('print','print')+'</div>'+this.R.html(p,this.asOf)+'</section>';
   return'<section class="clm-card">'+head('history')+
    this.table(['Rev','Timestamp','Action','Source ID'],p.audit.map(x=>[x.revision,x.at,x.action,x.recordId||null]))+'</section>';
  }
@@ -227,17 +260,41 @@ class VesaClaimsWorkspace{
    this.field('externalAuthorityRef')+this.field('externallyNamedParty')+
    this.select('closureBasis',[['','Not closing'],['documented-settlement','Documented settlement'],
     ['documented-rejection','Documented rejection'],['documented-withdrawal','Documented withdrawal']],true);
+  if(kind==='asof')body=this.field('asOf',true,'date',true,this.asOf);
+  if(kind==='reference-select')body='<p class="wide clm-warning">'+e(t('sourceNotice'))+'</p>'+
+   this.select('refKind',[['aql','Manually enveloped AQL InspectionRef (source only)'],
+    ['shipment','VESA Shipment & Documentation — ShipmentFile'],
+    ['po','VESA Purchase Order — PurchaseOrder']],true);
+  if(kind==='source-confirm'){
+   if(!this.pendingRef)throw Error('Choose an AQL/Shipment/PO source first');
+   body='<p class="wide clm-warning">'+e(t('sourceNotice'))+'</p>'+
+    '<p class="wide">'+e(this.pendingRef.sourceApp)+' / '+e(this.pendingRef.recordId)+' / '+
+    e(this.pendingRef.revisionId)+'</p>'+this.field('localReviewer',true)+
+    this.field('localReviewDate',true,'date')+
+    '<label class="wide clm-confirm"><input type="checkbox" name="identityConfirmed" value="yes" required>'+
+    '<span>'+e(t('identityConfirmed'))+'</span></label>';
+  }
   if(!body)throw Error('Unsupported source-entry form');
   const name={new:'new','add-finding':'addFinding','add-evidence':'addEvidence',
    'add-response':'addResponse','add-agreement':'addAgreement','add-settlement':'addSettlement',
-   'add-decision':'addDecision'}[kind];
+   'add-decision':'addDecision',asof:'selectAsOf','reference-select':'referenceSelect','source-confirm':'referenceSelect'}[kind];
   this.modal(this.t(name),'<form class="clm-form" data-form="'+e(kind)+'">'+body+
    '<div class="wide clm-actions"><button class="clm-btn primary" type="submit">'+e(t('submit'))+'</button></div></form>');
  }
  submit(form){
   const data=new FormData(form),get=k=>String(data.get(k)??'').trim(),kind=form.dataset.form;
   try{
-   if(kind==='new'){
+   if(kind==='asof'){if(!this.E.date(get('asOf')))throw Error('Choose exact valid report as-of date');this.asOf=get('asOf');this.section='reports';}
+   else if(kind==='reference-select'){
+    if(!this.current||this.current.mode==='practice')throw Error('Open editable case first');
+    this.refKind=get('refKind');this.dialog.close();this.refFile.click();return;
+   }else if(kind==='source-confirm'){
+    if(!this.current||!this.pendingRef||this.current.mode==='practice')throw Error('Select reviewed local original case evidence');
+    const proposed=this.Ref.append(this.current,this.refKind,this.pendingRef,{
+     localReviewer:get('localReviewer'),localReviewDate:get('localReviewDate'),
+     identityConfirmed:get('identityConfirmed')==='yes'});
+    this.store.save(proposed);this.current=proposed;this.pendingRef=null;this.section='references';
+   }else if(kind==='new'){
     const h={};for(const k of ['caseNumber','buyer','supplier','poNo','shipmentRef','claimCategory',
      'openedDate','sourceRef','allegationSummary','reviewedBy','reviewDate'])h[k]=get(k);
     const p=this.E.create(h);
