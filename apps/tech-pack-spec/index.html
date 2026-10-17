@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VESA Tech Pack & Spec 360</title><meta name="theme-color" content="#f3f6fa">
+<link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/vesa-workspace.css?v=20261013-platform-g09">
+<script src="/js/preferences.js"></script>
+<script src="/js/auth.js" data-auth-guard="app" data-auth-bar="true"></script>
+<script src="/js/vesa-workspace-shell.js"></script>
+<script src="/js/vendor/xlsx.full.min.js"></script>
+<style>
+/* APP-03 owns only garment-specific workspace, not VESA shared header. */
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14px/1.5 var(--ui,Arial,sans-serif)}
+#specMain{width:min(1280px,calc(100vw - 24px));min-width:0;margin:0 auto;padding:18px 0 70px}
+.sp-card{background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:14px;padding:17px;margin-bottom:14px;min-width:0}
+.sp-card h1{font-size:clamp(1.35rem,3vw,2rem);line-height:1.2;margin:0 0 4px}
+.sp-card h2{font-size:1.12rem;margin:0 0 10px}
+.sp-card h3{font-size:1rem;margin:10px 0}
+.sp-note{color:var(--muted,#526176);font-size:.88rem;margin:6px 0 12px}
+.sp-warning{padding:12px;border:1px solid var(--line,#cbd6e4);border-left:4px solid var(--action,#aa3040);border-radius:9px;background:var(--look-surface,#eef3f9);margin:10px 0}
+.sp-actions,.sp-tabs{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:10px 0}
+.sp-tabs{border-bottom:1px solid var(--line,#cbd6e4);padding:0 0 11px}
+.sp-btn{font:inherit;font-weight:700;border:1px solid var(--line,#cbd6e4);border-radius:9px;background:var(--paper,#fff);color:var(--ink,#17263d);padding:10px 14px;min-height:44px;cursor:pointer}
+.sp-btn.primary,.sp-tabs [aria-current=true]{background:var(--blue,#244fd6);color:#fff;border-color:var(--blue,#244fd6)}
+.sp-btn:disabled{opacity:.5;cursor:not-allowed}
+.sp-btn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--gold,#a77926);outline-offset:2px}
+.sp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.sp-tile{background:var(--look-surface,#eef3f9);padding:13px;border:1px solid var(--line,#cbd6e4);border-radius:10px;min-width:0}
+.sp-tile b{display:block;font-size:1.4rem;font-variant-numeric:tabular-nums}
+.sp-tile small{color:var(--muted,#526176)}
+.sp-scroll{max-width:100%;min-width:0;overflow:auto;border:1px solid var(--line,#cbd6e4);border-radius:9px}
+.sp-table{border-collapse:collapse;min-width:700px;width:100%;font-size:.88rem}
+.sp-table th,.sp-table td{text-align:left;vertical-align:top;border-bottom:1px solid var(--line,#cbd6e4);padding:9px 10px;overflow-wrap:anywhere}
+.sp-table th{white-space:nowrap;background:var(--look-surface,#eef3f9)}
+.sp-table tr:last-child td{border-bottom:0}
+.sp-dialog{width:min(760px,calc(100vw - 14px));max-height:91vh;overflow:auto;padding:18px;background:var(--paper,#fff);color:var(--ink,#17263d);border:1px solid var(--line,#cbd6e4);border-radius:14px;box-shadow:0 16px 80px #0004}
+.sp-dialog::backdrop{background:#08152eaa}
+.sp-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sp-dialog-head h2{font-size:1.2rem;margin:0}
+.sp-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}
+.sp-form label{min-width:0;font-weight:700;font-size:.88rem;display:grid;gap:5px}
+.sp-form label.wide,.sp-form .wide{grid-column:1/-1}
+.sp-form input,.sp-form textarea,.sp-form select{font:inherit;min-width:0;min-height:44px;width:100%;padding:10px 11px;color:var(--ink,#17263d);background:var(--paper,#fff);border:1px solid var(--line,#cbd6e4);border-radius:9px}
+.sp-form textarea{min-height:72px;resize:vertical}
+.sp-form .sp-check{display:flex;align-items:center;gap:9px}
+.sp-check input{width:22px;min-height:22px}
+.sp-record{padding:14px 0;border-bottom:1px solid var(--line,#cbd6e4);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sp-record:last-child{border:0}
+.sp-record small{display:block;color:var(--muted,#526176)}
+.sp-report section{margin:14px 0;break-inside:avoid}
+.sp-report h3{margin:0 0 9px}
+@media(max-width:750px){.sp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sp-card{padding:12px}}
+@media(max-width:480px){.sp-grid,.sp-form{grid-template-columns:1fr}.sp-form label.wide,.sp-form .wide{grid-column:1}.sp-actions>.sp-btn{flex:1 1 auto}}
+@media print{.vesa-workspace,.app-user-bar,.sp-tabs,.sp-actions,.sp-dialog{display:none!important}#specMain{width:100%;padding:0}.sp-card{border:0;padding:0}.sp-table{font-size:10px}.sp-table td,.sp-table th{padding:5px 6px}.sp-report{display:block!important}@page{size:A4 landscape;margin:12mm}}
+</style></head><body>
+<main id="specMain" tabindex="-1"><p role="status">Opening VESA Tech Pack &amp; Spec 360…</p></main>
+<dialog id="specDialog" class="sp-dialog" aria-labelledby="specDialogTitle">
+<div class="sp-dialog-head"><h2 id="specDialogTitle">Details</h2><button class="sp-btn" id="specClose" type="button" aria-label="Close">×</button></div>
+<div id="specDialogBody"></div>
+</dialog><input id="specFile" type="file" accept=".vesaspec,application/json" hidden>
+<script>
+(function(global){
+'use strict';
+const VERSION='VESA-TECHSPEC-1',FORMAT='VESA-TECHSPEC-COPY-1',KEY='vesa.tech-pack-spec.records.v1.',MAX_BYTES=2097152;
+const DISCLAIMER='Local technical draft and user-entered document references only. Buyer approval and approved samples are not inferred. Public personal demonstration: synthetic inputs only.';
+const trim=v=>String(v??'').trim(),clone=v=>JSON.parse(JSON.stringify(v));
+const escape=v=>String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
+const sheetSafe=v=>typeof v==='number'&&Number.isFinite(v)?v:/^[=+\-@\t\r]/.test(String(v??''))?"'"+String(v):String(v??'');
+const uniqueId=prefix=>prefix+'-'+(global.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+/**
+ * APP-03 garment measurement calculation owner. All values are fixed-point
+ * decimal (4 places); size path and signed direction are source-defined.
+ * No buyer rule, grading increment, approval or tolerance is synthesized.
+ */
+class GarmentSpecEngine{
+ static scaled(value,signed=false){
+  if(typeof value!=='string'&&typeof value!=='number')return null;
+  const re=signed?/^(-?)(\d{1,8})(?:\.(\d{1,4}))?$/:/^(\d{1,8})(?:\.(\d{1,4}))?$/;
+  const m=trim(value).match(re);if(!m)return null;
+  const sign=signed?(m[1]==='-'?-1n:1n):1n,whole=signed?m[2]:m[1],fraction=signed?m[3]:m[2];
+  return sign*(BigInt(whole)*10000n+BigInt((fraction||'').padEnd(4,'0')));
+ }
+ static date(value){if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+  const num=Date.parse(value+'T00:00:00Z');return Number.isFinite(num)&&new Date(num).toISOString().slice(0,10)===value;}
+ static round(n,precision,rule){
+  if(![0,1,2,3,4].includes(precision)||!['half-up','down'].includes(rule))return null;
+  const q=10n**BigInt(4-precision),sign=n<0n?-1n:1n,abs=n<0n?-n:n;
+  const value=(rule==='half-up'?(abs+q/2n):abs)/q;
+  return sign*value;
+ }
+ static text(n,precision,rule){
+  if(n===null||n===undefined)return null;
+  const rounded=this.round(n,precision,rule);if(rounded===null)return null;
+  const sign=rounded<0n?'-':'',v=rounded<0n?-rounded:rounded,s=10n**BigInt(precision);
+  return sign+(v/s).toString()+(precision?'.'+(v%s).toString().padStart(precision,'0'):'');
+ }
+ static convert(n,from,to){
+  if(n===null)return null;
+  if(from===to)return n;
+  if(from==='in'&&to==='cm')return (n*254n+50n)/100n;
+  if(from==='cm'&&to==='in')return (n*100n+127n)/254n;
+  return null;
+ }
+ static base(pom){return pom?.baseReviewed===true&&trim(pom.baseSource)&&trim(pom.reviewedBy)&&this.date(pom.reviewDate);}
+ static tolerance(pom){return pom?.toleranceReviewed===true&&trim(pom.toleranceSource)&&trim(pom.toleranceReviewedBy);}
+ static gradeReady(rule){return rule?.reviewed===true&&trim(rule.sourceRef)&&trim(rule.reviewedBy)&&this.date(rule.reviewDate);}
+ static project(p,options={}){
+  const cells=[],problems=[],baseIndex=p.meta?.sizes?.indexOf(p.meta.baseSize)??-1;
+  const precision=p.meta?.precision,rule=p.meta?.rounding;
+  if(baseIndex<0||!Array.isArray(p.meta.sizes))return {cells,problems:['Specify a valid base size and size sequence.']};
+  for(const pom of p.poms){
+   const base=this.scaled(pom.baseValue),minus=this.scaled(pom.toleranceMinus),
+     plus=this.scaled(pom.tolerancePlus);
+   for(let j=0;j<p.meta.sizes.length;j++){
+    const size=p.meta.sizes[j];let target=base,missing=null;
+    if(!this.base(pom)||base===null||base<=0n)missing='Base POM measurement source not reviewed';
+    if(!missing&&j!==baseIndex){
+     const direction=j>baseIndex?1:-1;
+     for(let i=baseIndex;i!==j;i+=direction){
+      const from=p.meta.sizes[Math.min(i,i+direction)],to=p.meta.sizes[Math.max(i,i+direction)];
+      const matched=p.grades.filter(x=>x.pomId===pom.id&&x.fromSize===from&&x.toSize===to);
+      const grd=matched[0];
+      const delta=grd&&this.scaled(grd.delta,true);
+      if(matched.length!==1||!this.gradeReady(grd)||delta===null||grd.unit!==pom.unit){
+       missing='Source-reviewed grade missing for '+from+' → '+to;break;
+      }
+      target+=BigInt(direction)*delta;
+     }
+    }
+    if(!missing&&target<=0n)missing='Calculated POM value is not positive';
+    const t=missing?null:target;
+    let low=null,high=null;
+    if(t!==null&&this.tolerance(pom)&&minus!==null&&plus!==null){
+     low=t-minus;high=t+plus;
+     if(low<0n){low=null;high=null;missing='Lower tolerance is below zero';}
+    }
+    const result={pomId:pom.id,code:pom.code,size,unit:pom.unit,basis:pom.basis,
+      target:t===null?null:this.text(t,precision,rule),
+      lower:low===null?null:this.text(low,precision,rule),
+      upper:high===null?null:this.text(high,precision,rule),
+      source:pom.baseSource,issue:missing||(!this.tolerance(pom)?'Asymmetric tolerance requires reviewed source':'')};
+    if(options.unit&&options.unit!==pom.unit&&t!==null){
+      if(!['in','cm'].includes(options.unit))result.issue='Unsupported output unit';
+      else{
+        result.target=this.text(this.convert(t,pom.unit,options.unit),precision,rule);
+        result.lower=low===null?null:this.text(this.convert(low,pom.unit,options.unit),precision,rule);
+        result.upper=high===null?null:this.text(this.convert(high,pom.unit,options.unit),precision,rule);
+        result.unit=options.unit;
+      }
+    }
+    if(options.basis&&options.basis!==pom.basis&&t!==null){
+      if(pom.geometry!=='girth'||pom.conversionReviewed!==true||
+        !trim(pom.conversionSource)||!trim(pom.conversionBy)){
+        result.target=null;result.lower=null;result.upper=null;
+        result.issue='Flat/circumference conversion needs explicit girth source';
+      }else{
+        const factor=options.basis==='circumference'?2n:1n,divider=options.basis==='flat'?2n:1n;
+        const multiplier=value=>value===null?null:this.text(this.scaled(value,true)*factor/divider,precision,rule);
+        result.target=multiplier(result.target);
+        result.lower=multiplier(result.lower);
+        result.upper=multiplier(result.upper);
+        result.basis=options.basis;
+      }
+    }
+    cells.push(result);
+   }
+  }
+  return {cells,problems};
+ }
+ static validate(p){
+  const errors=[];
+  if(!p||p.version!==VERSION||!p.meta||!Array.isArray(p.meta.sizes)||!Array.isArray(p.poms)||
+    !Array.isArray(p.grades)||!Array.isArray(p.bom)||!Array.isArray(p.revisions)||!Array.isArray(p.audit))
+    return {ok:false,errors:['Unsupported tech-spec saved-record format.']};
+  const meta=p.meta;
+  if(!trim(meta.style)||!trim(meta.fabric)||!trim(meta.category)||!trim(meta.sourceRef)||
+     !trim(meta.gender)||!trim(meta.season))errors.push('Style/fabric/category/gender/season and original source are required.');
+  if(new Set(meta.sizes).size!==meta.sizes.length||!meta.sizes.length||meta.sizes.length>20||
+     meta.sizes.some(s=>!trim(s))||!meta.sizes.includes(meta.baseSize))
+    errors.push('Size range requires unique named sizes with a real base size.');
+  if(![0,1,2,3,4].includes(meta.precision)||!['half-up','down'].includes(meta.rounding))
+    errors.push('Choose an explicit measurement precision and rounding convention.');
+  const pomIds=new Set(),codes=new Set(),gradeKeys=new Set();
+  for(const pom of p.poms){
+   if(pomIds.has(pom.id)||codes.has(trim(pom.code).toLowerCase()))
+     errors.push('Duplicate POM IDs or measurement codes.');
+   pomIds.add(pom.id);codes.add(trim(pom.code).toLowerCase());
+   if(!trim(pom.code)||!trim(pom.name)||!trim(pom.location)||!trim(pom.baseSource)||
+      !['cm','in'].includes(pom.unit)||!['flat','circumference'].includes(pom.basis)||
+      !['girth','length','other'].includes(pom.geometry)||this.scaled(pom.baseValue)===null||
+      this.scaled(pom.baseValue)<=0n)errors.push('POM needs code/description/location, positive base value, explicit unit/basis/geometry and source.');
+   if(pom.baseReviewed===true&&(!trim(pom.reviewedBy)||!this.date(pom.reviewDate)))
+      errors.push('Source-reviewed POM needs reviewer and valid date.');
+   if(trim(pom.toleranceMinus)||trim(pom.tolerancePlus)||pom.toleranceReviewed){
+    if(this.scaled(pom.toleranceMinus)===null||this.scaled(pom.tolerancePlus)===null||
+      !trim(pom.toleranceSource))errors.push('Separate plus/minus tolerances need exact nonnegative values and written source.');
+   }
+   if(pom.toleranceReviewed===true&&!trim(pom.toleranceReviewedBy))
+      errors.push('Reviewed tolerance needs named local reviewer.');
+   if(pom.conversionReviewed===true&&(pom.geometry!=='girth'||!trim(pom.conversionSource)||!trim(pom.conversionBy)))
+      errors.push('Flat/circumference conversion requires explicit girth geometry and reviewed rule.');
+  }
+  for(const g of p.grades){
+   const key=g.pomId+'|'+g.fromSize+'|'+g.toSize;
+   if(gradeKeys.has(key))errors.push('Duplicate POM size-transition grade.');gradeKeys.add(key);
+   const index=meta.sizes.indexOf(g.fromSize);
+   const pom=p.poms.find(x=>x.id===g.pomId);
+   if(!pom||index<0||meta.sizes[index+1]!==g.toSize||g.unit!==pom.unit||
+     this.scaled(g.delta,true)===null||!trim(g.sourceRef))
+     errors.push('Grade must be a sourced adjacent-size transition matching POM unit.');
+   if(g.reviewed===true&&!this.gradeReady(g))errors.push('Reviewed grade needs actor, source and date.');
+  }
+  for(const bom of p.bom){
+   if(!['fabric','trim','construction','packing','other'].includes(bom.kind)||
+     !trim(bom.description)||!trim(bom.sourceRef)||!trim(bom.id))
+     errors.push('Each fabric, trim, construction or packing instruction needs a source reference.');
+  }
+  const ids=new Set();
+  for(const snap of p.revisions){
+   if(ids.has(snap.id))errors.push('Duplicate specification revision ID.');ids.add(snap.id);
+   if(!trim(snap.id)||!trim(snap.approver)||!trim(snap.evidenceRef)||!this.date(snap.effectiveDate)||
+      !snap.snapshot||!Array.isArray(snap.snapshot.poms))errors.push('Recorded specification revision needs dated document, actor and immutable snapshot.');
+  }
+  return {ok:errors.length===0,errors};
+ }
+ static make(seed={},practice=false){
+  return {version:VERSION,id:uniqueId('TECH'),revision:0,status:'draft',
+   createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),mode:practice?'practice':'local',
+   meta:{style:trim(seed.style),fabric:trim(seed.fabric),category:trim(seed.category),
+    gender:trim(seed.gender),season:trim(seed.season),sourceRef:trim(seed.sourceRef),
+    sizes:Array.isArray(seed.sizes)?clone(seed.sizes):[],baseSize:trim(seed.baseSize),
+    precision:seed.precision??null,rounding:trim(seed.rounding),sketchReference:'',reference:null},
+   poms:[],grades:[],bom:[],revisions:[],audit:[]};
+ }
+ static practice(){
+  const p=this.make({style:'DEMO-TEE',fabric:'SYNTHETIC 100% COTTON JERSEY',
+   category:'T-shirt',gender:'Men',season:'DEMO 2026',sourceRef:'SYNTHETIC TECH PACK',sizes:['S','M','L'],
+   baseSize:'M',precision:2,rounding:'half-up'},true);
+  p.poms=[{id:'P1',code:'CHEST',name:'Chest width',location:'1 inch below armhole',
+   geometry:'girth',basis:'flat',unit:'cm',baseValue:'50.0000',baseSource:'SYNTHETIC POM SOURCE',
+   baseReviewed:true,reviewedBy:'Demo reviewer',reviewDate:'2026-10-17',
+   toleranceMinus:'1.0',tolerancePlus:'1.5',toleranceSource:'SYNTHETIC TOLERANCE',
+   toleranceReviewed:true,toleranceReviewedBy:'Demo reviewer',conversionReviewed:false,
+   conversionSource:'',conversionBy:''}];
+  p.grades=[{id:'G1',pomId:'P1',fromSize:'S',toSize:'M',delta:'2.0000',
+   unit:'cm',sourceRef:'SYNTHETIC GRADE',reviewed:true,reviewedBy:'Demo reviewer',reviewDate:'2026-10-17'},
+   {id:'G2',pomId:'P1',fromSize:'M',toSize:'L',delta:'2.0000',
+   unit:'cm',sourceRef:'SYNTHETIC GRADE',reviewed:true,reviewedBy:'Demo reviewer',reviewDate:'2026-10-17'}];
+  p.bom=[{id:'B1',kind:'construction',description:'SYNTHETIC SHOULDER JOIN',sourceRef:'DEMO INSTRUCTION',
+    note:'Practice instruction only',photoRef:''}];return p;
+ }
+ static compare(current,snapshot){
+  if(!snapshot)return [];
+  const old=snapshot.snapshot||{},rows=[];
+  for(const field of ['meta','poms','grades','bom']){
+   const before=JSON.stringify(old[field]??null),after=JSON.stringify(current[field]??null);
+   if(before!==after)rows.push({field,before:old[field]??null,after:current[field]??null});
+  }
+  return rows;
+ }
+}
+/** Browser-local versioned records and checksum-only corruption guard (not auth). */
+class TechSpecStore{
+ constructor(user){this.key=KEY+(trim(user).replace(/[^A-Za-z0-9-]/g,'-').slice(0,100)||'local');}
+ static digest(text){let v=2166136261;for(let i=0;i<text.length;i++){v^=text.charCodeAt(i);v=Math.imul(v,16777619);}return (v>>>0).toString(16);}
+ static validate(p){const valid=GarmentSpecEngine.validate(p);
+  if(!valid.ok)throw Error(valid.errors.join('\n'));
+  if(!trim(p.id)||!Number.isSafeInteger(p.revision)||p.revision<0||JSON.stringify(p).length>MAX_BYTES)
+   throw Error('Invalid or oversized specification record.');
+  return p;
+ }
+ read(){let raw;try{raw=localStorage.getItem(this.key);}catch{throw Error('Browser storage unavailable.');}
+  if(!raw)return [];const box=JSON.parse(raw);
+  if(box.version!==VERSION||!Array.isArray(box.records))throw Error('Local version not supported.');
+  return box.records;
+ }
+ list(){return this.read().map(p=>({id:p.id,style:p.meta.style,category:p.meta.category,revision:p.revision,at:p.updatedAt}));}
+ load(id){const p=this.read().find(r=>r.id===id);if(!p)return null;TechSpecStore.validate(p);return clone(p);}
+ save(p){
+  TechSpecStore.validate(p);const records=[clone(p),...this.read().filter(x=>x.id!==p.id)];
+  const contents=JSON.stringify({version:VERSION,records});
+  if(contents.length>MAX_BYTES)throw Error('Too many local saved records. Download Saved Copy first.');
+  const tmp=this.key+'.tmp';
+  try{localStorage.setItem(tmp,contents);localStorage.setItem(this.key,contents);}
+  catch{throw Error('Local save failed; prior records were not intentionally deleted.');}
+  finally{try{localStorage.removeItem(tmp)}catch{}}
+  return p.id;
+ }
+ static encode(p){this.validate(p);const text=JSON.stringify(p);
+  return JSON.stringify({format:FORMAT,checksum:this.digest(text),exportedAt:new Date().toISOString(),record:p});}
+ static decode(text){
+  if(typeof text!=='string'||text.length>MAX_BYTES)throw Error('Saved copy exceeds safe size.');
+  const box=JSON.parse(text);
+  if(box?.format!==FORMAT||!box.record||box.checksum!==this.digest(JSON.stringify(box.record)))
+   throw Error('Saved copy is altered or unsupported. Existing records remain unchanged.');
+  this.validate(box.record);return clone(box.record);
+ }
+}
+/** Export projection; any untrusted spreadsheet-leading character is escaped. */
+class TechSpecReport{
+ static sheets(p,calculated,changes){
+  const findPom=id=>p.poms.find(x=>x.id===id)||{};
+  return {
+   'Measurement Specification':[['POM','Name','Location','Size','Target','Minus bound','Plus bound','Unit','Basis','Source / issue'],
+    ...calculated.cells.map(x=>[x.code,findPom(x.pomId).name,findPom(x.pomId).location,x.size,x.target??'Needs Information',
+     x.lower??'Needs Information',x.upper??'Needs Information',x.unit,x.basis,x.issue||x.source])],
+   'Grading':[['POM','From size','To size','Grade','Unit','Reviewed source','Reviewed by','Reviewed date'],
+    ...p.grades.map(x=>[findPom(x.pomId).code,x.fromSize,x.toSize,x.delta,x.unit,x.sourceRef,x.reviewedBy,x.reviewDate])],
+   'Tolerance Matrix':[['POM','Minus','Plus','Unit','Basis','Tolerance source','Local review'],
+    ...p.poms.map(x=>[x.code,x.toleranceMinus||'Needs Information',x.tolerancePlus||'Needs Information',
+     x.unit,x.basis,x.toleranceSource||'Needs Information',x.toleranceReviewed?'Locally reviewed':'Needs Information'])],
+   'BOM Construction':[['Kind','Description','Source','Note','Reference image path'],
+    ...p.bom.map(x=>[x.kind,x.description,x.sourceRef,x.note,x.photoRef])],
+   'Revision Comparison':[['Field','Older confirmed revision','Current draft'],
+    ...changes.map(x=>[x.field,JSON.stringify(x.before),JSON.stringify(x.after)])],
+   'Revision History':[['Revision','Recorded at','Actor','Evidence','Effective','Local status'],
+    ...p.revisions.map(x=>[x.recordRevision,x.recordedAt,x.approver,x.evidenceRef,x.effectiveDate,
+      'Source declared — authenticity not independently verified'])],
+   'Order Source':[['Field','Value'],...Object.entries(p.meta).map(([k,v])=>[k,
+      typeof v==='object'?JSON.stringify(v):v])]
+  };
+ }
+ static html(p,calc,changes){
+  const sheets=this.sheets(p,calc,changes);
+  return '<article class="sp-report"><h2>VESA Tech Pack & Spec 360 · DRAFT</h2><p class="sp-note">'+
+   escape(DISCLAIMER)+'</p>'+Object.entries(sheets).map(([name,rows])=>
+   '<section><h3>'+escape(name)+'</h3><div class="sp-scroll"><table class="sp-table"><thead><tr>'+
+   rows[0].map(v=>'<th>'+escape(v)+'</th>').join('')+'</tr></thead><tbody>'+
+   rows.slice(1,1501).map(row=>'<tr>'+row.map(x=>'<td>'+escape(x??'Needs Information')+'</td>').join('')+'</tr>').join('')+
+   '</tbody></table></div></section>').join('')+'</article>';
+ }
+ static excelRows(rows,sheetName){
+  return rows.map((row,i)=>row.map((v,j)=>{
+   const numeric=sheetName==='Measurement Specification'&&i>0&&[4,5,6].includes(j)||
+     sheetName==='Grading'&&i>0&&j===3||sheetName==='Tolerance Matrix'&&i>0&&[1,2].includes(j);
+   return numeric&&typeof v==='string'&&/^-?\d+(\.\d{1,4})?$/.test(v)?Number(v):sheetSafe(v);
+  }));
+ }
+}
+const I18N={
+ en:{title:'Tech Pack & Spec 360',subtitle:'Versioned garment measurements, source-reviewed grades and tolerances',
+ new:'New Tech Pack',continue:'Continue Last',open:'Open Saved',practice:'Practice Example',save:'Save Now',
+ download:'Download Saved Copy',upload:'Open Saved Copy',report:'Prepare Report',excel:'Download Excel',print:'Print / Save PDF',
+ back:'All Tech Packs',summary:'Summary',poms:'Measurement Points',grades:'Size Grading',
+ bom:'BOM & Construction',revisions:'Revisions',reports:'Reports',add:'Add',edit:'Edit',remove:'Remove',
+ style:'Style',fabric:'Fabric',category:'Category',gender:'Gender',season:'Season',source:'Original Tech Pack Source',
+ sizes:'Size range (comma-separated)',baseSize:'Base Size',precision:'Display decimals',rounding:'Chosen rounding rule',
+ code:'POM Code',name:'POM description',location:'Measurement location',geometry:'Measurement geometry',
+ basis:'Measured basis',unit:'Measurement unit',baseValue:'Base size value',reviewedBy:'Locally reviewed by',
+ reviewDate:'Source review date',reviewed:'I reviewed the written source',baseSource:'Base measurement source',
+ toleranceMinus:'Allowed minus tolerance',tolerancePlus:'Allowed plus tolerance',
+ toleranceSource:'Tolerance instruction source',toleranceReviewed:'I reviewed the tolerance source',
+ conversionSource:'Flat/circumference conversion source',conversionReviewed:'Explicitly reviewed girth conversion',
+ fromSize:'From size',toSize:'To size',delta:'Grade increment (signed)',gradeSource:'Written grading source',
+ kind:'BOM category',description:'Instruction / component',note:'Remarks',photoRef:'Sketch/photo reference (name only)',
+ approver:'Approver recorded in source',evidence:'Approval/effective document reference',
+ effective:'Document effective date',reason:'Revision note',reference:'Manual App Reference',
+ target:'Target measurements',bounds:'Tolerance bounds',missing:'Needs Information',
+ compare:'Compare with last recorded revision',latest:'Last recorded evidence',
+ none:'No entries yet',local:'Saved on this browser only',notApproved:'Local review is NOT sample/buyer approval',
+ noDefaults:'No POM grades, tolerances or fit decisions will be invented.',
+ approval:'Record Sourced Revision',approvalWarning:'Record only an independently provided buyer approval document. This form does not grant approval.',
+ profile:'Garment Profile',details:'Source Details'},
+ ta:{title:'Tech Pack & Spec 360',subtitle:'ஆதாரத்துடன் Measurements, Size Grading, Tolerance, Revision',
+ new:'புதிய Tech Pack',continue:'கடைசி பதிவு திற',open:'Saved பதிவு திற',practice:'Practice Example',save:'இப்போது Save செய்',
+ download:'Saved Copy Download',upload:'Saved Copy திற',report:'Report தயாரி',excel:'Excel Download',print:'Print / PDF',
+ back:'எல்லா Tech Pack-களும்',summary:'சுருக்கம்',poms:'POM அளவுகள்',grades:'Size Grading',
+ bom:'BOM & Construction',revisions:'Revision வரலாறு',reports:'Reports',add:'சேர்',edit:'திருத்து',remove:'நீக்கு',
+ style:'Style',fabric:'Fabric',category:'வகை',gender:'பாலினம்',season:'Season',source:'Tech Pack ஆதாரம்',
+ sizes:'Size பெயர்கள் (comma)',baseSize:'Base Size',precision:'Decimal எண்ணிக்கை',rounding:'Rounding விதி',
+ code:'POM Code',name:'அளவு விளக்கம்',location:'அளவு எடுக்கும் இடம்',geometry:'Measurement geometry',
+ basis:'அளவின் அடிப்படை',unit:'Unit',baseValue:'Base Size அளவு',reviewedBy:'ஆதாரம் சரிபார்த்தவர்',
+ reviewDate:'ஆதாரத் தேதி',reviewed:'எழுத்து ஆதாரம் சரிபார்க்கப்பட்டது',baseSource:'Base அளவின் ஆதாரம்',
+ toleranceMinus:'Minus Tolerance',tolerancePlus:'Plus Tolerance',
+ toleranceSource:'Tolerance ஆதாரம்',toleranceReviewed:'Tolerance ஆதாரத்தைச் சரிபார்த்தேன்',
+ conversionSource:'Flat/Circumference மாற்ற ஆதாரம்',conversionReviewed:'Girth மாற்ற விதி உறுதி',
+ fromSize:'எந்த Size',toSize:'அடுத்த Size',delta:'Grade அதிகரிப்பு / குறைப்பு',gradeSource:'Grading ஆதாரம்',
+ kind:'BOM வகை',description:'Component / Instruction',note:'குறிப்புகள்',photoRef:'Sketch/Photo Reference',
+ approver:'ஆதாரத்தில் உள்ள Approver',evidence:'Approval Document ஆதாரம்',effective:'செயல்படும் தேதி',
+ reason:'Revision குறிப்பு',reference:'வேறு App ஆதாரம்',target:'Target அளவுகள்',bounds:'Tolerance வரம்பு',
+ missing:'தகவல் தேவை',compare:'முந்தைய Revision உடன் ஒப்பீடு',latest:'கடைசி ஆதாரம்',
+ none:'பதிவு இல்லை',local:'இந்த Browser-ல் மட்டும் Save',notApproved:'Local Review என்பது Buyer Approval அல்ல',
+ noDefaults:'POM grade/tolerance எதையும் ஊகித்து நிரப்ப மாட்டோம்.',
+ approval:'ஆதாரத்துடன் Revision பதிவு',approvalWarning:'உண்மையான Buyer Approval ஆவணம் இருந்தால் மட்டுமே பதிவு செய்யவும்.',
+ profile:'Garment Profile',details:'ஆதார விவரங்கள்'},
+ bn:{title:'টেক প্যাক ও স্পেক ৩৬০',subtitle:'উৎসভিত্তিক মাপ, সাইজ গ্রেডিং, সহনশীলতা ও সংস্করণ',
+ new:'নতুন টেক প্যাক',continue:'শেষ রেকর্ড খুলুন',open:'সংরক্ষিত খুলুন',practice:'অনুশীলন উদাহরণ',save:'এখন সংরক্ষণ',
+ download:'সংরক্ষিত কপি ডাউনলোড',upload:'সংরক্ষিত কপি খুলুন',report:'রিপোর্ট তৈরি',excel:'এক্সেল ডাউনলোড',print:'প্রিন্ট / PDF',
+ back:'সব টেক প্যাক',summary:'সারাংশ',poms:'মাপের পয়েন্ট',grades:'সাইজ গ্রেডিং',
+ bom:'BOM ও নির্মাণ',revisions:'সংস্করণ',reports:'রিপোর্ট',add:'যোগ',edit:'সম্পাদনা',remove:'সরান',
+ style:'স্টাইল',fabric:'ফ্যাব্রিক',category:'বিভাগ',gender:'লিঙ্গ',season:'সিজন',source:'টেক প্যাক উৎস',
+ sizes:'সাইজ (কমা দিয়ে)',baseSize:'বেস সাইজ',precision:'দশমিক',rounding:'রাউন্ডিং নিয়ম',
+ code:'POM কোড',name:'মাপের বিবরণ',location:'মাপের স্থান',geometry:'মাপের ধরন',
+ basis:'মাপের ভিত্তি',unit:'একক',baseValue:'বেস মাপ',reviewedBy:'পর্যালোচক',
+ reviewDate:'পর্যালোচনার তারিখ',reviewed:'লিখিত উৎস যাচাই করেছি',baseSource:'বেস মাপের উৎস',
+ toleranceMinus:'মাইনাস সহনশীলতা',tolerancePlus:'প্লাস সহনশীলতা',
+ toleranceSource:'সহনশীলতার উৎস',toleranceReviewed:'সহনশীলতার উৎস যাচাই করেছি',
+ conversionSource:'ফ্ল্যাট/পরিধির রূপান্তর উৎস',conversionReviewed:'পরিধির রূপান্তর যাচাই করেছি',
+ fromSize:'প্রথম সাইজ',toSize:'পরের সাইজ',delta:'গ্রেডের পরিবর্তন',gradeSource:'গ্রেডিং উৎস',
+ kind:'BOM ধরন',description:'উপকরণ / নির্দেশ',note:'মন্তব্য',photoRef:'স্কেচ/ছবির রেফারেন্স',
+ approver:'নথিতে লেখা অনুমোদনকারী',evidence:'অনুমোদনের নথি',effective:'কার্যকর তারিখ',
+ reason:'সংস্করণের মন্তব্য',reference:'অন্য অ্যাপের রেফারেন্স',
+ target:'টার্গেট মাপ',bounds:'সহনশীলতার সীমা',missing:'তথ্য প্রয়োজন',
+ compare:'আগের সংস্করণের সঙ্গে তুলনা',latest:'সর্বশেষ রেকর্ড',
+ none:'কোনো রেকর্ড নেই',local:'শুধু ব্রাউজারে সংরক্ষিত',notApproved:'স্থানীয় পর্যালোচনা ক্রেতার অনুমোদন নয়',
+ noDefaults:'গ্রেড বা সহনশীলতা অনুমান করা হয় না',
+ approval:'উৎসভিত্তিক সংস্করণ',approvalWarning:'স্বাধীন ক্রেতা-অনুমোদন নথি থাকলেই লিখুন',
+ profile:'পোশাকের ধরন',details:'উৎস বিবরণ'},
+ hi:{title:'टेक पैक और स्पेक 360',subtitle:'स्रोत आधारित माप, साइज ग्रेडिंग, टॉलरेंस और संशोधन',
+ new:'नया टेक पैक',continue:'पिछला खोलें',open:'सेव रिकॉर्ड खोलें',practice:'अभ्यास उदाहरण',save:'अभी सेव करें',
+ download:'सेव कॉपी डाउनलोड',upload:'सेव कॉपी खोलें',report:'रिपोर्ट तैयार करें',excel:'एक्सेल डाउनलोड',print:'प्रिंट / PDF',
+ back:'सभी टेक पैक',summary:'सारांश',poms:'माप बिंदु',grades:'साइज ग्रेडिंग',
+ bom:'BOM और निर्माण',revisions:'संस्करण',reports:'रिपोर्ट',add:'जोड़ें',edit:'संपादित',remove:'हटाएं',
+ style:'स्टाइल',fabric:'फैब्रिक',category:'वर्ग',gender:'लिंग',season:'सीजन',source:'टेक पैक स्रोत',
+ sizes:'साइज क्रम (कॉमा से)',baseSize:'बेस साइज',precision:'दशमलव',rounding:'राउंडिंग नियम',
+ code:'POM कोड',name:'माप विवरण',location:'मापने की जगह',geometry:'माप का प्रकार',
+ basis:'माप आधार',unit:'माप इकाई',baseValue:'बेस माप',reviewedBy:'स्थानीय समीक्षक',
+ reviewDate:'समीक्षा तारीख',reviewed:'लिखित स्रोत जांचा',baseSource:'बेस माप स्रोत',
+ toleranceMinus:'माइनस टॉलरेंस',tolerancePlus:'प्लस टॉलरेंस',
+ toleranceSource:'टॉलरेंस स्रोत',toleranceReviewed:'टॉलरेंस स्रोत जांचा',
+ conversionSource:'फ्लैट/परिधि रूपांतरण स्रोत',conversionReviewed:'परिधि रूपांतरण जांचा',
+ fromSize:'पहला साइज',toSize:'अगला साइज',delta:'ग्रेड अंतर',gradeSource:'ग्रेड स्रोत',
+ kind:'BOM प्रकार',description:'वस्तु/निर्देश',note:'टिप्पणी',photoRef:'स्केच/फोटो रिफरेंस',
+ approver:'दस्तावेज अनुमोदनकर्ता',evidence:'अनुमोदन दस्तावेज',effective:'प्रभावी तारीख',
+ reason:'संस्करण कारण',reference:'दूसरी ऐप का रिफरेंस',
+ target:'टार्गेट माप',bounds:'टॉलरेंस सीमा',missing:'जानकारी चाहिए',
+ compare:'पिछली समीक्षा से तुलना',latest:'पुराना प्रमाण',
+ none:'रिकॉर्ड नहीं',local:'केवल ब्राउज़र में सेव',notApproved:'स्थानीय समीक्षा खरीदार की मंजूरी नहीं',
+ noDefaults:'ग्रेड/टॉलरेंस का अनुमान नहीं लगाया जाएगा',
+ approval:'स्रोत आधारित संस्करण',approvalWarning:'असली खरीदार-मंजूरी दस्तावेज ही दर्ज करें',
+ profile:'गारमेंट प्रोफ़ाइल',details:'स्रोत विवरण'}
+};
+/** Single application controller for local record editing, saved-copy and six VESA menus. */
+class TechSpecWorkspace{
+ constructor(){
+  this.main=document.getElementById('specMain');this.dialog=document.getElementById('specDialog');
+  this.body=document.getElementById('specDialogBody');this.file=document.getElementById('specFile');
+  this.current=null;this.section='summary';this.dirty=false;this.shell=null;this.focus=null;
+  this.user=trim(global.VesaAuth?.session?.()?.email||'local-browser-user');
+  this.store=new TechSpecStore(this.user);
+ }
+ tr(key){const lang=global.VesaPrefs?.read?.()?.language||'en';return I18N[lang]?.[key]||I18N.en[key]||key;}
+ input(key,value='',kind='text',attrs='',wide=false){
+  return '<label class="'+(wide?'wide':'')+'"><span>'+escape(this.tr(key))+'</span><input name="'+escape(key)+'" value="'+escape(value??'')+
+   '" type="'+escape(kind)+'" '+attrs+'></label>';
+ }
+ select(key,choices,value,wide=false){
+  return '<label class="'+(wide?'wide':'')+'"><span>'+escape(this.tr(key))+'</span><select name="'+escape(key)+'">'+
+   choices.map(([a,b])=>'<option value="'+escape(a)+'"'+(String(a)===String(value)?' selected':'')+'>'+escape(b)+'</option>').join('')+'</select></label>';
+ }
+ textArea(key,value=''){return '<label class="wide"><span>'+escape(this.tr(key))+'</span><textarea name="'+escape(key)+'" maxlength="350">'+escape(value)+'</textarea></label>';}
+ checkbox(key,checked){return '<label class="wide sp-check"><input type="checkbox" name="'+escape(key)+'"'+(checked?' checked':'')+
+  '><span>'+escape(this.tr(key))+'</span></label>';}
+ dialogShow(title,html){this.focus=document.activeElement;document.getElementById('specDialogTitle').textContent=title;
+  this.body.innerHTML=html;if(!this.dialog.open)this.dialog.showModal();
+  this.dialog.addEventListener('close',()=>this.focus?.focus?.(),{once:true});
+  this.body.querySelector('input:not([type=hidden]),select,button')?.focus?.();
+ }
+ alert(message){this.dialogShow('Please review','<p role="alert" class="sp-warning">'+escape(message)+'</p>');}
+ begin(){
+  const Shell=global.VesaWorkspaceShell?.VesaWorkspaceShell;
+  if(!Shell){this.main.textContent='VESA shared shell unavailable.';return;}
+  const session=global.VesaAuth?.session?.()||{};
+  this.shell=new Shell({root:document.body,descriptor:{id:'tech-pack-spec',name:'VESA Tech Pack & Spec 360',
+    route:'/apps/tech-pack-spec/',contentTarget:'#specMain',savedState:'Unsaved changes',
+    userLabel:session.name||session.email||'',userRole:session.role||''},
+    callbacks:{menu:name=>this.menu(name)}});
+  this.shell.mount();
+  document.getElementById('specClose').onclick=()=>this.dialog.close();
+  this.main.addEventListener('click',event=>{
+    const action=event.target.closest('[data-action]');
+    if(action){event.preventDefault();this.action(action.dataset.action,action.dataset.id);}
+  });
+  this.dialog.addEventListener('submit',event=>{
+   if(event.target.matches('[data-form]')){event.preventDefault();this.submit(event.target);}
+  });
+  this.file.addEventListener('change',async()=>{
+   const file=this.file.files?.[0];this.file.value='';if(!file)return;
+   try{
+    if(file.size>MAX_BYTES)throw Error('Saved copy exceeds the safe size limit.');
+    const p=TechSpecStore.decode(await file.text());
+    if(this.store.load(p.id)){p.id=uniqueId('TECH-COPY');p.audit.push({at:new Date().toISOString(),
+      revision:p.revision,action:'Opened saved copy as a separate local specification'});}
+    p.mode='local';this.store.save(p);this.current=p;this.section='summary';this.dirty=false;this.render();
+    this.dialogShow(this.tr('upload'),'<p>Saved copy opened as a separately reviewed local record. Source revision is unchanged.</p>');
+   }catch(error){this.alert(error.message);}
+  });
+  global.addEventListener('vesa-preferences-change',()=>this.render());
+  global.addEventListener('beforeunload',event=>{if(this.dirty&&this.current?.mode==='local'){event.preventDefault();event.returnValue='';}});
+  this.render();
+ }
+ menu(name){
+  const commands={Home:[['home','back'],['new','new'],['continue','continue'],['practice','practice']],
+   File:[['save','save'],['download','download'],['upload','upload'],['open','open']],
+   Edit:[['meta','details'],['add-pom','poms'],['add-grade','grades'],['add-bom','bom']],
+   View:[['summary','summary'],['poms','poms'],['grades','grades'],['bom','bom']],
+   Tools:[['report','report'],['approve','approval'],['reference','reference']],
+   Help:[['help','title'],['practice','practice']]};
+  this.dialogShow(name,'<div class="sp-actions">'+(commands[name]||[]).map(([action,label])=>
+    '<button class="sp-btn" type="button" data-dialog-action="'+escape(action)+'">'+escape(this.tr(label))+'</button>').join('')+'</div>');
+  this.body.querySelectorAll('[data-dialog-action]').forEach(btn=>btn.onclick=()=>{
+   this.dialog.close();this.action(btn.dataset.dialogAction);
+  });
+ }
+ action(action,id){
+  try{
+   if(action==='home'||action==='open'){this.current=null;this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='new')return this.form('new');
+   if(action==='practice'){this.current=GarmentSpecEngine.practice();this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='continue'){const all=this.store.list();if(!all.length)throw Error('No saved specs on this device.');
+    return this.action('open-record',all[0].id);}
+   if(action==='open-record'){const p=this.store.load(id);if(!p)throw Error('Saved specification not found.');
+    this.current=p;this.section='summary';this.dirty=false;this.render();return;}
+   if(action==='upload'){this.file.click();return;}
+   if(action==='save'){if(!this.current||this.current.mode==='practice')throw Error('Practice cannot be saved as production evidence.');
+    this.store.save(this.current);this.dirty=false;this.render();return;}
+   if(action==='download'){if(!this.current||this.current.mode==='practice')throw Error('Open a real local spec first.');
+    this.download(TechSpecStore.encode(this.current),'VESA-TECHSPEC-'+this.current.id+'.vesaspec','application/json');return;}
+   if(['summary','poms','grades','bom','revisions','reports'].includes(action)){
+    if(!this.current)throw Error('Open a specification first.');this.section=action;this.render();return;}
+   if(action==='report'){if(!this.current)throw Error('Open a specification.');this.section='reports';this.render();return;}
+   if(action==='excel')return this.excel();
+   if(action==='print'){if(!this.current)throw Error('Open a specification.');this.section='reports';this.render();global.print();return;}
+   if(action==='help')return this.dialogShow('Tech Pack & Spec 360','<p>'+escape(DISCLAIMER)+'</p>'+
+    '<p>Enter a sourced POM value and explicitly signed size-transition grades. A missing approval/tolerance displays Needs Information. Use Save Now and Download Saved Copy. User-entered buyer approval evidence does not mean this system verified the buyer.</p>');
+   if(['meta','add-pom','add-grade','add-bom','approve','reference'].includes(action))return this.form(action);
+   if(action.startsWith('edit-'))return this.form(action.slice(5),id);
+   if(action.startsWith('delete-'))return this.remove(action.slice(7),id);
+  }catch(error){this.alert(error.message);}
+ }
+ update(label,callback){
+  if(!this.current||this.current.mode!=='local')throw Error('Practice example is read-only.');
+  const next=clone(this.current);callback(next);
+  next.revision++;next.status='draft';next.updatedAt=new Date().toISOString();
+  next.audit.push({at:next.updatedAt,revision:next.revision,action:label});
+  TechSpecStore.validate(next);
+  if(this.store.load(next.id))this.store.save(next);else this.dirty=true;
+  this.current=next;this.render();
+ }
+ remove(kind,id){
+  if(!this.current||this.current.mode!=='local')throw Error('Open a real draft.');
+  const names={pom:'poms',grade:'grades',bom:'bom'},field=names[kind];
+  if(!field)throw Error('Record type cannot be removed.');
+  if(kind==='pom'&&this.current.grades.some(x=>x.pomId===id))
+    throw Error('Remove dependent POM grades first.');
+  if(!global.confirm('Remove this unsigned item from the current draft? Historical revision snapshots remain unchanged.'))return;
+  this.update('Removed draft '+kind,p=>p[field]=p[field].filter(x=>x.id!==id));
+ }
+ render(){
+  const t=k=>escape(this.tr(k));
+  const title='<section class="sp-card"><h1>'+t('title')+'</h1><p class="sp-note">'+t('subtitle')+'</p>'+
+    '<p class="sp-warning">'+escape(DISCLAIMER)+'</p></section>';
+  if(!this.current){
+   const list=this.store.list();
+   this.main.innerHTML=title+'<section class="sp-card"><div class="sp-actions">'+
+    '<button class="sp-btn primary" data-action="new">'+t('new')+'</button>'+
+    '<button class="sp-btn" data-action="continue">'+t('continue')+'</button>'+
+    '<button class="sp-btn" data-action="upload">'+t('upload')+'</button>'+
+    '<button class="sp-btn" data-action="practice">'+t('practice')+'</button></div><h2>'+t('open')+'</h2>'+
+    (list.length?list.map(x=>'<div class="sp-record"><span><b>'+escape(x.style)+'</b> · '+
+     escape(x.category)+'<small>Revision '+escape(x.revision)+'</small></span>'+
+     '<button class="sp-btn" data-action="open-record" data-id="'+escape(x.id)+'">'+t('open')+'</button></div>').join('')+
+     :'<p class="sp-note">'+t('none')+'</p>')+'</section>';
+   this.shell?.setSavedState('unsaved');return;
+  }
+  const p=this.current,projection=GarmentSpecEngine.project(p),
+    status=p.mode==='practice'?'SYNTHETIC PRACTICE':this.dirty?'Local unsaved draft':'Saved locally; not independently approved';
+  const tabs=['summary','poms','grades','bom','revisions','reports'];
+  this.main.innerHTML=title+'<section class="sp-card"><h2>'+escape(p.meta.style)+
+   ' · '+escape(p.meta.fabric)+'</h2><p class="sp-note">'+escape(p.meta.category)+
+   ' · '+escape(p.meta.season)+' · '+escape(status)+'</p>'+
+   '<div class="sp-actions"><button class="sp-btn" data-action="home">'+t('back')+'</button>'+
+   '<button class="sp-btn primary" data-action="save"'+(p.mode==='practice'?' disabled':'')+'>'+t('save')+'</button>'+
+   '<button class="sp-btn" data-action="download"'+(p.mode==='practice'?' disabled':'')+'>'+t('download')+'</button>'+
+   '<button class="sp-btn" data-action="report">'+t('report')+'</button>'+
+   '<button class="sp-btn" data-action="approve"'+(p.mode==='practice'?' disabled':'')+'>'+t('approval')+'</button></div></section>'+
+   '<nav class="sp-tabs" aria-label="Tech pack workspace sections">'+tabs.map(tab=>
+    '<button class="sp-btn" data-action="'+tab+'" aria-current="'+(tab===this.section)+'">'+t(tab)+'</button>').join('')+'</nav>'+
+   this.panel(this.section,p,projection);
+  this.shell?.setSavedState(this.dirty?'unsaved':'saved');
+ }
+ panel(tab,p,projection){
+  const t=k=>escape(this.tr(k)),disabled=p.mode==='practice';
+  const btn=(act,id,label='edit')=>'<button class="sp-btn" data-action="'+escape(act)+'"'+
+   (id?' data-id="'+escape(id)+'"':'')+(disabled?' disabled':'')+'>'+t(label)+'</button>';
+  const table=(columns,rows)=>'<div class="sp-scroll"><table class="sp-table"><thead><tr>'+
+   columns.map(x=>'<th>'+escape(x)+'</th>').join('')+'</tr></thead><tbody>'+
+   rows.map(row=>'<tr>'+row.map(x=>'<td>'+x+'</td>').join('')+'</tr>').join('')+
+   '</tbody></table></div>';
+  if(tab==='summary'){
+   const cell=projection.cells,mapped=cell.filter(x=>x.target!==null),complete=cell.filter(x=>x.lower!==null);
+   return '<section class="sp-card"><div class="sp-actions"><h2>'+t('summary')+'</h2>'+btn('meta',null,'edit')+
+    btn('reference',null,'reference')+'</div><div class="sp-grid">'+
+    [['POMs',p.poms.length],['Size labels',p.meta.sizes.length],['Sourced size targets',mapped.length],
+     ['Tolerance-complete cells',complete.length],['Recorded revisions',p.revisions.length],['BOM entries',p.bom.length]]
+    .map(([name,value])=>'<div class="sp-tile"><b>'+escape(value)+'</b><small>'+escape(name)+'</small></div>').join('')+
+    '</div><p class="sp-note">'+t('noDefaults')+'</p></section>';
+  }
+  if(tab==='poms')return '<section class="sp-card"><div class="sp-actions"><h2>'+t('poms')+'</h2>'+
+   btn('add-pom',null,'add')+'</div>'+table(['Code','Description / location','Base value','Basis','Tolerance -/+','Reviewed source','Action'],
+    p.poms.map(x=>[escape(x.code),escape(x.name+' / '+x.location),
+     escape(x.baseValue+' '+x.unit),escape(x.basis),
+     escape((x.toleranceMinus||'Needs Information')+' / '+(x.tolerancePlus||'Needs Information')),
+     escape(x.baseReviewed?'Source-reviewed':'Needs Information'),
+     btn('edit-pom',x.id)+' '+btn('delete-pom',x.id,'remove')]))+
+   '<h3>'+t('target')+'</h3>'+table(['POM','Size','Target','Min','Max','Unit','Basis','Source status'],
+    projection.cells.map(x=>[escape(x.code),escape(x.size),escape(x.target??this.tr('missing')),
+      escape(x.lower??this.tr('missing')),escape(x.upper??this.tr('missing')),
+      escape(x.unit),escape(x.basis),escape(x.issue||'Source reviewed')]))+'</section>';
+  if(tab==='grades')return '<section class="sp-card"><div class="sp-actions"><h2>'+t('grades')+'</h2>'+
+   btn('add-grade',null,'add')+'</div><p class="sp-note">'+t('noDefaults')+'</p>'+
+   table(['POM','From','To','Delta','Unit','Source','Local review','Action'],
+    p.grades.map(x=>[escape(p.poms.find(z=>z.id===x.pomId)?.code||'?'),escape(x.fromSize),
+     escape(x.toSize),escape(x.delta),escape(x.unit),escape(x.sourceRef),
+     escape(x.reviewed?'Reviewed':'Needs Information'),btn('edit-grade',x.id)+' '+btn('delete-grade',x.id,'remove')]))+'</section>';
+  if(tab==='bom')return '<section class="sp-card"><div class="sp-actions"><h2>'+t('bom')+'</h2>'+
+    btn('add-bom',null,'add')+'</div>'+table(['Type','Component / instruction','Source','Notes','Image reference','Action'],
+      p.bom.map(x=>[escape(x.kind),escape(x.description),escape(x.sourceRef),
+        escape(x.note),escape(x.photoRef),btn('edit-bom',x.id)+' '+btn('delete-bom',x.id,'remove')]))+'</section>';
+  if(tab==='revisions'){
+   const last=p.revisions.at(-1),changes=GarmentSpecEngine.compare(p,last);
+   return '<section class="sp-card"><div class="sp-actions"><h2>'+t('revisions')+'</h2>'+
+    btn('approve',null,'approval')+'</div><p class="sp-warning">'+t('approvalWarning')+'</p>'+
+    table(['Revision','Effective date','Recorded approver','Source','Status'],
+      p.revisions.map(x=>[escape(x.recordRevision),escape(x.effectiveDate),escape(x.approver),
+        escape(x.evidenceRef),'User-recorded source (not independently authenticated)']))+
+    '<h3>'+t('compare')+'</h3>'+table(['Field','Changed since recorded revision'],
+      changes.map(x=>[escape(x.field),escape('Changed; see full report for exact old/new values')]))+'</section>';
+  }
+  if(tab==='reports'){
+   const last=p.revisions.at(-1),change=GarmentSpecEngine.compare(p,last);
+   return '<section class="sp-card"><div class="sp-actions">'+
+    '<button class="sp-btn primary" data-action="excel">'+t('excel')+'</button>'+
+    '<button class="sp-btn" data-action="print">'+t('print')+'</button></div>'+
+    TechSpecReport.html(p,projection,change)+'</section>';
+  }
+  return '<section class="sp-card">'+t('none')+'</section>';
+ }
+ form(kind,id){
+  const p=this.current,t=k=>escape(this.tr(k));
+  if(kind!=='new'&&!p)throw Error('Start or open a tech pack.');
+  const start='<form class="sp-form" data-form="'+escape(kind)+'"><input type="hidden" name="id" value="'+escape(id||'')+'">';
+  const end='<div class="wide sp-actions"><button class="sp-btn primary" type="submit">'+t('save')+'</button></div></form>';
+  let html='',label='',item={};
+  const unit=[['cm','Centimetres (cm)'],['in','Inches (in)']];
+  const basis=[['flat','Flat width/length'],['circumference','Circumference']];
+  if(kind==='new'||kind==='meta'){
+   item=kind==='meta'?p.meta:{};label=kind==='new'?t('new'):t('details');
+   html=this.input('style',item.style,'text','required maxlength="80"')+
+    this.input('fabric',item.fabric,'text','required maxlength="160"')+
+    this.input('category',item.category,'text','required maxlength="80"')+
+    this.input('gender',item.gender,'text','required maxlength="60"')+
+    this.input('season',item.season,'text','required maxlength="80"')+
+    this.input('source',item.sourceRef,'text','required maxlength="180"')+
+    this.input('sizes',item.sizes?.join(',')||'','text','required maxlength="180"')+
+    this.input('baseSize',item.baseSize,'text','required maxlength="24"')+
+    this.select('precision',[['','Select decimals'],...[0,1,2,3,4].map(x=>[String(x),String(x)])],item.precision??'')+
+    this.select('rounding',[['','Select source convention'],['half-up','Half up'],['down','Down']],item.rounding)+
+    this.input('photoRef',item.sketchReference,'text','maxlength="180"',true);
+  }else if(kind==='add-pom'||kind==='pom'){
+   item=p.poms.find(x=>x.id===id)||{};label=t('poms');
+   html=this.input('code',item.code,'text','required maxlength="45"')+
+    this.input('name',item.name,'text','required maxlength="120"')+
+    this.input('location',item.location,'text','required maxlength="160"')+
+    this.select('geometry',[['','Select'],['girth','Girth'],['length','Length'],['other','Other']],item.geometry)+
+    this.select('basis',basis,item.basis)+this.select('unit',unit,item.unit)+
+    this.input('baseValue',item.baseValue,'text','required inputmode="decimal"')+
+    this.input('baseSource',item.baseSource||p.meta.sourceRef,'text','required maxlength="180"')+
+    this.input('reviewedBy',item.reviewedBy,'text','maxlength="100"')+
+    this.input('reviewDate',item.reviewDate,'date')+this.checkbox('reviewed',item.baseReviewed)+
+    this.input('toleranceMinus',item.toleranceMinus,'text','inputmode="decimal"')+
+    this.input('tolerancePlus',item.tolerancePlus,'text','inputmode="decimal"')+
+    this.input('toleranceSource',item.toleranceSource,'text','maxlength="160"')+
+    this.input('toleranceReviewedBy',item.toleranceReviewedBy,'text','maxlength="100"')+
+    this.checkbox('toleranceReviewed',item.toleranceReviewed)+
+    this.input('conversionSource',item.conversionSource,'text','maxlength="160"')+
+    this.input('conversionBy',item.conversionBy,'text','maxlength="100"')+
+    this.checkbox('conversionReviewed',item.conversionReviewed);
+  }else if(kind==='add-grade'||kind==='grade'){
+   if(!p.poms.length)throw Error('Add a measurement point before its grade.');
+   item=p.grades.find(x=>x.id===id)||{};label=t('grades');
+   html=this.select('code',p.poms.map(x=>[x.id,x.code+' — '+x.name]),item.pomId)+
+    this.select('fromSize',p.meta.sizes.slice(0,-1).map(x=>[x,x]),item.fromSize)+
+    this.select('toSize',p.meta.sizes.slice(1).map(x=>[x,x]),item.toSize)+
+    this.input('delta',item.delta,'text','required inputmode="decimal"')+
+    this.input('gradeSource',item.sourceRef,'text','required maxlength="180"')+
+    this.input('reviewedBy',item.reviewedBy,'text','maxlength="100"')+
+    this.input('reviewDate',item.reviewDate,'date')+this.checkbox('reviewed',item.reviewed)+
+    '<p class="sp-note wide">Signed increment is always To Size minus From Size. Unit follows selected POM. No universal grade.</p>';
+  }else if(kind==='add-bom'||kind==='bom'){
+   item=p.bom.find(x=>x.id===id)||{};label=t('bom');
+   html=this.select('kind',[['fabric','Fabric'],['trim','Trims'],['construction','Construction'],
+      ['packing','Packing'],['other','Other']],item.kind)+
+    this.input('description',item.description,'text','required maxlength="250"')+
+    this.input('source',item.sourceRef,'text','required maxlength="180"')+
+    this.input('photoRef',item.photoRef,'text','maxlength="150"')+
+    this.textArea('note',item.note);
+  }else if(kind==='approve'){
+   label=t('approval');html='<p class="wide sp-warning">'+t('approvalWarning')+'</p>'+
+    this.input('approver','','text','required maxlength="100"')+
+    this.input('evidence','','text','required maxlength="180"')+
+    this.input('effective','','date','required')+
+    this.textArea('reason')+this.checkbox('reviewed',false);
+  }else if(kind==='reference'){
+   item=p.meta.reference||{};label=t('reference');
+   html=['sourceApp','recordType','recordId','revisionId','sourceDate','verifiedBy','verifiedAt','displaySnapshot']
+    .map(k=>this.input(k,item[k]||'','text','maxlength="180"')).join('');
+  }else throw Error('Unknown spec entry type.');
+  this.dialogShow(label,start+html+end);
+ }
+ submit(form){
+  try{
+   const values=Object.fromEntries(new FormData(form).entries()),
+     get=k=>trim(values[k]),type=form.dataset.form,flag=k=>form.querySelector('[name="'+k+'"]')?.checked||false;
+   if(type==='new'){
+    const sizes=get('sizes').split(',').map(x=>x.trim()).filter(Boolean);
+    const profile={style:get('style'),fabric:get('fabric'),category:get('category'),gender:get('gender'),
+      season:get('season'),sourceRef:get('source'),sizes,baseSize:get('baseSize'),
+      precision:get('precision')===''?null:Number(get('precision')),rounding:get('rounding')};
+    const item=GarmentSpecEngine.make(profile);item.meta.sketchReference=get('photoRef');
+    TechSpecStore.validate(item);
+    this.current=item;this.section='poms';this.dirty=true;
+   }else if(type==='meta'){
+    this.update('Style spec source profile updated',p=>{
+     const sizes=get('sizes').split(',').map(x=>x.trim()).filter(Boolean);
+     if(p.poms.length&&(JSON.stringify(p.meta.sizes)!==JSON.stringify(sizes)||
+       p.meta.baseSize!==get('baseSize')))
+      throw Error('Size range changes need a separate approved revision workflow; existing POM grades remain protected.');
+     p.meta={...p.meta,style:get('style'),fabric:get('fabric'),category:get('category'),gender:get('gender'),
+      season:get('season'),sourceRef:get('source'),sizes,baseSize:get('baseSize'),
+      precision:get('precision')===''?null:Number(get('precision')),rounding:get('rounding'),
+      sketchReference:get('photoRef')};
+    });
+   }else if(type==='add-pom'||type==='pom'){
+    this.update('POM measurement source updated',p=>{
+     const id=get('id')||uniqueId('POM'),before=p.poms.find(x=>x.id===id);
+     const item={id,code:get('code'),name:get('name'),location:get('location'),geometry:get('geometry'),
+      basis:get('basis'),unit:get('unit'),baseValue:get('baseValue'),baseSource:get('baseSource'),
+      baseReviewed:flag('reviewed'),reviewedBy:get('reviewedBy'),reviewDate:get('reviewDate'),
+      toleranceMinus:get('toleranceMinus'),tolerancePlus:get('tolerancePlus'),
+      toleranceSource:get('toleranceSource'),toleranceReviewed:flag('toleranceReviewed'),
+      toleranceReviewedBy:get('toleranceReviewedBy'),
+      conversionReviewed:flag('conversionReviewed'),conversionSource:get('conversionSource'),
+      conversionBy:get('conversionBy')};
+     if(before&&before.unit!==item.unit&&p.grades.some(x=>x.pomId===id))
+      throw Error('Remove/replace the sourced grades before changing a POM measurement unit.');
+     p.poms=p.poms.filter(x=>x.id!==id).concat(item);
+    });
+   }else if(type==='add-grade'||type==='grade'){
+    this.update('Size-transition source grade updated',p=>{
+     const id=get('id')||uniqueId('GR'),pom=p.poms.find(x=>x.id===get('code'));
+     if(!pom)throw Error('Select an actual POM.');
+     const item={id,pomId:pom.id,fromSize:get('fromSize'),toSize:get('toSize'),
+      delta:get('delta'),unit:pom.unit,sourceRef:get('gradeSource'),
+      reviewed:flag('reviewed'),reviewedBy:get('reviewedBy'),reviewDate:get('reviewDate')};
+     p.grades=p.grades.filter(x=>x.id!==id).concat(item);
+    });
+   }else if(type==='add-bom'||type==='bom'){
+    this.update('BOM/construction source updated',p=>{
+     const id=get('id')||uniqueId('BOM'),item={id,kind:get('kind'),description:get('description'),
+      sourceRef:get('source'),photoRef:get('photoRef'),note:get('note')};
+     p.bom=p.bom.filter(x=>x.id!==id).concat(item);
+    });
+   }else if(type==='approve'){
+    if(!flag('reviewed'))throw Error('Confirm you have independently reviewed an actual buyer source document.');
+    this.update('External specification decision recorded from user-entered evidence',p=>{
+     if(!p.poms.length||GarmentSpecEngine.project(p).cells.some(x=>x.target===null))
+      throw Error('Do not record an approved revision with unknown POM base/size grades.');
+     if(!trim(get('approver'))||!trim(get('evidence'))||!GarmentSpecEngine.date(get('effective')))
+      throw Error('Approver, original evidence source and date are required.');
+     p.revisions.push({id:uniqueId('REV'),recordRevision:p.revision+1,
+       recordedAt:new Date().toISOString(),approver:get('approver'),
+       evidenceRef:get('evidence'),effectiveDate:get('effective'),
+       reason:get('reason'),snapshot:{meta:clone(p.meta),poms:clone(p.poms),
+         grades:clone(p.grades),bom:clone(p.bom)}});
+    });
+   }else if(type==='reference'){
+    this.update('Manual reviewed source reference attached',p=>{
+     p.meta.reference=Object.fromEntries(
+      ['sourceApp','recordType','recordId','revisionId','sourceDate','verifiedBy','verifiedAt','displaySnapshot']
+       .map(k=>[k,get(k)]));
+    });
+   }
+   this.dialog.close();this.render();
+  }catch(e){
+   let error=form.querySelector('[role=alert]');
+   if(!error){error=document.createElement('p');error.className='sp-warning wide';error.setAttribute('role','alert');form.prepend(error);}
+   error.textContent=e.message;
+  }
+ }
+ download(contents,name,mime){
+  const blob=contents instanceof Blob?contents:new Blob([contents],{type:mime});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
+ }
+ excel(){
+  if(!this.current)throw Error('Open a spec first.');
+  if(!global.XLSX?.utils?.book_new)throw Error('Local Excel exporter is not loaded.');
+  const p=this.current,project=GarmentSpecEngine.project(p),last=p.revisions.at(-1);
+  const sheets=TechSpecReport.sheets(p,project,GarmentSpecEngine.compare(p,last));
+  const wb=global.XLSX.utils.book_new();
+  for(const [name,rows] of Object.entries(sheets)){
+   const table=TechSpecReport.excelRows(rows,name),sheet=global.XLSX.utils.aoa_to_sheet(table);
+   sheet['!cols']=rows[0].map(()=>({wch:27}));
+   global.XLSX.utils.book_append_sheet(wb,sheet,name.slice(0,31));
+  }
+  const data=global.XLSX.write(wb,{bookType:'xlsx',type:'array',compression:true});
+  this.download(new Blob([data],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),
+    'VESA-TECHPACK-'+p.id+'.xlsx','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+ }
+}
+global.VesaTechSpec360=Object.freeze({GarmentSpecEngine,TechSpecStore,TechSpecReport,VERSION,FORMAT});
+if(typeof module!=='undefined'&&module.exports)module.exports=global.VesaTechSpec360;
+if(typeof document!=='undefined'){
+ const run=()=>new TechSpecWorkspace().begin();
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
+}
+})(typeof globalThis!=='undefined'?globalThis:this);
+</script></body></html>
