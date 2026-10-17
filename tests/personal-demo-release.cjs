@@ -31,7 +31,9 @@ assert.equal((catalog.match(/id:'fabric-supplier-comparison'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'claims-disputes'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'product-development'/g)||[]).length,1);
 assert(catalog.includes("route:'/apps/product-development/'")&&catalog.includes("order:190,openLabelKey:'openProductDevelopment'"));
-assert(sw.includes('vesa-v83-product-development-personal-demo'));
+assert(sw.includes('vesa-v84-unified-app-centre'));
+assert(sw.includes("'./css/vesa-app-centre.css?v=20261017-u01'"));
+assert(sw.includes("'./js/vesa-app-centre.js?v=20261017-u01'"));
 for(const url of ['./apps/product-development/','./apps/product-development/index.html','./apps/product-development/assets/product-development.css','./apps/product-development/src/bootstrap.js','./apps/product-development/src/domain/concept-register.js','./apps/product-development/src/domain/board-layout.js','./apps/product-development/src/domain/revision-history.js','./apps/product-development/src/domain/reviewed-reference.js','./apps/product-development/src/data/saved-copy-codec.js','./apps/product-development/src/data/local-record-port.js','./apps/product-development/src/reports/report-model.js','./apps/product-development/src/i18n/app-copy.js','./apps/product-development/src/application/workspace-controller.js','./apps/packing-container/','./apps/order-commission/',
  './apps/packing-container/index.html','./apps/order-commission/index.html',
  './apps/tech-pack-spec/','./apps/tech-pack-spec/index.html',
