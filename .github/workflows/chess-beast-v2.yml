@@ -18,6 +18,10 @@ on:
       - 'service-worker.js'
       - '.github/workflows/chess-beast-v2.yml'
   workflow_dispatch:
+# Prevent overlapping branch pushes from competing for browser QA resources.
+concurrency:
+  group: chess-v2-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
