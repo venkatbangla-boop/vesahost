@@ -168,6 +168,7 @@ class ChessProQA {
         // Real Worker plays out a complete 50-move-rule endgame at each strength.
         // Halfmove clock is 99; any legal king/rook move makes it 100.
         const endgame='4k3/8/8/8/8/8/8/4K2R w K - 99 1';
+        await page.locator('[data-tab="tabTools"]').click();
         await page.evaluate(()=>{
           document.getElementById('customFenInput').closest('details').open=true;
         });
