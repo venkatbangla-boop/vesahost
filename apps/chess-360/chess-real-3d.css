@@ -1,0 +1,65 @@
+/* Chess Beast 360 — actual WebGL board, isolated from VESA sibling apps. */
+body.chess-beast-v2 #chessReal3DCanvas{
+ position:absolute;inset:0;width:100%;height:100%;z-index:5;
+ display:block;border-radius:7px;
+ touch-action:none;cursor:pointer;outline-offset:3px;
+ background:#162a2d;
+}
+body.chess-beast-v2 #chessReal3DCanvas[hidden]{display:none!important}
+body.chess-beast-v2.board-3d.real3d-active #boardFrame{
+ transform:none!important;transform-style:flat!important;
+ box-shadow:0 13px 0 #38251b,0 18px 0 #1d1715,0 24px 40px rgba(0,0,0,.43)!important;
+ transition:none!important;isolation:isolate;
+}
+body.chess-beast-v2.real3d-active #chessboard{
+ background:transparent!important;
+}
+body.chess-beast-v2.real3d-active #chessboard .square{
+ background:transparent!important;background-image:none!important;
+}
+body.chess-beast-v2.real3d-active #chessboard .piece-svg,
+body.chess-beast-v2.real3d-active #chessboard :is(.move-dot,.capture-ring,.coord-rank,.coord-file,.heatmap-layer,.capture-burst,.chesscom-move-badge,.plan-step-badge){
+ visibility:hidden!important;
+}
+body.chess-beast-v2.real3d-active :is(#boardFxCanvas,#arrowOverlaySvg){
+ display:none!important;
+}
+body.chess-beast-v2.real3d-active #boardStartOverlay{
+ z-index:12!important;
+}
+body.chess-beast-v2.real3d-active.beast-camera-drag-mode #chessReal3DCanvas{
+ cursor:grab;
+}
+body.chess-beast-v2.real3d-active #boardFrame.beast-orbit-moving #chessReal3DCanvas{
+ cursor:grabbing;
+}
+body.chess-beast-v2.real3d-active .beast-camera-toolbar{
+ background:#1e312f;border:1px solid rgba(108,225,188,.38);
+}
+body.chess-beast-v2 #chessReal3DStatus{
+ display:inline-flex;align-items:center;gap:7px;
+ color:#aedccc;font-weight:600;font-size:12px;padding:6px;
+ white-space:normal;
+}
+body.chess-beast-v2 .chess-3d-shortcut{
+ display:flex;align-items:center;gap:9px;justify-content:flex-start;
+ width:100%;min-height:44px;margin:0;
+ font-size:14px;font-weight:740;
+ background:linear-gradient(95deg,#195548,#183a40);
+ border:1px solid #367e69;border-radius:10px;
+ padding:10px 12px;color:#f3fff9;cursor:pointer;
+}
+body.chess-beast-v2 .chess-3d-shortcut[aria-pressed=true]{
+ border-color:#7ce9ba;background:linear-gradient(100deg,#226652,#15463e);
+}
+body.chess-beast-v2 .chess-3d-shortcut>span:last-child{margin-left:auto;color:#ace9cf}
+body.chess-beast-v2 .beast-camera-toolbar .chess-real3d-note{
+ width:100%;text-align:center;color:#bdddd1;font-size:12px;
+}
+@media(max-width:610px){
+ body.chess-beast-v2 .chess-3d-shortcut{min-height:48px;font-size:13px}
+ body.chess-beast-v2 #chessReal3DStatus{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+ body.chess-beast-v2.real3d-active #boardFrame{transition:none!important}
+}
