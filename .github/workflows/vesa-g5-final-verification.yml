@@ -23,6 +23,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install real Chromium
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
       - name: Existing source and domain contracts
         shell: bash
         run: |
@@ -53,12 +59,6 @@ jobs:
           node apps/tna/tests/g14-task-planning-date-revision.test.cjs
           node apps/tna/tests/g15-merchandising-export.test.cjs
           node apps/tna/tests/g16-offline-bundle.test.cjs
-      - name: Install real Chromium
-        shell: bash
-        run: |
-          npm install --no-save --no-package-lock playwright@1.56.0
-          npx playwright install --with-deps chromium
-          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
       - name: Existing real browser workflows
         shell: bash
         run: |
@@ -90,6 +90,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install real Chromium
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
       - name: Existing source and domain contracts
         shell: bash
         run: |
@@ -106,12 +112,6 @@ jobs:
           node apps/ppm/tests/planning.cjs
           node apps/ppm/tests/regression.cjs
           node apps/ppm/tests/update.cjs
-      - name: Install real Chromium
-        shell: bash
-        run: |
-          npm install --no-save --no-package-lock playwright@1.56.0
-          npx playwright install --with-deps chromium
-          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
       - name: Existing real browser workflows
         shell: bash
         run: |
@@ -144,6 +144,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install real Chromium
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
       - name: Existing source and domain contracts
         shell: bash
         run: |
@@ -163,12 +169,6 @@ jobs:
           node apps/aql/tests/a-g09-cross-app-boundaries.cjs
           node apps/aql/tests/a-g11-60-requirement-matrix.cjs
           node apps/aql/tests/release-contract.cjs
-      - name: Install real Chromium
-        shell: bash
-        run: |
-          npm install --no-save --no-package-lock playwright@1.56.0
-          npx playwright install --with-deps chromium
-          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
       - name: Existing real browser workflows
         shell: bash
         run: |
@@ -203,6 +203,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install real Chromium
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
       - name: Existing source and domain contracts
         shell: bash
         run: |
@@ -227,12 +233,6 @@ jobs:
           node apps/fabric-supplier-comparison/tests/domain.test.cjs
           node apps/claims-disputes/tests/domain.test.cjs
           node apps/product-development/tests/domain.test.cjs
-      - name: Install real Chromium
-        shell: bash
-        run: |
-          npm install --no-save --no-package-lock playwright@1.56.0
-          npx playwright install --with-deps chromium
-          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
       - name: Existing real browser workflows
         shell: bash
         run: |
