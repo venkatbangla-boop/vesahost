@@ -3768,14 +3768,21 @@
 
     banner.classList.add('active');
     if (engine.turn === humanColor) {
-      // AI "Brain" picks the piece type of its recommended best move!
-      const res = engine.computeBestMove(Math.max(3, aiLevel));
-      if (res && res.move) {
-        requiredBrainPieceType = res.move.piece.type;
-        const pNames = { P: 'PAWN (♙)', N: 'KNIGHT (♘)', B: 'BISHOP (♗)', R: 'ROOK (♖)', Q: 'QUEEN (♕)', K: 'KING (♔)' };
-        textEl.textContent = `🧠 Brain Command: Move any ${pNames[requiredBrainPieceType]}! You choose the square.`;
-        badgeEl.textContent = `Piece: ${requiredBrainPieceType}`;
-      }
+      // The Brain uses the same cancellable background search as the opponent.
+      // Avoid blocking the board while the expert chooses a piece for the Hand.
+      requiredBrainPieceType=null;
+      textEl.textContent=currentLang==='ta'?'🧠 காய் வகையைத் தேர்வு செய்கிறது…':'🧠 Coach is choosing a piece…';
+      badgeEl.textContent='Coach thinking';
+      chessSearchCoordinator.request('brain',Math.max(2,aiLevel),(move)=>{
+        if(!isHandAndBrain||engine.turn!==humanColor)return;
+        requiredBrainPieceType=move.piece.type;
+        const pNames={P:'PAWN (♙)',N:'KNIGHT (♘)',B:'BISHOP (♗)',R:'ROOK (♖)',Q:'QUEEN (♕)',K:'KING (♔)'};
+        textEl.textContent=currentLang==='ta'
+          ? `🧠 ${pNames[requiredBrainPieceType]} நகர்த்துங்கள். இடத்தை நீங்களே தேர்ந்தெடுக்கலாம்.`
+          : `🧠 Move any ${pNames[requiredBrainPieceType]}. You choose where!`;
+        badgeEl.textContent='Piece: '+requiredBrainPieceType;
+        renderBoard();
+      });
     } else {
       requiredBrainPieceType = null;
       textEl.textContent = `🤖 AI Opponent is thinking...`;
