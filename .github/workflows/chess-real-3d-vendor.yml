@@ -38,12 +38,27 @@ jobs:
                   assert any(name.startswith("piece_"+piece+"_"+side) for name in names),(piece,side)
           print("CHESS_3D_REAL_CARVED_MESHES_LICENSE_PASS 12 types; 32 mesh nodes; 9 PBR images")
           PY
+      - name: Vendor pinned MIT Three.js PBR and GLTFLoader offline
+        run: |
+          set -euo pipefail
+          mkdir -p apps/chess-360/vendor
+          npm install --no-audit --no-fund --ignore-scripts --no-save --no-package-lock --prefix /tmp/chess-three three@0.180.0
+          PKG=/tmp/chess-three/node_modules/three
+          test -f "$PKG/build/three.module.js"
+          test -f "$PKG/examples/jsm/loaders/GLTFLoader.js"
+          test -f "$PKG/LICENSE"
+          cp "$PKG/build/three.module.js" apps/chess-360/vendor/three.module.js
+          cp "$PKG/examples/jsm/loaders/GLTFLoader.js" apps/chess-360/vendor/GLTFLoader.js
+          cp "$PKG/LICENSE" apps/chess-360/vendor/THREE_LICENSE_MIT.txt
+          node --check apps/chess-360/vendor/three.module.js
+          node --check apps/chess-360/vendor/GLTFLoader.js
+          echo "CHESS_3D_THREE_OFFLINE_VENDOR_PASS v0.180.0"
       - name: Preserve exact binary files in GitHub feature branch only
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apps/chess-360/assets/real3d
+          git add apps/chess-360/assets/real3d apps/chess-360/vendor
           if git diff --cached --quiet; then
             echo "CHESS_3D_VENDOR_ALREADY_COMMITTED"
           else
