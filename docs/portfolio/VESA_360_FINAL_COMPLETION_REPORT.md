@@ -1,57 +1,50 @@
-# VESA 360 — Final Completion Evidence and Outstanding Gates
+# VESA 360 — Final 19-App Completion and Release Evidence
 
-**Date:** 2026-10-18 (Asia/Dhaka). **Verdict: PARTIAL — not a signed final 19-app release.** Scope is permanently a personal static showcase with synthetic data. Baseline main `afd3ab38ae733bb72d260457273bc591e08a45d1` (inspected). No runtime source, calculation engine, record schema, auth, offline cache or UI assets changed by this verification branch.
+**Recorded:** 2026-10-18 Asia/Dhaka. **Scope:** owner-confirmed 19-application **personal synthetic static showcase**, not commercial production. **Automated G5 verification:** SUCCESS for all four jobs. **Overall final release verdict: PARTIAL** because exhaustive original-blueprint/manual/native-device UAT and physical/third-party acceptance are not established. Completed engineering work is preserved; no broad app rewrite was necessary.
 
-## Exact 19-application status
+## All 19 application statuses
 
-| Application | Evidence-scoped status |
-|---|---|
-| TNA 360 | Core deep G5 in progress; G11 scheduling/CPM and G13-G17 proven previously, newly rerunning |
-| PPM 360 | Core deep G5 in progress; prior 168-checkpoint and report tests exist |
-| AQL 360 | Core deep G5 in progress; sampling/Ac-Re/stages browser passed up through large restore; PDF file-viewer runner failed |
-| Costing 360 | G4/G5 source QA verified |
-| Packing & Container 360 | G4/G5 source QA verified |
-| Order & Commission 360 | G4/G5 source QA verified |
-| Tech Pack & Spec 360 | G4/G5 source QA verified |
-| Purchase Order 360 | G4/G5 source QA verified |
-| LC & Payment 360 | G4/G5 source QA verified |
-| Sampling & Approval 360 | G4/G5 source QA verified |
-| Fabric & Trims 360 | G4/G5 source QA verified |
-| Shipment & Documentation 360 | G4/G5 source QA verified |
-| Production Tracker 360 | G4/G5 source QA verified |
-| Factory & Vendor 360 | G4/G5 source QA verified |
-| Label & Artwork Approval 360 | G4/G5 source QA verified |
-| Buyer CRM 360 | G4/G5 source QA verified |
-| Fabric & Supplier Comparison 360 | G4/G5 source QA verified |
-| Claims & Disputes 360 | G4/G5 source QA verified |
-| Product Development 360 | G4/G5 source QA verified |
+| Application | Automated status | Feature-parity evidence/limit |
+|---|---|---|
+| TNA 360 | G5 domain + Chromium PASS | Original G01–G16, seven-sheet order, CPM, calendars, revisions/baselines, report/workbook/offline; native manual UAT outstanding |
+| PPM 360 | G5 Node + Chromium PASS | 168 checkpoint identities; conditional decisions; amendments, report and offline upgrade; human release not inferred |
+| AQL 360 | G5 Node + Chromium PASS | Ac/Re, AR11 carton, 13 stages, CAPA/reinspection, measurements, saved copies and reports; external inspection unclaimed |
+| Costing 360 | G4/G5 + integrated PASS | Source-based costing and report regression as supported by prior app tests; independent G5 form/19-route proof |
+| Packing & Container 360 | G4/G5 + integrated PASS | Packing workflow/form/reports/portable records |
+| Order & Commission 360 | G4/G5 + integrated PASS | Original sourced commission terms and records; no assumptions |
+| Tech Pack & Spec 360 | G4/G5 + integrated PASS | POM/size grading engine; approval authority remains external |
+| Purchase Order 360 | G4/G5 + integrated PASS | PO/line/acknowledgement and shipping balance |
+| LC & Payment 360 | G4/G5 + integrated PASS | LC/maturity/payment fields and source rules |
+| Sampling & Approval 360 | G4/G5 + integrated PASS | Sample version/round and explicit approval provenance |
+| Fabric & Trims 360 | G4/G5 + integrated PASS | BOM/booking/receipts/QA/reconciliation |
+| Shipment & Documentation 360 | G4/G5 + integrated PASS | Documents, cartons, shipment figures and review |
+| Production Tracker 360 | G4/G5 + integrated PASS | Line/stage WIP, capacity data, corrections |
+| Factory & Vendor 360 | G4/G5 + integrated PASS | Supplier/site/certificate recording; no inferred certification |
+| Label & Artwork Approval 360 | G4/G5 + integrated PASS | Artwork/version/decision/check digit; no GS1 ownership implied |
+| Buyer CRM 360 | G4/G5 + integrated PASS | Contacts/enquiries/followups and consent unknown |
+| Fabric & Supplier Comparison 360 | G4/G5 + integrated PASS | Comparability/source costs and missing landed-input safeguards |
+| Claims & Disputes 360 | G4/G5 + integrated PASS | Claim/agreement/settlement/receipt separation |
+| Product Development 360 | G4/G5 + integrated PASS | Concept, colorway, board and immutable revision flow |
 
-These entries mean completed app code and existing verification evidence, **not every approved blueprint requirement or real-device/human PASS**. Original 15 blueprints are retained and their detailed G4/G5 source/function reports remain in `docs/portfolio/20_*` through `28_*`. G5 Wave A/B/C records source-level Chromium/editable form QA across all 15. The AQL 11.78MB source is image-heavy; file size is not a meaningful proxy for feature depth.
+**Status interpretation:** each PASS is limited to exercised Node/real Chromium regression and the source-approved G4/G5 checks; not a claim that every possible app exception or untested blueprint checkbox was manually checked. The 15 companion apps underwent G5 actual editable form validation as recorded in [Wave A](26_G5_FORM_QA_WAVE_A.md), [Wave B](27_G5_FORM_QA_WAVE_B.md), and [Wave C](28_G5_FORM_QA_WAVE_C.md). Costing was additionally covered in the 19-route opened-section suite. Original `blueprints/APP-01..APP-15`, core domain specs and approval boundaries remained unmodified.
 
-## 2026-10-18 updated independent results (newer than original report inventory)
+## Exact changes / source commits
 
-- **TNA G5 deep:** [exact test-source `2945aab00e1280b43a7e603f2016e0cab85dd407`, run #39119684912](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119684912) **SUCCESS**: 26 domain/integrity/CPM/mixed-calendar/baseline/migration/source/portfolio Node checks and six real Chromium browser suites for responsive shell, 200% page scale, four locales, Order Master save/reopen, G13 sheet XLSX/print, G16 offline/browser. The older `file://` Chromium PDF viewer test was isolated because GitHub runner treats navigation as download; generated report/print tests remain. Original business critical path unchanged.
-- **AQL G5 deep:** [exact test-source `473cb3c31a2fa68696b276988fe2c3e889e148d6`, run #39119598197](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119598197) **SUCCESS**: 15 source/engine/Ac-Re/60-requirement Node tests and nine real Chromium suites through AR11, 13 stages, final Ac/Re, carton/barcode, analytics, measurement, evidence restore, reports, links. Runner-specific standalone `file://` PDF-reader check excluded; not a claim of native reader acceptance. No inspection or report domain changes.
-- **Pages at documentation main SHA `906b05f879cf2aa335f60054e48b9eabbd8218fe`:** [deployment #39119748071](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119748071) **SUCCESS**. [Blueprint integrity #39119748312](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119748312) **SUCCESS**. New Pages job success verifies pipeline, **not** independently fetched live route/asset bytes. Public-origin page fetch was unavailable in this execution.
-- **PPM G5 deep:** [full-history test-source `ded6fc7a5cd0521762a47e32d142b8b4f9df7e2d`, independent four-job run #39119769280](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119769280) **PPM job SUCCESS**: original baseline/checkpoint logic, all 168 checkpoint identities, conditional GO/HOLD, amendments, backups, recovery, 4-languages/PDF, service worker version migration against the genuine Git history, real responsive/browser workflows. Old shallow checkout broke a `git show 16b6e45` test; `fetch-depth: 0` repaired the CI prerequisite. No PPM engine/record changes.
-- **Latest combined gate:** [#39119769280](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119769280) is the four-job full Git-history checkout and CI-runner safe PDF-reader matrix; check its final independent outcomes before upgrading PPM/portfolio statuses or promoting a test-only workflow. The applied test-only branch SHA is `ded6fc7a5cd0521762a47e32d142b8b4f9df7e2d`. Human UAT still 1/0/48.
+- Starting source main `afd3ab38ae733bb72d260457273bc591e08a45d1`. Earlier G4/G5 app improvements were already integrated; no completed app code was rebuilt. Original TNA scheduling, dates, critical path/baselines; PPM 168 checkpoints/GO-HOLD; AQL SamplingEngine Ac/Re and carton policy; Costing engines; source records, existing storage formats, 4 languages and saved-copy owners were untouched in this execution.
+- Four-job G5 Node/Chromium workflow introduced `7b9bc2156bfadeed0d5087e6f920aef5cee754d1`; dependency-order fix `254e43ab7bd6b71387d6dd3fbd81f74991df747e`; stale old-root TNA G12/file-PDF CI runner exclusion `473cb3c31a2fa68696b276988fe2c3e889e148d6`; TNA standalone PDF-viewer exclusion `2945aab00e1280b43a7e603f2016e0cab85dd407`; full Git history for PPM old-worker update test `ded6fc7a5cd0521762a47e32d142b8b4f9df7e2d`. All scoped to **test orchestration** (no application assets or domain rules).
+- Independently verified final source and complete GitHub Actions SUCCESS: [#39119769280](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119769280) at `ded6fc7a5cd0521762a47e32d142b8b4f9df7e2d`: **TNA, PPM, AQL, PORTFOLIO = 4/4 SUCCESS**. Node + real Chromium, prior sibling baseline/18 original portfolio workflow scripts, original real 19-app opened routes. The TNA job exercises responsive 320–1440, 200%-page scale, EN/BN/HI/TA, saved/reopen and offline, XLSX/print. PPM confirms portable/168/checks/recovery/worker old-new lifecycle and report. AQL exercises Ac/Re, stages, AR11, measurement, analytics, saved-copy and reporting. Browser synthetic fixtures only.
+- GitHub main report first committed `e25a5eb6aab4479f7d51b4e76a982378fc16cef2`; root continuity docs updated in subsequent main commits, including `906b05f879cf2aa335f60054e48b9eabbd8218fe`; G5 verified workflow published on main `f1c4801506be741f1c6090b5497df6ba7240bff4`; read-only live parity test published `0bc7d2fef306bb1901fc316636a63467e9aedec0`. This report is updated without altering any application runtime. Normal fast-forward commits only; no force push.
 
----
+## Deployment and real public route evidence
 
-## Actual changes and exact GitHub references
+- Main `906b05f879cf2aa335f60054e48b9eabbd8218fe`: GitHub Pages [#39119748071](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119748071) SUCCESS and blueprint integrity [#39119748312](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119748312) SUCCESS.
+- Main `0bc7d2fef306bb1901fc316636a63467e9aedec0`: independent [public exact-source byte smoke #39119974770](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119974770) SUCCESS, compares live `https://vesaent.com/apps/<app>/` HTML with **all 19 exact repository `apps/<app>/index.html` files**, plus live `js/vesa-workspace-shell.js`, `js/app-catalogue.js`, `css/vesa-workspace.css` against checkout bytes. This proves those served source bytes at test time, not whole live workflow or entire 11.78 MB AQL client behavior.
+- The main branch and Pages revision advance whenever this report/progress document is committed; confirm the final `main` Pages deployment job at its exact SHA rather than assuming a previous successful SHA covers the newer documents. All 19 original app assets are **unchanged** by this report.
 
-- Existing previously released main source: `afd3ab38ae733bb72d260457273bc591e08a45d1`. Earlier complete Pages deployment [#39117706520](https://github.com/venkatbangla-boop/vesahost/actions/runs/39117706520) **SUCCESS** for this main commit (GitHub job completion, not newly verified public byte parity).
-- G5 integration matrix introduced in `7b9bc2156bfadeed0d5087e6f920aef5cee754d1`, installation-order fix `254e43ab7bd6b71387d6dd3fbd81f74991df747e`, latest matrix adjustment `473cb3c31a2fa68696b276988fe2c3e889e148d6`, all on development branch `feature/vesa-g5-core-final-proof-20261018` when this report was prepared. Only `.github/workflows/vesa-g5-final-verification.yml` was changed, no production runtime.
-- [First final G5 workflow #39119410434](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119410434) failed because a browser-backed test ran before Playwright installed; no app defect claimed.
-- [Second G5 workflow #39119435913](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119435913): TNA G01–G11 Node tests passed including mixed calendar, leap/time-zone invariants, dependency graph, 250-order/25,250-task synthetic performance; a **superseded G12 release inventory** expected TNA assets in the root worker, while accepted G16 has a separate TNA app-scope worker. AQL G00–G11 Node tests, AR11 selection, stage, final Ac/Re, packing/barcode, 600-record analytics, measurement and legacy reopen Chromium tests passed up to browser PDF-viewer file navigation, which failed `page.goto: Download is starting` on GitHub runner. These two issues do **not** prove source application functional errors; no false G5 PASS assigned.
-- [Follow-up matrix #39119598197](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119598197) uses the accepted G16 offline-manifest test instead of obsolete G12 root-cache assumption; skips a Chromium `file://` PDF-viewer test that is runner-dependent. Existing standalone AQL multilingual PDF evidence is preserved, but **cross-platform native PDF reader approval stays unverified**. Report the final conclusion from the Actions page; this document does not preempt it.
+## Genuine exclusions, exceptions and remaining acceptance
 
-## QA and feature parity boundaries
+- GitHub's headless Chromium treats standalone `file://...pdf` navigation as **download** for two old PDF-viewer tests. The core browser-report, local PDF generation and A4 print paths have separate prior evidence; physical/native Acrobat/Excel/OS reader acceptance remains **NOT TESTED**. The original stale TNA G12 root-cache asset assertion was superseded by verified G16 TNA-scoped offline manifest; it was not used to rewrite app service workers or weaken the genuine offline/browser test. Original legacy tests remain in source intact.
+- End-to-end synthetic app tests do **not** replace every legacy format, optional blueprint, actual external buyer/bank/certification approval, 320–1440 **native hardware/device** rendering, 200% OS zoom, assistive-technology review, full every-error-path coverage or manual image inspection. No real customer data, credentials or external services were uploaded.
+- **Human UAT** separately remains **1 PASS / 0 FAIL / 48 NOT TESTED** of 49 rows. No human tester signed anything during this execution. A successful website request is not evidence of secure server-side login for GitHub Pages (browser-local convenience only).
 
-Existing original tests cover TNA seven-sheet/workflow, scheduling, CPM, revisions, calendars, downloaded workbook/PDF, saved-copy migration and isolated offline; PPM checkpoint catalogue, conditional GO/HOLD, amendments and reports; AQL approved sampling/Ac-Re, carton AR11, stage checkpoints, reinspection, report models and legacy copies. The new matrix invokes genuine Node and real Chromium tests for all 19, but only successfully completed runs count. It does **not** establish every blueprint exception, native 200% OS zoom, every keyboard flow, four-language manual typography/semantic acceptance, all original Microsoft Excel readers, large browser quota/devices or every public byte. No formula or buyer/factory/bank approval has been invented.
-
-## CI, deployment, human review and readiness
-
-The original main Pages CI passed at `afd3ab38ae733bb72d260457273bc591e08a45d1`. At report creation the G5 validation changes were **branch-only**, **not deployed** and neither a new main SHA nor public-asset byte check can be asserted. Until the final four independent jobs are green, protected source-preserving main promotion and direct Pages route/version verification are outstanding. Human UAT separately remains **1 PASS / 0 FAIL / 48 NOT TESTED** in the 49-case historical register. No human approvals were performed in this execution.
-
-**Release readiness verdict: PARTIAL.** Personal-demo source currently published according to older successful Pages evidence; independent full final G5 evidence, manual cross-browser/native devices, remaining expected-source policy gaps and actual served-byte confirmation must not be labeled complete. **Rollback:** revert the test-workflow-only commits; never delete browser records or force-push. Original domain code, TNA baselines/critical path, PPM 168 checkpoint IDs and AQL Ac/Re remain untouched.
+**Final decision: PARTIAL.** All four newly run cross-app automated verification jobs succeeded and all 19 original public app routes/shared shell passed the direct public byte comparison, but an unqualified human-approved/full-blueprint/native-device COMPLETE claim would be fabricated. Continuing work should address only these genuine remaining review/evidence limitations or independently reproduced defects; do not restart the completed 19 application source work or ask for the original master ZIP. For rollback, revert only the newly added CI/doc changes; never clear browser saved copies or alter frozen engines.
