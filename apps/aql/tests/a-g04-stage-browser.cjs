@@ -126,7 +126,7 @@ async function run() {
     page.on('pageerror', error => pageErrors.push(error.message));
     page.on('request', request => { if (!request.url().startsWith(base)) external.push(request.url()); });
     await page.goto(`${base}/apps/aql/`, { waitUntil: 'domcontentloaded' });
-    const enter = page.locator('#vesa-enter'); if (await enter.count()) await enter.click();
+    const enter = page.locator('#vesa-enter'); if (await enter.isVisible()) await enter.click();
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db);
 
     const ipc = await createStage(page, {
@@ -649,7 +649,7 @@ async function run() {
     assert.ok(geometry.document <= geometry.inner && geometry.body <= geometry.inner, `mobile overflow: ${JSON.stringify(geometry)}`);
 
     await page.reload({ waitUntil: 'domcontentloaded' });
-    const reenter = page.locator('#vesa-enter'); if (await reenter.count()) await reenter.click();
+    const reenter = page.locator('#vesa-enter'); if (await reenter.isVisible()) await reenter.click();
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db && window.__vesaApp.step === 'home');
     await reopen(page, ipcFinal);
     await reopen(page, cuttingFinal);
