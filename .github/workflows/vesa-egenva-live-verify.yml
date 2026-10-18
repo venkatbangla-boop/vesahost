@@ -1,0 +1,54 @@
+name: VESA EGENVA corrected public byte check
+on:
+  push:
+    branches: [verify/egenva-live-bytes-20261018]
+    paths: ['.github/workflows/vesa-egenva-live-verify.yml']
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare latest deployed site assets against exact verified main source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/egenva-public-smoke
+          paths=(
+            "js/app-catalogue.js"
+            "js/vesa-app-centre.js"
+            "apps/index.html"
+            "login/index.html"
+            "service-worker.js"
+            "apps/chess-360/index.html"
+          )
+          success=0
+          for attempt in $(seq 1 24); do
+            okay=1
+            for file in "${paths[@]}"; do
+              output="/tmp/egenva-public-smoke/$(echo "$file" | tr / _)"
+              if ! curl --fail --silent --show-error --location --connect-timeout 8 --max-time 50 \
+                "https://vesaent.com/$file?egenva_brand_check=20261018_$attempt" -o "$output"; then
+                echo "REQUEST_ERROR attempt=$attempt $file"
+                okay=0
+              elif ! cmp -s "$file" "$output"; then
+                echo "NOT_YET_DEPLOYED attempt=$attempt $file"
+                okay=0
+              fi
+            done
+            if [ "$okay" -eq 1 ]; then
+              success=1
+              break
+            fi
+            sleep 12
+          done
+          if [ "$success" -ne 1 ]; then
+            echo 'Public deployed bytes not verified; no false success'
+            exit 1
+          fi
+          for file in "${paths[@]}"; do
+            echo "LIVE_EGENVA_MATCH $file $(sha256sum "$file" | cut -d ' ' -f 1)"
+          done
+          echo "EGENVA_PUBLIC_LIVE_6_OF_6_PASS"
