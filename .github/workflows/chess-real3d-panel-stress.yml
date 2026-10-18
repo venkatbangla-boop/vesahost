@@ -1,8 +1,9 @@
 name: Chess Real 3D panel hardening
 on:
   push:
-    branches: [feature/chess-real3d-panel-hardening-20261018]
+    branches: [main, feature/chess-real3d-panel-hardening-20261018]
     paths:
+      - 'apps/chess-360/**'
       - 'tests/chess-real-3d-panel-stress.cjs'
       - '.github/workflows/chess-real3d-panel-stress.yml'
   workflow_dispatch:
