@@ -147,6 +147,33 @@ class Real3DQa{
     await page.waitForFunction(n=>window.__chessBeastStudioState().pieceCount===n,count);
     assert.equal((await page.evaluate(()=>window.__chessBeastStudioState())).pieceCount,count);
   }
+  async showcaseVisual(page){
+    await page.locator('#btnCameraShowcase').click();
+    await page.waitForFunction(()=>{
+      const cam=window.__chessBeastOrbitState();
+      return Math.round(cam.tilt)===48&&Math.round(cam.yaw)===10&&Math.round(cam.spin)===8;
+    },null,{timeout:5000});
+    await page.waitForTimeout(220);
+    const view=await page.evaluate(()=>{
+      const r=document.getElementById('chessStudioCanvas').getBoundingClientRect();
+      return {rect:{x:r.x,y:r.y,w:r.width,h:r.height},
+        points:[0,7,56,63].map(n=>window.__chessBeastReal3DSquare(n)),
+        pieceCount:window.__chessBeastStudioState().pieceCount,
+        persisted:JSON.parse(localStorage.getItem('chess_beast_orbit_camera_v1')||'null')};
+    });
+    assert.equal(view.pieceCount,32,'Showcase changes camera only, not chess position');
+    assert.equal(Math.round(view.persisted.tilt),48,'Showcase preference saved');
+    for(const [i,p] of view.points.entries())
+      assert.ok(p.x>=view.rect.x&&p.x<=view.rect.x+view.rect.w&&
+        p.y>=view.rect.y&&p.y<=view.rect.y+view.rect.h,
+        'Showcase must keep square '+[0,7,56,63][i]+' in the camera '+JSON.stringify(view));
+    fs.mkdirSync(imageDir,{recursive:true});
+    await page.screenshot({path:path.join(imageDir,'real-sculpted-showcase-1440.png'),
+      animations:'disabled'});
+    await page.locator('#btnCameraReset').click();
+    await page.waitForFunction(()=>window.__chessBeastOrbitState().spin===0);
+    console.log('CHESS_REAL_3D_SHOWCASE_PASS '+JSON.stringify({pose:view.persisted,pieces:view.pieceCount}));
+  }
   async diagonalVisualCheck(page){
     // The owner-approved reference is a three-quarter view. Capture an
     // honest screenshot of the ACTUAL SCULPTED playable WebGL scene, not a
@@ -266,6 +293,7 @@ class Real3DQa{
     try{
       const initial=await this.enable(page);
       const studio=await this.verifyStudio(page,width);
+      if(width===1440)await this.showcaseVisual(page);
       if(width===1440){
         fs.mkdirSync(imageDir,{recursive:true});
         await page.waitForTimeout(1650); // Let nonessential toast leave the frame.
