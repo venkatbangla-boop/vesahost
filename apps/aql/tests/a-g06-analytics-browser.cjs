@@ -103,7 +103,7 @@ async function probe(browser, base, width) {
   page.on('request', request => { if (!request.url().startsWith(base)) external.push(request.url()); });
   await page.goto(`${base}/apps/aql/`, { waitUntil: 'domcontentloaded' });
   const enter = page.locator('#vesa-enter');
-  if (await enter.count()) await enter.click();
+  if (await enter.isVisible()) await enter.click();
   await page.waitForFunction(() => !!window.__vesaApp?.repository?.db && document.querySelector('[data-vesa-menu="Tools"]'));
 
   const before = await seedHistory(page);
