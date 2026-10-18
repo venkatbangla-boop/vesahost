@@ -78,6 +78,51 @@ jobs:
           (root/"cc0-chess-set-file-manifest.json").write_text(
               json.dumps(report,indent=2),encoding="utf-8")
           print("CHESS_3D_CC0_ASSET_PROBE_PASS "+json.dumps(report["selected"]))
+          # Validate and download ONLY local relative geometry+texture dependencies
+          # from the exact canonical Poly Haven model folder. No opaque CDN at runtime.
+          if ext==".gltf":
+              from urllib.parse import urljoin, urlparse
+              gltf=json.loads(data.decode("utf-8"))
+              dependencies=[v["uri"] for v in
+                 [*gltf.get("buffers",[]),*gltf.get("images",[])]
+                 if "uri" in v and not v["uri"].startswith("data:")]
+              total=len(data)
+              whitelist="https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/chess_set/"
+              collected=[]
+              for relative in dependencies:
+                  if ".." in pathlib.PurePosixPath(relative).parts:
+                      raise SystemExit("Unsafe GLTF dependency: "+relative)
+                  asset_url=urljoin(url,relative)
+                  if not asset_url.startswith(whitelist):
+                      raise SystemExit("Offsite GLTF dependency: "+asset_url)
+                  dest=root/pathlib.PurePosixPath(relative)
+                  dest.parent.mkdir(parents=True,exist_ok=True)
+                  req=urllib.request.Request(asset_url,headers={"User-Agent":agent})
+                  dep=urllib.request.urlopen(req,timeout=50).read(12_000_000)
+                  total+=len(dep)
+                  if len(dep)>10_000_000 or total>20_000_000:
+                      raise SystemExit("Offline mobile size budget exceeded")
+                  dest.write_bytes(dep)
+                  collected.append({"name":relative,"size":len(dep),
+                    "sha256":hashlib.sha256(dep).hexdigest()})
+                  print("OFFLINE_DEP "+relative+" "+str(len(dep)))
+              report["selected"]["dependencies"]=collected
+              report["selected"]["completePackageBytes"]=total
+              (root/"cc0-chess-set-file-manifest.json").write_text(
+                  json.dumps(report,indent=2),encoding="utf-8")
+              (root/"ASSET_LICENSE_CC0.txt").write_text(
+                  "Poly Haven Chess Set — author Riley Queen\n"
+                  "Original source: https://polyhaven.com/a/chess_set\n"
+                  "License: CC0 public-domain dedication\n"
+                  "Downloaded through official API with build-time User-Agent.\n"
+                  "Offline copies only; no app runtime requests to Poly Haven.\n"
+                  "No claim of affiliation or exclusive authorship.\n",
+                  encoding="utf-8")
+              print("CHESS_3D_FULL_OFFLINE_PACKAGE_PASS "+json.dumps({
+                "meshes":len(gltf.get("meshes",[])),
+                "nodes":len(gltf.get("nodes",[])),
+                "textures":len(gltf.get("images",[])),
+                "dependencies":len(collected),"totalBytes":total}))
           PY
       - uses: actions/upload-artifact@v4
         if: always()
