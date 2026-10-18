@@ -22,12 +22,12 @@ jobs:
           set -euo pipefail
           npm install --no-audit --no-fund
           npm run build
-          test -s dist/index.html
+          test -s ../vendor/index.html
           node --check src/main.js
-          test -d dist/assets
+          test -d ../vendor/assets
           python3 - <<'PY'
           from pathlib import Path
-          root=Path('dist')
+          root=Path('../vendor')
           files=[p for p in root.rglob('*') if p.is_file()]
           assert files and len(files)<300
           print('PDFME_LOCAL_BUILD_PASS',len(files),'files',sum(p.stat().st_size for p in files),'bytes')
@@ -38,5 +38,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: vesa-pdfme-local-studio-build
-          path: apps/pdf-template-studio/dist/
+          path: apps/pdf-template-studio/vendor/
           retention-days: 7
