@@ -101,6 +101,7 @@ class Real3DQa{
     assert.ok(Math.abs(before.x-after.x)>3,'Real projected 3D pieces move under orbit camera');
     assert.equal(Number(await page.locator('#moveRewindScrubber').inputValue()),old,'Orbit did not play a move');
     await page.locator('#btnCameraReset').click();
+    await page.waitForFunction(()=>Math.round(window.__chessBeastReal3DState().angle.yaw)===0);
     const reset=await page.evaluate(()=>window.__chessBeastReal3DState());
     assert.equal(Math.round(reset.angle.yaw),0,'Reset camera');
     await page.locator('#btnCameraRotate').click();
