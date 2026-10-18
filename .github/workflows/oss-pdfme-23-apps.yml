@@ -4,6 +4,7 @@ on:
     branches: [feature/oss-pdfme-studio-20261019]
     paths:
       - '.github/workflows/oss-pdfme-23-apps.yml'
+      - 'apps/pdf-template-studio/offline-manifest.json'
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,6 +16,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
+      - name: License and dependency release gate
+        run: |
+          test -s apps/pdf-template-studio/vendor/THIRD_PARTY_LICENSES.md
+          test -s apps/pdf-template-studio/vendor/dependency-inventory.json
+          grep -q 'Bundled dependency licenses' apps/pdf-template-studio/vendor/THIRD_PARTY_LICENSES.md
       - name: Source and original garment rules
         run: |
           set -euo pipefail
