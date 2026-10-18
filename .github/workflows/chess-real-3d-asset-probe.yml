@@ -87,7 +87,8 @@ jobs:
                  [*gltf.get("buffers",[]),*gltf.get("images",[])]
                  if "uri" in v and not v["uri"].startswith("data:")]
               total=len(data)
-              whitelist="https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/chess_set/"
+              whitelist="https://dl.polyhaven.org/file/ph-assets/Models/"
+              print("GLTF_ENTRY "+json.dumps(files.get("gltf",{}).get("1k",{}).get("gltf",{}))[:4800])
               collected=[]
               for relative in dependencies:
                   if ".." in pathlib.PurePosixPath(relative).parts:
@@ -98,7 +99,24 @@ jobs:
                   dest=root/pathlib.PurePosixPath(relative)
                   dest.parent.mkdir(parents=True,exist_ok=True)
                   req=urllib.request.Request(asset_url,headers={"User-Agent":agent})
-                  dep=urllib.request.urlopen(req,timeout=50).read(12_000_000)
+                  try:
+                      dep=urllib.request.urlopen(req,timeout=50).read(12_000_000)
+                  except urllib.error.HTTPError as exc:
+                      if exc.code!=404:raise
+                      # Poly Haven glTF file records can point to texture maps
+                      # stored under Models/jpg/1k instead of gltf/1k.
+                      stem=pathlib.PurePosixPath(relative).name
+                      texture_key=stem.removeprefix("chess_set_").removesuffix("_1k.jpg")
+                      tex=files.get(texture_key,{}).get("1k",{}).get("jpg",{})
+                      if not tex.get("url"):
+                          raise SystemExit("Missing official included texture metadata for "+relative)
+                      asset_url=tex["url"]
+                      if not asset_url.startswith(whitelist):
+                          raise SystemExit("Untrusted material URL "+asset_url)
+                      req=urllib.request.Request(asset_url,headers={"User-Agent":agent})
+                      dep=urllib.request.urlopen(req,timeout=50).read(12_000_000)
+                      if tex.get("md5") and hashlib.md5(dep).hexdigest()!=tex["md5"]:
+                          raise SystemExit("Official texture checksum mismatch "+relative)
                   total+=len(dep)
                   if len(dep)>10_000_000 or total>20_000_000:
                       raise SystemExit("Offline mobile size budget exceeded")
