@@ -4922,7 +4922,7 @@
       gameStatusTitle.textContent = status.inCheck ? `⚠️ CHECK! ${turnText}` : turnText;
     }
 
-    coachInsightText.textContent = generateCoachInsight(cp, status);
+    if(!proPrefs.quiet)coachInsightText.textContent = generateCoachInsight(cp, status);
     fenInputBox.value = engine.toFen();
     halfMoveCounter.textContent = `Move ${engine.fullMoveNumber}`;
 
@@ -4956,9 +4956,13 @@
       }
     }
 
-    updateProtectionProductionMatrix();
-    renderEvalGraph();
-    renderBookMoveChips();
+    // Invisible coaching widgets must not calculate or repaint each ply in Focus Mode.
+    // The board, clock, result, FEN, turn and move list remain live.
+    if(!proPrefs.quiet){
+      updateProtectionProductionMatrix();renderEvalGraph();renderBookMoveChips();
+    }else{
+      document.getElementById('bookMovesSuggestionRow')?.replaceChildren();
+    }
   }
 
   function renderBookMoveChips() {
@@ -5861,6 +5865,7 @@
   document.getElementById('btnQuietMode').addEventListener('click',()=>{
     proPrefs.quiet=!proPrefs.quiet;
     saveProPrefs();syncProPrefs();
+    if(!proPrefs.quiet)renderAll();
     showToast(proPrefs.quiet?'Focus mode ON — coaching hidden':'Coaching and graphs are visible');
   });
   document.getElementById('btnOpenCustomize').onclick=()=>displayCustomize(true);
@@ -5890,7 +5895,7 @@
     proPrefs.legalDots=val('chessPrefLegalDots')==='on';
     proPrefs.quiet=val('chessPrefQuiet')==='on';
     showThreatRadar=proPrefs.threatArrow;
-    saveProPrefs();syncProPrefs();renderBoard();
+    saveProPrefs();syncProPrefs();renderAll();
     if(soundEnabled!==(val('chessPrefSound')==='on'))document.getElementById('btnSoundToggle').click();
     if(voiceEnabled!==(val('chessPrefVoice')==='on'))document.getElementById('btnVoiceToggle').click();
     const current3D=document.body.classList.contains('board-3d')?'on':'off';
