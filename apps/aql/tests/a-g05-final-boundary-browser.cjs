@@ -63,7 +63,7 @@ async function run() {
     page.on('pageerror', error => pageErrors.push(error.message));
     page.on('request', request => { if (!request.url().startsWith(base)) external.push(request.url()); });
     await page.goto(`${base}/apps/aql/`, { waitUntil: 'domcontentloaded' });
-    const enter = page.locator('#vesa-enter'); if (await enter.count()) await enter.click();
+    const enter = page.locator('#vesa-enter'); if (await enter.isVisible()) await enter.click();
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db);
 
     await page.locator('#app [data-action="new"]:visible').first().click();
@@ -150,7 +150,7 @@ async function run() {
     assert.equal(overflow, false, 'Final boundary review overflows the 390px viewport');
 
     await page.reload({ waitUntil: 'domcontentloaded' });
-    const enterAgain = page.locator('#vesa-enter'); if (await enterAgain.count()) await enterAgain.click();
+    const enterAgain = page.locator('#vesa-enter'); if (await enterAgain.isVisible()) await enterAgain.click();
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db);
     if (await page.locator('#app [data-action="home"]:visible').count()) {
       await page.locator('#app [data-action="home"]:visible').first().click();
