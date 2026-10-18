@@ -2,13 +2,15 @@
 name: Chess Beast 360 V2 acceptance
 on:
   push:
-    branches: [feature/chess-beast-v2-20261018, feature/chess-beast-v2-20261018-match-experience, feature/chess-beast-pro-orbit-20261018, main]
+    branches: [feature/chess-beast-v2-20261018, feature/chess-beast-v2-20261018-match-experience, feature/chess-beast-pro-orbit-20261018, feature/chess-real-3d-mesh-20261018, main]
     paths:
       - 'apps/chess-360/**'
       - 'tests/chess-beast-v2.cjs'
       - 'tests/chess-match-experience.cjs'
       - 'tests/chess-pro-orbit-qa.cjs'
       - 'tests/chess-panel-layout-qa.cjs'
+      - 'tests/chess-real-3d-models.cjs'
+      - 'tests/chess-real-3d-browser.cjs'
       - 'tests/chess-beast-rules.cjs'
       - 'tests/chess-beast-deep-browser.cjs'
       - 'tests/chess-beast-visual.cjs'
@@ -45,6 +47,9 @@ jobs:
           node --check apps/chess-360/chess-beast-ui.js
           node --check apps/chess-360/chess-panel-ui.js
           node --check apps/chess-360/chess-orbit.js
+          node --check apps/chess-360/chess-real-3d-models.js
+          node --check apps/chess-360/chess-real-3d.js
+          node tests/chess-real-3d-models.cjs
           node tests/chess-beast-rules.cjs
           node tests/vesa-blueprint-integrity.cjs
           node tests/vesa-egenva-branding.cjs
@@ -59,6 +64,7 @@ jobs:
       - name: Real AI Worker / 320-1440 responsiveness
         run: |
           set -euo pipefail
+          node tests/chess-real-3d-browser.cjs
           node tests/chess-panel-layout-qa.cjs
           node tests/chess-beast-v2.cjs
           CHESS_BROWSER=webkit node tests/chess-beast-v2.cjs
@@ -72,7 +78,9 @@ jobs:
         if: always()
         with:
           name: chess-beast-v2-mobile-desktop-synthetic-screens
-          path: output/chess-beast-v2/*.jpg
+          path: |
+            output/chess-beast-v2/*.jpg
+            output/chess-real-3d/*.png
           if-no-files-found: ignore
           retention-days: 7
 
