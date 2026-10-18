@@ -6224,26 +6224,51 @@
     });
   });
 
-  // Resign Button
+  // A resignation must never happen on an accidental mobile tap.
+  let resignWasPlaying=false;
+  function closeResignPrompt(restore){
+    const modal=document.getElementById('chessResignModal');
+    modal.classList.remove('open');modal.setAttribute('aria-hidden','true');
+    document.getElementById('btnResign').focus();
+    if(restore&&resignWasPlaying&&matchState==='paused')beginOrResumeMatch();
+    resignWasPlaying=false;
+  }
   document.getElementById('btnResign').addEventListener('click', () => {
-    if (matchState === 'idle') {
-      showToast(currentLang === 'ta' ? "ஆட்டம் இன்னும் தொடங்கவில்லை — Start Game அழுத்தவும்!" : "Match hasn't started yet — click Start Game!");
-      return;
+    if(matchState==='idle'){showToast('Start a match before resigning.');return;}
+    if(matchState==='ended'){showToast('Match finished. Review board or start a new game.');return;}
+    if(gameMode==='aivsai'){
+      // Spectating is not a resignation. Keep the position to review.
+      chessSearchCoordinator.cancel();stopClockLoop();matchState='paused';renderAll();
+      showToast('AI vs AI paused. Press Resume to keep watching.');return;
     }
-    const status = engine.getGameStatus();
-    if (status.over || matchState === 'ended') {
-      resetMatchToReady();
-      return;
+    resignWasPlaying=matchState==='playing';
+    if(resignWasPlaying){
+      chessSearchCoordinator.cancel();stopClockLoop();matchState='paused';renderAll();
     }
-    matchState = 'ended';
-    stopClockLoop();
-    playSound('gameover');
+    const modal=document.getElementById('chessResignModal');
+    modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+    document.getElementById('btnCancelResign').focus();
+  });
+  document.getElementById('btnCancelResign').addEventListener('click',()=>closeResignPrompt(true));
+  document.getElementById('chessResignModal').addEventListener('keydown',event=>{
+    if(event.key==='Escape'){event.preventDefault();closeResignPrompt(true);}
+    if(event.key==='Tab'){
+      const first=document.getElementById('btnCancelResign'),last=document.getElementById('btnConfirmResign');
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+    }
+  });
+  document.getElementById('btnConfirmResign').addEventListener('click',()=>{
+    closeResignPrompt(false);
+    const resigningColor=(gameMode==='ai'||isChess960||isHandAndBrain)?humanColor:engine.turn;
+    const winnerColor=resigningColor==='w'?'b':'w';
+    const resigningSide=resigningColor==='w'?'White':'Black';
+    const winnerSide=winnerColor==='w'?'White':'Black';
     chessSearchCoordinator.cancel();
-    isAiThinking = false;
-    thinkingBanner.classList.remove('visible');
-    const resigningSide = engine.turn === 'w' ? 'White' : 'Black';
-    const winnerSide = engine.turn === 'w' ? 'Black' : 'White';
-    openGameOverModal('🏳️ Resignation', `${resigningSide} resigned. ${winnerSide} wins!`, engine.turn === 'w' ? 'b' : 'w');
+    matchState='ended';stopClockLoop();isAutoWinActive=false;
+    updateAutoWinButtonsUI();
+    playSound('gameover');
+    openGameOverModal('Resignation',resigningSide+' resigned. '+winnerSide+' wins!',winnerColor);
     renderAll();
   });
 
