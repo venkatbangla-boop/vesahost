@@ -1546,7 +1546,7 @@
         <div class="player-meta">
           <div class="player-name-row">
             <span class="player-name" id="topPlayerName">Chess Beast AI</span>
-            <span class="badge" id="topPlayerBadge">Lvl 3 • 1500 ELO</span>
+            <span class="badge" id="topPlayerBadge">Lvl 1 • Easy</span>
             <span class="badge" id="topStyleBadge" style="background:rgba(59,130,246,0.15);color:#60a5fa;border-color:rgba(59,130,246,0.3);">Carlsen Style</span>
           </div>
           <div class="captured-row" id="topCapturedRow"></div>
@@ -1570,7 +1570,7 @@
           <div class="start-gate-card">
             <div style="font-size:2rem;" id="startGateIcon">♟️</div>
             <div class="start-gate-title" id="startGateTitle">Ready to Start Match?</div>
-            <div class="start-gate-summary" id="startGateSummary">🤖 vs Tactician AI (Lvl 3 • 1500 ELO) • ♔ White • ⏱️ 10:00</div>
+            <div class="start-gate-summary" id="startGateSummary">🤖 vs Beginner AI (Lvl 1 • Easy) • ♔ White • ⏱️ 10:00</div>
             <p class="start-gate-sub" id="startGateDesc">
               The game and clock will stay paused until you click <b>Start Game</b> below.
             </p>
@@ -1617,7 +1617,7 @@
         <div class="player-meta">
           <div class="player-name-row">
             <span class="player-name" id="bottomPlayerName" style="cursor:pointer;" title="Click to Customize Your Player Name & Avatar">Champion</span>
-            <span class="badge" id="bottomPlayerTitleBadge" style="background:rgba(229,169,60,0.18); color:#fbbf24;">GM</span>
+            <span class="badge" id="bottomPlayerTitleBadge" style="background:rgba(229,169,60,0.18); color:#fbbf24;">Player</span>
             <span class="badge" id="bottomPlayerBadge">White</span>
             <button type="button" class="edit-profile-chip" id="btnQuickEditProfile" title="Rename Player & Pick Avatar">✏️ Name</button>
           </div>
@@ -1665,12 +1665,12 @@
           <span id="activeTierModeLabel" style="color:#81b64c;">⚔️ Mid / Club</span>
         </div>
         <div class="tier-pills-grid" id="universalTierPills">
-          <button type="button" class="tier-pill-btn" data-tier="1" title="Beginner (800 ELO): Full visual guides, move arrows & coach tips">🌱 Beg</button>
-          <button type="button" class="tier-pill-btn" data-tier="2" title="Mid / Club (1200 ELO): Clean board, legal move dots & move badges (No move arrows)">⚔️ Mid</button>
-          <button type="button" class="tier-pill-btn active" data-tier="3" title="Expert (1550 ELO): Tournament clean board — no spoon-feeding arrows or badges">🎯 Exp</button>
-          <button type="button" class="tier-pill-btn" data-tier="4" title="Pro (1900 ELO): FIDE Pro standard board & deep tactical engine">🏆 Pro</button>
-          <button type="button" class="tier-pill-btn" data-tier="5" title="Ultimate (2200 ELO): Pure calculation board (no move dots or hints unless requested)">⚡ Ult</button>
-          <button type="button" class="tier-pill-btn" data-tier="6" title="Legend (2450 ELO): World Championship pure board (Eval bar hidden, maximum engine)">👑 Leg</button>
+          <button type="button" class="tier-pill-btn active" data-tier="1" title="Beginner (Easy): Full visual guides, move arrows & coach tips">🌱 Beg</button>
+          <button type="button" class="tier-pill-btn" data-tier="2" title="Mid / Club (Intermediate): Clean board, legal move dots & move badges (No move arrows)">⚔️ Mid</button>
+          <button type="button" class="tier-pill-btn" data-tier="3" title="Expert (Challenging): Tournament clean board — no spoon-feeding arrows or badges">🎯 Exp</button>
+          <button type="button" class="tier-pill-btn" data-tier="4" title="Pro (Advanced): FIDE Pro standard board & deep tactical engine">🏆 Pro</button>
+          <button type="button" class="tier-pill-btn" data-tier="5" title="Ultimate (Expert): Pure calculation board (no move dots or hints unless requested)">⚡ Ult</button>
+          <button type="button" class="tier-pill-btn" data-tier="6" title="Legend (Legend): World Championship pure board (Eval bar hidden, maximum engine)">👑 Leg</button>
         </div>
       </div>
         <div style="font-size:0.7rem; color:#dad8d6;" id="winIdeaSummaryText">
@@ -1685,7 +1685,7 @@
           <div class="play-hub-icon">🤖</div>
           <div>
             <div class="play-hub-title">Start Match vs AI Bot</div>
-            <div class="play-hub-sub" id="cardQuickBotSub">Expert Tier (1550 ELO) • Click to Start</div>
+            <div class="play-hub-sub" id="cardQuickBotSub">Beginner Tier (Easy) • Click to Start</div>
           </div>
         </button>
         <button type="button" class="play-hub-card" id="cardQuickCoachMode">
@@ -1701,7 +1701,7 @@
       <div class="career-bar" title="Your Offline Career Profile (Auto-Saved in Browser)">
         <div class="career-cell">
           <span class="career-val" id="careerEloVal">1200</span>
-          <span class="career-lbl">Your ELO</span>
+          <span class="career-lbl">Practice points</span>
         </div>
         <div class="career-cell">
           <span class="career-val" id="careerRecordVal">0W-0L-0D</span>
@@ -1877,6 +1877,7 @@
           </select>
           <input type="text" id="profileNameInput" class="fen-input" placeholder="Enter your name..." value="Champion" maxlength="22" style="flex:1; font-family:inherit; font-weight:800;">
           <select id="profileTitleSelect" aria-label="Player Title" style="background:#1f1e1b; color:#fbbf24; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:0.38rem; font-size:0.72rem; font-weight:800; cursor:pointer;">
+            <option value="Player" selected>Player</option>
             <option value="GM">GM</option>
             <option value="IM">IM</option>
             <option value="FM">FM</option>
@@ -1948,47 +1949,47 @@
       <div class="form-group">
         <span class="form-label" data-i18n="chooseLevel">🎯 AI Engine Tier (Beginner to Legend)</span>
         <div class="level-cards" id="levelCardsContainer">
-          <div class="level-card" data-level="1">
+          <div class="level-card selected" data-level="1">
             <div>
               <div class="level-title">🌱 Level 1: Beginner</div>
               <div class="level-desc">Guided visuals (Move arrows, dots, badges & coach hints)</div>
             </div>
-            <span class="elo-pill">800 ELO</span>
+            <span class="elo-pill">Easy</span>
           </div>
           <div class="level-card" data-level="2">
             <div>
               <div class="level-title">⚔️ Level 2: Mid / Club</div>
               <div class="level-desc">Balanced play (Legal move dots & badges • No move arrows)</div>
             </div>
-            <span class="elo-pill">1200 ELO</span>
+            <span class="elo-pill">Intermediate</span>
           </div>
-          <div class="level-card selected" data-level="3">
+          <div class="level-card" data-level="3">
             <div>
               <div class="level-title">🎯 Level 3: Expert</div>
               <div class="level-desc">Tournament clean board (Zero spoon-feeding arrows/badges)</div>
             </div>
-            <span class="elo-pill">1550 ELO</span>
+            <span class="elo-pill">Challenging</span>
           </div>
           <div class="level-card" data-level="4">
             <div>
               <div class="level-title">🏆 Level 4: Pro</div>
               <div class="level-desc">FIDE Pro standard board + Depth 4 positional search</div>
             </div>
-            <span class="elo-pill">1900 ELO</span>
+            <span class="elo-pill">Advanced</span>
           </div>
           <div class="level-card" data-level="5">
             <div>
               <div class="level-title">⚡ Level 5: Ultimate</div>
               <div class="level-desc">Pure calculation board (No move dots) + Zobrist TT engine</div>
             </div>
-            <span class="elo-pill">2200 ELO</span>
+            <span class="elo-pill">Expert</span>
           </div>
           <div class="level-card" data-level="6">
             <div>
               <div class="level-title">👑 Level 6: Legend</div>
               <div class="level-desc">World Championship mode (Eval bar hidden, Ply 5+Q+TT)</div>
             </div>
-            <span class="elo-pill">2450 ELO</span>
+            <span class="elo-pill">Legend</span>
           </div>
         </div>
       </div>
@@ -3625,7 +3626,7 @@
 
   let gameMode = 'ai';
   let humanColor = 'w';
-  let aiLevel = 3;
+  let aiLevel = 1; // New players begin with legal-move guidance and a friendly AI.
   let boardFlipped = false;
   let selectedSq = -1;
   let legalMovesFromSelected = [];
@@ -3921,12 +3922,12 @@
   };
 
   const LEVEL_NAMES = {
-    1: { name: "Beginner AI", nameTa: "ஆரம்ப நிலை (Beginner)", elo: "800 ELO", tierTag: "🌱 Beginner" },
-    2: { name: "Mid / Club AI", nameTa: "மத்திய நிலை (Mid)", elo: "1200 ELO", tierTag: "⚔️ Mid / Club" },
-    3: { name: "Expert AI", nameTa: "நிபுணர் (Expert)", elo: "1550 ELO", tierTag: "🎯 Expert" },
-    4: { name: "Pro AI", nameTa: "ப்ரோ (Pro)", elo: "1900 ELO", tierTag: "🏆 Pro" },
-    5: { name: "Ultimate AI", nameTa: "அல்டிமேட் (Ultimate)", elo: "2200 ELO", tierTag: "⚡ Ultimate" },
-    6: { name: "Legend AI", nameTa: "லெஜண்ட் (Legend)", elo: "2450 ELO", tierTag: "👑 Legend" }
+    1: { name: "Beginner AI", nameTa: "ஆரம்ப நிலை (Beginner)", elo: "Easy", tierTag: "🌱 Beginner" },
+    2: { name: "Mid / Club AI", nameTa: "மத்திய நிலை (Mid)", elo: "Intermediate", tierTag: "⚔️ Mid / Club" },
+    3: { name: "Expert AI", nameTa: "நிபுணர் (Expert)", elo: "Challenging", tierTag: "🎯 Expert" },
+    4: { name: "Pro AI", nameTa: "ப்ரோ (Pro)", elo: "Advanced", tierTag: "🏆 Pro" },
+    5: { name: "Ultimate AI", nameTa: "அல்டிமேட் (Ultimate)", elo: "Expert", tierTag: "⚡ Ultimate" },
+    6: { name: "Legend AI", nameTa: "லெஜண்ட் (Legend)", elo: "Legend", tierTag: "👑 Legend" }
   };
 
   const STYLE_NAMES = {
@@ -5280,7 +5281,7 @@
         careerStats.puzzleStreak++;
         careerStats.elo += 12;
         activePuzzleSolution = null;
-        showToast(`🎉 Puzzle Solved! +12 ELO (Streak: ${careerStats.puzzleStreak} 🔥)`);
+        showToast(`🎉 Puzzle Solved! +12 points (Streak: ${careerStats.puzzleStreak} 🔥)`);
       }
     }
 
@@ -6228,7 +6229,7 @@
   let playerProfile = {
     name: 'Champion',
     avatar: '👑',
-    title: 'GM'
+    title: 'Player'
   };
   let currentCategory = 'serious'; // 'serious' | 'fun'
   let activeRuleVariant = 'standard'; // 'standard' | 'timeodds' | 'atomic' | 'queenwars' | 'mystery' | 'handbrain' | 'chess960' | 'pvp'
@@ -6348,7 +6349,7 @@
     const botTit = document.getElementById('bottomPlayerTitleBadge');
     if (botName) botName.textContent = playerProfile.name || 'Champion';
     if (botAv && !boardFlipped) botAv.textContent = playerProfile.avatar || '👑';
-    if (botTit) botTit.textContent = playerProfile.title || 'GM';
+    if (botTit) botTit.textContent = playerProfile.title || 'Player';
   }
 
   // Override bottom player name & avatar after updatePlayerCards runs
@@ -6745,7 +6746,7 @@
   document.getElementById('btnSaveProfile')?.addEventListener('click', () => {
     const nameVal = document.getElementById('profileNameInput')?.value.trim() || 'Champion';
     const avVal = document.getElementById('profileAvatarSelect')?.value || '👑';
-    const titVal = document.getElementById('profileTitleSelect')?.value || 'GM';
+    const titVal = document.getElementById('profileTitleSelect')?.value || 'Player';
     playerProfile = { name: nameVal, avatar: avVal, title: titVal };
     saveCustomProfileToStorage();
     renderAll();
