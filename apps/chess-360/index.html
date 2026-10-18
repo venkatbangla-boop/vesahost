@@ -1619,6 +1619,12 @@
         <div class="chessboard" id="chessboard" role="grid" aria-label="Chessboard"></div>
         <canvas id="chessReal3DCanvas" aria-label="Interactive real 3D chess board. Use Rotate mode for camera, Move mode to play pieces." hidden></canvas>
         <canvas id="chessStudioCanvas" aria-label="Realistic sculpted 3D chess pieces, playable offline" hidden></canvas>
+        <!-- Always-in-view camera shortcuts in Real 3D; full controls remain below -->
+        <div class="chess-3d-hud" id="chess3DHud" role="group" aria-label="3D board camera shortcuts">
+          <button type="button" id="btnCameraQuickRotate" aria-pressed="false" title="Drag the board with mouse or finger to rotate 360 degrees">↻ Rotate</button>
+          <button type="button" id="btnCameraQuickShowcase" aria-pressed="false" title="Set the cinematic three-quarter view like the chess demo">✦ Showcase</button>
+          <button type="button" id="btnCameraQuickReset" title="Return camera to the classic easy-to-play angle">↺ Reset</button>
+        </div>
         <!-- Hardware-Accelerated Move Particle & Shockwave FX Canvas -->
         <canvas class="board-fx-canvas" id="boardFxCanvas" width="600" height="600"></canvas>
         <!-- 3rd-Eye SVG Tactical, Protection & Move Beam Overlay -->
