@@ -128,7 +128,7 @@ class ChessBeastDeepBrowserQA {
       await page.locator('#btnOpenVaultTab').click();
       assert.equal(await page.locator('#savedGamesVaultList img').count(),0,'Untrusted title cannot inject HTML');
       assert.equal(await page.evaluate(()=>window.__injected===true),false);
-      await page.locator('#cardResumeLast').click({force:true});
+      await page.locator('#savedGamesVaultList [data-load-id]').click();
       const fen=await page.locator('#fenInputBox').inputValue();
       assert.match(fen,/ w KQkq /,'Legacy saved copy restored');
       await page.waitForTimeout(250);
