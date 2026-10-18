@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script>document.documentElement.classList.add("vesa-intro-pending");</script>
+  <style>html.vesa-intro-pending,html.vesa-intro-pending body{overflow:hidden!important}html.vesa-intro-pending .vesa-home-intro{position:fixed;inset:0;z-index:2147483000;display:block;background:#090d14}</style>
   <title>VESA Enterprise Inc | Apparel Sourcing Partner Across Bangladesh & India</title>
   <meta name="description" content="VESA Enterprise Inc helps global retailers, importers and brands source garments across Bangladesh and India through product development, factory matching, production management, quality assurance and AI-enhanced workflow visibility.">
   <meta name="keywords" content="VESA Enterprise Inc, apparel sourcing Bangladesh, apparel sourcing India, garment sourcing company, apparel buying office, apparel supply chain partner, Bangladesh garment production, India apparel sourcing, design to delivery sourcing, EGENVA AI apparel sourcing">
@@ -17,7 +19,8 @@
   <link rel="canonical" href="https://www.vesaent.com/">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="alternate" type="text/plain" href="llms.txt" title="LLM summary for VESA Enterprise Inc">
-  <link rel="preload" as="image" href="assets/hero-video-poster.jpg">
+  <link rel="preload" as="image" href="assets/vesa-intro-portrait-poster.jpg?v=2" media="(max-aspect-ratio: 4/3)">
+  <link rel="preload" as="image" href="assets/vesa-intro-landscape-poster.jpg?v=2" media="(min-aspect-ratio: 4/3)">
   <!-- V32 Premium Editorial Sourcing Platform -->
   <!-- Google Search Console verification placeholder: add provided meta tag here after Search Console setup. -->
   <!-- Bing Webmaster verification placeholder: add provided meta tag here after Bing setup. -->
@@ -29,9 +32,8 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/vesa-home-intro.css">
-  <script>document.documentElement.classList.add("vesa-intro-pending");</script>
-  <script src="js/vesa-home-intro.js" defer></script>
+  <link rel="stylesheet" href="css/vesa-home-intro.css?v=2">
+  <script src="js/vesa-home-intro.js?v=2" defer></script>
   <meta property="og:title" content="VESA Enterprise Inc | Apparel Sourcing Partner Across Bangladesh & India">
   <meta property="og:description" content="Premium design-to-delivery apparel sourcing for retailers, importers and brands. Buyer-focused apparel sourcing. Powered by experience. Enhanced by intelligence.">
   <meta property="og:type" content="website">
@@ -124,9 +126,13 @@
 <!-- Complete 10-second opening film overlays (but never replaces) the original homepage. -->
 <div class="vesa-home-intro" id="vesaHomeIntro" role="dialog" aria-modal="true" aria-label="VESA ten-second welcome film">
   <video class="vesa-home-intro__video" id="vesaIntroVideo" autoplay muted playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-hidden="true">
-    <source src="assets/vesa-intro-portrait.mp4" type="video/mp4" media="(max-aspect-ratio: 4/3)">
-    <source src="assets/vesa-intro-landscape.mp4" type="video/mp4">
+    <source src="assets/vesa-intro-portrait.mp4?v=2" type="video/mp4" media="(max-aspect-ratio: 4/3)">
+    <source src="assets/vesa-intro-landscape.mp4?v=2" type="video/mp4">
   </video>
+  <button class="vesa-home-intro__sound" id="vesaIntroSound" aria-label="Turn on welcome film music" aria-pressed="false" type="button">
+    <span class="vesa-home-intro__sound-icon" id="vesaIntroSoundIcon" aria-hidden="true">🔇</span>
+    <span id="vesaIntroSoundLabel">Music Off</span>
+  </button>
   <div class="vesa-home-intro__recovery" id="vesaIntroRecovery" hidden>
     <p id="vesaIntroMessage"></p>
     <button class="vesa-home-intro__action" id="vesaIntroAction" type="button">Play welcome film</button>

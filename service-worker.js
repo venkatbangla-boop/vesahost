@@ -1,4 +1,4 @@
-const CACHE='vesa-v111-home-cinematic-intro';
+const CACHE='vesa-v112-home-intro-audio-fast';
 const ASSETS=[
   './',
   './index.html',
@@ -187,8 +187,8 @@ const ASSETS=[
   './apple-touch-icon.png',
   './icon-192.png',
   './icon-512.png',
-  './css/vesa-home-intro.css',
-  './js/vesa-home-intro.js',
+  './css/vesa-home-intro.css?v=2',
+  './js/vesa-home-intro.js?v=2',
   './assets/hero-video-poster.jpg',
   './assets/hero-background-loop.mp4',
   './assets/hero-background-loop.webm',
