@@ -185,6 +185,32 @@ class ChessBeastDeepBrowserQA {
       return {arena:true,plies:before,eventLoop:perf};
     }finally{await context.close();}
   }
+  async testHandBrainAndChess960() {
+    const {page,context,errors}=await this.open({viewport:{width:390,height:844},reducedMotion:'reduce'});
+    try{
+      await this.setMode(page,'handbrain',2);
+      await page.waitForFunction(()=>{
+        const text=document.getElementById('specialModeBadge')?.textContent||'';
+        return /^Piece: [PNBRQK]$/.test(text)&&window.__chessBeastPerformance().aiInFlight===false;
+      },null,{timeout:12500});
+      const type=(await page.locator('#specialModeBadge').textContent()).split(': ')[1];
+      assert.ok(['P','N'].includes(type),'Opening coach should offer legal Pawn/Knight: '+type);
+      const moves={P:[52,36],N:[62,45]};
+      await this.move(page,...moves[type]);
+      await page.waitForFunction(()=>Number(document.getElementById('moveRewindScrubber').value)>=2,
+        null,{timeout:15000});
+      assert.equal(await page.locator('#fenInputBox').inputValue().then(fen=>fen.includes(' w ')),true,'After AI response the human has turn');
+      await this.setMode(page,'chess960',2);
+      const fen=await page.locator('#fenInputBox').inputValue();
+      assert.match(fen,/ w [A-Ha-h]+ /,'Chess960 start includes rook-file castling rights');
+      await this.move(page,52,36);
+      await page.waitForFunction(()=>Number(document.getElementById('moveRewindScrubber').value)>=2,
+        null,{timeout:17000});
+      assert.equal(await page.locator('#chessboard .square').count(),64);
+      assert.deepEqual(errors,[],'Hand & Brain and Chess960 have no uncaught errors');
+      return {handbrain:true,selectedPiece:type,chess960:true,backgroundAI:true};
+    }finally{await context.close();}
+  }
   async testAnalysisAndCancellation() {
     const {page,context,errors}=await this.open({viewport:{width:320,height:760},reducedMotion:'reduce'});
     try{
@@ -209,6 +235,7 @@ class ChessBeastDeepBrowserQA {
       results.push(await this.testTouchVaultAndKeyboard());
       results.push(await this.testSavedCopyInjection());
       results.push(await this.testAiArena());
+      results.push(await this.testHandBrainAndChess960());
       results.push(await this.testAnalysisAndCancellation());
       console.log('CHESS_BEAST_DEEP_REAL_BROWSER_PASS '+JSON.stringify(results));
     }finally{
