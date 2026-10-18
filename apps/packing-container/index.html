@@ -477,7 +477,10 @@ class PackingWorkspace {
  message(text,error=false){this.openDialog(error?'Please review':'VESA Packing 360','<p class="pack-alert"'+(error?' role="alert"':'')+'>'+safe(text)+'</p>');}
  openDialog(title,html){this.lastFocus=document.activeElement;document.getElementById('packDialogTitle').textContent=title;this.body.innerHTML=html;
    if(!this.dialog.open)this.dialog.showModal();this.dialog.addEventListener('close',()=>this.lastFocus?.focus?.(),{once:true});
-   this.dialog.querySelector('input:not([type=hidden]),select,button')?.focus?.();
+   // App forms own field focus; the shared close button must not intercept it.
+   // Text-only notices still leave the dialog Close control keyboard-reachable.
+   const first=this.body.querySelector('input:not([type=hidden]):not(:disabled),select:not(:disabled),textarea:not(:disabled),button:not(:disabled)');
+   (first||document.getElementById('packClose'))?.focus?.();
  }
  menu(name){
    const menus={Home:[['home',this.tr('home')],['new',this.tr('new')],['continue',this.tr('continue')]],

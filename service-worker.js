@@ -1,4 +1,4 @@
-const CACHE='vesa-v105-costing-g5-one-identity';
+const CACHE='vesa-v106-packing-g5-form-focus';
 const ASSETS=[
   './',
   './index.html',

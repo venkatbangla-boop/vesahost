@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - feature/packing-container-360
+      - feature/packing-g5-modal-focus-20261018
+      - main
     paths:
       - 'apps/packing-container/**'
       - '.github/workflows/packing-container.yml'
@@ -30,6 +32,7 @@ jobs:
           set -e
           node --check apps/packing-container/tests/domain.test.cjs
           node --check apps/packing-container/tests/browser-workflow.cjs
+          node tests/vesa-blueprint-integrity.cjs
           node apps/packing-container/tests/domain.test.cjs
           node apps/ppm/tests/p-g00-baseline.cjs
           node apps/aql/tests/a-g00-baseline.cjs
@@ -44,7 +47,9 @@ jobs:
           npx playwright install --with-deps chromium
           echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
       - name: Browser workflow
-        run: node apps/packing-container/tests/browser-workflow.cjs
+        run: |
+          node apps/packing-container/tests/browser-workflow.cjs
+          node apps/packing-container/tests/feature-discovery-browser.cjs
       - name: Save screenshots
         if: always()
         uses: actions/upload-artifact@v4

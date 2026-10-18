@@ -36,10 +36,18 @@ class PackingBrowserProof{
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('.vesa-workspace__brand img').count(),1);
    assert.equal(await page.locator('[data-vesa-menu]').count(),6);
+   // G5: Form opens on the first editable field, not the dialog Close button.
+   await act('new');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'buyer','New plan focuses Buyer field');
+   await page.keyboard.press('Escape');
+   await page.locator('#packDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
    await act('new');await f({buyer:'SYNTHETIC BUYER',factory:'SYNTHETIC FACTORY',po:'0000-PO',style:'MOCK-TEE',source:'SYNTHETIC PO SOURCE'});await submit();
    await act('add-line');await f({style:'MOCK-TEE',color:'Navy',size:'M',qty:40,source:'TEST-LINE-1'});await submit();
    await act('add-line');await f({style:'MOCK-TEE',color:'Navy',size:'L',qty:20,source:'TEST-LINE-2'});await submit();
-   await act('cartons');await act('add-carton');await f({code:'TEST-BOX',length:60,width:40,height:30,unit:'cm',gross:10,net:9,weightUnit:'kg',source:'TEST-BOX SOURCE'});await submit();
+   await act('cartons');await act('add-carton');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'code','Carton dialog focuses first Code field');
+   await f({code:'TEST-BOX',length:60,width:40,height:30,unit:'cm',gross:10,net:9,weightUnit:'kg',source:'TEST-BOX SOURCE'});await submit();
    await act('packs');await act('add-pack');
    await f({full:2,start:'0001',end:'0002',packSource:'TEST PACK SOURCE'});
    const qty=page.locator('#packDialog input[name^="q_"]');assert.equal(await qty.count(),2);
@@ -119,6 +127,12 @@ class PackingBrowserProof{
    await page.screenshot({path:path.join(output,'packing-app01-mobile.png')});
    await page.setViewportSize({width:320,height:720});
    assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=321);
+   await act('summary');await act('meta');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'buyer','320px Edit Plan opens on Buyer');
+   assert((await page.locator('#packDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+    '320px edit dialog fits viewport');
+   await page.keyboard.press('Escape');
+   await page.locator('#packDialog[open]').waitFor({state:'hidden'});
    await page.setViewportSize({width:768,height:1024});
    assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=769);
    await page.setViewportSize({width:1280,height:900});
