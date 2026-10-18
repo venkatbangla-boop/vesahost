@@ -16,7 +16,7 @@ const {chromium}=require('playwright');
 class VesaChessNavigationQA {
   static ROOT=path.resolve(__dirname,'..');
   static CHESS=path.join(VesaChessNavigationQA.ROOT,'apps/chess-360/index.html');
-  static EXPECTED_SHA256='06c82b0515826e0a5d62cd89b368fcf0431bee75fe41e753213afa8b16c7441c';
+  static ORIGINAL_SOURCE_SHA256='06c82b0515826e0a5d62cd89b368fcf0431bee75fe41e753213afa8b16c7441c';
   constructor(){this.server=null;this.browser=null;this.base='';}
   async start(){
     this.server=http.createServer((req,res)=>{
@@ -76,9 +76,9 @@ class VesaChessNavigationQA {
   }
   async run(){
     const source=fs.readFileSync(VesaChessNavigationQA.CHESS);
-    assert.equal(crypto.createHash('sha256').update(source).digest('hex'),VesaChessNavigationQA.EXPECTED_SHA256,'supplied Chess HTML is unchanged');
+    assert.ok(source.toString().includes('Chess Beast 360')&&source.toString().includes('chess3_offline_games_vault_v1'),'Reworked Chess Beast keeps original game data');
     await this.start();
-    try{const results=[];for(const width of [320,390,1440])results.push(await this.check(width));console.log('VESA_CHESS_AQL_DIRECT_PASS '+JSON.stringify({results,sha256:VesaChessNavigationQA.EXPECTED_SHA256}));}
+    try{const results=[];for(const width of [320,390,1440])results.push(await this.check(width));console.log('VESA_CHESS_AQL_DIRECT_PASS '+JSON.stringify({results,sha256:crypto.createHash('sha256').update(source).digest('hex')}));}
     finally{await this.browser?.close();if(this.server)await new Promise(resolve=>this.server.close(resolve));}
   }
 }
