@@ -60,6 +60,13 @@ class Real3DQa{
       return result;
     });
     assert.ok(new Set(colors.map(x=>x.join(','))).size>1,'Pixels prove actual 3D rendering not blank canvas');
+    const foreground=await page.evaluate(()=>{
+      const a=window.__chessBeastReal3DSquare(56),b=window.__chessBeastReal3DSquare(63);
+      const box=document.getElementById('chessReal3DCanvas').getBoundingClientRect();
+      return {fraction:Math.abs(b.x-a.x)/box.width,nearLeft:a.x,nearRight:b.x,width:box.width};
+    });
+    assert.ok(foreground.fraction>.68,
+      'Cinematic perspective board must fill most of the view, not look tiny '+JSON.stringify(foreground));
     return state;
   }
   async mouseSquare(page,sq){
@@ -111,6 +118,11 @@ class Real3DQa{
     const {page,ctx,errors}=await this.open(browser,{viewport:{width,height}});
     try{
       const initial=await this.enable(page);
+      if(width===1440){
+        fs.mkdirSync(imageDir,{recursive:true});
+        await page.waitForTimeout(1650); // Let nonessential toast leave the frame.
+        await page.screenshot({path:path.join(imageDir,'real-3d-starting-1440.png'),animations:'disabled'});
+      }
       if(width===1440){await this.orbit(page);await this.match(page);}
       if(width===390){
         const start=await page.evaluate(()=>window.__chessBeastReal3DState());
