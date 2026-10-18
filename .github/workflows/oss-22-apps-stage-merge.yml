@@ -31,7 +31,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git merge --no-ff --no-edit "$PIN"
-          git diff --check HEAD^1 HEAD
+          # Upstream vendor files include original whitespace; do not rewrite those
+          # license-preserved bytes. Check only integration-owned source files.
+          git diff --check HEAD^1 HEAD -- ':!apps/artwork-cad-studio/vendor/**' ':!apps/marker-lab/vendor/**'
           test -s apps/marker-lab/vendor/svgnest.js
           test -s apps/artwork-cad-studio/vendor/Editor.js
           test -s apps/artwork-cad-studio/offline-manifest.json
