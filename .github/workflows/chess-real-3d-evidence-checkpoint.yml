@@ -1,0 +1,57 @@
+# Preserve actual playable Chess Beast WebGL screenshots in Git history.
+name: Chess 3D real browser screenshot checkpoint
+on:
+  push:
+    branches: [feature/chess-real-3d-mesh-20261018]
+    paths:
+      - '.github/workflows/chess-real-3d-evidence-checkpoint.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/chess-real-3d-mesh-20261018
+          persist-credentials: true
+      - name: Download proof from successful 3D browser test
+        uses: actions/download-artifact@v4
+        with:
+          name: chess-beast-v2-mobile-desktop-synthetic-screens
+          run-id: 39145797620
+          repository: venkatbangla-boop/vesahost
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: /tmp/chess-actual-3d
+      - name: Commit exact browser-produced image evidence to GitHub
+        run: |
+          set -euo pipefail
+          src=/tmp/chess-actual-3d/chess-real-3d
+          out=docs/portfolio/chess-real-3d-images
+          test -s "$src/real-sculpted-showcase-1440.png"
+          test -s "$src/real-sculpted-cc0-mobile-390.png"
+          test -s "$src/real-sculpted-cc0-diagonal-1440.png"
+          mkdir -p "$out"
+          cp "$src/real-sculpted-showcase-1440.png" "$out/showcase-1440.png"
+          cp "$src/real-sculpted-cc0-mobile-390.png" "$out/mobile-390.png"
+          cp "$src/real-sculpted-cc0-diagonal-1440.png" "$out/diagonal-1440.png"
+          cat > "$out/README.md" <<'EOF'
+          # Chess Beast 360 — real 3D browser evidence
+          Screenshots from ACTUAL playable Three.js PBR chess, not generated artwork.
+          Workflow: https://github.com/venkatbangla-boop/vesahost/actions/runs/39145797620
+          Source SHA: 5f023656f3fb3d89c6c51340bae2d27c262ec01f
+          Fictional cinematic reference remains a comparison target, not a pixel-match claim.
+          EOF
+          sha256sum "$out/"*.png
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$out"
+          if git diff --cached --quiet; then
+            echo "CHESS_REAL3D_VISUAL_EVIDENCE_ALREADY_COMMITTED"
+          else
+            git commit -m "docs(chess): save actual rendered desktop/mobile 3D screenshot evidence"
+            git push origin HEAD:feature/chess-real-3d-mesh-20261018
+          fi
