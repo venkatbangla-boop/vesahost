@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/fabric-supplier-comparison-360
+      - feature/supplier-g4-source-journey-20261018
       - main
     paths:
       - 'apps/fabric-supplier-comparison/**'

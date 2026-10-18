@@ -133,7 +133,14 @@ async function run(){
   assert.match(await page.locator('#fsDialogBody').innerText(),/altered\/unsupported/);
   await page.locator('#fsDialogClose').click();
   assert.equal(JSON.stringify(await records()),before,'Tampered saved copy cannot alter records');
-  await act('matrix');assert.match(await page.locator('.fs-table').last().innerText(),/1\.6000/);
+  // Comparison is date-specific. A saved scenario dated 17 Oct must not appear
+  // against 18 Oct; select the recorded source date explicitly after reload.
+  await act('matrix');await act('asof');await fill({asOf:'2026-10-18'});await submit();
+  assert.doesNotMatch(await page.locator('.fs-table').last().innerText(),/1\.6000/,
+   'Different as-of date must not reuse stale landed amounts');
+  await act('asof');await fill({asOf:'2026-10-17'});await submit();
+  assert.match(await page.locator('.fs-table').last().innerText(),/1\.6000/,
+   'Choosing exact recorded scenario date reveals sourced landed input');
   await act('history');assert.match(await page.locator('.fs-table').innerText(),/Locally sourced offer/);
   await act('reports');
   const reportText=await page.locator('.fs-report').innerText();
