@@ -60,8 +60,7 @@ async function layout(browser,engine,base,width){
  assert.equal(q.styles.some(x=>x.includes('/css/style.css')),false,n+': no homepage styles');
  assert.equal(await page.locator('#email').inputValue(),id,n+': demo username prefilled');
  assert.equal(await page.locator('#password').inputValue(),secret,n+': demo password prefilled');
- assert.equal(await page.locator('#demoUserId').textContent(),id,n+': visible user ID');
- assert.equal(await page.locator('#demoPassword').textContent(),secret,n+': visible password');
+ assert.equal(await page.locator('.login-demo,.login-availability,.login-story__foot').count(),0,n+': no duplicate demo, count or numbered panel');
  assert.match(q.bodyFont,/Segoe UI/i,n+': shared typography');
  assert.deepEqual(errors,[],n+': errors');
  assert.deepEqual(external,[],n+': no external requests');
