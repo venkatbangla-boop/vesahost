@@ -48,6 +48,12 @@ class TechPackBrowserProof {
    await page.locator('[data-action=new]').waitFor();
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('[data-vesa-menu]').count(),6);
+   // G5 interactive focus: first input owns focus; Escape returns to New.
+   await click('new');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'style','New Tech Pack focuses Style');
+   await page.keyboard.press('Escape');
+   await page.locator('#specDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
    await click('new');
    await enter({style:'SYN-T001',fabric:'SYNTHETIC JERSEY',category:'Men T-shirt',
     gender:'Men',season:'SYN-2026',source:'SYNTHETIC TECH PACK',
@@ -55,6 +61,7 @@ class TechPackBrowserProof {
     photoRef:'NO PRIVATE ART'});
    await submit();
    await click('add-pom');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'code','POM dialog focuses Code');
    await enter({code:'CHEST',name:'Chest at 1 inch below armhole',location:'1 inch below underarm',
     geometry:'girth',basis:'flat',unit:'cm',baseValue:'50.0000',
     baseSource:'SYNTHETIC SOURCE POM 01',reviewedBy:'Synthetic Reviewer',
@@ -78,6 +85,7 @@ class TechPackBrowserProof {
     source:'SYNTHETIC CONSTRUCTION SHEET',photoRef:'PHOTO REFERENCE ONLY',note:'Practice text'});
    await submit();
    await click('approve');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'approver','Technical revision starts at approver evidence');
    await enter({approver:'SYNTHETIC APPROVER',evidence:'SYNTHETIC BUYER SIGNATURE DOC',
     effective:'2026-10-17',reason:'Synthetic first signed technical revision'});
    await page.locator('#specDialog [name=reviewed]').check();await submit();
@@ -123,10 +131,20 @@ class TechPackBrowserProof {
    await page.locator('#specClose').click();
    const afterBad=await page.evaluate(()=>{const key=Object.keys(localStorage).find(k=>k.startsWith('vesa.tech-pack-spec.records.v1.'));return localStorage.getItem(key);});
    assert.equal(afterBad,backup);
-   for(const size of [320,390,768,1280]){
+   for(const size of [320,390,768,1280,1440]){
     await page.setViewportSize({width:size,height:850});
     assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=size+1,size+'px body overflow');
    }
+   // Audit the real editable dialog, not only the opened size-chart tab.
+   await page.setViewportSize({width:320,height:720});
+   await click('poms');await click('add-pom');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'code','320px POM form focuses Code');
+   assert((await page.locator('#specDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+    '320px POM dialog fits viewport');
+   await page.screenshot({path:path.join(output,'techspec-app03-pom-edit-320.png')});
+   await page.keyboard.press('Escape');
+   await page.locator('#specDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='add-pom');
    await page.setViewportSize({width:390,height:850});
    await page.screenshot({path:path.join(output,'techspec-app03-mobile.png')});
    await page.setViewportSize({width:1280,height:900});

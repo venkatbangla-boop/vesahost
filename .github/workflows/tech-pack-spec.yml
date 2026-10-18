@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/tech-pack-spec-360
+      - feature/techpack-g5-edit-form-qa-20261018
     paths:
       - 'apps/tech-pack-spec/**'
       - '.github/workflows/tech-pack-spec.yml'
@@ -26,6 +27,7 @@ jobs:
       - name: Domain and sibling regressions
         run: |
           set -e
+          node tests/vesa-blueprint-integrity.cjs
           node --check apps/tech-pack-spec/tests/domain.test.cjs
           node --check apps/tech-pack-spec/tests/browser-workflow.cjs
           node apps/tech-pack-spec/tests/domain.test.cjs
@@ -44,8 +46,10 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
           echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
-      - name: Browser Tech Pack workflow
-        run: node apps/tech-pack-spec/tests/browser-workflow.cjs
+      - name: Browser Tech Pack workflow and original G4 size-chart feature parity
+        run: |
+          node apps/tech-pack-spec/tests/browser-workflow.cjs
+          node apps/tech-pack-spec/tests/sizechart-discovery-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
