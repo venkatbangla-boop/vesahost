@@ -26,6 +26,9 @@ jobs:
           lines.forEach((line,i)=>{if(patterns.some(r=>r.test(line)) && line.length<10000)matches.push(i)});
           console.log('MATCHING_LINES',matches.length);
           for(const index of matches.slice(0,130))console.log(String(index+1).padStart(6),lines[index].slice(0,410));
+          console.log('ENTRY REFERENCES');for(let i=0;i<lines.length;i++){if(/vesa-welcome|vesa-enter|vesa-at-entrance|entranceShown|enterInspection|enterWorkspace|entryReady|showEntrance/.test(lines[i]) && lines[i].length<8000)console.log(i+1,lines[i].slice(0,650));}
+          console.log('ENTRY HTML LINES 420-475');for(let i=419;i<Math.min(lines.length,475);i++)console.log(i+1,lines[i].slice(0,600));
+          console.log('END JS LINES 3850-END');for(let i=3850;i<lines.length;i++){if(lines[i].length<3000 && /vesa-|entrance|entry|init\(|DOMContentLoaded|InspectionApp|app =|start\(|boot\(/i.test(lines[i]))console.log(i+1,lines[i].slice(0,650))}
           console.log('HTML TOP');for(let i=0;i<Math.min(lines.length,40);i++)console.log(i+1,lines[i].slice(0,250));
           console.log('END');for(let i=lines.length-30;i<lines.length;i++)console.log(i+1,lines[i].slice(0,250));
           NODE
