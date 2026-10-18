@@ -159,6 +159,10 @@
       window.addEventListener('pointerup',end,true);
       window.addEventListener('pointercancel',end,true);
       this.frame.addEventListener('click',event=>{
+        // A camera HUD button is an intentional click, not a board move.
+        // When Rotate mode is ON, an unconditional capture listener would
+        // swallow the very button press needed to turn Rotate OFF.
+        if(event.target.closest('button,input,select,a'))return;
         if(this.is3D&&(this.dragMode||performance.now()<this.suppressClickUntil)){
           event.preventDefault();event.stopImmediatePropagation();
         }
