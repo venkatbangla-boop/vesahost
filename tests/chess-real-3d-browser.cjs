@@ -142,6 +142,30 @@ class Real3DQa{
     await page.waitForFunction(n=>window.__chessBeastStudioState().pieceCount===n,count);
     assert.equal((await page.evaluate(()=>window.__chessBeastStudioState())).pieceCount,count);
   }
+  async diagonalVisualCheck(page){
+    // The owner-approved reference is a three-quarter view. Capture an
+    // honest screenshot of the ACTUAL SCULPTED playable WebGL scene, not a
+    // generated image, with camera yaw/spin set through user-visible controls.
+    await page.locator('#btnCameraSpinRight').click();
+    await page.waitForFunction(()=>Math.round(window.__chessBeastOrbitState().spin)===45);
+    await page.waitForTimeout(350);
+    const corners=await page.evaluate(()=>{
+      const board=document.getElementById('chessStudioCanvas').getBoundingClientRect();
+      return {canvas:{x:board.x,y:board.y,w:board.width,h:board.height},
+        squares:[0,7,56,63].map(sq=>window.__chessBeastReal3DSquare(sq))};
+    });
+    for(const [i,pos] of corners.squares.entries()){
+      assert.ok(pos&&pos.x>corners.canvas.x&&pos.x<corners.canvas.x+corners.canvas.w&&
+        pos.y>corners.canvas.y&&pos.y<corners.canvas.y+corners.canvas.h,
+        '45° 3D camera must keep edge square '+[0,7,56,63][i]+' visible '+JSON.stringify(corners));
+    }
+    fs.mkdirSync(imageDir,{recursive:true});
+    await page.screenshot({path:path.join(imageDir,'real-sculpted-cc0-diagonal-1440.png'),
+      animations:'disabled'});
+    await page.locator('#btnCameraReset').click();
+    await page.waitForFunction(()=>Math.round(window.__chessBeastOrbitState().spin)===0);
+    console.log('CHESS_REAL_3D_CINEMATIC_VIEW_PASS 45-degree live orbit; 64 squares remain visible');
+  }
   async special3DMoves(page){
     // Castling must move a real King mesh and its real Rook mesh without
     // duplicates or stale square identities.
@@ -245,6 +269,7 @@ class Real3DQa{
       if(width===1440){
         await this.orbit(page);
         await this.match(page);
+        await this.diagonalVisualCheck(page);
         await this.special3DMoves(page);
         await this.webglFallback(page);
       }
