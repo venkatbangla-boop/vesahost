@@ -4118,7 +4118,8 @@
           canvas:document.getElementById('chessStudioCanvas'),
           frame:document.getElementById('boardFrame'),
           onSquareClick:sq=>onSquareClick(sq),
-          getOrbit:()=>chessOrbitController.debug()
+          getOrbit:()=>chessOrbitController.debug(),
+          getMotion:()=>chessVisualController.effectMode
         });
         await chessStudio.load();
         chessStudio.sync(engine.board,{...highFidelityState});
