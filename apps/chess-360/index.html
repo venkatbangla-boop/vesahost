@@ -4107,6 +4107,15 @@
   window.__chessBeastReal3DState=()=>chessReal3D.diagnostics();
   window.__chessBeastReal3DSquare=sq=>chessReal3D.squareScreen(sq);
   window.__chessBeastReal3DPick=(x,y)=>chessReal3D.pick(x,y);
+  window.addEventListener('chess-real3d-fallback',()=>{
+    chessOrbitController.sync3D();
+    const direct=document.getElementById('btn3DDirect');
+    direct?.setAttribute('aria-pressed','false');
+    const state=document.getElementById('chess3DDirectState');
+    if(state)state.textContent='OFF';
+    const status=document.getElementById('chessReal3DStatus');
+    if(status)status.textContent='3D unavailable · 2D chess is ready';
+  });
   const thinkingBanner = document.getElementById('thinkingBanner');
   const gameStatusTitle = document.getElementById('gameStatusTitle');
   const openingNameDisplay = document.getElementById('openingNameDisplay');
@@ -7319,8 +7328,12 @@
     }
     chessOrbitController.state.tilt=Math.min(65,Math.max(0,deg));
     chessOrbitController.draw();chessOrbitController.save();
-    chessReal3D.enable(document.body.classList.contains('board-3d'));
+    const sceneOn=document.body.classList.contains('board-3d');
+    const ready=chessReal3D.enable(sceneOn);
     chessOrbitController.sync3D();
+    document.getElementById('btn3DDirect')?.setAttribute('aria-pressed',String(sceneOn&&ready));
+    const chip=document.getElementById('chess3DDirectState');
+    if(chip)chip.textContent=sceneOn&&ready?'ON':'OFF';
   });
 
   document.querySelectorAll('#pieceStyleSelectorRow .opt-pill').forEach(pill => {
