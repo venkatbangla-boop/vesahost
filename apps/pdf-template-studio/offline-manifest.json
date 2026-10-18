@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "files": [
+    "./index.html",
+    "./src/shell-controller.js",
+    "./assets/pdf-studio.css",
+    "./service-worker.js",
+    "./vendor/index.html",
+    "./vendor/THIRD_PARTY_NOTICES.md",
+    "./vendor/INSTALLATION-NOTES.md",
+    "./vendor/assets/__vite-browser-external-BIHI7g3E.js",
+    "./vendor/assets/browser-B-jX_RS5.js",
+    "./vendor/assets/clawpdf-worker-CRtypNKQ-CBAj82p2.js",
+    "./vendor/assets/index-BvAErHu5.js",
+    "./vendor/assets/index-Cn6eLxnE.css",
+    "./vendor/assets/pdfium.esm-DrdX3q7Q.wasm"
+  ]
+}
