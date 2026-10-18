@@ -1,0 +1,58 @@
+# Isolated integration tests only; no main mutation or GitHub Pages publish.
+name: VESA 22-app OSS integration acceptance
+on:
+  push:
+    branches: [feature/oss-22-apps-integration-20261019]
+    paths:
+      - 'apps/index.html'
+      - 'js/app-catalogue.js'
+      - 'js/vesa-app-centre.js'
+      - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/vesa-platform-pages.cjs'
+      - 'tests/personal-demo-release.cjs'
+      - '.github/workflows/oss-22-apps-acceptance.yml'
+permissions:
+  contents: read
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source and legacy domain checks
+        run: |
+          set -euo pipefail
+          node --check js/app-catalogue.js
+          node --check js/vesa-app-centre.js
+          node --check js/preferences.js
+          node --check service-worker.js
+          node --check apps/artwork-cad-studio/src/studio-controller.js
+          node --check apps/marker-lab/src/workspace-controller.js
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Real 22-app App Centre and existing pages
+        run: |
+          node tests/vesa-platform-pages.cjs
+          node tests/vesa-uniform-experience.cjs
+      - name: Test both third-party editors independently
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/oss22-http.log 2>&1 &
+          SERVER=$!
+          trap 'kill $SERVER || true' EXIT
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:8765/apps/marker-lab/ >/dev/null && break
+            sleep 1
+          done
+          node apps/marker-lab/tests/browser-workflow.cjs
+          node apps/artwork-cad-studio/tests/browser-workflow.cjs
