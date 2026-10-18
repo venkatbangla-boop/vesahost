@@ -48,11 +48,13 @@ jobs:
           test -f "$PKG/examples/jsm/loaders/GLTFLoader.js"
           test -f "$PKG/LICENSE"
           cp "$PKG/build/three.module.js" apps/chess-360/vendor/three.module.js
+          cp "$PKG/build/three.core.js" apps/chess-360/vendor/three.core.js
           cp "$PKG/examples/jsm/loaders/GLTFLoader.js" apps/chess-360/vendor/GLTFLoader.js
           cp "$PKG/examples/jsm/utils/BufferGeometryUtils.js" apps/chess-360/vendor/BufferGeometryUtils.js
           sed -i 's@../utils/BufferGeometryUtils.js@./BufferGeometryUtils.js@' apps/chess-360/vendor/GLTFLoader.js
           cp "$PKG/LICENSE" apps/chess-360/vendor/THREE_LICENSE_MIT.txt
           node --check apps/chess-360/vendor/three.module.js
+          node --check apps/chess-360/vendor/three.core.js
           node --check apps/chess-360/vendor/GLTFLoader.js
           node --check apps/chess-360/vendor/BufferGeometryUtils.js
           echo "CHESS_3D_THREE_OFFLINE_VENDOR_PASS v0.180.0"
