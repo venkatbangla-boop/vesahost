@@ -1,0 +1,37 @@
+/* Homepage-only VESA cinematic intro: the existing homepage is always mounted behind this layer. */
+html.vesa-intro-pending,
+html.vesa-intro-pending body{overflow:hidden!important;overscroll-behavior:none}
+.vesa-home-intro{display:none}
+html.vesa-intro-pending .vesa-home-intro{
+  position:fixed;inset:0;z-index:2147483000;display:grid;
+  width:100vw;height:100%;height:100dvh;overflow:hidden;place-items:center;
+  isolation:isolate;background:#060b12;opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+  transition:opacity 980ms cubic-bezier(.22,.61,.36,1),
+             transform 980ms cubic-bezier(.22,.61,.36,1)
+}
+.vesa-home-intro__video{
+  position:absolute;inset:0;display:block;width:100%;height:100%;
+  object-fit:cover;object-position:center center;pointer-events:none;background:#060b12
+}
+html.vesa-intro-pending .vesa-home-intro.is-exiting{
+  opacity:0;transform:translate3d(0,-1.7%,0) scale(1.014);pointer-events:none
+}
+.vesa-home-intro__recovery{
+  position:absolute;inset:auto 18px max(30px,env(safe-area-inset-bottom)) 18px;
+  z-index:1;display:none;align-items:center;flex-direction:column;gap:12px;
+  text-align:center;color:#fff;font:500 14px/1.45 system-ui,-apple-system,sans-serif;
+  text-shadow:0 1px 10px #000
+}
+.vesa-home-intro.is-paused .vesa-home-intro__recovery,
+.vesa-home-intro.is-error .vesa-home-intro__recovery{display:flex}
+.vesa-home-intro__action{
+  appearance:none;border:1px solid rgba(255,255,255,.55);
+  background:rgba(9,22,38,.88);color:#fff;border-radius:100px;
+  min-width:162px;min-height:48px;padding:12px 22px;font:inherit;
+  font-weight:700;cursor:pointer
+}
+.vesa-home-intro__action:focus-visible{outline:3px solid #d6b06a;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){
+  html.vesa-intro-pending .vesa-home-intro{transition-duration:140ms}
+}
