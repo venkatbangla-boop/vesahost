@@ -16,6 +16,7 @@ const assets=[
  'apps/chess-360/chess-beast-ui.js','apps/chess-360/chess-beast.css',
  'apps/chess-360/chess-report.js','apps/chess-360/chess-match-experience.css',
  'apps/chess-360/chess-orbit.js','apps/chess-360/chess-pro-ux.css',
+ 'apps/chess-360/chess-panel-ui.js','apps/chess-360/chess-panel-ui.css',
  'apps/chess-360/sw.js','js/app-catalogue.js','service-worker.js'
 ];
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
