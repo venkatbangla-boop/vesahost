@@ -1429,6 +1429,7 @@
 </style>
 <link rel="stylesheet" href="./chess-beast.css">
 <link rel="stylesheet" href="./chess-match-experience.css">
+<link rel="stylesheet" href="./chess-pro-ux.css">
 </head>
 <body class="chess-beast-v2" data-board-theme="green">
 
@@ -1464,6 +1465,7 @@
       <span>💾</span> <span id="saveBtnSidebarLabel">Save Game</span>
     </button>
     <button class="btn" id="btnOpenCustomize" type="button" title="All game, board and animation preferences"><span>⚙️</span> <span>Customize</span></button>
+    <button class="btn" id="btnQuietMode" type="button" aria-pressed="true" title="Show only the board, game status and moves"><span>🌙</span> <span id="chessQuietModeLabel">Focus: ON</span></button>
     <button class="btn" id="btnDownloadMatchPdf" type="button" title="Save match report as an offline PDF"><span>📄</span> <span>Match PDF</span></button>
     <button class="btn" id="btnOpenVaultTab" type="button" title="Open Saved Games Vault & Rewind">
       <span>📂</span> <span>Saved Vault</span>
@@ -1611,6 +1613,16 @@
           <g id="arrowsLayerGroup"></g>
         </svg>
       </div>
+    </div>
+
+    <!-- Manual 360° 3D orbit, separate from normal piece drag -->
+    <div class="beast-camera-toolbar" id="chessCameraControls" role="group" aria-label="3D chess board camera" hidden>
+      <button class="btn" id="btnCameraRotate" type="button" aria-pressed="false" title="Drag on board to orbit. Press Esc to finish.">↻ Rotate board</button>
+      <button class="btn" id="btnCameraSpinLeft" type="button" aria-label="Spin board counterclockwise 45 degrees">↶ 45°</button>
+      <button class="btn" id="btnCameraSpinRight" type="button" aria-label="Spin board clockwise 45 degrees">↷ 45°</button>
+      <button class="btn" id="btnCameraReset" type="button">Reset angle</button>
+      <output id="chessCameraAngles" class="beast-camera-angle" aria-live="off">Tilt 26° · Orbit 0° · Spin 0°</output>
+      <span class="beast-camera-help">Rotate board → drag with mouse/finger. Alt + mouse drag also works. Turn Rotate OFF to move chess pieces.</span>
     </div>
 
     <!-- Bottom Player Card (Human by default) -->
@@ -2193,7 +2205,7 @@
         <button class="btn" id="btnToggleHeatmap" type="button" title="Toggle Square Control Heatmap">
           <span>🔥</span> <span data-i18n="heatmap">Heatmap</span>
         </button>
-        <button class="btn active-toggle" id="btnToggleThreats" type="button" title="Toggle Enemy Threat Arrow">
+        <button class="btn" id="btnToggleThreats" type="button" title="Toggle Enemy Threat Arrow">
           <span>🎯</span> <span data-i18n="threats">Threats</span>
         </button>
         <button class="btn" id="btnDrawArrowMode" type="button" title="Draw Arrows">
@@ -2292,11 +2304,37 @@
         <select id="chessPrefVoice"><option value="off">Off</option><option value="on">On</option></select>
       </label>
       <label>3D board
-        <select id="chessPref3D"><option value="off">Off · Flat board</option><option value="on">On</option></select>
+        <select id="chessPref3D"><option value="off">Off · Flat board</option><option value="on">On · Rotate camera</option></select>
+      </label>
+      <label>Automatic move arrows
+        <select id="chessPrefAutoArrows"><option value="off">Off · Last move is highlighted</option><option value="on">On · Show last move arrow</option></select>
+      </label>
+      <label>Hint arrow
+        <select id="chessPrefHintArrows"><option value="off">Off · Highlight hint squares</option><option value="on">On · Draw hint arrow</option></select>
+      </label>
+      <label>Enemy threat arrows
+        <select id="chessPrefThreatArrows"><option value="off">Off · No automatic threats</option><option value="on">On · Highlight threats</option></select>
+      </label>
+      <label>Legal move hints
+        <select id="chessPrefLegalDots"><option value="on">On · Show available squares</option><option value="off">Off · Tournament style</option></select>
+      </label>
+      <label>Focus mode
+        <select id="chessPrefQuiet"><option value="on">On · Board, clock & moves</option><option value="off">Off · Show coaching & graphs</option></select>
       </label>
     </div>
     <p class="chess-muted">Advanced options: choose New Match for game mode and color, or open the Studio tabs for time control, assistance and other variants.</p>
     <div class="chess-modal-actions"><button type="button" class="btn" id="btnCustomizeDefaults">Restore defaults</button><button type="button" class="btn btn-primary" id="btnApplyCustomize">Apply & Close</button></div>
+  </div>
+</div>
+<!-- Prevent accidental resignations without interrupting ongoing games. -->
+<div class="modal-backdrop" id="chessResignModal" role="dialog" aria-modal="true" aria-labelledby="chessResignHeading" aria-hidden="true">
+  <div class="modal-card" style="max-width:390px">
+    <div class="modal-header"><h2 class="modal-title" id="chessResignHeading">Resign this match?</h2></div>
+    <p class="chess-muted">You will lose the current game. You can still review or save the moves afterward.</p>
+    <div class="chess-resign-actions">
+      <button class="btn btn-primary" id="btnCancelResign" type="button">Keep Playing</button>
+      <button class="btn" id="btnConfirmResign" type="button">Yes, Resign</button>
+    </div>
   </div>
 </div>
 <!-- Modal 3: Game Over Summary -->
@@ -2319,6 +2357,7 @@
 
 <script src="./chess-beast-ui.js"></script>
 <script src="./chess-report.js"></script>
+<script src="./chess-orbit.js"></script>
 <script>
 (function() {
   "use strict";
@@ -3665,6 +3704,28 @@
    * ========================================================================= */
   const engine = new ChessEngine();
 
+  // Chess-first preferences: no unsolicited visual arrows or coaching.
+  const PRO_PREFS_KEY='chess_beast_pro_preferences_v1';
+  const proDefaults={lastMoveArrow:false,hintArrow:false,threatArrow:false,legalDots:true,quiet:true};
+  const proPrefs=(()=>{try{
+    const parsed=JSON.parse(localStorage.getItem(PRO_PREFS_KEY)||'null');
+    if(parsed&&typeof parsed==='object')return {...proDefaults,...Object.fromEntries(
+      Object.keys(proDefaults).filter(k=>typeof parsed[k]==='boolean').map(k=>[k,parsed[k]])
+    )};
+  }catch{}return {...proDefaults};})();
+  const saveProPrefs=()=>{try{localStorage.setItem(PRO_PREFS_KEY,JSON.stringify(proPrefs));}catch{}};
+  const syncProPrefs=()=>{
+    document.body.classList.toggle('chess-quiet-mode',proPrefs.quiet);
+    document.body.classList.toggle('beast-hide-legal-dots',!proPrefs.legalDots);
+    const quietButton=document.getElementById('btnQuietMode');
+    quietButton?.setAttribute('aria-pressed',String(proPrefs.quiet));
+    const label=document.getElementById('chessQuietModeLabel');
+    if(label)label.textContent=proPrefs.quiet?'Focus: ON':'Focus: OFF';
+    document.getElementById('btnToggleThreats')?.classList.toggle('active-toggle',proPrefs.threatArrow);
+    document.getElementById('btnToggleThreats')?.setAttribute('aria-pressed',String(proPrefs.threatArrow));
+  };
+  syncProPrefs();
+
   let gameMode = 'ai';
   let humanColor = 'w';
   let aiLevel = 1; // New players begin with legal-move guidance and a friendly AI.
@@ -3679,7 +3740,7 @@
   // World-First Visual Overlays State
   let showProtectionShields = false;
   let showHeatmap = false;
-  let showThreatRadar = false; // Only auto-enabled in Beginner Tier (Level 1)
+  let showThreatRadar = proPrefs.threatArrow; // Opt-in only, never enabled by AI tier.
   let drawArrowMode = false;
   let lastMoveFloatingCallout = null; // { sq, text, bg, color }
   let activeWinIdeaPlan = []; // Array of { stepNo, from, to, san, color, desc, moveObj }
@@ -3998,6 +4059,18 @@
     },
     onSelect:sq=>onSquareClick(sq)
   });
+  const chessOrbitController=new window.ChessBeastOrbitController({
+    frame:document.getElementById('boardFrame'),
+    toolbar:document.getElementById('chessCameraControls'),
+    modeButton:document.getElementById('btnCameraRotate'),
+    resetButton:document.getElementById('btnCameraReset'),
+    leftButton:document.getElementById('btnCameraSpinLeft'),
+    rightButton:document.getElementById('btnCameraSpinRight'),
+    readout:document.getElementById('chessCameraAngles'),
+    tiltSlider:document.getElementById('slider3DTiltAngle'),
+    tiltLabel:document.getElementById('lbl3DTiltAngle')
+  });
+  window.__chessBeastOrbitState=()=>chessOrbitController.debug();
   const thinkingBanner = document.getElementById('thinkingBanner');
   const gameStatusTitle = document.getElementById('gameStatusTitle');
   const openingNameDisplay = document.getElementById('openingNameDisplay');
@@ -4511,7 +4584,9 @@
   }
 
   function triggerMoveVisualFX(moveObj, snap, status) {
-    if (!fxCtx || chessVisualController.effectMode==='off' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const captureFxEnabled=localStorage.getItem('chess_beast_capture_fx')==='on';
+    if (!fxCtx || window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+        (chessVisualController.effectMode!=='full' && !(moveObj.captured && captureFxEnabled))) {
       lastMoveFloatingCallout=null;
       return;
     }
@@ -4544,14 +4619,14 @@
       x: p2.x,
       y: p2.y,
       radius: 6,
-      maxRadius: moveObj.captured && localStorage.getItem('chess_beast_capture_fx')!=='off' ? 52 : 34,
-      alpha: moveObj.captured && localStorage.getItem('chess_beast_capture_fx')==='off' ? 0 : 0.9,
+      maxRadius: moveObj.captured && captureFxEnabled ? 52 : 34,
+      alpha: moveObj.captured && !captureFxEnabled ? 0 : 0.9,
       color: moveObj.captured ? '#ef4444' : '#38bdf8',
       lineWidth: moveObj.captured ? 4 : 2.5
     });
 
     // 3. Explosive Capture Burst + Board Impact Shake
-    if (moveObj.captured && localStorage.getItem('chess_beast_capture_fx')!=='off') {
+    if (moveObj.captured && captureFxEnabled) {
       const bf = document.getElementById('boardFrame');
       if (bf) {
         bf.classList.remove('impact-shake');
@@ -4769,7 +4844,7 @@
 
     // 0. Last Played Move Arrow — ONLY in Beginner Tier (aiLevel === 1) so Mid/Expert/Pro/Ultimate/Legend have a clean tournament board!
     const lastSnap = engine.history[engine.history.length - 1];
-    if (aiLevel === 1 && lastSnap && lastSnap.move && activeWinIdeaPlan.length === 0) {
+    if (proPrefs.lastMoveArrow && lastSnap && lastSnap.move && activeWinIdeaPlan.length === 0) {
       drawSvgArrow(lastSnap.move.from, lastSnap.move.to, 'rgba(56, 189, 248, 0.55)', 'arrowHeadCyan');
     }
 
@@ -4783,12 +4858,12 @@
         const marker = isHero ? 'arrowHeadGold' : 'arrowHeadCyan';
         drawSvgArrow(step.from, step.to, strokeCol, marker);
       });
-    } else if (hintMove) {
+    } else if (hintMove && proPrefs.hintArrow) {
       drawSvgArrow(hintMove.from, hintMove.to, 'rgba(229, 169, 60, 0.92)', 'arrowHeadGold');
     }
 
     // 2. Enemy Threat Radar Arrow (Red — only if user toggled Threat Radar ON or in Beginner tier)
-    if (showThreatRadar && !engine.getGameStatus().over) {
+    if (showThreatRadar && proPrefs.threatArrow && !engine.getGameStatus().over) {
       const threat = engine.computeEnemyThreatMove();
       if (threat) {
         drawSvgArrow(threat.from, threat.to, 'rgba(239, 68, 68, 0.72)', 'arrowHeadRed');
@@ -5056,7 +5131,7 @@
           sqDiv.appendChild(fileSpan);
         }
 
-        if (sq === lastCaptureSq) {
+        if (sq === lastCaptureSq && localStorage.getItem('chess_beast_capture_fx')==='on') {
           const burst = document.createElement('div');
           burst.className = 'capture-burst';
           sqDiv.appendChild(burst);
@@ -5336,7 +5411,7 @@
     }
 
     const moverSide = engine.turn;
-    const moveFlight = chessVisualController.prepareMove(moveObj);
+    const moveFlight = document.body.classList.contains('board-3d') ? null : chessVisualController.prepareMove(moveObj);
     const snap = engine.executeMove(moveObj);
     if (baseTimeSeconds > 0 && incrementSeconds > 0) {
       if (moverSide === 'w') whiteTime += incrementSeconds;
@@ -5493,8 +5568,7 @@
       statNodesVal.textContent=`${Number(result.nodes||0).toLocaleString()} (${result.ttHits||0} TT)`;
       statBestMoveVal.textContent=`${sqToAlgebraic(move.from)}→${sqToAlgebraic(move.to)}`;
       performMoveAndContinue(move);
-      hintMove=move;
-      renderTacticalArrows();
+      // A real AI move is never a suggestion: do not create a fake hint arrow.
     },pace);
   }
 
@@ -5766,7 +5840,12 @@
     if(open){
       document.getElementById('chessPrefDifficulty').value=String(aiLevel);
       document.getElementById('chessPrefMotion').value=chessVisualController.effectMode;
-      document.getElementById('chessPrefCapture').value=localStorage.getItem('chess_beast_capture_fx')||'on';
+      document.getElementById('chessPrefCapture').value=localStorage.getItem('chess_beast_capture_fx')||'off';
+      document.getElementById('chessPrefAutoArrows').value=proPrefs.lastMoveArrow?'on':'off';
+      document.getElementById('chessPrefHintArrows').value=proPrefs.hintArrow?'on':'off';
+      document.getElementById('chessPrefThreatArrows').value=proPrefs.threatArrow?'on':'off';
+      document.getElementById('chessPrefLegalDots').value=proPrefs.legalDots?'on':'off';
+      document.getElementById('chessPrefQuiet').value=proPrefs.quiet?'on':'off';
       document.getElementById('chessPrefTheme').value=document.body.dataset.boardTheme||'green';
       document.getElementById('chessPrefSound').value=soundEnabled?'on':'off';
       document.getElementById('chessPrefVoice').value=voiceEnabled?'on':'off';
@@ -5779,6 +5858,11 @@
     if(open)document.getElementById('btnCloseCustomize').focus();
     else document.getElementById('btnOpenCustomize').focus();
   }
+  document.getElementById('btnQuietMode').addEventListener('click',()=>{
+    proPrefs.quiet=!proPrefs.quiet;
+    saveProPrefs();syncProPrefs();
+    showToast(proPrefs.quiet?'Focus mode ON — coaching hidden':'Coaching and graphs are visible');
+  });
   document.getElementById('btnOpenCustomize').onclick=()=>displayCustomize(true);
   document.getElementById('btnCloseCustomize').onclick=()=>displayCustomize(false);
   document.getElementById('chessCustomizeModal').addEventListener('keydown',e=>{
@@ -5800,6 +5884,13 @@
     }catch{}
     const motionSelector=document.getElementById('beastFxMode');
     if(motionSelector)motionSelector.value=motion;
+    proPrefs.lastMoveArrow=val('chessPrefAutoArrows')==='on';
+    proPrefs.hintArrow=val('chessPrefHintArrows')==='on';
+    proPrefs.threatArrow=val('chessPrefThreatArrows')==='on';
+    proPrefs.legalDots=val('chessPrefLegalDots')==='on';
+    proPrefs.quiet=val('chessPrefQuiet')==='on';
+    showThreatRadar=proPrefs.threatArrow;
+    saveProPrefs();syncProPrefs();renderBoard();
     if(soundEnabled!==(val('chessPrefSound')==='on'))document.getElementById('btnSoundToggle').click();
     if(voiceEnabled!==(val('chessPrefVoice')==='on'))document.getElementById('btnVoiceToggle').click();
     const current3D=document.body.classList.contains('board-3d')?'on':'off';
@@ -5813,6 +5904,11 @@
     document.getElementById('chessPrefPieces').value='staunton';
     document.getElementById('chessPrefMotion').value='subtle';
     document.getElementById('chessPrefCapture').value='off';
+    document.getElementById('chessPrefAutoArrows').value='off';
+    document.getElementById('chessPrefHintArrows').value='off';
+    document.getElementById('chessPrefThreatArrows').value='off';
+    document.getElementById('chessPrefLegalDots').value='on';
+    document.getElementById('chessPrefQuiet').value='on';
     document.getElementById('chessPrefSound').value='on';
     document.getElementById('chessPrefVoice').value='off';
     document.getElementById('chessPref3D').value='off';
@@ -5838,26 +5934,22 @@
     // Adapt visual aids based on Player Tier (Zero Spoon-Feeding for Expert/Pro/Ultimate/Legend!)
     if (aiLevel === 1) {
       // Beginner: Full visual guidance
-      showThreatRadar = true;
+      // All levels respect the user's opt-in threat arrows preference.
       document.body.classList.remove('tier-pure-board', 'tier-hide-eval');
     } else if (aiLevel === 2) {
       // Mid / Club: Clean board, move dots & badges, no move arrows or threat radar clutter
-      showThreatRadar = false;
       document.body.classList.remove('tier-pure-board', 'tier-hide-eval');
     } else if (aiLevel === 3 || aiLevel === 4) {
       // Expert & Pro: Tournament clean board (no arrows, no on-board badges)
-      showThreatRadar = false;
       showProtectionShields = false;
       document.body.classList.remove('tier-pure-board', 'tier-hide-eval');
     } else if (aiLevel === 5) {
       // Ultimate: Pure calculation board (even legal move dots hidden unless Assist toggled)
-      showThreatRadar = false;
       showProtectionShields = false;
       document.body.classList.add('tier-pure-board');
       document.body.classList.remove('tier-hide-eval');
     } else if (aiLevel === 6) {
       // Legend: World Championship pure board (Eval bar & move dots hidden)
-      showThreatRadar = false;
       showProtectionShields = false;
       document.body.classList.add('tier-pure-board', 'tier-hide-eval');
     }
@@ -6012,7 +6104,8 @@
 
   document.getElementById('btnToggleThreats').addEventListener('click', (e) => {
     showThreatRadar = !showThreatRadar;
-    e.currentTarget.classList.toggle('active-toggle', showThreatRadar);
+    proPrefs.threatArrow=showThreatRadar;
+    saveProPrefs();syncProPrefs();
     renderTacticalArrows();
     showToast(showThreatRadar ? "🎯 Enemy Threat Radar ON" : "Threat Radar OFF");
   });
@@ -6426,7 +6519,8 @@
   document.getElementById('btnToggle3D').addEventListener('click', (e) => {
     const active = document.body.classList.toggle('board-3d');
     e.currentTarget.classList.toggle('active-toggle', active);
-    showToast(active ? "🧊 3D Perspective Board View ON" : "2D Classic View ON");
+    chessOrbitController.sync3D();
+    showToast(active ? "3D Board ON — use Rotate board controls underneath" : "2D Board ON — normal chess moves");
   });
 
   document.getElementById('btnToggleBlindfold').addEventListener('click', (e) => {
@@ -7128,8 +7222,10 @@
       document.body.classList.remove('board-3d');
     } else {
       document.body.classList.add('board-3d');
-      document.documentElement.style.setProperty('--board-tilt-deg', `${deg}deg`);
     }
+    chessOrbitController.state.tilt=Math.min(65,Math.max(0,deg));
+    chessOrbitController.draw();chessOrbitController.save();
+    chessOrbitController.sync3D();
   });
 
   document.querySelectorAll('#pieceStyleSelectorRow .opt-pill').forEach(pill => {
