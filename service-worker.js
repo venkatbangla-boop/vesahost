@@ -1,4 +1,5 @@
-const CACHE='vesa-v112-home-intro-audio-fast';
+// Rollback cache version must supersede all previously installed 21-23 app caches.
+const CACHE='vesa-v116-rollback20-cache-refresh';
 const ASSETS=[
   './',
   './index.html',
@@ -176,9 +177,11 @@ const ASSETS=[
   './js/vesa-workspace-shell.js',
   './js/vesa-app-centre.js?v=20261018-u03',
   './js/vesa-app-centre.js?v=20261018-egenva-v2',
+  './js/vesa-app-centre.js?v=20261018-egenva-v2&rollback=20261019-20',
   './js/app-catalogue.js',
   './js/app-catalogue.js?v=20261015-costing-demo',
   './js/app-catalogue.js?v=20261018-egenva-v2',
+  './js/app-catalogue.js?v=20261018-egenva-v2&rollback=20261019-20',
   './js/vendor/xlsx.full.min.js',
   './manifest.webmanifest',
   './favicon.ico',
@@ -217,16 +220,39 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(caches.keys().then(keys => Promise.all(keys.map(key => /^vesa-v\d+-/.test(key) && key !== CACHE ? caches.delete(key) : null))).then(() => self.clients.claim()));
 });
+// App Centre and its discovery scripts always try the current Pages deployment first.
+// This also defeats old HTTP and CacheStorage copies from the removed 3 apps.
+const ROLLBACK_DISCOVERY_PATHS = new Set([
+  '/apps', '/apps/', '/apps/index.html',
+  '/js/app-catalogue.js', '/js/vesa-app-centre.js'
+]);
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  // App folders own their versioned offline bundles; root cache must not serve stale app HTML.
-  const path = new URL(event.request.url).pathname;
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+  const path = url.pathname;
+  // The original garment applications keep their own offline/caching behavior.
   if (path.startsWith('/apps/ppm') || path.startsWith('/apps/aql') || path.startsWith('/apps/tna')) return;
+  if (ROLLBACK_DISCOVERY_PATHS.has(path)) {
+    event.respondWith(
+      fetch(event.request, {cache:'no-store'}).then(response => {
+        if (!response.ok) throw new Error('Fresh VESA discovery unavailable');
+        const copy=response.clone();
+        event.waitUntil(caches.open(CACHE).then(cache=>cache.put(event.request,copy)));
+        return response;
+      }).catch(async () => {
+        // Do not fall back to v113-v115 caches containing the removed apps.
+        const cache=await caches.open(CACHE);
+        return (await cache.match(event.request)) || Response.error();
+      })
+    );
+    return;
+  }
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
       const copy = response.clone();
-      if (response.ok && event.request.url.startsWith(self.location.origin)) {
-        caches.open(CACHE).then(cache => cache.put(event.request, copy));
+      if (response.ok) {
+        event.waitUntil(caches.open(CACHE).then(cache => cache.put(event.request, copy)));
       }
       return response;
     }).catch(() => caches.match('./index.html')))
