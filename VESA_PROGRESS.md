@@ -1,3 +1,7 @@
+> **2026-10-18 G5 FINAL VERIFICATION CHECKPOINT (PARTIAL):** The personal synthetic showcase scope is settled. Retain all previous releases. See [19-app final completion evidence](docs/portfolio/VESA_360_FINAL_COMPLETION_REPORT.md). Original main `afd3ab38ae733bb72d260457273bc591e08a45d1`; independent [four-job G5 matrix](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119598197) exercises TNA/PPM/AQL/15 portfolio apps. Treat incomplete/failed jobs as NOT VERIFIED, never as PASS. No domain engines, data formats, or deployed assets changed. Human UAT remains 1 PASS / 0 FAIL / 48 NOT TESTED. Only promote evidence-verified work non-force; live origin requires Pages/public-byte verification. Do not restart accepted G4/G5 app source work or request old ZIP.
+
+---
+
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
 ## 2026-10-18 — G5-13..16 VERIFIED; ALL 15 PORTFOLIO ACTIVE-FORM QA PASS; NEXT TNA
