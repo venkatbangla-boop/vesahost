@@ -75,6 +75,12 @@ class LCBrowserProof{
    }
    await page.setViewportSize({width:1280,height:900});
    assert(await noLC(),'Nine source previews preserve empty local LC store');
+   // G5: original LC forms start at their real first fields and return on Escape.
+   await act('new');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'lcType','New LC starts at documented type');
+   await page.keyboard.press('Escape');
+   await page.locator('#lcDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
    await act('new');
    await enter({lcType:'master',lcNo:'SYN-MASTER-LC-001',applicant:'SYNTHETIC BUYER',
      beneficiary:'SYNTHETIC FACTORY',issuingBank:'SYNTHETIC BANK A',
@@ -82,9 +88,11 @@ class LCBrowserProof{
      openingDate:'2026-10-01',expiryDate:'2027-04-30',
      source:'SYNTHETIC SIGNED LC TERMS'});await submit();
    await act('events');await act('event');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'eventType','LC event dialog focuses event type');
    await enter({eventType:'bl',date:'2026-10-10',actor:'SYNTHETIC REVIEWER',
      source:'SYNTHETIC BL DOCUMENT'});await submit();
    await act('obligations');await act('add-obligation');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'direction','Obligation form focuses payable/receivable choice');
    await enter({direction:'payable',amount:'5000.00',currency:'USD',
      counterparty:'SYNTHETIC FACTORY',invoiceRef:'SYNTHETIC INVOICE',
      shipmentRef:'SYNTHETIC BL',source:'SYNTHETIC PAYABLE CONTRACT',
@@ -170,10 +178,19 @@ class LCBrowserProof{
    assert.match(await page.locator('#lcDialogBody').innerText(),/altered or unsupported/);
    await page.locator('#lcClose').click();
    assert.equal(JSON.stringify(await saved()),before);
-   for(const width of [320,390,768,1280]){
+   for(const width of [320,390,768,1280,1440]){
     await page.setViewportSize({width,height:850});
     assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=width+1,width+'px overflow');
    }
+   await page.setViewportSize({width:320,height:720});
+   await act('summary');await act('header');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'lcType','320px LC terms dialog starts at type');
+   assert((await page.locator('#lcDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+    '320px LC terms dialog fits viewport');
+   await page.screenshot({path:path.join(out,'lc-app05-edit-320.png')});
+   await page.keyboard.press('Escape');
+   await page.locator('#lcDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='header');
    await page.setViewportSize({width:390,height:844});
    await page.screenshot({path:path.join(out,'lc-app05-mobile.png')});
    await page.setViewportSize({width:1280,height:900});
