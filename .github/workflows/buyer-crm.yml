@@ -5,6 +5,7 @@ on:
     branches:
       - feature/buyer-crm-360
       - feature/buyer-crm-g4-20261018
+      - feature/crm-g5-active-forms-20261018
       - main
     paths:
       - 'apps/buyer-crm/**'

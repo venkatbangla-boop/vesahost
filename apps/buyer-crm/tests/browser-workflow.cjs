@@ -58,9 +58,18 @@ async function run(){
    assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=width+1,'CRM Home discovery overflow '+width);
   }
   await page.setViewportSize({width:1280,height:900});
+  // G5-13: CRM input starts on organization identity; Escape restores opener.
+  await act('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'organizationName','New Buyer focuses organization');
+  await page.keyboard.press('Escape');
+  await page.locator('#crmDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  assert.equal((await records()).length,0,'Escaped CRM draft never writes personal contacts');
   await act('new');await fill({organizationName:'SYNTHETIC BUYER LTD',territory:'SYN TERRITORY',sourceRef:'SYN BUYER REGISTER'});await submit();
   assert.equal((await records()).length,1);assert.match((await records())[0].status,/NOT BUYER-APPROVED PO/);
-  await act('add-contact');await fill({contactName:'SYN LOCAL CONTACT',role:'SYN MERCHANDISER',email:'synthetic@example.invalid',
+  await act('add-contact');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'contactName','Contact entry starts at contact name');
+  await fill({contactName:'SYN LOCAL CONTACT',role:'SYN MERCHANDISER',email:'synthetic@example.invalid',
    sourceRef:'SYN CONTACT SOURCE',privacySourceRef:'SYN PRIVACY REGISTER',reviewedBy:'SYN REVIEWER',reviewDate:'2026-10-17',consentStatus:'needs-information'});await submit();
   assert.equal((await records())[0].contacts.length,1);
   await act('add-contact');await fill({contactName:'SYN LOCAL CONTACT',role:'SYN MERCHANDISER',email:'synthetic@example.invalid',
@@ -68,15 +77,21 @@ async function run(){
   const beforeDup=JSON.stringify(await records());await page.locator('#crmDialog form button[type=submit]').click();
   assert.match(await page.locator('#crmDialog [role=alert]').innerText(),/Possible duplicate contact/);
   await page.locator('#crmDialogClose').click();assert.equal(JSON.stringify(await records()),beforeDup,'No silent contact merge');
-  await act('enquiries');await act('add-enquiry');await fill({category:'Knit Polo',styleRequest:'SYN POLO STYLE',sourceDate:'2026-10-16',sourceRef:'SYN ENQUIRY',requestedQuantity:'1000',unit:'pieces'});await submit();
+  await act('enquiries');await act('add-enquiry');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'category','Enquiry entry starts at sourced category');
+  await fill({category:'Knit Polo',styleRequest:'SYN POLO STYLE',sourceDate:'2026-10-16',sourceRef:'SYN ENQUIRY',requestedQuantity:'1000',unit:'pieces'});await submit();
   const eq=(await records())[0].enquiries[0];assert.equal(eq.requestedQuantity,1000);
-  await act('pipeline');await act('add-opportunity');await fill({enquiryId:eq.id,stage:'Buyer costing request',stageSourceRef:'SYN STAGE DOC',reviewedBy:'SYN PLANNER',reviewDate:'2026-10-17',
+  await act('pipeline');await act('add-opportunity');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'enquiryId','Opportunity starts at linked enquiry');
+  await fill({enquiryId:eq.id,stage:'Buyer costing request',stageSourceRef:'SYN STAGE DOC',reviewedBy:'SYN PLANNER',reviewDate:'2026-10-17',
    amount:'1250.50',currency:'USD',amountSourceRef:'SYN BUYER ESTIMATE',amountReviewedBy:'SYN REVIEWER',amountReviewDate:'2026-10-17'});await submit();
   const o=(await records())[0].opportunities[0];assert.equal(o.amount,'1250.50');
   assert.match(await page.locator('.crm-table').first().innerText(),/1250\.50/);
   await act('add-stage');await fill({opportunityId:o.id,stage:'Buyer discussion',sourceRef:'SYN CALL NOTES',reviewedBy:'SYN OWNER',reviewDate:'2026-10-17'});await submit();
   assert.equal((await records())[0].opportunities[0].stage,'Buyer costing request','Stage amendment must not rewrite source');
-  await act('followups');await act('add-followup');await fill({linkedItem:'opportunity|'+o.id,owner:'SYN FOLLOWUP OWNER',createdDate:'2026-10-15',dueDate:'2026-10-16',sourceRef:'SYN FOLLOWUP REGISTER',followupStatus:'open'});await submit();
+  await act('followups');await act('add-followup');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'linkedItem','Follow-up starts at linked source');
+  await fill({linkedItem:'opportunity|'+o.id,owner:'SYN FOLLOWUP OWNER',createdDate:'2026-10-15',dueDate:'2026-10-16',sourceRef:'SYN FOLLOWUP REGISTER',followupStatus:'open'});await submit();
   await page.evaluate(()=>{window.VesaBuyerCRM360.asOf='2026-10-17';window.VesaBuyerCRM360.render();});
   assert.match(await page.locator('.crm-table').innerText(),/overdue/);
   assert.match(await page.locator('body').innerText(),/does not send reminders, emails or SMS/);
@@ -132,6 +147,17 @@ async function run(){
    assert(scroll<=width+1,width+'px Buyer CRM overflow: '+scroll);
    if([390,768,1280].includes(width))await page.screenshot({path:path.join(output,'crm-app11-'+width+'.png')});
   }
+  // Check a real form at 320px, beyond original eight Home preview screenshots.
+  await page.setViewportSize({width:320,height:720});
+  await act('home');await act('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'organizationName','320px CRM form focuses Buyer');
+  assert((await page.locator('#crmDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+   '320px CRM edit dialog fits width');
+  await page.screenshot({path:path.join(output,'crm-app11-new-dialog-320.png')});
+  await page.keyboard.press('Escape');
+  await page.locator('#crmDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  await act('continue');
   await page.setViewportSize({width:1280,height:900});
   const translations=[['en','Buyer Contacts'],['bn','বায়ার যোগাযোগ'],['hi','बायर संपर्क'],['ta','Buyer தொடர்புகள்']];
   for(const [lang,label]of translations){const old=JSON.stringify(await records());await page.locator('[data-vesa-user]').click();
