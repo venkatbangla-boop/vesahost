@@ -1,5 +1,12 @@
 # Production Tracker 360 — Personal Demo Release Notes
 
+## 2026-10-18 G5-10 — Production active form QA PASS
+
+Test/CI-only commit `d1315e1fde9d87977d65b701dda95261f62ed17d`, [real Node/Chromium #39116291213 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39116291213). Production plan/opening WIP/target/daily initial focus, 320px Escape; stage correction, no AQL/TNA automatic release and portable history unchanged. [G5 Wave B](../../docs/portfolio/27_G5_FORM_QA_WAVE_B.md).
+
+---
+
+
 **Status:** DEMO LIVE, personal, non-commercial, synthetic data only. **Released source:** `2b060a027776ee7ab7a2355ed8f1ca493529a0cf`, **Date:** 2026-10-17.
 
 - [Demo route](https://vesaent.com/apps/production-tracker/) | [Main Chromium/Node regression #39023609749](https://github.com/venkatbangla-boop/vesahost/actions/runs/39023609749) SUCCESS | [Pages deployment #39023609518](https://github.com/venkatbangla-boop/vesahost/actions/runs/39023609518) SUCCESS | [Exact public served bytes and sibling live smoke #39023609761](https://github.com/venkatbangla-boop/vesahost/actions/runs/39023609761) SUCCESS.

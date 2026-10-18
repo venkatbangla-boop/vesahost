@@ -1,5 +1,12 @@
 # Sampling & Approval 360 — Personal Demo Release Notes (2026-10-17)
 
+## 2026-10-18 G5-07 — Sampling active forms PASS
+
+Test/CI-only commit `2ea58d79fbe40c4f1baadbabbc01754cf1e43a4d`, [real Node/Chromium CI #39115898665 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39115898665). New request/category/round/decision/revision focus, Escape return, real 320px form; original rejected and stale-review history, XLSX/PDF, local copy unchanged. See [G5 Wave B](../../docs/portfolio/27_G5_FORM_QA_WAVE_B.md).
+
+---
+
+
 **Original authority:** Approved user ZIP `blueprints/APP-04_sampling-approval.md`, SHA256 `b06e7d1e3eb486f564097f754817d899b4dba5c094cef054bc4c01e5090934c8`. **Main code commit:** `6b1e4b53a7d4f7bcd7a37ea529a49a9e3903da4a`; [domain/real Chromium/sibling CI #39015967734 PASS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39015967734), [Pages #39016045454 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39016045454), [public exact HTML and all separate CSS/JS source #39016044847 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39016044847). Live https://vesaent.com/apps/sampling-approval/.
 
 **Status: DEMO LIVE** synthetic personal non-commercial only. Browser login is not secure authentication; local buyer evidence is not a digitally verified signature or external approval. No real buyer, PO, style or sample evidence may be used. Native-device UAT and third-party workflow permission remain **CONDITIONAL**.

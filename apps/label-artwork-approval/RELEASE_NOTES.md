@@ -1,5 +1,12 @@
 # Label & Artwork Approval 360 — Personal Demo Release Notes
 
+## 2026-10-18 G5-12 — Artwork editable form QA PASS
+
+Test/CI-only `e4f2fc9176db500250e7dea96f47d36635f58501`. [Feature Chromium #39116539311](https://github.com/venkatbangla-boop/vesahost/actions/runs/39116539311), [main #39116601270](https://github.com/venkatbangla-boop/vesahost/actions/runs/39116601270), [Pages #39116601186](https://github.com/venkatbangla-boop/vesahost/actions/runs/39116601186), [public smoke #39116601257](https://github.com/venkatbangla-boop/vesahost/actions/runs/39116601257) all SUCCESS. New/revision/comment/decision focus + 320px Escape, GTIN/review/ephemeral PNG/JPEG source rules frozen. [G5 Wave B](../../docs/portfolio/27_G5_FORM_QA_WAVE_B.md).
+
+---
+
+
 **Status:** Verified live personal, non-commercial, synthetic demo ONLY. **Source:** `4573f14d9ee7a848f7de22b8f13eccf0cc80eebe`. **Date:** 2026-10-17.
 
 **Demo URL:** https://vesaent.com/apps/label-artwork-approval/.
