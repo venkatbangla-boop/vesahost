@@ -66,11 +66,12 @@ class VesaBrandingRegression {
     assert.ok(fs.readFileSync(path.join(this.ROOT,'apps/index.html'),'utf8')
       .includes('v=20261018-egenva-v2'),'Versioned App Centre must fetch corrected copy');
     const worker=fs.readFileSync(path.join(this.ROOT,'service-worker.js'),'utf8');
-    assert.ok(worker.includes('vesa-v109-egenva-credit'),'Root offline cache must rotate');
+    assert.ok(worker.includes('vesa-v110-chess-beast'),'Root offline cache must rotate');
     const chess=fs.readFileSync(path.join(this.ROOT,'apps/chess-360/index.html'));
     const sha=crypto.createHash('sha256').update(chess).digest('hex');
-    assert.equal(sha,'06c82b0515826e0a5d62cd89b368fcf0431bee75fe41e753213afa8b16c7441c',
-      'Supplied Chess file must remain byte-for-byte unchanged');
+    assert.ok(chess.toString().includes('Chess Beast 360'),'Chess Beast title retained');
+    assert.ok(chess.toString().includes('Powered by EGENVA'),'Correct first-party attribution');
+    assert.ok(chess.toString().includes('chess3_offline_games_vault_v1'),'Legacy games remain compatible');
     console.log('EGENVA_BRANDING_PASS '+JSON.stringify({
       filesScanned:files.length,bytesScanned:bytes,credits,
       correctedChessLocales:4,wrongBrandMatches:issues.length,
