@@ -1,5 +1,16 @@
 # VESA 360 - ONE UNIVERSAL RESUME PROMPT (GITHUB FREE + LOCAL DATA)
 
+## 2026-10-18 — G4-W4 ALL FOUR LIVE, G5-01 COSTING LIVE — NEXT G5-02 PACKING
+
+**Latest verified application source:** `main` `4fbb7efa1f326c1e93c1bde798a63a5445a2484f`. The four W4 app original Home workflows are polished and LIVE: Buyer CRM **8**, Supplier Comparison **8**, Claims **10**, Product Development **9** panels. Existing pure domain engines, TNA CPM/baselines, PPM 168, AQL Ac-Re, browser records and local saved copies unchanged. No synthetic practice writes or fabricated commercial approvals. Individual exact code SHA, Chromium CI, Pages and public-byte proof: [25_G4_W4_COMPLETE_AND_G5_ACTIVE.md](docs/portfolio/25_G4_W4_COMPLETE_AND_G5_ACTIVE.md).
+
+**First G5 application-only correction:** Costing Home/Editor short `Costing 360` without a second VESA brand kicker; one common workspace header remains. [Node, real Python Chromium and 19-app opened-panel audit #39111844125 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39111844125): **19 routes, 38 device-width browser sessions, 334 screenshots, zero recorded issue sessions**; Costing now shows all seven original section screenshots. [Pages #39111979312 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39111979312), [exact public-byte smoke #39111979159 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39111979159). This is **not** exhaustive active-form/dialog, offline, device, report or human UAT. **Human UAT 1 PASS / 0 FAIL / 48 NOT TESTED**.
+
+**EXACT NEXT G5-02:** Audit editable **Packing & Container 360** source `apps/packing-container/index.html`, original blueprint `blueprints/APP-01_packing-container.md`, actual browser tests; inspect cartonization, pack ratios, CBM/loading exceptions, 320/390/768/1280/1440/200% zoom focus/escape, mobile forms, Excel/PDF/saved-copy/offline. Fix one reproduced app-owned UI issue at a time, test Node + real Chromium + siblings, non-force promote, verify Pages/live bytes. Thereafter remaining 19 active-form paths and real-device QA. Do not restart previous waves or request master ZIP.
+
+---
+
+
 ## 2026-10-18 — G4-W4 BUYER CRM 8-PANEL DISCOVERY VERIFIED & MAIN-PROMOTED
 
 **Verified application commit:** `be8267e8adc6d5f8bdf663c059f7bfeded0a67e2` on `main`. Real Node, original APP-11 browser create/edit/source/recovery/Excel/PDF regression, 4 languages, canonical-blueprint and sibling tests plus 19-app opened Chromium route audit (19 apps × 390/1440 px = 38 sessions) all **SUCCESS** in [feature CI #39110324685](https://github.com/venkatbangla-boop/vesahost/actions/runs/39110324685). The prior [read-only 19-app audit #39110173067](https://github.com/venkatbangla-boop/vesahost/actions/runs/39110173067) also passed. This is automated synthetic browser evidence, not every form/state or physical device approval.

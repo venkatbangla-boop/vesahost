@@ -1,5 +1,16 @@
 # VESA TNA 360 — Repository Instructions for VS Code Codex
 
+## 2026-10-18 — G4-W4 ALL FOUR LIVE, G5-01 COSTING LIVE — NEXT G5-02 PACKING
+
+**Latest verified application source:** `main` `4fbb7efa1f326c1e93c1bde798a63a5445a2484f`. The four W4 app original Home workflows are polished and LIVE: Buyer CRM **8**, Supplier Comparison **8**, Claims **10**, Product Development **9** panels. Existing pure domain engines, TNA CPM/baselines, PPM 168, AQL Ac-Re, browser records and local saved copies unchanged. No synthetic practice writes or fabricated commercial approvals. Individual exact code SHA, Chromium CI, Pages and public-byte proof: [25_G4_W4_COMPLETE_AND_G5_ACTIVE.md](docs/portfolio/25_G4_W4_COMPLETE_AND_G5_ACTIVE.md).
+
+**First G5 application-only correction:** Costing Home/Editor short `Costing 360` without a second VESA brand kicker; one common workspace header remains. [Node, real Python Chromium and 19-app opened-panel audit #39111844125 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39111844125): **19 routes, 38 device-width browser sessions, 334 screenshots, zero recorded issue sessions**; Costing now shows all seven original section screenshots. [Pages #39111979312 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39111979312), [exact public-byte smoke #39111979159 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39111979159). This is **not** exhaustive active-form/dialog, offline, device, report or human UAT. **Human UAT 1 PASS / 0 FAIL / 48 NOT TESTED**.
+
+**EXACT NEXT G5-02:** Audit editable **Packing & Container 360** source `apps/packing-container/index.html`, original blueprint `blueprints/APP-01_packing-container.md`, actual browser tests; inspect cartonization, pack ratios, CBM/loading exceptions, 320/390/768/1280/1440/200% zoom focus/escape, mobile forms, Excel/PDF/saved-copy/offline. Fix one reproduced app-owned UI issue at a time, test Node + real Chromium + siblings, non-force promote, verify Pages/live bytes. Thereafter remaining 19 active-form paths and real-device QA. Do not restart previous waves or request master ZIP.
+
+---
+
+
 ## 2026-10-18 — G4-W3 FOUR-APP VERIFIED LIVE; G4-W4 NEXT BUYER CRM
 
 **Verified application runtime source:** `main` `65691b8716b4fc8ab4e71fbf6ea8a4d2afb14c0f`. **G4-W3 COMPLETE for synthetic personal non-commercial demonstration only**: Production Tracker **7 real panels** `515f2533`, Shipment & Documentation **8 panels** `3b7879b3`, Factory & Vendor **9 panels** `e77715bd`, Label & Artwork Approval **7 panels** `65691b87`. All four have original source-backed readonly Home practice, EN/BN/HI/TA, 320/390/1440 Chromium proof and untouched domain calculators, reports and browser-local record contracts. Production walkthrough explicitly retains corrected cutting WIP and unresolved sewing opening. Shipment retains draft quantities/document versions. Factory demo never certifies declared capacity or source-unconfirmed document. Label demo keeps barcode warnings and the latest revision review **PENDING**, never validates buyer/GS1/legal approval.
