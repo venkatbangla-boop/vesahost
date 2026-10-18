@@ -52,3 +52,14 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
  .fs-table td,.fs-table th{white-space:normal;overflow-wrap:anywhere}
  @page{size:A4 landscape;margin:12mm}
 }
+
+/* G4 app-owned task discovery: one shared shell, inline real-domain sections only. */
+.fs-journey{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.fs-journey-card{display:flex;flex-direction:column;min-width:0;padding:14px;border:1px solid var(--line,#cbd6e4);border-radius:11px;background:var(--look-surface,#eef3f9)}
+.fs-journey-step{font-size:.8rem;font-weight:800;letter-spacing:.05em;color:var(--muted,#526176)}
+.fs-journey-card h3{font-size:1rem;margin:7px 0}
+.fs-journey-card p{color:var(--muted,#526176);margin:0 0 12px;flex:1;overflow-wrap:anywhere}
+.fs-journey-card .fs-btn{width:100%}
+@media(max-width:900px){.fs-journey{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.fs-journey{grid-template-columns:1fr}}
+@media print{.fs-journey{display:none!important}}

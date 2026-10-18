@@ -45,6 +45,36 @@ async function run(){
   assert.equal(await page.locator('.vesa-workspace').count(),1,'Only shared VESA header');
   assert.equal(await page.locator('[data-vesa-menu]').count(),6,'Global Home/File/Edit/View/Tools/Help');
   assert.match(await page.locator('body').innerText(),/NON-COMMERCIAL PERSONAL DEMO/);
+  // G4: All eight original sections open on a validated, read-only fictional record.
+  const steps=['summary','offers','scenarios','matrix','decisions','references','reports','history'];
+  assert.equal(await page.locator('.fs-journey [data-action="preview"]').count(),8);
+  for(const step of steps){
+   await page.locator('.fs-journey [data-action="preview"][data-id="'+step+'"]').click();
+   assert.equal(await page.locator('.fs-tabs [data-action="'+step+'"]').getAttribute('aria-current'),'true');
+   assert(await page.locator('#fsMain [data-action="save"]').isDisabled(),'Practice Save is disabled');
+   assert(await page.locator('#fsMain [data-action="download"]').isDisabled(),'Practice export of saved copy is disabled');
+   assert.equal((await records()).length,0,'Practice cannot write local supplier records');
+   assert.match(await page.locator('#fsMain').innerText(),/Synthetic practice is read-only|SYN PIQUE FABRIC/i);
+   if(step==='offers')assert.match(await page.locator('.fs-table').innerText(),/SYN VENDOR SYN-Q3/);
+   if(step==='scenarios'){
+    assert.match(await page.locator('.fs-table').innerText(),/1\.6000/);
+    assert.match(await page.locator('.fs-table').innerText(),/NEEDS INFORMATION/);
+   }
+   if(step==='matrix'){
+    assert.match(await page.locator('.fs-table').first().innerText(),/NOT COMPARABLE/);
+    assert.match(await page.locator('.fs-table').last().innerText(),/1\.6000/);
+   }
+   if(step==='reports')assert.match(await page.locator('.fs-report').innerText(),/DRAFT \/ SOURCE REVIEW ONLY/);
+   if(step==='history')assert.match(await page.locator('.fs-table').innerText(),/Locally sourced offer/);
+   await act('home');
+  }
+  assert.equal((await records()).length,0);
+  for(const width of [320,390,1440]){
+   await page.setViewportSize({width,height:860});
+   assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=width+1,'Supplier Home overflow '+width);
+   await page.screenshot({path:path.join(out,'supplier-app12-home-'+width+'.png')});
+  }
+  await page.setViewportSize({width:1280,height:900});
   await act('new');await fill({
    article:'SYN COTTON PIQUE',composition:'SYN 100% COTTON',gsm:'210',width:'68',
    widthUnit:'in',construction:'PIQUE KNIT',shrinkageBasis:'SYN AFTER WASH TEST',

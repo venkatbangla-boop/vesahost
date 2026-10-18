@@ -4,6 +4,7 @@
 (function(root){
 'use strict';
 class VesaSupplierWorkspace{
+ static steps=Object.freeze([['summary','hintSummary'],['offers','hintOffers'],['scenarios','hintScenarios'],['matrix','hintMatrix'],['decisions','hintDecisions'],['references','hintReferences'],['reports','hintReports'],['history','hintHistory']]);
  constructor(){
   this.main=document.getElementById('fsMain');this.dialog=document.getElementById('fsDialog');
   this.body=document.getElementById('fsDialogBody');this.file=document.getElementById('fsCopyFile');
@@ -83,21 +84,11 @@ class VesaSupplierWorkspace{
  action(name,id=''){try{
   if(name==='home'){this.current=null;this.section='summary';this.render();return;}
   if(name==='new'){this.form('new');return;}
-  if(name==='practice'){let p=this.E.create({article:'SYN PIQUE FABRIC',composition:'SYN 100% COTTON',
-   gsm:'210',width:'68',widthUnit:'in',construction:'PIQUE',shrinkageBasis:'SYN LAB AFTER WASH',
-   shrinkage:'4',sourceRef:'SYN TECH PACK',reviewedBy:'SYN QA',reviewDate:'2026-10-17',
-   requestedTradeTerm:'FOB',requestedDeliveryTerm:'SYN DELIVERY POINT'});
-   const offer=(id,price)=>({id,supplier:'SYN VENDOR '+id,article:p.requirement.article,
-    composition:p.requirement.composition,gsm:p.requirement.gsm,width:p.requirement.width,
-    widthUnit:'in',construction:p.requirement.construction,shrinkageBasis:p.requirement.shrinkageBasis,
-    shrinkage:p.requirement.shrinkage,quoteRef:'SYN QUOTE '+id,quoteDate:'2026-10-16',validTo:'2026-11-30',
-    unitPrice:price,currency:'USD',unit:'yd',moq:1000,moqUnit:'yd',leadDays:28,tradeTerm:'FOB',
-    origin:'SYN PLACE',deliveryTerm:'SYN DELIVERY POINT',specSourceRef:'SYN SPEC',
-    qualitySourceRef:'SYN LAB TEST',qualityEquivalence:'locally-reviewed-equivalent',
-    qualityReviewedBy:'SYN REVIEW',qualityReviewDate:'2026-10-17',sourceRef:'SYN SOURCE QUOTE'});
-   p=this.E.append(p,'offer',offer('SYN-Q1','1.2000'));
-   p=this.E.append(p,'offer',offer('SYN-Q2','1.0500'));
-   p.mode='practice';this.current=p;this.asOf='2026-10-17';this.section='matrix';this.render();return;}
+  if(name==='practice'||name==='preview'){
+   if(name==='preview'&&(this.current||!VesaSupplierWorkspace.steps.some(([step])=>step===id)))
+    throw Error('Return to All Comparisons for a valid practice section');
+   this.current=this.practiceExample();this.asOf='2026-10-17';
+   this.section=name==='practice'?'matrix':id;this.render();return;}
   if(name==='continue'){const saved=this.store.list();if(!saved.length)throw Error(this.t('none'));this.action('load',saved[0].id);return;}
   if(name==='load'){const p=this.store.load(id);if(!p)throw Error('Supplier comparison not found on this device');this.current=p;this.section='summary';this.render();return;}
   if(name==='save'){if(!this.current||this.current.mode==='practice')throw Error('Open a local comparison (not Practice) before saving');this.store.save(this.current);this.render();return;}
@@ -116,6 +107,56 @@ class VesaSupplierWorkspace{
    if(!this.current||this.current.mode==='practice')throw Error(this.t('practiceOnly'));
    this.form(name);return;}
  }catch(err){this.error(err.message);}}
+ /** Build read-only fictional source history with actual validators and landed arithmetic. */
+ practiceExample(){
+  let p=this.E.create({article:'SYN PIQUE FABRIC',composition:'SYN 100% COTTON',
+   gsm:'210',width:'68',widthUnit:'in',construction:'PIQUE',shrinkageBasis:'SYN LAB AFTER WASH',
+   shrinkage:'4',sourceRef:'SYN TECH PACK',reviewedBy:'SYN QA',reviewDate:'2026-10-17',
+   requestedTradeTerm:'FOB',requestedDeliveryTerm:'SYN DELIVERY POINT'});
+  const offer=(id,price)=>({id,supplier:'SYN VENDOR '+id,article:p.requirement.article,
+   composition:p.requirement.composition,gsm:p.requirement.gsm,width:p.requirement.width,
+   widthUnit:'in',construction:p.requirement.construction,shrinkageBasis:p.requirement.shrinkageBasis,
+   shrinkage:p.requirement.shrinkage,quoteRef:'SYN QUOTE '+id,quoteDate:'2026-10-16',
+   validTo:'2026-11-30',unitPrice:price,currency:'USD',unit:'yd',moq:1000,moqUnit:'yd',
+   leadDays:28,tradeTerm:'FOB',origin:'SYN PLACE',deliveryTerm:'SYN DELIVERY POINT',
+   specSourceRef:'SYN FABRIC SPEC',qualitySourceRef:'SYN LAB TEST',
+   qualityEquivalence:'locally-reviewed-equivalent',qualityReviewedBy:'SYN REVIEW',
+   qualityReviewDate:'2026-10-17',sourceRef:'SYN SOURCE QUOTE'});
+  p=this.E.append(p,'offer',offer('SYN-Q1','1.2000'));
+  p=this.E.append(p,'offer',offer('SYN-Q2','1.0500'));
+  p=this.E.append(p,'offer',{...offer('SYN-Q3','0.5000'),gsm:'180',
+   sourceRef:'SYN CHEAP DIFFERENT GSM QUOTE'});
+  const charge=(kind,amount)=>({state:'amount',amount,currency:'USD',unit:'yd',
+   sourceRef:'SYN '+kind+' DOCUMENT',reviewedBy:'SYN FINANCE',reviewDate:'2026-10-17'});
+  const scenario={offerId:'SYN-Q1',asOfDate:'2026-10-17',targetUnit:'yd',
+   targetCurrency:'USD',rounding:'half-up-4',sourceRef:'SYN LANDED BASIS',
+   reviewedBy:'SYN FINANCE',reviewDate:'2026-10-17'};
+  p=this.E.append(p,'scenario',{...scenario,id:'SYN-LANDED-1',
+   charges:{freight:charge('FREIGHT','0.2000'),duty:charge('DUTY','0.1000'),
+    tax:charge('TAX','0.0500'),lc:charge('LC','0.0500')}});
+  p=this.E.append(p,'scenario',{...scenario,id:'SYN-MISSING-2',
+   sourceRef:'SYN MISSING CHARGES',charges:{}});
+  p=this.E.append(p,'decision',{id:'SYN-REVIEW-1',offerId:'SYN-Q1',
+   state:'compare-further',reviewer:'SYN SOURCING',reviewDate:'2026-10-17',
+   sourceRef:'SYN INTERNAL REVIEW NOTE — NOT APPROVED'});
+  p.mode='practice';
+  const check=this.E.validate(p);
+  if(!check.ok)throw Error('Fictional comparison source invalid: '+check.errors.join('; '));
+  return p;
+ }
+ /** Open existing eight panels from Home with synthetic data, without local writes. */
+ journey(){
+  const t=k=>this.e(this.t(k));
+  const cards=VesaSupplierWorkspace.steps.map(([step,hint],index)=>
+   '<article class="fs-journey-card"><span class="fs-journey-step">'+
+   String(index+1).padStart(2,'0')+'</span><h3>'+t(step)+'</h3><p>'+t(hint)+
+   '</p><button class="fs-btn" type="button" data-action="preview" data-id="'+
+   this.e(step)+'" aria-label="'+t('journeyOpen')+' · '+t(step)+'">'+t('journeyOpen')+
+   '</button></article>');
+  return '<section class="fs-card" aria-labelledby="fsJourneyTitle"><h2 id="fsJourneyTitle">'+
+   t('journeyTitle')+'</h2><p class="fs-note">'+t('journeyLead')+'</p>'+
+   '<div class="fs-journey">'+cards.join('')+'</div></section>';
+ }
  excel(){
   if(!this.current)throw Error('Open a local comparison first');
   if(!root.XLSX)throw Error('Bundled Excel library not available');
@@ -133,18 +174,18 @@ class VesaSupplierWorkspace{
  render(){
   const e=v=>this.e(v??this.t('needs')),t=k=>e(this.t(k));
   const banner='<section class="fs-card"><h1>'+t('title')+'</h1><p class="fs-note">'+t('lead')+'</p>'+
-   '<p class="fs-warning">'+t('notice')+'</p><p class="fs-note">NON-COMMERCIAL PERSONAL DEMO — SYNTHETIC SOURCE ONLY</p></section>';
+   '<p class="fs-warning">'+t('notice')+'</p></section>';
   if(!this.current){let saved=[];try{saved=this.store.list();}catch(err){
    this.main.innerHTML=banner+'<section role="alert" class="fs-card fs-warning">'+e(err.message)+'</section>'+this.btn('upload','upload');return;}
    this.main.innerHTML=banner+'<section class="fs-card"><div class="fs-actions">'+this.btn('new','new',true)+
     this.btn('continue','continue')+this.btn('upload','upload')+this.btn('practice','practice')+'</div>'+
     '<h2>'+t('openRecords')+'</h2>'+(saved.length?saved.map(row=>
      '<div class="fs-record"><span><b>'+e(row.article)+'</b><small>'+e(row.composition)+' / Rev '+e(row.revision)+'</small></span>'+
-     this.btn('load','open',false,row.id)+'</div>').join(''):'<p class="fs-note">'+t('none')+'</p>')+'</section>';
+     this.btn('load','open',false,row.id)+'</div>').join(''):'<p class="fs-note">'+t('none')+'</p>')+'</section>'+this.journey();
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,practice=p.mode==='practice',valid=this.E.validate(p);
-  const tabs=['summary','offers','scenarios','matrix','decisions','references','reports','history'];
+  const tabs=VesaSupplierWorkspace.steps.map(([step])=>step);
   this.main.innerHTML=banner+'<section class="fs-card"><h2>'+e(p.requirement.article)+' / '+e(p.requirement.gsm)+' GSM / '+e(p.requirement.width)+' '+e(p.requirement.widthUnit)+'</h2>'+
    '<p class="fs-note">'+(practice?t('practiceOnly'):t('localOnly'))+' / '+t('status')+'</p>'+
    '<div class="fs-actions">'+this.btn('home','back')+this.btn('save','save',true,'',practice)+this.btn('download','download',false,'',practice)+'</div></section>'+

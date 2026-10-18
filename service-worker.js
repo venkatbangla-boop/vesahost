@@ -1,4 +1,4 @@
-const CACHE='vesa-v101-crm-g4-workflow-discovery';
+const CACHE='vesa-v102-supplier-g4-guided-steps';
 const ASSETS=[
   './',
   './index.html',
