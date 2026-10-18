@@ -60,6 +60,7 @@ class ChessProQA {
       await page.locator('#chessboard [data-sq="12"]').click();
       assert.ok(await page.locator('#chessboard .move-dot').count()>0,'Legal dots remain for level 6');
       assert.equal(await page.locator('#chessboard .move-dot').first().isVisible(),true);
+      await page.locator('#chessAppearanceGroup summary').click();
       await page.locator('#btnToggle3D').click();
       assert.equal(await page.locator('#chessCameraControls').isVisible(),true,'Camera toolbar visible in 3D');
       await page.locator('#btnCameraRotate').click();
@@ -122,6 +123,8 @@ class ChessProQA {
     const {page,context,errors}=await this.open(browser,profile);
     try{
       await this.newGame(page,'pvp',1);
+      await page.locator('#btnMobileMore').click();
+      await page.locator('#chessAppearanceGroup summary').click();
       await page.locator('#btnToggle3D').click();
       assert.equal(await page.locator('#chessCameraControls').isVisible(),true,name+' sees orbit toolbar');
       await page.locator('#btnCameraRotate').click();
