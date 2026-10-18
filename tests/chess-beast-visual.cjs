@@ -40,7 +40,7 @@ class ChessBeastVisualQA {
     page.on('pageerror',e=>errors.push(e.message));
     await page.goto(this.origin+'/apps/chess-360/',{waitUntil:'domcontentloaded'});
     await page.locator('#chessboard .square').first().waitFor();
-    await page.locator('#btnOverlayStartGame').click();
+    await page.locator('#btnTopStartPause').click();
     await page.waitForTimeout(300);
     const geometry=await page.evaluate(()=>{
       const bound=id=>{
