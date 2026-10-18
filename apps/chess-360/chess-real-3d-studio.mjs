@@ -132,10 +132,12 @@ export class ChessBeast3DStudio {
       tile.castShadow=false;tile.receiveShadow=true;
       tile.userData.square=sq;boardGroup.add(tile);this.board.push(tile);
     }
-    // Local tabletop only: allows the dark photographic-style CSS backdrop
-    // to show at the upper edges of the scene without a static board image.
-    const ground=new THREE.Mesh(new THREE.PlaneGeometry(19,19),
-      new THREE.MeshStandardMaterial({color:0x151c1c,roughness:.87,metalness:.04}));
+    // Physically meaningful but transparent shadow catcher: no visible
+    // polygon floor cutting across the photographic-style CSS ambience.
+    // Only actual directional-light contact shadows composite under the
+    // real chessboard, preserving low GPU overhead and offline rendering.
+    const ground=new THREE.Mesh(new THREE.PlaneGeometry(80,80),
+      new THREE.ShadowMaterial({color:0x050806,opacity:.28}));
     ground.rotation.x=-Math.PI/2;ground.position.y=-.242;
     ground.receiveShadow=true;this.scene.add(ground);
     this.scene.add(boardGroup);
@@ -277,7 +279,11 @@ export class ChessBeast3DStudio {
     const orbit=this.getOrbit()||{tilt:26,yaw:0,spin:0};
     const a=((orbit.yaw||0)+(orbit.spin||0)+(this.state.flipped?180:0))*Math.PI/180;
     const elev=(59-clamp(orbit.tilt||26,0,65)*.55)*Math.PI/180;
-    const half=4.45*(Math.abs(Math.cos(a))+Math.abs(Math.sin(a)));
+    // The old full diagonal factor 1.414x pushed the board far away: at 45°
+    // it occupied only ~70% of the visible width. Use a tempered diagonal
+    // safety margin while retaining all board-square centres in the view.
+    const diagonal=Math.abs(Math.cos(a))+Math.abs(Math.sin(a));
+    const half=4.45*(1+.25*(diagonal-1));
     const radius=(half/Math.tan(49*Math.PI/360)+half*Math.cos(elev))*1.045;
     this.camera.position.set(radius*Math.cos(elev)*Math.sin(a),
       radius*Math.sin(elev),radius*Math.cos(elev)*Math.cos(a));
