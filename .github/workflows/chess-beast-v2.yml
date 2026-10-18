@@ -59,12 +59,12 @@ jobs:
       - name: Real AI Worker / 320-1440 responsiveness
         run: |
           set -euo pipefail
+          node tests/chess-panel-layout-qa.cjs
           node tests/chess-beast-v2.cjs
           CHESS_BROWSER=webkit node tests/chess-beast-v2.cjs
           node tests/chess-beast-deep-browser.cjs
           node tests/chess-match-experience.cjs
           node tests/chess-pro-orbit-qa.cjs
-          node tests/chess-panel-layout-qa.cjs
           CHESS_IMAGE_LOG=1 node tests/chess-beast-visual.cjs
           node tests/chess-beast-offline.cjs
           node tests/vesa-chess-20th-app.cjs
