@@ -1,0 +1,45 @@
+name: VESA 23 app integration acceptance
+on:
+  push:
+    branches: [feature/oss-pdfme-studio-20261019]
+    paths:
+      - '.github/workflows/oss-pdfme-23-apps.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Source and original garment rules
+        run: |
+          set -euo pipefail
+          node --check js/app-catalogue.js
+          node --check js/vesa-app-centre.js
+          node --check js/preferences.js
+          node --check service-worker.js
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Verify 23 App Centre cards and PDF export offline
+        run: |
+          node tests/vesa-platform-pages.cjs
+          node tests/vesa-uniform-experience.cjs
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/pdf-studio-23.log 2>&1 &
+          SERVER=$!
+          trap 'kill $SERVER || true' EXIT
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:8765/apps/pdf-template-studio/ >/dev/null && break
+            sleep 1
+          done
+          node apps/pdf-template-studio/tests/browser-workflow.cjs
