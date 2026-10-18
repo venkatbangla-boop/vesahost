@@ -1,5 +1,29 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VESA PDF Template Studio</title></head>
-<body><main><h1>PDF Template Studio — Offline pilot</h1><p>Create editable sample PDF forms. Save templates and exports to your device. Personal/demo use only.</p>
-<div class="actions"><button id="save" type="button">Download Template</button><button id="pdf" type="button">Download Sample PDF</button><label>Open Template <input id="open" type="file" accept=".json,application/json"></label></div>
-<p id="status" role="status">Starting local editor…</p><div id="designer" style="height:72vh;min-height:580px"></div><footer>pdfme MIT · local browser processing · experimental</footer></main><script type="module" src="/src/main.js"></script></body></html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PDF Template Studio | VESA 360</title>
+<link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/vesa-workspace.css">
+<link rel="stylesheet" href="./assets/pdf-studio.css">
+<script src="/js/preferences.js"></script><script src="/js/auth.js"></script>
+<script src="/js/vesa-workspace-shell.js"></script><script src="./src/shell-controller.js"></script>
+</head>
+<body class="vesa-pdf-studio-page">
+<script>VesaAuth.requireAuth();</script>
+<main id="pdfStudioMain" class="pdf-studio-main" tabindex="-1">
+<section class="pdf-studio-intro">
+<p class="pdf-studio-eyebrow">OFFLINE PDF DESIGN · EXPERIMENTAL</p>
+<h1>PDF Template Studio</h1>
+<p>Design sample PDF templates, download your editable copy, and generate sample PDFs locally using open-source pdfme.</p>
+<p class="pdf-studio-warning">Design tool only. Not a buyer approval, validated purchase order, LC or legal financial document.</p>
+<p id="pdfStudioState" role="status" aria-live="polite">Opening local PDF designer…</p>
+</section>
+<section class="pdf-studio-frame" aria-label="Local PDF designer">
+<iframe title="pdfme template designer" id="pdfStudioEditor" src="./vendor/index.html" loading="eager" referrerpolicy="no-referrer"></iframe>
+</section>
+<section class="pdf-studio-help" id="pdfStudioHelp">
+<h2>Using the PDF designer</h2><p>Create or edit the sample report, download the editable template and PDF file to your device. Open Saved Template to restore a copy. The files do not sync to other VESA apps.</p>
+<p class="pdf-studio-credit"><a href="./vendor/LICENSE-pdfme.md" target="_blank" rel="noopener">pdfme MIT license</a> · <a href="https://github.com/pdfme/pdfme" target="_blank" rel="noopener">Original project</a></p>
+</section>
+</main>
+<script>new VesaPdfStudioShell(document).mount();</script>
+</body></html>
