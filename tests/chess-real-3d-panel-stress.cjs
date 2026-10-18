@@ -94,6 +94,10 @@ async function testViewport(browser,url,width,height){
  try{
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
   await page.locator('#chessboard .square').first().waitFor();
+  await page.locator('#btnOpenNewGame').click();
+  await page.locator('#modalModeRow [data-mode="pvp"]').click();
+  await page.locator('#btnConfirmStartGame').click();
+  await page.locator('#newGameModal').waitFor({state:'hidden'});
   await choose3D(page);
   await page.locator('#btnCameraQuickShowcase').click();
   await page.waitForFunction(()=>window.__chessBeastOrbitState?.().tilt===48);
