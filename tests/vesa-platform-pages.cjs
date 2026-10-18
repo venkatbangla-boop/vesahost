@@ -64,12 +64,12 @@ async function authenticatedProbe(browser,base,width,route,id){
     const expected=['aql','ppm','tna','costing','packing-container','order-commission',
       'tech-pack-spec','purchase-order','lc-payment','sampling-approval','fabric-trims',
       'shipment-documentation','production-tracker','factory-vendor','label-artwork-approval',
-      'buyer-crm','fabric-supplier-comparison','claims-disputes','product-development','chess-360','marker-lab']
+      'buyer-crm','fabric-supplier-comparison','claims-disputes','product-development','chess-360','marker-lab','artwork-cad-studio']
       .map(slug=>'/apps/'+slug+'/').sort();
     assert.deepEqual(await page.locator('#appCatalogue a[href^="/apps/"]')
       .evaluateAll(nodes=>nodes.map(x=>x.getAttribute('href')).sort()),
-      expected,`${id}@${width}: all 21 routes retained without duplicate cards`);
-    assert.equal(await page.locator('.app-tile').count(),21,'all 21 workspaces render');
+      expected,`${id}@${width}: all 22 routes retained without duplicate cards`);
+    assert.equal(await page.locator('.app-tile').count(),22,'all 22 workspaces render');
     if(width>=1280){
       const view=await page.evaluate(()=>{
         const catalogue=document.getElementById('appCatalogue'),
@@ -102,12 +102,12 @@ async function authenticatedProbe(browser,base,width,route,id){
     await page.locator('#appSearch').fill('not-a-real-vesa-app-123');
     assert.equal(await page.locator('.app-tile').count(),0,'no false search matches');
     await page.locator('#appClear').click();
-    assert.equal(await page.locator('.app-tile').count(),21,'clear restores the catalogue');
+    assert.equal(await page.locator('.app-tile').count(),22,'clear restores the catalogue');
     await page.locator('[data-app-group="orders"]').click();
     assert.equal(await page.locator('.app-tile').count(),4,'orders group has four apps');
     assert.equal(await page.locator('[data-app-group="orders"]').getAttribute('aria-pressed'),'true','active filter announced');
     await page.locator('[data-app-group="all"]').click();
-    assert.equal(await page.locator('.app-tile').count(),21,'all group restores all apps');
+    assert.equal(await page.locator('.app-tile').count(),22,'all group restores all apps');
   }
   if(id==='admin'){
     assert.equal(await page.locator('.admin-grid').count(),1,'admin content retained');
@@ -144,7 +144,7 @@ async function authenticatedProbe(browser,base,width,route,id){
     await dialog.locator('[data-pref-language]').selectOption('bn');await dialog.locator('[data-pref-theme]').selectOption('pure-mono');
     if(id==='apps'){
       assert.equal(await page.locator('#appSearch').getAttribute('placeholder'),'অ্যাপ, কাজ বা রিপোর্ট খুঁজুন…','Bengali search text follows Settings');
-      assert.equal(await page.locator('.app-tile').count(),21,'language change retains all apps');
+      assert.equal(await page.locator('.app-tile').count(),22,'language change retains all apps');
     }
     await dialog.locator('footer button').click();
     assert.equal(await page.evaluate(()=>localStorage.getItem('vesa.appcentre.store.v1')),before,`${id}@${width}: preferences preserve auth/user store`);
