@@ -44,11 +44,11 @@
       if(node)extra.appendChild(node);
     });
     optional.append(summary,extra);
+    const status=gameTab.querySelector('.status-banner');
     const quick=gameTab.querySelector('#playHubQuickCards');
     if(quick&&status)status.after(quick);
     gameTab.append(moveList,optional);
     moveList.classList.add('chess-primary-history');
-    const status=gameTab.querySelector('.status-banner');
     if(status)status.classList.add('chess-primary-status');
     gameTab.classList.add('chess-game-reworked');
   }
