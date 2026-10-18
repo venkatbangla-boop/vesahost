@@ -1,5 +1,12 @@
 # Fabric & Supplier Comparison 360 — Personal Demo Release Notes
 
+## 2026-10-18 G5-14 — Supplier source form QA PASS
+
+Test/workflow-only `112a7c17aee9789c8c765d599a792f1c0ddd7742`, [Node/real Chromium #39117241532 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39117241532). New Fabric, Offer, Landed Scenario and Internal Decision first-field/320px/ESC, exact dated 1.6000 USD/yd, mismatched 180/210 GSM rejected. No guessed FX/tax/approval. Existing reports/copies untouched. [G5 Wave C](../../docs/portfolio/28_G5_FORM_QA_WAVE_C.md).
+
+---
+
+
 **Status:** independently verified PUBLIC personal, non-commercial, synthetic-only browser-local demonstration (NOT approved commercial hosting, supplier qualification, procurement or production SaaS). **Released source:** `fb4a4e75145322d7994a515b416f9364e70a1e4d`; **date:** 2026-10-17.
 **Personal demo:** https://vesaent.com/apps/fabric-supplier-comparison/
 

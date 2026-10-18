@@ -1,5 +1,12 @@
 # Claims & Disputes 360 — Personal Non-commercial Release
 
+## 2026-10-18 G5-15 — Claims source case form QA PASS
+
+Test/workflow-only `b2275e742b5de9aee4e74da46f8eb075d78f5bf9`, [Node/real Chromium #39117358443 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39117358443). New Case, Finding, AQL Source, documentary Agreement, Settlement and Decision first-field/320px/ESC. Draft credit and actual documentary receipt kept separate; no legal/banking auto-closure; reports/copies unchanged. [G5 Wave C](../../docs/portfolio/28_G5_FORM_QA_WAVE_C.md).
+
+---
+
+
 **Verified demo:** https://vesaent.com/apps/claims-disputes/ (synthetic examples and local non-commercial demonstration ONLY). **Source SHA:** `e5e4c108e8f450b985ff510e046c1c96958fc221`, **date:** 2026-10-17.
 
 **Independent evidence:** [full app and all siblings/main Chromium #39042891062 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39042891062), [GitHub Pages #39042890792 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39042890792), [public exact served HTML/CSS/JS and every prior demo #39042891101 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39042891101). Feature candidate CI #39042812527 SUCCESS.

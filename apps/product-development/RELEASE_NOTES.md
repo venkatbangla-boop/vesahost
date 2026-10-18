@@ -1,5 +1,12 @@
 # Product Development 360 — Verified Personal Non-commercial Demo Release
 
+## 2026-10-18 G5-16 — Product concept form QA PASS
+
+Test/workflow-only `fa03e69726b04d77c6f6a86242c7c0ae477fa7e0`, [Node/real Chromium #39117463238 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39117463238). New Concept, Colourway, Task, Board, Revision, Decision actual first-field focus, ESC and 320px. No unauthorized buyer, Tech Pack or artwork rights decision; original safe boards, XLSX/PDF, saved copies untouched. [G5 Wave C](../../docs/portfolio/28_G5_FORM_QA_WAVE_C.md).
+
+---
+
+
 **Status: DEMO LIVE VERIFIED — personal NON-COMMERCIAL SYNTHETIC-ONLY.** Public route: https://vesaent.com/apps/product-development/ . Exact deployed application source SHA: `feb076269c130e0b50cfe247cc09c7312e6c9d09`. Date: 2026-10-17. Original, immutable approved blueprint: `blueprints/APP-15_product-development.md`.
 
 **Independent release evidence:** [M4 feature full Node/domain/full siblings + installed real Chromium #39046020409 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39046020409); [main Product Development full tests/Chromium #39046102188 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39046102188); [GitHub Pages #39046101944 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39046101944); [served exact HTML/CSS/JS + all previous app public source smoke #39046102155 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39046102155). The smoke job printed `LIVE PASS` and the precise main SHA, and compared the APP-15 public index/CSS/bootstrap/domain/references/store/report/translations/workspace-controller to release source. Claims, Fabric Supplier Comparison, Label Artwork, Production Tracker, Buyer CRM and Factory Vendor main regression workflows also independently succeeded.
