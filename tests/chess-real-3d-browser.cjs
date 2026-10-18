@@ -25,7 +25,7 @@ class Real3DQa{
     this.url='http://127.0.0.1:'+this.server.address().port+'/apps/chess-360/';
   }
   async open(browser,profile){
-    const ctx=await browser.newContext({...profile,serviceWorkers:'block',reducedMotion:'reduce'});
+    const ctx=await browser.newContext({...profile,serviceWorkers:'block',reducedMotion:profile.reducedMotion||'reduce'});
     const page=await ctx.newPage(),errors=[];
     page.on('pageerror',e=>errors.push(String(e.message)));
     await page.goto(this.url,{waitUntil:'domcontentloaded'});
@@ -265,6 +265,48 @@ class Real3DQa{
       console.log('CHESS_REAL_3D_CHROMIUM_PASS '+JSON.stringify({width,...initial,dimensions}));
     }finally{await ctx.close();}
   }
+  async runMotion(browser){
+    const {page,ctx,errors}=await this.open(browser,{
+      viewport:{width:1366,height:850},reducedMotion:'no-preference'
+    });
+    try{
+      await this.enable(page);
+      await this.verifyStudio(page,1366);
+      await page.locator('#btnOpenNewGame').click();
+      await page.locator('#modalModeRow [data-mode="pvp"]').click();
+      await page.locator('#btnConfirmStartGame').click();
+      await page.locator('#newGameModal').waitFor({state:'hidden'});
+      async function motion(mode){
+        await page.evaluate(value=>{
+          const sel=document.getElementById('beastFxMode');
+          if(!sel)throw Error('User-accessible motion control missing');
+          sel.value=value;sel.dispatchEvent(new Event('change',{bubbles:true}));
+        },mode);
+      }
+      await motion('subtle');
+      await this.mouseSquare(page,52);await this.mouseSquare(page,36);
+      await page.waitForFunction(()=>window.__chessBeastStudioState().animatedMoves>=1);
+      await page.waitForFunction(()=>window.__chessBeastStudioState().animationsActive===0);
+      let state=await page.evaluate(()=>window.__chessBeastStudioState());
+      assert.ok(state.animationFrames>=1,'Actual model transforms interpolated');
+      assert.equal(state.moveAnimationMs,140);
+      const count=state.animatedMoves;
+      await motion('off');
+      await this.mouseSquare(page,12);await this.mouseSquare(page,28);
+      state=await page.evaluate(()=>window.__chessBeastStudioState());
+      assert.equal(state.moveAnimationMs,0,'Animation OFF preference honored');
+      assert.equal(state.animatedMoves,count,'OFF causes instant move, not a 3D tween');
+      await motion('full');
+      await this.mouseSquare(page,51);await this.mouseSquare(page,35);
+      await page.waitForFunction(n=>window.__chessBeastStudioState().animatedMoves>n,count);
+      state=await page.evaluate(()=>window.__chessBeastStudioState());
+      assert.equal(state.moveAnimationMs,188,'Expressive uses user-selected animation duration');
+      assert.deepEqual(errors,[],'3D tween caused no page exceptions');
+      console.log('CHESS_REAL_3D_ANIMATIONS_PASS '+JSON.stringify({
+        frames:state.animationFrames,animatedMoves:state.animatedMoves,
+        subtleMs:140,expressiveMs:188,offSupported:true}));
+    }finally{await ctx.close();}
+  }
   async runWebkit(){
     const browser=await webkit.launch({headless:true});
     try{
@@ -296,6 +338,7 @@ class Real3DQa{
     try{
       await this.runChromium(browser,1440,900);
       await this.runChromium(browser,390,844);
+      await this.runMotion(browser);
       await this.runWebkit();
     }finally{await browser.close();await new Promise(resolve=>this.server.close(resolve));}
   }
