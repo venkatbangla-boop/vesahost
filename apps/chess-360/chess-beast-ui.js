@@ -83,25 +83,30 @@ class ChessBeastVisualController {
       this.placeGhost(event.clientX,event.clientY);
       if(event.cancelable)event.preventDefault();
     },{passive:false});
-    this.board.addEventListener('pointerup',event=>{
-      if(this.pointerId!==event.pointerId)return;
-      const moved=!!this.ghost,from=this.origin;
-      this.resetPointer();
-      if(!moved)return; // Native tap-to-select stays unchanged.
-      this.suppressClickUntil=performance.now()+360;
-      const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest('[data-sq]');
-      if(hit&&this.board.contains(hit)){
-        const to=Number(hit.dataset.sq);
-        if(from!==to)this.onDrop(from,to);
-      }
-    });
-    this.board.addEventListener('pointercancel',()=>this.resetPointer());
+    // Window-level events also finish a gesture dropped outside the board.
+    // A square click remains the fallback for users who prefer tap-to-move.
+    window.addEventListener('pointerup',event=>this.finishGesture(event),true);
+    window.addEventListener('pointercancel',event=>{
+      if(this.pointerId===event.pointerId)this.resetPointer();
+    },true);
     this.board.addEventListener('click',event=>{
       if(performance.now()<this.suppressClickUntil){
         event.preventDefault();
         event.stopImmediatePropagation();
       }
     },true);
+  }
+  finishGesture(event){
+    if(this.pointerId!==event.pointerId)return;
+    const moved=Boolean(this.ghost),from=this.origin;
+    this.resetPointer();
+    if(!moved)return;
+    this.suppressClickUntil=performance.now()+280;
+    const target=document.elementFromPoint(event.clientX,event.clientY)?.closest('[data-sq]');
+    if(target&&this.board.contains(target)){
+      const to=Number(target.dataset.sq);
+      if(from!==to)this.onDrop(from,to);
+    }
   }
   placeGhost(x,y){
     if(!this.ghost||!this.start)return;
