@@ -16,6 +16,8 @@ on:
       - 'js/vesa-app-centre.js'
       - 'service-worker.js'
       - 'tests/vesa-platform-pages.cjs'
+      - 'tests/vesa-uniform-experience.cjs'
+      - 'apps/tna/tests/g11-route-regression.cjs'
       - 'tests/personal-demo-release.cjs'
       - '.github/workflows/vesa-app-centre-unified.yml'
   workflow_dispatch:

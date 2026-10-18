@@ -16,6 +16,7 @@ on:
       - 'apps/index.html'
       - 'service-worker.js'
       - 'apps/tna/tests/g11-route-regression.cjs'
+      - 'tests/vesa-uniform-experience.cjs'
       - 'tests/vesa-platform-pages.cjs'
       - 'login/index.html'
       - 'js/**'

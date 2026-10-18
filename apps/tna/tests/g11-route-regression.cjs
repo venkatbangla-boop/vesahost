@@ -34,10 +34,11 @@ async function run(){
     page.on('request',request=>{if(!request.url().startsWith(base))external.push(request.url());});
     await page.goto(`${base}/apps/`,{waitUntil:'domcontentloaded'});
     const routes=await page.locator('#appCatalogue a').evaluateAll(nodes=>nodes.map(node=>new URL(node.href).pathname).sort());
-    // The catalogue expanded from four entries to 19; keep the four original
-    // cross-app navigation probes without treating the other approved apps as drift.
+    // Preserve all 19 garment apps and the separately approved Chess 360 tile.
+    // Only four original routes need per-route probes in this navigation regression.
     const expected=await page.evaluate(()=>window.VesaAppCatalogue.enabled().map(app=>app.route).sort());
-    assert.equal(expected.length,19,'the unified catalogue must register all 19 approved demo routes.');
+    assert.equal(expected.filter(route=>route!=='/apps/chess-360/').length,19,'all original 19 garment app routes remain registered');
+    assert.equal(expected.length,20,'19 original garment routes plus Chess Beast 360');
     assert.deepEqual(routes,expected,'App Centre must expose every registered application exactly once.');
     const coreRoutes=['/apps/aql/','/apps/costing/','/apps/ppm/','/apps/tna/'];
     for(const route of coreRoutes)assert.ok(routes.includes(route),route+' must remain available.');
@@ -45,8 +46,8 @@ async function run(){
     for(const route of coreRoutes){
       await page.goto(`${base}${route}`,{waitUntil:'domcontentloaded',timeout:120000});
       if(route==='/apps/aql/'){
-        const enter=page.locator('#vesa-enter');
-        if(await enter.count())await enter.click();
+        await page.waitForFunction(()=>!!window.__vesaApp&&!document.getElementById('app').hidden,null,{timeout:120000});
+        assert.equal(await page.locator('#vesa-enter').isVisible(),false,'AQL must open directly without a second Enter click');
       }
       await page.locator('.vesa-workspace').waitFor({state:'visible',timeout:120000});
       assert.equal(await page.locator('.vesa-workspace__brand').getAttribute('href'),'/',`${route} must retain the VESA Home link.`);
@@ -56,10 +57,10 @@ async function run(){
     }
     await page.locator('.vesa-workspace__app-centre').click();
     await page.waitForURL(url=>url.pathname==='/apps/');
-    assert.equal(await page.locator('#appCatalogue .app-tile').count(),expected.length,'the in-app App Centre link must return to all 19 approved apps.');
+    assert.equal(await page.locator('#appCatalogue .app-tile').count(),expected.length,'the in-app App Centre link must return to all 20 approved tiles.');
     assert.deepEqual(errors,[],'route regression must have no uncaught page errors');
     assert.deepEqual(external,[],'route regression must make no external requests');
-    console.log('TNA G11 route regression passed: premium login return, 19 app catalogue, four core direct routes, Home/App Centre links, zero external requests/page errors');
+    console.log('TNA G11 route regression passed: premium login return, 19 original apps plus Chess, four core direct routes, Home/App Centre links, zero external requests/page errors');
     await context.close();
   }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 }

@@ -10,6 +10,7 @@ on:
       - 'css/vesa-login.css'
       - 'service-worker.js'
       - 'tests/vesa-premium-login.cjs'
+      - 'tests/vesa-uniform-experience.cjs'
       - 'tests/personal-demo-release.cjs'
       - '.github/workflows/vesa-premium-login.yml'
   workflow_dispatch:

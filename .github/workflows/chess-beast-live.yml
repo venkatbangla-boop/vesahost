@@ -1,21 +1,24 @@
 name: Chess Beast 360 LIVE acceptance
 on:
-  workflow_run:
-    workflows: ["pages build and deployment"]
-    types: [completed]
+  push:
     branches: [main]
+    paths:
+      - 'tests/chess-beast-live.cjs'
+      - '.github/workflows/chess-beast-live.yml'
+      - 'apps/chess-360/**'
+      - 'js/app-catalogue.js'
+      - 'service-worker.js'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   chess-public:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -26,7 +29,7 @@ jobs:
       - name: Verify public exact bytes and live synthetic game
         env:
           CHESS_PUBLIC_ORIGIN: https://vesaent.com
-          CHESS_EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          CHESS_EXPECTED_SHA: ${{ github.sha }}
         run: |
           node --check tests/chess-beast-live.cjs
           node tests/chess-beast-live.cjs
