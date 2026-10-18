@@ -1,0 +1,52 @@
+# CC0 geometry/texture vendoring is explicit, audited and feature-branch-only.
+# NEVER push to main or download at Chess app runtime.
+name: Chess 3D audited CC0 asset vendor
+on:
+  push:
+    branches: [feature/chess-real-3d-mesh-20261018]
+    paths:
+      - '.github/workflows/chess-real-3d-vendor.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/chess-real-3d-mesh-20261018
+          persist-credentials: true
+      - name: Fetch, license, checksum and inspect compact 1K offline models
+        run: |
+          set -euo pipefail
+          python3 tools/chess-real-3d-import.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          base=Path("apps/chess-360/assets/real3d")
+          manifest=json.loads((base/"MANIFEST.json").read_text())
+          doc=json.loads((base/"chess_set_1k.gltf").read_text())
+          assert manifest["license"]=="CC0"
+          assert manifest["totalBytes"]<9_000_000
+          assert len(doc["meshes"])==33
+          assert len(doc["images"])==9
+          names=[node.get("name","") for node in doc["nodes"]]
+          for side in ("white","black"):
+              for piece in ("pawn","rook","knight","bishop","queen","king"):
+                  assert any(name.startswith("piece_"+piece+"_"+side) for name in names),(piece,side)
+          print("CHESS_3D_REAL_CARVED_MESHES_LICENSE_PASS 12 types; 32 mesh nodes; 9 PBR images")
+          PY
+      - name: Preserve exact binary files in GitHub feature branch only
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/chess-360/assets/real3d
+          if git diff --cached --quiet; then
+            echo "CHESS_3D_VENDOR_ALREADY_COMMITTED"
+          else
+            git commit -m "assets(chess): vendor verified CC0 Poly Haven real sculpted chess models and PBR textures"
+            git push origin HEAD:feature/chess-real-3d-mesh-20261018
+          fi
