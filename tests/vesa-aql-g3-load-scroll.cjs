@@ -49,9 +49,9 @@ async function profile(browser,base,p,iteration){
   const response=await page.goto(base+'/apps/aql/',{waitUntil:'domcontentloaded',timeout:90000});
   assert.equal(response.status(),200);
   const navMs=Date.now()-begun;
-  await page.locator('#vesa-enter').waitFor({state:'visible',timeout:45000});
+  await page.waitForFunction(()=>!!window.__vesaApp&&!document.getElementById('app').hidden,null,{timeout:45000});
   const entryReadyMs=Date.now()-begun;
-  await page.locator('#vesa-enter').click();
+  assert.equal(await page.locator('#vesa-welcome').isVisible(),false,'no intermediate Enter page');
   await page.waitForFunction(()=>!!window.__vesaApp&&!document.getElementById('app').hidden,
     null,{timeout:60000});
   const homeReadyMs=Date.now()-begun;
