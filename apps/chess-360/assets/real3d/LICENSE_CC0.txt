@@ -1,0 +1,7 @@
+Chess Set — Riley Queen / Poly Haven
+Official source: https://polyhaven.com/a/chess_set
+License: Creative Commons Zero (CC0 1.0) public domain dedication.
+Source asset is free to modify, reproduce and redistribute.
+Downloaded and verified using official Poly Haven file metadata.
+Original artist credited voluntarily. No affiliation claimed.
+Asset is bundled with the game: no runtime CDN or Poly Haven API access.
