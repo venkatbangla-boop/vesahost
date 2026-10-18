@@ -5294,77 +5294,104 @@
     }
   }
 
-  // Inline Background Web Worker for Non-Blocking AI Search (with automatic fallback)
-  let bgWorker = null;
-  try {
-    const workerCode = `
-      self.onmessage = function(e) {
-        // Signal ready to execute asynchronous search slice
-        self.postMessage({ status: 'tick', reqId: e.data.reqId });
-      };
-    `;
-    const blob = new Blob([workerCode], { type: 'application/javascript' });
-    bgWorker = new Worker(URL.createObjectURL(blob));
-  } catch (e) {
-    bgWorker = null;
-  }
-
-  function triggerAiMove() {
-    if (matchState !== 'playing') return;
-    isAiThinking = true;
-    thinkingBanner.classList.add('visible');
-
-    const isHeroTurnInAutoWin = isAutoWinActive && (engine.turn === humanColor);
-    if (isHeroTurnInAutoWin) {
-      document.getElementById('thinkingText').textContent =
-        currentLang === 'ta' ? `👑 Auto-Win தாக்குதல்...` : `👑 Auto-Win Striking...`;
-    } else {
-      document.getElementById('thinkingText').textContent =
-        currentLang === 'ta' ? `🤖 AI Lvl ${aiLevel}...` : `🤖 AI Lvl ${aiLevel}...`;
+  /**
+   * Chess Beast AI lifecycle. Owns one dedicated Worker and its hard deadline.
+   *
+   * Search never runs on the UI thread. Cancel terminates a running worker for
+   * New, Reset, Pause, Resign and Saved Game, preventing stale moves.
+   * The only main-thread fallback is selecting an already legal lightweight move.
+   */
+  class ChessBeastSearchCoordinator {
+    constructor() {
+      this.worker=null;
+      this.timer=null;
+      this.startTimer=null;
+      this.token=0;
+      this.lastDuration=0;
+      this.fallbackCount=0;
+      this.workerSupported=typeof Worker==='function';
     }
-
-    if (aiTimeoutId) clearTimeout(aiTimeoutId);
-    const runSearch = () => {
-      if (matchState !== 'playing') {
-        isAiThinking = false;
-        thinkingBanner.classList.remove('visible');
-        return;
-      }
-      let res;
-      if (isAutoWinActive) {
-        if (engine.turn === humanColor) {
-          res = engine.computeAutoWinMove(humanColor);
-        } else {
-          res = engine.computeOpponentMoveDuringAutoWin(aiLevel);
-        }
-      } else {
-        res = engine.computeBestMove(aiLevel);
-      }
-
-      isAiThinking = false;
+    cancel() {
+      this.token++;
+      if(this.startTimer!==null)clearTimeout(this.startTimer);
+      if(this.timer!==null)clearTimeout(this.timer);
+      this.startTimer=null;
+      this.timer=null;
+      if(this.worker){this.worker.terminate();this.worker=null;}
+      isAiThinking=false;
       thinkingBanner.classList.remove('visible');
-
-      if (res && res.move) {
-        statDepthVal.textContent = res.depthLabel;
-        statNodesVal.textContent = `${engine.nodesSearched.toLocaleString()} (${engine.ttHits} TT)`;
-        statBestMoveVal.textContent = `${sqToAlgebraic(res.move.from)}→${sqToAlgebraic(res.move.to)}`;
-        // Show live tactical arrow for the move being executed!
-        const playedMove = res.move;
-        performMoveAndContinue(playedMove);
-        hintMove = playedMove;
-        renderTacticalArrows();
-      }
-    };
-
-    const delayMs = isAutoWinActive ? 55 : 110;
-    aiTimeoutId = setTimeout(() => {
-      if (bgWorker) {
-        bgWorker.onmessage = () => runSearch();
-        bgWorker.postMessage({ reqId: Date.now() });
-      } else {
-        runSearch();
-      }
-    }, delayMs);
+    }
+    quickLegalMove() {
+      const moves=engine.getLegalMoves(engine.turn);
+      moves.sort((a,b)=>engine.scoreMoveForOrdering(b)-engine.scoreMoveForOrdering(a));
+      return moves[0]||null;
+    }
+    request(kind,level,onDone,pauseMs=0) {
+      this.cancel();
+      const ticket=this.token;
+      const fen=engine.toFen();
+      const history=engine.uciHistory.slice();
+      isAiThinking=true;
+      thinkingBanner.classList.add('visible');
+      document.getElementById('thinkingText').textContent=kind==='move'
+        ? (currentLang==='ta'?'🤖 AI யோசிக்கிறது…':'AI thinking…')
+        : (currentLang==='ta'?'💡 நகர்வைப் பரிசீலிக்கிறது…':'Finding a good move…');
+      const done=(data)=>{
+        if(ticket!==this.token)return;
+        this.lastDuration=data?.elapsedMs||0;
+        if(data?.error)this.fallbackCount++;
+        this.cancel();
+        if(matchState!=='playing'||engine.toFen()!==fen)return;
+        const legal=engine.getLegalMoves(engine.turn);
+        const uci=data?.uci||'';
+        const move=legal.find(m=>sqToAlgebraic(m.from)+sqToAlgebraic(m.to)+(m.promotion||'').toLowerCase()===uci)
+          ||this.quickLegalMove();
+        if(!move)return;
+        onDone(move,data||{error:'Search unavailable'});
+      };
+      const run=()=>{
+        if(ticket!==this.token||matchState!=='playing')return;
+        if(!this.workerSupported){
+          done({error:'Worker unavailable',depthLabel:'Quick move'});
+          return;
+        }
+        try {
+          const worker=new Worker('./chess-ai-worker.js');
+          this.worker=worker;
+          worker.onmessage=e=>{if(e.data?.id===ticket)done(e.data);};
+          worker.onerror=()=>done({error:'Search worker failed'});
+          // Abort a pathological depth search without freezing or losing the game.
+          this.timer=setTimeout(()=>done({error:'Search took too long',depthLabel:'Quick move'}),
+            level>=5?2600:1800);
+          const mode=(kind==='move'&&isAutoWinActive)?'autowin':'normal';
+          worker.postMessage({
+            id:ticket,kind:mode,fen,history,level,
+            personality:engine.personality,heroColor:humanColor
+          });
+        }catch(error){done({error:String(error.message||error)});}
+      };
+      this.startTimer=setTimeout(run,pauseMs);
+    }
+  }
+  const chessSearchCoordinator=new ChessBeastSearchCoordinator();
+  // Read-only diagnostic counters; no profile, FEN, game history or credentials.
+  window.__chessBeastPerformance=()=>({
+    workerSupported:chessSearchCoordinator.workerSupported,
+    aiInFlight:isAiThinking,
+    lastSearchMs:chessSearchCoordinator.lastDuration,
+    fallbackCount:chessSearchCoordinator.fallbackCount
+  });
+  function triggerAiMove() {
+    if(matchState!=='playing')return;
+    const pace=gameMode==='aivsai'?185:70;
+    chessSearchCoordinator.request('move',aiLevel,(move,result)=>{
+      statDepthVal.textContent=result.depthLabel||'Quick move';
+      statNodesVal.textContent=`${Number(result.nodes||0).toLocaleString()} (${result.ttHits||0} TT)`;
+      statBestMoveVal.textContent=`${sqToAlgebraic(move.from)}→${sqToAlgebraic(move.to)}`;
+      performMoveAndContinue(move);
+      hintMove=move;
+      renderTacticalArrows();
+    },pace);
   }
 
   // Generate a 5-to-6 Move Winning Idea Blueprint (Principal Variation & Strategic Attack Plan)
@@ -5390,7 +5417,7 @@
 
   function startNewMatch(customFen = null, autoStart = false) {
     isAutoWinActive = false;
-    if (aiTimeoutId) clearTimeout(aiTimeoutId);
+    chessSearchCoordinator.cancel();
     stopClockLoop();
     isAiThinking = false;
     thinkingBanner.classList.remove('visible');
@@ -5453,7 +5480,7 @@
       // Toggle to Paused
       isAutoWinActive = false;
       matchState = 'paused';
-      if (aiTimeoutId) clearTimeout(aiTimeoutId);
+      chessSearchCoordinator.cancel();
       isAiThinking = false;
       thinkingBanner.classList.remove('visible');
       stopClockLoop();
@@ -5734,7 +5761,7 @@
   // Undo Button
   document.getElementById('btnUndo').addEventListener('click', () => {
     if (gameMode === 'aivsai') {
-      if (aiTimeoutId) clearTimeout(aiTimeoutId);
+      chessSearchCoordinator.cancel();
       isAiThinking = false;
       thinkingBanner.classList.remove('visible');
       gameMode = 'ai';
@@ -5764,17 +5791,18 @@
     const status = engine.getGameStatus();
     if (status.over) return;
 
-    const res = engine.computeBestMove(Math.max(4, aiLevel));
-    if (res && res.move) {
-      hintMove = res.move;
-      selectedSq = res.move.from;
-      legalMovesFromSelected = engine.getLegalMoves(engine.turn).filter(m => m.from === selectedSq);
-      const san = engine.moveToSan(res.move, engine.getLegalMoves(engine.turn));
-      statBestMoveVal.textContent = san;
-      statNodesVal.textContent = `${engine.nodesSearched.toLocaleString()} (${engine.ttHits} TT)`;
-      coachInsightText.textContent = `💡 Coach Recommendation: Play ${san} (${sqToAlgebraic(res.move.from)} → ${sqToAlgebraic(res.move.to)}). Cyan arrow drawn on the board!`;
+    chessSearchCoordinator.request('hint',Math.max(3,aiLevel),(move,result)=>{
+      hintMove=move;
+      selectedSq=move.from;
+      legalMovesFromSelected=engine.getLegalMoves(engine.turn).filter(m=>m.from===move.from);
+      const san=engine.moveToSan(move,engine.getLegalMoves(engine.turn));
+      statBestMoveVal.textContent=san;
+      statNodesVal.textContent=`${Number(result.nodes||0).toLocaleString()} (${result.ttHits||0} TT)`;
+      coachInsightText.textContent=currentLang==='ta'
+        ? `💡 இந்த நகர்வை முயற்சிக்கவும்: ${san}`
+        : `💡 Try ${san} (${sqToAlgebraic(move.from)} → ${sqToAlgebraic(move.to)}).`;
       renderBoard();
-    }
+    });
   });
 
   // Flip Board Button
@@ -5786,18 +5814,17 @@
   // Deep Evaluate Button
   document.getElementById('btnAnalyzeNow').addEventListener('click', () => {
     if (isAiThinking) return;
-    const res = engine.computeBestMove(5);
-    if (res && res.move) {
-      hintMove = res.move;
-      const san = engine.moveToSan(res.move, engine.getLegalMoves(engine.turn));
-      statDepthVal.textContent = res.depthLabel;
-      statNodesVal.textContent = `${engine.nodesSearched.toLocaleString()} (${engine.ttHits} TT)`;
-      statBestMoveVal.textContent = san;
-      const pawns = (res.score / 100).toFixed(2);
-      coachInsightText.textContent = `🧠 Deep Engine Assessment (${res.depthLabel}): Score is ${pawns >= 0 ? '+' : ''}${pawns}. Best continuation is ${san}.`;
+    chessSearchCoordinator.request('analyze',Math.max(4,aiLevel),(move,result)=>{
+      hintMove=move;
+      const san=engine.moveToSan(move,engine.getLegalMoves(engine.turn));
+      statDepthVal.textContent=result.depthLabel||'Quick analysis';
+      statNodesVal.textContent=`${Number(result.nodes||0).toLocaleString()} (${result.ttHits||0} TT)`;
+      statBestMoveVal.textContent=san;
+      const score=(Number(result.score||0)/100).toFixed(2);
+      coachInsightText.textContent=`Position ${score}. Suggested move: ${san}.`;
       renderBoard();
-      showToast(`Engine Best Move: ${san}`);
-    }
+      showToast(`Suggested move: ${san}`);
+    });
   });
 
   // Resign Button
@@ -5814,7 +5841,7 @@
     matchState = 'ended';
     stopClockLoop();
     playSound('gameover');
-    if (aiTimeoutId) clearTimeout(aiTimeoutId);
+    chessSearchCoordinator.cancel();
     isAiThinking = false;
     thinkingBanner.classList.remove('visible');
     const resigningSide = engine.turn === 'w' ? 'White' : 'Black';
@@ -6466,7 +6493,7 @@
     const item = vault.find(g => g.id === gameId);
     if (!item) return;
 
-    if (aiTimeoutId) clearTimeout(aiTimeoutId);
+    chessSearchCoordinator.cancel();
     stopClockLoop();
     isAiThinking = false;
 
