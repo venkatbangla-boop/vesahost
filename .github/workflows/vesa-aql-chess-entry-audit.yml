@@ -1,0 +1,31 @@
+name: VESA AQL entry ownership audit
+on:
+  push:
+    branches: [feature/aql-direct-chess-ux-20261018]
+    paths: ['.github/workflows/vesa-aql-chess-entry-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Locate actual AQL entry DOM and handlers without opening base64 media
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const s=fs.readFileSync('apps/aql/index.html','utf8');
+          const lines=s.split('\n');
+          const patterns=[/choose.{0,20}(login|enter|workflow)/i,/enter.{0,50}(workspace|aql|inspection|app)/i,/inspection.{0,50}(centre|center|workspace)/i,/local quality/i,/entry|entrance|intro|portal|landing|welcome|splash/i,/start.{0,25}inspection/i,/auth|requireAuth/i];
+          console.log('LINES',lines.length,'BYTES',Buffer.byteLength(s),'SCRIPTS',(s.match(/<script/gi)||[]).length);
+          const matches=[];
+          lines.forEach((line,i)=>{if(patterns.some(r=>r.test(line)) && line.length<10000)matches.push(i)});
+          console.log('MATCHING_LINES',matches.length);
+          for(const index of matches.slice(0,130))console.log(String(index+1).padStart(6),lines[index].slice(0,410));
+          console.log('HTML TOP');for(let i=0;i<Math.min(lines.length,40);i++)console.log(i+1,lines[i].slice(0,250));
+          console.log('END');for(let i=lines.length-30;i<lines.length;i++)console.log(i+1,lines[i].slice(0,250));
+          NODE
