@@ -1,0 +1,65 @@
+name: VESA EGENVA repository attribution audit
+on:
+  push:
+    branches: [fix/egenva-brand-attribution-20261018]
+    paths: ['.github/workflows/vesa-egenva-audit.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only whole-repository first-party attribution census
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          'use strict';
+          const fs=require('node:fs'),cp=require('node:child_process');
+          const filelist=cp.execFileSync('git',['ls-files','-z'],{encoding:'utf8'}).split('\0').filter(Boolean);
+          const allowed=/\.(html?|js|cjs|mjs|css|md|json|yml|yaml|svg|txt|xml|py|webmanifest|sh)$/i;
+          const aliases=/\b(?:ajan(?:va|ba|v[a-z]*|b[a-z]*)|a[jg]en(?:va|ba)|egen(?:ba|wa|na)|egnova|egenova|ejenva|eganva|egnva|eigenva|egenva)\b/gi;
+          const powered=/\bpower(?:ed)?\s+by\b/gi;
+          const ignore=e=>/^(?:docs|blueprints|templates)\//.test(e)||/\.md$/i.test(e)||/\/tests?\//.test(e)||/^tests\//.test(e)||/^\.github\//.test(e);
+          let textfiles=0,binary=0,bytes=0,credits=[],suspects=[],wordCandidates=new Map(),correct=0;
+          for(const file of filelist){
+            if(!allowed.test(file)){binary++;continue;}
+            let s=fs.readFileSync(file,'utf8');bytes+=Buffer.byteLength(s);textfiles++;
+            // Base64 images are opaque assets and have no rendered copy to inspect.
+            s=s.replace(/data:[a-zA-Z0-9.+/-]+;base64,[A-Za-z0-9+/=]{500,}/g,'[BASE64_ASSET]');
+            function push(destination,m,tag){
+              const prefix=s.slice(0,m.index),line=(prefix.match(/\n/g)||[]).length+1;
+              const sample=s.slice(Math.max(0,m.index-55),m.index+210).replace(/\s+/g,' ').slice(0,265);
+              destination.push({file,line,tag,layer:ignore(file)?'history/test':'runtime',sample});
+            }
+            for(const m of s.matchAll(powered))push(credits,m,'powered');
+            for(const m of s.matchAll(aliases)){
+              if(m[0].toUpperCase()==='EGENVA'){correct++;continue;}
+              push(suspects,m,m[0]);
+            }
+            // Discover nearby misspellings not explicitly in the alias list.
+            if(!ignore(file)){
+              const words=s.match(/\b[A-Za-z]{5,9}\b/g)||[];
+              for(const word of words){
+                const w=word.toUpperCase();
+                if(!/^[AEIG]/.test(w)||w==='EGENVA')continue;
+                const target='EGENVA',a=w,b=target,dp=Array.from({length:b.length+1},(_,i)=>i);
+                for(let i=1;i<=a.length;i++){
+                  let prev=dp[0];dp[0]=i;
+                  for(let j=1;j<=b.length;j++){const save=dp[j];dp[j]=Math.min(dp[j]+1,dp[j-1]+1,prev+(a[i-1]===b[j-1]?0:1));prev=save;}
+                }
+                if(dp[b.length]<=2)wordCandidates.set(w,(wordCandidates.get(w)||0)+1);
+              }
+            }
+          }
+          console.log('AUDIT_INVENTORY',JSON.stringify({tracked:filelist.length,textFiles:textfiles,nonText:binary,utf8BytesScanned:bytes,correctEGENVAOccurrences:correct}));
+          console.log('POWERED_BY_MATCHES',credits.length);
+          for(const item of credits.slice(0,150))console.log('CREDIT',JSON.stringify(item));
+          console.log('SUSPECT_ALIAS_MATCHES',suspects.length);
+          for(const item of suspects.slice(0,150))console.log('SUSPECT',JSON.stringify(item));
+          console.log('FUZZY_CANDIDATES',JSON.stringify([...wordCandidates].sort((a,b)=>b[1]-a[1]).slice(0,65)));
+          NODE
