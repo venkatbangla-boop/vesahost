@@ -35,6 +35,20 @@ const base='https://vesaent.com/apps/chess-360/';
               bytes:(await response.body()).length};
           }catch(e){files[part]={error:e.message};}
         }
+        if(width===1440){
+          // Exact public acceptance journey: first e4, wait for AI's move,
+          // then switch to Real 3D. This is distinct from startup mode.
+          await page.locator('#btnTopStartPause').click();
+          await page.locator('#chessboard [data-sq="52"]').click();
+          await page.locator('#chessboard [data-sq="36"]').click();
+          await page.waitForFunction(()=>
+            Number(document.getElementById('moveRewindScrubber').value)>=2,
+            null,{timeout:22000});
+          console.log('PUBLIC_AFTER_AI_BEFORE_3D '+JSON.stringify(
+            await page.evaluate(()=>({scrubber:document.getElementById('moveRewindScrubber').value,
+              status:document.getElementById('matchStatus')?.textContent,
+              playing:document.getElementById('btnTopStartPause')?.textContent}))));
+        }
         await page.locator('#btn3DDirect').click();
         let history=[];
         for(let i=0;i<25;i++){
