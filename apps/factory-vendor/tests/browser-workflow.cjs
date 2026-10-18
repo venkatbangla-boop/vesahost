@@ -85,20 +85,32 @@ async function run(){
   assert.equal((await rows()).length,0);
   await act('home');await page.setViewportSize({width:1280,height:900});
 
+  // G5-11: actual vendor edit forms start on source fields and restore focus.
+  await act('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'vendorName','New Vendor focuses name');
+  await page.keyboard.press('Escape');await page.locator('#fvDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  assert.equal((await rows()).length,0,'Escaped incomplete vendor must not create local records');
   await act('new');await fill({vendorName:'SYNTHETIC VENDOR LTD',country:'BD',sourceRef:'SYNTHETIC DECLARATION DOC'});await submit();
   assert.equal((await rows()).length,1);assert.equal((await rows())[0].status,'INTERNAL DRAFT — NOT CERTIFIED');
-  await act('add-site');await fill({siteName:'SYNTHETIC SITE A',country:'BD',process:'Knit garment manufacturing',sourceRef:'SYN SITE DOCUMENT'});await submit();
+  await act('add-site');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'siteName','Site form focuses site identity');
+  await fill({siteName:'SYNTHETIC SITE A',country:'BD',process:'Knit garment manufacturing',sourceRef:'SYN SITE DOCUMENT'});await submit();
   assert.equal((await rows())[0].sites.length,1);
   const site=(await rows())[0].sites[0];
   await act('add-site');await fill({siteName:'SYNTHETIC SITE A',country:'BD',process:'Knit garment manufacturing',sourceRef:'SYN DUPLICATE SITE'});
   await page.locator('#fvDialog form button[type=submit]').click();
   assert.match(await page.locator('#fvDialog [role=alert]').innerText(),/Duplicate factory site/);
   await page.locator('#fvDialogClose').click();assert.equal((await rows())[0].sites.length,1,'Duplicate cannot persist');
-  await act('add-capability');await fill({siteId:site.id,category:'Knit Polo',unit:'pieces',declaredMonthlyCapacity:'100000',
+  await act('add-capability');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'siteId','Capacity form focuses factory site');
+  await fill({siteId:site.id,category:'Knit Polo',unit:'pieces',declaredMonthlyCapacity:'100000',
    asOfDate:'2026-10-16',sourceRef:'SYN DECLARED CATEGORY',capacitySourceRef:'SYN SIGNED CAPACITY STATEMENT',
    reviewedBy:'SYN LOCAL REVIEWER',reviewDate:'2026-10-17',moq:'5000',leadDays:'60',leadDaysSource:'SYN DECLARED LEAD DAYS'});await submit();
   const cap=(await rows())[0].capabilities[0];assert.equal(cap.declaredMonthlyCapacity,100000);assert.equal(cap.unit,'pieces');
-  await act('add-certificate');await fill({siteId:site.id,scheme:'SYNTHETIC BSCI DOCUMENT',issuer:'SYNTHETIC ISSUER',
+  await act('add-certificate');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'siteId','Certificate form focuses evidence site');
+  await fill({siteId:site.id,scheme:'SYNTHETIC BSCI DOCUMENT',issuer:'SYNTHETIC ISSUER',
    documentRef:'SYN-CERT-2026',sourceRef:'SYN CERT DOCUMENT',issueDate:'2026-01-01',expiryDate:'2026-09-30',
    reviewedBy:'SYN LOCAL REVIEWER',reviewDate:'2026-10-17',documentStatus:'document-supplied'});await submit();
   await act('documents');await page.evaluate(()=>{window.VesaFactoryVendor360.asOf='2026-10-17';window.VesaFactoryVendor360.render();});
@@ -167,6 +179,16 @@ async function run(){
    assert(scroll<=width+1,width+'px Factory page overflow: '+scroll);
    if([390,768,1280].includes(width))await page.screenshot({path:path.join(out,'factory-app08-'+width+'.png')});
   }
+  // Real 320px new-vendor modal, beyond opened landing-page width screenshots.
+  await page.setViewportSize({width:320,height:720});
+  await act('home');await act('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'vendorName','Mobile Vendor form focuses name');
+  assert((await page.locator('#fvDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+   'Vendor 320px dialog fits screen');
+  await page.screenshot({path:path.join(out,'factory-app08-new-dialog-320.png')});
+  await page.keyboard.press('Escape');await page.locator('#fvDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  await act('continue');
   await page.setViewportSize({width:1280,height:900});
   const languages=[['en','Factory Sites'],['bn','কারখানা সাইট'],['hi','फैक्ट्री साइट'],['ta','Factory இடங்கள்']];
   for(const [language,label] of languages){

@@ -5,6 +5,7 @@ on:
     branches:
       - feature/factory-vendor-360
       - feature/factory-g4-guided-practice
+      - feature/factory-g5-actual-forms-20261018
       - main
     paths:
       - 'apps/factory-vendor/**'
