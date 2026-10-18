@@ -86,6 +86,7 @@ class ChessBeastDeepBrowserQA {
       assert.equal(await page.evaluate(()=>document.activeElement.dataset.sq),'28','Keyboard roving focus survives redraw');
       await page.keyboard.press('Enter');
       assert.equal(await this.plyCount(page),2,'Keyboard e7-e5');
+      await page.locator('#btnMobileMore').click(); // Expand compact phone toolbar
       await page.locator('#btnQuickSaveMatch').click();
       const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('chess3_offline_games_vault_v1'))[0]);
       assert.equal(saved.gameMode,'pvp','Record includes nonbreaking optional mode');
@@ -125,6 +126,7 @@ class ChessBeastDeepBrowserQA {
       });
       await page.reload({waitUntil:'domcontentloaded'});
       await page.locator('#cardResumeLast').waitFor({state:'visible'});
+      await page.locator('#btnMobileMore').click();
       await page.locator('#btnOpenVaultTab').click();
       assert.equal(await page.locator('#savedGamesVaultList img').count(),0,'Untrusted title cannot inject HTML');
       assert.equal(await page.evaluate(()=>window.__injected===true),false);
