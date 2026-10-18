@@ -8,6 +8,7 @@ on:
       - 'tests/chess-beast-v2.cjs'
       - 'tests/chess-match-experience.cjs'
       - 'tests/chess-pro-orbit-qa.cjs'
+      - 'tests/chess-panel-layout-qa.cjs'
       - 'tests/chess-beast-rules.cjs'
       - 'tests/chess-beast-deep-browser.cjs'
       - 'tests/chess-beast-visual.cjs'
@@ -42,6 +43,8 @@ jobs:
           node --check apps/chess-360/chess-ai-worker.js
           node --check tests/chess-beast-v2.cjs
           node --check apps/chess-360/chess-beast-ui.js
+          node --check apps/chess-360/chess-panel-ui.js
+          node --check apps/chess-360/chess-orbit.js
           node tests/chess-beast-rules.cjs
           node tests/vesa-blueprint-integrity.cjs
           node tests/vesa-egenva-branding.cjs
@@ -61,6 +64,7 @@ jobs:
           node tests/chess-beast-deep-browser.cjs
           node tests/chess-match-experience.cjs
           node tests/chess-pro-orbit-qa.cjs
+          node tests/chess-panel-layout-qa.cjs
           CHESS_IMAGE_LOG=1 node tests/chess-beast-visual.cjs
           node tests/chess-beast-offline.cjs
           node tests/vesa-chess-20th-app.cjs
