@@ -28,6 +28,7 @@ async function run(){
    await page.goto(url);
    await page.locator('#chessboard .square').first().waitFor();
    // every control accessible at phone and desktop widths
+   if(width<=1180)await page.locator('#btnMobileMore').click();
    await page.locator('#btnOpenCustomize').click();
    assert.equal(await page.locator('#chessCustomizeModal').getAttribute('aria-hidden'),'false');
    await page.locator('#chessPrefMotion').selectOption('off');
