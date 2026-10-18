@@ -29,6 +29,9 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/vesa-home-intro.css">
+  <script>document.documentElement.classList.add("vesa-intro-pending");</script>
+  <script src="js/vesa-home-intro.js" defer></script>
   <meta property="og:title" content="VESA Enterprise Inc | Apparel Sourcing Partner Across Bangladesh & India">
   <meta property="og:description" content="Premium design-to-delivery apparel sourcing for retailers, importers and brands. Buyer-focused apparel sourcing. Powered by experience. Enhanced by intelligence.">
   <meta property="og:type" content="website">
@@ -118,6 +121,17 @@
   </script>
 </head>
 <body data-version="v32-premium-editorial-sourcing" class="v30-premium-header-egenva v31-hero-video-loop v32-premium-editorial">
+<!-- Complete 10-second opening film overlays (but never replaces) the original homepage. -->
+<div class="vesa-home-intro" id="vesaHomeIntro" role="dialog" aria-modal="true" aria-label="VESA ten-second welcome film">
+  <video class="vesa-home-intro__video" id="vesaIntroVideo" autoplay muted playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-hidden="true">
+    <source src="assets/vesa-intro-portrait.mp4" type="video/mp4" media="(max-aspect-ratio: 4/3)">
+    <source src="assets/vesa-intro-landscape.mp4" type="video/mp4">
+  </video>
+  <div class="vesa-home-intro__recovery" id="vesaIntroRecovery" hidden>
+    <p id="vesaIntroMessage"></p>
+    <button class="vesa-home-intro__action" id="vesaIntroAction" type="button">Play welcome film</button>
+  </div>
+</div>
 <canvas id="ambient-canvas" aria-hidden="true"></canvas>
 <div class="scroll-progress" aria-hidden="true"></div>
 <div class="cursor-dot" aria-hidden="true"></div>
