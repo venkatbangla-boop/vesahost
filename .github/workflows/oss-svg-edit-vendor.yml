@@ -69,5 +69,7 @@ jobs:
             echo STUDIO_VENDOR_ALREADY_PRESENT
           else
             git commit -m "vendor(svg-studio): pin offline SVG-Edit bundle with license notices"
+            git fetch origin feature/oss-svg-edit-audit-20261019
+            git rebase origin/feature/oss-svg-edit-audit-20261019
             git push origin HEAD:feature/oss-svg-edit-audit-20261019
           fi
