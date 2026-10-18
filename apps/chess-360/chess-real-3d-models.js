@@ -22,6 +22,15 @@
       for(const v of [a,b,c]){positions.push(v[0],v[1],v[2]);normals.push(...n);}
     };
     const quad=(a,b,c,d)=>{tri(a,b,c);tri(a,c,d);};
+    const shadedTriangle=(a,b,c,na,nb,nc)=>{
+      for(const [v,n] of [[a,na],[b,nb],[c,nc]]){
+        positions.push(...v);normals.push(...norm(n));
+      }
+    };
+    const shadedQuad=(a,b,c,d,na,nb,nc,nd)=>{
+      shadedTriangle(a,b,c,na,nb,nc);
+      shadedTriangle(a,c,d,na,nc,nd);
+    };
     const box=(x,y,z,hx,hy,hz)=>{
       const p=(a,b,c)=>[x+a*hx,y+b*hy,z+c*hz];
       // Face quads are wound outward. Backface culling is not necessary.
@@ -32,17 +41,28 @@
       quad(p(-1,1,1),p(1,1,1),p(1,1,-1),p(-1,1,-1));
       quad(p(-1,-1,-1),p(1,-1,-1),p(1,-1,1),p(-1,-1,1));
     };
-    const lathe=(outline,cx=0,cz=0,segments=32)=>{
+    // Carved/lathed Staunton silhouettes use shared smooth vertex normals.
+    // Flat polygon face normals created visible 32-facet bands in demo QA.
+    // Top/bottom ring transitions remain volumetric, with no sprite geometry.
+    const lathe=(outline,cx=0,cz=0,segments=48)=>{
+      const at=(r,h,t)=>[cx+r*Math.cos(t),h,cz+r*Math.sin(t)];
+      const profileNormal=(j,t)=>{
+        const lo=outline[Math.max(0,j-1)];
+        const hi=outline[Math.min(outline.length-1,j+1)];
+        const dr=hi[0]-lo[0],dh=hi[1]-lo[1];
+        return norm([dh*Math.cos(t),-dr,dh*Math.sin(t)]);
+      };
       for(let j=0;j<outline.length-1;j++){
         const [r0,h0]=outline[j],[r1,h1]=outline[j+1];
         for(let k=0;k<segments;k++){
-          const t0=TAU*k/segments,t1=TAU*(k+1)/segments;
-          const p=(r,h,t)=>[cx+r*Math.cos(t),h,cz+r*Math.sin(t)];
-          quad(p(r0,h0,t0),p(r1,h1,t0),p(r1,h1,t1),p(r0,h0,t1));
+          const a=TAU*k/segments,b=TAU*(k+1)/segments;
+          shadedQuad(at(r0,h0,a),at(r1,h1,a),at(r1,h1,b),at(r0,h0,b),
+            profileNormal(j,a),profileNormal(j+1,a),
+            profileNormal(j+1,b),profileNormal(j,b));
         }
       }
     };
-    const sphere=(cx,cy,cz,r,segments=22,rings=12)=>{
+    const sphere=(cx,cy,cz,r,segments=38,rings=22)=>{
       const profile=[];
       for(let i=0;i<=rings;i++){
         const t=Math.PI*i/rings;
@@ -124,7 +144,10 @@
         [-.38,1.32],[-.35,1.12],[-.50,1.0],[-.49,.81],
         [-.34,.77],[-.20,.91],[-.20,.62]
       ],-.145,.145);
-      g.sphere(-.205,1.16,.167,.045,12,8);
+      // Carved cheek / muzzle and hand-polished nostril work, visible from both sides.
+      g.sphere(-.28,.96,.15,.096,24,14);
+      g.sphere(-.28,.96,-.15,.096,24,14);
+      g.sphere(-.205,1.16,.167,.045,16,11);
       g.sphere(-.205,1.16,-.167,.045,12,8);
       g.sphere(-.425,.91,.14,.035,10,7);
       g.sphere(-.425,.91,-.14,.035,10,7);
