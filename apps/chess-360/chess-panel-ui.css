@@ -679,3 +679,16 @@ body.chess-beast-v2.chess-left-hidden.drawer-collapsed .main-container{grid-temp
 @media(prefers-reduced-motion:reduce){
  body.chess-beast-v2 .topbar *,body.chess-beast-v2 .sidebar-panel *{transition:none!important}
 }
+
+/* Continue Saved Game is always accessible, even in default Focus Mode. */
+body.chess-beast-v2.chess-quiet-mode #cardQuickPlayBot,
+body.chess-beast-v2.chess-quiet-mode #cardQuickCoachMode{display:none!important}
+body.chess-beast-v2.chess-quiet-mode #playHubQuickCards:not(:has(#cardResumeLast:not([hidden]))){display:none!important}
+body.chess-beast-v2 #tabPlay #playHubQuickCards{order:1;width:100%;gap:8px;min-width:0}
+body.chess-beast-v2 #tabPlay #cardResumeLast{
+ display:flex;flex:1;gap:10px;min-height:54px;
+ text-align:left;padding:11px 13px;font-size:13px;
+ border-color:rgba(95,225,183,.35);
+ background:#244a3c;
+}
+body.chess-beast-v2 #tabPlay #cardResumeLast .play-hub-sub{font-size:12px;color:#c0e3d1}
