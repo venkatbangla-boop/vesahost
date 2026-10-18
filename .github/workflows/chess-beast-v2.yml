@@ -49,6 +49,7 @@ jobs:
           node --check apps/chess-360/chess-orbit.js
           node --check apps/chess-360/chess-real-3d-models.js
           node --check apps/chess-360/chess-real-3d.js
+          node --check apps/chess-360/chess-real-3d-studio.mjs
           node tests/chess-real-3d-models.cjs
           node tests/chess-beast-rules.cjs
           node tests/vesa-blueprint-integrity.cjs
