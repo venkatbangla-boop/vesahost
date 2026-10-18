@@ -1,0 +1,266 @@
+# G5 final evidence-only matrix. Runtime, source records and frozen engines are untouched.
+# Runs real installed Chromium for original app-owned suites; human UAT is separate.
+name: VESA 360 G5 core and 19-app integrated verification
+on:
+  push:
+    branches:
+      - feature/vesa-g5-core-final-proof-20261018
+    paths:
+      - '.github/workflows/vesa-g5-final-verification.yml'
+      - 'tests/vesa-19-app-real-screens.cjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tna:
+    name: TNA current-source Node and real Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 48
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Existing source and domain contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          node apps/tna/tests/g01-shell.test.js
+          node apps/tna/tests/g02-domain.test.js
+          node apps/tna/tests/g03-scheduling.test.js
+          node apps/tna/tests/g04-operations.test.js
+          node apps/tna/tests/g05-storage.test.js
+          node apps/tna/tests/g05-ui.test.js
+          node apps/tna/tests/g06-workspace.test.js
+          node apps/tna/tests/g07-reports.test.js
+          node apps/tna/tests/g08-scenarios.test.js
+          node apps/tna/tests/g10-integration-references.test.js
+          node apps/tna/tests/g10-notification-rules.test.js
+          node apps/tna/tests/g11-calendar-fixtures.test.js
+          node apps/tna/tests/g11-f06-order-master.test.js
+          node apps/tna/tests/g11-garment-scenarios.test.js
+          node apps/tna/tests/g11-graph-fixtures.test.js
+          node apps/tna/tests/g11-risk-fixtures.test.js
+          node apps/tna/tests/g11-saved-copy-migration.test.js
+          node apps/tna/tests/g11-security-audit.test.js
+          node apps/tna/tests/g11-portfolio-performance.test.js
+          node apps/tna/tests/g12-local-handoff.test.js
+          node apps/tna/tests/g13-merchandising-sheet.test.cjs
+          node apps/tna/tests/g14-task-planning-date-revision.test.cjs
+          node apps/tna/tests/g15-merchandising-export.test.cjs
+          node apps/tna/tests/g16-offline-bundle.test.cjs
+      - name: Install real Chromium
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Existing real browser workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/tna/tests/g11-unified-shell-browser.cjs
+          node apps/tna/tests/g11-localization-accessibility.cjs
+          node apps/tna/tests/g11-f06-order-master.cjs
+          node apps/tna/tests/g11-artifact-viewers.cjs
+          node apps/tna/tests/g10-linked-ui.cjs
+          node apps/tna/tests/g13-merchandising-sheet-browser.cjs
+          node apps/tna/tests/g16-offline-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-final-tna-synthetic-browser-evidence
+          path: |
+            output/playwright/
+            output/vesa-19-real-screens/
+          if-no-files-found: ignore
+          retention-days: 7
+  ppm:
+    name: PPM current-source Node and real Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 48
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Existing source and domain contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/ppm/tests/p-g02-home.cjs
+          node apps/ppm/tests/p-g03-workflow.cjs
+          node apps/ppm/tests/p-g04-decisions.cjs
+          node apps/ppm/tests/p-g05-followups.cjs
+          node apps/ppm/tests/p-g06-recovery.cjs
+          node apps/ppm/tests/p-g08-references.cjs
+          node apps/ppm/tests/p-g09-collaboration-contracts.cjs
+          node apps/ppm/tests/p-g10-handoff.cjs
+          node apps/ppm/tests/planning.cjs
+          node apps/ppm/tests/regression.cjs
+          node apps/ppm/tests/update.cjs
+      - name: Install real Chromium
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Existing real browser workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/ppm/tests/p-g01-unified-ui.cjs
+          node apps/ppm/tests/p-g05-amendment-ui.cjs
+          node apps/ppm/tests/p-g05-followup-ui.cjs
+          node apps/ppm/tests/p-g05-localization.cjs
+          node apps/ppm/tests/p-g07-reports.cjs
+          node apps/ppm/tests/p-g08-linked-ui.cjs
+          node apps/ppm/tests/p-g11-mobile-section-focus.cjs
+          node apps/ppm/tests/p-g11-offline-focus.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-final-ppm-synthetic-browser-evidence
+          path: |
+            output/playwright/
+            output/vesa-19-real-screens/
+          if-no-files-found: ignore
+          retention-days: 7
+  aql:
+    name: AQL current-source Node and real Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 48
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Existing source and domain contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/aql/tests/a-g01-unified-ui.cjs
+          node apps/aql/tests/a-g02-workflow.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node apps/aql/tests/a-g03-ar11-carton-selection.cjs
+          node apps/aql/tests/a-g04-35-area-matrix.cjs
+          node apps/aql/tests/a-g04-stage.cjs
+          node apps/aql/tests/a-g05-readiness-rework.cjs
+          node apps/aql/tests/a-g06-evidence-analytics.cjs
+          node apps/aql/tests/a-g07-atomic-import.cjs
+          node apps/aql/tests/a-g07-portable-safety.cjs
+          node apps/aql/tests/a-g08-reports-language.cjs
+          node apps/aql/tests/a-g09-cross-app-boundaries.cjs
+          node apps/aql/tests/a-g11-60-requirement-matrix.cjs
+          node apps/aql/tests/release-contract.cjs
+      - name: Install real Chromium
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Existing real browser workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/aql/tests/a-g03-ar11-carton-selection-browser.cjs
+          node apps/aql/tests/a-g04-stage-browser.cjs
+          node apps/aql/tests/a-g05-final-boundary-browser.cjs
+          node apps/aql/tests/a-g05-packing-barcode-browser.cjs
+          node apps/aql/tests/a-g06-analytics-browser.cjs
+          node apps/aql/tests/a-g06-measurement-browser.cjs
+          node apps/aql/tests/a-g07-browser-restore.cjs
+          node apps/aql/tests/a-g08-report-languages-browser.cjs
+          node apps/aql/tests/a-g08-stage-reports-browser.cjs
+          node apps/aql/tests/a-g09-linked-ui.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-final-aql-synthetic-browser-evidence
+          path: |
+            output/playwright/
+            output/vesa-19-real-screens/
+          if-no-files-found: ignore
+          retention-days: 7
+  portfolio:
+    name: PORTFOLIO current-source Node and real Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 48
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Existing source and domain contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tests/personal-demo-release.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/vesa-workspace-shell-contract.cjs
+          node tests/vesa-local-uat-package.cjs
+          node apps/costing/tests/costing.test.cjs
+          node apps/packing-container/tests/domain.test.cjs
+          node apps/order-commission/tests/domain.test.cjs
+          node apps/tech-pack-spec/tests/domain.test.cjs
+          node apps/purchase-order/tests/domain.test.cjs
+          node apps/lc-payment/tests/domain.test.cjs
+          node apps/sampling-approval/tests/domain.test.cjs
+          node apps/fabric-trims/tests/domain.test.cjs
+          node apps/shipment-documentation/tests/domain.test.cjs
+          node apps/production-tracker/tests/domain.test.cjs
+          node apps/factory-vendor/tests/domain.test.cjs
+          node apps/label-artwork-approval/tests/domain.test.cjs
+          node apps/buyer-crm/tests/domain.test.cjs
+          node apps/fabric-supplier-comparison/tests/domain.test.cjs
+          node apps/claims-disputes/tests/domain.test.cjs
+          node apps/product-development/tests/domain.test.cjs
+      - name: Install real Chromium
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Existing real browser workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tests/vesa-19-app-real-screens.cjs
+          node tests/vesa-platform-pages.cjs
+          node tests/vesa-uniform-experience.cjs
+          node apps/packing-container/tests/browser-workflow.cjs
+          node apps/order-commission/tests/browser-workflow.cjs
+          node apps/tech-pack-spec/tests/browser-workflow.cjs
+          node apps/purchase-order/tests/browser-workflow.cjs
+          node apps/lc-payment/tests/browser-workflow.cjs
+          node apps/sampling-approval/tests/browser-workflow.cjs
+          node apps/fabric-trims/tests/browser-workflow.cjs
+          node apps/shipment-documentation/tests/browser-workflow.cjs
+          node apps/production-tracker/tests/browser-workflow.cjs
+          node apps/factory-vendor/tests/browser-workflow.cjs
+          node apps/label-artwork-approval/tests/browser-workflow.cjs
+          node apps/buyer-crm/tests/browser-workflow.cjs
+          node apps/fabric-supplier-comparison/tests/browser-workflow.cjs
+          node apps/claims-disputes/tests/browser-workflow.cjs
+          node apps/product-development/tests/browser-workflow.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-final-portfolio-synthetic-browser-evidence
+          path: |
+            output/playwright/
+            output/vesa-19-real-screens/
+          if-no-files-found: ignore
+          retention-days: 7
