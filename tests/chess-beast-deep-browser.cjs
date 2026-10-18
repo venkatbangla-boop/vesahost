@@ -221,6 +221,7 @@ class ChessBeastDeepBrowserQA {
       await page.waitForFunction(()=>window.__chessBeastPerformance().aiInFlight===false,
         null,{timeout:10000});
       assert.ok(await page.locator('#statBestMoveVal').textContent(),'Hint responded');
+      await page.locator('#chessMoreTools summary').click(); // Advanced controls are intentionally folded
       await page.locator('#btnAnalyzeNow').click();
       await page.locator('#btnTopReset').click();
       await page.waitForTimeout(950);
