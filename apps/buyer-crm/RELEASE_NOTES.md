@@ -11,3 +11,7 @@
 **Boundaries:** This demo is not approved to host real contacts commercially or act as secure authenticated server storage. No legal privacy consent/retention basis, actual signed PO/quotation, buyer approval, automatic marketing email/SMS, CRM/provider integration, approved commercial SaaS Pages eligibility, data encryption at rest, or independently verified identity. Only synthetic personal demo records. Avoid entering actual buyer names, direct personal phone numbers, financial/private records. Downloaded copies remain the user's own responsibility.
 
 **Next approved portfolio source:** `blueprints/APP-12_fabric-supplier-comparison.md`.
+
+## 2026-10-18 — G4 Home eight-panel discovery
+
+Read-only fictional practice previews open all eight original CRM sections directly from Home. No domain, saved-copy, report calculation, reference ownership or shared navigation changes. Feature Node/sibling and real Chromium including all 19-app opened visual audit PASS: [CI #39110324685](https://github.com/venkatbangla-boop/vesahost/actions/runs/39110324685), code `be8267e8adc6d5f8bdf663c059f7bfeded0a67e2`. Public Pages proof tracked separately in master progress.

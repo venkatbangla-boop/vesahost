@@ -1,0 +1,14 @@
+# VESA 360 — G4-W4 Buyer CRM and 19-app opened-screen proof
+
+## 2026-10-18 — G4-W4 BUYER CRM 8-PANEL DISCOVERY VERIFIED & MAIN-PROMOTED
+
+**Verified application commit:** `be8267e8adc6d5f8bdf663c059f7bfeded0a67e2` on `main`. Real Node, original APP-11 browser create/edit/source/recovery/Excel/PDF regression, 4 languages, canonical-blueprint and sibling tests plus 19-app opened Chromium route audit (19 apps × 390/1440 px = 38 sessions) all **SUCCESS** in [feature CI #39110324685](https://github.com/venkatbangla-boop/vesahost/actions/runs/39110324685). The prior [read-only 19-app audit #39110173067](https://github.com/venkatbangla-boop/vesahost/actions/runs/39110173067) also passed. This is automated synthetic browser evidence, not every form/state or physical device approval.
+
+**Change:** Buyer CRM Home now clearly exposes eight original source-owned panels via responsive read-only practice previews, populated through unchanged original BuyerDirectory append/validation with a fictional .invalid contact, explicit consent Needs Information, sourced enquiry, USD pipeline amount, stage event and local overdue follow-up. Reports, manual review requirements and immutable history remain in their original panels. No new global menu/logo, buyer approval, message sending, source rule, business record save or cross-app storage read; existing saved-copy/Excel/PDF remain intact. App-owned controller/i18n/CSS/test, root service worker cache name and matching exact-version assertion are the only runtime/test changes. Corporate homepage and original 15 blueprint bytes untouched.
+
+**Precise next: G4-W4 Fabric & Supplier Comparison 360** (`apps/fabric-supplier-comparison/src/application/workspace-controller.js`, `blueprints/APP-12_fabric-supplier-comparison.md`). Audit original eight? sections actually from controller before assuming a count; create a minimal source-based responsive Home panel walkthrough, preserving original quote normalization, GSM/width/spec comparability, landed-input and FX evidence boundaries, source-only decisions and saved records. Then Claims & Disputes, Product Development, then G5 all actual form dialogs, offline Excel/PDF and 4-language QA. Human UAT remains 1 PASS / 0 FAIL / 48 NOT TESTED. Public Pages/exact served-byte verification must be recorded separately after deployment; a successful feature run alone is not proof that public asset bytes have updated.
+
+
+## Rollback and handover
+
+Buyer CRM patch is app controller/CSS/i18n/browser assertions plus matching versioned service-worker cache; revert only those files if independent live regression requires it. Preserve original buyer directory/source validators, XLSX report engine, saved local records and 15 blueprint files. Follow G5 full-form matrix after W4 remaining three apps; never treat 38 opened sessions as complete 19-app form acceptance.
