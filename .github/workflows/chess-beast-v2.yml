@@ -7,6 +7,7 @@ on:
       - 'apps/chess-360/**'
       - 'tests/chess-beast-v2.cjs'
       - 'tests/chess-beast-rules.cjs'
+      - 'tests/chess-beast-deep-browser.cjs'
       - 'tests/vesa-chess-20th-app.cjs'
       - 'tests/vesa-egenva-branding.cjs'
       - 'js/app-catalogue.js'
@@ -35,6 +36,8 @@ jobs:
           node --check apps/chess-360/chess-beast-ui.js
           node tests/chess-beast-rules.cjs
           node tests/vesa-blueprint-integrity.cjs
+          node tests/vesa-egenva-branding.cjs
+          node tests/personal-demo-release.cjs
       - name: Install Chromium and WebKit
         shell: bash
         run: |
@@ -46,3 +49,5 @@ jobs:
         run: |
           set -euo pipefail
           node tests/chess-beast-v2.cjs
+          node tests/chess-beast-deep-browser.cjs
+          node tests/vesa-chess-20th-app.cjs
