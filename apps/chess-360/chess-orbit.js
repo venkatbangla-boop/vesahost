@@ -15,6 +15,7 @@
       this.toolbar=options.toolbar;
       this.modeButton=options.modeButton;
       this.resetButton=options.resetButton;
+      this.showcaseButton=options.showcaseButton;
       this.leftButton=options.leftButton;
       this.rightButton=options.rightButton;
       this.readout=options.readout;
@@ -81,6 +82,12 @@
       this.state={tilt:26,yaw:0,spin:0};
       this.save();this.draw();this.syncButton();
     }
+    showcase(){
+      // Three-quarter product-view preset, visually closer to the approved
+      // wood-board demo. This changes only the camera, never the game state.
+      this.state={tilt:48,yaw:10,spin:8};
+      this.save();this.draw();this.syncButton();
+    }
     adjust({tilt=0,yaw=0,spin=0}){
       this.state.tilt=clamp(this.state.tilt+tilt,0,65);
       this.state.yaw=norm(this.state.yaw+yaw);
@@ -90,6 +97,7 @@
     install(){
       this.modeButton?.addEventListener('click',()=>this.setMode(!this.dragMode));
       this.resetButton?.addEventListener('click',()=>this.reset());
+      this.showcaseButton?.addEventListener('click',()=>this.showcase());
       this.leftButton?.addEventListener('click',()=>{this.adjust({spin:-45});this.save();});
       this.rightButton?.addEventListener('click',()=>{this.adjust({spin:45});this.save();});
       this.tiltSlider?.addEventListener('input',e=>{
