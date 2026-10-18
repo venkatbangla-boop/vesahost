@@ -1,4 +1,4 @@
-const CACHE='vesa-v109-egenva-credit';
+const CACHE='vesa-v110-chess-beast';
 const ASSETS=[
   './',
   './index.html',
@@ -12,6 +12,9 @@ const ASSETS=[
   './apps/index.html',
   './apps/chess-360/',
   './apps/chess-360/index.html',
+  './apps/chess-360/chess-ai-worker.js',
+  './apps/chess-360/chess-beast-ui.js',
+  './apps/chess-360/chess-beast.css',
   './apps/costing/',
   './apps/costing/index.html',
   './apps/packing-container/',
