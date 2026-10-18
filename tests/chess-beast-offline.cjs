@@ -66,6 +66,7 @@ class ChessBeastOfflineQA {
         null,{timeout:15000});
       const stat=await page.evaluate(()=>window.__chessBeastPerformance());
       assert.equal(stat.fallbackCount,0,'Original AI Worker executes offline from cache');
+      await page.locator('#btnMobileMore').click();
       await page.locator('#btnQuickSaveMatch').click();
       const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('chess3_offline_games_vault_v1')).length);
       assert.ok(saved>=1,'Offline game saved locally');
