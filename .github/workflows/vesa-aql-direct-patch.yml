@@ -1,0 +1,71 @@
+# Apply a surgical, verified patch to the 11.78 MB AQL HTML in an isolated branch.
+# The existing inspector, source media, stored-copy and report engines are never rewritten.
+name: VESA AQL direct entry controlled patch
+on:
+  push:
+    branches: [feature/aql-direct-chess-ux-20261018]
+    paths: ['.github/workflows/vesa-aql-direct-patch.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Surgical AQL startup patch (no engine or assets changed)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          'use strict';
+          const fs=require('node:fs');
+          const path='apps/aql/index.html';
+          const original=fs.readFileSync(path,'utf8');
+          const edits=[
+            ['<body class="vesa-at-entrance">','<body>'],
+            ['<main id="vesa-welcome" tabindex="-1"','<main id="vesa-welcome" hidden tabindex="-1"'],
+            ['globalThis.VESA_WELCOME.bind();',`globalThis.VESA_WELCOME.bind();
+// After every script has registered its handlers, open the original inspection root directly.
+// This preserves original init/resume/storage, avoids an extra user click and never clears records.
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>globalThis.VESA_WELCOME.enter(),{once:true});
+else globalThis.VESA_WELCOME.enter();`]
+          ];
+          let next=original;
+          for(const [before,after] of edits){
+            if(next.split(before).length!==2)throw new Error('AQL startup target changed or duplicated: '+before);
+            next=next.replace(before,after);
+          }
+          if(next.length<11000000||next.length>original.length+700)throw new Error('Unexpected AQL media or source size');
+          fs.writeFileSync(path,next,'utf8');
+          console.log('AQL_PATCH_OK',Buffer.byteLength(original),Buffer.byteLength(next));
+          NODE
+          git diff --numstat -- apps/aql/index.html
+          node apps/aql/tests/a-g00-baseline.cjs
+      - name: Install Chromium
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Prove direct entry and original inspection sampling workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/aql/tests/a-g01-unified-ui.cjs
+          node apps/aql/tests/a-g03-ar11-carton-selection-browser.cjs
+      - name: Commit only verified AQL HTML without force-push
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'VESA CI'
+          git config user.email 'vesa-ci@users.noreply.github.com'
+          git add -- apps/aql/index.html
+          git diff --cached --check
+          git commit -m 'fix(aql): open inspection workspace directly without welcome gate'
+          git push origin HEAD:feature/aql-direct-chess-ux-20261018
