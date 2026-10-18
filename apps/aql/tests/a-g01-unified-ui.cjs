@@ -82,12 +82,13 @@ async function run(){
       page.on('request',request=>{if(!request.url().startsWith(base))external.push(request.url());});
       await page.goto(`${base}/apps/aql/`,{waitUntil:'domcontentloaded'});
 
-      const entrance=await inspectShell(page,width,'entrance');
+      await page.waitForFunction(()=>!!window.__vesaApp&&!document.getElementById('app').hidden);
+      assert.equal(await page.locator('#vesa-welcome').isVisible(),false,`${width}: redundant entrance stays hidden`);
+      const entrance=await inspectShell(page,width,'direct-workspace');
       assert.equal(entrance.entranceLogoVisible,false,`${width}: entrance logo duplicate is hidden`);
       assert.equal(entrance.entranceTopVisible,false,`${width}: entrance brand header duplicate is hidden`);
       if(width===390||width===1280)await page.screenshot({path:path.join(output,`vesa-unified-aql-entrance-${width}.png`)});
 
-      await page.locator('#vesa-enter').click();
       await page.waitForFunction(()=>!!window.__vesaApp&&!document.getElementById('app').hidden);
       const home=await inspectShell(page,width,'home');
       assert.equal(home.brandRows,0,`${width}: no internal AQL brand row`);
