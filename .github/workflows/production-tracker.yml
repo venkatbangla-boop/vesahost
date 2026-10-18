@@ -5,6 +5,7 @@ on:
     branches:
       - feature/production-tracker-360
       - feature/production-g4-guided-practice
+      - feature/production-g5-active-form-qa-20261018
       - main
     paths:
       - 'apps/production-tracker/**'

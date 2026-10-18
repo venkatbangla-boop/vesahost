@@ -85,14 +85,26 @@ async function run(){
   await act('home');
   await page.setViewportSize({width:1280,height:900});
   assert(await noSavedProduction(),'All seven practices remain read-only');
+  // G5-10: actual production entry focus, Escape return and untouched draft store.
+  await act('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'poNo','New Production form begins at PO');
+  await page.keyboard.press('Escape');await page.locator('#ptDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  assert(await noSavedProduction(),'Escaped New form must not persist production record');
   await act('new');await fill({poNo:'SYN-PROD-PO',style:'SYN-POLO',colour:'Navy',size:'M',lot:'SYN-LOT-A',factory:'SYN FACTORY',unit:'pieces',sourceRef:'SYNTHETIC SIGNED PLAN'});await submit();
   assert.equal((await rows())[0].header.poNo,'SYN-PROD-PO');
   const axis={stage:'cutting',line:'SYN-LINE-01',lot:'SYN-LOT-A',unit:'pieces'};
-  await act('opening-form');await fill({...axis,opening:'0',sourceRef:'SYN OPENING WIP',reviewedBy:'SYN LOCAL REVIEWER',reviewDate:'2026-10-17'});await submit();
-  await act('target-form');await fill({...axis,quantity:'50',sourceRef:'SYN TARGET REFERENCE',declaredAuthority:'SYN PLAN AUTHORITY',sourceDate:'2026-10-16',reviewedBy:'SYN LOCAL REVIEWER',reviewDate:'2026-10-17'});await submit();
+  await act('opening-form');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'stage','Opening WIP dialog focuses Stage');
+  await fill({...axis,opening:'0',sourceRef:'SYN OPENING WIP',reviewedBy:'SYN LOCAL REVIEWER',reviewDate:'2026-10-17'});await submit();
+  await act('target-form');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'stage','Target form starts at Stage');
+  await fill({...axis,quantity:'50',sourceRef:'SYN TARGET REFERENCE',declaredAuthority:'SYN PLAN AUTHORITY',sourceDate:'2026-10-16',reviewedBy:'SYN LOCAL REVIEWER',reviewDate:'2026-10-17'});await submit();
   const daily={...axis,date:'2026-10-17',shift:'Day',good:'20',verifiedIn:'25',verifiedOut:'20',verifiedRejects:'1',rework:'2',
    sourceRef:'SYN DAY STAGE REGISTER',actor:'SYN SHIFT LEAD',status:'locally-reviewed',reviewedBy:'SYN LOCAL REVIEWER',reviewDate:'2026-10-17',reviewSource:'SYN DAILY REVIEW',handoffRef:'SYN INPUT PASS',outRef:'SYN OUT REGISTER',rejectRef:'SYN REJECT REGISTER'};
-  await act('daily-form');await fill(daily);await submit();
+  await act('daily-form');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'stage','Daily output form starts at Stage');
+  await fill(daily);await submit();
   const snap=await page.evaluate(()=>window.VesaProduction360.L.validate(window.VesaProduction360.current));
   assert(snap.ok);assert.equal(snap.groups[0].locallyReviewedGood,20);assert.equal(snap.groups[0].wip.closing,4);assert.equal(snap.groups[0].remaining,30);
   await act('daily-form');await fill(daily);await page.locator('#ptDialog form button[type=submit]').click();
@@ -195,6 +207,16 @@ async function run(){
    assert(scroll<=width+1,width+'px viewport overflow: '+scroll);
    if([390,640,768,1280,1440].includes(width))await page.screenshot({path:path.join(out,'prod-app09-'+width+'.png')});
   }
+  // G5 physical form on 320px (in addition to seven read-only Home links).
+  await page.setViewportSize({width:320,height:720});
+  await act('home');await act('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'poNo','320px production draft starts at PO');
+  assert((await page.locator('#ptDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+   'Production new-request dialog remains inside 320px width');
+  await page.screenshot({path:path.join(out,'prod-app09-new-dialog-320.png')});
+  await page.keyboard.press('Escape');await page.locator('#ptDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  await act('continue');
   await page.setViewportSize({width:1280,height:900});
   for(const [language,label] of [['en','Daily Output'],['bn','দৈনিক উৎপাদন'],['hi','दैनिक उत्पादन'],['ta','தினசரி உற்பத்தி']]){
    const state=JSON.stringify(await rows());await page.locator('[data-vesa-user]').click();
