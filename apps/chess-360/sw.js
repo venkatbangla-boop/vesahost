@@ -11,9 +11,9 @@
  */
 'use strict';
 class ChessBeastOfflineCache {
-  static VERSION='chess-beast-v2-20261018-r6';
+  static VERSION='chess-beast-v2-20261018-r7';
   static PREFIX='chess-beast-v2-';
-  static ASSETS=['./','./index.html','./chess-beast.css','./chess-beast-ui.js','./chess-ai-worker.js','./chess-report.js','./chess-match-experience.css','./chess-orbit.js','./chess-pro-ux.css','./chess-panel-ui.css','./chess-panel-ui.js','./chess-real-3d-models.js','./chess-real-3d.js','./chess-real-3d.css','./chess-real-3d-studio.mjs','./vendor/three.module.js','./vendor/GLTFLoader.js','./assets/real3d/chess_set_1k.gltf','./assets/real3d/chess_set.bin','./assets/real3d/textures/chess_set_pieces_white_nor_gl_1k.jpg','./assets/real3d/textures/chess_set_pieces_white_diff_1k.jpg','./assets/real3d/textures/chess_set_pieces_white_arm_1k.jpg','./assets/real3d/textures/chess_set_board_nor_gl_1k.jpg','./assets/real3d/textures/chess_set_board_diff_1k.jpg','./assets/real3d/textures/chess_set_board_arm_1k.jpg','./assets/real3d/textures/chess_set_pieces_black_nor_gl_1k.jpg','./assets/real3d/textures/chess_set_pieces_black_diff_1k.jpg','./assets/real3d/textures/chess_set_pieces_black_arm_1k.jpg'];
+  static ASSETS=['./','./index.html','./chess-beast.css','./chess-beast-ui.js','./chess-ai-worker.js','./chess-report.js','./chess-match-experience.css','./chess-orbit.js','./chess-pro-ux.css','./chess-panel-ui.css','./chess-panel-ui.js','./chess-real-3d-models.js','./chess-real-3d.js','./chess-real-3d.css','./chess-real-3d-studio.mjs','./vendor/three.module.js','./vendor/three.core.js','./vendor/GLTFLoader.js','./vendor/BufferGeometryUtils.js','./assets/real3d/chess_set_1k.gltf','./assets/real3d/chess_set.bin','./assets/real3d/textures/chess_set_pieces_white_nor_gl_1k.jpg','./assets/real3d/textures/chess_set_pieces_white_diff_1k.jpg','./assets/real3d/textures/chess_set_pieces_white_arm_1k.jpg','./assets/real3d/textures/chess_set_board_nor_gl_1k.jpg','./assets/real3d/textures/chess_set_board_diff_1k.jpg','./assets/real3d/textures/chess_set_board_arm_1k.jpg','./assets/real3d/textures/chess_set_pieces_black_nor_gl_1k.jpg','./assets/real3d/textures/chess_set_pieces_black_diff_1k.jpg','./assets/real3d/textures/chess_set_pieces_black_arm_1k.jpg'];
   static install(event) {
     event.waitUntil(
       caches.open(this.VERSION).then(cache=>cache.addAll(this.ASSETS))
