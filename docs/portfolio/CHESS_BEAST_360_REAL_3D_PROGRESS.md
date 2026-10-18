@@ -1,3 +1,13 @@
+## 2026-10-18 — POST-RELEASE REAL 3D TWO-PANEL STRESS GATE (ADDITIVE)
+
+- Public release was **already completed** and independently verified at source `c5d0865f623de4eb053fb82418bc5b15b01504c5`, followed by docs-only checkpoint `e61fc0733cefd0d2040e4127c64b5ca4aae74514`; no repeated 3D mesh development.
+- **New browser acceptance:** [Chess Real 3D panel hardening #39149795627](https://github.com/venkatbangla-boop/vesahost/actions/runs/39149795627) **SUCCESS** at 390, 1024, 1366, 2040px. Each actually loads 12 real sculpted PBR prototypes / 32 pieces, hides/reopens both side panels, uses Rotate/Showcase/Reset on board, makes a legal move through the real 3D surface, confirms chess history is preserved and no overlap/horizontal scrolling/JavaScript exceptions.
+- New permanent `tests/chess-real-3d-panel-stress.cjs` + `.github/workflows/chess-real3d-panel-stress.yml` run on Chess source modifications in `main`, with screenshot artifacts at 390/1366/2040px. This is **test hardening only**; no game engine, styling or saved-game format change.
+- Physical Android/iPhone native hardware manual QA still **not verified**; Chrome responsive/browser and iPhone WebKit emulation are not substitutes for physical UAT.
+- No further code changes are necessary solely because the earlier session ended mid-plan: on-board Showcase, Rotate and Reset already exist and are public. Investigate only concrete new regressions or owner-requested improvements.
+
+---
+
 ## 2026-10-18 — REAL 3D + IN-BOARD CAMERA HUD — RELEASED & PUBLICLY VERIFIED
 
 **Current status: COMPLETE for automated production acceptance.** The historical development checkpoints below contain older "NOT LIVE" notes; those are superseded by this section. Do not restart completed mesh/camera work.
