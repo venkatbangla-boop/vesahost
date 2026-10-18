@@ -5,6 +5,7 @@ on:
     branches:
       - feature/fabric-trims-360
       - feature/fabric-g4-source-journey
+      - feature/fabric-g5-real-form-qa-20261018
       - main
     paths:
       - 'apps/fabric-trims/**'
@@ -33,6 +34,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node tests/vesa-blueprint-integrity.cjs
           node --check apps/fabric-trims/src/domain/material-engine.js
           node --check apps/fabric-trims/src/data/local-record-port.js
           node --check apps/fabric-trims/src/reports/report-model.js

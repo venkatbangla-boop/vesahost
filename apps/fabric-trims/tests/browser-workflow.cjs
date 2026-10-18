@@ -82,6 +82,13 @@ class FabricBrowserTest {
    }
    await page.setViewportSize({width:1280,height:900});
    assert(await noStoredRecords(),'Nine previews never create stock or QC data');
+   // G5-08: Original first-field focus/keyboard Escape before source entry.
+   await act('new');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'poNo','New BOM record focuses PO number');
+   await page.keyboard.press('Escape');
+   await page.locator('#ftDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+   assert(await noStoredRecords(),'Escaping uncommitted BOM must not write local inventory');
    await act('new');
    await fill({poNo:'SYN-PO-FAB-01',style:'SYN-TEE',buyer:'SYNTHETIC BUYER',
     factory:'SYNTHETIC FACTORY',bomRevision:'BOM-V1',
@@ -89,6 +96,7 @@ class FabricBrowserTest {
     calendarBasis:'calendar',calendarSource:'SYNTHETIC BUYER DELIVERY CALENDAR'});
    await submit();
    await act('item');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'kind','Material form focuses documented material type');
    await fill({kind:'fabric',description:'SYNTHETIC COTTON JERSEY',unit:'kg',
     composition:'100% Cotton',gsm:'180',width:'68',widthUnit:'in',
     construction:'Single Jersey',sourceRef:'SYNTHETIC TECH PACK FABRIC'});
@@ -101,11 +109,13 @@ class FabricBrowserTest {
     demandRounding:'half-up-4',targetLot:'LOT-A',targetShade:'NAVY-1'});
    await submit();
    await act('bookings');await act('booking');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'item','Supplier booking focuses material choice');
    await fill({supplier:'SYNTHETIC YARN/FABRIC SUPPLIER',bookingRef:'SYN-BOOK-01',
     orderedQty:'600.0000',unit:'kg',committedDate:'2026-11-10',
     lot:'LOT-A',shade:'NAVY-1',sourceRef:'SYNTHETIC SUPPLIER BOOKING'});
    await submit();
    await act('receipts');await act('receipt');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'bookingRef','Goods receipt starts at source booking');
    await fill({receiptRef:'SYN-GRN-001',date:'2026-11-08',
     qty:'400.0000',rejected:'10.0000',lot:'LOT-A',shade:'NAVY-1',
     qaStatus:'pending',sourceRef:'SYNTHETIC WAREHOUSE GRN'});
@@ -118,6 +128,7 @@ class FabricBrowserTest {
    await page.locator('#ftClose').click();
    assert.equal((await saved())[0].allocations.length,0,'Pending QC cannot move into stock.');
    await act('receipts');await act('qa-review');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'qaStatus','QC review focuses explicit source decision');
    await fill({qaStatus:'approved',qaDate:'2026-11-09',qaActor:'SYNTHETIC QA PERSON',
     qaSource:'SYNTHETIC QA RELEASE NOTE'});await submit();
    await act('allocations');await act('allocation');
@@ -204,10 +215,20 @@ class FabricBrowserTest {
    assert.match(await page.locator('#ftDialogBody').innerText(),/altered\/unsupported/);
    await page.locator('#ftClose').click();
    assert.equal(JSON.stringify(await saved()),before);
-   for(const width of [320,390,768,1280]){
+   for(const width of [320,390,768,1280,1440]){
     await page.setViewportSize({width,height:840});
     assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=width+1,width+'px page overflow');
    }
+   // Mobile test opens the real editable BOM header, not just the landing page.
+   await page.setViewportSize({width:320,height:720});
+   await act('summary');await act('header');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'poNo','320px BOM edit starts at PO number');
+   assert((await page.locator('#ftDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+    '320px BOM editor fits viewport');
+   await page.screenshot({path:path.join(out,'fabric-app06-header-dialog-320.png')});
+   await page.keyboard.press('Escape');
+   await page.locator('#ftDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='header');
    await page.setViewportSize({width:390,height:844});
    await page.screenshot({path:path.join(out,'fabric-app06-mobile.png')});
    await page.setViewportSize({width:1280,height:900});
