@@ -55,13 +55,13 @@ body.chess-beast-v2 #btnQuietMode[aria-pressed=true]{
   border-color:rgba(100,230,177,.5);background:#21433f;
   color:#d8ffee;
 }
-body.chess-beast-v2.chess-quiet-mode #tabPlay .companion-pet-card,
-body.chess-beast-v2.chess-quiet-mode #tabPlay .coach-card,
-body.chess-beast-v2.chess-quiet-mode #tabPlay .production-matrix,
-body.chess-beast-v2.chess-quiet-mode #tabPlay .telemetry-grid,
-body.chess-beast-v2.chess-quiet-mode #tabPlay .graph-wrap,
-body.chess-beast-v2.chess-quiet-mode #tabPlay .career-bar,
-body.chess-beast-v2.chess-quiet-mode #tabPlay .universal-tier-strip,
+body.chess-beast-v2.chess-quiet-mode .companion-pet-card,
+body.chess-beast-v2.chess-quiet-mode .coach-card,
+body.chess-beast-v2.chess-quiet-mode .production-matrix,
+body.chess-beast-v2.chess-quiet-mode .telemetry-grid,
+body.chess-beast-v2.chess-quiet-mode .graph-wrap,
+body.chess-beast-v2.chess-quiet-mode .career-bar,
+body.chess-beast-v2.chess-quiet-mode .universal-tier-strip,
 body.chess-beast-v2.chess-quiet-mode .chesscom-move-badge,
 body.chess-beast-v2.chess-quiet-mode .plan-step-badge{
   display:none!important;
