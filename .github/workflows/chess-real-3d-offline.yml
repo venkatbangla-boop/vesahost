@@ -7,6 +7,9 @@ on:
     paths:
       - 'tests/chess-real-3d-offline.cjs'
       - 'apps/chess-360/sw.js'
+      - 'apps/chess-360/index.html'
+      - 'apps/chess-360/chess-orbit.js'
+      - 'apps/chess-360/chess-real-3d.css'
       - 'apps/chess-360/chess-real-3d-studio.mjs'
       - 'apps/chess-360/assets/real3d/**'
       - '.github/workflows/chess-real-3d-offline.yml'
