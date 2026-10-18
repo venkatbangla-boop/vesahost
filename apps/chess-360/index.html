@@ -1618,6 +1618,7 @@
         </div>
         <div class="chessboard" id="chessboard" role="grid" aria-label="Chessboard"></div>
         <canvas id="chessReal3DCanvas" aria-label="Interactive real 3D chess board. Use Rotate mode for camera, Move mode to play pieces." hidden></canvas>
+        <canvas id="chessStudioCanvas" aria-label="Realistic sculpted 3D chess pieces, playable offline" hidden></canvas>
         <!-- Hardware-Accelerated Move Particle & Shockwave FX Canvas -->
         <canvas class="board-fx-canvas" id="boardFxCanvas" width="600" height="600"></canvas>
         <!-- 3rd-Eye SVG Tactical, Protection & Move Beam Overlay -->
@@ -2384,6 +2385,7 @@
 <script src="./chess-beast-ui.js"></script>
 <script src="./chess-report.js"></script>
 <script src="./chess-orbit.js"></script>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 <script src="./chess-real-3d-models.js"></script>
 <script src="./chess-real-3d.js"></script>
 <script>
@@ -4104,9 +4106,44 @@
     frame:document.getElementById('boardFrame'),
     onSquareClick:sq=>onSquareClick(sq)
   });
+  let chessStudio=null,studioLoading=null;
+  const highFidelityState={selected:-1,lastFrom:-1,lastTo:-1,check:-1,legal:[],flipped:false};
+  function ensureChessStudio(){
+    if(studioLoading)return studioLoading;
+    const status=document.getElementById('chessReal3DStatus');
+    if(status)status.textContent='Loading sculpted 3D models · offline assets';
+    studioLoading=import('./chess-real-3d-studio.mjs')
+      .then(async module=>{
+        chessStudio=new module.ChessBeast3DStudio({
+          canvas:document.getElementById('chessStudioCanvas'),
+          frame:document.getElementById('boardFrame'),
+          onSquareClick:sq=>onSquareClick(sq),
+          getOrbit:()=>chessOrbitController.debug()
+        });
+        await chessStudio.load();
+        chessStudio.sync(engine.board,{...highFidelityState});
+        if(document.body.classList.contains('board-3d'))chessStudio.enable(true);
+        if(status)status.textContent='Sculpted CC0 Staunton · Walnut board · Fully offline';
+        return true;
+      }).catch(error=>{
+        console.warn('Premium 3D could not start; original solid 3D remains playable',error);
+        if(status)status.textContent='Solid 3D playable · Detailed pieces unavailable';
+        // Not a chess-engine problem: keep the original WebGL working.
+        return false;
+      });
+    return studioLoading;
+  }
   window.__chessBeastReal3DState=()=>chessReal3D.diagnostics();
-  window.__chessBeastReal3DSquare=sq=>chessReal3D.squareScreen(sq);
-  window.__chessBeastReal3DPick=(x,y)=>chessReal3D.pick(x,y);
+  window.__chessBeastStudioState=()=>chessStudio?chessStudio.diagnostics():
+    {ready:false,active:false,pending:Boolean(studioLoading)};
+  window.__chessBeastReal3DSquare=sq=>chessStudio?.active?
+    chessStudio.squareScreen(sq):chessReal3D.squareScreen(sq);
+  window.__chessBeastReal3DPick=(x,y)=>chessStudio?.active?
+    chessStudio.pick(x,y):chessReal3D.pick(x,y);
+  window.addEventListener('chess-studio-fallback',()=>{
+    const status=document.getElementById('chessReal3DStatus');
+    if(status)status.textContent='Solid 3D fallback · Game remains playable';
+  });
   window.addEventListener('chess-real3d-fallback',()=>{
     chessOrbitController.sync3D();
     const direct=document.getElementById('btn3DDirect');
@@ -5314,6 +5351,9 @@
       selected:selectedSq,lastFrom,lastTo,check:kingInCheckSq,
       legal:legalMovesFromSelected.map(m=>m.to),flipped:boardFlipped
     });
+    Object.assign(highFidelityState,{selected:selectedSq,lastFrom,lastTo,
+      check:kingInCheckSq,legal:legalMovesFromSelected.map(m=>m.to),flipped:boardFlipped});
+    chessStudio?.sync(engine.board,{...highFidelityState});
     if(focused>=0){
       boardEl.querySelector('[data-sq="'+focused+'"]')?.focus({preventScroll:true});
     }
@@ -6603,6 +6643,10 @@
     e.currentTarget.classList.toggle('active-toggle', active);
     const ready=chessReal3D.enable(active);
     const enabled=active&&ready;
+    if(enabled){
+      if(chessStudio?.ready)chessStudio.enable(true);
+      else ensureChessStudio();
+    }else chessStudio?.enable(false);
     chessOrbitController.sync3D();
     e.currentTarget.classList.toggle('active-toggle',enabled);
     const direct=document.getElementById('btn3DDirect');
@@ -7330,6 +7374,7 @@
     chessOrbitController.draw();chessOrbitController.save();
     const sceneOn=document.body.classList.contains('board-3d');
     const ready=chessReal3D.enable(sceneOn);
+    if(sceneOn&&ready)ensureChessStudio();else chessStudio?.enable(false);
     chessOrbitController.sync3D();
     document.getElementById('btn3DDirect')?.setAttribute('aria-pressed',String(sceneOn&&ready));
     const chip=document.getElementById('chess3DDirectState');
