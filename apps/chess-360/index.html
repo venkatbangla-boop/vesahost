@@ -1427,7 +1427,7 @@
   }
 
 </style>
-<link rel="stylesheet" href="./chess-beast.css?v=2">
+<link rel="stylesheet" href="./chess-beast.css">
 </head>
 <body class="chess-beast-v2" data-board-theme="green">
 
@@ -2276,7 +2276,7 @@
 <!-- Notification Toast -->
 <div class="toast" id="toastBox">Copied to clipboard!</div>
 
-<script src="./chess-beast-ui.js?v=2"></script>
+<script src="./chess-beast-ui.js"></script>
 <script>
 (function() {
   "use strict";
@@ -6934,6 +6934,12 @@
   renderSavedGamesVaultUI();
 
   window.addEventListener('load', () => {
+    // App-scoped offline chess shell; failure never blocks normal gameplay.
+    // Other VESA applications keep their own independently versioned workers.
+    if('serviceWorker' in navigator&&location.protocol==='https:'||(
+      'serviceWorker' in navigator&&location.hostname==='127.0.0.1')){
+      navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});
+    }
     autoFitBoardToViewport();
     loadCareerAndSavedState();
     // Initialize in 'idle' Ready-to-Start state (clocks paused, waiting for user to click Start Game)
