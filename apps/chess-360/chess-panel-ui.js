@@ -34,7 +34,7 @@
   extra.className='chess-learning-content';
   const extras=[
     'mainCategorySwitcher','.universal-tier-strip','#chessWinningIdeaCard',
-    '#playHubQuickCards','.career-bar','#companionPetCard',
+    '.career-bar','#companionPetCard',
     '.coach-card','.production-matrix','.telemetry-grid','.graph-wrap'
   ];
   if(gameTab&&moveList&&gameTab.contains(moveList)){
@@ -44,6 +44,8 @@
       if(node)extra.appendChild(node);
     });
     optional.append(summary,extra);
+    const quick=gameTab.querySelector('#playHubQuickCards');
+    if(quick&&status)status.after(quick);
     gameTab.append(moveList,optional);
     moveList.classList.add('chess-primary-history');
     const status=gameTab.querySelector('.status-banner');
