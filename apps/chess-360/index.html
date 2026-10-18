@@ -6524,6 +6524,7 @@
       date: nowStr,
       category: currentCategory,
       variant: activeRuleVariant,
+      gameMode,
       aiLevel,
       humanColor,
       whiteTime,
@@ -6555,7 +6556,13 @@
     isAiThinking = false;
 
     setGameCategoryMode(item.category || 'serious');
-    activeRuleVariant = item.variant || 'standard';
+    activeRuleVariant=item.variant||'standard';
+    // Backward compatible with saved-copy entries that predate the mode field.
+    gameMode=['ai','pvp','chess960','handbrain','aivsai'].includes(item.gameMode)
+      ?item.gameMode
+      :(['pvp','chess960','handbrain'].includes(activeRuleVariant)?activeRuleVariant:'ai');
+    isChess960=gameMode==='chess960';
+    isHandAndBrain=gameMode==='handbrain';
     applyUniversalTier(item.aiLevel || 3);
     humanColor = item.humanColor || 'w';
     baseTimeSeconds = item.baseTimeSeconds ?? 600;
@@ -6592,8 +6599,8 @@
     blackTime = item.blackTime ?? baseTimeSeconds;
     boardFlipped = (humanColor === 'b');
     timeTravelIndex = -1;
-    matchState = 'playing';
-    startClockLoop();
+    // Restoring a saved game must never start a timer or AI without user intent.
+    matchState='paused';
     renderAll();
     updateRewindScrubberUI();
 
@@ -6623,24 +6630,40 @@
     }
 
     listEl.innerHTML = '';
-    vault.forEach(g => {
-      const row = document.createElement('div');
-      row.className = 'vault-item';
-      const catBadge = g.category === 'fun' ? '🎉 Fun' : '🏆 Serious';
-      row.innerHTML = `
-        <div class="vault-meta">
-          <span class="vault-title">${g.title}</span>
-          <span class="vault-sub">${catBadge} • ${g.moveCount || 0} moves • ⏱️ ${formatClock(g.whiteTime || 0)} • ${g.date || ''}</span>
-        </div>
-        <div class="vault-actions">
-          <button type="button" class="btn btn-start-success" data-load-id="${g.id}" style="padding:0.2rem 0.5rem; font-size:0.68rem;">▶ Load & Rewind</button>
-          <button type="button" class="btn" data-del-id="${g.id}" style="padding:0.2rem 0.4rem; font-size:0.68rem; color:#f87171;">🗑️</button>
-        </div>
-      `;
-      row.querySelector('[data-load-id]')?.addEventListener('click', () => loadGameFromVaultById(g.id));
-      row.querySelector('[data-del-id]')?.addEventListener('click', () => deleteGameFromVaultById(g.id));
-      listEl.appendChild(row);
+    // Trusted static nodes; saved titles and uploaded copies are never parsed as HTML.
+    vault.forEach(g=>{
+      const row=document.createElement('div');row.className='vault-item';
+      const meta=document.createElement('div');meta.className='vault-meta';
+      const title=document.createElement('span');title.className='vault-title';
+      title.textContent=String(g.title||'Saved Game');
+      const summary=document.createElement('span');summary.className='vault-sub';
+      const catBadge=g.category==='fun'?'🎉 Fun':'🏆 Serious';
+      const safeMoves=Number.isFinite(Number(g.moveCount))?Math.max(0,Number(g.moveCount)):0;
+      const safeTime=Number.isFinite(Number(g.whiteTime))?Math.max(0,Number(g.whiteTime)):0;
+      summary.textContent=catBadge+' • '+safeMoves+' moves • ⏱️ '+formatClock(safeTime)+' • '+String(g.date||'');
+      meta.append(title,summary);
+      const actions=document.createElement('div');actions.className='vault-actions';
+      const load=document.createElement('button');load.type='button';load.className='btn btn-start-success';
+      load.textContent='▶ Load & Rewind';load.style.cssText='padding:0.2rem 0.5rem;font-size:0.68rem';
+      load.addEventListener('click',()=>loadGameFromVaultById(g.id));
+      const del=document.createElement('button');del.type='button';del.className='btn';
+      del.textContent='🗑️';del.setAttribute('aria-label','Delete saved game');
+      del.style.cssText='padding:0.2rem 0.4rem;font-size:0.68rem;color:#f87171';
+      del.addEventListener('click',()=>deleteGameFromVaultById(g.id));
+      actions.append(load,del);row.append(meta,actions);listEl.appendChild(row);
     });
+    const quickCards=document.getElementById('playHubQuickCards');
+    if(quickCards){
+      let resume=document.getElementById('cardResumeLast');
+      if(!resume){
+        resume=document.createElement('button');resume.type='button';
+        resume.id='cardResumeLast';resume.className='play-hub-card';
+        resume.innerHTML='<div class="play-hub-icon">📂</div><div><strong>Continue saved game</strong><div class="play-hub-sub">Pick up right where you left off</div></div>';
+        quickCards.appendChild(resume);
+      }
+      resume.hidden=vault.length===0;
+      resume.onclick=()=>{if(vault.length>0)loadGameFromVaultById(vault[0].id);};
+    }
   }
 
   function updateRewindScrubberUI() {
