@@ -1,3 +1,14 @@
+## NEW G3D-05 LICENSED SCULPTING PASS — GitHub-only checkpoint (2026-10-18)
+**True source:** \`feature/chess-real-3d-mesh-20261018\`. **Stable public main:** \`2a374c264b0700a2f044652da44ec417d8772a0e\`. Realistic upgraded 3D is **NOT YET PUBLIC LIVE**.
+
+- **Official CC0 asset downloaded, validated and COMMITTED to branch:** Poly Haven "Chess Set" sculpted by Riley Queen. The official Poly Haven API supplied a 1K glTF with 33 mesh nodes (board + 32 chess pieces), a 1.73 MB buffer, nine 1K PBR JPEG maps, official MD5s and manifest. Complete file bundle **6,983,829 bytes** and per-file SHA-256 manifest; **no runtime CDN**.
+- **Offline files**: \`apps/chess-360/assets/real3d/chess_set_1k.gltf\`, \`chess_set.bin\`, \`textures/*.jpg\`, \`MANIFEST.json\`, \`LICENSE_CC0.txt\`. Reproducible build-time importer in \`tools/chess-real-3d-import.py\`, with 9 MB hard limit and licensed-source checks; [vendor CI evidence #39142051520](https://github.com/venkatbangla-boop/vesahost/actions/runs/39142051520) **SUCCESS**.
+- **Pinned MIT renderer fully committed**: \`apps/chess-360/vendor/three.module.js\`, \`three.core.js\`, \`GLTFLoader.js\`, \`BufferGeometryUtils.js\`, \`THREE_LICENSE_MIT.txt\`; Three.js 0.180.0 from npm, local/no CDN; [vendor CI #39142524734](https://github.com/venkatbangla-boop/vesahost/actions/runs/39142524734) **SUCCESS**.
+- **Actual prototype:** \`apps/chess-360/chess-real-3d-studio.mjs\` lazy-loads on explicit Real 3D ON, physically lit sculpted meshes, walnut/maple tactile board, soft shadows, 360 camera and perspective ray picking; \`index.html\` falls back automatically to the previously accepted custom WebGL and then 2D when necessary. Portable offline cache includes models and dependencies.
+- **Pending mandatory proof:** Real browser Three.js load and screenshot parity under the updated \`tests/chess-real-3d-browser.cjs\`, then 3D capture/promotion/castling/flip/restore/context-loss, iPhone WebKit, 19-app regression, offline and visual comparison to approved demo. The pending CI run is not a PASS and **nothing has been merged into main**.
+- **Do not skip the visual gate:** procedural first/second screenshots are distinctly below demo reference quality; sculpted licensed model must be inspected in browser after full load before promotion.
+- **Exact next action:** check latest GH Actions \`Chess Beast 360 V2 acceptance\` for the branch, fix any Three imports or 3D scene rendering issue, retrieve \`real-sculpted-cc0-1440.png\` and mobile image, compare to provided original reference, then fix studio quality + synchronize full Chess rules. Commit and update this document. Only then consider guarded main.
+
 # Chess Beast 360 — TRUE 3D Github continuation checkpoint
 Last updated: 2026-10-18. Official requirements: [master blueprint](CHESS_BEAST_360_REAL_3D_MASTER_BLUEPRINT.md).
 
