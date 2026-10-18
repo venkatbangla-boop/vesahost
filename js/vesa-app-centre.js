@@ -1,6 +1,6 @@
 /*
  * App Centre explorer: display-only catalogue adapter.
- * Owner: app discovery, 19-route categorization, search, language labels and
+ * Owner: app discovery, 20-route categorization, search, language labels and
  * keyboard-accessible filters. Never reads or writes domain records, auth
  * secrets, sibling storage or approval state. Existing catalogue owns routes.
  * Usage: new VesaAppCentreExplorer({catalogue,filters,search,clear,status,count}).mount()
@@ -86,7 +86,7 @@ const SUMMARIES=Object.freeze({
  'shipment-documentation':['Prepare draft shipping files, quantities and documents.','খসড়া শিপিং ফাইল, পরিমাণ ও নথি প্রস্তুত করুন।','ड्राफ्ट शिपिंग फाइल, मात्रा और दस्तावेज बनाएँ।','Draft shipping files, quantities, documents தயாரிக்கவும்.'],
  'claims-disputes':['Follow claim cases, source evidence and settlement records.','ক্লেইম মামলা, প্রমাণ ও নিষ্পত্তির রেকর্ড দেখুন।','क्लेम मामले, प्रमाण और निपटान रिकॉर्ड देखें।','Claim cases, evidence, settlement பதிவுகளைக் கண்காணிக்கவும்.'],
  'buyer-crm':['Manage buyer enquiries, opportunities and follow-ups locally.','বায়ার এনকোয়ারি, সুযোগ ও ফলো-আপ স্থানীয়ভাবে রাখুন।','बायर पूछताछ, अवसर और फॉलो-अप स्थानीय रूप से रखें।','Buyer enquiry, opportunity, follow-up-களை நிர்வகிக்கவும்.'],
- 'chess-360':['Play chess offline with a built-in engine. Powered by Ajanva.','অফলাইনে চেস খেলুন। Powered by Ajanva.','ऑफलाइन शतरंज खेलें। Powered by Ajanva.','Offline Chess விளையாடுங்கள். Powered by Ajanva.'],
+ 'chess-360':['Play chess offline with a built-in engine. Powered by EGENVA.','অফলাইনে চেস খেলুন। Powered by EGENVA.','ऑफलाइन शतरंज खेलें। Powered by EGENVA.','Offline Chess விளையாடுங்கள். Powered by EGENVA.'],
  'factory-vendor':['Review factory sites, declared capacities and documents.','ফ্যাক্টরি সাইট, ঘোষিত সক্ষমতা ও নথি দেখুন।','फैक्ट्री साइट, घोषित क्षमता और दस्तावेज देखें।','Factory sites, declared capacity, documents பார்க்கவும்.']
 });
 class VesaAppCentreExplorer {
