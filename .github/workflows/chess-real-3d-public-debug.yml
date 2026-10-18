@@ -1,0 +1,34 @@
+name: Chess 3D public diagnostic
+on:
+  push:
+    branches: [feature/chess-real-3d-mesh-20261018]
+    paths:
+      - 'tests/chess-real-3d-public-debug.cjs'
+      - '.github/workflows/chess-real-3d-public-debug.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  external-public:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install real Chromium with software GPU
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Isolate live public 3D renderer initialization
+        run: |
+          node --check tests/chess-real-3d-public-debug.cjs
+          node tests/chess-real-3d-public-debug.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chess-real3d-public-debug-screenshots
+          path: output/chess-real3d-public-debug/*.png
+          if-no-files-found: ignore
+          retention-days: 5
