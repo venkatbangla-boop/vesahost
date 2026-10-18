@@ -692,3 +692,30 @@ body.chess-beast-v2 #tabPlay #cardResumeLast{
  background:#244a3c;
 }
 body.chess-beast-v2 #tabPlay #cardResumeLast .play-hub-sub{font-size:12px;color:#c0e3d1}
+
+
+/* Chrome 67%-75% browser zoom gives a much wider CSS viewport while shrinking
+   physical text. Scale side-panel typography up at that equivalent viewport
+   without making cards or labels overlap. Also helps real ultra-wide monitors. */
+@media(min-width:1700px){
+ body.chess-beast-v2 #appTitleText{font-size:21px}
+ body.chess-beast-v2 #appSubText{font-size:15px}
+ body.chess-beast-v2 .chess-brand-tagline{font-size:15px}
+ body.chess-beast-v2 .beast-home{font-size:16px}
+ body.chess-beast-v2 .power-dock-grid .btn{font-size:18px}
+ body.chess-beast-v2 .utility-ribbon .btn{font-size:17px}
+ body.chess-beast-v2 .chess-side-label{font-size:13px}
+ body.chess-beast-v2 .chess-appearance-group summary{font-size:17px}
+ body.chess-beast-v2 .tabs-header .tab-btn{font-size:19px}
+ body.chess-beast-v2 #tabPlay #gameStatusTitle{font-size:18px}
+ body.chess-beast-v2 #tabPlay .opening-tag{font-size:16px}
+ body.chess-beast-v2 #tabPlay .chess-primary-history .form-label{font-size:18px}
+ body.chess-beast-v2 #tabPlay #halfMoveCounter{font-size:15px!important}
+ body.chess-beast-v2 .moves-table td{font-size:17px}
+ body.chess-beast-v2 #tabPlay .rewind-scrubber-row span{font-size:15px!important}
+ body.chess-beast-v2 .right-dock-footer .board-controls .btn{font-size:17px}
+ body.chess-beast-v2 .right-dock-footer .chess-more-tools>summary{font-size:16px}
+ body.chess-beast-v2 .tab-content .form-group>.form-label{font-size:17px}
+ body.chess-beast-v2 .tab-content :is(.form-label,.stat-label,.opening-tag,.coach-text,.knowledge-body,.vault-sub,.level-desc){font-size:16px}
+ body.chess-beast-v2 #tabPlay .time-travel-bar .btn{font-size:15px!important}
+}
