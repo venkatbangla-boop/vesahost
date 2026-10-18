@@ -69,6 +69,45 @@ class Real3DQa{
       'Cinematic perspective board must fill most of the view, not look tiny '+JSON.stringify(foreground));
     return state;
   }
+  async verifyStudio(page,width){
+    await page.waitForFunction(()=>{
+      const state=window.__chessBeastStudioState?.();
+      const text=document.getElementById('chessReal3DStatus')?.textContent||'';
+      return state?.ready||/unavailable/.test(text);
+    },null,{timeout:40000});
+    const state=await page.evaluate(()=>window.__chessBeastStudioState());
+    assert.equal(state.ready,true,'Licensed sculpted 3D did not load '+width+' '+JSON.stringify(state));
+    assert.equal(state.active,true,'High-quality 3D overlay not visible');
+    assert.equal(state.loadedModels,12,'Six licensed sculpts for each side');
+    assert.equal(state.pieceCount,32,'Each chess piece must be its own real 3D mesh instance');
+    assert.equal(state.assetsOffline,true);
+    assert.equal(state.remoteRuntimeRequests,0,'No runtime CDN downloads');
+    assert.equal(state.shadowMap,true,'Directional soft shadows');
+    assert.ok(state.frames>=1,'Physically lit Three.js scene rendered at least once');
+    assert.ok(state.width>=250&&state.height>=250,'Canvas remains readable');
+    assert.equal(await page.locator('#chessStudioCanvas').isVisible(),true);
+    const probe=await page.evaluate(()=>{
+      const canvas=document.getElementById('chessStudioCanvas');
+      const pixels=document.createElement('canvas');
+      pixels.width=canvas.width;pixels.height=canvas.height;
+      const ctx=pixels.getContext('2d');
+      ctx.drawImage(canvas,0,0);
+      const samples=[[.25,.5],[.5,.5],[.76,.68],[.55,.86]]
+        .map(([x,y])=>[...ctx.getImageData(Math.floor(pixels.width*x),
+          Math.floor(pixels.height*y),1,1).data]);
+      return {samples,rawWidth:canvas.width,rawHeight:canvas.height};
+    });
+    assert.ok(new Set(probe.samples.map(row=>row.join(','))).size>=2,'Studio render is not blank');
+    fs.mkdirSync(imageDir,{recursive:true});
+    if(width===1440)await page.screenshot({
+      path:path.join(imageDir,'real-sculpted-cc0-1440.png'),
+      animations:'disabled'});
+    if(width===390)await page.screenshot({
+      path:path.join(imageDir,'real-sculpted-cc0-mobile-390.png'),
+      animations:'disabled'});
+    console.log('CHESS_REAL_3D_STUDIO_PASS '+JSON.stringify({width,...state}));
+    return state;
+  }
   async mouseSquare(page,sq){
     const p=await page.evaluate(n=>window.__chessBeastReal3DSquare(n),sq);
     assert.ok(p&&Number.isFinite(p.x)&&Number.isFinite(p.y),'3D projection exists '+sq);
@@ -118,6 +157,7 @@ class Real3DQa{
     const {page,ctx,errors}=await this.open(browser,{viewport:{width,height}});
     try{
       const initial=await this.enable(page);
+      const studio=await this.verifyStudio(page,width);
       if(width===1440){
         fs.mkdirSync(imageDir,{recursive:true});
         await page.waitForTimeout(1650); // Let nonessential toast leave the frame.
@@ -148,6 +188,7 @@ class Real3DQa{
       try{
         const state=await this.enable(page);
         assert.equal(state.pieceCount,32);
+        const studio=await this.verifyStudio(page,390);
         await page.locator('#btnCameraRotate').click();
         const box=await page.locator('#chessReal3DCanvas').boundingBox();
         const x=box.x+box.width*.5,y=box.y+box.height*.5;
