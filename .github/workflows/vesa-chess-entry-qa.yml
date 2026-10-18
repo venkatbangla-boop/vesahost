@@ -2,7 +2,7 @@
 name: VESA UX correction and Chess 360 acceptance
 on:
   push:
-    branches: [main]
+    branches: [main, feature/aql-direct-chess-ux-20261018]
     paths:
       - 'login/index.html'
       - 'apps/index.html'
@@ -13,6 +13,7 @@ on:
       - 'js/vesa-app-centre.js'
       - 'js/preferences.js'
       - 'tests/vesa-chess-20th-app.cjs'
+      - 'tests/vesa-19-app-real-screens.cjs'
       - '.github/workflows/vesa-chess-entry-qa.yml'
   workflow_dispatch:
 permissions:
