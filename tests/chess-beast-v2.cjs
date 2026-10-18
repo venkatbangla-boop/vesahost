@@ -24,7 +24,9 @@ class ChessBeastV2QA {
     const core=html.slice(from,to);
     assert.ok(worker.includes(core),'worker runs precisely the same ChessEngine as UI');
     new vm.Script(worker,{filename:'chess-ai-worker.js'});
-    const blocks=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+    const blocks=[...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)]
+      .filter(m=>!/\btype\s*=\s*["']importmap["']/i.test(m[1]))
+      .map(m=>m[2]);
     for(const block of blocks)new vm.Script(block,{filename:'chess-inline.js'});
     assert.ok(worker.includes('class ChessBeastWorkerService'));
     assert.ok(html.includes('class ChessBeastSearchCoordinator'));
