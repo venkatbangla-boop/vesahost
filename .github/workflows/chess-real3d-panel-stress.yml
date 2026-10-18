@@ -1,0 +1,41 @@
+name: Chess Real 3D panel hardening
+on:
+  push:
+    branches: [feature/chess-real3d-panel-hardening-20261018]
+    paths:
+      - 'tests/chess-real-3d-panel-stress.cjs'
+      - '.github/workflows/chess-real3d-panel-stress.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: chess-real3d-panel-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  3d-panel-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install real Chromium
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          CHROME="$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')"
+          echo "CHROMIUM_PATH=$CHROME" >> "$GITHUB_ENV"
+      - name: Real 3D with both panels hidden and restored
+        run: |
+          set -euo pipefail
+          node --check tests/chess-real-3d-panel-stress.cjs
+          node tests/chess-real-3d-panel-stress.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chess-real3d-panel-stress-screenshots
+          path: output/chess-real3d-panel/*.png
+          if-no-files-found: ignore
+          retention-days: 7
