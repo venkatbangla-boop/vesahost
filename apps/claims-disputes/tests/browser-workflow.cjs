@@ -80,6 +80,12 @@ async function run(){
    await page.screenshot({path:path.join(out,'claims-app14-home-'+width+'.png')});
   }
   await page.setViewportSize({width:1280,height:900});
+  // G5-15: real claim input/keyboard Escape cannot persist unsigned allegation.
+  await action('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'caseNumber','New Case focuses case identity');
+  await page.keyboard.press('Escape');await page.locator('#clmDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  assert.equal((await records()).length,0,'Escaping unsubmitted allegation leaves no case');
   await action('new');await fill({
    caseNumber:'SYN CLAIM-001',buyer:'SYN BUYER',supplier:'SYN SUPPLIER',poNo:'SYN-PO-1',
    shipmentRef:'SYN-SHIP-1',claimCategory:'SYN SHORT SHIPMENT',
@@ -87,7 +93,9 @@ async function run(){
    allegationSummary:'SYN alleged 20 pieces short',reviewedBy:'SYN CLAIM OWNER',
    reviewDate:'2026-10-17'});await submit();
   assert.equal((await records()).length,1);assert.match((await records())[0].authority,/NO LIABILITY/);
-  await action('add-finding');await fill({
+  await action('add-finding');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'category','Claim Finding starts at category');
+  await fill({
    category:'SYN SHORTAGE',description:'SYN CARTON DISCREPANCY',
    affectedQty:'20',quantityUnit:'pieces',sourceRef:'SYN CARTON COUNT SOURCE',
    sourceDate:'2026-10-17',reviewedBy:'SYN QA',reviewDate:'2026-10-17',
@@ -104,7 +112,9 @@ async function run(){
   await action('summary');
   assert.match(await page.locator('.clm-card').last().innerText(),/125\.50/);
   assert.match(await page.locator('.clm-card').last().innerText(),/Unvalued Findings/);
-  await action('evidence');await action('add-evidence');await fill({
+  await action('evidence');await action('add-evidence');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'sourceApp','Source Evidence starts at origin');
+  await fill({
    sourceApp:'AQL',recordType:'InspectionRef',recordId:'SYN-AQL-1',revisionId:'R2',
    sourceRef:'SYN AQL SOURCE EXPORT',evidenceSummary:'SYN AQL finding, liability not admitted',
    sourceDate:'2026-10-17',reviewedBy:'SYN INSPECTOR',reviewDate:'2026-10-17'});await submit();
@@ -114,14 +124,18 @@ async function run(){
    receivedDate:'2026-10-17',sourceRef:'SYN SUPPLIER MESSAGE COPY',
    reviewedBy:'SYN MERCHANDISER',reviewDate:'2026-10-17',stance:'disputed'});await submit();
   assert.equal((await records())[0].responses.length,1);
-  await action('agreements');await action('add-agreement');await fill({
+  await action('agreements');await action('add-agreement');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'agreedAmount','Signed evidence form starts at amount');
+  await fill({
    agreedAmount:'80.00',currency:'USD',agreementDate:'2026-10-17',
    sourceRef:'SYN SIGNED AGREEMENT SOURCE',externalAuthorityRef:'SYN EXTERNAL SIGNED DOCUMENT',
    externallyNamedParty:'SYN BUYER AND SUPPLIER',reviewedBy:'SYN REVIEWER',
    reviewDate:'2026-10-17'});await submit();
   const agreedId=(await records())[0].agreements[0].id;
   assert.equal((await records())[0].agreements.length,1);
-  await action('settlements');await action('add-settlement');await fill({
+  await action('settlements');await action('add-settlement');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'agreementId','Settlement starts at documented agreement');
+  await fill({
    agreementId:agreedId,kind:'draft-credit',amount:'20.00',currency:'USD',
    recordedDate:'2026-10-17',sourceRef:'SYN DRAFT CREDIT MEMO',
    reviewedBy:'SYN FINANCE',reviewDate:'2026-10-17'});await submit();
@@ -137,7 +151,9 @@ async function run(){
   assert.match(await page.locator('.clm-card').last().innerText(),/50\.00/,'Partial locally evidenced receipt leaves balance');
   assert.equal(await page.evaluate(()=>window.VesaClaims360.E.localStatus(window.VesaClaims360.current).state),'open',
    'Partial receipt cannot auto-close/auto-agree claim');
-  await action('decisions');await action('add-decision');await fill({
+  await action('decisions');await action('add-decision');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'newState','Case decision starts at state');
+  await fill({
    newState:'agreed',decisionDate:'2026-10-17',decisionSourceRef:'SYN CASE DECISION REGISTER',
    reviewedBy:'SYN CLAIM REVIEW',reviewDate:'2026-10-17',
    externalAuthorityRef:'SYN EXTERNAL SIGNED AUTHORITY',externallyNamedParty:'SYN BUYER+SUPPLIER',
@@ -206,6 +222,16 @@ async function run(){
    assert(actual<=width+1,width+'px claims horizontal overflow '+actual);
    if([390,768,1280].includes(width))await page.screenshot({path:path.join(out,'claims-app14-'+width+'.png')});
   }
+  // Real editable claim modal under phone-sized width, not only Home screenshots.
+  await page.setViewportSize({width:320,height:720});
+  await action('home');await action('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'caseNumber','320px Claim form begins at case ID');
+  assert((await page.locator('#clmDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+   '320px Claim dialog fits width');
+  await page.screenshot({path:path.join(out,'claims-app14-new-dialog-320.png')});
+  await page.keyboard.press('Escape');await page.locator('#clmDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  await action('continue');
   await page.setViewportSize({width:1280,height:900});
   for(const [lang,expected]of [['en','Alleged Findings'],['bn','অভিযোগের তথ্য'],['hi','दावे के तथ्य'],['ta','Claim Findings']]){
    const state=JSON.stringify(await records());
