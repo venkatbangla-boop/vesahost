@@ -4,7 +4,7 @@
 
 This directory preserves the **original handover text, unedited**, from the user-provided 15-App Master Roadmap package. The 15 exact technical specifications live in the repository-root [`blueprints/`](../../blueprints/) folder so every new Work/Codex session can open its next app directly.
 
-**Latest implementation proof:** [25_G4_W4_COMPLETE_AND_G5_ACTIVE.md](25_G4_W4_COMPLETE_AND_G5_ACTIVE.md) — W4 four apps verified LIVE and G5 Costing first fix, next G5-02 Packing & Container active forms. Previous reports: [24_G4_W4_BUYER_CRM_G5_NEXT.md](24_G4_W4_BUYER_CRM_G5_NEXT.md) and [23_G4_W3_FOUR_APP_PROOF_AND_W4.md](23_G4_W3_FOUR_APP_PROOF_AND_W4.md).
+**Latest implementation proof:** [26_G5_FORM_QA_WAVE_A.md](26_G5_FORM_QA_WAVE_A.md) — G5 Packing, Commission, Tech Pack, Purchase Order and LC & Payment verified; NEXT Sampling & Approval active-form QA. Previous: [25_G4_W4_COMPLETE_AND_G5_ACTIVE.md](25_G4_W4_COMPLETE_AND_G5_ACTIVE.md) and [23_G4_W3_FOUR_APP_PROOF_AND_W4.md](23_G4_W3_FOUR_APP_PROOF_AND_W4.md).
 
 ## Reliable lookup for every new session
 

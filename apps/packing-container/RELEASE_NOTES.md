@@ -1,5 +1,12 @@
 # APP-01 Packing & Container 360 — Verified Local Handover (2026-10-16)
 
+## 2026-10-18 G5-02 actual editable-dialog focus — LIVE
+
+New Plan and Edit Carton dialogs focus their first source field; Escape returns to the launching button at mobile 320px. App-only patch `95e6fe110e1fd2c7bda0e13dd5d56bf211b75ccb`, [feature Chromium #39112448733](https://github.com/venkatbangla-boop/vesahost/actions/runs/39112448733), [main Packing #39112515743](https://github.com/venkatbangla-boop/vesahost/actions/runs/39112515743), [Pages #39112515653](https://github.com/venkatbangla-boop/vesahost/actions/runs/39112515653), [public exact bytes #39112515781](https://github.com/venkatbangla-boop/vesahost/actions/runs/39112515781) SUCCESS. Pure CBM/carton/physical-load restrictions, report and portable schema frozen. Next wave audit: [G5 evidence](../../docs/portfolio/26_G5_FORM_QA_WAVE_A.md).
+
+---
+
+
 ## Source and ownership
 The approved original `blueprints/APP-01_packing-container.md` (SHA256 `85d1df576bbad7fca869c87f10467b401711147e3d7ac3db888737b23d8230fd`) came from the user-provided 15-app handover ZIP. Code owner `apps/packing-container/index.html` (single editable application HTML), regression owner `apps/packing-container/tests/`, VESA central integration `js/app-catalogue.js`, `js/preferences.js`; shared shell untouched. Stored records are `vesa.packing-container.records.v1.<user>`, version `VESA-PACK360-PLAN-1`; portable file `.vesapack` version `VESA-PACK360-COPY-1`. No network upload.
 

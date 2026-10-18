@@ -1,5 +1,14 @@
 # VESA TNA 360 — Repository Instructions for VS Code Codex
 
+## 2026-10-18 — G5-02..06 VERIFIED; NEXT G5-07 SAMPLING & APPROVAL
+
+**Current verified app/test baseline:** `main` `1fd22dc7352279361bedc55af0650c2d4d828ee1`. G5 Packing and Order & Commission received **two reversible UI field-focus/Escape fixes**, each independently Node/Chromium tested and Pages/public-byte verified. G5 Tech Pack, Purchase Order and LC & Payment received **three independent test-only** real-browser active-dialog/focus/mobile acceptance expansions; all feature CI PASS, LC main CI also PASS. App calculations, financial status, original blueprints, saved-copy contracts, one VESA shell, 4 locales, sibling TNA/PPM/AQL unchanged. Full exact SHA, branch CI, Pages and rollback: [G5 Wave A proof](https://github.com/venkatbangla-boop/vesahost/blob/main/docs/portfolio/26_G5_FORM_QA_WAVE_A.md).
+
+**EXACT NEXT G5-07:** Sampling & Approval 360 `blueprints/APP-04_sampling-approval.md`, `apps/sampling-approval/src/application/workspace-controller.js`, actual browser acceptance tests. Audit all original sampling rounds, buyer-decision evidence, revision states and review exceptions before any edit. Add one reversible proven app-owned 320/390px focus/Escape/report or test coverage improvement; verify real Chromium/Node/sibling and guarded main. Never infer buyer approval, rewrite source engines, or request the original ZIP. G5 opened-screen matrix is 19 apps/38 cases/334 screenshots, not full acceptance. Human UAT remains **1 PASS / 0 FAIL / 48 NOT TESTED**.
+
+---
+
+
 ## 2026-10-18 — G4-W4 ALL FOUR LIVE, G5-01 COSTING LIVE — NEXT G5-02 PACKING
 
 **Latest verified application source:** `main` `4fbb7efa1f326c1e93c1bde798a63a5445a2484f`. The four W4 app original Home workflows are polished and LIVE: Buyer CRM **8**, Supplier Comparison **8**, Claims **10**, Product Development **9** panels. Existing pure domain engines, TNA CPM/baselines, PPM 168, AQL Ac-Re, browser records and local saved copies unchanged. No synthetic practice writes or fabricated commercial approvals. Individual exact code SHA, Chromium CI, Pages and public-byte proof: [25_G4_W4_COMPLETE_AND_G5_ACTIVE.md](docs/portfolio/25_G4_W4_COMPLETE_AND_G5_ACTIVE.md).
