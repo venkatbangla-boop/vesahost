@@ -91,12 +91,14 @@
     }
     reset(){
       this.state={tilt:26,yaw:0,spin:0};
+      this.quickShowcaseButton?.setAttribute('aria-pressed','false');
       this.save();this.draw();this.syncButton();
     }
     showcase(){
       // Three-quarter product-view preset, visually closer to the approved
       // wood-board demo. This changes only the camera, never the game state.
       this.state={tilt:48,yaw:10,spin:8};
+      this.quickShowcaseButton?.setAttribute('aria-pressed',String(this.is3D));
       this.save();this.draw();this.syncButton();
     }
     adjust({tilt=0,yaw=0,spin=0}){
