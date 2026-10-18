@@ -302,6 +302,10 @@ export class ChessBeast3DStudio {
       assetsOffline:true,remoteRuntimeRequests:0,
       loadedModels:Object.keys(this.prototypes).length,
       pieceCount:this.instances.size,shadowMap:!!this.renderer?.shadowMap.enabled,
+      pieceSquares:[...this.instances.values()].map(obj=>({
+        sq:obj.userData.square,type:obj.userData.type,color:obj.userData.color
+      })).sort((a,b)=>a.sq-b.sq),
+      flipped:!!this.state.flipped,rotating:!!this.getOrbit()?.rotateMode,
       width:this.w||0,height:this.h||0,error:this.error};
   }
 }
