@@ -1529,12 +1529,12 @@
     </div>
 
     <!-- Unobstructed Live Move & Engine Status Ticker (Never Covers the Board!) -->
-    <div class="live-ticker-strip" id="liveTickerStrip">
+    <div class="live-ticker-strip" id="liveTickerStrip" aria-label="Live game and AI status">
       <div class="ticker-left">
         <span class="last-move-pill" id="liveLastMovePill">♟️ Ready</span>
         <span id="liveTurnSummaryText" style="color:var(--text-secondary); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Click Start to Play</span>
       </div>
-      <div class="thinking-banner" id="thinkingBanner">
+      <div class="thinking-banner" id="thinkingBanner" role="status" aria-live="polite" aria-atomic="true">
         <div class="spinner"></div>
         <span id="thinkingText">AI thinking...</span>
       </div>
