@@ -1431,6 +1431,7 @@
 <link rel="stylesheet" href="./chess-match-experience.css">
 <link rel="stylesheet" href="./chess-pro-ux.css">
 <link rel="stylesheet" href="./chess-panel-ui.css">
+<link rel="stylesheet" href="./chess-real-3d.css">
 </head>
 <body class="chess-beast-v2" data-board-theme="green">
 
@@ -1461,6 +1462,7 @@
     </button>
   </div>
 
+  <button class="chess-3d-shortcut" type="button" id="btn3DDirect" aria-pressed="false" title="Real 3D chess board with solid 3D pieces. Click to toggle."><span aria-hidden="true">♜</span> Real 3D Board <span id="chess3DDirectState">OFF</span></button>
   <!-- Clean Vertical Navigation Links -->
 
   <!-- Chess-first navigation: strong actions first, secondary controls grouped. -->
@@ -1615,6 +1617,7 @@
           </div>
         </div>
         <div class="chessboard" id="chessboard" role="grid" aria-label="Chessboard"></div>
+        <canvas id="chessReal3DCanvas" aria-label="Interactive real 3D chess board. Use Rotate mode for camera, Move mode to play pieces." hidden></canvas>
         <!-- Hardware-Accelerated Move Particle & Shockwave FX Canvas -->
         <canvas class="board-fx-canvas" id="boardFxCanvas" width="600" height="600"></canvas>
         <!-- 3rd-Eye SVG Tactical, Protection & Move Beam Overlay -->
@@ -1642,7 +1645,8 @@
       <button class="btn" id="btnCameraSpinRight" type="button" aria-label="Spin board clockwise 45 degrees">↷ 45°</button>
       <button class="btn" id="btnCameraReset" type="button">Reset angle</button>
       <output id="chessCameraAngles" class="beast-camera-angle" aria-live="off">Tilt 26° · Orbit 0° · Spin 0°</output>
-      <span class="beast-camera-help">Rotate board → drag with mouse/finger. Alt + mouse drag also works. Turn Rotate OFF to move chess pieces.</span>
+      <span class="beast-camera-help">Rotate ON: mouse/finger drag orbits the board. Rotate OFF: select or drag 3D pieces. Keyboard chess board remains accessible.</span>
+      <span id="chessReal3DStatus" role="status">Solid 3D piece models · WebGL · 100% offline</span>
     </div>
 
     <!-- Bottom Player Card (Human by default) -->
@@ -2380,6 +2384,8 @@
 <script src="./chess-beast-ui.js"></script>
 <script src="./chess-report.js"></script>
 <script src="./chess-orbit.js"></script>
+<script src="./chess-real-3d-models.js"></script>
+<script src="./chess-real-3d.js"></script>
 <script>
 (function() {
   "use strict";
@@ -4093,6 +4099,14 @@
     tiltLabel:document.getElementById('lbl3DTiltAngle')
   });
   window.__chessBeastOrbitState=()=>chessOrbitController.debug();
+  const chessReal3D=new window.ChessBeastReal3D({
+    canvas:document.getElementById('chessReal3DCanvas'),
+    frame:document.getElementById('boardFrame'),
+    onSquareClick:sq=>onSquareClick(sq)
+  });
+  window.__chessBeastReal3DState=()=>chessReal3D.diagnostics();
+  window.__chessBeastReal3DSquare=sq=>chessReal3D.squareScreen(sq);
+  window.__chessBeastReal3DPick=(x,y)=>chessReal3D.pick(x,y);
   const thinkingBanner = document.getElementById('thinkingBanner');
   const gameStatusTitle = document.getElementById('gameStatusTitle');
   const openingNameDisplay = document.getElementById('openingNameDisplay');
@@ -5285,6 +5299,12 @@
     }
 
     renderTacticalArrows();
+    // Pure projection of the authoritative ChessEngine position. 3D has no
+    // independent game state, time control, promotion or legal move rules.
+    chessReal3D.sync(engine.board,{
+      selected:selectedSq,lastFrom,lastTo,check:kingInCheckSq,
+      legal:legalMovesFromSelected.map(m=>m.to),flipped:boardFlipped
+    });
     if(focused>=0){
       boardEl.querySelector('[data-sq="'+focused+'"]')?.focus({preventScroll:true});
     }
@@ -6572,10 +6592,31 @@
   document.getElementById('btnToggle3D').addEventListener('click', (e) => {
     const active = document.body.classList.toggle('board-3d');
     e.currentTarget.classList.toggle('active-toggle', active);
+    const ready=chessReal3D.enable(active);
+    const enabled=active&&ready;
     chessOrbitController.sync3D();
-    showToast(active ? "3D Board ON — use Rotate board controls underneath" : "2D Board ON — normal chess moves");
+    e.currentTarget.classList.toggle('active-toggle',enabled);
+    const direct=document.getElementById('btn3DDirect');
+    direct?.setAttribute('aria-pressed',String(enabled));
+    const state=document.getElementById('chess3DDirectState');
+    if(state)state.textContent=enabled?'ON':'OFF';
+    if(enabled){
+      chessReal3D.sync(engine.board,{selected:selectedSq,
+        lastFrom:engine.history.at(-1)?.move?.from??-1,
+        lastTo:engine.history.at(-1)?.move?.to??-1,
+        check:engine.inCheck(engine.turn)?engine.findKing(engine.turn):-1,
+        legal:legalMovesFromSelected.map(m=>m.to),flipped:boardFlipped});
+    }
+    showToast(enabled?'Real 3D ON — individual solid meshes. Use Rotate board to orbit.':
+      active&&!ready?'WebGL unavailable: switched to safe 2D board.':'2D Classic board ON');
   });
 
+  document.getElementById('btn3DDirect').addEventListener('click',()=>{
+    if(document.body.classList.contains('chess-left-hidden')){
+      document.getElementById('btnShowLeftPanel')?.click();
+    }
+    document.getElementById('btnToggle3D').click();
+  });
   document.getElementById('btnToggleBlindfold').addEventListener('click', (e) => {
     const active = document.body.classList.toggle('blindfold-mode');
     e.currentTarget.classList.toggle('active-toggle', active);
@@ -7278,6 +7319,7 @@
     }
     chessOrbitController.state.tilt=Math.min(65,Math.max(0,deg));
     chessOrbitController.draw();chessOrbitController.save();
+    chessReal3D.enable(document.body.classList.contains('board-3d'));
     chessOrbitController.sync3D();
   });
 
