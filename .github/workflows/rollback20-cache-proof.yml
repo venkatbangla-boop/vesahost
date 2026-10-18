@@ -2,7 +2,7 @@ name: VESA rollback 20-app cache proof
 on:
   push:
     branches: [fix/rollback20-mobile-cache-20261019]
-    paths: ['service-worker.js','apps/index.html','.github/workflows/rollback20-cache-proof.yml']
+    paths: ['service-worker.js','apps/index.html','tests/personal-demo-release.cjs','.github/workflows/rollback20-cache-proof.yml']
 permissions: {contents: read}
 jobs:
   verify:
