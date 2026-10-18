@@ -1,3 +1,11 @@
+## 2026-10-18 — TRUE sculpted model acceptance + smooth 3D motion (latest checkpoint)
+- **Still NOT LIVE**; public \`main\` remains \`2a374c264b0700a2f044652da44ec417d8772a0e\`. Owner required close demo visual comparison before release. Do not silently promote WIP.
+- [Real licensed 3D studio and special moves CI #39143503210](https://github.com/venkatbangla-boop/vesahost/actions/runs/39143503210) **2/2 SUCCESS**: genuine 12 Poly Haven sculpt shapes, 32 independent piece meshes, mouse/touch ray picking, 3D King/Rook castling, Queen promotion, undo, flipped board, switch 3D/2D, WebGL context-loss usable fallback. Android/desktop Chrome and emulated iPhone WebKit; 19 garment-app regression all PASS.
+- [Smooth 3D animation CI #39144017401](https://github.com/venkatbangla-boop/vesahost/actions/runs/39144017401) **2/2 SUCCESS**: retain same 3D object on moves and castles, 140-ms subtle/188-ms expressive, Off instant, reduced-motion compliance; original chess/PDF/save/AI and 19 apps unchanged.
+- **In-progress art pass** \`7efb5dbd\`, \`c52e4ed3\`, \`9e4ffe8b\`: desaturated walnut, darker lacquer frame, bounded tabletop, CSS bokeh studio ambience around a real WebGL scene, 45-degree orbit screenshot for manual comparison. Test run #39144427059 pending; **do not call it PASS until finished and screenshot inspected**.
+- **Next uncompleted gates:** compare \`real-sculpted-cc0-diagonal-1440.png\` against owner-approved cinematic demo; verify WebGL/PBR offline restart on same device with network truly disconnected, then update \`CHESS_BEAST_360_REAL_3D_VISUAL_QA.md\`. Human physical device UAT not verified, exact pixel parity with generated photograph not claimed.
+- **Continuity:** latest GitHub branch, workflows and this file are source of truth. Resume this exact art/offline acceptance gate, never redo prior accepted code or ask for old ZIP.
+
 ## NEW G3D-05 LICENSED SCULPTING PASS — GitHub-only checkpoint (2026-10-18)
 **True source:** \`feature/chess-real-3d-mesh-20261018\`. **Stable public main:** \`2a374c264b0700a2f044652da44ec417d8772a0e\`. Realistic upgraded 3D is **NOT YET PUBLIC LIVE**.
 
