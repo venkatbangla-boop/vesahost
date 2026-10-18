@@ -35,6 +35,7 @@ class Real3DQa{
   }
   async enable(page){
     assert.equal(await page.locator('#btn3DDirect').isVisible(),true,'Real 3D toggle discoverable');
+    assert.equal(await page.locator('#chess3DHud').isVisible(),false,'Camera HUD must not cover the ordinary 2D board');
     await page.locator('#btn3DDirect').click();
     await page.waitForFunction(()=>window.__chessBeastReal3DState().frames>0,{timeout:18000});
     const state=await page.evaluate(()=>window.__chessBeastReal3DState());
@@ -50,6 +51,39 @@ class Real3DQa{
     assert.equal(await page.locator('#chessCameraControls').isVisible(),true,'Camera controls visible');
     assert.equal(await page.locator('#chessReal3DCanvas').isVisible(),true,'Canvas visible');
     assert.equal(await page.locator('#btn3DDirect').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('#chess3DHud').isVisible(),true,'Real 3D camera controls must stay in the visible board');
+    const hud=await page.evaluate(()=>{
+      const frame=document.getElementById('boardFrame').getBoundingClientRect();
+      const group=document.getElementById('chess3DHud').getBoundingClientRect();
+      const buttons=['btnCameraQuickRotate','btnCameraQuickShowcase','btnCameraQuickReset']
+        .map(id=>{const r=document.getElementById(id).getBoundingClientRect();return {id,x:r.x,y:r.y,w:r.width,h:r.height};});
+      return {frame:{x:frame.x,y:frame.y,w:frame.width,h:frame.height},
+        group:{x:group.x,y:group.y,w:group.width,h:group.height},buttons};
+    });
+    assert.ok(hud.group.x>=hud.frame.x&&hud.group.x+hud.group.w<=hud.frame.x+hud.frame.w+2,
+      '3D camera HUD exceeds board width '+JSON.stringify(hud));
+    assert.ok(hud.group.y>=hud.frame.y&&hud.group.y+hud.group.h<=hud.frame.y+hud.frame.h,
+      '3D HUD must stay in board viewport '+JSON.stringify(hud));
+    for(const b of hud.buttons)assert.ok(b.w>=46&&b.h>=36,
+      'Camera action too tiny on phone '+JSON.stringify(b));
+    for(let i=0;i<hud.buttons.length;i++)for(let j=i+1;j<hud.buttons.length;j++){
+      const a=hud.buttons[i],b=hud.buttons[j];
+      assert.ok(a.x+a.w<=b.x+1||b.x+b.w<=a.x+1||a.y+a.h<=b.y+1||b.y+b.h<=a.y+1,
+        '3D HUD buttons overlap '+JSON.stringify(hud));
+    }
+    await page.locator('#btnCameraQuickShowcase').click();
+    await page.waitForFunction(()=>Math.round(window.__chessBeastOrbitState().tilt)===48);
+    assert.equal(await page.locator('#btnCameraQuickShowcase').getAttribute('aria-pressed'),'true',
+      'Showcase preset selection should be announced');
+    await page.locator('#btnCameraQuickRotate').click();
+    assert.equal(await page.locator('#btnCameraQuickRotate').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('#btnCameraRotate').getAttribute('aria-pressed'),'true',
+      'Quick and full camera controls stay in sync');
+    await page.locator('#btnCameraQuickRotate').click();
+    assert.equal(await page.locator('#btnCameraQuickRotate').getAttribute('aria-pressed'),'false');
+    await page.locator('#btnCameraQuickReset').click();
+    await page.waitForFunction(()=>Math.round(window.__chessBeastOrbitState().tilt)===26);
+    assert.equal(await page.locator('#btnCameraQuickShowcase').getAttribute('aria-pressed'),'false');
     const colors=await page.evaluate(()=>{
       const canvas=document.getElementById('chessReal3DCanvas');
       const gl=canvas.getContext('webgl'),p=new Uint8Array(4),result=[];
@@ -416,6 +450,8 @@ class Real3DQa{
     try{
       await this.runChromium(browser,1440,900);
       await this.runChromium(browser,390,844);
+      await this.runChromium(browser,320,760);
+      await this.runChromium(browser,2040,1110);
       await this.runMotion(browser);
       await this.switchTo3DMidGame(browser);
       await this.runWebkit();
