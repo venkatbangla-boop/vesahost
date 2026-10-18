@@ -73,7 +73,13 @@ body.chess-beast-v2 .beast-camera-toolbar .chess-real3d-note{
 body.chess-beast-v2 #chessStudioCanvas{
  position:absolute;inset:0;width:100%;height:100%;z-index:6;
  display:block;touch-action:none;cursor:pointer;border-radius:7px;
- background:transparent;outline-offset:3px;
+ background:
+  radial-gradient(circle 72px at 76% 7%, rgba(170,130,69,.17), transparent 95%),
+  radial-gradient(circle 58px at 84% 21%, rgba(226,166,90,.10),transparent 94%),
+  radial-gradient(ellipse 170px 190px at 15% 12%,rgba(78,116,110,.19),transparent 95%),
+  radial-gradient(ellipse 290px 230px at 55% 102%,rgba(109,78,48,.18),transparent 94%),
+  linear-gradient(148deg,#101c20 0%,#111818 48%,#1d1b19 100%);
+ outline-offset:3px;
 }
 body.chess-beast-v2 #chessStudioCanvas[hidden]{display:none!important}
 body.chess-beast-v2.beast-camera-drag-mode #chessStudioCanvas{cursor:grab}
