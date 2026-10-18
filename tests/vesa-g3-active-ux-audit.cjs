@@ -152,9 +152,8 @@ async function runPPM(page,size){
  await visit(page,'ppm','guide',size,['top']);
 }
 async function runAQL(page,size){
- await page.locator('#vesa-enter').waitFor({state:'visible',timeout:25000});
- await visit(page,'aql','entrance',size,['top']);
- await page.locator('#vesa-enter').click();
+ await page.waitForFunction(()=>!!window.__vesaApp&&!document.getElementById('app').hidden,null,{timeout:30000});
+ if(await page.locator('#vesa-welcome').isVisible())throw Error('redundant AQL entrance is visible');
  await page.waitForFunction(()=>!!window.__vesaApp&&!document.getElementById('app').hidden,{timeout:30000});
  await visit(page,'aql','home',size,['top']);
  await page.locator('[data-action="demo-menu"]').first().click();
