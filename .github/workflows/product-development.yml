@@ -10,6 +10,7 @@ on:
     paths:
       - 'apps/product-development/**'
       - 'docs/product-development/**'
+      - 'tests/personal-demo-release.cjs'
       - '.github/workflows/product-development.yml'
   workflow_dispatch:
 permissions:
