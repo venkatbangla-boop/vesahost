@@ -75,6 +75,11 @@ class Real3DQa{
       const text=document.getElementById('chessReal3DStatus')?.textContent||'';
       return state?.ready||/unavailable/.test(text);
     },null,{timeout:40000});
+    // Scene loading and GPU first render are scheduled on separate frames.
+    // WebKit can resolve the GLTF promise before its next RAF; wait for
+    // actual rendered proof rather than sampling in that brief gap.
+    await page.waitForFunction(()=>window.__chessBeastStudioState?.().frames>=1,
+      null,{timeout:20000});
     const state=await page.evaluate(()=>window.__chessBeastStudioState());
     assert.equal(state.ready,true,'Licensed sculpted 3D did not load '+width+' '+JSON.stringify(state));
     assert.equal(state.active,true,'High-quality 3D overlay not visible');
