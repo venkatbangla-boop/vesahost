@@ -4940,6 +4940,8 @@
   }
 
   function renderBoard() {
+    // Keep the active chess square keyboard-focusable through DOM updates.
+    const focused=boardEl.contains(document.activeElement)?Number(document.activeElement.dataset.sq):-1;
     boardEl.innerHTML = '';
     const lastSnap = engine.history[engine.history.length - 1];
     const lastFrom = lastSnap ? lastSnap.move.from : -1;
@@ -4957,7 +4959,7 @@
         sqDiv.className = `square ${isLight ? 'light' : 'dark'}`;
         sqDiv.dataset.sq = sq;
         sqDiv.setAttribute('role','gridcell');
-        sqDiv.tabIndex=(visualRow===0&&visualCol===0)?0:-1;
+        sqDiv.tabIndex=(sq===focused||(focused<0&&visualRow===0&&visualCol===0))?0:-1;
         const a11yPiece=engine.board[sq];
         sqDiv.setAttribute('aria-label',sqToAlgebraic(sq)+' '+(a11yPiece
           ?(a11yPiece.color==='w'?'White ':'Black ')+(PIECE_LABELS_EN[a11yPiece.type]||a11yPiece.type)
@@ -5134,6 +5136,9 @@
     }
 
     renderTacticalArrows();
+    if(focused>=0){
+      boardEl.querySelector('[data-sq="'+focused+'"]')?.focus({preventScroll:true});
+    }
   }
 
   function renderAll() {
@@ -6624,8 +6629,14 @@
     const vault = getSavedGamesVault();
     if (badgeEl) badgeEl.textContent = `${vault.length} Saved`;
 
-    if (vault.length === 0) {
-      listEl.innerHTML = `<div style="font-size:0.7rem; color:#989795; text-align:center; padding:0.65rem; background:#262522; border-radius:6px;">No saved games yet. Click <b>💾 Save Game</b> anytime during a match to save it offline with full move rewind!</div>`;
+    if(vault.length===0){
+      listEl.textContent='';
+      const empty=document.createElement('p');
+      empty.textContent='No saved games yet. Use Save Game to keep your moves for later.';
+      empty.style.cssText='font-size:.8rem;color:var(--text-secondary);padding:.75rem;text-align:center';
+      listEl.appendChild(empty);
+      const resume=document.getElementById('cardResumeLast');
+      if(resume)resume.hidden=true;
       return;
     }
 
