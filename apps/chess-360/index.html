@@ -3789,6 +3789,7 @@
   let whiteTime = 600;
   let blackTime = 600;
   let clockIntervalId = null;
+  let clockLastStamp = 0;
   let gameEndedByClock = false;
 
   let currentLang = 'en';
@@ -4024,7 +4025,7 @@
    * ========================================================================= */
   function formatClock(sec) {
     if (baseTimeSeconds === 0) return "∞";
-    const s = Math.max(0, Math.floor(sec));
+    const s = Math.max(0, Math.ceil(sec));
     const m = Math.floor(s / 60);
     const rem = s % 60;
     return `${String(m).padStart(2, '0')}:${String(rem).padStart(2, '0')}`;
@@ -4040,32 +4041,26 @@
   function startClockLoop() {
     stopClockLoop();
     updateClockUI();
-    if (baseTimeSeconds === 0 || matchState !== 'playing') {
-      return;
-    }
-    clockIntervalId = setInterval(() => {
-      const status = engine.getGameStatus();
-      const modalOpen = document.getElementById('newGameModal').classList.contains('open');
-      if (matchState !== 'playing' || status.over || gameEndedByClock || timeTravelIndex !== -1 || isBoardEditorOpen || modalOpen) {
-        return;
-      }
-      if (engine.turn === 'w') {
-        if (isAutoWinActive && humanColor === 'w' && whiteTime <= 15) {
-          whiteTime = 15;
-        } else {
-          whiteTime = Math.max(0, whiteTime - 1);
-        }
-        if (whiteTime === 0) handleFlagFall('w');
-      } else {
-        if (isAutoWinActive && humanColor === 'b' && blackTime <= 15) {
-          blackTime = 15;
-        } else {
-          blackTime = Math.max(0, blackTime - 1);
-        }
-        if (blackTime === 0) handleFlagFall('b');
+    if(baseTimeSeconds===0||matchState!=='playing')return;
+    clockLastStamp=performance.now();
+    // Monotonic elapsed time prevents timer drift during calculation or redraw.
+    // Visibility pause below prevents surprise timeouts after device suspension.
+    clockIntervalId=setInterval(()=>{
+      const now=performance.now();
+      const seconds=Math.max(0,Math.min(1.25,(now-clockLastStamp)/1000));
+      clockLastStamp=now;
+      const modalOpen=document.getElementById('newGameModal').classList.contains('open');
+      if(matchState!=='playing'||gameEndedByClock||timeTravelIndex!==-1||isBoardEditorOpen||modalOpen)return;
+      const activeWhite=engine.turn==='w';
+      if(activeWhite){
+        whiteTime=isAutoWinActive&&humanColor==='w'?Math.max(15,whiteTime-seconds):Math.max(0,whiteTime-seconds);
+        if(whiteTime===0){handleFlagFall('w');return;}
+      }else{
+        blackTime=isAutoWinActive&&humanColor==='b'?Math.max(15,blackTime-seconds):Math.max(0,blackTime-seconds);
+        if(blackTime===0){handleFlagFall('b');return;}
       }
       updateClockUI();
-    }, 1000);
+    },125);
   }
 
   function handleFlagFall(flaggedColor) {
@@ -6133,6 +6128,16 @@
 
   window.addEventListener('resize', () => {
     autoFitBoardToViewport();
+  });
+  // Suspend an offline casual game before a mobile browser backgrounds it.
+  // The user explicitly resumes; no hidden AI job or timer is left running.
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden&&matchState==='playing'){
+      chessSearchCoordinator.cancel();
+      matchState='paused';
+      stopClockLoop();
+      updateStartPauseControlsUI();
+    }
   });
 
   // Chess Beast Button Listeners: 3D View, Blindfold, and Board Setup Editor
