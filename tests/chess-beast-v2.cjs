@@ -11,7 +11,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const http=require('node:http');
 const vm=require('node:vm');
-const {chromium}=require('playwright');
+const {chromium,webkit}=require('playwright');
 
 class ChessBeastV2QA {
   constructor(){this.root=path.resolve(__dirname,'..');this.server=null;this.browser=null;this.base='';}
@@ -42,7 +42,10 @@ class ChessBeastV2QA {
     });
     await new Promise(resolve=>this.server.listen(0,'127.0.0.1',resolve));
     this.base='http://127.0.0.1:'+this.server.address().port;
-    this.browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||undefined,args:['--no-sandbox'],headless:true});
+    const webkitMode=process.env.CHESS_BROWSER==='webkit';
+    this.browser=await (webkitMode?webkit:chromium).launch(webkitMode
+      ?{headless:true}
+      :{executablePath:process.env.CHROMIUM_PATH||undefined,args:['--no-sandbox'],headless:true});
   }
   async verify(width){
     const ctx=await this.browser.newContext({viewport:{width,height:880},serviceWorkers:'block',reducedMotion:'reduce'});
