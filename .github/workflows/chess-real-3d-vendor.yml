@@ -49,9 +49,12 @@ jobs:
           test -f "$PKG/LICENSE"
           cp "$PKG/build/three.module.js" apps/chess-360/vendor/three.module.js
           cp "$PKG/examples/jsm/loaders/GLTFLoader.js" apps/chess-360/vendor/GLTFLoader.js
+          cp "$PKG/examples/jsm/utils/BufferGeometryUtils.js" apps/chess-360/vendor/BufferGeometryUtils.js
+          sed -i 's@../utils/BufferGeometryUtils.js@./BufferGeometryUtils.js@' apps/chess-360/vendor/GLTFLoader.js
           cp "$PKG/LICENSE" apps/chess-360/vendor/THREE_LICENSE_MIT.txt
           node --check apps/chess-360/vendor/three.module.js
           node --check apps/chess-360/vendor/GLTFLoader.js
+          node --check apps/chess-360/vendor/BufferGeometryUtils.js
           echo "CHESS_3D_THREE_OFFLINE_VENDOR_PASS v0.180.0"
       - name: Preserve exact binary files in GitHub feature branch only
         run: |
