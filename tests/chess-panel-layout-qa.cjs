@@ -129,8 +129,8 @@ class ChessPanelQA{
       scrollY:scrollY,viewport:innerHeight,bodyClass:document.body.className};
   });
   assert.equal(placement.position,'fixed','reopen button must stay pinned to viewport '+JSON.stringify(placement));
-  const nearTop=handle.top<170;
-  const nearBottom=handle.top+handle.height>placement.viewport-170;
+  const nearTop=handle.y<170;
+  const nearBottom=handle.y+handle.height>placement.viewport-170;
   assert.ok(nearTop||nearBottom,
     'reopen handle must be top/bottom anchored, never centered: '+JSON.stringify({handle,placement}));
   await page.locator('#btnEdgeDrawerHandle').click();
