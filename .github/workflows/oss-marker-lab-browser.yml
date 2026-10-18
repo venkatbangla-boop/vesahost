@@ -1,0 +1,46 @@
+# Feature-branch-only browser acceptance: no main changes or deployment.
+name: VESA Marker Lab Chromium + offline proof
+on:
+  push:
+    branches: [feature/oss-marker-lab-20261019]
+    paths:
+      - 'apps/marker-lab/**'
+      - '.github/workflows/oss-marker-lab-browser.yml'
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify local source license and syntax
+        run: |
+          set -euo pipefail
+          test -f apps/marker-lab/vendor/LICENSE.txt
+          node --check apps/marker-lab/src/workspace-controller.js
+          node --check apps/marker-lab/service-worker.js
+          node --check apps/marker-lab/tests/browser-workflow.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Verify mobile and network-free reload
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/marker-lab-http.log 2>&1 &
+          SERVER=$!
+          trap 'kill $SERVER || true' EXIT
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:8765/apps/marker-lab/ >/dev/null && break
+            sleep 1
+          done
+          node apps/marker-lab/tests/browser-workflow.cjs
+      - name: Original TNA/PPM/AQL regression
+        run: |
+          node tests/vesa-blueprint-integrity.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
