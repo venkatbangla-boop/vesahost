@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>Artwork & SVG Studio | VESA 360</title>
+ <link rel="icon" href="/favicon.ico">
+ <link rel="stylesheet" href="/css/vesa-workspace.css">
+ <link rel="stylesheet" href="./assets/artwork-studio.css">
+ <script src="/js/preferences.js"></script>
+ <script src="/js/auth.js"></script>
+ <script src="/js/vesa-workspace-shell.js"></script>
+ <script src="./src/studio-controller.js"></script>
+</head>
+<body class="vesa-artwork-page">
+ <script>VesaAuth.requireAuth();</script>
+ <main id="artworkMain" class="artwork-main" tabindex="-1">
+  <section class="artwork-intro" aria-labelledby="artworkTitle">
+   <span class="artwork-kicker" data-copy="kicker">OFFLINE VECTOR WORKSPACE · EXPERIMENTAL</span>
+   <h1 id="artworkTitle" data-copy="title">Artwork & SVG Studio</h1>
+   <p data-copy="description">Create and edit scalable SVG drawings, trims, logos and artwork layouts. Powered by a locally hosted SVG-Edit engine.</p>
+   <p class="artwork-warning" data-copy="warning">Design tool only. It does not validate garment measurements, fabric consumption, graded patterns or buyer approvals.</p>
+   <p id="artworkStatus" class="artwork-status" role="status" aria-live="polite">Preparing local SVG editor…</p>
+  </section>
+  <section class="artwork-editor" aria-label="SVG vector drawing workspace">
+   <iframe id="svgEditFrame" title="SVG vector editor" src="./vendor/index.html" referrerpolicy="no-referrer" loading="eager"></iframe>
+  </section>
+  <section class="artwork-help" id="artworkHelp">
+   <h2 data-copy="helpTitle">Using the studio</h2>
+   <p data-copy="help">Use the editor toolbar to draw, import, and save SVG. Download important files to this device. Work remains local; uploaded artwork is not shared with other VESA applications.</p>
+   <p class="artwork-license">SVG-Edit contributors · Open-source licenses and third-party notices:
+    <a href="./vendor/LICENSE-MIT.txt" target="_blank" rel="noopener">License</a> ·
+    <a href="./vendor/licenseInfo.json" target="_blank" rel="noopener">Third-party notices</a> ·
+    <a href="https://github.com/SVG-Edit/svgedit" target="_blank" rel="noopener">Source</a>
+   </p>
+  </section>
+ </main>
+ <script>new VesaArtworkStudio(document).mount();</script>
+</body>
+</html>
