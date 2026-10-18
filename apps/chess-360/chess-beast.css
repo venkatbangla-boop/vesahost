@@ -266,3 +266,63 @@ body.chess-beast-v2 .drawer-edge-handle{background:#1b3438;border-color:#58d6b0;
   }
   body.chess-beast-v2 .board-fx-canvas{display:none!important}
 }
+
+/* Always-visible, concise game feedback. The legacy shell hid this whole
+   region, leaving AI thinking with no visible status on phones. */
+body.chess-beast-v2 #liveTickerStrip{
+  display:flex!important;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:.45rem;
+  width:min(calc(var(--board-px) + 32px),100%);
+  min-height:38px;padding:.4rem .65rem;
+  color:#bfdbd0;background:#192e35;border:1px solid rgba(123,223,187,.19);
+  border-radius:11px;font-size:.72rem
+}
+body.chess-beast-v2 #liveTickerStrip .ticker-left{
+  min-width:0;display:flex;align-items:center;gap:.5rem;flex:1
+}
+body.chess-beast-v2 #liveLastMovePill{
+  flex-shrink:0;max-width:53%;overflow:hidden;text-overflow:ellipsis;
+  font-weight:750;color:#edf8ed
+}
+body.chess-beast-v2 #liveTurnSummaryText{
+  min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;font-size:.71rem
+}
+body.chess-beast-v2 #thinkingBanner{display:none;align-items:center;gap:.45rem}
+body.chess-beast-v2 #thinkingBanner.visible{
+  display:inline-flex;color:#6eebc0;font-weight:750;white-space:nowrap
+}
+body.chess-beast-v2 #thinkingBanner .spinner{
+  display:inline-block;width:8px;height:8px;border-radius:50%;background:#6df0bb;
+  box-shadow:0 0 0 3px rgba(90,224,177,.13);
+  animation:beast-pulse 1.15s ease-in-out infinite
+}
+@keyframes beast-pulse{
+  0%,100%{opacity:.5;transform:scale(.8)}
+  50%{opacity:1;transform:scale(1.17)}
+}
+body.chess-beast-v2 #specialModeBanner.active{
+  display:flex!important;align-items:center;justify-content:space-between;
+  gap:.4rem;width:min(calc(var(--board-px) + 32px),100%);
+  padding:.5rem .65rem;border-radius:10px;
+  background:#2b343e;border:1px solid rgba(234,204,143,.3);
+  color:#f9e8bf;font-size:.72rem
+}
+body.chess-beast-v2 #specialModeBanner #specialModeText{
+  min-width:0;overflow:hidden;text-overflow:ellipsis
+}
+body.chess-beast-v2 #specialModeBanner #specialModeBadge{
+  flex-shrink:0;color:#f3dca3
+}
+@media(max-width:420px){
+  body.chess-beast-v2 #liveTickerStrip{
+    min-height:35px;padding:.34rem .44rem;font-size:.66rem;gap:.25rem
+  }
+  body.chess-beast-v2 #liveTurnSummaryText{font-size:.65rem}
+  body.chess-beast-v2 #liveLastMovePill{max-width:43%}
+  body.chess-beast-v2 #thinkingBanner{width:100%;font-size:.68rem}
+  body.chess-beast-v2 #specialModeBanner.active{font-size:.65rem}
+}
+@media(prefers-reduced-motion:reduce){
+  body.chess-beast-v2 #thinkingBanner .spinner{animation:none}
+}
