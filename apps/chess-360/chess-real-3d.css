@@ -85,3 +85,42 @@ body.chess-beast-v2 #chessStudioCanvas[hidden]{display:none!important}
 body.chess-beast-v2.beast-camera-drag-mode #chessStudioCanvas{cursor:grab}
 body.chess-beast-v2 #boardFrame.beast-orbit-moving #chessStudioCanvas{cursor:grabbing}
 body.chess-beast-v2.real3d-active #boardStartOverlay{z-index:12!important}
+
+
+/* Permanent discoverable 3D camera shortcuts inside the board viewport.
+   These are real controls, not decorative image labels. They deliberately
+   stay available at 100%/67% Chrome zoom even if the toolbar is below fold.
+   No effect on classic 2D or other VESA applications. */
+body.chess-beast-v2 #chess3DHud{
+ position:absolute;z-index:17;top:12px;right:12px;
+ max-width:calc(100% - 24px);
+ display:none;flex-wrap:wrap;align-items:center;justify-content:flex-end;
+ gap:6px;pointer-events:auto;
+}
+body.chess-beast-v2.real3d-active #chess3DHud{display:flex}
+body.chess-beast-v2 #chess3DHud button{
+ min-height:38px;max-width:100%;
+ padding:7px 10px;border:1px solid rgba(139,226,197,.4);
+ border-radius:9px;background:rgba(12,30,32,.89);
+ box-shadow:0 3px 13px rgba(0,0,0,.28);
+ color:#f4f7f5;font:700 12px/1.2 inherit;
+ font-family:inherit;font-size:12px;font-weight:700;
+ white-space:nowrap;cursor:pointer;touch-action:manipulation;
+}
+body.chess-beast-v2 #chess3DHud button:hover,
+body.chess-beast-v2 #chess3DHud button:focus-visible{
+ border-color:#98f4d1;background:#264941;
+}
+body.chess-beast-v2 #chess3DHud button:focus-visible{
+ outline:2px solid #e6ca84;outline-offset:2px;
+}
+body.chess-beast-v2 #btnCameraQuickRotate[aria-pressed=true]{
+ background:#4edeb5;border-color:#7ff4d3;color:#072e29;
+}
+body.chess-beast-v2 #btnCameraQuickShowcase[aria-pressed=true]{
+ background:#2e5042;border-color:#77d2b5;color:#f6fff9;
+}
+@media(max-width:610px){
+ body.chess-beast-v2 #chess3DHud{top:8px;right:8px;max-width:calc(100% - 16px);gap:4px}
+ body.chess-beast-v2 #chess3DHud button{min-height:40px;padding:6px 7px;font-size:11px}
+}
