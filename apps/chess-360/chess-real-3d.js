@@ -14,8 +14,8 @@
       x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,
       -dot(x,eye),-dot(y,eye),-dot(z,eye),1])};
   };
-  const COLORS={frame:[.21,.105,.060],trim:[.46,.265,.13],light:[.82,.66,.44],
-    dark:[.30,.155,.082],w:[.93,.85,.71],b:[.125,.12,.12],
+  const COLORS={frame:[.24,.125,.073],trim:[.51,.29,.16],light:[.83,.68,.47],
+    dark:[.32,.18,.11],w:[.96,.88,.72],b:[.265,.245,.22],
     shadow:[.027,.02,.012],selected:[.05,.89,.59],last:[.98,.77,.29],
     legal:[.18,.75,.92],check:[1,.13,.19]};
   const vs=[
@@ -33,9 +33,11 @@
     'void main(){',
     'vec3 N=normalize(vNorm),L=normalize(vec3(-.4,.83,.5)),V=normalize(uEye-vPos);',
     'float d=max(dot(N,L),0.),f=max(dot(N,normalize(vec3(.7,.7,-.4))),0.);',
-    'float h=pow(max(dot(reflect(-L,N),V),0.),30.);',
+    'float h=pow(max(dot(reflect(-L,N),V),0.),22.);',
+    'float broad=pow(max(dot(reflect(-L,N),V),0.),7.);',
+    'float rim=pow(1.0-max(dot(N,V),0.),2.);',
     'float grain=sin(vPos.x*40.+sin(vPos.z*9.)*2.)*.036+sin(vPos.z*22.)*.02;',
-    'vec3 col=uColor*(.44+.45*d+.14*f+grain*uGrain)+vec3(.85,.71,.54)*h*.36*uGloss+vec3(.022);',
+    'vec3 col=uColor*(.49+.54*d+.20*f+grain*uGrain)+vec3(.97,.84,.68)*(h*.45+broad*.10)*uGloss+vec3(.09,.075,.066)*rim+vec3(.018);',
     'gl_FragColor=vec4(clamp(col,0.,1.),uAlpha);}'
   ].join('\n');
   function shaders(gl){
@@ -100,7 +102,7 @@
       if(this.supported===false)return false;
       if(this.gl)return true;
       try{
-        const gl=this.canvas.getContext('webgl',{alpha:false,antialias:true,depth:true,
+        const gl=this.canvas.getContext('webgl',{alpha:true,antialias:true,depth:true,
           stencil:false,preserveDrawingBuffer:true,powerPreference:'default'});
         if(!gl)throw Error('WebGL unavailable');
         this.gl=gl;this.webgl=shaders(gl);
@@ -142,9 +144,13 @@
     }
     view(){
       const az=((Number(this.cam.yaw)||0)+(Number(this.cam.spin)||0)+(this.state.flipped?180:0))*Math.PI/180;
-      const elev=(72-Math.max(0,Math.min(65,Number(this.cam.tilt)||26))*.38)*Math.PI/180;
-      const radius=14.6,eye=[radius*Math.cos(elev)*Math.sin(az),radius*Math.sin(elev),radius*Math.cos(elev)*Math.cos(az)];
-      const basis=look(eye),aspect=this.canvas.width/this.canvas.height||1,fov=48*Math.PI/180;
+      const elev=(59-Math.max(0,Math.min(65,Number(this.cam.tilt)||26))*.55)*Math.PI/180;
+      // A lower cinematic orbit angle and close framing. The adaptive
+      // radius increases slightly for diagonal views to keep all pieces visible.
+      const baseHalf=4.15*(Math.abs(Math.cos(az))+Math.abs(Math.sin(az)));
+      const radius=(baseHalf/Math.tan(49*Math.PI/360)+baseHalf*Math.cos(elev))*1.025;
+      const eye=[radius*Math.cos(elev)*Math.sin(az),radius*Math.sin(elev),radius*Math.cos(elev)*Math.cos(az)];
+      const basis=look(eye),aspect=this.canvas.width/this.canvas.height||1,fov=49*Math.PI/180;
       return {...basis,aspect,fov,mvp:matMul(projection(fov,aspect,.08,70),basis.matrix)};
     }
     draw(name,color,translation=[0,0,0],alpha=1,grain=0,gloss=1){
@@ -164,7 +170,7 @@
         width=Math.max(1,Math.min(1400,Math.round(r.width*dpr))),
         height=Math.max(1,Math.min(1400,Math.round(r.height*dpr)));
       if(this.canvas.width!==width||this.canvas.height!==height){this.canvas.width=width;this.canvas.height=height;}
-      gl.viewport(0,0,width,height);gl.clearColor(.082,.116,.13,1);
+      gl.viewport(0,0,width,height);gl.clearColor(0,0,0,0);
       gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
       gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);
       gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
