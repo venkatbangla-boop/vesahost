@@ -5144,8 +5144,12 @@
 
   function renderAll() {
     const quickCards = document.getElementById('playHubQuickCards');
-    if (quickCards) {
-      quickCards.style.display = (engine.history.length === 0 && !isAutoWinActive) ? 'flex' : 'none';
+    if(quickCards){
+      quickCards.style.display=(engine.history.length===0&&!isAutoWinActive)?'flex':'none';
+      // "Start Match" duplicates the primary Start control after play begins.
+      // Keep other coach/fun tiles and existing features accessible.
+      const startCard=document.getElementById('cardQuickPlayBot');
+      if(startCard)startCard.hidden=matchState==='playing';
     }
     const botSub = document.getElementById('cardQuickBotSub');
     if (botSub && LEVEL_NAMES[aiLevel]) {
