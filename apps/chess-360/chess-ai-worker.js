@@ -688,7 +688,11 @@ let currentLang='en';
       const refBestSan = refBestMove ? this.moveToSan(refBestMove, legal) : '';
 
       const san = this.moveToSan(m, legal);
-      const uci = sqToAlgebraic(m.from) + sqToAlgebraic(m.to) + (m.promotion ? m.promotion.toLowerCase() : '');
+      // Chess960 must serialize castling by KING->ROOK source (UCI_Chess960),
+      // distinguishing an ordinary adjacent King move to c/g from castling.
+      const isCastle=m.flags==='castleK'||m.flags==='castleQ';
+      const uciTo=this.castle960&&isCastle?m.rookFrom:m.to;
+      const uci=sqToAlgebraic(m.from)+sqToAlgebraic(uciTo)+(m.promotion?m.promotion.toLowerCase():'');
       const snap = this.makeMoveInternal(m);
       const evalAfter = this.evaluatePosition();
 
