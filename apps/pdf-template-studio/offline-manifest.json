@@ -6,6 +6,7 @@
     "./assets/pdf-studio.css",
     "./service-worker.js",
     "./vendor/index.html",
+    "./vendor/THIRD_PARTY_LICENSES.md",
     "./vendor/LICENSE-pdfme.md",
     "./vendor/THIRD_PARTY_NOTICES.md",
     "./vendor/dependency-inventory.json",
