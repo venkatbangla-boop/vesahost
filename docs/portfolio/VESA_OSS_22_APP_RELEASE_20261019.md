@@ -1,7 +1,7 @@
 # VESA 360 — Open-source 22-app release record
 
-**Date:** 2026-10-19  
-**Scope:** Personal synthetic-data showcase; no commercial production CAD or server-side data  
+**Date:** 2026-10-19
+**Scope:** Personal synthetic-data showcase; no commercial production CAD or server-side data
 **Release stage:** Automated acceptance PASS; main/Pages and exact public-byte verification required separately before claiming LIVE
 
 ## Accepted application additions
