@@ -1,0 +1,88 @@
+# One-shot licensing and offline bundle-size probe. Feature branch only.
+# Does NOT publish assets or change main. Uses official Poly Haven API with a
+# unique user-agent, never calls the remote API at application runtime.
+name: Chess 3D art asset investigation
+on:
+  push:
+    branches: [feature/chess-real-3d-mesh-20261018]
+    paths:
+      - '.github/workflows/chess-real-3d-asset-probe.yml'
+      - 'docs/portfolio/CHESS_BEAST_360_REAL_3D_VISUAL_QA.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe-cc0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - name: Discover official CC0 chess set download formats
+        env:
+          ASSET_ID: chess_set
+          USER_AGENT: VESAChessBeast360AssetAudit/1.0 (github.com/venkatbangla-boop/vesahost)
+        run: |
+          set -euo pipefail
+          mkdir -p output/chess-3d-art
+          python3 - <<'PY'
+          import json, os, urllib.request, hashlib, pathlib
+          root=pathlib.Path("output/chess-3d-art")
+          agent=os.environ["USER_AGENT"]
+          def fetch(url):
+              req=urllib.request.Request(url,headers={"User-Agent":agent,"Accept":"application/json"})
+              with urllib.request.urlopen(req,timeout=35) as r:return json.load(r)
+          meta=fetch("https://api.polyhaven.com/info/chess_set")
+          files=fetch("https://api.polyhaven.com/files/chess_set")
+          auth=meta.get("authors",{})
+          print("CC0_SOURCE polyhaven.com/a/chess_set")
+          print("ASSET_AUTHOR "+json.dumps(auth)[:400])
+          print("MANIFEST_KEYS "+json.dumps(list(files.keys())))
+          candidates=[]
+          def walk(v,path=()):
+              if isinstance(v,dict):
+                  if isinstance(v.get("url"),str):
+                      u=v["url"];size=int(v.get("size",0))
+                      if any(s in u.lower() for s in [".gltf",".glb",".zip",".blend"]):
+                          candidates.append({"path":"/".join(map(str,path)),
+                            "url":u,"size":size,"md5":v.get("md5","")})
+                  for k,w in v.items():walk(w,path+(k,))
+              elif isinstance(v,list):
+                  for i,w in enumerate(v):walk(w,path+(i,))
+          walk(files)
+          candidates.sort(key=lambda x:(x["size"] or 2**40,x["path"]))
+          report={"source":"https://polyhaven.com/a/chess_set",
+              "sourceLicense":"CC0 per Poly Haven asset page",
+              "assetAuthors":auth,"candidateFormats":candidates[:80],
+              "allCount":len(candidates),
+              "appOfflineOnly":True,"notYetApprovedOrShipped":True}
+          (root/"cc0-chess-set-file-manifest.json").write_text(
+              json.dumps(report,indent=2),encoding="utf-8")
+          print("CANDIDATES "+json.dumps(candidates[:20])[:4700])
+          filtered=[x for x in candidates if ("gltf" in x["path"].lower() or
+              "glb" in x["path"].lower()) and x["size"]>0 and x["size"]<25_000_000]
+          if not filtered:
+              print("ART_DOWNLOAD_SKIPPED no locally shippable <25MB 3D candidate")
+              raise SystemExit(0)
+          item=filtered[0]
+          url=item["url"]
+          req=urllib.request.Request(url,headers={"User-Agent":agent})
+          data=urllib.request.urlopen(req,timeout=60).read(26_000_000)
+          if len(data)>25_000_000:raise SystemExit("MODEL_TOO_BIG_FOR_MOBILE: "+str(len(data)))
+          if item["md5"] and hashlib.md5(data).hexdigest()!=item["md5"]:
+              raise SystemExit("ASSET_MD5_MISMATCH")
+          ext=".glb" if ".glb" in url.lower() else ".zip" if ".zip" in url.lower() else ".gltf"
+          out=root/("polyhaven-original-cc0-1k"+ext)
+          out.write_bytes(data)
+          report["selected"]={"path":item["path"],"size":len(data),
+              "sha256":hashlib.sha256(data).hexdigest(),"downloadedFile":out.name}
+          (root/"cc0-chess-set-file-manifest.json").write_text(
+              json.dumps(report,indent=2),encoding="utf-8")
+          print("CHESS_3D_CC0_ASSET_PROBE_PASS "+json.dumps(report["selected"]))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chess-real-3d-cc0-asset-candidate
+          path: output/chess-3d-art/
+          if-no-files-found: ignore
+          retention-days: 7
