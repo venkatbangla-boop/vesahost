@@ -5,6 +5,7 @@ on:
     branches: [feature/oss-svg-edit-audit-20261019]
     paths:
       - '.github/workflows/oss-svg-edit-vendor.yml'
+      - 'apps/artwork-cad-studio/service-worker.js'
   workflow_dispatch:
 permissions:
   contents: write
@@ -49,6 +50,13 @@ jobs:
                       print('LOCALHOST_REFERENCE',p)
           total=sum(p.stat().st_size for p in root.rglob('*') if p.is_file())
           assert total<30_000_000,total
+          import json
+          files=['./','./index.html','./assets/artwork-studio.css','./src/studio-controller.js','./service-worker.js',
+                 '/js/preferences.js','/js/auth.js','/js/vesa-workspace-shell.js','/css/vesa-workspace.css',
+                 '/assets/vesa-logo-black.png','/favicon.ico']
+          files += ['./vendor/'+str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()]
+          (Path('apps/artwork-cad-studio/offline-manifest.json')).write_text(json.dumps({'version':'svg-edit-c44f061d','files':files},indent=2))
+          print('SVG_STUDIO_OFFLINE_MANIFEST',len(files))
           print('SVG_STUDIO_VENDOR_READY',total)
           PY
       - name: Commit bundled source only to feature branch
@@ -56,7 +64,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apps/artwork-cad-studio/vendor
+          git add apps/artwork-cad-studio/vendor apps/artwork-cad-studio/offline-manifest.json
           if git diff --cached --quiet; then
             echo STUDIO_VENDOR_ALREADY_PRESENT
           else
