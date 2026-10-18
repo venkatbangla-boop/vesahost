@@ -37,7 +37,7 @@ class VesaChessNavigationQA {
     const context=await this.browser.newContext({viewport:{width,height:900},reducedMotion:'reduce',serviceWorkers:'block'});
     const page=await context.newPage(),errors=[],external=[];
     page.on('pageerror',error=>errors.push(error.message));
-    page.on('request',request=>{if(!request.url().startsWith(this.base))external.push(request.url());});
+    page.on('request',request=>{if(!request.url().startsWith(this.base)&&!request.url().startsWith('blob:'+this.base))external.push(request.url());});
     try{
       await page.goto(this.base+'/login/',{waitUntil:'domcontentloaded'});
       assert.equal(await page.locator('#email').inputValue(),'user@vesa');
