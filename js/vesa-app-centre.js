@@ -13,7 +13,8 @@ const GROUPS=Object.freeze([
  {id:'orders',members:['costing','purchase-order','order-commission','lc-payment']},
  {id:'product',members:['product-development','tech-pack-spec','sampling-approval','fabric-trims','label-artwork-approval','fabric-supplier-comparison']},
  {id:'shipping',members:['packing-container','shipment-documentation','claims-disputes']},
- {id:'partners',members:['buyer-crm','factory-vendor']}
+ {id:'partners',members:['buyer-crm','factory-vendor']},
+ {id:'games',members:['chess-360']}
 ]);
 const COPY=Object.freeze({
  en:{
@@ -26,7 +27,7 @@ const COPY=Object.freeze({
   emptyText:'Try another keyword or show all applications.',
   reset:'Show all apps',open:'Open workspace',
   groups:{planning:'Planning & quality',orders:'Orders & finance',
-   product:'Product & sourcing',shipping:'Shipping & claims',partners:'Buyer & factory'}
+   product:'Product & sourcing',shipping:'Shipping & claims',partners:'Buyer & factory',games:'Games'}
  },
  bn:{
   eyebrow:'আপনার ওয়ার্কস্পেস',title:'কাজের জন্য সঠিক অ্যাপ বেছে নিন',
@@ -38,7 +39,7 @@ const COPY=Object.freeze({
   emptyText:'অন্য শব্দ দিয়ে খুঁজুন অথবা সব অ্যাপ দেখুন।',
   reset:'সব অ্যাপ দেখুন',open:'অ্যাপ খুলুন',
   groups:{planning:'পরিকল্পনা ও মান',orders:'অর্ডার ও হিসাব',
-   product:'পণ্য ও সোর্সিং',shipping:'শিপমেন্ট ও দাবি',partners:'বায়ার ও ফ্যাক্টরি'}
+   product:'পণ্য ও সোর্সিং',shipping:'শিপমেন্ট ও দাবি',partners:'বায়ার ও ফ্যাক্টরি',games:'গেমস'}
  },
  hi:{
   eyebrow:'आपके वर्कस्पेस',title:'अपने काम के लिए सही ऐप चुनें',
@@ -50,7 +51,7 @@ const COPY=Object.freeze({
   emptyText:'दूसरे शब्द से खोजें या सभी ऐप दिखाएँ।',
   reset:'सभी ऐप दिखाएँ',open:'ऐप खोलें',
   groups:{planning:'प्लानिंग और गुणवत्ता',orders:'ऑर्डर और वित्त',
-   product:'प्रोडक्ट और सोर्सिंग',shipping:'शिपमेंट और क्लेम',partners:'बायर और फैक्ट्री'}
+   product:'प्रोडक्ट और सोर्सिंग',shipping:'शिपमेंट और क्लेम',partners:'बायर और फैक्ट्री',games:'गेम्स'}
  },
  ta:{
   eyebrow:'உங்கள் வேலைப்பகுதி',title:'உங்கள் வேலைக்கான சரியான App-ஐத் தேர்ந்தெடுக்கவும்',
@@ -62,7 +63,7 @@ const COPY=Object.freeze({
   emptyText:'வேறு வார்த்தையில் தேடவும் அல்லது எல்லா Apps-ஐயும் பார்க்கவும்.',
   reset:'எல்லா Apps-ஐயும் பார்க்கவும்',open:'App திறக்கவும்',
   groups:{planning:'Planning & Quality',orders:'Orders & Finance',
-   product:'Product & Sourcing',shipping:'Shipping & Claims',partners:'Buyer & Factory'}
+   product:'Product & Sourcing',shipping:'Shipping & Claims',partners:'Buyer & Factory',games:'Games'}
  }
 });
 /* Short user-facing actions only. Neither task names nor translations create business approval. */
@@ -85,6 +86,7 @@ const SUMMARIES=Object.freeze({
  'shipment-documentation':['Prepare draft shipping files, quantities and documents.','খসড়া শিপিং ফাইল, পরিমাণ ও নথি প্রস্তুত করুন।','ड्राफ्ट शिपिंग फाइल, मात्रा और दस्तावेज बनाएँ।','Draft shipping files, quantities, documents தயாரிக்கவும்.'],
  'claims-disputes':['Follow claim cases, source evidence and settlement records.','ক্লেইম মামলা, প্রমাণ ও নিষ্পত্তির রেকর্ড দেখুন।','क्लेम मामले, प्रमाण और निपटान रिकॉर्ड देखें।','Claim cases, evidence, settlement பதிவுகளைக் கண்காணிக்கவும்.'],
  'buyer-crm':['Manage buyer enquiries, opportunities and follow-ups locally.','বায়ার এনকোয়ারি, সুযোগ ও ফলো-আপ স্থানীয়ভাবে রাখুন।','बायर पूछताछ, अवसर और फॉलो-अप स्थानीय रूप से रखें।','Buyer enquiry, opportunity, follow-up-களை நிர்வகிக்கவும்.'],
+ 'chess-360':['Play chess offline with a built-in engine. Powered by Ajanva.','অফলাইনে চেস খেলুন। Powered by Ajanva.','ऑफलाइन शतरंज खेलें। Powered by Ajanva.','Offline Chess விளையாடுங்கள். Powered by Ajanva.'],
  'factory-vendor':['Review factory sites, declared capacities and documents.','ফ্যাক্টরি সাইট, ঘোষিত সক্ষমতা ও নথি দেখুন।','फैक्ट्री साइट, घोषित क्षमता और दस्तावेज देखें।','Factory sites, declared capacity, documents பார்க்கவும்.']
 });
 class VesaAppCentreExplorer {
