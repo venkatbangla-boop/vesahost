@@ -125,13 +125,13 @@
 <body data-version="v32-premium-editorial-sourcing" class="v30-premium-header-egenva v31-hero-video-loop v32-premium-editorial">
 <!-- Complete 10-second opening film overlays (but never replaces) the original homepage. -->
 <div class="vesa-home-intro" id="vesaHomeIntro" role="dialog" aria-modal="true" aria-label="VESA ten-second welcome film">
-  <video class="vesa-home-intro__video" id="vesaIntroVideo" autoplay muted playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-hidden="true">
+  <video class="vesa-home-intro__video" id="vesaIntroVideo" autoplay playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-hidden="true">
     <source src="assets/vesa-intro-portrait.mp4?v=2" type="video/mp4" media="(max-aspect-ratio: 4/3)">
     <source src="assets/vesa-intro-landscape.mp4?v=2" type="video/mp4">
   </video>
-  <button class="vesa-home-intro__sound" id="vesaIntroSound" aria-label="Turn on welcome film music" aria-pressed="false" type="button">
-    <span class="vesa-home-intro__sound-icon" id="vesaIntroSoundIcon" aria-hidden="true">🔇</span>
-    <span id="vesaIntroSoundLabel">Music Off</span>
+  <button class="vesa-home-intro__sound" id="vesaIntroSound" aria-label="Mute welcome film" aria-pressed="true" type="button">
+    <span class="vesa-home-intro__sound-icon" id="vesaIntroSoundIcon" aria-hidden="true">🔊</span>
+    <span id="vesaIntroSoundLabel">Music On</span>
   </button>
   <div class="vesa-home-intro__recovery" id="vesaIntroRecovery" hidden>
     <p id="vesaIntroMessage"></p>
