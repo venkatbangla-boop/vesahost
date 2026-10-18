@@ -1,0 +1,51 @@
+name: VESA PDF Studio vendor and offline manifest
+on:
+  push:
+    branches: [feature/oss-pdfme-studio-20261019]
+    paths: ['.github/workflows/oss-pdfme-vendor.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: feature/oss-pdfme-studio-20261019, fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Build original pinned PDF editor locally
+        working-directory: apps/pdf-template-studio
+        run: |
+          set -euo pipefail
+          npm install --no-fund --no-audit
+          npm run build
+          test -s vendor/index.html
+          test -d vendor/assets
+          cp ../../docs/portfolio/VESA_PDFME_STUDIO_INSTALLATION_20261019.md vendor/INSTALLATION-NOTES.md
+          cp THIRD_PARTY_NOTICES.md vendor/THIRD_PARTY_NOTICES.md
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('.')
+          files=['index.html','src/shell-controller.js','assets/pdf-studio.css','service-worker.js',
+                 'vendor/index.html','vendor/THIRD_PARTY_NOTICES.md','vendor/INSTALLATION-NOTES.md']
+          files += [str(p) for p in sorted((root/'vendor/assets').rglob('*')) if p.is_file()]
+          assert len(files)>=10
+          missing=[p for p in files if not (root/p).is_file()]
+          if missing:raise SystemExit('MISSING_ASSETS: '+repr(missing))
+          (root/'offline-manifest.json').write_text(json.dumps({'version':1,'files':['./'+p for p in files]},indent=2))
+          print('PDF_STUDIO_MANIFEST_PASS',len(files))
+          PY
+      - name: Commit vendor artifact to isolated feature branch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/pdf-template-studio/vendor apps/pdf-template-studio/offline-manifest.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'vendor(pdf-studio): pinned pdfme static assets and offline manifest'
+          git fetch origin feature/oss-pdfme-studio-20261019
+          git rebase origin/feature/oss-pdfme-studio-20261019
+          git push origin HEAD:feature/oss-pdfme-studio-20261019
