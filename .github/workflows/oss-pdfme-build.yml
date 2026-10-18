@@ -22,12 +22,12 @@ jobs:
           set -euo pipefail
           npm install --no-audit --no-fund
           npm run build
-          test -s ../vendor/index.html
+          test -s vendor/index.html
           node --check src/main.js
-          test -d ../vendor/assets
+          test -d vendor/assets
           python3 - <<'PY'
           from pathlib import Path
-          root=Path('../vendor')
+          root=Path('vendor')
           files=[p for p in root.rglob('*') if p.is_file()]
           assert files and len(files)<300
           print('PDFME_LOCAL_BUILD_PASS',len(files),'files',sum(p.stat().st_size for p in files),'bytes')
