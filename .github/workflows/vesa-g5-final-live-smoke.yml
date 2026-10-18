@@ -1,0 +1,35 @@
+# Read-only GitHub Pages byte comparison for the 19 synthetic personal demo routes.
+# No credentials, customer records, external uploads or application state mutations.
+name: VESA 360 G5 final public-byte smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/vesa-g5-final-live-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify 19 publicly served index bytes against this exact checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/vesa-live
+          for app in aql ppm tna costing packing-container order-commission tech-pack-spec purchase-order lc-payment sampling-approval fabric-trims shipment-documentation production-tracker factory-vendor label-artwork-approval buyer-crm fabric-supplier-comparison claims-disputes product-development; do
+            url="https://vesaent.com/apps/$app/"
+            file="apps/$app/index.html"
+            curl --retry 4 --retry-all-errors --retry-delay 5 --fail --location --silent --show-error --max-time 45 "$url" -o "/tmp/vesa-live/$app.html"
+            cmp "$file" "/tmp/vesa-live/$app.html"
+            echo "PUBLIC_BYTE_PASS $app $(sha256sum "$file" | cut -d ' ' -f 1)"
+          done
+          for file in js/vesa-workspace-shell.js js/app-catalogue.js css/vesa-workspace.css; do
+            curl --retry 4 --retry-all-errors --retry-delay 5 --fail --location --silent --show-error --max-time 45 "https://vesaent.com/$file" -o "/tmp/vesa-live/$(basename "$file")"
+            cmp "$file" "/tmp/vesa-live/$(basename "$file")"
+            echo "SHARED_BYTE_PASS $file"
+          done
+          echo "PUBLIC_SMOKE_SUCCESS exact checkout $GITHUB_SHA 19 app routes + 3 shared source assets"
