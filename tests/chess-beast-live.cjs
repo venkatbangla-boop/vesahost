@@ -14,6 +14,8 @@ const repo=path.resolve(__dirname,'..');
 const assets=[
  'apps/chess-360/index.html','apps/chess-360/chess-ai-worker.js',
  'apps/chess-360/chess-beast-ui.js','apps/chess-360/chess-beast.css',
+ 'apps/chess-360/chess-report.js','apps/chess-360/chess-match-experience.css',
+ 'apps/chess-360/chess-orbit.js','apps/chess-360/chess-pro-ux.css',
  'apps/chess-360/sw.js','js/app-catalogue.js','service-worker.js'
 ];
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
