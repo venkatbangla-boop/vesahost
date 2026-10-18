@@ -1,4 +1,4 @@
-const CACHE='vesa-v107-commission-g5-form-focus';
+const CACHE='vesa-v108-chess-clean-entry';
 const ASSETS=[
   './',
   './index.html',
@@ -10,6 +10,8 @@ const ASSETS=[
   './css/vesa-admin.css?v=20261018-admin-r1',
   './apps/',
   './apps/index.html',
+  './apps/chess-360/',
+  './apps/chess-360/index.html',
   './apps/costing/',
   './apps/costing/index.html',
   './apps/packing-container/',
@@ -170,8 +172,10 @@ const ASSETS=[
   './js/vesa-workspace-shell.js?v=20261013-platform-g09',
   './js/vesa-workspace-shell.js',
   './js/vesa-app-centre.js?v=20261018-u03',
+  './js/vesa-app-centre.js?v=20261018-chess-v1',
   './js/app-catalogue.js',
   './js/app-catalogue.js?v=20261015-costing-demo',
+  './js/app-catalogue.js?v=20261018-chess-v1',
   './js/vendor/xlsx.full.min.js',
   './manifest.webmanifest',
   './favicon.ico',
