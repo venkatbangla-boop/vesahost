@@ -1,0 +1,45 @@
+# Scope-limited 21st app registration regression. No deployment or main writes.
+name: VESA Marker Lab App Centre 21-app gate
+on:
+  push:
+    branches: [feature/oss-marker-lab-20261019]
+    paths:
+      - 'apps/index.html'
+      - 'js/app-catalogue.js'
+      - 'js/vesa-app-centre.js'
+      - 'js/preferences.js'
+      - 'service-worker.js'
+      - 'tests/vesa-platform-pages.cjs'
+      - '.github/workflows/oss-marker-lab-centre.yml'
+permissions:
+  contents: read
+jobs:
+  app-centre:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and frozen domain checks
+        run: |
+          set -euo pipefail
+          node --check js/app-catalogue.js
+          node --check js/vesa-app-centre.js
+          node --check js/preferences.js
+          node --check service-worker.js
+          node --check tests/vesa-platform-pages.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Run 21-app real-browser platform checks
+        run: |
+          node tests/vesa-platform-pages.cjs
+          node tests/vesa-uniform-experience.cjs
