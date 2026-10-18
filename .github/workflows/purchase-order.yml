@@ -5,6 +5,7 @@ on:
     branches:
       - feature/purchase-order-360
       - feature/po-g4-guided-workflow
+      - feature/po-g5-edit-form-qa-20261018
       - main
     paths:
       - 'apps/purchase-order/**'
@@ -31,6 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node tests/vesa-blueprint-integrity.cjs
           node --check apps/purchase-order/tests/domain.test.cjs
           node --check apps/purchase-order/tests/browser-workflow.cjs
           node apps/purchase-order/tests/domain.test.cjs

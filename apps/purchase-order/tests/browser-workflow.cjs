@@ -80,6 +80,12 @@ class PurchaseOrderBrowserProof{
     }
     await page.setViewportSize({width:1280,height:900});
     assert(await noPO(),'No business records after seven practice previews');
+    // G5: real editable PO dialog focus, Escape and return to its original opener.
+    await act('new');
+    assert.equal(await page.evaluate(()=>document.activeElement?.name),'poNo','New PO focuses PO Number');
+    await page.keyboard.press('Escape');
+    await page.locator('#poDialog[open]').waitFor({state:'hidden'});
+    await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
     await act('new');
     await enter({poNo:'SYN-PO-01',buyer:'SYNTHETIC BUYER',issuer:'SYNTHETIC MERCHANDISER',
       factory:'SYNTHETIC FACTORY',shipTo:'SYNTHETIC PORT',
@@ -90,6 +96,7 @@ class PurchaseOrderBrowserProof{
     await submit();
     for(const [size,qty,price] of [['M','40','2.5000'],['L','20','3.2500']]){
       await act('add-line');
+      assert.equal(await page.evaluate(()=>document.activeElement?.name),'style','PO line form focuses Style');
       await enter({style:'SYNTHETIC TEE',color:'Navy',size,quantity:qty,unitFob:price,
         source:'SYNTHETIC LINE SOURCE'});await submit();
     }
@@ -194,11 +201,20 @@ class PurchaseOrderBrowserProof{
     assert.match(await page.locator('#poDialogBody').innerText(),/altered or unsupported/i);
     await page.locator('#poClose').click();
     assert.equal(JSON.stringify(await records()),beforeBad);
-    for(const width of [320,390,768,1280]){
+    for(const width of [320,390,768,1280,1440]){
       await page.setViewportSize({width,height:844});
       const doc=await page.evaluate(()=>document.documentElement.scrollWidth);
       assert(doc<=width+1,width+'px body has overflow '+doc);
     }
+    await page.setViewportSize({width:320,height:720});
+    await act('summary');await act('meta');
+    assert.equal(await page.evaluate(()=>document.activeElement?.name),'poNo','320px PO header opens at number');
+    assert((await page.locator('#poDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+     '320px PO header dialog remains in viewport');
+    await page.screenshot({path:path.join(output,'po-app04-edit-320.png')});
+    await page.keyboard.press('Escape');
+    await page.locator('#poDialog[open]').waitFor({state:'hidden'});
+    await page.waitForFunction(()=>document.activeElement?.dataset?.action==='meta');
     await page.setViewportSize({width:390,height:844});
     await page.screenshot({path:path.join(output,'po-app04-mobile.png')});
     await page.setViewportSize({width:1280,height:900});
