@@ -1,4 +1,4 @@
-const CACHE='vesa-v108-chess-clean-entry';
+const CACHE='vesa-v109-egenva-credit';
 const ASSETS=[
   './',
   './index.html',
@@ -172,10 +172,10 @@ const ASSETS=[
   './js/vesa-workspace-shell.js?v=20261013-platform-g09',
   './js/vesa-workspace-shell.js',
   './js/vesa-app-centre.js?v=20261018-u03',
-  './js/vesa-app-centre.js?v=20261018-chess-v1',
+  './js/vesa-app-centre.js?v=20261018-egenva-v2',
   './js/app-catalogue.js',
   './js/app-catalogue.js?v=20261015-costing-demo',
-  './js/app-catalogue.js?v=20261018-chess-v1',
+  './js/app-catalogue.js?v=20261018-egenva-v2',
   './js/vendor/xlsx.full.min.js',
   './manifest.webmanifest',
   './favicon.ico',
