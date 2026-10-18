@@ -1,5 +1,14 @@
 # Chess Beast 360 V2 - release evidence
 
+## Final Chess V2 public release evidence (2026-10-18)
+
+- GitHub Pages [final verified pre-documentation deployment](https://github.com/venkatbangla-boop/vesahost/actions/runs/39129711757) SUCCESS at main `6aa2be45b83020221204090dfe8c168ad97c10da`.
+- [Live public byte and Chromium verification](https://github.com/venkatbangla-boop/vesahost/actions/runs/39129237159) PASS: 7/7 files exact SHA-256 bytes over https://vesaent.com, 390/1440 responsive real browser two-ply game, zero AI fallbacks. Verified baseline `ec44f68167fb3130a1670ab19699b973ad9953d4`; subsequent changes to `6aa2be45b83020221204090dfe8c168ad97c10da` were only accessibility test and workflow, no live application assets.
+- [Main App Centre](https://github.com/venkatbangla-boop/vesahost/actions/runs/39129237137) PASS (19 apparel plus Chess 20th tile), [Costing](https://github.com/venkatbangla-boop/vesahost/actions/runs/39129237097) PASS, [Login/AQL accessibility](https://github.com/venkatbangla-boop/vesahost/actions/runs/39129712054) PASS; old expectations about the removed AQL Enter page and 19-only tiles corrected in tests, not app code.
+- [Chess V2 full gameplay + original 19 apps](https://github.com/venkatbangla-boop/vesahost/actions/runs/39128051952) PASS 2/2. Chess code source `7f8b6767110bfbc8da014e1a36bdf92ede37e973` unchanged since acceptance.
+- **Release verdict: Chess Beast V2 automated/public QA ACCEPTED.** Native physical mobile testing and human UAT unverified. The separate original 19-app human UAT verdict remains PARTIAL.
+
+
 Date: 2026-10-18. Chess Beast 360 is the optional 20th App Centre tile; original 19 garment apps remain unchanged. Powered by EGENVA. Personal showcase using synthetic data.
 
 ## Baseline, release and precise evidence
