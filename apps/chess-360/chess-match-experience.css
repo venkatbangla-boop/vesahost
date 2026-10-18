@@ -1,0 +1,29 @@
+/* Chess Beast 360 — match-result and settings experience. Chess-only. */
+body.chess-beast-v2 #gameOverModal{z-index:800;align-items:center;justify-content:center}
+body.chess-beast-v2 #gameOverModal .modal-card{max-width:410px;width:min(94vw,410px);max-height:min(84vh,720px);overflow-y:auto;text-align:center;border:1px solid rgba(95,224,173,.4);border-radius:19px;background:linear-gradient(165deg,#24393e,#15252e);box-shadow:0 30px 100px rgba(0,0,0,.75);padding:1.35rem;gap:.88rem}
+body.chess-beast-v2 #gameOverModal .modal-title{font-size:1.65rem;letter-spacing:-.025em}
+body.chess-beast-v2 #gameOverModal #gameOverScorecardBox{background:#13262b!important;border:1px solid rgba(137,209,184,.2)!important}
+body.chess-beast-v2 .chess-result-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.44rem .35rem;text-align:left;border-bottom:1px solid rgba(224,255,240,.09);font-size:.82rem}
+body.chess-beast-v2 .chess-result-row:last-child{border-bottom:0}
+body.chess-beast-v2 .chess-result-row strong{color:#d9f5e7}
+body.chess-beast-v2 .chess-modal-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.55rem;width:100%}
+body.chess-beast-v2 .chess-modal-actions>.btn{flex:1 1 145px;padding:.65rem .7rem;font-size:.84rem}
+body.chess-beast-v2 #chessCustomizeModal{z-index:700}
+body.chess-beast-v2 #chessCustomizeModal .modal-card{max-width:630px;max-height:min(90dvh,830px);overflow-y:auto;overscroll-behavior:contain;border-radius:18px;background:#1a2a32;border:1px solid rgba(98,235,187,.3)}
+body.chess-beast-v2 #chessCustomizeModal .modal-title{font-size:1.3rem}
+body.chess-beast-v2 .chess-muted{color:#b6cec8;font-size:.83rem;line-height:1.6}
+body.chess-beast-v2 .chess-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}
+body.chess-beast-v2 .chess-settings-grid label{display:flex;flex-direction:column;gap:.4rem;min-width:0;color:#f0f8f5;font-size:.82rem;font-weight:650}
+body.chess-beast-v2 .chess-settings-grid select{width:100%;min-width:0;padding:.68rem .75rem;border-radius:9px;color:#eefbf5;border:1px solid rgba(191,232,216,.25);background:#233944;font-size:.82rem;min-height:43px}
+body.chess-beast-v2 .chess-settings-grid select:focus-visible{outline:3px solid #86efac;outline-offset:2px}
+body.chess-beast-v2 .chess-resume-notice{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:center;width:100%;border:1px solid rgba(121,223,184,.4);border-radius:11px;padding:.65rem .8rem;background:#1d3435;color:#e6fff4;font-size:.82rem}
+body.chess-beast-v2 .chess-resume-notice span{flex:1 1 220px}
+body.chess-beast-v2 #btnDownloadMatchPdf{border-color:rgba(102,224,183,.25)}
+@media(max-width:520px){
+ body.chess-beast-v2 .chess-settings-grid{grid-template-columns:1fr}
+ body.chess-beast-v2 #chessCustomizeModal .modal-card{padding:.9rem}
+ body.chess-beast-v2 #gameOverModal .modal-card{padding:1rem}
+}
+@media(prefers-reduced-motion:reduce){
+ body.chess-beast-v2 #gameOverModal *,body.chess-beast-v2 #chessCustomizeModal *{animation:none!important;transition:none!important}
+}
