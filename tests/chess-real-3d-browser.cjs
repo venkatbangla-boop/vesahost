@@ -132,6 +132,85 @@ class Real3DQa{
     await page.waitForFunction(()=>window.__chessBeastReal3DState().pieceCount===32);
     assert.equal(Number(await page.locator('#moveRewindScrubber').inputValue()),3);
   }
+  async loadPracticeFen(page,fen,count){
+    // Exercise the app's ACTUAL validated FEN loader (no test-only engine).
+    await page.evaluate(v=>{
+      const field=document.getElementById('customFenInput');
+      field.value=v;
+      document.getElementById('btnLoadFen').click();
+    },fen);
+    await page.waitForFunction(n=>window.__chessBeastStudioState().pieceCount===n,count);
+    assert.equal((await page.evaluate(()=>window.__chessBeastStudioState())).pieceCount,count);
+  }
+  async special3DMoves(page){
+    // Castling must move a real King mesh and its real Rook mesh without
+    // duplicates or stale square identities.
+    await this.loadPracticeFen(page,'r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1',6);
+    let pieces=(await page.evaluate(()=>window.__chessBeastStudioState())).pieceSquares;
+    assert.ok(pieces.some(p=>p.sq===60&&p.type==='K'&&p.color==='w'));
+    assert.ok(pieces.some(p=>p.sq===63&&p.type==='R'&&p.color==='w'));
+    await this.mouseSquare(page,60);await this.mouseSquare(page,62);
+    await page.waitForFunction(()=>window.__chessBeastStudioState().pieceSquares.some(
+      p=>p.sq===62&&p.type==='K'&&p.color==='w'));
+    pieces=(await page.evaluate(()=>window.__chessBeastStudioState())).pieceSquares;
+    assert.ok(pieces.some(p=>p.sq===61&&p.type==='R'&&p.color==='w'),'Castle moves physical rook');
+    assert.ok(!pieces.some(p=>p.sq===63&&p.color==='w'),'Old rook square is emptied');
+    assert.equal(pieces.length,6);
+    await page.locator('#btnUndo').click();
+    await page.waitForFunction(()=>window.__chessBeastStudioState().pieceSquares.some(
+      p=>p.sq===60&&p.type==='K'&&p.color==='w'));
+    pieces=(await page.evaluate(()=>window.__chessBeastStudioState())).pieceSquares;
+    assert.ok(pieces.some(p=>p.sq===63&&p.type==='R'&&p.color==='w'),
+      'Undo restores sculpted rook to h1');
+
+    // Promotion must REPLACE the pawn geometry with a Queen model.
+    await this.loadPracticeFen(page,'4k3/P7/8/8/8/8/8/4K3 w - - 0 1',3);
+    await this.mouseSquare(page,8);await this.mouseSquare(page,0);
+    await page.locator('#promotionModal.open').waitFor();
+    const first=page.locator('#promoChoicesGrid .promo-btn').first();
+    assert.ok((await first.textContent()).includes('Queen'),'Explicit Queen option');
+    await first.click();
+    await page.waitForFunction(()=>window.__chessBeastStudioState().pieceSquares.some(
+      p=>p.sq===0&&p.type==='Q'&&p.color==='w'));
+    pieces=(await page.evaluate(()=>window.__chessBeastStudioState())).pieceSquares;
+    assert.equal(pieces.length,3);
+    assert.ok(!pieces.some(p=>p.type==='P'&&p.color==='w'));
+
+    const original=await page.evaluate(()=>window.__chessBeastReal3DSquare(0));
+    await page.locator('#btnFlip').click();
+    await page.waitForFunction(()=>window.__chessBeastStudioState().flipped);
+    const flipped=await page.evaluate(()=>window.__chessBeastReal3DSquare(0));
+    assert.ok(Math.abs(original.x-flipped.x)>20,'Flip rotates actual 3D camera');
+    const screenPick=await page.evaluate(v=>window.__chessBeastReal3DPick(v.x,v.y),flipped);
+    assert.equal(screenPick,0,'Board square mapping survives 180-degree flip');
+
+    // 3D -> 2D -> 3D must never reset the chess position.
+    await page.locator('#btn3DDirect').click();
+    await page.waitForFunction(()=>!window.__chessBeastReal3DState().enabled);
+    assert.equal(await page.locator('#chessStudioCanvas').isVisible(),false);
+    await page.locator('#btn3DDirect').click();
+    await page.waitForFunction(()=>window.__chessBeastStudioState().active);
+    assert.ok((await page.evaluate(()=>window.__chessBeastStudioState())).pieceSquares
+      .some(p=>p.sq===0&&p.type==='Q'),'Position preserved through view toggle');
+    console.log('CHESS_REAL_3D_SPECIAL_MOVES_PASS castle/undo/promotion/flip/toggle');
+  }
+  async webglFallback(page){
+    const result=await page.evaluate(()=>{
+      const canvas=document.getElementById('chessStudioCanvas');
+      const gl=canvas.getContext('webgl2')||canvas.getContext('webgl');
+      const ext=gl&&gl.getExtension('WEBGL_lose_context');
+      if(ext){ext.loseContext();return 'hardware extension';}
+      canvas.dispatchEvent(new Event('webglcontextlost',{cancelable:true}));
+      return 'synthetic context loss';
+    });
+    await page.waitForFunction(()=>!window.__chessBeastStudioState().active);
+    assert.equal(await page.locator('#chessStudioCanvas').isVisible(),false);
+    assert.equal(await page.locator('#chessReal3DCanvas').isVisible(),true,
+      'Working original WebGL board remains usable after studio context loss');
+    assert.equal(await page.locator('#btn3DDirect').getAttribute('aria-pressed'),'true',
+      '3D fallback remains clearly enabled');
+    console.log('CHESS_REAL_3D_CONTEXT_FALLBACK_PASS '+result);
+  }
   async orbit(page){
     const before=await page.evaluate(()=>window.__chessBeastReal3DSquare(52));
     await page.locator('#btnCameraRotate').click();
@@ -163,7 +242,12 @@ class Real3DQa{
         await page.waitForTimeout(1650); // Let nonessential toast leave the frame.
         await page.screenshot({path:path.join(imageDir,'real-3d-starting-1440.png'),animations:'disabled'});
       }
-      if(width===1440){await this.orbit(page);await this.match(page);}
+      if(width===1440){
+        await this.orbit(page);
+        await this.match(page);
+        await this.special3DMoves(page);
+        await this.webglFallback(page);
+      }
       if(width===390){
         const start=await page.evaluate(()=>window.__chessBeastReal3DState());
         await page.reload();
@@ -193,7 +277,7 @@ class Real3DQa{
         const box=await page.locator('#chessReal3DCanvas').boundingBox();
         const x=box.x+box.width*.5,y=box.y+box.height*.5;
         await page.evaluate(({x,y})=>{
-          const el=document.getElementById('chessReal3DCanvas');
+          const el=document.getElementById('chessStudioCanvas');
           const data={bubbles:true,cancelable:true,pointerId:14,isPrimary:true,pointerType:'touch',button:0};
           el.dispatchEvent(new PointerEvent('pointerdown',{...data,clientX:x,clientY:y}));
           window.dispatchEvent(new PointerEvent('pointermove',{...data,clientX:x+75,clientY:y+20}));
