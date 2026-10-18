@@ -1,3 +1,12 @@
+## FINAL AUTOMATED REAL 3D RELEASE GATE — 2026-10-18
+- **Status:** All technical/browser/offline/19-app gates PASS; cinematic image **approximate rather than pixel-exact**, documented separately. GitHub feature branch has source and immutable visual screenshots; production main originally still old 2D/CSS baseline.
+- **Feature CI:** #39145797620 PASS including Showcase camera, WebGL scenes, captures, castling, promotion, undo, 2D fallback and 19 sibling apps. #39146318601 PASS after strengthened public-live asset-parity test.
+- **Actual offline:** #39146313404 PASS after browser network physically switched OFF; CC0 glTF 1K, bin, nine material maps and vendored Three.js loaded from app's service worker.
+- **Permanent screenshots:** docs/portfolio/chess-real-3d-images/{showcase-1440,diagonal-1440,mobile-390}.png, created by github-actions bot from green source run #39145797620.
+- **Public gate (on eventual main):** tests/chess-beast-live.cjs now checks 35 exact files incl. all model textures, both browser sizes actually run PBR chess, and Showcase camera. Public screenshots uploaded as Actions artifacts. This test must PASS on production; if not, roll back via a commit to recorded old source SHA, never force reset.
+- **Remaining non-blocking subjective gap:** demo is fictional studio photo with decor/DOF and lower decorative gallery. Playable implementation keeps practical uncluttered gameplay UI instead of copied fake background. Physical Android/iPhone hardware remains untested.
+- **Safe rule:** no production claim until Github Pages/public 35-file byte parity and 3D gameplay passes on final main SHA.
+
 ## 2026-10-18 — TRUE sculpted model acceptance + smooth 3D motion (latest checkpoint)
 - **Still NOT LIVE**; public \`main\` remains \`2a374c264b0700a2f044652da44ec417d8772a0e\`. Owner required close demo visual comparison before release. Do not silently promote WIP.
 - [Real licensed 3D studio and special moves CI #39143503210](https://github.com/venkatbangla-boop/vesahost/actions/runs/39143503210) **2/2 SUCCESS**: genuine 12 Poly Haven sculpt shapes, 32 independent piece meshes, mouse/touch ray picking, 3D King/Rook castling, Queen promotion, undo, flipped board, switch 3D/2D, WebGL context-loss usable fallback. Android/desktop Chrome and emulated iPhone WebKit; 19 garment-app regression all PASS.
