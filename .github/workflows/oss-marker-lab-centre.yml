@@ -10,6 +10,7 @@ on:
       - 'js/preferences.js'
       - 'service-worker.js'
       - 'tests/vesa-platform-pages.cjs'
+      - 'tests/personal-demo-release.cjs'
       - '.github/workflows/oss-marker-lab-centre.yml'
 permissions:
   contents: read
