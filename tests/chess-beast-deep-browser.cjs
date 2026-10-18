@@ -167,6 +167,16 @@ class ChessBeastDeepBrowserQA {
       await page.locator('#btnTopStartPause').click();
       await page.waitForFunction((target)=>Number(document.getElementById('moveRewindScrubber').value)>target,
         before,{timeout:12000});
+      // Opening setup must suspend gameplay rather than leave AI moving unseen.
+      await page.locator('#btnOpenNewGame').click();
+      const atSetup=await this.plyCount(page);
+      await page.waitForTimeout(800);
+      assert.equal(await this.plyCount(page),atSetup,'New Match dialog suspends AI arena');
+      assert.equal(await page.evaluate(()=>window.__chessBeastPerformance().aiInFlight),false);
+      await page.locator('#btnCloseNewGame').click();
+      await page.locator('#btnTopStartPause').click();
+      await page.waitForFunction(target=>Number(document.getElementById('moveRewindScrubber').value)>target,
+        atSetup,{timeout:12000});
       await page.locator('#btnTopReset').click();
       assert.equal(await this.plyCount(page),0,'Reset clears game');
       await page.waitForTimeout(800);
