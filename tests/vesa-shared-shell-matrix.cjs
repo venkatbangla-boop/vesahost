@@ -106,7 +106,7 @@ async function run() {
       await page.goto(`${server.base}${app.route}`, { waitUntil: 'domcontentloaded' });
       if (app.id === 'aql') {
         const enter = page.locator('#vesa-enter');
-        if (await enter.count()) await enter.click();
+        if (await enter.isVisible()) await enter.click();
       }
       const result = await inspectPage(page, app, width);
       await page.screenshot({ path: path.join(output, `vesa-p-g01-${app.id}-${width}.png`), fullPage: true });
