@@ -11,6 +11,7 @@ on:
       - 'service-worker.js'
       - 'tests/vesa-premium-login.cjs'
       - 'tests/vesa-uniform-experience.cjs'
+      - 'tests/vesa-accessibility.cjs'
       - 'tests/personal-demo-release.cjs'
       - '.github/workflows/vesa-premium-login.yml'
   workflow_dispatch:

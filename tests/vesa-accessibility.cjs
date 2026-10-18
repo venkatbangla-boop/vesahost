@@ -16,7 +16,7 @@ const routes=[
   {id:'admin',path:'/admin/',authenticated:true,ready:()=>!!document.querySelector('.vesa-workspace')},
   {id:'tna',path:'/apps/tna/',authenticated:true,ready:()=>!!document.querySelector('.vesa-workspace')&&!!document.querySelector('#tnaMain')},
   {id:'ppm',path:'/apps/ppm/',authenticated:true,ready:()=>typeof app!=='undefined'&&!!document.querySelector('.vesa-workspace')},
-  {id:'aql',path:'/apps/aql/',authenticated:true,ready:()=>!!document.querySelector('.vesa-workspace')&&!!document.querySelector('#vesa-welcome')}
+  {id:'aql',path:'/apps/aql/',authenticated:true,ready:()=>!!window.__vesaApp&&!!document.querySelector('#app:not([hidden]) main')&&!!document.querySelector('.vesa-workspace')}
 ];
 const mime=file=>({'.css':'text/css','.html':'text/html','.js':'application/javascript','.json':'application/json','.png':'image/png','.svg':'image/svg+xml','.ttf':'font/ttf','.webmanifest':'application/manifest+json','.ico':'image/x-icon','.jpg':'image/jpeg'})[path.extname(file)]||'application/octet-stream';
 
@@ -28,7 +28,7 @@ async function skip(page,label){
   const active=await page.evaluate(()=>{const link=document.querySelector('.vesa-skip-link'),style=getComputedStyle(link);return {skip:document.activeElement?.matches('.vesa-skip-link'),tag:document.activeElement?.tagName,id:document.activeElement?.id,classes:document.activeElement?.className,link:{tabIndex:link?.tabIndex,display:style.display,visibility:style.visibility,rects:link?.getClientRects().length}};});
   assert.equal(active.skip,true,`${label}: skip link is first keyboard stop (${JSON.stringify(active)})`);
   const box=await page.locator('.vesa-skip-link').boundingBox();
-  assert.ok(box&&box.height>=44&&box.y>=0,`${label}: focused skip link is visible and touch-sized`);
+  assert.ok(box&&box.height>=44&&box.y>=0,`${label}: focused skip link must be visible and touch-sized (${JSON.stringify({box,active})})`);
   if(['login@390','apps@390'].includes(label)) await page.screenshot({path:path.join(output,`vesa-accessibility-${label.split('@')[0]}-skip-focus-390.png`)});
   await page.keyboard.press('Enter');
   assert.equal(await page.evaluate(()=>document.activeElement?.id===new URL(document.querySelector('.vesa-skip-link').href).hash.slice(1)),true,`${label}: skip link focuses its current target`);
@@ -43,10 +43,10 @@ async function probe(browser,base,route,width){
   const label=`${route.id}@${width}`;
   await skip(page,label);
   if(route.id==='aql'){
-    await page.locator('#vesa-enter').click();await page.waitForFunction(()=>!!window.__vesaApp&&!document.getElementById('app').hidden);
-    await page.waitForFunction(()=>document.activeElement?.matches('#app h1, #app main'));
-    await page.locator('.vesa-skip-link').focus();await page.keyboard.press('Enter');
-    assert.equal(await page.evaluate(()=>document.querySelector('#app:not([hidden]) main')===document.activeElement),true,`${label}: skip target follows AQL entrance-to-workspace transition`);
+    assert.equal(await page.locator('#vesa-enter').isVisible(),false,`${label}: legacy intermediate Enter screen stays hidden`);
+    // AQL opens straight into its inspection app; skip navigation no longer
+    // transitions via the removed welcome/Enter page.
+    assert.equal(await page.evaluate(()=>document.querySelector('#app:not([hidden]) main')===document.activeElement),true,`${label}: skip target is the directly opened AQL workspace`);
   }
   const evidence=await page.evaluate(({authenticated,platform})=>{
     const visible=node=>{const style=getComputedStyle(node);return style.display!=='none'&&style.visibility!=='hidden'&&node.getClientRects().length};
