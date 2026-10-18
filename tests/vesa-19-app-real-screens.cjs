@@ -73,7 +73,7 @@ class VesaNineteenScreenAudit {
    const btn=await this.firstButton(page,['button[data-action="preview"]',
       'button[data-action="practice"]','button[data-command="practice"]',
       'button[data-cmd="practice"]',
-      '#homeScreen [data-command="new"]','#vesa-enter']);
+      '#homeScreen [data-command="new"]','[data-action="demo-menu"]','#vesa-enter']);
    if(btn){
     report.opened=(await btn.getAttribute('data-action'))||
       (await btn.getAttribute('data-command'))||
