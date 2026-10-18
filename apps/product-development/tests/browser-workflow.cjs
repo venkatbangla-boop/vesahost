@@ -47,6 +47,32 @@ async function run(){
   assert.equal(await page.locator('.vesa-workspace__brand img').count(),1,'Only one workspace logo');
   assert.equal(await page.locator('[data-vesa-menu]').count(),6,'One universal six-command menu');
   assert.match(await page.locator('body').innerText(),/NON-COMMERCIAL PERSONAL DEMO/);
+  // G4: Source-labelled fictional journey opens all original nine panels from Home.
+  const journey=['summary','colourways','tasks','boards','revisions',
+   'decisions','references','reports','history'];
+  assert.equal(await page.locator('.pd-journey [data-action="preview"]').count(),9);
+  for(const step of journey){
+   await page.locator('.pd-journey [data-action="preview"][data-id="'+step+'"]').click();
+   assert.equal(await page.locator('.pd-tabs [data-action="'+step+'"]').getAttribute('aria-current'),'true');
+   assert(await page.locator('#pdMain [data-action="save"]').isDisabled(),'Practice cannot Save');
+   assert(await page.locator('#pdMain [data-action="download"]').isDisabled(),'Practice cannot export an editable copy');
+   assert(await page.locator('#pdMain [data-action="copy"]').isDisabled(),'Practice cannot create record copy');
+   assert.equal((await records()).length,0,'Practice cannot store concept records');
+   if(step==='colourways')assert.match(await page.locator('.pd-table').innerText(),/Demo Maroon proposal/);
+   if(step==='tasks')assert.match(await page.locator('.pd-table').innerText(),/requested-not-approved/);
+   if(step==='boards')assert.match(await page.locator('.pd-board').last().innerText(),/Demo Navy proposal[\s\S]*Demo Maroon proposal/);
+   if(step==='revisions')assert.match(await page.locator('.pd-table').innerText(),/SYN internal brief revision/);
+   if(step==='decisions')assert.match(await page.locator('.pd-table').innerText(),/changes-requested/);
+   if(step==='reports')assert.match(await page.locator('.pd-report').innerText(),/DRAFT BUYER PROPOSAL ONLY/);
+   if(step==='history')assert.match(await page.locator('.pd-table').innerText(),/Locally sourced draft/);
+   await action('home');
+  }
+  for(const width of [320,390,1440]){
+   await page.setViewportSize({width,height:860});
+   assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=width+1,'Product Home overflow '+width);
+   await page.screenshot({path:path.join(out,'product-app15-home-'+width+'.png')});
+  }
+  await page.setViewportSize({width:1280,height:900});
   await action('new');await fill({
    conceptName:'SYN CLASSIC TEE LINE',category:'T-SHIRT',season:'SYN SEASON',market:'SYN MEXICO MARKET',
    sourceRef:'SYN DESIGN BRIEF',reviewedBy:'SYN PRODUCT TEAM',reviewDate:'2026-10-17',

@@ -5,6 +5,7 @@
 (function(root){
 'use strict';
 class VesaProductWorkspace{
+ static steps=Object.freeze([['summary','hintSummary'],['colourways','hintColourways'],['tasks','hintTasks'],['boards','hintBoards'],['revisions','hintRevisions'],['decisions','hintDecisions'],['references','hintReferences'],['reports','hintReports'],['history','hintHistory']]);
  constructor(){
   this.main=document.getElementById('pdMain');
   this.dialog=document.getElementById('pdDialog');
@@ -122,7 +123,12 @@ class VesaProductWorkspace{
   try{
    if(name==='home'){this.current=null;this.practice=false;this.section='summary';this.render();return;}
    if(name==='new'){this.form('new');return;}
-   if(name==='practice'){this.current=this.E.demo();this.practice=true;this.section='summary';this.render();return;}
+   if(name==='practice'||name==='preview'){
+    if(name==='preview'&&(this.current||!VesaProductWorkspace.steps.some(([step])=>step===id)))
+     throw Error('Return to All Concepts to open a practice section');
+    this.current=this.practiceExample();this.practice=true;
+    this.section=name==='practice'?'summary':id;this.render();return;
+   }
    if(name==='continue'){const list=this.store.list();
     if(!list.length)throw Error(this.t('none'));this.action('load',list[0].id);return;}
    if(name==='load'){const record=this.store.load(id);if(!record)throw Error(this.t('none'));
@@ -150,6 +156,51 @@ class VesaProductWorkspace{
    if(name==='help'){this.modal(this.t('help'),'<p class="pd-warning">'+this.e(this.t('warning'))+
     '</p><p>'+this.e(this.t('rightsNotice'))+'</p><p>'+this.e(this.t('reportPlanned'))+'</p>');}
   }catch(err){this.error(err.message);}
+ }
+ /**
+  * Build an explicitly fictional board/colourway/fit/revision/review journey
+  * exclusively through the original proposal engines. Never persists, infers
+  * buyer approval, attaches unknown artwork, or writes a sibling app.
+  */
+ practiceExample(){
+  let p=this.E.demo();
+  p=this.E.append(p,'colourway',{id:'DEMO-CW-MAROON',name:'Demo Maroon proposal',
+   sourceRef:'SYN MAROON PALETTE',sourceDate:'2026-10-17',
+   reviewedBy:'SYN LOCAL DESIGNER',materialProposal:'SYN PIQUE CONCEPT ONLY',
+   materialSourceRef:'SYN MATERIAL IDEA'});
+  p=this.E.append(p,'task',{id:'DEMO-FIT-TASK',kind:'fit',
+   description:'SYN draft fit/sample exploration request',sourceRef:'SYN REQUEST FILE',
+   sourceDate:'2026-10-17',reviewedBy:'SYN PRODUCT TEAM',state:'requested-not-approved'});
+  p=this.E.append(p,'board',{id:'DEMO-BOARD-2',title:'DEMO Two-colour direction',
+   layout:'grid-2',aspect:'16:9',sourceRef:'SYN BOARD DIRECTION',
+   sourceDate:'2026-10-17',reviewedBy:'SYN LOCAL DESIGNER',cards:[
+    {id:'DEMO-CARD-NAVY',kind:'colourway',colourwayId:'DEMO-CW-NAVY',
+     sourceRef:'SYN NAVY CONCEPT BOARD',position:1},
+    {id:'DEMO-CARD-MAROON',kind:'colourway',colourwayId:'DEMO-CW-MAROON',
+     sourceRef:'SYN MAROON CONCEPT BOARD',position:2}
+   ]});
+  p=this.R.revise(p,{changes:{brief:'SYN revised proposal brief for next internal review only'},
+   sourceRef:'SYN REVISION BRIEF',reviewedBy:'SYN PRODUCT REVIEWER',
+   sourceDate:'2026-10-17',summary:'SYN internal brief revision, not buyer approval'});
+  p=this.R.decide(p,{state:'changes-requested',party:'internal',
+   actor:'SYN INTERNAL DESIGN TEAM',authorityRef:'SYN LOCAL REVIEW RECORD',
+   sourceRef:'SYN CHANGES NOTE',decisionDate:'2026-10-17',
+   comments:'SYN changes requested; no buyer or factory approval'});
+  const result=this.E.validate(p);
+  if(!result.ok)throw Error('Fictional development example invalid: '+result.errors.join('; '));
+  return p;
+ }
+ /** Show genuine product development panels as accessible read-only Home previews. */
+ journey(){
+  const t=k=>this.e(this.t(k));
+  return '<section class="pd-card" aria-labelledby="pdJourneyTitle"><h2 id="pdJourneyTitle">'+
+   t('journeyTitle')+'</h2><p class="pd-muted">'+t('journeyLead')+'</p>'+
+   '<div class="pd-journey">'+VesaProductWorkspace.steps.map(([step,hint],index)=>
+    '<article class="pd-journey-card"><span class="pd-journey-step">'+
+    String(index+1).padStart(2,'0')+'</span><h3>'+t(step)+'</h3><p>'+t(hint)+
+    '</p><button class="pd-btn" type="button" data-action="preview" data-id="'+
+    this.e(step)+'" aria-label="'+t('journeyOpen')+' · '+t(step)+'">'+
+    t('journeyOpen')+'</button></article>').join('')+'</div></section>';
  }
  excel(){
   if(!this.current)throw Error(this.t('none'));
@@ -320,8 +371,7 @@ class VesaProductWorkspace{
  render(){
   const e=v=>this.e(v??this.t('needs')),t=k=>this.e(this.t(k));
   const banner='<section class="pd-card"><h1>'+t('title')+'</h1><p class="pd-muted">'+t('lead')+'</p>'+
-   '<p class="pd-warning">'+t('notice')+'</p>'+
-   '<p class="pd-muted">NON-COMMERCIAL PERSONAL DEMO — SYNTHETIC IDEAS ONLY</p></section>';
+   '<p class="pd-warning">'+t('notice')+'</p></section>';
   if(!this.current){
    let saved;try{saved=this.store.list();}catch(err){
     this.main.innerHTML=banner+'<section class="pd-card pd-warning" role="alert">'+e(err.message)+
@@ -332,12 +382,12 @@ class VesaProductWorkspace{
     (saved.length?saved.map(item=>'<div class="pd-record"><span><strong>'+e(item.name)+
      '</strong><small>'+e(item.season)+' / Rev '+e(item.revision)+'</small></span>'+
      this.btn('load','openTitle',false,item.id)+'</div>').join(''):
-     '<p class="pd-muted">'+t('none')+'</p>')+'</section>';
+     '<p class="pd-muted">'+t('none')+'</p>')+'</section>'+this.journey();
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,check=this.E.validate(p);
   const summary=check.ok?this.E.summarize(p):{status:'Needs Information'};
-  const tabs=['summary','colourways','tasks','boards','revisions','decisions','references','reports','history'];
+  const tabs=VesaProductWorkspace.steps.map(([step])=>step);
   this.main.innerHTML=banner+'<section class="pd-card"><h2>'+e(p.header.conceptName)+
    '</h2><p class="pd-muted">'+e(p.header.category)+' / '+e(p.header.season)+
    ' / '+t('status')+': '+e(summary.status)+'</p>'+

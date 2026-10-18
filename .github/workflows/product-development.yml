@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - feature/product-development-360
+      - feature/product-g4-journey-20261018
       - main
     paths:
       - 'apps/product-development/**'

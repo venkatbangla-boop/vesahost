@@ -1,4 +1,4 @@
-const CACHE='vesa-v103-claims-g4-guided-cases';
+const CACHE='vesa-v104-product-g4-guided-journey';
 const ASSETS=[
   './',
   './index.html',
