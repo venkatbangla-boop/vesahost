@@ -165,6 +165,20 @@ class ChessProQA {
         assert.ok(info.moves>=4,'AI vs AI needs real moves, level '+level);
         assert.equal(info.arrows,0,'No unwanted AI arrows at level '+level);
         measurements.push({level,moves:info.moves,elapsedMs:info.perf.lastSearchMs,worker:info.perf.workerSupported});
+        // Real Worker plays out a complete 50-move-rule endgame at each strength.
+        // Halfmove clock is 99; any legal king/rook move makes it 100.
+        const endgame='4k3/8/8/8/8/8/8/4K2R w K - 99 1';
+        await page.evaluate(()=>{
+          document.getElementById('customFenInput').closest('details').open=true;
+        });
+        await page.locator('#customFenInput').fill(endgame);
+        await page.locator('#btnLoadFen').click();
+        await page.locator('#gameOverModal.open').waitFor({timeout:25000});
+        assert.match(await page.locator('#gameOverHeadline').innerText(),/Drawn|Draw/i,
+          'Real AI finishes level '+level+' via 50-move-rule draw');
+        assert.match(await page.locator('#gameOverReason').innerText(),/50-Move/i);
+        measurements[measurements.length-1].terminal='50-move-rule draw';
+        await page.locator('#btnCloseGameOver').click();
         await page.locator('#btnTopReset').click();
       }
       assert.deepEqual(errors,[],'All levels have no JS errors');
