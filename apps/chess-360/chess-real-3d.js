@@ -105,6 +105,9 @@
     initEvents(){
       root.addEventListener('chess-beast-camera-change',e=>{this.cam={...this.cam,...e.detail};this.request();});
       root.addEventListener('resize',()=>this.request());
+      document.addEventListener('visibilitychange',()=>{
+        if(!document.hidden && this.enabled)this.request();
+      });
       if(root.ResizeObserver)new ResizeObserver(()=>this.request()).observe(this.frame);
       this.canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();this.error='WebGL context lost';this.fallback();});
       this.canvas.addEventListener('webglcontextrestored',()=>{this.gl=null;this.webgl=null;this.buffers={};this.supported=null;});
@@ -153,10 +156,13 @@
       this.request();return true;
     }
     fallback(){
-      this.enabled=false;this.canvas.hidden=true;
+      this.enabled=false;this.canvas.hidden=true;this.press=null;
       document.body.classList.remove('real3d-active','board-3d');
       document.getElementById('btnToggle3D')?.classList.remove('active-toggle');
+      document.getElementById('btn3DDirect')?.setAttribute('aria-pressed','false');
+      const state=document.getElementById('chess3DDirectState');if(state)state.textContent='OFF';
       const bar=document.getElementById('chessCameraControls');if(bar)bar.hidden=true;
+      root.dispatchEvent(new Event('chess-real3d-fallback'));
     }
     sync(board,state={}){
       if(!Array.isArray(board)||board.length!==64)return;
