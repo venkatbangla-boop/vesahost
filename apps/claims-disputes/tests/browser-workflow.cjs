@@ -48,6 +48,38 @@ async function run(){
   assert.equal(await page.locator('.vesa-workspace').count(),1,'One shared VESA global shell');
   assert.equal(await page.locator('[data-vesa-menu]').count(),6,'One six-command universal menu');
   assert.match(await page.locator('body').innerText(),/NON-COMMERCIAL PERSONAL DEMO/);
+  // G4: Each original claim section is reachable through safe read-only Home practice.
+  const panels=['summary','findings','evidence','responses','agreements','settlements',
+   'decisions','references','reports','history'];
+  assert.equal(await page.locator('.clm-journey [data-action="preview"]').count(),10);
+  for(const step of panels){
+   await page.locator('.clm-journey [data-action="preview"][data-id="'+step+'"]').click();
+   assert.equal(await page.locator('.clm-tabs [data-action="'+step+'"]').getAttribute('aria-current'),'true');
+   assert(await page.locator('#clmMain [data-action="save"]').isDisabled(),'Practice Save disabled');
+   assert(await page.locator('#clmMain [data-action="download"]').isDisabled(),'Practice copy disabled');
+   assert.equal((await records()).length,0,'Read-only practice never persists source data');
+   if(step==='summary'){
+    assert.match(await page.locator('.clm-card').last().innerText(),/125\.50/);
+    assert.match(await page.locator('.clm-card').last().innerText(),/50\.00/);
+   }
+   if(step==='findings')assert.match(await page.locator('.clm-table').innerText(),/SYN UNVALUED ALLEGATION/);
+   if(step==='settlements'){
+    assert.match(await page.locator('.clm-table').innerText(),/20\.00/);
+    assert.match(await page.locator('.clm-table').innerText(),/30\.00/);
+   }
+   if(step==='decisions')assert.match(await page.locator('.clm-table').innerText(),/in-review/);
+   if(step==='reports')assert.match(await page.locator('.clm-report').innerText(),/DRAFT \/ SOURCE REVIEW ONLY/);
+   if(step==='history')assert.match(await page.locator('.clm-table').innerText(),/Source-reviewed finding/);
+   await action('home');
+  }
+  assert.equal((await records()).length,0);
+  for(const width of [320,390,1440]){
+   await page.setViewportSize({width,height:860});
+   assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=width+1,
+    'Claims Home overflow at '+width);
+   await page.screenshot({path:path.join(out,'claims-app14-home-'+width+'.png')});
+  }
+  await page.setViewportSize({width:1280,height:900});
   await action('new');await fill({
    caseNumber:'SYN CLAIM-001',buyer:'SYN BUYER',supplier:'SYN SUPPLIER',poNo:'SYN-PO-1',
    shipmentRef:'SYN-SHIP-1',claimCategory:'SYN SHORT SHIPMENT',

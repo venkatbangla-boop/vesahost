@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/claims-disputes-360
+      - feature/claims-g4-guided-cases-20261018
       - main
     paths:
       - 'apps/claims-disputes/**'

@@ -56,3 +56,14 @@ body{margin:0;background:var(--canvas,#f3f6fa);color:var(--ink,#17263d);font:14p
  .clm-table th,.clm-table td{white-space:normal;overflow-wrap:anywhere}
  @page{size:A4 landscape;margin:12mm}
 }
+
+/* G4 original case-panel discovery only; global VESA header stays with shared shell. */
+.clm-journey{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.clm-journey-card{display:flex;flex-direction:column;min-width:0;padding:14px;border:1px solid var(--line,#cbd6e4);border-radius:11px;background:var(--look-surface,#eef3f9)}
+.clm-journey-step{font-size:.8rem;font-weight:800;letter-spacing:.05em;color:var(--muted,#526176)}
+.clm-journey-card h3{margin:7px 0;font-size:1rem}
+.clm-journey-card p{margin:0 0 12px;color:var(--muted,#526176);flex:1;overflow-wrap:anywhere}
+.clm-journey-card .clm-btn{width:100%}
+@media(max-width:900px){.clm-journey{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.clm-journey{grid-template-columns:1fr}}
+@media print{.clm-journey{display:none!important}}

@@ -4,6 +4,7 @@
 (function(root){
 'use strict';
 class VesaClaimsWorkspace{
+ static steps=Object.freeze([['summary','hintSummary'],['findings','hintFindings'],['evidence','hintEvidence'],['responses','hintResponses'],['agreements','hintAgreements'],['settlements','hintSettlements'],['decisions','hintDecisions'],['references','hintReferences'],['reports','hintReports'],['history','hintHistory']]);
  constructor(){
   this.main=document.getElementById('clmMain');this.dialog=document.getElementById('clmDialog');
   this.body=document.getElementById('clmDialogBody');this.file=document.getElementById('clmCopyFile');
@@ -94,17 +95,11 @@ class VesaClaimsWorkspace{
  action(name,id=''){try{
   if(name==='home'){this.current=null;this.section='summary';this.render();return;}
   if(name==='new'){this.form('new');return;}
-  if(name==='practice'){
-   let p=this.E.create({caseNumber:'SYN-CLAIM-001',buyer:'SYN BUYER',supplier:'SYN SUPPLIER',
-    poNo:'SYN-PO-10',shipmentRef:'SYN SHIPMENT-2',claimCategory:'SYN ALLEGED SHORT SHIPMENT',
-    openedDate:'2026-10-17',sourceRef:'SYN CASE REGISTER',allegationSummary:'SYN quantity discrepancy for review',
-    reviewedBy:'SYN MERCHANDISER',reviewDate:'2026-10-17'});
-   p=this.E.append(p,'finding',{id:'SYN-F1',category:'SHORT SHIPMENT',description:'SYN CARTON COUNT VARIANCE',
-    affectedQty:10,quantityUnit:'pieces',sourceRef:'SYN PACKING NOTE',sourceDate:'2026-10-17',
-    reviewedBy:'SYN QA',reviewDate:'2026-10-17',valueReviewState:'locally-reviewed-claim-value',
-    allegedAmount:'120.00',currency:'USD',amountSourceRef:'SYN CLAIM VALUE SOURCE',
-    amountReviewedBy:'SYN FINANCE',amountReviewDate:'2026-10-17'});
-   p.mode='practice';this.current=p;this.section='summary';this.render();return;
+  if(name==='practice'||name==='preview'){
+   if(name==='preview'&&(this.current||!VesaClaimsWorkspace.steps.some(([step])=>step===id)))
+    throw Error('Return to All Cases for a valid practice section');
+   this.current=this.practiceExample();this.section=name==='practice'?'summary':id;
+   this.render();return;
   }
   if(name==='continue'){const list=this.store.list();if(!list.length)throw Error(this.t('none'));this.action('load',list[0].id);return;}
   if(name==='load'){const p=this.store.load(id);if(!p)throw Error('Saved claim not found on this device');
@@ -127,6 +122,64 @@ class VesaClaimsWorkspace{
    if(!this.current||this.current.mode==='practice')throw Error(this.t('practiceOnly'));
    this.form(name);return;}
  }catch(err){this.error(err.message);}}
+ /** Produce a fictional claim lifecycle through original pure validators; never persist. */
+ practiceExample(){
+  let p=this.E.create({caseNumber:'SYN-CLAIM-001',buyer:'SYN BUYER',supplier:'SYN SUPPLIER',
+   poNo:'SYN-PO-10',shipmentRef:'SYN SHIPMENT-2',
+   claimCategory:'SYN ALLEGED SHORT SHIPMENT',openedDate:'2026-10-17',
+   sourceRef:'SYN CASE REGISTER',allegationSummary:'SYN quantity discrepancy for review',
+   reviewedBy:'SYN MERCHANDISER',reviewDate:'2026-10-17'});
+  p=this.E.append(p,'finding',{id:'SYN-F1',category:'SHORT SHIPMENT',
+   description:'SYN CARTON COUNT VARIANCE',affectedQty:20,quantityUnit:'pieces',
+   sourceRef:'SYN PACKING NOTE',sourceDate:'2026-10-17',reviewedBy:'SYN QA',
+   reviewDate:'2026-10-17',valueReviewState:'locally-reviewed-claim-value',
+   allegedAmount:'125.50',currency:'USD',amountSourceRef:'SYN CLAIM VALUE SOURCE',
+   amountReviewedBy:'SYN FINANCE',amountReviewDate:'2026-10-17'});
+  p=this.E.append(p,'finding',{id:'SYN-F2',category:'SHADE REVIEW',
+   description:'SYN UNVALUED ALLEGATION',affectedQty:5,quantityUnit:'pieces',
+   sourceRef:'SYN SHADE NOTE',sourceDate:'2026-10-17',reviewedBy:'SYN QA',
+   reviewDate:'2026-10-17',valueReviewState:'needs-information',allegedAmount:null});
+  p=this.E.append(p,'evidence',{id:'SYN-AQL-EVIDENCE',sourceApp:'AQL',
+   recordType:'InspectionRef',recordId:'SYN-AQL-1',revisionId:'R2',
+   sourceRef:'SYN AQL EXCERPT',summary:'SYN read-only finding; liability not admitted',
+   sourceDate:'2026-10-17',reviewedBy:'SYN INSPECTOR',reviewDate:'2026-10-17'});
+  p=this.E.append(p,'response',{id:'SYN-RESPONSE-1',party:'SYN SUPPLIER',
+   summary:'SYN supplier disputes quantity discrepancy',receivedDate:'2026-10-17',
+   sourceRef:'SYN DOCUMENTED REPLY',reviewedBy:'SYN MERCHANDISER',
+   reviewDate:'2026-10-17',stance:'disputed'});
+  p=this.E.append(p,'agreement',{id:'SYN-AGREEMENT-1',
+   agreedAmount:'80.00',currency:'USD',agreementDate:'2026-10-17',
+   sourceRef:'SYN AGREEMENT EXAMPLE',externalAuthorityRef:'SYN FICTIONAL SIGNED REFERENCE',
+   externallyNamedParty:'SYN BUYER AND SUPPLIER',reviewedBy:'SYN CLAIM REVIEWER',
+   reviewDate:'2026-10-17',authorityState:'outside-party-evidence-entered-locally'});
+  p=this.E.append(p,'settlement',{id:'SYN-CREDIT-DRAFT',agreementId:'SYN-AGREEMENT-1',
+   kind:'draft-credit',amount:'20.00',currency:'USD',recordedDate:'2026-10-17',
+   sourceRef:'SYN CREDIT DRAFT',reviewedBy:'SYN FINANCE',reviewDate:'2026-10-17'});
+  p=this.E.append(p,'settlement',{id:'SYN-RECEIPT-1',agreementId:'SYN-AGREEMENT-1',
+   kind:'documented-receipt',amount:'30.00',currency:'USD',recordedDate:'2026-10-17',
+   sourceRef:'SYN DOCUMENTED RECEIPT',reviewedBy:'SYN FINANCE',
+   reviewDate:'2026-10-17',actualReceiptRef:'SYN-RECEIPT-DOC-1',
+   receiptReviewedBy:'SYN REVIEWER',receiptReviewDate:'2026-10-17'});
+  p=this.E.append(p,'decision',{id:'SYN-CASE-REVIEW',
+   newState:'in-review',decisionDate:'2026-10-17',decisionSourceRef:'SYN CASE REVIEW NOTE',
+   reviewedBy:'SYN CLAIM OWNER',reviewDate:'2026-10-17'});
+  p.mode='practice';
+  const valid=this.E.validate(p);if(!valid.ok)throw Error('Fictional claim invalid: '+valid.errors.join('; '));
+  return p;
+ }
+ /** Reveal all ten original case panels without localStorage writes or external approval. */
+ journey(){
+  const t=k=>this.e(this.t(k));
+  const cards=VesaClaimsWorkspace.steps.map(([step,hint],i)=>
+   '<article class="clm-journey-card"><span class="clm-journey-step">'+
+   String(i+1).padStart(2,'0')+'</span><h3>'+t(step)+'</h3><p>'+t(hint)+
+   '</p><button class="clm-btn" type="button" data-action="preview" data-id="'+
+   this.e(step)+'" aria-label="'+t('journeyOpen')+' · '+t(step)+'">'+t('journeyOpen')+
+   '</button></article>');
+  return '<section class="clm-card" aria-labelledby="clmJourneyTitle"><h2 id="clmJourneyTitle">'+
+   t('journeyTitle')+'</h2><p class="clm-muted">'+t('journeyLead')+'</p>'+
+   '<div class="clm-journey">'+cards.join('')+'</div></section>';
+ }
  excel(){
   if(!this.current)throw Error('Open a source claim case first');
   if(!root.XLSX)throw Error('Bundled Excel library unavailable');
@@ -143,7 +196,7 @@ class VesaClaimsWorkspace{
  render(){
   const e=v=>this.e(v??this.t('needs')),t=k=>e(this.t(k));
   const banner='<section class="clm-card"><h1>'+t('title')+'</h1><p class="clm-muted">'+t('lead')+'</p>'+
-   '<p class="clm-warning">'+t('notice')+'</p><p class="clm-muted">NON-COMMERCIAL PERSONAL DEMO — SYNTHETIC SOURCE ONLY</p></section>';
+   '<p class="clm-warning">'+t('notice')+'</p></section>';
   if(!this.current){
    let entries=[];try{entries=this.store.list();}catch(err){this.main.innerHTML=banner+
     '<section role="alert" class="clm-card clm-warning">'+e(err.message)+'</section>'+this.btn('upload','upload');return;}
@@ -152,12 +205,12 @@ class VesaClaimsWorkspace{
     this.btn('practice','practice')+'</div><h2>'+t('openRecords')+'</h2>'+
     (entries.length?entries.map(x=>'<div class="clm-record"><span><b>'+e(x.caseNumber)+
      '</b><small>'+e(x.buyer)+' / Rev '+e(x.revision)+'</small></span>'+this.btn('load','open',false,x.id)+
-     '</div>').join(''):'<p class="clm-muted">'+t('none')+'</p>')+'</section>';
+     '</div>').join(''):'<p class="clm-muted">'+t('none')+'</p>')+'</section>'+this.journey();
    this.shell?.setSavedState('unsaved');return;
   }
   const p=this.current,practice=p.mode==='practice',checked=this.E.validate(p),
    status=checked.ok?this.E.localStatus(p):{state:'Needs Information'};
-  const tabs=['summary','findings','evidence','responses','agreements','settlements','decisions','references','reports','history'];
+  const tabs=VesaClaimsWorkspace.steps.map(([step])=>step);
   this.main.innerHTML=banner+'<section class="clm-card"><h2>'+e(p.header.caseNumber)+
    ' — '+e(p.header.claimCategory)+'</h2><p class="clm-muted">'+e(p.header.buyer)+' / '+
    e(p.header.supplier)+' / '+t('state')+': '+e(status.state)+'</p>'+
