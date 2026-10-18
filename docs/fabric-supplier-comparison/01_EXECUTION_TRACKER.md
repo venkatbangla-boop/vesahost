@@ -1,5 +1,12 @@
 # APP-12 Fabric & Supplier Comparison 360 — Execution Tracker
 
+## 2026-10-18 — G4 eight original Fabric Comparison sections LIVE
+
+Sourced fictional offers, 210 GSM vs 180 GSM mismatch, landed 1.6000 USD/yd and missing-charge warning; no auto supplier approval. Original eight sections accessible from Home, four languages and 320–1440 Chromium; no source engine, local saved copy or report changes. Exact code `97698ddf1fe56e5ca5a98ddd67a6e45846113a31`; date-only test guard `07bdcf95f5029c410999390dfaa5896a6131b8d5`; [feature CI #39110991257](https://github.com/venkatbangla-boop/vesahost/actions/runs/39110991257), [Pages #39111065210](https://github.com/venkatbangla-boop/vesahost/actions/runs/39111065210), [public exact bytes #39111065445](https://github.com/venkatbangla-boop/vesahost/actions/runs/39111065445) SUCCESS. Current project NEXT is G5-02 Packing active-form QA as per [portfolio proof](../portfolio/25_G4_W4_COMPLETE_AND_G5_ACTIVE.md).
+
+---
+
+
 ## 2026-10-17 — M4 APP-12 SUPPLIER PERSONAL-DEMO PUBLIC RELEASE ACCEPTED
 
 **Verdict: ACCEPTED, PERSONAL NON-COMMERCIAL SYNTHETIC STATIC DEMO ONLY.** APP-12 source published from `main` `fb4a4e75145322d7994a515b416f9364e70a1e4d` at https://vesaent.com/apps/fabric-supplier-comparison/ . [Candidate full Node/Chromium including previous sibling apps #39040789416 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39040789416); [main independently rerun APP-12 CI #39040870697 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39040870697); [GitHub Pages deployment #39040870787 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39040870787); [public exact HTML/CSS/all source JS and previous demos #39040870750 SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions/runs/39040870750), whose `LIVE PASS` line explicitly identifies `main=fb4a4e75145322d7994a515b416f9364e70a1e4d`. [Buyer CRM #39040870683, Factory #39040870761, Production #39040870730 and Label Artwork #39040870745 all SUCCESS](https://github.com/venkatbangla-boop/vesahost/actions). All earlier demos preserved. No real commercial quotes, customer contacts or vendor credentials committed.

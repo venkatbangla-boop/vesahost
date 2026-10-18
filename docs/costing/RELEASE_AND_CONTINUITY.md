@@ -1,5 +1,12 @@
 # VESA Costing 360 - Build / Acceptance Log
 
+## 2026-10-18 — G5-01 Costing short identity and seven actual section Chromium LIVE
+
+At application source `4fbb7efa1f326c1e93c1bde798a63a5445a2484f`, the one shared VESA header remains while page-side titles read `Costing 360` without duplicate VESA 360 kicker. All original CostingEngine/margin/FOB/commission/import/saved copy/offline/Excel/PDF unchanged. [Feature full Node/Python Chromium + 19 opened-route suite #39111844125](https://github.com/venkatbangla-boop/vesahost/actions/runs/39111844125) SUCCESS: 19 routes, 38 sessions, 334 screenshots, 7 Costing opened tabs (390/1440), 0 issues. [Pages #39111979312](https://github.com/venkatbangla-boop/vesahost/actions/runs/39111979312), [public exact bytes #39111979159](https://github.com/venkatbangla-boop/vesahost/actions/runs/39111979159) SUCCESS. NEXT G5-02 Packing actual forms/reports/focus/mobile per [portfolio proof](../portfolio/25_G4_W4_COMPLETE_AND_G5_ACTIVE.md).
+
+---
+
+
 
 ## LIVE DEMO ACCEPTED — 2026-10-15 (Bangladesh time)
 
