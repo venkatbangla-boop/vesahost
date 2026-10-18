@@ -51,6 +51,7 @@ jobs:
         run: |
           set -euo pipefail
           node tests/chess-beast-v2.cjs
+          CHESS_BROWSER=webkit node tests/chess-beast-v2.cjs
           node tests/chess-beast-deep-browser.cjs
           CHESS_IMAGE_LOG=1 node tests/chess-beast-visual.cjs
           node tests/chess-beast-offline.cjs
@@ -62,3 +63,38 @@ jobs:
           path: output/chess-beast-v2/*.jpg
           if-no-files-found: ignore
           retention-days: 7
+
+  sibling-platform:
+    name: Preserve 19 garment apps and shared VESA App Centre
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Frozen TNA PPM AQL and shared source contracts
+        run: |
+          set -euo pipefail
+          node tests/vesa-workspace-shell-contract.cjs
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/tna/tests/g03-scheduling.test.js
+      - name: Install real Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          CHROME="$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')"
+          echo "CHROMIUM_PATH=$CHROME" >> "$GITHUB_ENV"
+      - name: Real App Centre and 19 existing opened workflows
+        run: |
+          set -euo pipefail
+          node tests/vesa-platform-pages.cjs
+          node tests/vesa-19-app-real-screens.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chess-beast-v2-original-nineteen-app-regression
+          path: output/vesa-19-real-screens/
+          if-no-files-found: ignore
+          retention-days: 5
