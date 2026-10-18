@@ -1,0 +1,86 @@
+# SVG-Edit audit-only build: no commit to main or public app registration.
+# Generates downloadable CI artifact, not a published site or app.
+name: VESA SVG-Edit pinned offline build probe
+on:
+  push:
+    branches: [feature/oss-svg-edit-audit-20261019]
+    paths:
+      - '.github/workflows/oss-svg-edit-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch exact upstream SHA, inspect declared licences
+        run: |
+          set -euo pipefail
+          SHA=c44f061d2f9a626d2771cc931298af5a45522d87
+          curl --fail --location --retry 3 --max-time 90 \
+            "https://github.com/SVG-Edit/svgedit/archive/$SHA.tar.gz" \
+            --output /tmp/svgedit-src.tar.gz
+          mkdir -p /tmp/svgedit-src
+          tar -xzf /tmp/svgedit-src.tar.gz -C /tmp/svgedit-src
+          cp -a "/tmp/svgedit-src/svgedit-$SHA" /tmp/vesa-svgedit
+          test -f /tmp/vesa-svgedit/LICENSE-MIT.txt
+          test -f /tmp/vesa-svgedit/licenseInfo.json
+          python3 - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('/tmp/vesa-svgedit')
+          pkg=json.loads((root/'package.json').read_text())
+          licenses=json.loads((root/'licenseInfo.json').read_text())
+          assert pkg['name']=='svgedit'
+          assert pkg['license'].find('LGPL-3.0-or-later')>=0
+          assert 'filesByLicense' in licenses
+          print('SVGEDIT_PINNED_LICENSE_AUDIT',pkg['version'],pkg['license'])
+          PY
+      - name: Install exact lockfile and produce full static editor
+        working-directory: /tmp/vesa-svgedit
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-fund --no-audit
+          npm run build
+          test -s dist/editor/index.html
+          test -s dist/editor/Editor.js
+          test -s dist/editor/svgedit.css
+          test -d dist/editor/images
+          node --check dist/editor/Editor.js
+      - name: Check static bundle manifest, embedded network references, sizes
+        run: |
+          set -euo pipefail
+          mkdir -p output/svg-edit-probe
+          python3 - <<'PY'
+          import hashlib,json,pathlib,re
+          root=pathlib.Path('/tmp/vesa-svgedit')
+          dist=root/'dist/editor'
+          files=[p for p in dist.rglob('*') if p.is_file()]
+          total=sum(p.stat().st_size for p in files)
+          inventory=[{'path':str(p.relative_to(dist)),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in files]
+          urls=[]
+          for p in files:
+              if p.suffix not in ('.html','.js','.css','.json'):continue
+              if p.stat().st_size>15_000_000:continue
+              text=p.read_text(errors='replace')
+              for value in set(re.findall(r'https?://[^\s"\'<>\\]+',text)):
+                  if 'github.com' in value or 'w3.org' in value or 'mozilla.org' in value:continue
+                  urls.append({'file':str(p.relative_to(dist)),'url':value[:250]})
+          report={'source':'SVG-Edit/svgedit','sha':'c44f061d2f9a626d2771cc931298af5a45522d87','fileCount':len(files),'totalBytes':total,'possibleRuntimeUrls':urls[:120],'inventory':inventory}
+          out=pathlib.Path('output/svg-edit-probe')
+          (out/'manifest.json').write_text(json.dumps(report,indent=2))
+          (out/'LICENSE-MIT.txt').write_bytes((root/'LICENSE-MIT.txt').read_bytes())
+          (out/'licenseInfo.json').write_bytes((root/'licenseInfo.json').read_bytes())
+          print('SVGEDIT_STATIC_BUILD_READY_TO_AUDIT',len(files),'files',total,'bytes',len(urls),'url-like references')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-svg-edit-build-and-license-probe
+          path: output/svg-edit-probe/
+          retention-days: 14
+          if-no-files-found: ignore

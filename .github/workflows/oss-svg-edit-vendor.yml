@@ -1,0 +1,75 @@
+# Feature branch only: build and vendor pinned SVG-Edit into isolated VESA studio.
+name: VESA SVG Studio pinned vendor
+on:
+  push:
+    branches: [feature/oss-svg-edit-audit-20261019]
+    paths:
+      - '.github/workflows/oss-svg-edit-vendor.yml'
+      - 'apps/artwork-cad-studio/service-worker.js'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/oss-svg-edit-audit-20261019
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build exact upstream source
+        run: |
+          set -euo pipefail
+          SHA=c44f061d2f9a626d2771cc931298af5a45522d87
+          curl -fLsS --retry 3 --max-time 90 "https://github.com/SVG-Edit/svgedit/archive/$SHA.tar.gz" -o /tmp/oss-svg.tgz
+          mkdir -p /tmp/oss-src
+          tar -xzf /tmp/oss-svg.tgz -C /tmp/oss-src
+          SOURCE="/tmp/oss-src/svgedit-$SHA"
+          cd "$SOURCE"
+          npm ci --ignore-scripts --no-fund --no-audit
+          npm run build
+          cd "$GITHUB_WORKSPACE"
+          DEST=apps/artwork-cad-studio/vendor
+          mkdir -p "$DEST"
+          cp -a "$SOURCE/dist/editor/." "$DEST/"
+          cp "$SOURCE/LICENSE-MIT.txt" "$SOURCE/licenseInfo.json" "$SOURCE/AUTHORS" "$DEST/"
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path('apps/artwork-cad-studio/vendor')
+          for p in ['index.html','Editor.js','svgedit.css','LICENSE-MIT.txt','licenseInfo.json']:
+              assert (root/p).is_file(), p
+          for p in root.rglob('*.map'):
+              p.unlink()
+          for p in root.rglob('*'):
+              if p.is_file() and p.name.endswith('.html') and p.stat().st_size < 100_000:
+                  text=p.read_text(errors='replace')
+                  if 'http://localhost:' in text:
+                      print('LOCALHOST_REFERENCE',p)
+          total=sum(p.stat().st_size for p in root.rglob('*') if p.is_file())
+          assert total<30_000_000,total
+          import json
+          files=['./','./index.html','./assets/artwork-studio.css','./src/studio-controller.js','./service-worker.js',
+                 '/js/preferences.js','/js/auth.js','/js/vesa-workspace-shell.js','/css/vesa-workspace.css',
+                 '/assets/vesa-logo-black.png','/favicon.ico']
+          files += ['./vendor/'+str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()]
+          (Path('apps/artwork-cad-studio/offline-manifest.json')).write_text(json.dumps({'version':'svg-edit-c44f061d','files':files},indent=2))
+          print('SVG_STUDIO_OFFLINE_MANIFEST',len(files))
+          print('SVG_STUDIO_VENDOR_READY',total)
+          PY
+      - name: Commit bundled source only to feature branch
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/artwork-cad-studio/vendor apps/artwork-cad-studio/offline-manifest.json
+          if git diff --cached --quiet; then
+            echo STUDIO_VENDOR_ALREADY_PRESENT
+          else
+            git commit -m "vendor(svg-studio): pin offline SVG-Edit bundle with license notices"
+            git fetch origin feature/oss-svg-edit-audit-20261019
+            git rebase origin/feature/oss-svg-edit-audit-20261019
+            git push origin HEAD:feature/oss-svg-edit-audit-20261019
+          fi

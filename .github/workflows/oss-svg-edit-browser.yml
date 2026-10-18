@@ -1,0 +1,58 @@
+# Isolated, synthetic VESA SVG-Edit browser validation. No deploy or main writes.
+name: VESA SVG Studio offline Chromium proof
+on:
+  push:
+    branches: [feature/oss-svg-edit-audit-20261019]
+    paths:
+      - 'apps/artwork-cad-studio/**'
+      - '.github/workflows/oss-svg-edit-browser.yml'
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Local vendor and manifest gate
+        run: |
+          set -euo pipefail
+          test -s apps/artwork-cad-studio/vendor/Editor.js
+          test -s apps/artwork-cad-studio/vendor/LICENSE-MIT.txt
+          test -s apps/artwork-cad-studio/offline-manifest.json
+          node --check apps/artwork-cad-studio/service-worker.js
+          node --check apps/artwork-cad-studio/src/studio-controller.js
+          python3 - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('apps/artwork-cad-studio')
+          files=json.loads((root/'offline-manifest.json').read_text())['files']
+          for item in files:
+              if item.startswith('./'):p=root/item[2:]
+              else:p=pathlib.Path(item.lstrip('/'))
+              if item=='./':continue
+              assert p.is_file(),item
+          print('SVG_STUDIO_OFFLINE_MANIFEST_CHECK_PASS',len(files))
+          PY
+      - name: Install real Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Prove mobile SVG studio and offline reload
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/art-studio-http.log 2>&1 &
+          SERVER=$!
+          trap 'kill $SERVER || true' EXIT
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:8765/apps/artwork-cad-studio/ >/dev/null && break
+            sleep 1
+          done
+          node apps/artwork-cad-studio/tests/browser-workflow.cjs
+      - name: Verify existing garment-domain engines stay frozen
+        run: |
+          node tests/vesa-blueprint-integrity.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
