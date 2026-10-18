@@ -11,6 +11,7 @@ on:
       - 'tests/chess-panel-layout-qa.cjs'
       - 'tests/chess-real-3d-models.cjs'
       - 'tests/chess-real-3d-browser.cjs'
+      - 'tests/chess-beast-live.cjs'
       - 'tests/chess-beast-rules.cjs'
       - 'tests/chess-beast-deep-browser.cjs'
       - 'tests/chess-beast-visual.cjs'
