@@ -46,7 +46,7 @@ class VesaBrandingRegression {
       for(const found of source.matchAll(this.ALIASES))failure('Misspelled brand '+found[0],found.index);
       for(const found of source.matchAll(this.ATTRIBUTIONS)){
         credits++;
-        const next=source.slice(found.index+found[0].length,160)
+        const next=source.slice(found.index+found[0].length,found.index+found[0].length+160)
           .replace(/^(?:\s|<[^>]+>|&nbsp;|&#\d+;)+/g,'');
         const token=next.match(/^([A-Za-z]+)/)?.[1]?.toUpperCase()||'';
         if((token!=='EGENVA'&&!this.SAFE_NON_BRAND_USES.has(token))||
