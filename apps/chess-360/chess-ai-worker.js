@@ -182,32 +182,43 @@ let currentLang='en';
       const parts = fen.trim().split(/\s+/);
       if (parts.length < 4) return false;
 
-      const rows = parts[0].split('/');
-      if (rows.length !== 8) return false;
-
-      const newBoard = new Array(64).fill(null);
-      let sq = 0;
-      for (let r = 0; r < 8; r++) {
-        for (const ch of rows[r]) {
-          if (ch >= '1' && ch <= '8') {
-            sq += parseInt(ch, 10);
-          } else {
-            const color = ch === ch.toUpperCase() ? 'w' : 'b';
-            const type = ch.toUpperCase();
-            newBoard[sq++] = { color, type };
-          }
+      const rows=parts[0].split('/');
+      if(rows.length!==8||!['w','b'].includes(parts[1])||!/^(?:-|[KQkqA-Ha-h]+)$/.test(parts[2]))return false;
+      const newBoard=new Array(64).fill(null);
+      let sq=0;
+      for(const row of rows){
+        let count=0;
+        for(const ch of row){
+          if(/[1-8]/.test(ch)){count+=Number(ch);sq+=Number(ch);}
+          else if(/[KQRBNPkqrbnp]/.test(ch)){
+            if(count>=8)return false;
+            newBoard[sq++]={color:ch===ch.toUpperCase()?'w':'b',type:ch.toUpperCase()};
+            count++;
+          }else return false;
         }
+        if(count!==8)return false;
       }
-
-      this.board = newBoard;
-      this.turn = parts[1] === 'b' ? 'b' : 'w';
-      this.castling = {
-        wK: parts[2].includes('K'),
-        wQ: parts[2].includes('Q'),
-        bK: parts[2].includes('k'),
-        bQ: parts[2].includes('q')
-      };
-      this.epSquare = parts[3] !== '-' ? algebraicToSq(parts[3]) : -1;
+      if(newBoard.filter(p=>p?.type==='K'&&p.color==='w').length!==1
+        ||newBoard.filter(p=>p?.type==='K'&&p.color==='b').length!==1)return false;
+      if(parts[3]!=='-'&&(!/^[a-h][36]$/.test(parts[3])||algebraicToSq(parts[3])<0))return false;
+      this.board=newBoard;
+      this.turn=parts[1];
+      this.castling={wK:false,wQ:false,bK:false,bQ:false};
+      this.castleRooks={wK:63,wQ:56,bK:7,bQ:0};
+      this.castle960=/[A-Ha-h]/.test(parts[2]);
+      for(const ch of parts[2]==='-'?'':parts[2]){
+        const standard={K:'wK',Q:'wQ',k:'bK',q:'bQ'}[ch];
+        if(standard){this.castling[standard]=true;continue;}
+        const color=ch===ch.toUpperCase()?'w':'b';
+        const back=color==='w'?56:0;
+        const kingCol=newBoard.findIndex((p,i)=>p?.type==='K'&&p.color===color&&Math.floor(i/8)===(color==='w'?7:0))%8;
+        if(kingCol<0)return false;
+        const rookCol=FILES.indexOf(ch.toLowerCase());
+        const slot=color+(rookCol>kingCol?'K':'Q');
+        this.castling[slot]=true;
+        this.castleRooks[slot]=back+rookCol;
+      }
+      this.epSquare=parts[3]!=='-'?algebraicToSq(parts[3]):-1;
       this.halfMoveClock = parseInt(parts[4] || '0', 10);
       this.fullMoveNumber = parseInt(parts[5] || '1', 10);
       this.history = [];
@@ -236,12 +247,14 @@ let currentLang='en';
         if (empty > 0) rowStr += empty;
         fenRows.push(rowStr);
       }
-      let castleStr = '';
-      if (this.castling.wK) castleStr += 'K';
-      if (this.castling.wQ) castleStr += 'Q';
-      if (this.castling.bK) castleStr += 'k';
-      if (this.castling.bQ) castleStr += 'q';
-      if (!castleStr) castleStr = '-';
+      let castleStr='';
+      for(const key of ['wK','wQ','bK','bQ']){
+        if(!this.castling[key])continue;
+        const original={wK:'K',wQ:'Q',bK:'k',bQ:'q'}[key];
+        const file=FILES[this.castleRooks[key]%8];
+        castleStr+=this.castle960?(key[0]==='w'?file.toUpperCase():file):original;
+      }
+      if(!castleStr)castleStr='-';
 
       const epStr = this.epSquare >= 0 ? sqToAlgebraic(this.epSquare) : '-';
       return `${fenRows.join('/')} ${this.turn} ${castleStr} ${epStr} ${this.halfMoveClock} ${this.fullMoveNumber}`;
@@ -438,23 +451,35 @@ let currentLang='en';
             }
           }
 
-          if (color === 'w' && sq === 60 && !this.isSquareAttacked(60, 'b')) {
-            if (this.castling.wK && !this.board[61] && !this.board[62] &&
-                !this.isSquareAttacked(61, 'b') && !this.isSquareAttacked(62, 'b')) {
-              moves.push({ from: 60, to: 62, piece: p, captured: null, promotion: null, flags: 'castleK' });
-            }
-            if (this.castling.wQ && !this.board[59] && !this.board[58] && !this.board[57] &&
-                !this.isSquareAttacked(59, 'b') && !this.isSquareAttacked(58, 'b')) {
-              moves.push({ from: 60, to: 58, piece: p, captured: null, promotion: null, flags: 'castleQ' });
-            }
-          } else if (color === 'b' && sq === 4 && !this.isSquareAttacked(4, 'w')) {
-            if (this.castling.bK && !this.board[5] && !this.board[6] &&
-                !this.isSquareAttacked(5, 'w') && !this.isSquareAttacked(6, 'w')) {
-              moves.push({ from: 4, to: 6, piece: p, captured: null, promotion: null, flags: 'castleK' });
-            }
-            if (this.castling.bQ && !this.board[3] && !this.board[2] && !this.board[1] &&
-                !this.isSquareAttacked(3, 'w') && !this.isSquareAttacked(2, 'w')) {
-              moves.push({ from: 4, to: 2, piece: p, captured: null, promotion: null, flags: 'castleQ' });
+          // Standard and Chess960 castling: rook, traversed squares and
+          // king safety are verified before offering either legal destination.
+          if(!this.inCheck(color)){
+            const back=color==='w'?56:0;
+            if(Math.floor(sq/8)===(color==='w'?7:0)){
+              for(const side of ['K','Q']){
+                const key=color+side;
+                if(!this.castling[key])continue;
+                const rookFrom=this.castleRooks[key];
+                const rook=this.board[rookFrom];
+                if(!rook||rook.color!==color||rook.type!=='R')continue;
+                const kingTo=back+(side==='K'?6:2);
+                const rookTo=back+(side==='K'?5:3);
+                const between=(a,b)=>{
+                  const out=[];
+                  const step=a<=b?1:-1;
+                  for(let n=a;;n+=step){out.push(n);if(n===b)break;}
+                  return out;
+                };
+                const kingTrack=between(sq,kingTo);
+                const rookTrack=between(rookFrom,rookTo);
+                const allPath=new Set([...kingTrack,...rookTrack,...between(sq,rookFrom)]);
+                if([...allPath].some(n=>n!==sq&&n!==rookFrom&&this.board[n]))continue;
+                if(kingTrack.some(n=>this.isSquareAttacked(n,enemy)))continue;
+                moves.push({
+                  from:sq,to:kingTo,piece:p,captured:null,promotion:null,
+                  flags:side==='K'?'castleK':'castleQ',rookFrom,rookTo
+                });
+              }
             }
           }
         } else {
@@ -492,37 +517,27 @@ let currentLang='en';
         fullMoveNumber: this.fullMoveNumber
       };
 
-      const p = this.board[m.from];
-      this.board[m.from] = null;
-
-      if (m.flags === 'ep') {
-        this.board[m.epVictimSq] = null;
-      } else if (m.flags === 'castleK') {
-        if (p.color === 'w') {
-          this.board[61] = this.board[63];
-          this.board[63] = null;
-        } else {
-          this.board[5] = this.board[7];
-          this.board[7] = null;
-        }
-      } else if (m.flags === 'castleQ') {
-        if (p.color === 'w') {
-          this.board[59] = this.board[56];
-          this.board[56] = null;
-        } else {
-          this.board[3] = this.board[0];
-          this.board[0] = null;
-        }
+      const p=this.board[m.from];
+      const castle=m.flags==='castleK'||m.flags==='castleQ';
+      this.board[m.from]=null;
+      if(castle){
+        const key=p.color+(m.flags==='castleK'?'K':'Q');
+        m.rookFrom??=this.castleRooks[key];
+        m.rookTo??=(p.color==='w'?56:0)+(m.flags==='castleK'?5:3);
+        const rook=this.board[m.rookFrom];
+        this.board[m.rookFrom]=null;
+        this.board[m.to]=p;
+        this.board[m.rookTo]=rook;
+      }else{
+        if(m.flags==='ep')this.board[m.epVictimSq]=null;
+        this.board[m.to]=m.promotion?{color:p.color,type:m.promotion}:p;
       }
-
-      this.board[m.to] = m.promotion ? { color: p.color, type: m.promotion } : p;
-
-      if (m.from === 60 || m.to === 60) { this.castling.wK = false; this.castling.wQ = false; }
-      if (m.from === 4 || m.to === 4) { this.castling.bK = false; this.castling.bQ = false; }
-      if (m.from === 63 || m.to === 63) this.castling.wK = false;
-      if (m.from === 56 || m.to === 56) this.castling.wQ = false;
-      if (m.from === 7 || m.to === 7) this.castling.bK = false;
-      if (m.from === 0 || m.to === 0) this.castling.bQ = false;
+      if(p.type==='K'){
+        this.castling[p.color+'K']=false;this.castling[p.color+'Q']=false;
+      }
+      for(const side of ['wK','wQ','bK','bQ']){
+        if(m.from===this.castleRooks[side]||m.to===this.castleRooks[side])this.castling[side]=false;
+      }
 
       if (m.flags === 'double') {
         this.epSquare = (m.from + m.to) >> 1;
@@ -549,28 +564,17 @@ let currentLang='en';
       this.halfMoveClock = snap.halfMoveClock;
       this.fullMoveNumber = snap.fullMoveNumber;
 
-      this.board[m.from] = m.piece;
-      if (m.flags === 'ep') {
-        this.board[m.to] = null;
-        this.board[m.epVictimSq] = m.captured;
-      } else {
-        this.board[m.to] = m.captured;
-        if (m.flags === 'castleK') {
-          if (m.piece.color === 'w') {
-            this.board[63] = this.board[61];
-            this.board[61] = null;
-          } else {
-            this.board[7] = this.board[5];
-            this.board[5] = null;
-          }
-        } else if (m.flags === 'castleQ') {
-          if (m.piece.color === 'w') {
-            this.board[56] = this.board[59];
-            this.board[59] = null;
-          } else {
-            this.board[0] = this.board[3];
-            this.board[3] = null;
-          }
+      if(m.flags==='castleK'||m.flags==='castleQ'){
+        this.board[m.to]=null;
+        this.board[m.rookTo]=null;
+        this.board[m.from]=m.piece;
+        this.board[m.rookFrom]={color:m.piece.color,type:'R'};
+      }else{
+        this.board[m.from]=m.piece;
+        this.board[m.to]=m.captured;
+        if(m.flags==='ep'){
+          this.board[m.to]=null;
+          this.board[m.epVictimSq]=m.captured;
         }
       }
     }
@@ -1236,7 +1240,6 @@ let currentLang='en';
       return threat;
     }
   }
-
 
 class ChessBeastWorkerService {
   /**
