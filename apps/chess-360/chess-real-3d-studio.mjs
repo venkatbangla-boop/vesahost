@@ -71,6 +71,7 @@ export class ChessBeast3DStudio {
     this.prototypes={};this.instances=new Map();this.board=[];
     this.highlights=[];this.state={};this.flipped=false;
     this.pieces=[];this.frames=0;this.anim=0;this.pointer=null;
+    this.motion=new Map();this.moveDurationMs=140;
     this.raycaster=new THREE.Raycaster();
     this.ndc=new THREE.Vector2();this.mapPlane=new THREE.Plane(new THREE.Vector3(0,1,0),-.247);
     this.hitWorld=new THREE.Vector3();
@@ -191,6 +192,10 @@ export class ChessBeast3DStudio {
   enable(on){
     this.active=Boolean(on&&this.ready&&!this.error);
     this.canvas.hidden=!this.active;
+    if(!this.active){
+      for(const [obj,m] of this.motion)obj.position.copy(m.to);
+      this.motion.clear();
+    }
     if(this.active)this.schedule();
     return this.active;
   }
@@ -199,21 +204,52 @@ export class ChessBeast3DStudio {
     this.state={...state};
     if(!this.ready)return;
     const desired=new Map();
+    const previouslyUsed=new Set();
+    // Keep the same GPU piece object when a move changes squares. A new mesh
+    // for each ply produces a distracting teleport and needless allocations.
+    // All motion is VISUAL ONLY; ChessEngine already finalized the legal move.
     this.pieces.forEach((p,sq)=>{
       if(!p||!TYPE[p.type?.toLowerCase()]&&!'KQRBNP'.includes(p.type))return;
       const color=p.color,type=p.type,id=sq+':'+color+type;
       const proto=this.prototypes[key(color,type)];if(!proto)return;
-      let obj=this.instances.get(id);
+      let obj=this.instances.get(id),moving=false;
+      if(!obj&&sq===state.lastTo&&Number.isInteger(state.lastFrom)){
+        const fromId=state.lastFrom+':'+color+type;
+        const previous=this.instances.get(fromId);
+        if(previous&&!previouslyUsed.has(previous)){
+          obj=previous;moving=true;
+        }
+      }
+      // During castling the rook moves at the same time as the King.
+      if(!obj&&type==='R'&&[62,58,6,2].includes(state.lastTo)){
+        const rookTrack={
+          62:[63,61],58:[56,59],6:[7,5],2:[0,3]
+        }[state.lastTo];
+        if(rookTrack&&sq===rookTrack[1]){
+          const prev=this.instances.get(rookTrack[0]+':'+color+'R');
+          if(prev&&!previouslyUsed.has(prev)){obj=prev;moving=true;}
+        }
+      }
       if(!obj){
         obj=proto.clone(true);obj.scale.setScalar(17.27);
-        obj.userData.square=sq;obj.userData.color=color;obj.userData.type=type;
-        obj.traverse(m=>{if(m.isMesh){m.userData.square=sq;m.castShadow=true;m.receiveShadow=true;}});
         this.scene.add(obj);
       }
-      obj.position.set((sq&7)-3.5,.247,(sq>>3)-3.5);
+      previouslyUsed.add(obj);
+      obj.userData.square=sq;obj.userData.color=color;obj.userData.type=type;
+      obj.traverse(m=>{if(m.isMesh){m.userData.square=sq;m.castShadow=true;m.receiveShadow=true;}});
+      const target=new THREE.Vector3((sq&7)-3.5,.247,(sq>>3)-3.5);
+      if(moving&&this.active&&!this.reduced&&!document.hidden){
+        this.motion.set(obj,{from:obj.position.clone(),to:target,
+          start:performance.now(),duration:this.moveDurationMs});
+      }else if(!this.motion.has(obj)||this.motion.get(obj).to.distanceToSquared(target)>.0001){
+        this.motion.delete(obj);
+        obj.position.copy(target);
+      }
       desired.set(id,obj);
     });
-    for(const [id,obj] of this.instances)if(!desired.has(id))this.scene.remove(obj);
+    for(const obj of this.instances.values())if(!previouslyUsed.has(obj)){
+      this.motion.delete(obj);this.scene.remove(obj);
+    }
     this.instances=desired;
     this.highlights.forEach(o=>this.scene.remove(o));this.highlights=[];
     const highlights=[
@@ -254,7 +290,18 @@ export class ChessBeast3DStudio {
   }
   render(){
     if(!this.active||document.hidden||!this.ready||!this.resize())return;
+    if(this.motion.size){
+      const now=performance.now();
+      for(const [obj,m] of this.motion){
+        const t=Math.min(1,(now-m.start)/m.duration);
+        const smooth=t*t*(3-2*t);
+        obj.position.lerpVectors(m.from,m.to,smooth);
+        obj.position.y+=Math.sin(t*Math.PI)*.10;
+        if(t>=1){obj.position.copy(m.to);this.motion.delete(obj);}
+      }
+    }
     this.cameraPose();this.renderer.render(this.scene,this.camera);this.frames++;
+    if(this.motion.size)this.schedule();
   }
   schedule(){
     if(!this.active||this.anim)return;
@@ -306,6 +353,7 @@ export class ChessBeast3DStudio {
         sq:obj.userData.square,type:obj.userData.type,color:obj.userData.color
       })).sort((a,b)=>a.sq-b.sq),
       flipped:!!this.state.flipped,rotating:!!this.getOrbit()?.rotateMode,
+      animationsActive:this.motion.size,moveAnimationMs:this.reduced?0:this.moveDurationMs,
       width:this.w||0,height:this.h||0,error:this.error};
   }
 }
