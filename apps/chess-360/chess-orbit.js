@@ -16,6 +16,9 @@
       this.modeButton=options.modeButton;
       this.resetButton=options.resetButton;
       this.showcaseButton=options.showcaseButton;
+      this.quickModeButton=document.getElementById('btnCameraQuickRotate');
+      this.quickShowcaseButton=document.getElementById('btnCameraQuickShowcase');
+      this.quickResetButton=document.getElementById('btnCameraQuickReset');
       this.leftButton=options.leftButton;
       this.rightButton=options.rightButton;
       this.readout=options.readout;
@@ -56,6 +59,10 @@
       window.dispatchEvent(new CustomEvent('chess-beast-camera-change',{detail:{...this.state}}));
       if(this.tiltSlider){this.tiltSlider.value=String(Math.round(this.state.tilt));}
       if(this.tiltLabel){this.tiltLabel.textContent=Math.round(this.state.tilt)+'°';}
+      // Sync camera preset indicator after drag, spin, reload, Showcase or Reset.
+      const showcase=Math.abs(this.state.tilt-48)<.1&&
+        Math.abs(this.state.yaw-10)<.1&&Math.abs(this.state.spin-8)<.1;
+      this.quickShowcaseButton?.setAttribute('aria-pressed',String(this.is3D&&showcase));
     }
     draw(){if(!this.raf)this.raf=requestAnimationFrame(()=>this.render());}
     sync3D(){
@@ -70,6 +77,10 @@
     syncButton(){
       document.body.classList.toggle('beast-camera-drag-mode',this.dragMode&&this.is3D);
       this.modeButton?.setAttribute('aria-pressed',String(this.dragMode&&this.is3D));
+      this.quickModeButton?.setAttribute('aria-pressed',String(this.dragMode&&this.is3D));
+      if(this.quickModeButton)this.quickModeButton.title=this.dragMode&&this.is3D?
+        'Rotation ON. Drag the board to orbit; tap again to move pieces.':
+        'Rotation OFF. Click to orbit by mouse or touch.';
       if(this.modeButton)this.modeButton.textContent=this.dragMode&&this.is3D?'✓ Rotate: ON':'↻ Rotate board';
     }
     setMode(active){
@@ -98,6 +109,9 @@
       this.modeButton?.addEventListener('click',()=>this.setMode(!this.dragMode));
       this.resetButton?.addEventListener('click',()=>this.reset());
       this.showcaseButton?.addEventListener('click',()=>this.showcase());
+      this.quickModeButton?.addEventListener('click',()=>this.setMode(!this.dragMode));
+      this.quickShowcaseButton?.addEventListener('click',()=>this.showcase());
+      this.quickResetButton?.addEventListener('click',()=>this.reset());
       this.leftButton?.addEventListener('click',()=>{this.adjust({spin:-45});this.save();});
       this.rightButton?.addEventListener('click',()=>{this.adjust({spin:45});this.save();});
       this.tiltSlider?.addEventListener('input',e=>{
