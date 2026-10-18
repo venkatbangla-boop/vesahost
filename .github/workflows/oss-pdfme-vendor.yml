@@ -27,6 +27,7 @@ jobs:
           cp LICENSE-pdfme.md vendor/LICENSE-pdfme.md
           cp THIRD_PARTY_NOTICES.md vendor/THIRD_PARTY_NOTICES.md
           npm ls --all --json > vendor/dependency-inventory.json || true
+          python3 tools/license-inventory.py
           python3 - <<'PY'
           import json,pathlib
           p=pathlib.Path('vendor/dependency-inventory.json')
@@ -39,7 +40,7 @@ jobs:
           from pathlib import Path
           root=Path('.')
           files=['index.html','src/shell-controller.js','assets/pdf-studio.css','service-worker.js',
-                 'vendor/index.html','vendor/LICENSE-pdfme.md','vendor/THIRD_PARTY_NOTICES.md','vendor/dependency-inventory.json','vendor/INSTALLATION-NOTES.md']
+                 'vendor/index.html','vendor/THIRD_PARTY_LICENSES.md','vendor/LICENSE-pdfme.md','vendor/THIRD_PARTY_NOTICES.md','vendor/dependency-inventory.json','vendor/INSTALLATION-NOTES.md']
           files += [str(p) for p in sorted((root/'vendor/assets').rglob('*')) if p.is_file()]
           assert len(files)>=10
           missing=[p for p in files if not (root/p).is_file()]
