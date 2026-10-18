@@ -112,15 +112,15 @@ export class ChessBeast3DStudio {
     c.addEventListener('click',e=>{if(this.active)e.preventDefault();});
   }
   makeBoard(){
-    const boardGroup=new THREE.Group(),colorTrim=0x81502a;
+    const boardGroup=new THREE.Group(),colorTrim=0x5c3929;
     const lower=new THREE.Mesh(new THREE.BoxGeometry(8.7,.38,8.7),
-      new THREE.MeshPhysicalMaterial({color:0x442516,roughness:.48,clearcoat:.39}));
+      new THREE.MeshPhysicalMaterial({color:0x321e17,roughness:.39,clearcoat:.62,clearcoatRoughness:.21}));
     lower.position.y=-.04;lower.castShadow=true;lower.receiveShadow=true;
     boardGroup.add(lower);
     const lip=new THREE.Mesh(new THREE.BoxGeometry(8.52,.07,8.52),
       new THREE.MeshPhysicalMaterial({color:colorTrim,metalness:.15,roughness:.24,clearcoat:.74}));
     lip.position.y=.165;lip.castShadow=true;lip.receiveShadow=true;boardGroup.add(lip);
-    const maple=woodTexture([214,175,119],42),walnut=woodTexture([111,62,35],142);
+    const maple=woodTexture([210,176,136],42),walnut=woodTexture([92,56,37],142);
     const materials=[
       new THREE.MeshPhysicalMaterial({map:maple,roughness:.43,clearcoat:.53,clearcoatRoughness:.20}),
       new THREE.MeshPhysicalMaterial({map:walnut,roughness:.39,clearcoat:.56,clearcoatRoughness:.18})
@@ -132,13 +132,15 @@ export class ChessBeast3DStudio {
       tile.castShadow=false;tile.receiveShadow=true;
       tile.userData.square=sq;boardGroup.add(tile);this.board.push(tile);
     }
-    const ground=new THREE.Mesh(new THREE.PlaneGeometry(80,80),
+    // Local tabletop only: allows the dark photographic-style CSS backdrop
+    // to show at the upper edges of the scene without a static board image.
+    const ground=new THREE.Mesh(new THREE.PlaneGeometry(19,19),
       new THREE.MeshStandardMaterial({color:0x151c1c,roughness:.87,metalness:.04}));
     ground.rotation.x=-Math.PI/2;ground.position.y=-.242;
     ground.receiveShadow=true;this.scene.add(ground);
     this.scene.add(boardGroup);
     this.mapPlane.constant=-.247;
-    const light1=new THREE.DirectionalLight(0xffedcf,3.2);
+    const light1=new THREE.DirectionalLight(0xffeacd,3.5);
     light1.position.set(-3.5,10,6);
     light1.castShadow=true;
     light1.shadow.mapSize.set(1024,1024);
@@ -148,9 +150,9 @@ export class ChessBeast3DStudio {
     light1.shadow.bias=-.00016;light1.shadow.normalBias=.018;
     light1.shadow.radius=3;
     this.scene.add(light1);
-    const fill=new THREE.DirectionalLight(0xcce4ff,2.0);fill.position.set(5,7,-5);this.scene.add(fill);
-    const rim=new THREE.DirectionalLight(0xffd9af,1.05);rim.position.set(2,5,10);this.scene.add(rim);
-    this.scene.add(new THREE.HemisphereLight(0xf5faff,0x58402d,1.6));
+    const fill=new THREE.DirectionalLight(0xd4e2ff,1.65);fill.position.set(5,7,-5);this.scene.add(fill);
+    const rim=new THREE.DirectionalLight(0xffd9af,1.35);rim.position.set(2,5,10);this.scene.add(rim);
+    this.scene.add(new THREE.HemisphereLight(0xf5faff,0x58402d,1.40));
     this.scene.add(new THREE.AmbientLight(0xffffff,.35));
   }
   async load(){
