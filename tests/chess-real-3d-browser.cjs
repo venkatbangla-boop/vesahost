@@ -365,6 +365,26 @@ class Real3DQa{
         subtleMs:140,expressiveMs:188,offSupported:true}));
     }finally{await ctx.close();}
   }
+  async switchTo3DMidGame(browser){
+    // Regression for users who play in 2D first, then activate real 3D.
+    // Public release validates this same sequence after the AI moves.
+    const {page,ctx,errors}=await this.open(browser,{viewport:{width:1366,height:900}});
+    try{
+      await page.locator('#btnOpenNewGame').click();
+      await page.locator('#modalModeRow [data-mode="pvp"]').click();
+      await page.locator('#btnConfirmStartGame').click();
+      await page.locator('#newGameModal').waitFor({state:'hidden'});
+      for(const sq of [52,36,12,28])await page.locator('#chessboard [data-sq="'+sq+'"]').click();
+      assert.equal(Number(await page.locator('#moveRewindScrubber').inputValue()),2);
+      await this.enable(page);
+      const studio=await this.verifyStudio(page,1366);
+      assert.equal(studio.pieceCount,32);
+      assert.ok(studio.pieceSquares.some(p=>p.sq===36&&p.color==='w'&&p.type==='P'));
+      assert.ok(studio.pieceSquares.some(p=>p.sq===28&&p.color==='b'&&p.type==='P'));
+      assert.deepEqual(errors,[],'Enabling premium PBR midway did not cause JS errors');
+      console.log('CHESS_REAL_3D_MIDGAME_SWITCH_PASS 2D to sculpted 3D after e4 e5');
+    }finally{await ctx.close();}
+  }
   async runWebkit(){
     const browser=await webkit.launch({headless:true});
     try{
@@ -397,6 +417,7 @@ class Real3DQa{
       await this.runChromium(browser,1440,900);
       await this.runChromium(browser,390,844);
       await this.runMotion(browser);
+      await this.switchTo3DMidGame(browser);
       await this.runWebkit();
     }finally{await browser.close();await new Promise(resolve=>this.server.close(resolve));}
   }
