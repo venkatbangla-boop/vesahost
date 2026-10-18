@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - feature/buyer-crm-360
+      - feature/buyer-crm-g4-20261018
       - main
     paths:
       - 'apps/buyer-crm/**'
+      - 'tests/vesa-19-app-real-screens.cjs'
       - 'docs/buyer-crm/**'
       - '.github/workflows/buyer-crm.yml'
       - 'js/app-catalogue.js'
@@ -53,6 +55,7 @@ jobs:
           node --check js/app-catalogue.js
           node --check js/preferences.js
           node --check service-worker.js
+          node --check tests/vesa-19-app-real-screens.cjs
           node tests/vesa-next-app-starter.cjs
           node apps/label-artwork-approval/tests/domain.test.cjs
           node apps/label-artwork-approval/tests/save-reopen.test.cjs
@@ -85,9 +88,18 @@ jobs:
           echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
       - name: Real Chromium CRM reviewed PO source, report Excel/PDF and privacy proof
         run: node apps/buyer-crm/tests/browser-workflow.cjs
+      - name: Inspect all 19 app opened workflows with real Chromium
+        run: node tests/vesa-19-app-real-screens.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: buyercrm360-m4-synthetic-browser
           path: output/playwright/crm-app11-*
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-19-opened-workflow-audit
+          path: output/vesa-19-real-screens/
           if-no-files-found: ignore
