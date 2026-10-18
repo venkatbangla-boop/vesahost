@@ -1644,7 +1644,8 @@
       <button class="btn" id="btnCameraRotate" type="button" aria-pressed="false" title="Drag on board to orbit. Press Esc to finish.">↻ Rotate board</button>
       <button class="btn" id="btnCameraSpinLeft" type="button" aria-label="Spin board counterclockwise 45 degrees">↶ 45°</button>
       <button class="btn" id="btnCameraSpinRight" type="button" aria-label="Spin board clockwise 45 degrees">↷ 45°</button>
-      <button class="btn" id="btnCameraReset" type="button">Reset angle</button>
+      <button class="btn" id="btnCameraShowcase" type="button" title="Studio three-quarter view, like the demo">✦ Showcase</button>
+      <button class="btn" id="btnCameraReset" type="button" title="Return to the easy-to-play classic camera">Reset angle</button>
       <output id="chessCameraAngles" class="beast-camera-angle" aria-live="off">Tilt 26° · Orbit 0° · Spin 0°</output>
       <span class="beast-camera-help">Rotate ON: mouse/finger drag orbits the board. Rotate OFF: select or drag 3D pieces. Keyboard chess board remains accessible.</span>
       <span id="chessReal3DStatus" role="status">Solid 3D piece models · WebGL · 100% offline</span>
@@ -4094,6 +4095,7 @@
     toolbar:document.getElementById('chessCameraControls'),
     modeButton:document.getElementById('btnCameraRotate'),
     resetButton:document.getElementById('btnCameraReset'),
+    showcaseButton:document.getElementById('btnCameraShowcase'),
     leftButton:document.getElementById('btnCameraSpinLeft'),
     rightButton:document.getElementById('btnCameraSpinRight'),
     readout:document.getElementById('chessCameraAngles'),
