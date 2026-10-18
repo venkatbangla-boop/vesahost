@@ -11,9 +11,9 @@
  */
 'use strict';
 class ChessBeastOfflineCache {
-  static VERSION='chess-beast-v2-20261018-r1';
+  static VERSION='chess-beast-v2-20261018-r2';
   static PREFIX='chess-beast-v2-';
-  static ASSETS=['./','./index.html','./chess-beast.css','./chess-beast-ui.js','./chess-ai-worker.js'];
+  static ASSETS=['./','./index.html','./chess-beast.css','./chess-beast-ui.js','./chess-ai-worker.js','./chess-report.js','./chess-match-experience.css'];
   static install(event) {
     event.waitUntil(
       caches.open(this.VERSION).then(cache=>cache.addAll(this.ASSETS))
