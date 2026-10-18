@@ -1430,6 +1430,7 @@
 <link rel="stylesheet" href="./chess-beast.css">
 <link rel="stylesheet" href="./chess-match-experience.css">
 <link rel="stylesheet" href="./chess-pro-ux.css">
+<link rel="stylesheet" href="./chess-panel-ui.css">
 </head>
 <body class="chess-beast-v2" data-board-theme="green">
 
@@ -1440,6 +1441,7 @@
       <div class="brand-logo" aria-hidden="true">♞</div>
       <div class="brand-title">
         <span id="appTitleText">Chess Beast 360</span>
+        <span class="chess-brand-tagline">Offline Grandmaster</span>
         <span class="brand-sub" id="appSubText">Powered by EGENVA</span>
       </div>
     </div>
@@ -1460,42 +1462,58 @@
   </div>
 
   <!-- Clean Vertical Navigation Links -->
-  <div class="utility-ribbon">
-    <button class="btn" id="btnQuickSaveMatch" type="button" title="Save Current Match to Offline Vault (With Full Move Rewind!)">
+
+  <!-- Chess-first navigation: strong actions first, secondary controls grouped. -->
+  <nav class="utility-ribbon" aria-label="Chess actions">
+    <div class="chess-nav-group" id="chessSavedGroup">
+      <div class="chess-side-label">MY GAMES</div>
+      <button class="btn" id="btnQuickSaveMatch" type="button" title="Save Current Match to Offline Vault (With Full Move Rewind!)">
       <span>💾</span> <span id="saveBtnSidebarLabel">Save Game</span>
     </button>
-    <button class="btn" id="btnOpenCustomize" type="button" title="All game, board and animation preferences"><span>⚙️</span> <span>Customize</span></button>
-    <button class="btn" id="btnQuietMode" type="button" aria-pressed="true" title="Show only the board, game status and moves"><span>🌙</span> <span id="chessQuietModeLabel">Focus: ON</span></button>
-    <button class="btn" id="btnDownloadMatchPdf" type="button" title="Save match report as an offline PDF"><span>📄</span> <span>Match PDF</span></button>
-    <button class="btn" id="btnOpenVaultTab" type="button" title="Open Saved Games Vault & Rewind">
+      <button class="btn" id="btnOpenVaultTab" type="button" title="Open Saved Games Vault & Rewind">
       <span>📂</span> <span>Saved Vault</span>
     </button>
-    <button class="btn" id="btnPuzzlesMenu" type="button">
+      <button class="btn" id="btnDownloadMatchPdf" type="button" title="Save match report as an offline PDF"><span>📄</span> <span>Match PDF</span></button>
+    </div>
+    <div class="chess-nav-group" id="chessToolsGroup">
+      <div class="chess-side-label">PLAY & PRACTICE</div>
+      <button class="btn" id="btnOpenCustomize" type="button" title="All game, board and animation preferences"><span>⚙️</span> <span>Customize</span></button>
+      <button class="btn" id="btnQuietMode" type="button" aria-pressed="true" title="Show only the board, game status and moves"><span>🌙</span> <span id="chessQuietModeLabel">Focus: ON</span></button>
+      <button class="btn" id="btnPuzzlesMenu" type="button">
       <span>🧩</span> <span data-i18n="puzzles">Tactical Puzzles</span>
     </button>
-    <button class="btn" id="btnThemeCycle" type="button">
+    </div>
+    <details class="chess-appearance-group" id="chessAppearanceGroup">
+      <summary>Appearance & sound <span aria-hidden="true">⌄</span></summary>
+      <div class="chess-appearance-grid">
+        <button class="btn" id="btnThemeCycle" type="button">
       <span>🎨</span> <span id="themeLabel">Board: Green</span>
     </button>
-    <button class="btn" id="btnSoundToggle" type="button">
+        <button class="btn" id="btnSoundToggle" type="button">
       <span id="soundIcon">🔊</span> <span data-i18n="sound">Sound: ON</span>
     </button>
-    <button class="btn" id="btnVoiceToggle" type="button" title="Tamil / English Voice Coach">
+        <button class="btn" id="btnVoiceToggle" type="button" title="Tamil / English Voice Coach">
       <span id="voiceIcon">🗣️</span> <span id="voiceLabel">Voice: OFF</span>
     </button>
-    <button class="btn" id="btnToggle3D" type="button" title="Toggle 2D / 3D Board">
+        <button class="btn" id="btnToggle3D" type="button" title="Toggle 2D / 3D Board">
       <span>🧊</span> <span>3D Board</span>
     </button>
-    <button class="btn" id="btnToggleBlindfold" type="button" style="display:none;">
+        <button class="btn" id="btnToggleBlindfold" type="button" style="display:none;">
       <span>🙈</span> <span>Blindfold</span>
     </button>
-    <button class="btn" id="btnZenMode" type="button" style="display:none;">
+        <button class="btn" id="btnZenMode" type="button" style="display:none;">
       <span>⛶</span> <span>Zen</span>
     </button>
-    <button class="btn" id="btnToggleRightDrawer" type="button" title="Slide Right Panel Open / Closed">
+      </div>
+    </details>
+    <div class="chess-nav-group chess-panel-nav-group" id="chessPanelControlGroup">
+      <div class="chess-side-label">WORKSPACE</div>
+      <button class="btn" id="btnToggleRightDrawer" type="button" title="Slide Right Panel Open / Closed">
       <span id="drawerToggleIcon">📊</span> <span id="drawerToggleText">Hide Panel ▶</span>
     </button>
-  </div>
-
+      <button class="btn" id="btnHideLeftPanel" type="button" aria-label="Hide left menu">◧ <span>Hide Menu</span></button>
+    </div>
+  </nav>
   <!-- Contained Bottom Zoom & Language Controls (Never Overlaps Board!) -->
   <div class="topbar-right-tools">
     <div class="zoom-control-group" title="Adjust Board Size (Auto-Clamped so it never overlaps)">
@@ -1516,11 +1534,13 @@
       <button class="btn" id="btnLangToggle" type="button" style="display:none;"><span id="langLabel">Lang: EN</span></button>
     </div>
   </div>
+  <button type="button" class="btn chess-mobile-more-btn" id="btnMobileMore" aria-controls="chessSavedGroup" aria-expanded="false">☰ More tools</button>
 </header>
+<button type="button" class="chess-show-left" id="btnShowLeftPanel" aria-label="Show chess main menu" hidden>☰ Menu</button>
 
 <!-- Floating Right-Edge Slide Drawer Handle -->
-<button class="drawer-edge-handle" id="btnEdgeDrawerHandle" type="button" title="Slide Inspector Panel Open / Closed">
-  <span id="edgeHandleArrow">◀</span> <span>STUDIO PANEL</span>
+<button class="drawer-edge-handle" id="btnEdgeDrawerHandle" type="button" title="Show game panel" aria-label="Show right game panel">
+  <span id="edgeHandleArrow" aria-hidden="true">◀</span> <span>Game Panel</span>
 </button>
 
 <!-- Main Workspace -->
@@ -1653,12 +1673,11 @@
 
   <!-- Right Column: Collapsible Slide-In / Slide-Out Studio Inspector -->
   <aside class="sidebar-panel" id="rightSidebarDrawer">
-    <div class="tabs-header" style="grid-template-columns: repeat(4, 1fr) auto; align-items:center;">
-      <button class="tab-btn active" data-tab="tabPlay" type="button" data-i18n="tabMatch">📊 Match</button>
-      <button class="tab-btn" data-tab="tabLevels" type="button" data-i18n="tabLevels">🎛️ Customize</button>
-      <button class="tab-btn" data-tab="tabTools" type="button" data-i18n="tabFen">💾 Vault</button>
-      <button class="tab-btn" data-tab="tabKnowledge" type="button" data-i18n="tabGuide">🎨 3D & Look</button>
-      <button class="tab-btn" id="btnCollapseDrawerInside" type="button" title="Slide Panel Closed" style="padding:0.5rem 0.65rem; color:#fbbf24; font-weight:900;">⇥</button>
+    <div class="tabs-header" role="tablist" aria-label="Chess right panel sections">
+      <button class="tab-btn active" data-tab="tabPlay" type="button" aria-controls="tabPlay">Game</button>
+      <button class="tab-btn" data-tab="tabLevels" type="button" aria-controls="tabLevels">Settings</button>
+      <button class="tab-btn" data-tab="tabTools" type="button" aria-controls="tabTools">Saved</button>
+      <button class="tab-btn chess-close-panel" id="btnCollapseDrawerInside" type="button" title="Hide game panel" aria-label="Hide right game panel">✕</button>
     </div>
 
     <!-- TAB 1: Chess.com-Style Play Hub + Live Match Coach & Move List -->
@@ -1688,8 +1707,9 @@
           <button type="button" class="tier-pill-btn" data-tier="6" title="Legend (Legend): World Championship pure board (Eval bar hidden, maximum engine)">👑 Leg</button>
         </div>
       </div>
-        <div style="font-size:0.7rem; color:#dad8d6;" id="winIdeaSummaryText">
-          Follow this 6-move tactical sequence on the board (numbered ① to ⑥) to build a winning attack:
+      <div class="win-idea-card" id="chessWinningIdeaCard" aria-live="polite">
+        <div id="winIdeaSummaryText">
+          Follow this 6-move tactical sequence on the board to build a winning attack:
         </div>
         <div class="win-idea-steps" id="winIdeaStepsList"></div>
       </div>
@@ -1874,6 +1894,8 @@
 
     <!-- TAB 2: Deep Game Customizer (Serious vs Fun Modes, Time Odds 10m vs 2m, Piece Handicaps & AI Tiers) -->
     <div class="tab-content" id="tabLevels">
+      <div class="chess-settings-heading">Game settings <span>AI, time &amp; variants</span></div>
+      <button class="tab-btn chess-view-entry" type="button" data-tab="tabKnowledge" aria-controls="tabKnowledge">◈ Board, pieces & 3D camera settings <span aria-hidden="true">→</span></button>
       <!-- Player Profile Customizer (Name, Avatar, Title - Saved Offline) -->
       <div class="form-group" style="background:#302e2b; padding:0.55rem; border-radius:7px; border:1px solid rgba(255,255,255,0.07);">
         <span class="form-label" style="color:#fbbf24;">👤 Your Offline Player Profile (Auto-Saved on Device)</span>
@@ -7373,5 +7395,6 @@
   });
 })();
 </script>
+<script src="./chess-panel-ui.js"></script>
 </body>
 </html>
