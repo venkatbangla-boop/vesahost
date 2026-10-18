@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.4, maximum-scale=5.0, user-scalable=yes">
-<title>Chess 3.0 — Offline Grandmaster Chess Engine</title>
+<title>Chess Beast 360 — Play, Learn & Challenge | EGENVA</title>
 <style>
   :root {
     --bg-primary: #302e2b;
@@ -1427,8 +1427,9 @@
   }
 
 </style>
+<link rel="stylesheet" href="./chess-beast.css?v=2">
 </head>
-<body data-board-theme="green">
+<body class="chess-beast-v2" data-board-theme="green">
 
 <!-- Top Navigation & Menus -->
 <header class="topbar">
@@ -1436,10 +1437,11 @@
     <div class="brand">
       <div class="brand-logo" aria-hidden="true">♞</div>
       <div class="brand-title">
-        <span id="appTitleText">Chess 3.0</span>
-        <span class="brand-sub" id="appSubText">Universal Edition</span>
+        <span id="appTitleText">Chess Beast 360</span>
+        <span class="brand-sub" id="appSubText">Powered by EGENVA</span>
       </div>
     </div>
+    <a class="beast-home" href="/apps/" aria-label="Return to VESA App Centre">← App Centre</a>
   </div>
 
   <!-- Primary 4 Match Controls -->
@@ -1523,7 +1525,7 @@
     <!-- Hand & Brain / Puzzle / Auto-Win Compact Mode Strip -->
     <div class="hand-brain-banner" id="specialModeBanner">
       <span id="specialModeText" style="overflow:hidden; text-overflow:ellipsis;">🧠 Hand & Brain Mode Active</span>
-      <span class="badge" id="specialModeBadge">Chess 3.0</span>
+      <span class="badge" id="specialModeBadge">Chess Beast 360</span>
     </div>
 
     <!-- Unobstructed Live Move & Engine Status Ticker (Never Covers the Board!) -->
@@ -1543,7 +1545,7 @@
         <div class="avatar" id="topAvatar">🤖</div>
         <div class="player-meta">
           <div class="player-name-row">
-            <span class="player-name" id="topPlayerName">Chess 3.0 Engine</span>
+            <span class="player-name" id="topPlayerName">Chess Beast AI</span>
             <span class="badge" id="topPlayerBadge">Lvl 3 • 1500 ELO</span>
             <span class="badge" id="topStyleBadge" style="background:rgba(59,130,246,0.15);color:#60a5fa;border-color:rgba(59,130,246,0.3);">Carlsen Style</span>
           </div>
@@ -2274,6 +2276,7 @@
 <!-- Notification Toast -->
 <div class="toast" id="toastBox">Copied to clipboard!</div>
 
+<script src="./chess-beast-ui.js?v=2"></script>
 <script>
 (function() {
   "use strict";
@@ -3634,7 +3637,7 @@
   let userDrawnArrows = []; // Array of { from, to, color }
   let timeTravelIndex = -1; // -1 means viewing latest live position
 
-  // Chess 3.0 State: Drag-and-Drop, Variants, Editor, Puzzle Verifier & Career Profile
+  // Chess Beast State: Drag-and-Drop, Variants, Editor, Puzzle Verifier & Career Profile
   let draggedFromSq = -1;
   let lastCaptureSq = -1;
   let isChess960 = false;
@@ -3916,6 +3919,21 @@
   };
 
   const boardEl = document.getElementById('chessboard');
+  // UI interaction owner: independent of ChessEngine rules / AI worker.
+  const chessVisualController=new window.ChessBeastVisualController({
+    board:boardEl,
+    canMove:sq=>{
+      if(matchState!=='playing'||isAiThinking||gameMode==='aivsai')return false;
+      const p=engine.board[sq];
+      return Boolean(p&&p.color===engine.turn&&(gameMode==='pvp'||engine.turn===humanColor));
+    },
+    onDrop:(from,to)=>{
+      selectedSq=from;
+      legalMovesFromSelected=engine.getLegalMoves(engine.turn).filter(m=>m.from===from);
+      onSquareClick(to);
+    },
+    onSelect:sq=>onSquareClick(sq)
+  });
   const thinkingBanner = document.getElementById('thinkingBanner');
   const gameStatusTitle = document.getElementById('gameStatusTitle');
   const openingNameDisplay = document.getElementById('openingNameDisplay');
@@ -4434,7 +4452,10 @@
   }
 
   function triggerMoveVisualFX(moveObj, snap, status) {
-    if (!fxCtx) return;
+    if (!fxCtx || chessVisualController.effectMode==='off' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      lastMoveFloatingCallout=null;
+      return;
+    }
     if (aiLevel >= 3 && !moveObj.captured && !(status && (status.inCheck || status.over))) {
       // In Expert, Pro, Ultimate & Legend tiers, keep normal moves 100% crisp and distraction-free!
       return;
@@ -4923,6 +4944,12 @@
         const isLight = ((r + c) % 2) === 0;
         sqDiv.className = `square ${isLight ? 'light' : 'dark'}`;
         sqDiv.dataset.sq = sq;
+        sqDiv.setAttribute('role','gridcell');
+        sqDiv.tabIndex=(visualRow===0&&visualCol===0)?0:-1;
+        const a11yPiece=engine.board[sq];
+        sqDiv.setAttribute('aria-label',sqToAlgebraic(sq)+' '+(a11yPiece
+          ?(a11yPiece.color==='w'?'White ':'Black ')+(PIECE_LABELS_EN[a11yPiece.type]||a11yPiece.type)
+          :'empty'));
 
         if (sq === selectedSq) sqDiv.classList.add('selected');
         if (sq === lastFrom || sq === lastTo) sqDiv.classList.add('last-move');
@@ -5236,6 +5263,7 @@
     }
 
     const moverSide = engine.turn;
+    const moveFlight = chessVisualController.prepareMove(moveObj);
     const snap = engine.executeMove(moveObj);
     if (baseTimeSeconds > 0 && incrementSeconds > 0) {
       if (moverSide === 'w') whiteTime += incrementSeconds;
@@ -5260,7 +5288,8 @@
     }
 
     renderAll();
-    setTimeout(() => { lastCaptureSq = -1; }, 420);
+    if(moveFlight)moveFlight();
+    setTimeout(() => { lastCaptureSq = -1; }, 200);
 
     if (status.over) {
       const wasAutoWin = isAutoWinActive;
@@ -6026,7 +6055,7 @@
 
   document.getElementById('btnDownloadPgn').addEventListener('click', () => {
     const pgnMoves = buildPgnString() || '*';
-    const header = `[Event "Chess 3.0 Offline Match"]\n[Site "Offline Browser"]\n[White "${humanColor === 'w' ? 'Player' : LEVEL_NAMES[aiLevel].name}"]\n[Black "${humanColor === 'b' ? 'Player' : LEVEL_NAMES[aiLevel].name}"]\n[FEN "${engine.toFen()}"]\n\n${pgnMoves}`;
+    const header = `[Event "Chess Beast 360 Offline Match"]\n[Site "Offline Browser"]\n[White "${humanColor === 'w' ? 'Player' : LEVEL_NAMES[aiLevel].name}"]\n[Black "${humanColor === 'b' ? 'Player' : LEVEL_NAMES[aiLevel].name}"]\n[FEN "${engine.toFen()}"]\n\n${pgnMoves}`;
     const blob = new Blob([header], { type: 'text/plain;charset=utf-8' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -6100,7 +6129,7 @@
     autoFitBoardToViewport();
   });
 
-  // Chess 3.0 Button Listeners: 3D View, Blindfold, and Board Setup Editor
+  // Chess Beast Button Listeners: 3D View, Blindfold, and Board Setup Editor
   document.getElementById('btnToggle3D').addEventListener('click', (e) => {
     const active = document.body.classList.toggle('board-3d');
     e.currentTarget.classList.toggle('active-toggle', active);
