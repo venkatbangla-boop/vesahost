@@ -18,27 +18,55 @@
     dark:[.32,.18,.11],w:[.96,.88,.72],b:[.265,.245,.22],
     shadow:[.027,.02,.012],selected:[.05,.89,.59],last:[.98,.77,.29],
     legal:[.18,.75,.92],check:[1,.13,.19]};
+  // Offline microfacet material model: two broad studio key/fill lights,
+  // clear lacquer highlights, rough walnut, and radial contact shadow falloff.
+  // This is an original shader, not a claim of Three.js or Blender.
   const vs=[
-    'precision mediump float;',
+    'precision highp float;',
     'attribute vec3 aPosition;attribute vec3 aNormal;',
     'uniform mat4 uMvp;uniform vec3 uOffset;',
-    'varying vec3 vNorm;varying vec3 vPos;',
-    'void main(){vec3 p=aPosition+uOffset;vPos=p;vNorm=aNormal;gl_Position=uMvp*vec4(p,1.);}'
+    'varying vec3 vNorm;varying vec3 vPos;varying vec3 vLocal;',
+    'void main(){vec3 p=aPosition+uOffset;vPos=p;vLocal=aPosition;',
+    'vNorm=aNormal;gl_Position=uMvp*vec4(p,1.);}'
   ].join('\n');
   const fs=[
-    'precision mediump float;',
-    'varying vec3 vNorm;varying vec3 vPos;',
+    'precision highp float;',
+    'varying vec3 vNorm;varying vec3 vPos;varying vec3 vLocal;',
     'uniform vec3 uColor;uniform vec3 uEye;',
     'uniform float uAlpha;uniform float uGrain;uniform float uGloss;',
+    'uniform float uRoughness;uniform float uShadow;',
+    'const float PI=3.14159265;',
+    'float GGX(float nh,float a2){float d=nh*nh*(a2-1.0)+1.0;return a2/(PI*d*d+.0001);}',
+    'float Smith(float nv,float rough){float k=(rough+1.0)*(rough+1.0)/8.0;return nv/(nv*(1.0-k)+k+.0001);}',
+    'vec3 lighting(vec3 N,vec3 V,vec3 L,vec3 light,vec3 color,float rough){',
+    'vec3 H=normalize(V+L);float nl=max(dot(N,L),0.0),nv=max(dot(N,V),0.001);',
+    'float nh=max(dot(N,H),0.0),vh=max(dot(V,H),0.0),a=rough*rough;',
+    'float spec=GGX(nh,a*a)*Smith(nv,rough)*Smith(nl,rough)/(4.0*nv*nl+.0001);',
+    'vec3 F=.045*vec3(1.0)+(vec3(1.0)-vec3(.045))*pow(1.0-vh,5.0);',
+    'return ((color/PI)*(vec3(1.0)-F)+F*spec)*light*nl;',
+    '}',
     'void main(){',
-    'vec3 N=normalize(vNorm),L=normalize(vec3(-.4,.83,.5)),V=normalize(uEye-vPos);',
-    'float d=max(dot(N,L),0.),f=max(dot(N,normalize(vec3(.7,.7,-.4))),0.);',
-    'float h=pow(max(dot(reflect(-L,N),V),0.),22.);',
-    'float broad=pow(max(dot(reflect(-L,N),V),0.),7.);',
-    'float rim=pow(1.0-max(dot(N,V),0.),2.);',
-    'float grain=sin(vPos.x*40.+sin(vPos.z*9.)*2.)*.036+sin(vPos.z*22.)*.02;',
-    'vec3 col=uColor*(.49+.54*d+.20*f+grain*uGrain)+vec3(.97,.84,.68)*(h*.45+broad*.10)*uGloss+vec3(.09,.075,.066)*rim+vec3(.018);',
-    'gl_FragColor=vec4(clamp(col,0.,1.),uAlpha);}'
+    'if(uShadow>.5){float radius=length(vLocal.xz);',
+    'float soft=1.0-smoothstep(.065,.41,radius);',
+    'gl_FragColor=vec4(.025,.017,.011,uAlpha*soft*soft);return;}',
+    'vec3 N=normalize(vNorm),V=normalize(uEye-vPos);',
+    'vec3 albedo=uColor;',
+    // Fine directional fibers with mild ring variations, not exaggerated waves
+    'if(uGrain>.5){float line=sin(vPos.z*89.0+sin(vPos.x*1.5)*.55)*.011;',
+    'float fiber=sin(vPos.z*30.0+sin(vPos.x*2.4)*.35)*.018;',
+    'float ring=sin(vPos.z*8.0+vPos.x*2.2)*.024;',
+    'float pores=sin(vPos.x*127.0)*sin(vPos.z*117.0)*.005;',
+    'albedo*=1.0+line+fiber+ring+pores;}',
+    'float rough=max(.09,min(.97,uRoughness));',
+    'vec3 key=lighting(N,V,normalize(vec3(-.48,.87,.32)),vec3(2.55,2.3,2.04),albedo,rough);',
+    'vec3 fill=lighting(N,V,normalize(vec3(.65,.68,-.37)),vec3(.85,1.0,1.15),albedo,rough);',
+    'vec3 back=lighting(N,V,normalize(vec3(.2,.48,.85)),vec3(.25,.31,.39),albedo,rough);',
+    'float ndv=max(dot(N,V),0.0),fres=pow(1.0-ndv,3.0);',
+    'vec3 softbox=vec3(.18,.20,.22)*fres*(.50+(1.0-rough)*.6);',
+    'vec3 lit=albedo*(vec3(.18,.185,.19)+.14*max(N.y,0.0))+key+fill+back+softbox;',
+    'lit=lit/(vec3(1.0)+lit*.38);',
+    'lit=pow(max(lit,vec3(0.0)),vec3(.82));',
+    'gl_FragColor=vec4(clamp(lit,0.0,1.0),uAlpha);}',
   ].join('\n');
   function shaders(gl){
     const make=(type,source)=>{
@@ -53,7 +81,8 @@
     const attr=n=>gl.getAttribLocation(pr,n),uni=n=>gl.getUniformLocation(pr,n);
     return {pr,pos:attr('aPosition'),norm:attr('aNormal'),mvp:uni('uMvp'),
       offset:uni('uOffset'),color:uni('uColor'),eye:uni('uEye'),
-      alpha:uni('uAlpha'),grain:uni('uGrain'),gloss:uni('uGloss')};
+      alpha:uni('uAlpha'),grain:uni('uGrain'),gloss:uni('uGloss'),
+      roughness:uni('uRoughness'),shadow:uni('uShadow')};
   }
   const plane=()=>({vertexCount:6,positions:Float32Array.from([
     -.49,0,-.49,.49,0,.49,.49,0,-.49,
@@ -161,6 +190,10 @@
       gl.vertexAttribPointer(p.norm,3,gl.FLOAT,false,0,0);
       gl.uniform3fv(p.color,color);gl.uniform3fv(p.offset,translation);
       gl.uniform1f(p.alpha,alpha);gl.uniform1f(p.grain,grain);gl.uniform1f(p.gloss,gloss);
+      const wood=['frame','trim','light','dark'].includes(name);
+      gl.uniform1f(p.shadow,name==='shadow'?1:0);
+      gl.uniform1f(p.roughness,name==='shadow'||name==='plane'?1:
+        wood?(name==='trim'?.34:.55):(name==='K'||name==='Q'?.19:.25));
       gl.drawArrays(gl.TRIANGLES,0,b.count);
     }
     render(){
