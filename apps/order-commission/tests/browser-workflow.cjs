@@ -39,10 +39,17 @@ class CommissionBrowserProof{
    await page.locator('[data-action=new]').waitFor();
    assert.equal(await page.locator('.vesa-workspace').count(),1);
    assert.equal(await page.locator('[data-vesa-menu]').count(),6);
+   // G5: New finance record must focus its first editable input, not Close.
+   await click('new');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'buyer','New commission dialog starts at Buyer');
+   await page.keyboard.press('Escape');
+   await page.locator('#comDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
    await click('new');
    await enter({buyer:'SYNTHETIC BUYER',factory:'SYNTHETIC FACTORY',po:'SYN-PO-001',
     style:'SYN-TEE',source:'SYNTHETIC PO PAPER'});await submit();
    await click('edit-agreement');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'source','Agreement form starts on evidence Source');
    await enter({source:'SYNTHETIC AGREEMENT',effective:'2026-10-01',rate:'3',
     currency:'USD',basis:'total-fob',rounding:'total-half-up-2',
     debtor:'factory',milestone:'SYNTHETIC GOODS SHIPPED',reviewer:'Synthetic reviewer'});
@@ -62,6 +69,7 @@ class CommissionBrowserProof{
     issuedOn:'2026-10-13',dueDate:'2026-10-14',issuedBy:'Synthetic director',
     source:'SYNTHETIC ISSUED INVOICE'});await submit();
    await click('receipts');await click('add-receipt');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'receiptRef','Receipt form starts at receipt reference');
    await enter({receiptRef:'SYN-TRANSFER-01',date:'2026-10-15',amount:'20.00',
     receiptCurrency:'USD',evidence:'SYNTHETIC RECEIPT EVIDENCE',actor:'Synthetic finance'});
    const firstOption=await page.locator('#comDialog [name=invoiceChoice] option').nth(1).getAttribute('value');
@@ -100,6 +108,13 @@ class CommissionBrowserProof{
    await page.screenshot({path:path.join(out,'commission-app02-mobile.png')});
    await page.setViewportSize({width:320,height:720});
    assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=321);
+   await click('summary');await click('meta');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'buyer','320px edit dialog focuses Buyer');
+   assert((await page.locator('#comDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+    'Commission edit dialog stays inside 320px viewport');
+   await page.keyboard.press('Escape');
+   await page.locator('#comDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='meta');
    await page.setViewportSize({width:768,height:1024});
    assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=769);
    await page.setViewportSize({width:1280,height:900});

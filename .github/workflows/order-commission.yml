@@ -1,9 +1,11 @@
-# APP-02 review-only development; does NOT deploy GitHub Pages.
+# APP-02 source-only verification; deployment remains an independent Pages gate.
 name: VESA Order Commission 360 verification
 on:
   push:
     branches:
       - feature/order-commission-360
+      - feature/commission-g5-form-focus-20261018
+      - main
     paths:
       - 'apps/order-commission/**'
       - '.github/workflows/order-commission.yml'
@@ -31,6 +33,8 @@ jobs:
           set -euo pipefail
           node --check apps/order-commission/tests/domain.test.cjs
           node --check apps/order-commission/tests/browser-workflow.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
           node apps/order-commission/tests/domain.test.cjs
           node apps/packing-container/tests/domain.test.cjs
           node apps/tna/tests/g02-domain.test.js

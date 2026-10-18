@@ -1,4 +1,4 @@
-const CACHE='vesa-v106-packing-g5-form-focus';
+const CACHE='vesa-v107-commission-g5-form-focus';
 const ASSETS=[
   './',
   './index.html',

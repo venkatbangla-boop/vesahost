@@ -535,7 +535,10 @@ class CommissionWorkspace{
   document.getElementById('comDialogTitle').textContent=title;
   this.body.innerHTML=content;if(!this.dialog.open)this.dialog.showModal();
   this.dialog.addEventListener('close',()=>this.focus?.focus?.(),{once:true});
-  this.dialog.querySelector('input:not([type=hidden]),select,button')?.focus?.();
+  // Focus the application-owned field, not the shared dialog Close control.
+  // Non-form guidance falls back to Close, keeping keyboard access explicit.
+  const first=this.body.querySelector('input:not([type=hidden]):not(:disabled),select:not(:disabled),textarea:not(:disabled),button:not(:disabled)');
+  (first||document.getElementById('comClose'))?.focus?.();
  }
  error(text){this.dialogOpen('Please review','<p role="alert" class="com-warning">'+esc(text)+'</p>');}
  start(){
