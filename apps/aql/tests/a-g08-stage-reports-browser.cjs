@@ -27,7 +27,7 @@ function serve() {
 async function enterApp(page) {
   await page.goto(page.url() || 'about:blank', { waitUntil: 'domcontentloaded' }).catch(() => {});
   const enter = page.locator('#vesa-enter');
-  if (await enter.count()) await enter.click();
+  if (await enter.isVisible()) await enter.click();
   await page.waitForFunction(() => !!window.__vesaApp?.repository?.db);
 }
 
