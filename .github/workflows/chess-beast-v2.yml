@@ -2,11 +2,12 @@
 name: Chess Beast 360 V2 acceptance
 on:
   push:
-    branches: [feature/chess-beast-v2-20261018, feature/chess-beast-v2-20261018-match-experience, main]
+    branches: [feature/chess-beast-v2-20261018, feature/chess-beast-v2-20261018-match-experience, feature/chess-beast-pro-orbit-20261018, main]
     paths:
       - 'apps/chess-360/**'
       - 'tests/chess-beast-v2.cjs'
       - 'tests/chess-match-experience.cjs'
+      - 'tests/chess-pro-orbit-qa.cjs'
       - 'tests/chess-beast-rules.cjs'
       - 'tests/chess-beast-deep-browser.cjs'
       - 'tests/chess-beast-visual.cjs'
@@ -55,6 +56,7 @@ jobs:
           CHESS_BROWSER=webkit node tests/chess-beast-v2.cjs
           node tests/chess-beast-deep-browser.cjs
           node tests/chess-match-experience.cjs
+          node tests/chess-pro-orbit-qa.cjs
           CHESS_IMAGE_LOG=1 node tests/chess-beast-visual.cjs
           node tests/chess-beast-offline.cjs
           node tests/vesa-chess-20th-app.cjs
