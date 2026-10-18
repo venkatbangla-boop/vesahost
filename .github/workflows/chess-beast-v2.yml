@@ -6,6 +6,7 @@ on:
     paths:
       - 'apps/chess-360/**'
       - 'tests/chess-beast-v2.cjs'
+      - 'tests/chess-beast-rules.cjs'
       - 'tests/vesa-chess-20th-app.cjs'
       - 'tests/vesa-egenva-branding.cjs'
       - 'js/app-catalogue.js'
@@ -31,6 +32,8 @@ jobs:
           set -euo pipefail
           node --check apps/chess-360/chess-ai-worker.js
           node --check tests/chess-beast-v2.cjs
+          node --check apps/chess-360/chess-beast-ui.js
+          node tests/chess-beast-rules.cjs
           node tests/vesa-blueprint-integrity.cjs
       - name: Install Chromium and WebKit
         shell: bash
