@@ -55,7 +55,7 @@ async function run() {
     page.on('request', request => { if (!request.url().startsWith(base)) external.push(request.url()); });
     await page.goto(`${base}/apps/aql/`, { waitUntil: 'domcontentloaded' });
     const enter = page.locator('#vesa-enter');
-    if (await enter.count()) await enter.click();
+    if (await enter.isVisible()) await enter.click();
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db);
 
     const current = await page.evaluate(async () => {
@@ -210,7 +210,7 @@ async function run() {
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     const reenter = page.locator('#vesa-enter');
-    if (await reenter.count()) await reenter.click();
+    if (await reenter.isVisible()) await reenter.click();
     await page.waitForFunction(() => !!window.__vesaApp?.repository?.db);
     const durableCurrent = await page.evaluate(async id => {
       const app = window.__vesaApp;
