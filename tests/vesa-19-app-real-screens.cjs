@@ -81,12 +81,13 @@ class VesaNineteenScreenAudit {
     try{
      await btn.click({timeout:8000});
      if(id==='aql'){
-      const entry=await this.firstButton(page,['[data-action="demo-menu"]']);
-      if(entry){
-       await entry.click({timeout:5000});
-       const demo=await this.firstButton(page,['[data-action="demo"][data-kind="apparel"]']);
-       if(demo)await demo.click({timeout:5000});
+      // Demo may already be open; do not click behind its modal a second time.
+      if(report.opened!=='demo-menu'){
+       const entry=await this.firstButton(page,['[data-action="demo-menu"]']);
+       if(entry)await entry.click({timeout:5000});
       }
+      const demo=await this.firstButton(page,['[data-action="demo"][data-kind="apparel"]']);
+      if(demo)await demo.click({timeout:5000});
      }
      await page.waitForTimeout(220);
      report.shots.push(await this.snap(page,id,width,'opened'));
