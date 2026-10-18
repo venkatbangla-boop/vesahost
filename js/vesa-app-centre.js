@@ -1,6 +1,6 @@
 /*
  * App Centre explorer: display-only catalogue adapter.
- * Owner: app discovery, 23-route categorization, search, language labels and
+ * Owner: app discovery, 20-route categorization, search, language labels and
  * keyboard-accessible filters. Never reads or writes domain records, auth
  * secrets, sibling storage or approval state. Existing catalogue owns routes.
  * Usage: new VesaAppCentreExplorer({catalogue,filters,search,clear,status,count}).mount()
@@ -11,7 +11,7 @@ const ORDER=['en','bn','hi','ta'];
 const GROUPS=Object.freeze([
  {id:'planning',members:['aql','ppm','tna','production-tracker']},
  {id:'orders',members:['costing','purchase-order','order-commission','lc-payment']},
- {id:'product',members:['product-development','tech-pack-spec','sampling-approval','fabric-trims','label-artwork-approval','fabric-supplier-comparison','marker-lab','artwork-cad-studio','pdf-template-studio']},
+ {id:'product',members:['product-development','tech-pack-spec','sampling-approval','fabric-trims','label-artwork-approval','fabric-supplier-comparison']},
  {id:'shipping',members:['packing-container','shipment-documentation','claims-disputes']},
  {id:'partners',members:['buyer-crm','factory-vendor']},
  {id:'games',members:['chess-360']}
@@ -86,9 +86,6 @@ const SUMMARIES=Object.freeze({
  'shipment-documentation':['Prepare draft shipping files, quantities and documents.','খসড়া শিপিং ফাইল, পরিমাণ ও নথি প্রস্তুত করুন।','ड्राफ्ट शिपिंग फाइल, मात्रा और दस्तावेज बनाएँ।','Draft shipping files, quantities, documents தயாரிக்கவும்.'],
  'claims-disputes':['Follow claim cases, source evidence and settlement records.','ক্লেইম মামলা, প্রমাণ ও নিষ্পত্তির রেকর্ড দেখুন।','क्लेम मामले, प्रमाण और निपटान रिकॉर्ड देखें।','Claim cases, evidence, settlement பதிவுகளைக் கண்காணிக்கவும்.'],
  'buyer-crm':['Manage buyer enquiries, opportunities and follow-ups locally.','বায়ার এনকোয়ারি, সুযোগ ও ফলো-আপ স্থানীয়ভাবে রাখুন।','बायर पूछताछ, अवसर और फॉलो-अप स्थानीय रूप से रखें।','Buyer enquiry, opportunity, follow-up-களை நிர்வகிக்கவும்.'],
- 'pdf-template-studio':['Design PDF templates and export samples locally; no buyer approval.','লোকাল PDF টেমপ্লেট ডিজাইন ও স্যাম্পল এক্সপোর্ট করুন; বায়ার অনুমোদন নয়।','लोकल PDF टेम्पलेट बनाएं और सैंपल निकालें; खरीदार की मंजूरी नहीं।','PDF template உருவாக்கி sample export செய்யவும்; buyer approval அல்ல.'],
- 'artwork-cad-studio':['Edit local SVG vector artwork in the browser; not buyer-approved designs.','ব্রাউজারে SVG আর্টওয়ার্ক সম্পাদনা করুন; বায়ার অনুমোদন নয়।','ब्राउज़र में SVG आर्टवर्क बदलें; खरीदार अनुमोदन नहीं।','Browser-ல் SVG artwork edit செய்யவும்; buyer approval அல்ல.'],
- 'marker-lab':['Explore local SVG pattern nesting. Experimental only; not factory cutting approval.','লোকাল SVG প্যাটার্ন নেস্টিং পরীক্ষা করুন। ফ্যাক্টরি কাটিং অনুমোদন নয়।','लोकल SVG पैटर्न नेस्टिंग जाँचें। फैक्ट्री कटिंग अनुमोदन नहीं।','Local SVG marker nesting பரிசோதனை; factory cutting approval அல்ல.'],
  'chess-360':['Play chess offline with a built-in engine. Powered by EGENVA.','অফলাইনে চেস খেলুন। Powered by EGENVA.','ऑफलाइन शतरंज खेलें। Powered by EGENVA.','Offline Chess விளையாடுங்கள். Powered by EGENVA.'],
  'factory-vendor':['Review factory sites, declared capacities and documents.','ফ্যাক্টরি সাইট, ঘোষিত সক্ষমতা ও নথি দেখুন।','फैक्ट्री साइट, घोषित क्षमता और दस्तावेज देखें।','Factory sites, declared capacity, documents பார்க்கவும்.']
 });
