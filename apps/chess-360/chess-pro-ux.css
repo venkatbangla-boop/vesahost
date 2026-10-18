@@ -62,7 +62,6 @@ body.chess-beast-v2.chess-quiet-mode #tabPlay .telemetry-grid,
 body.chess-beast-v2.chess-quiet-mode #tabPlay .graph-wrap,
 body.chess-beast-v2.chess-quiet-mode #tabPlay .career-bar,
 body.chess-beast-v2.chess-quiet-mode #tabPlay .universal-tier-strip,
-body.chess-beast-v2.chess-quiet-mode #tabPlay #playHubQuickCards,
 body.chess-beast-v2.chess-quiet-mode .chesscom-move-badge,
 body.chess-beast-v2.chess-quiet-mode .plan-step-badge{
   display:none!important;
@@ -83,4 +82,15 @@ body.chess-beast-v2 .chess-settings-grid select{color-scheme:dark}
 }
 @media(prefers-reduced-motion:reduce){
  body.chess-beast-v2.board-3d #boardFrame{transition:none}
+}
+
+/* Legal move dots remain visible when a piece is actually selected even in
+   Ultimate/Legend; a player can opt out explicitly in Customize. */
+body.chess-beast-v2.tier-pure-board:not(.assist-override):not(.beast-hide-legal-dots) .move-dot,
+body.chess-beast-v2.tier-pure-board:not(.assist-override):not(.beast-hide-legal-dots) .capture-ring{
+  display:block;
+}
+body.chess-beast-v2.beast-hide-legal-dots .move-dot,
+body.chess-beast-v2.beast-hide-legal-dots .capture-ring{
+  display:none;
 }
