@@ -73,6 +73,12 @@ async function run(){
    await page.screenshot({path:path.join(out,'product-app15-home-'+width+'.png')});
   }
   await page.setViewportSize({width:1280,height:900});
+  // G5-16: Real draft form focus/Escape without inventing buyer approval.
+  await action('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'conceptName','New concept focuses concept name');
+  await page.keyboard.press('Escape');await page.locator('#pdDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  assert.equal((await records()).length,0,'Escaped new concept must not persist drafts');
   await action('new');await fill({
    conceptName:'SYN CLASSIC TEE LINE',category:'T-SHIRT',season:'SYN SEASON',market:'SYN MEXICO MARKET',
    sourceRef:'SYN DESIGN BRIEF',reviewedBy:'SYN PRODUCT TEAM',reviewDate:'2026-10-17',
@@ -80,30 +86,40 @@ async function run(){
   await submit();
   assert.equal((await records()).length,1);assert.equal((await records())[0].revision,0);
   assert.equal((await records())[0].status,'DRAFT PROPOSAL — NOT BUYER APPROVED / NOT PRODUCTION READY');
-  await action('colourways');await action('add-colourway');await fill({
+  await action('colourways');await action('add-colourway');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'name','Colourway starts with proposed name');
+  await fill({
    name:'SYN NAVY IDEA',sourceRef:'SYN DESIGN PALETTE',sourceDate:'2026-10-17',
    reviewedBy:'SYN DESIGNER',colourRef:'SYN COLOR C1',colourSourceRef:'SYN BRIEF CARD',
    materialProposal:'SYN COTTON SINGLE JERSEY',materialSourceRef:'SYN DESIGN IDEA',
    silhouette:'SYN REGULAR',notes:'SYN draft only'});await submit();
   assert.equal((await records())[0].colourways.length,1);
   const cid=(await records())[0].colourways[0].id;
-  await action('tasks');await action('add-task');await fill({
+  await action('tasks');await action('add-task');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'kind','Draft task begins with kind');
+  await fill({
    kind:'fit',description:'SYN request fit exploration',sourceRef:'SYN DESIGN FILE',
    sourceDate:'2026-10-17',reviewedBy:'SYN PRODUCT TEAM'});await submit();
   assert.equal((await records())[0].tasks[0].state,'requested-not-approved');
-  await action('boards');await action('add-board');await fill({
+  await action('boards');await action('add-board');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'titleBoard','Concept board starts at title');
+  await fill({
    titleBoard:'SYN CAPSULE BOARD',layout:'grid-2',aspect:'16:9',sourceRef:'SYN BOARD DIRECTION',
    sourceDate:'2026-10-17',reviewedBy:'SYN DESIGNER',boardNote:'SYN mood and shape',
    boardColourway:cid});await submit();
   assert.equal((await records())[0].boards.length,1);
   assert.equal((await records())[0].boards[0].cards.length,2);
   assert.match(await page.locator('.pd-board').innerText(),/SYN NAVY IDEA/);
-  await action('revisions');await action('revise');await fill({
+  await action('revisions');await action('revise');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'brief','Revision starts at preserved original brief');
+  await fill({
    brief:'SYN second round concept review, no buyer signoff',sourceRef:'SYN REV NOTE',
    sourceDate:'2026-10-17',reviewedBy:'SYN DESIGNER',comments:'SYN internal changes'});await submit();
   assert.equal((await records())[0].revisions.length,1);
   assert.equal((await records())[0].revisions[0].before.brief,'SYN concept only no sizes');
-  await action('decisions');await action('decide');await fill({
+  await action('decisions');await action('decide');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'state','Design review begins at decision state');
+  await fill({
    state:'selected-for-next-draft',party:'internal',actor:'SYN PRODUCT OWNER',
    authorityRef:'SYN LOCAL REVIEW AUTHORITY',sourceRef:'SYN REVIEW NOTES',
    decisionDate:'2026-10-17',comments:'SYN PROPOSAL selected for next draft only'});await submit();
@@ -212,6 +228,16 @@ async function run(){
    if([390,768,1280].includes(width))
     await page.screenshot({path:path.join(out,'product-app15-'+width+'.png')});
   }
+  // Real 320px concept form is tested in addition to nine Home task previews.
+  await page.setViewportSize({width:320,height:720});
+  await action('home');await action('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'conceptName','320px concept form focuses name');
+  assert((await page.locator('#pdDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+   '320px Product Development form fits viewport');
+  await page.screenshot({path:path.join(out,'product-app15-new-dialog-320.png')});
+  await page.keyboard.press('Escape');await page.locator('#pdDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  await action('continue');
   await page.setViewportSize({width:1280,height:900});
   for(const [lang,label] of [['en','Proposed Colourways'],['bn','প্রস্তাবিত রং'],
    ['hi','प्रस्तावित रंग'],['ta','முன்மொழியப்பட்ட நிறங்கள்']]){
