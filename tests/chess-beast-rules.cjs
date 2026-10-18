@@ -68,7 +68,8 @@ class ChessBeastRulesQA {
     assert.equal(e.board[this.ctx.square('a1')]?.type,'R');
     e.undoLastMove();
     assert.equal(e.toFen(),start,'Chess960 kingside reversible');
-    e.executeMove(this.uci(e,'b1','c1'));
+    e.executeMove(e.getLegalMoves().find(m=>m.flags==='castleQ'));
+    assert.equal(e.history.at(-1).uci,'b1a1','Chess960 UCI save distinguishes castling from ordinary b1c1');
     assert.equal(e.board[this.ctx.square('c1')]?.type,'K');
     assert.equal(e.board[this.ctx.square('d1')]?.type,'R');
     e.undoLastMove();
