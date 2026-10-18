@@ -1262,6 +1262,7 @@ class ChessBeastWorkerService {
       const m=result?.move;
       self.postMessage({
         id,uci:m?sqToAlgebraic(m.from)+sqToAlgebraic(m.to)+(m.promotion||'').toLowerCase():null,
+        castleSide:m?.flags?.startsWith('castle')?m.flags:null,
         depthLabel:result?.depthLabel||'',score:result?.score||0,
         nodes:engine.nodesSearched||0,ttHits:engine.ttHits||0,elapsedMs:Math.round(performance.now()-began)
       });
