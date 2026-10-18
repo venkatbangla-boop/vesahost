@@ -11,7 +11,8 @@ const product=read('apps/product-development/index.html');
 assert(product.includes('personal non-commercial synthetic-only demo'));
 assert(product.includes('/js/auth.js')&&product.includes('/js/vesa-workspace-shell.js'));
 assert(product.includes('./src/domain/concept-register.js'));
-assert(read('apps/product-development/src/application/workspace-controller.js').includes('NON-COMMERCIAL PERSONAL DEMO — SYNTHETIC IDEAS ONLY'));
+assert(read('apps/product-development/src/i18n/app-copy.js').includes("notice:'NON-COMMERCIAL PERSONAL DEMO."),
+ 'Product Development localized notice must retain the personal demo boundary');
 const productPrefs=read('js/preferences.js');
 assert.equal((productPrefs.match(/openProductDevelopment:/g)||[]).length,4,'App Centre must show Product Development in all four languages');
 const catalog=read('js/app-catalogue.js'),sw=read('service-worker.js');
