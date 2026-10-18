@@ -86,19 +86,31 @@ async function run(){
   assert.equal((await records()).length,0);
   await act('home');await page.setViewportSize({width:1280,height:900});
 
+  // G5-12: real buyer artwork forms have explicit initial focus and Escape.
+  await act('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'style','New Artwork starts at Style');
+  await page.keyboard.press('Escape');await page.locator('#laDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  assert.equal((await records()).length,0,'Escaped new artwork must not persist');
   await act('new');await fill({style:'SYN-STYLE-01',colour:'Navy',size:'M',itemType:'care-label',placement:'left-neck seam',sourceRef:'SYN TECHPACK'});await submit();
   assert.equal((await records()).length,1);assert.equal((await records())[0].status,'DRAFT — SOURCE REVIEW ONLY');
-  await act('add-revision');await fill({artworkRef:'SYN ARTWORK REV 1',sourceDate:'2026-10-17',sourceRef:'SYN FILE REGISTER',
+  await act('add-revision');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'artworkRef','Revision starts at artwork reference');
+  await fill({artworkRef:'SYN ARTWORK REV 1',sourceDate:'2026-10-17',sourceRef:'SYN FILE REGISTER',
    width:'4',height:'5',unit:'cm',dimensionSourceRef:'SYN LABEL POM',washCareText:'Synthetic wash care only',
    contentSourceRef:'SYN WASH CARE SOURCE',symbology:'ean-13',barcodeValue:'4006381333932',barcodeSourceRef:'SYN GTIN DOC'});await submit();
   assert.equal((await records())[0].revisions.length,1);
   assert.match(await page.locator('.la-table').innerText(),/Invalid supplied barcode check digit/);
   assert.match(await page.locator('body').innerText(),/NOT independently verified|GS1 ownership|label validation/i);
   const firstId=(await records())[0].revisions[0].id;
-  await act('reviews');await act('add-comment');await fill({revisionId:firstId,reviewer:'SYN REVIEWER',reviewerRole:'internal',
+  await act('reviews');await act('add-comment');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'revisionId','Comment starts at linked revision');
+  await fill({revisionId:firstId,reviewer:'SYN REVIEWER',reviewerRole:'internal',
    reviewDate:'2026-10-17',sourceRef:'SYN COMMENT FILE',comment:'Synthetic label care source requires confirmation'});await submit();
   assert.equal((await records())[0].comments.length,1);
-  await act('add-decision');await fill({revisionId:firstId,reviewer:'SYN INTERNAL REVIEWER',reviewerRole:'internal',
+  await act('add-decision');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'revisionId','Approval evidence starts at revision');
+  await fill({revisionId:firstId,reviewer:'SYN INTERNAL REVIEWER',reviewerRole:'internal',
    reviewDate:'2026-10-17',sourceRef:'SYN INTERNAL REVIEW',decision:'buyer-approval-evidence-recorded',authorityRef:'SYN BUYER MAIL'});
   const beforeBad=JSON.stringify(await records());
   await page.locator('#laDialog form button[type=submit]').click();
@@ -174,6 +186,16 @@ async function run(){
    assert(scroll<=width+1,width+'px Artwork page overflow '+scroll);
    if([390,768,1280].includes(width))await page.screenshot({path:path.join(out,'artwork-app10-'+width+'.png')});
   }
+  // Validate the editable modal on a 320px viewport, beyond Home screenshots.
+  await page.setViewportSize({width:320,height:720});
+  await act('home');await act('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'style','320px Artwork editor starts at Style');
+  assert((await page.locator('#laDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+   'Artwork new-item dialog fits 320px viewport');
+  await page.screenshot({path:path.join(out,'artwork-app10-new-dialog-320.png')});
+  await page.keyboard.press('Escape');await page.locator('#laDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  await act('continue');
   await page.setViewportSize({width:1280,height:900});
   const labels=[['en','Artwork Revisions'],['bn','আর্টওয়ার্ক সংস্করণ'],['hi','आर्टवर्क संस्करण'],['ta','Artwork பதிப்புகள்']];
   for(const [language,label] of labels){

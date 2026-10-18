@@ -5,6 +5,7 @@ on:
     branches:
       - feature/label-artwork-approval-360
       - feature/label-g4-guided-practice
+      - feature/artwork-g5-active-form-qa-20261018
       - main
     paths:
       - 'apps/label-artwork-approval/**'
