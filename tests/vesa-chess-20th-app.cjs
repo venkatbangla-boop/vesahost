@@ -48,11 +48,12 @@ class VesaChessNavigationQA {
       assert.equal(await page.locator('.app-tile').count(),20,'19 apparel tools plus Chess');
       assert.equal(await page.locator('#appCount').textContent(),'20');
       assert.equal(await page.locator('[data-app-id="chess-360"]').count(),1,'single Chess 360 card');
-      assert.match(await page.locator('[data-app-id="chess-360"]').textContent(),/Powered by Ajanva/);
+      assert.match(await page.locator('[data-app-id="chess-360"]').textContent(),/Powered by EGENVA/);
       if(width===390){
         for(const lang of ['bn','hi','ta','en']){
           await page.evaluate(lang=>{const current=JSON.parse(localStorage.getItem('vesa.app.preferences.v1')||'{}');localStorage.setItem('vesa.app.preferences.v1',JSON.stringify({...current,language:lang}));window.dispatchEvent(new Event('vesa-preferences-change'));},lang);
           assert.equal(await page.locator('.app-tile').count(),20,'language keeps full catalogue '+lang);
+          assert.match(await page.locator('[data-app-id="chess-360"]').textContent(),/Powered by EGENVA/,'branded credit remains correct for '+lang);
         }
       }
       await page.locator('[data-app-id="chess-360"] a').click();
