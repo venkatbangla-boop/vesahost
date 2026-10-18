@@ -1,4 +1,4 @@
-const CACHE='vesa-v114-oss-22-pilot';
+const CACHE='vesa-v115-oss-23-pilot';
 const ASSETS=[
   './',
   './index.html',
@@ -172,15 +172,16 @@ const ASSETS=[
   './js/auth.js',
   './js/preferences.js',
   './js/preferences.js?v=20261015-costing-demo',
+  './js/preferences.js?v=20261019-pdf-studio',
   './js/vesa-workspace-shell.js?v=20261013-platform-g09',
   './js/vesa-workspace-shell.js',
   './js/vesa-app-centre.js?v=20261018-u03',
   './js/vesa-app-centre.js?v=20261018-egenva-v2',
-  './js/vesa-app-centre.js?v=20261019-oss22-v1',
+  './js/vesa-app-centre.js?v=20261019-oss23-v1',
   './js/app-catalogue.js',
   './js/app-catalogue.js?v=20261015-costing-demo',
   './js/app-catalogue.js?v=20261018-egenva-v2',
-  './js/app-catalogue.js?v=20261019-oss22-v1',
+  './js/app-catalogue.js?v=20261019-oss23-v1',
   './js/vendor/xlsx.full.min.js',
   './manifest.webmanifest',
   './favicon.ico',
@@ -223,7 +224,7 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   // App folders own their versioned offline bundles; root cache must not serve stale app HTML.
   const path = new URL(event.request.url).pathname;
-  if (path.startsWith('/apps/ppm') || path.startsWith('/apps/aql') || path.startsWith('/apps/tna') || path.startsWith('/apps/marker-lab') || path.startsWith('/apps/artwork-cad-studio')) return;
+  if (path.startsWith('/apps/ppm') || path.startsWith('/apps/aql') || path.startsWith('/apps/tna') || path.startsWith('/apps/marker-lab') || path.startsWith('/apps/artwork-cad-studio') || path.startsWith('/apps/pdf-template-studio')) return;
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
       const copy = response.clone();
