@@ -63,15 +63,16 @@ function prepPrototype(node,color){
   return model;
 }
 export class ChessBeast3DStudio {
-  constructor({canvas,frame,onSquareClick,getOrbit}){
+  constructor({canvas,frame,onSquareClick,getOrbit,getMotion}){
     this.canvas=canvas;this.frame=frame;
     this.onSquareClick=onSquareClick;this.getOrbit=getOrbit;
+    this.getMotion=getMotion||(()=> 'subtle');
     this.renderer=null;this.scene=null;this.camera=null;
     this.ready=false;this.active=false;this.error='';
     this.prototypes={};this.instances=new Map();this.board=[];
     this.highlights=[];this.state={};this.flipped=false;
     this.pieces=[];this.frames=0;this.anim=0;this.pointer=null;
-    this.motion=new Map();this.moveDurationMs=140;
+    this.motion=new Map();this.moveDurationMs=140;this.animatedMoves=0;this.animationFrames=0;
     this.raycaster=new THREE.Raycaster();
     this.ndc=new THREE.Vector2();this.mapPlane=new THREE.Plane(new THREE.Vector3(0,1,0),-.247);
     this.hitWorld=new THREE.Vector3();
@@ -238,9 +239,11 @@ export class ChessBeast3DStudio {
       obj.userData.square=sq;obj.userData.color=color;obj.userData.type=type;
       obj.traverse(m=>{if(m.isMesh){m.userData.square=sq;m.castShadow=true;m.receiveShadow=true;}});
       const target=new THREE.Vector3((sq&7)-3.5,.247,(sq>>3)-3.5);
-      if(moving&&this.active&&!this.reduced&&!document.hidden){
+      const motionMode=this.getMotion();
+      if(moving&&this.active&&!this.reduced&&!document.hidden&&motionMode!=='off'){
         this.motion.set(obj,{from:obj.position.clone(),to:target,
-          start:performance.now(),duration:this.moveDurationMs});
+          start:performance.now(),duration:motionMode==='full'?188:this.moveDurationMs});
+        this.animatedMoves++;
       }else if(!this.motion.has(obj)||this.motion.get(obj).to.distanceToSquared(target)>.0001){
         this.motion.delete(obj);
         obj.position.copy(target);
@@ -291,6 +294,7 @@ export class ChessBeast3DStudio {
   render(){
     if(!this.active||document.hidden||!this.ready||!this.resize())return;
     if(this.motion.size){
+      this.animationFrames++;
       const now=performance.now();
       for(const [obj,m] of this.motion){
         const t=Math.min(1,(now-m.start)/m.duration);
@@ -353,7 +357,9 @@ export class ChessBeast3DStudio {
         sq:obj.userData.square,type:obj.userData.type,color:obj.userData.color
       })).sort((a,b)=>a.sq-b.sq),
       flipped:!!this.state.flipped,rotating:!!this.getOrbit()?.rotateMode,
-      animationsActive:this.motion.size,moveAnimationMs:this.reduced?0:this.moveDurationMs,
+      animationsActive:this.motion.size,animatedMoves:this.animatedMoves,
+      animationFrames:this.animationFrames,
+      moveAnimationMs:this.reduced||this.getMotion()==='off'?0:this.getMotion()==='full'?188:this.moveDurationMs,
       width:this.w||0,height:this.h||0,error:this.error};
   }
 }
