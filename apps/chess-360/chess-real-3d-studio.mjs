@@ -37,8 +37,10 @@ function woodTexture(tone,seed){
 }
 function finishMaterial(source,color){
   if(Array.isArray(source))return source.map(m=>finishMaterial(m,color));
+  const colorFactor=source?.color?.clone()||new THREE.Color(0xffffff);
+  if(color==='w')colorFactor.multiply(new THREE.Color(0xffead5));
   const mat=new THREE.MeshPhysicalMaterial({
-    color:source?.color||new THREE.Color(color==='w'?0xf5e7cb:0x282627),
+    color:colorFactor,
     map:source?.map||null,
     normalMap:source?.normalMap||null,
     roughnessMap:source?.roughnessMap||null,
@@ -287,7 +289,9 @@ export class ChessBeast3DStudio {
     const radius=(half/Math.tan(49*Math.PI/360)+half*Math.cos(elev))*1.045;
     this.camera.position.set(radius*Math.cos(elev)*Math.sin(a),
       radius*Math.sin(elev),radius*Math.cos(elev)*Math.cos(a));
-    this.camera.lookAt(0,.27,0);this.camera.updateMatrixWorld();
+    // Focus slightly below the table center: the full large diagonal board
+    // rises into the composition without cropping the front chess pieces.
+    this.camera.lookAt(0,-.49,0);this.camera.updateMatrixWorld();
   }
   resize(){
     const rect=this.canvas.getBoundingClientRect();
