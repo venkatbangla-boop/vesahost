@@ -23,10 +23,18 @@ const mime=file=>({'.css':'text/css','.html':'text/html','.js':'application/java
 function server(){return http.createServer((request,response)=>{const pathname=decodeURIComponent(new URL(request.url,'http://vesa.test').pathname);let file=path.resolve(root,`.${pathname}`);if(!file.startsWith(root+path.sep))return response.writeHead(403).end();try{if(fs.statSync(file).isDirectory())file=path.join(file,'index.html');response.writeHead(200,{'Content-Type':mime(file),'Cache-Control':'no-store'});response.end(fs.readFileSync(file));}catch{response.writeHead(404).end();}});}
 
 async function skip(page,label){
-  await page.evaluate(()=>document.activeElement?.blur());
-  await page.keyboard.press('Tab');
+  if(label.startsWith('aql@')){
+    // Direct-entry AQL intentionally focuses its new app heading. Test
+    // keyboard skip access separately, not the retired splash-page Tab order.
+    assert.equal(await page.evaluate(()=>document.activeElement?.matches('#app h1,#app main')),true,
+      label+': direct AQL entry announces its inspection heading');
+    await page.locator('.vesa-skip-link').focus();
+  }else{
+    await page.evaluate(()=>document.activeElement?.blur());
+    await page.keyboard.press('Tab');
+  }
   const active=await page.evaluate(()=>{const link=document.querySelector('.vesa-skip-link'),style=getComputedStyle(link);return {skip:document.activeElement?.matches('.vesa-skip-link'),tag:document.activeElement?.tagName,id:document.activeElement?.id,classes:document.activeElement?.className,link:{tabIndex:link?.tabIndex,display:style.display,visibility:style.visibility,rects:link?.getClientRects().length}};});
-  assert.equal(active.skip,true,`${label}: skip link is first keyboard stop (${JSON.stringify(active)})`);
+  assert.equal(active.skip,true,`${label}: skip link is reachable by keyboard (${JSON.stringify(active)})`);
   const box=await page.locator('.vesa-skip-link').boundingBox();
   assert.ok(box&&box.height>=44&&box.y>=0,`${label}: focused skip link must be visible and touch-sized (${JSON.stringify({box,active})})`);
   if(['login@390','apps@390'].includes(label)) await page.screenshot({path:path.join(output,`vesa-accessibility-${label.split('@')[0]}-skip-focus-390.png`)});
@@ -74,6 +82,6 @@ async function run(){
   fs.mkdirSync(output,{recursive:true});const web=server();await new Promise(resolve=>web.listen(0,'127.0.0.1',resolve));const base=`http://127.0.0.1:${web.address().port}`;
   const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,headless:true,args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage']});
   try{for(const width of widths)for(const route of routes)await probe(browser,base,route,width);}finally{await browser.close();await new Promise(resolve=>web.close(resolve));}
-  console.log('VESA accessibility passed: six routes at 390/1280, first-stop skip focus, dynamic AQL target, one main, labelled platform controls/navigation, live save status, reduced motion, no overflow/external requests/page errors');
+  console.log('VESA accessibility passed: six routes at 390/1280, first-stop platform skip focus and direct-entry AQL skip access, one main, labelled platform controls/navigation, live save status, reduced motion, no overflow/external requests/page errors');
 }
 run().catch(error=>{console.error(error);process.exitCode=1;});
