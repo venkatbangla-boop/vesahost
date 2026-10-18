@@ -84,6 +84,13 @@ class ShipmentBrowserProof{
    }
    await page.setViewportSize({width:1280,height:900});
    assert(await noStoredShipment(),'Practice previews never write saved records');
+   // G5-09: shipment forms start with source fields, not the Close control.
+   await act('new');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'poNo','New shipment focuses sourced PO');
+   await page.keyboard.press('Escape');
+   await page.locator('#sdDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+   assert(await noStoredShipment(),'Escaped draft must not create shipment files');
    await act('new');
    await fill({poNo:'SYN-PO-SHIP-001',buyer:'SYNTHETIC BUYER',
     shipper:'SYNTHETIC FACTORY',consignee:'SYNTHETIC CONSIGNEE',
@@ -95,6 +102,7 @@ class ShipmentBrowserProof{
     hsCode:'DEMO HS CODE',hsEvidence:'SYNTHETIC CLASSIFICATION DOCUMENT'});
    await submit();
    await act('add-line');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'poLineRef','Invoice line starts at source reference');
    await fill({poLineRef:'SYN-PO-LINE-M',style:'SYNTHETIC TEE',
     colour:'Navy',size:'M',lot:'LOT-A',pieces:'50',unitPrice:'2.5000',
     rounding:'line-half-up-2',invoiceSource:'SYNTHETIC SIGNED PO FOB'});
@@ -106,11 +114,13 @@ class ShipmentBrowserProof{
     ['SYN-CTN-001','20','8.000','8.800','0.0440'],
     ['SYN-CTN-002','30','11.000','12.000','0.0660']]){
     await act('add-carton');
+    assert.equal(await page.evaluate(()=>document.activeElement?.name),'line','Carton form starts at invoice-line choice');
     await fill({cartonId:id,pieces:pcs,netKg:net,grossKg:gross,
       cbm,sourceRef:'SYNTHETIC APPROVED CARTON DETAILS'});await submit();
    }
    const baseline=JSON.stringify((await saved())[0].packing);
    await act('review-packing');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'revisionId','Packing review starts at signed-source revision');
    await fill({revisionId:'SYN-PACK-REV-1',reviewer:'SYNTHETIC SHIPPING REVIEWER',
     reviewDate:'2026-10-15',sourceRef:'SYNTHETIC SIGNED PACKING SOURCE',
     controlCartons:'2',controlPieces:'50',controlNetKg:'19.000',
@@ -132,6 +142,7 @@ class ShipmentBrowserProof{
     carrierRef:'SYNTHETIC DISPATCH NOTE',actor:'SYNTHETIC DISPATCH TEAM',
     sourceRef:'SYNTHETIC WAREHOUSE GATE PASS'});await submit();
    await act('documents');await act('add-document');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'kind','Document editor starts at document kind');
    await fill({kind:'invoice',versionNo:'1',status:'draft',
     documentRef:'SYNTHETIC COMM INV V1',date:'2026-10-14',
     actor:'SYNTHETIC MERCHANDISER',sourceRef:'SYNTHETIC INVOICE FILE'});await submit();
@@ -230,6 +241,16 @@ class ShipmentBrowserProof{
    assert(effectiveZoomScroll<=641,
     '200% effective layout width produced horizontal overflow '+effectiveZoomScroll);
    await page.screenshot({path:path.join(out,'ship-app07-zoom-200-equivalent.png')});
+   // Direct mobile edit-form test supplements the eight opened sections.
+   await page.setViewportSize({width:320,height:720});
+   await act('summary');await act('header');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'poNo','320px shipment header starts at PO');
+   assert((await page.locator('#sdDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+    '320px shipment header modal stays within viewport');
+   await page.screenshot({path:path.join(out,'ship-app07-header-edit-320.png')});
+   await page.keyboard.press('Escape');
+   await page.locator('#sdDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='header');
    await page.setViewportSize({width:390,height:844});
    await page.screenshot({path:path.join(out,'ship-app07-mobile.png')});
    await page.setViewportSize({width:1280,height:900});

@@ -5,6 +5,7 @@ on:
     branches:
       - feature/shipment-documentation-360
       - feature/shipment-g4-guided-workflow
+      - feature/shipment-g5-forms-20261018
       - main
     paths:
       - 'apps/shipment-documentation/**'
@@ -31,6 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node tests/vesa-blueprint-integrity.cjs
           node --check apps/shipment-documentation/src/domain/shipment-engine.js
           node --check apps/shipment-documentation/src/data/local-record-port.js
           node --check apps/shipment-documentation/src/reports/report-model.js
