@@ -34,7 +34,8 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium webkit
-          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
+          CHROME="$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')"
+          echo "CHROMIUM_PATH=$CHROME" >> "$GITHUB_ENV"
       - name: Real platform forms, Chess route and original hash
         shell: bash
         run: |
@@ -63,7 +64,8 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
-          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
+          CHROME="$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')"
+          echo "CHROMIUM_PATH=$CHROME" >> "$GITHUB_ENV"
       - name: Verify app-owned original inspection flows and responsive shell
         shell: bash
         run: |
