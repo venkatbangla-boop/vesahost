@@ -4128,16 +4128,17 @@
   const boardZoomSlider = document.getElementById('boardZoomSlider');
 
   function getMaxNonOverlappingBoardPx() {
+    // Measure the actual board column. Fixed 196/406px assumptions failed at
+    // browser zoom, narrow laptops and after hiding either side panel.
     const vw = window.innerWidth || 1280;
     const vh = window.innerHeight || 800;
-    const isTablet = vw <= 1024;
-    const isCollapsed = document.body.classList.contains('drawer-collapsed') || document.body.classList.contains('zen-mode');
-    const sidebarW = isTablet ? 0 : 196;
-    const drawerW = (isTablet || isCollapsed) ? 0 : 406;
-    const evalAndPaddingW = 64;
-    const maxByWidth = vw - sidebarW - drawerW - evalAndPaddingW;
-    const maxByHeight = vh - (isTablet ? 170 : 104);
-    return Math.max(256, Math.min(680, Math.min(maxByWidth, maxByHeight)));
+    const stacked = window.matchMedia('(max-width:1180px)').matches;
+    const boardColumn = document.querySelector('.board-section');
+    const available = boardColumn?.clientWidth || Math.max(280,vw-(stacked?36:620));
+    // Reserve evaluation bar, insets and shadow; do not exceed the column.
+    const maxByWidth = available - (vw <= 610 ? 32 : 56);
+    const maxByHeight = vh - (stacked ? (vw <= 610 ? 170 : 205) : 150);
+    return Math.max(250,Math.min(680,Math.floor(Math.min(maxByWidth,maxByHeight))));
   }
 
   function setBoardPixelSize(px) {
