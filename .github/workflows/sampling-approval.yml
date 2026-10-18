@@ -5,6 +5,7 @@ on:
     branches:
       - feature/sampling-approval-360
       - feature/sampling-g4-source-journey
+      - feature/sampling-g5-active-form-qa-20261018
       - main
     paths:
       - 'apps/sampling-approval/**'
@@ -31,6 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node tests/vesa-blueprint-integrity.cjs
           node --check apps/sampling-approval/src/domain/sampling-engine.js
           node --check apps/sampling-approval/src/data/local-record-port.js
           node --check apps/sampling-approval/src/reports/report-model.js

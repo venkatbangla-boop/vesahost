@@ -80,6 +80,13 @@ class SamplingBrowserProof{
    }
    await page.setViewportSize({width:1280,height:900});
    assert(await noRequest(),'No record created by seven previews');
+   // G5-07: First editable field and keyboard focus restoration on live forms.
+   await action('new');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'buyer','New Sample Request starts at Buyer');
+   await page.keyboard.press('Escape');
+   await page.locator('#saDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+   assert(await noRequest(),'Closing unsaved request must not create local records');
    await action('new');
    await put({buyer:'SYNTHETIC BUYER',poNo:'SYN-PO-123',style:'SYN-TEE',
      factory:'SYNTHETIC FACTORY',requirementsSource:'SYNTHETIC BUYER SAMPLE PLAN',
@@ -88,6 +95,7 @@ class SamplingBrowserProof{
    assert.equal((await saved())[0].categories.length,0);
    // Fit is defined by buyer evidence, not a global auto-required template.
    await action('category');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'categoryName','Buyer category starts at category name');
    await put({categoryName:'Fit Sample',categorySource:'SYNTHETIC BUYER FIT REQUIREMENT',
     buyerAuthority:'SYNTHETIC BUYER TECH DEPARTMENT'});
    await page.locator('#saDialog [name=requiredFlag]').check();await submit();
@@ -96,6 +104,7 @@ class SamplingBrowserProof{
     buyerAuthority:'SYNTHETIC BUYER PRODUCTION TEAM'});
    await page.locator('#saDialog [name=requiredFlag]').check();await submit();
    await action('round');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'category','Sample round starts at category selection');
    await put({roundNo:'1',physicalId:'SYN-FIT-001',colour:'Navy',size:'M',quantity:'2',
     requestDate:'2026-10-01',requiredDate:'2026-10-10',calendarBasis:'calendar',
     calendarSource:'SYNTHETIC BUYER SAMPLE CALENDAR'});await submit();
@@ -104,11 +113,13 @@ class SamplingBrowserProof{
    await action('rounds');await action('receipt');
    await put({receivedDate:'2026-10-05',receiptSource:'SYNTHETIC BUYER RECEIPT 001'});await submit();
    await action('decision');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'physicalId','Buyer decision starts at sample round');
    await put({decisionStatus:'rejected',decisionParty:'buyer',actor:'SYNTHETIC BUYER',
     decisionDate:'2026-10-06',authority:'SYNTHETIC BUYER APPROVER SOURCE',
     decisionEvidence:'SYNTHETIC BUYER EMAIL 001',
     comments:'SYNTHETIC: shoulder fit correction required'});await submit();
    await action('revision');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'revisionFrom','Revision request starts at prior round');
    await put({revisionReason:'SYNTHETIC SHOULDER FIT REWORK',
     revisionBy:'SYNTHETIC BUYER',revisionDate:'2026-10-07',
     revisionEvidence:'SYNTHETIC BUYER REVISE MESSAGE'});await submit();
@@ -193,11 +204,21 @@ class SamplingBrowserProof{
    assert.match(await page.locator('#saDialogBody').innerText(),/altered\/unsupported/i);
    await page.locator('#saClose').click();
    assert.equal(JSON.stringify(await saved()),before);
-   for(const width of [320,390,768,1280]){
+   for(const width of [320,390,768,1280,1440]){
     await page.setViewportSize({width,height:840});
     const measured=await page.evaluate(()=>document.documentElement.scrollWidth);
     assert(measured<=width+1,width+'px body overflow '+measured);
    }
+   // Test an actual editable dialog on a 320px handset-sized viewport.
+   await page.setViewportSize({width:320,height:720});
+   await action('summary');await action('header');
+   assert.equal(await page.evaluate(()=>document.activeElement?.name),'buyer','320px edit form starts at Buyer');
+   assert((await page.locator('#saDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+    'Sample header dialog stays inside 320px viewport');
+   await page.screenshot({path:path.join(out,'sampling-app04-header-dialog-320.png')});
+   await page.keyboard.press('Escape');
+   await page.locator('#saDialog[open]').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.activeElement?.dataset?.action==='header');
    await page.setViewportSize({width:390,height:845});
    await page.screenshot({path:path.join(out,'sampling-app04-mobile.png')});
    await page.setViewportSize({width:1280,height:900});
