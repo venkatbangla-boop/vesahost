@@ -75,6 +75,12 @@ async function run(){
    await page.screenshot({path:path.join(out,'supplier-app12-home-'+width+'.png')});
   }
   await page.setViewportSize({width:1280,height:900});
+  // G5-14 source requirement first-focus and ESC must not create supplier records.
+  await act('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'article','New fabric comparison focuses article');
+  await page.keyboard.press('Escape');await page.locator('#fsDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  assert.equal((await records()).length,0,'Escaped New fabric form must not persist offers');
   await act('new');await fill({
    article:'SYN COTTON PIQUE',composition:'SYN 100% COTTON',gsm:'210',width:'68',
    widthUnit:'in',construction:'PIQUE KNIT',shrinkageBasis:'SYN AFTER WASH TEST',
@@ -90,7 +96,9 @@ async function run(){
    specSourceRef:'SYN ORIGINAL SPEC',qualitySourceRef:'SYN LAB REVIEW',
    qualityEquivalence:'locally-reviewed-equivalent',qualityReviewedBy:'SYN QC MERCHANDISER',
    qualityReviewDate:'2026-10-17',sourceRef:'SYN SIGNED QUOTE'};
-  await act('add-offer');await fill(offerData);await submit();
+  await act('add-offer');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'supplier','Supplier offer opens at supplier');
+  await fill(offerData);await submit();
   assert.equal((await records())[0].offers.length,1);
   const offer1=(await records())[0].offers[0].id;
   await act('add-offer');await fill({...offerData,supplier:'SYN CHEAP DIFFERENT GSM',quoteRef:'SYN QUOTE B',
@@ -100,6 +108,7 @@ async function run(){
   assert.match(await page.locator('.fs-table').first().innerText(),/NOT COMPARABLE/);
   assert.match(await page.locator('.fs-table').first().innerText(),/MISMATCH: gsm/);
   await act('scenarios');await act('add-scenario');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'offerId','Landed scenario starts at explicit offer');
   const fees={};for(const [k,v]of [['freight','0.2000'],['duty','0.1000'],['tax','0.0500'],['lc','0.0500']]){
    fees[k+'State']='amount';fees[k+'Amount']=v;fees[k+'SourceRef']='SYN '+k+' COST PROOF';
    fees[k+'ReviewedBy']='SYN FINANCE';fees[k+'ReviewDate']='2026-10-17';
@@ -115,7 +124,9 @@ async function run(){
    reviewDate:'2026-10-17'});await submit();
   assert.equal((await records())[0].scenarios.length,2);
   assert.match(await page.locator('.fs-table').innerText(),/NEEDS INFORMATION/);
-  await act('decisions');await act('add-decision');await fill({offerId:offer1,
+  await act('decisions');await act('add-decision');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'offerId','Internal sourcing review starts at offer');
+  await fill({offerId:offer1,
    state:'internally-preferred-for-review',reviewer:'SYN SOURCING',
    reviewDate:'2026-10-17',sourceRef:'SYN REVIEW NOTE'});await submit();
   assert.match((await records())[0].status,/NO SUPPLIER APPROVAL/);
@@ -192,6 +203,16 @@ async function run(){
    assert(sw<=width+1,width+'px supplier page horizontal overflow '+sw);
    if([390,768,1280].includes(width))await page.screenshot({path:path.join(out,'supplier-app12-'+width+'.png')});
   }
+  // Real editable source form at 320px; prior widths only inspected tables.
+  await page.setViewportSize({width:320,height:720});
+  await act('home');await act('new');
+  assert.equal(await page.evaluate(()=>document.activeElement?.name),'article','Mobile new comparison focuses Article');
+  assert((await page.locator('#fsDialog').evaluate(el=>el.getBoundingClientRect().width))<=320,
+   '320px source comparison dialog fits viewport');
+  await page.screenshot({path:path.join(out,'supplier-app12-new-dialog-320.png')});
+  await page.keyboard.press('Escape');await page.locator('#fsDialog[open]').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.dataset?.action==='new');
+  await act('continue');
   await page.setViewportSize({width:1280,height:900});
   const locales=[['en','Supplier Offers'],['bn','সাপ্লায়ার অফার'],['hi','सप्लायर ऑफर'],['ta','Supplier விலைகள்']];
   for(const [lang,label]of locales){

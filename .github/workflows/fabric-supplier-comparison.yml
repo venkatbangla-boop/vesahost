@@ -5,6 +5,7 @@ on:
     branches:
       - feature/fabric-supplier-comparison-360
       - feature/supplier-g4-source-journey-20261018
+      - feature/supplier-g5-active-forms-20261018
       - main
     paths:
       - 'apps/fabric-supplier-comparison/**'
