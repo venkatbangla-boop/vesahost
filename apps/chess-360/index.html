@@ -2082,6 +2082,7 @@
         <div class="vault-list" id="savedGamesVaultList" style="margin-top:0.35rem;"></div>
         <div style="display:flex; gap:0.35rem; margin-top:0.25rem; flex-wrap:wrap;">
           <button class="btn" id="btnResumeSaved" type="button" style="flex:1; justify-content:center; font-size:0.7rem;">⚡ Resume Last Auto-Save</button>
+          <button class="btn" id="btnImportSavedCopy" type="button">📥 Open Saved Copy</button><input id="chessImportSavedCopyInput" type="file" accept=".json,application/json" hidden aria-label="Choose saved chess file">
           <button class="btn" id="btnExportVaultJson" type="button" style="flex:1; justify-content:center; font-size:0.7rem;">📤 Export Backup (.JSON)</button>
           <button class="btn" id="btnDownloadPgn" type="button" style="flex:1; justify-content:center; font-size:0.7rem;">📝 Save .PGN</button>
         </div>
@@ -7186,6 +7187,45 @@
     a.click();
     document.body.removeChild(a);
     showToast("📤 Exported Offline Vault Backup (.JSON)!");
+  });
+
+
+  document.getElementById('btnImportSavedCopy').addEventListener('click',()=>{
+    document.getElementById('chessImportSavedCopyInput').click();
+  });
+  document.getElementById('chessImportSavedCopyInput').addEventListener('change',async event=>{
+    const file=event.target.files?.[0];
+    event.target.value='';
+    if(!file)return;
+    if(file.size>1024*1024){showToast('Saved copy too large (maximum 1 MB)');return;}
+    try{
+      const parsed=JSON.parse(await file.text());
+      const imported=Array.isArray(parsed.vault)?parsed.vault:
+        Array.isArray(parsed)?parsed:
+        parsed.game&&typeof parsed.game==='object'?[parsed.game]:[];
+      const safe=imported.filter(item=>
+        item&&typeof item==='object'&&typeof item.fen==='string'&&
+        item.fen.length<250&&Array.isArray(item.uciHistory)&&
+        item.uciHistory.length<=1500&&item.uciHistory.every(uci=>typeof uci==='string'&&/^[a-h][1-8][a-h][1-8][qrbn]?$/i.test(uci))
+      ).slice(0,30);
+      if(!safe.length){showToast('No valid saved chess games in file');return;}
+      const existing=getSavedGamesVault();
+      const normalized=safe.map((item,i)=>({
+        ...item,
+        id:'import_'+Date.now()+'_'+i,
+        title:String(item.title||'Imported match').slice(0,80),
+        date:String(item.date||'Imported').slice(0,65),
+        gameMode:['ai','pvp','aivsai','chess960','handbrain'].includes(item.gameMode)?item.gameMode:'ai',
+        aiLevel:Math.min(6,Math.max(1,Number(item.aiLevel)||1)),
+        humanColor:item.humanColor==='b'?'b':'w',
+        baseTimeSeconds:Math.min(86400,Math.max(0,Number(item.baseTimeSeconds)||600)),
+        whiteTime:Math.min(86400,Math.max(0,Number(item.whiteTime)||0)),
+        blackTime:Math.min(86400,Math.max(0,Number(item.blackTime)||0)),
+        incrementSeconds:Math.min(60,Math.max(0,Number(item.incrementSeconds)||0))
+      }));
+      setSavedGamesVault([...normalized,...existing].slice(0,30));
+      showToast('Imported '+normalized.length+' saved game(s). Open from Vault.');
+    }catch(error){showToast('Saved file could not be opened');}
   });
 
   // Initialize Profile & Vault on load
