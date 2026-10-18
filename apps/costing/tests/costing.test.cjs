@@ -16,6 +16,11 @@ test('single HTML and VESA shared shell only',()=>{
   assert.doesNotMatch(page,/(fetch\([^\)]*,\s*\{[^}]*method\s*:\s*['"]POST|\.sendBeacon\(|XMLHttpRequest\()/);
   assert.equal((page.match(/<header class="vesa-workspace"/g)||[]).length,0);
 });
+test('Costing G5 has one VESA shell identity and one short page title',()=>{
+ assert.match(page, /<span class="costing-kicker">PERSONAL DEMO · LOCAL ONLY<\/span>/);
+ assert.equal((page.match(/head\('Costing 360',/g)||[]).length,2,'Home and Editor title');
+ assert.doesNotMatch(page,/costing-kicker">VESA 360/);
+});
 test('fixtures preserve exact calculations from costing ZIP',()=>{const r=E.calculate(clone());eq(r.summary.baseCostUsdPerPiece,1.6552);eq(r.summary.fobUsdPerPiece,1.6552/.96);eq(r.summary.commissionUsdPerPiece,(1.6552/.96)*.04);assert.equal(r.status,'DEMO_ONLY');});
 test('three commission policies and missing inputs fail closed',()=>{const d=clone();d.policy.commissionTreatment='SEPARATE';eq(E.calculate(d).summary.fobUsdPerPiece,1.6552);eq(E.calculate(d).summary.separateCommissionUsdPerPiece,1.6552*.04);d.policy.commissionTreatment='NONE';d.policy.commissionPercent=0;eq(E.calculate(d).summary.fobUsdPerPiece,1.6552);d.lines[0].rate=null;assert.equal(E.calculate(d).summary,null);});
 test('non-demo commission requires source evidence',()=>{const d=clone();d.sourceKind='user-entry';assert.ok(E.validateRecord(d).some(x=>x.includes('agreement/source reference')));d.policy.commissionSourceRef='Contract fixture (synthetic)';assert.ok(!E.validateRecord(d).some(x=>x.includes('agreement/source reference')));});

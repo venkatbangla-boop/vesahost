@@ -32,7 +32,7 @@ assert.equal((catalog.match(/id:'fabric-supplier-comparison'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'claims-disputes'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'product-development'/g)||[]).length,1);
 assert(catalog.includes("route:'/apps/product-development/'")&&catalog.includes("order:190,openLabelKey:'openProductDevelopment'"));
-assert(sw.includes('vesa-v104-product-g4-guided-journey'));
+assert(sw.includes('vesa-v105-costing-g5-one-identity'));
 assert(sw.includes("'./css/vesa-login.css?v=20261018-login-r1'"));
 assert(sw.includes("'./css/vesa-admin.css?v=20261018-admin-r1'"));
 assert(sw.includes("'./css/vesa-app-centre.css?v=20261018-u02'"));

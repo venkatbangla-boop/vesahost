@@ -72,10 +72,12 @@ class VesaNineteenScreenAudit {
    report.shots.push(await this.snap(page,id,width,'home'));
    const btn=await this.firstButton(page,['button[data-action="preview"]',
       'button[data-action="practice"]','button[data-command="practice"]',
+      'button[data-cmd="practice"]',
       '#homeScreen [data-command="new"]','#vesa-enter']);
    if(btn){
     report.opened=(await btn.getAttribute('data-action'))||
-      (await btn.getAttribute('data-command'))||(await btn.getAttribute('id'));
+      (await btn.getAttribute('data-command'))||
+      (await btn.getAttribute('data-cmd'))||(await btn.getAttribute('id'));
     try{
      await btn.click({timeout:8000});
      if(id==='aql'){
@@ -90,13 +92,18 @@ class VesaNineteenScreenAudit {
      report.shots.push(await this.snap(page,id,width,'opened'));
     }catch(e){errors.push('Open action '+String(e.message).slice(0,230));}
    }
-   const nav=page.locator('nav[class*="tabs"] button[data-action]');
+   // Costing uses its original data-cmd/data-section UI rather than data-action.
+   const costing=id==='costing';
+   const nav=page.locator(costing?'.costing-section-tabs button[data-section]':
+     'nav[class*="tabs"] button[data-action]');
    for(let n=0;n<Math.min(14,await nav.count());n++){
-    const act=await nav.nth(n).getAttribute('data-action');
+    const act=await nav.nth(n).getAttribute(costing?'data-section':'data-action');
     if(!act||report.tabs.includes(act))continue;
     report.tabs.push(act);
     try{
-     const tab=page.locator('nav[class*="tabs"] button[data-action="'+act+'"]').first();
+     const selector=costing?'.costing-section-tabs button[data-section="'+act+'"]':
+      'nav[class*="tabs"] button[data-action="'+act+'"]';
+     const tab=page.locator(selector).first();
      if(!await tab.isVisible())continue;
      await tab.click({timeout:7500});
      report.shots.push(await this.snap(page,id,width,'section-'+act));
@@ -110,6 +117,11 @@ class VesaNineteenScreenAudit {
     locale:document.documentElement.lang
    }));
    if(report.metrics.scrollWidth>width+1)errors.push('Overflow '+report.metrics.scrollWidth+' at '+width);
+   if(id==='costing'){
+    const valid=report.opened==='practice'&&report.tabs.length===7&&report.shots.length===9;
+    if(!valid)this.blockers.push({id,width,reason:'Costing Home and all seven original sections must open'});
+    if(report.metrics.h1!=='Costing 360')this.blockers.push({id,width,reason:'Short Costing page title lost'});
+   }
    if(report.status!==200||report.shell!==1||report.menus!==6)
     this.blockers.push({id,width,status:report.status,shell:report.shell,menus:report.menus});
   }catch(e){

@@ -7,10 +7,12 @@ on:
       - feature/costing-g4-mobile-dialog
       - feature/fabric-g4-source-journey
       - feature/costing-g4-settings-focus-race
+      - feature/costing-g5-one-brand-20261018
       - main
     paths:
       - '.github/workflows/costing-360-verification.yml'
       - 'apps/costing/**'
+      - 'tests/vesa-19-app-real-screens.cjs'
       - 'apps/index.html'
       - 'service-worker.js'
       - 'apps/tna/tests/g11-route-regression.cjs'
@@ -72,3 +74,13 @@ jobs:
           node apps/tna/tests/g11-route-regression.cjs
           node tests/vesa-shared-shell-matrix.cjs
           node tests/vesa-uniform-experience.cjs
+      - name: G5 verify 19 original opened routes including Costing seven real panels
+        run: |
+          node --check tests/vesa-19-app-real-screens.cjs
+          node tests/vesa-19-app-real-screens.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-g5-real-screen-matrix
+          path: output/vesa-19-real-screens/
+          if-no-files-found: ignore

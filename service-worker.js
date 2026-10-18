@@ -1,4 +1,4 @@
-const CACHE='vesa-v104-product-g4-guided-journey';
+const CACHE='vesa-v105-costing-g5-one-identity';
 const ASSETS=[
   './',
   './index.html',
