@@ -1428,6 +1428,7 @@
 
 </style>
 <link rel="stylesheet" href="./chess-beast.css">
+<link rel="stylesheet" href="./chess-match-experience.css">
 </head>
 <body class="chess-beast-v2" data-board-theme="green">
 
@@ -1462,6 +1463,8 @@
     <button class="btn" id="btnQuickSaveMatch" type="button" title="Save Current Match to Offline Vault (With Full Move Rewind!)">
       <span>💾</span> <span id="saveBtnSidebarLabel">Save Game</span>
     </button>
+    <button class="btn" id="btnOpenCustomize" type="button" title="All game, board and animation preferences"><span>⚙️</span> <span>Customize</span></button>
+    <button class="btn" id="btnDownloadMatchPdf" type="button" title="Save match report as an offline PDF"><span>📄</span> <span>Match PDF</span></button>
     <button class="btn" id="btnOpenVaultTab" type="button" title="Open Saved Games Vault & Rewind">
       <span>📂</span> <span>Saved Vault</span>
     </button>
@@ -2260,13 +2263,49 @@
   </div>
 </div>
 
+<!-- Unified match preferences dialog: existing controls remain the single source of truth. -->
+<div class="modal-backdrop" id="chessCustomizeModal" role="dialog" aria-modal="true" aria-labelledby="chessCustomizeTitle" aria-hidden="true">
+  <div class="modal-card chess-preferences-card">
+    <div class="modal-header"><h2 class="modal-title" id="chessCustomizeTitle">⚙️ Customize Chess</h2><button type="button" class="btn" id="btnCloseCustomize" aria-label="Close customize">✕</button></div>
+    <p class="chess-muted">Choose your look and feel. Settings are saved on this device. Match rules and difficulty apply to the next game.</p>
+    <div class="chess-settings-grid">
+      <label>AI difficulty
+        <select id="chessPrefDifficulty"><option value="1">1 · Beginner</option><option value="2">2 · Club</option><option value="3">3 · Expert</option><option value="4">4 · Pro</option><option value="5">5 · Ultimate</option><option value="6">6 · Legend</option></select>
+      </label>
+      <label>Board colors
+        <select id="chessPrefTheme"><option value="green">Green</option><option value="wood">Wood</option><option value="ocean">Ocean</option><option value="royal">Royal</option><option value="neon">Neon</option><option value="emerald">Emerald</option><option value="crimson">Crimson</option><option value="slate">Slate</option></select>
+      </label>
+      <label>Piece style
+        <select id="chessPrefPieces"><option value="staunton">Classic</option><option value="royal3d">Royal 3D</option><option value="neon3d">Neon</option><option value="heritage">Heritage</option></select>
+      </label>
+      <label>Move animation
+        <select id="chessPrefMotion"><option value="off">Off · Instant</option><option value="subtle">Smooth · Fast</option><option value="full">Expressive</option></select>
+      </label>
+      <label>Capture explosion
+        <select id="chessPrefCapture"><option value="off">Off</option><option value="on">On</option></select>
+      </label>
+      <label>Sound effects
+        <select id="chessPrefSound"><option value="on">On</option><option value="off">Off</option></select>
+      </label>
+      <label>Voice coach
+        <select id="chessPrefVoice"><option value="off">Off</option><option value="on">On</option></select>
+      </label>
+      <label>3D board
+        <select id="chessPref3D"><option value="off">Off · Flat board</option><option value="on">On</option></select>
+      </label>
+    </div>
+    <p class="chess-muted">Advanced options: choose New Match for game mode and color, or open the Studio tabs for time control, assistance and other variants.</p>
+    <div class="chess-modal-actions"><button type="button" class="btn" id="btnCustomizeDefaults">Restore defaults</button><button type="button" class="btn btn-primary" id="btnApplyCustomize">Apply & Close</button></div>
+  </div>
+</div>
 <!-- Modal 3: Game Over Summary -->
-<div class="modal-backdrop" id="gameOverModal">
+<div class="modal-backdrop" id="gameOverModal" role="dialog" aria-modal="true" aria-labelledby="gameOverHeadline" aria-hidden="true">
   <div class="modal-card" style="max-width: 400px; text-align: center;">
     <div style="font-size: 2.6rem;" id="gameOverEmoji">🏆</div>
     <h2 class="modal-title" id="gameOverHeadline">Checkmate!</h2>
     <p style="font-size: 0.88rem; color: var(--text-secondary);" id="gameOverReason">White wins by checkmate.</p>
     <div id="gameOverScorecardBox" style="background:rgba(15,23,42,0.75); border:1px solid var(--border); border-radius:10px; padding:0.6rem;"></div>
+    <div class="chess-modal-actions"><button class="btn btn-primary" id="btnResultPdf" type="button">📄 Download PDF Report</button></div>
     <div style="display:flex; gap:0.6rem; margin-top:0.5rem;">
       <button class="btn" id="btnCloseGameOver" type="button" style="flex:1; justify-content:center;">🔍 Review Board</button>
       <button class="btn btn-primary" id="btnPlayAgainModal" type="button" style="flex:1; justify-content:center;">⚡ Play Again</button>
@@ -2278,6 +2317,7 @@
 <div class="toast" id="toastBox">Copied to clipboard!</div>
 
 <script src="./chess-beast-ui.js"></script>
+<script src="./chess-report.js"></script>
 <script>
 (function() {
   "use strict";
@@ -3803,6 +3843,10 @@
   let clockIntervalId = null;
   let clockLastStamp = 0;
   let gameEndedByClock = false;
+  let lastMatchOutcome = null;
+  let matchStartedAt = null;
+  let matchCompletedAt = null;
+  let lastResultFocus = null;
 
   let currentLang = 'en';
 
@@ -4076,12 +4120,13 @@
   }
 
   function handleFlagFall(flaggedColor) {
+    chessSearchCoordinator.cancel();
     gameEndedByClock = true;
     matchState = 'ended';
     stopClockLoop();
     playSound('gameover');
     const winnerName = flaggedColor === 'w' ? (currentLang === 'ta' ? 'கறுப்பு' : 'Black') : (currentLang === 'ta' ? 'வெள்ளை' : 'White');
-    openGameOverModal(currentLang === 'ta' ? '⏱️ நேரம் முடிந்தது!' : '⏱️ Time Out!', `${winnerName} wins on time!`);
+    openGameOverModal(currentLang === 'ta' ? '⏱️ நேரம் முடிந்தது!' : '⏱️ Time Out!', `${winnerName} wins on time!`, flaggedColor === 'w' ? 'b' : 'w');
     renderAll();
   }
 
@@ -4498,14 +4543,14 @@
       x: p2.x,
       y: p2.y,
       radius: 6,
-      maxRadius: moveObj.captured ? 52 : 34,
-      alpha: 0.9,
+      maxRadius: moveObj.captured && localStorage.getItem('chess_beast_capture_fx')!=='off' ? 52 : 34,
+      alpha: moveObj.captured && localStorage.getItem('chess_beast_capture_fx')==='off' ? 0 : 0.9,
       color: moveObj.captured ? '#ef4444' : '#38bdf8',
       lineWidth: moveObj.captured ? 4 : 2.5
     });
 
     // 3. Explosive Capture Burst + Board Impact Shake
-    if (moveObj.captured) {
+    if (moveObj.captured && localStorage.getItem('chess_beast_capture_fx')!=='off') {
       const bf = document.getElementById('boardFrame');
       if (bf) {
         bf.classList.remove('impact-shake');
@@ -5299,6 +5344,7 @@
     const status = engine.getGameStatus();
     triggerMoveVisualFX(moveObj, snap, status);
     saveCareerAndMatchState();
+    saveAutomaticMatch();
     updateHandAndBrainPrompt();
 
     if (status.over) {
@@ -5337,7 +5383,7 @@
       const title = status.winner === 'draw'
         ? '🤝 Match Drawn!'
         : (wasAutoWin && status.winner === humanColor ? '👑 Auto-Win Victory — Checkmate!' : '🏆 Checkmate!');
-      openGameOverModal(title, status.reason);
+      openGameOverModal(title, status.reason, status.winner);
       return;
     }
 
@@ -5484,6 +5530,9 @@
     userDrawnArrows = [];
     timeTravelIndex = -1;
     gameEndedByClock = false;
+    lastMatchOutcome = null;
+    matchCompletedAt = null;
+    matchStartedAt = new Date().toISOString();
     if (!customFen) activePuzzleSolution = null;
 
     isChess960 = (gameMode === 'chess960');
@@ -5563,13 +5612,210 @@
   }
 
   function resetMatchToReady() {
-    document.getElementById('gameOverModal').classList.remove('open');
+    closeResultDialog();
     document.getElementById('newGameModal').classList.remove('open');
     startNewMatch(null, false);
     showToast(currentLang === 'ta'
       ? "🔄 போர்டு மற்றும் கடிகாரம் மீட்டமைக்கப்பட்டது (Ready to Start)"
       : "🔄 Board & Clocks Reset! Click 'Start Game' when ready.");
   }
+
+
+  /* Match completion is intentionally independent from AI and rule evaluation.
+   * Only this presenter owns the result dialog, so a draw can never disappear
+   * into the small status corner. */
+  function resultText(winner) {
+    if(winner==='w')return {result:'1-0',winner:'White wins',headline:'White Wins!'};
+    if(winner==='b')return {result:'0-1',winner:'Black wins',headline:'Black Wins!'};
+    if(winner==='draw')return {result:'1/2-1/2',winner:'Draw',headline:'Match Drawn'};
+    return {result:'*',winner:'Unfinished',headline:'Match Summary'};
+  }
+  function completedOutcome() {
+    const status=engine.getGameStatus();
+    if(lastMatchOutcome)return lastMatchOutcome;
+    return status.over?{winner:status.winner,reason:status.reason}:null;
+  }
+  function reportSnapshot() {
+    const outcome=completedOutcome();
+    const who=resultText(outcome?.winner);
+    const level=LEVEL_NAMES[aiLevel]?.name||'AI';
+    const white=gameMode==='aivsai'?level+' (White AI)':gameMode==='pvp'?'White player':humanColor==='w'?playerProfile.name:level;
+    const black=gameMode==='aivsai'?level+' (Black AI)':gameMode==='pvp'?'Black player':humanColor==='b'?playerProfile.name:level;
+    return {
+      result:who.result,headline:who.headline,reason:outcome?.reason||'Game in progress',winner:who.winner,
+      white,black,whiteTime,blackTime,mode:gameMode,variant:activeRuleVariant,
+      level:level+' (Level '+aiLevel+')',date:matchStartedAt?new Date(matchStartedAt).toLocaleString():new Date().toLocaleString(),
+      opening:openingNameDisplay?.textContent||'-',fen:engine.toFen(),
+      moves:engine.history.map(s=>s.san||s.uci||'-')
+    };
+  }
+  function downloadMatchReport() {
+    try{
+      const bytes=window.ChessBeastReport.download(reportSnapshot());
+      showToast('Match PDF saved ('+Math.round(bytes/1024)+' KB)');
+    }catch(e){showToast('PDF could not be saved. Please try again.');console.error('PDF report:',e);}
+  }
+  function openGameOverModal(title,reason,winner) {
+    const state=resultText(winner);
+    matchCompletedAt=new Date().toISOString();
+    lastMatchOutcome={winner,reason:String(reason||''),title:String(title||state.headline)};
+    try {saveAutomaticMatch();} catch(e) {console.warn('Auto-save unavailable',e);}
+    const modal=document.getElementById('gameOverModal');
+    if(!modal)return;
+    lastResultFocus=document.activeElement;
+    document.getElementById('gameOverEmoji').textContent=winner==='draw'?'🤝':'🏆';
+    document.getElementById('gameOverHeadline').textContent=state.headline;
+    document.getElementById('gameOverReason').textContent=String(reason||title||'Game completed');
+    const card=document.getElementById('gameOverScorecardBox');
+    card.textContent='';
+    const rows=[
+      ['Score',state.result],
+      ['White',gameMode==='aivsai'?'AI':humanColor==='w'?playerProfile.name:'AI'],
+      ['Black',gameMode==='aivsai'?'AI':humanColor==='b'?playerProfile.name:'AI'],
+      ['Moves',String(engine.history.length)+' half-moves'],
+      ['White clock',formatClock(whiteTime)],['Black clock',formatClock(blackTime)],
+    ];
+    for(const [name,value] of rows){
+      const row=document.createElement('div');
+      row.className='chess-result-row';
+      const label=document.createElement('span');label.textContent=name;
+      const text=document.createElement('strong');text.textContent=value;
+      row.append(label,text);card.append(row);
+    }
+    modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+    document.getElementById('btnResultPdf').focus();
+  }
+  function closeResultDialog(){
+    const modal=document.getElementById('gameOverModal');
+    modal.classList.remove('open');modal.setAttribute('aria-hidden','true');
+    if(lastResultFocus?.isConnected)lastResultFocus.focus();
+  }
+  document.getElementById('btnDownloadMatchPdf').addEventListener('click',downloadMatchReport);
+  document.getElementById('btnResultPdf').addEventListener('click',downloadMatchReport);
+  document.getElementById('gameOverModal').addEventListener('keydown',event=>{
+    if(event.key==='Escape'){event.preventDefault();closeResultDialog();}
+    if(event.key==='Tab'){
+      const focusable=[...document.querySelectorAll('#gameOverModal button:not([disabled])')];
+      const first=focusable[0],last=focusable.at(-1);
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+      if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+    }
+  });
+  const AUTOSAVE_KEY='chess_beast_current_match_v3';
+  function saveAutomaticMatch(){
+    if(!engine)return;
+    const entry={
+      version:3,startFen:engine.startFenSnap||START_FEN,fen:engine.toFen(),
+      uciHistory:engine.history.map(m=>m.uci),gameMode,humanColor,aiLevel,
+      whiteTime,blackTime,baseTimeSeconds,incrementSeconds,
+      category:currentCategory,variant:activeRuleVariant,
+      matchState:matchState==='playing'?'paused':matchState,
+      ended:matchState==='ended',outcome:lastMatchOutcome,
+      startedAt:matchStartedAt,completedAt:matchCompletedAt,
+      savedAt:Date.now()
+    };
+    try{localStorage.setItem(AUTOSAVE_KEY,JSON.stringify(entry));}catch{}
+  }
+  function readAutomaticMatch(){
+    try{const v=JSON.parse(localStorage.getItem(AUTOSAVE_KEY)||'null');
+      if(v&&v.version===3&&typeof v.fen==='string'&&Array.isArray(v.uciHistory))return v;
+    }catch{}return null;
+  }
+  function restoreAutomaticMatch() {
+    const item=readAutomaticMatch();
+    if(!item||(!item.uciHistory.length&&item.fen===START_FEN))return false;
+    const vault=getSavedGamesVault();
+    const temporary={...item,id:'autosaved-session',title:'Last session',date:'Recent'};
+    // Restore through the same validated move-replay path as user vault entries.
+    try {
+      localStorage.setItem(VAULT_STORAGE_KEY,JSON.stringify([temporary,...vault].slice(0,30)));
+      loadGameFromVaultById('autosaved-session');
+      lastMatchOutcome=item.outcome||null;
+      matchStartedAt=item.startedAt||null;matchCompletedAt=item.completedAt||null;
+      matchState=item.ended?'ended':'paused';
+      renderAll();stopClockLoop();
+      return true;
+    } finally {
+      // The automatic slot is separate from user-owned vault records.
+      try{localStorage.setItem(VAULT_STORAGE_KEY,JSON.stringify(vault));}catch{}
+      renderSavedGamesVaultUI();
+    }
+  }
+  function offerAutomaticResume() {
+    const item=readAutomaticMatch();
+    if(!item||(!item.uciHistory.length&&item.fen===START_FEN))return;
+    const notice=document.createElement('div');notice.className='chess-resume-notice';
+    notice.id='chessResumeNotice';
+    const label=document.createElement('span');label.textContent='Saved match found ('+item.uciHistory.length+' moves). Continue where you stopped?';
+    const resume=document.createElement('button');resume.className='btn btn-primary';resume.textContent='Continue Game';
+    const dismiss=document.createElement('button');dismiss.className='btn';dismiss.textContent='Not now';
+    resume.onclick=()=>{if(restoreAutomaticMatch())notice.remove();};
+    dismiss.onclick=()=>notice.remove();
+    notice.append(label,resume,dismiss);
+    document.querySelector('.board-section')?.prepend(notice);
+  }
+  let autoSaveTick=0;
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)saveAutomaticMatch();});
+  window.addEventListener('pagehide',saveAutomaticMatch);
+  setInterval(()=>{if(matchState==='playing'||matchState==='paused'){
+    if(Date.now()-autoSaveTick>1200){autoSaveTick=Date.now();saveAutomaticMatch();}
+  }},1200);
+  function displayCustomize(open) {
+    const modal=document.getElementById('chessCustomizeModal');
+    if(open){
+      document.getElementById('chessPrefDifficulty').value=String(aiLevel);
+      document.getElementById('chessPrefMotion').value=chessVisualController.effectMode;
+      document.getElementById('chessPrefCapture').value=localStorage.getItem('chess_beast_capture_fx')||'on';
+      document.getElementById('chessPrefTheme').value=document.body.dataset.boardTheme||'green';
+      document.getElementById('chessPrefSound').value=soundEnabled?'on':'off';
+      document.getElementById('chessPrefVoice').value=voiceEnabled?'on':'off';
+      const selectedStyle=document.querySelector('#pieceStyleSelectorRow .opt-pill.active');
+      document.getElementById('chessPrefPieces').value=selectedStyle?.dataset.pstyle||'staunton';
+      document.getElementById('chessPref3D').value=document.body.classList.contains('board-3d')?'on':'off';
+    }
+    modal.classList.toggle('open',open);
+    modal.setAttribute('aria-hidden',String(!open));
+    if(open)document.getElementById('btnCloseCustomize').focus();
+    else document.getElementById('btnOpenCustomize').focus();
+  }
+  document.getElementById('btnOpenCustomize').onclick=()=>displayCustomize(true);
+  document.getElementById('btnCloseCustomize').onclick=()=>displayCustomize(false);
+  document.getElementById('chessCustomizeModal').addEventListener('keydown',e=>{
+    if(e.key==='Escape'){e.preventDefault();displayCustomize(false);}
+  });
+  document.getElementById('btnApplyCustomize').onclick=()=>{
+    const val=id=>document.getElementById(id).value;
+    const level=Number(val('chessPrefDifficulty'));
+    if(level!==aiLevel)applyUniversalTier(level);
+    const chosenTheme=val('chessPrefTheme');
+    document.querySelector('#themePaletteGrid [data-btheme="'+chosenTheme+'"]')?.click();
+    const style=val('chessPrefPieces');
+    document.querySelector('#pieceStyleSelectorRow [data-pstyle="'+style+'"]')?.click();
+    const motion=val('chessPrefMotion');
+    chessVisualController.effectMode=motion;
+    try{
+      localStorage.setItem(chessVisualController.storageKey,motion);
+      localStorage.setItem('chess_beast_capture_fx',val('chessPrefCapture'));
+    }catch{}
+    const motionSelector=document.getElementById('beastFxMode');
+    if(motionSelector)motionSelector.value=motion;
+    if(soundEnabled!==(val('chessPrefSound')==='on'))document.getElementById('btnSoundToggle').click();
+    if(voiceEnabled!==(val('chessPrefVoice')==='on'))document.getElementById('btnVoiceToggle').click();
+    const current3D=document.body.classList.contains('board-3d')?'on':'off';
+    if(current3D!==val('chessPref3D'))document.getElementById('btnToggle3D').click();
+    displayCustomize(false);
+    showToast('Preferences saved on this device');
+  };
+  document.getElementById('btnCustomizeDefaults').onclick=()=>{
+    document.getElementById('chessPrefDifficulty').value='1';
+    document.getElementById('chessPrefTheme').value='green';
+    document.getElementById('chessPrefPieces').value='staunton';
+    document.getElementById('chessPrefMotion').value='subtle';
+    document.getElementById('chessPrefCapture').value='off';
+    document.getElementById('chessPrefSound').value='on';
+    document.getElementById('chessPrefVoice').value='off';
+    document.getElementById('chessPref3D').value='off';
+  };
 
   /* =========================================================================
    * 8. WIRE UP ALL CONTROLS, TABS, HEATMAP, ARROWS & MODALS
@@ -5903,7 +6149,7 @@
     thinkingBanner.classList.remove('visible');
     const resigningSide = engine.turn === 'w' ? 'White' : 'Black';
     const winnerSide = engine.turn === 'w' ? 'Black' : 'White';
-    openGameOverModal('🏳️ Resignation', `${resigningSide} resigned. ${winnerSide} wins!`);
+    openGameOverModal('🏳️ Resignation', `${resigningSide} resigned. ${winnerSide} wins!`, engine.turn === 'w' ? 'b' : 'w');
     renderAll();
   });
 
@@ -6039,10 +6285,10 @@
   });
 
   document.getElementById('btnCloseGameOver').addEventListener('click', () => {
-    document.getElementById('gameOverModal').classList.remove('open');
+    closeResultDialog();
   });
   document.getElementById('btnPlayAgainModal').addEventListener('click', () => {
-    document.getElementById('gameOverModal').classList.remove('open');
+    closeResultDialog();
     newGameModal.classList.add('open');
   });
 
@@ -6955,8 +7201,9 @@
     }
     autoFitBoardToViewport();
     loadCareerAndSavedState();
-    // Initialize in 'idle' Ready-to-Start state (clocks paused, waiting for user to click Start Game)
+    // Initialize in a stopped state. Offer explicit resume from the last stored match.
     startNewMatch(null, false);
+    offerAutomaticResume();
   });
 })();
 </script>
