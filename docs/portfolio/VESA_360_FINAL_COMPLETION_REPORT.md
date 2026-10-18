@@ -28,6 +28,15 @@
 
 These entries mean completed app code and existing verification evidence, **not every approved blueprint requirement or real-device/human PASS**. Original 15 blueprints are retained and their detailed G4/G5 source/function reports remain in `docs/portfolio/20_*` through `28_*`. G5 Wave A/B/C records source-level Chromium/editable form QA across all 15. The AQL 11.78MB source is image-heavy; file size is not a meaningful proxy for feature depth.
 
+## 2026-10-18 updated independent results (newer than original report inventory)
+
+- **TNA G5 deep:** [exact test-source `2945aab00e1280b43a7e603f2016e0cab85dd407`, run #39119684912](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119684912) **SUCCESS**: 26 domain/integrity/CPM/mixed-calendar/baseline/migration/source/portfolio Node checks and six real Chromium browser suites for responsive shell, 200% page scale, four locales, Order Master save/reopen, G13 sheet XLSX/print, G16 offline/browser. The older `file://` Chromium PDF viewer test was isolated because GitHub runner treats navigation as download; generated report/print tests remain. Original business critical path unchanged.
+- **AQL G5 deep:** [exact test-source `473cb3c31a2fa68696b276988fe2c3e889e148d6`, run #39119598197](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119598197) **SUCCESS**: 15 source/engine/Ac-Re/60-requirement Node tests and nine real Chromium suites through AR11, 13 stages, final Ac/Re, carton/barcode, analytics, measurement, evidence restore, reports, links. Runner-specific standalone `file://` PDF-reader check excluded; not a claim of native reader acceptance. No inspection or report domain changes.
+- **Pages at documentation main SHA `906b05f879cf2aa335f60054e48b9eabbd8218fe`:** [deployment #39119748071](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119748071) **SUCCESS**. [Blueprint integrity #39119748312](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119748312) **SUCCESS**. New Pages job success verifies pipeline, **not** independently fetched live route/asset bytes. Public-origin page fetch was unavailable in this execution.
+- **Latest combined gate:** [#39119769280](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119769280) is the four-job full Git-history checkout and CI-runner safe PDF-reader matrix; check its final independent outcomes before upgrading PPM/portfolio statuses or promoting a test-only workflow. The applied test-only branch SHA is `ded6fc7a5cd0521762a47e32d142b8b4f9df7e2d`. Human UAT still 1/0/48.
+
+---
+
 ## Actual changes and exact GitHub references
 
 - Existing previously released main source: `afd3ab38ae733bb72d260457273bc591e08a45d1`. Earlier complete Pages deployment [#39117706520](https://github.com/venkatbangla-boop/vesahost/actions/runs/39117706520) **SUCCESS** for this main commit (GitHub job completion, not newly verified public byte parity).
