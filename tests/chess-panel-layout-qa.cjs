@@ -123,7 +123,14 @@ class ChessPanelQA{
   assert.equal(state.rightHidden,true,'right state closed');
   assert.equal(await page.locator('#btnEdgeDrawerHandle').evaluate(x=>getComputedStyle(x).writingMode),'horizontal-tb','edge tab not vertical/center');
   const handle=await box(page.locator('#btnEdgeDrawerHandle'));
-  assert.ok(handle.top<170,'reopen handle should be near top, not the middle');
+  const placement=await page.evaluate(()=>{
+    const el=document.getElementById('btnEdgeDrawerHandle'),st=getComputedStyle(el);
+    return {top:st.top,position:st.position,transform:st.transform,rectTop:el.getBoundingClientRect().top,
+      scrollY:scrollY,viewport:innerHeight,bodyClass:document.body.className};
+  });
+  assert.equal(placement.position,'fixed','reopen button must stay pinned to viewport '+JSON.stringify(placement));
+  assert.ok(Number.parseFloat(placement.top)<170,'reopen button CSS top must be pinned, '+JSON.stringify(placement));
+  assert.ok(handle.top<170,'reopen handle should be near top, '+JSON.stringify({handle,placement}));
   await page.locator('#btnEdgeDrawerHandle').click();
   assert.equal(await page.locator('#rightSidebarDrawer').isVisible(),true);
   const after=await page.locator('#boardFrame').boundingBox();
