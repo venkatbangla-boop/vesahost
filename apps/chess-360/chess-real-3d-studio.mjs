@@ -269,6 +269,15 @@ export class ChessBeast3DStudio {
   }
   pick(x,y){
     if(!this.ready||!this.setRay(x,y))return -1;
+    // The board square below the pointer is the unambiguous chess input.
+    // At oblique camera angles a foreground King mesh can physically occlude
+    // the centre of a Pawn's target square. Picking meshes first incorrectly
+    // sent e2 taps to e1. Use the projected board contact plane first, and
+    // mesh raycasting only when the ray does not intersect a playable tile.
+    if(this.raycaster.ray.intersectPlane(this.mapPlane,this.hitWorld)){
+      const col=Math.floor(this.hitWorld.x+4),row=Math.floor(this.hitWorld.z+4);
+      if(row>=0&&row<8&&col>=0&&col<8)return(row<<3)|col;
+    }
     const meshes=[...this.instances.values()];
     const hit=this.raycaster.intersectObjects(meshes,true);
     if(hit.length){
@@ -277,10 +286,6 @@ export class ChessBeast3DStudio {
         if(Number.isInteger(obj.userData?.square))return obj.userData.square;
         obj=obj.parent;
       }
-    }
-    if(this.raycaster.ray.intersectPlane(this.mapPlane,this.hitWorld)){
-      const col=Math.floor(this.hitWorld.x+4),row=Math.floor(this.hitWorld.z+4);
-      if(row>=0&&row<8&&col>=0&&col<8)return(row<<3)|col;
     }
     return -1;
   }
