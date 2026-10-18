@@ -1,0 +1,42 @@
+name: VESA pdfme local studio build probe
+on:
+  push:
+    branches: [feature/oss-pdfme-studio-20261019]
+    paths:
+      - 'apps/pdf-template-studio/**'
+      - '.github/workflows/oss-pdfme-build.yml'
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install and build static bundle, never publish
+        working-directory: apps/pdf-template-studio
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          npm run build
+          test -s dist/index.html
+          node --check src/main.js
+          test -d dist/assets
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path('dist')
+          files=[p for p in root.rglob('*') if p.is_file()]
+          assert files and len(files)<300
+          print('PDFME_LOCAL_BUILD_PASS',len(files),'files',sum(p.stat().st_size for p in files),'bytes')
+          for file in root.rglob('*.html'):
+            s=file.read_text()
+            assert 'http://' not in s and 'https://' not in s
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vesa-pdfme-local-studio-build
+          path: apps/pdf-template-studio/dist/
+          retention-days: 7
