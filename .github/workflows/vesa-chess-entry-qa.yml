@@ -1,0 +1,85 @@
+# Integration gates for the 20th Chess entry, new AQL direct startup and clean Login.
+name: VESA UX correction and Chess 360 acceptance
+on:
+  push:
+    branches: [feature/aql-direct-chess-ux-20261018]
+    paths: ['.github/workflows/vesa-chess-entry-qa.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  platform:
+    name: App Centre, Login and Chess real browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 42
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Frozen business and platform source checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check js/app-catalogue.js
+          node --check js/vesa-app-centre.js
+          node --check js/preferences.js
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
+          node apps/aql/tests/a-g00-baseline.cjs
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/tna/tests/g03-scheduling.test.js
+      - name: Real Chromium and WebKit browsers
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium webkit
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Real platform forms, Chess route and original hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tests/vesa-chess-20th-app.cjs
+          node tests/vesa-platform-pages.cjs
+          node tests/vesa-premium-login.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-chess-login-platform-synthetic-qa
+          path: output/playwright/
+          if-no-files-found: ignore
+          retention-days: 5
+  inspection:
+    name: AQL direct entry and 19-app sibling regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 42
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Real Chromium
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require(\"playwright\").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Verify app-owned original inspection flows and responsive shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/aql/tests/a-g01-unified-ui.cjs
+          node apps/aql/tests/a-g03-ar11-carton-selection-browser.cjs
+          node apps/aql/tests/a-g07-browser-restore.cjs
+          node tests/vesa-shared-shell-matrix.cjs
+          node tests/vesa-aql-g3-load-scroll.cjs
+          node tests/vesa-19-app-real-screens.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-aql-direct-and-19-regression-qa
+          path: |
+            output/playwright/
+            output/vesa-19-real-screens/
+          if-no-files-found: ignore
+          retention-days: 5
