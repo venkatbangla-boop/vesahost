@@ -24,13 +24,22 @@ jobs:
           test -s vendor/index.html
           test -d vendor/assets
           cp ../../docs/portfolio/VESA_PDFME_STUDIO_INSTALLATION_20261019.md vendor/INSTALLATION-NOTES.md
+          cp LICENSE-pdfme.md vendor/LICENSE-pdfme.md
           cp THIRD_PARTY_NOTICES.md vendor/THIRD_PARTY_NOTICES.md
+          npm ls --all --json > vendor/dependency-inventory.json || true
+          python3 - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('vendor/dependency-inventory.json')
+          d=json.loads(p.read_text())
+          assert d.get('dependencies'), 'No dependency inventory'
+          print('PDFME_DEPENDENCY_INVENTORY_EXISTS',len(d['dependencies']))
+          PY
           python3 - <<'PY'
           import json
           from pathlib import Path
           root=Path('.')
           files=['index.html','src/shell-controller.js','assets/pdf-studio.css','service-worker.js',
-                 'vendor/index.html','vendor/THIRD_PARTY_NOTICES.md','vendor/INSTALLATION-NOTES.md']
+                 'vendor/index.html','vendor/LICENSE-pdfme.md','vendor/THIRD_PARTY_NOTICES.md','vendor/dependency-inventory.json','vendor/INSTALLATION-NOTES.md']
           files += [str(p) for p in sorted((root/'vendor/assets').rglob('*')) if p.is_file()]
           assert len(files)>=10
           missing=[p for p in files if not (root/p).is_file()]
