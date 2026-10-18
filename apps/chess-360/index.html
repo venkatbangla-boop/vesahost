@@ -3061,7 +3061,11 @@
       const refBestSan = refBestMove ? this.moveToSan(refBestMove, legal) : '';
 
       const san = this.moveToSan(m, legal);
-      const uci = sqToAlgebraic(m.from) + sqToAlgebraic(m.to) + (m.promotion ? m.promotion.toLowerCase() : '');
+      // Chess960 must serialize castling by KING->ROOK source (UCI_Chess960),
+      // distinguishing an ordinary adjacent King move to c/g from castling.
+      const isCastle=m.flags==='castleK'||m.flags==='castleQ';
+      const uciTo=this.castle960&&isCastle?m.rookFrom:m.to;
+      const uci=sqToAlgebraic(m.from)+sqToAlgebraic(uciTo)+(m.promotion?m.promotion.toLowerCase():'');
       const snap = this.makeMoveInternal(m);
       const evalAfter = this.evaluatePosition();
 
@@ -5185,6 +5189,11 @@
 
     if ((gameMode === 'ai' || isHandAndBrain || isChess960) && engine.turn !== humanColor) return;
 
+    // Chess960: dropping/clicking the own rook explicitly castles,
+    // even when the King's ordinary destination is the same square.
+    const rookCastle=legalMovesFromSelected.find(m=>
+      (m.flags==='castleK'||m.flags==='castleQ')&&m.rookFrom===sq&&engine.castle960);
+    if(rookCastle){performMoveAndContinue(rookCastle);return;}
     const candidateMoves = legalMovesFromSelected.filter(m => m.to === sq);
     if (candidateMoves.length > 0) {
       if (candidateMoves[0].promotion) {
@@ -5374,7 +5383,8 @@
         if(matchState!=='playing'||engine.toFen()!==fen)return;
         const legal=engine.getLegalMoves(engine.turn);
         const uci=data?.uci||'';
-        const move=legal.find(m=>sqToAlgebraic(m.from)+sqToAlgebraic(m.to)+(m.promotion||'').toLowerCase()===uci)
+        const move=legal.find(m=>sqToAlgebraic(m.from)+sqToAlgebraic(m.to)+(m.promotion||'').toLowerCase()===uci
+          &&(!data?.castleSide||m.flags===data.castleSide))
           ||this.quickLegalMove();
         if(!move)return;
         onDone(move,data||{error:'Search unavailable'});
@@ -6555,7 +6565,10 @@
         const toSq = algebraicToSq(uci.slice(2, 4));
         const promoChar = uci.length > 4 ? uci[4].toUpperCase() : null;
         const legal = engine.getLegalMoves(engine.turn);
-        const match = legal.find(m => m.from === fromSq && m.to === toSq && (!promoChar || m.promotion === promoChar));
+        const match=legal.find(m=>m.from===fromSq&&
+          (m.to===toSq||(engine.castle960&&(m.flags==='castleK'||m.flags==='castleQ')&&m.rookFrom===toSq))&&
+          (!promoChar||m.promotion===promoChar)&&
+          (!engine.castle960||m.rookFrom===toSq||m.flags!=='castleK'&&m.flags!=='castleQ'));
         if (match) {
           engine.executeMove(match);
         } else {
