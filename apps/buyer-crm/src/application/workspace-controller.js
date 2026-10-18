@@ -2,6 +2,7 @@
 (function(root){
 'use strict';
 class BuyerCRMWorkspace{
+ static steps=Object.freeze([['summary','hintSummary'],['contacts','hintContacts'],['enquiries','hintEnquiries'],['pipeline','hintPipeline'],['followups','hintFollowups'],['references','hintReferences'],['reports','hintReports'],['history','hintHistory']]);
  constructor(){
   this.main=document.getElementById('crmMain');this.dialog=document.getElementById('crmDialog');
   this.body=document.getElementById('crmDialogBody');this.file=document.getElementById('crmCopyFile');
@@ -76,9 +77,9 @@ class BuyerCRMWorkspace{
  action(name,id=''){try{
   if(name==='home'){this.current=null;this.section='summary';this.render();return;}
   if(name==='new'){this.form('new');return;}
-  if(name==='practice'){let p=this.E.create({organizationName:'SYNTHETIC BUYER',territory:'SYNTHETIC TERRITORY',sourceRef:'SYNTHETIC DIRECTORY SOURCE'});
-   p=this.E.append(p,'enquiry',{id:'SYN-ENQ',category:'SYN POLO',styleRequest:'SYN-STYLE',sourceRef:'SYN QUOTE REQUEST',sourceDate:'2026-10-17',requestedQuantity:1000,unit:'pieces'});
-   p.mode='practice';this.current=p;this.section='summary';this.render();return;}
+  if(name==='practice'||name==='preview'){
+   if(name==='preview'&&(this.current||!BuyerCRMWorkspace.steps.some(([step])=>step===id)))throw Error('Return to All Buyers to open a practice section');
+   this.current=this.practiceExample();this.section=name==='practice'?'summary':id;this.render();return;}
   if(name==='continue'){const saved=this.store.list();if(!saved.length)throw Error(this.t('none'));this.action('load',saved[0].id);return;}
   if(name==='load'){const p=this.store.load(id);if(!p)throw Error('CRM record not found on this device');this.current=p;this.section='summary';this.render();return;}
   if(name==='save'){if(!this.current||this.current.mode==='practice')throw Error('Open local CRM record before saving');this.store.save(this.current);this.render();return;}
@@ -96,15 +97,31 @@ class BuyerCRMWorkspace{
   if(['add-contact','add-enquiry','add-opportunity','add-stage','add-followup'].includes(name)){
    if(!this.current||this.current.mode==='practice')throw Error('Open a saved local CRM record for editing');this.form(name);return;}
  }catch(err){this.error(err.message);}}
+ /** Build a validated synthetic record without storing or changing any real application record. */
+ practiceExample(){
+  let p=this.E.create({organizationName:'SYNTHETIC BUYER',territory:'SYNTHETIC TERRITORY',sourceRef:'SYNTHETIC DIRECTORY SOURCE'});
+  p=this.E.append(p,'contact',{id:'SYN-CONTACT',contactName:'FICTIONAL CONTACT',role:'DEMO MERCHANDISER',email:'practice@example.invalid',sourceRef:'SYNTHETIC CONTACT RECORD',privacySourceRef:'SYNTHETIC PRIVACY STATUS UNKNOWN',reviewedBy:'SYNTHETIC LOCAL REVIEWER',reviewDate:'2026-10-17',consentStatus:'needs-information'});
+  p=this.E.append(p,'enquiry',{id:'SYN-ENQ',category:'SYN POLO',styleRequest:'SYN-STYLE',sourceRef:'SYNTHETIC ENQUIRY',sourceDate:'2026-10-17',requestedQuantity:1000,unit:'pieces'});
+  p=this.E.append(p,'opportunity',{id:'SYN-OPP',enquiryId:'SYN-ENQ',stage:'Buyer costing request',stageSourceRef:'SYNTHETIC STAGE NOTE',reviewedBy:'SYNTHETIC LOCAL REVIEWER',reviewDate:'2026-10-17',amount:'1250.50',currency:'USD',amountSourceRef:'SYNTHETIC AMOUNT SOURCE',amountReviewedBy:'SYNTHETIC LOCAL REVIEWER',amountReviewDate:'2026-10-17'});
+  p=this.E.append(p,'stage',{id:'SYN-STAGE',opportunityId:'SYN-OPP',stage:'Buyer discussion',sourceRef:'SYNTHETIC DISCUSSION',reviewedBy:'SYNTHETIC LOCAL REVIEWER',reviewDate:'2026-10-17'});
+  p=this.E.append(p,'followup',{id:'SYN-FOLLOWUP',linkType:'opportunity',linkId:'SYN-OPP',owner:'SYNTHETIC OWNER',sourceRef:'SYNTHETIC FOLLOWUP',createdDate:'2026-10-16',dueDate:'2026-10-17',status:'open'});
+  p.mode='practice';
+  const check=this.E.validate(p);if(!check.ok)throw Error('Practice example invalid: '+check.errors.join('; '));
+  return p;
+ }
+ /** Home previews open only the original eight panel renderers. */
+ journey(){const t=k=>this.e(this.t(k));
+  return '<section class="crm-card" aria-labelledby="crmJourneyTitle"><h2 id="crmJourneyTitle">'+t('journeyTitle')+'</h2><p class="crm-note">'+t('journeyLead')+'</p><div class="crm-journey">'+BuyerCRMWorkspace.steps.map(([step,hint],i)=>'<article class="crm-journey-card"><span class="crm-journey-step">'+String(i+1).padStart(2,'0')+'</span><h3>'+t(step)+'</h3><p>'+t(hint)+'</p><button class="crm-btn" type="button" data-action="preview" data-id="'+this.e(step)+'" aria-label="'+t('journeyOpen')+' · '+t(step)+'">'+t('journeyOpen')+'</button></article>').join('')+'</div></section>';
+ }
  table(headers,rows){return '<div class="crm-scroll"><table class="crm-table"><thead><tr>'+headers.map(k=>'<th>'+this.e(k)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(v=>'<td>'+this.e(v??this.t('needs'))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
  render(){const e=v=>this.e(v??this.t('needs')),t=k=>e(this.t(k));
   const banner='<section class="crm-card"><h1>'+t('title')+'</h1><p class="crm-note">'+t('lead')+'</p><p class="crm-warning">'+t('notice')+'</p></section>';
   if(!this.current){let saved=[];try{saved=this.store.list();}catch(err){this.main.innerHTML=banner+'<p class="crm-warning" role="alert">'+e(err.message)+'</p>'+this.btn('upload','upload');return;}
    this.main.innerHTML=banner+'<section class="crm-card"><div class="crm-actions">'+this.btn('new','new',true)+this.btn('continue','continue')+this.btn('upload','upload')+this.btn('practice','practice')+'</div><h2>'+t('openRecords')+'</h2>'+
-    (saved.length?saved.map(v=>'<div class="crm-record"><span><b>'+e(v.name)+'</b> / '+e(v.territory)+'<small>Rev '+e(v.revision)+'</small></span>'+this.btn('load','open',false,v.id)+'</div>').join(''):'<p class="crm-note">'+t('none')+'</p>')+'</section>';
+    (saved.length?saved.map(v=>'<div class="crm-record"><span><b>'+e(v.name)+'</b> / '+e(v.territory)+'<small>Rev '+e(v.revision)+'</small></span>'+this.btn('load','open',false,v.id)+'</div>').join('') :'<p class="crm-note">'+t('none')+'</p>')+'</section>'+this.journey();
    this.shell?.setSavedState('unsaved');return;}
   const p=this.current,practice=p.mode==='practice',checked=this.E.validate(p);
-  const tabs=['summary','contacts','enquiries','pipeline','followups','references','reports','history'];
+  const tabs=BuyerCRMWorkspace.steps.map(([step])=>step);
   this.main.innerHTML=banner+'<section class="crm-card"><h2>'+e(p.header.organizationName)+' / '+e(p.header.territory)+'</h2><p class="crm-note">'+(practice?'SYNTHETIC PRACTICE':t('localOnly'))+' / '+t('status')+'</p>'+
    '<div class="crm-actions">'+this.btn('home','back')+this.btn('save','save',true,'',practice)+this.btn('download','download',false,'',practice)+'</div></section>'+
    '<nav class="crm-tabs" aria-label="Buyer CRM sections">'+tabs.map(k=>'<button class="crm-btn" type="button" data-action="'+k+'" aria-current="'+(this.section===k)+'">'+t(k)+'</button>').join('')+'</nav>'+

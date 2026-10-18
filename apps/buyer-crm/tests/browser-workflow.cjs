@@ -37,6 +37,27 @@ async function run(){
   assert.equal(await page.locator('.vesa-workspace').count(),1,'Exactly one global VESA shell');
   assert.equal(await page.locator('[data-vesa-menu]').count(),6,'Six universal menu commands');
   assert.match(await page.locator('body').innerText(),/NON-COMMERCIAL PERSONAL DEMO/i);
+  // G4: Eight original sections are directly accessible from Home in read-only practice.
+  const previewSteps=['summary','contacts','enquiries','pipeline','followups','references','reports','history'];
+  assert.equal(await page.locator('.crm-journey [data-action="preview"]').count(),8);
+  for(const step of previewSteps){
+   await page.locator('.crm-journey [data-action="preview"][data-id="'+step+'"]').click();
+   assert.equal(await page.locator('.crm-tabs [data-action="'+step+'"]').getAttribute('aria-current'),'true');
+   assert(await page.locator('#crmMain [data-action="save"]').isDisabled());
+   assert.equal((await records()).length,0,'Practice must never save buyer data');
+   const text=await page.locator('#crmMain').innerText();
+   assert.match(text,/SYNTHETIC PRACTICE/);
+   if(step==='contacts')assert.match(text,/practice@example\.invalid/);
+   if(step==='pipeline')assert.match(text,/1250\.50/);
+   if(step==='followups')assert.match(text,/overdue/);
+   if(step==='reports')assert.match(text,/DRAFT \/ SOURCE REVIEW ONLY/);
+   await act('home');
+  }
+  for(const width of [320,390,1440]){
+   await page.setViewportSize({width,height:860});
+   assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=width+1,'CRM Home discovery overflow '+width);
+  }
+  await page.setViewportSize({width:1280,height:900});
   await act('new');await fill({organizationName:'SYNTHETIC BUYER LTD',territory:'SYN TERRITORY',sourceRef:'SYN BUYER REGISTER'});await submit();
   assert.equal((await records()).length,1);assert.match((await records())[0].status,/NOT BUYER-APPROVED PO/);
   await act('add-contact');await fill({contactName:'SYN LOCAL CONTACT',role:'SYN MERCHANDISER',email:'synthetic@example.invalid',
