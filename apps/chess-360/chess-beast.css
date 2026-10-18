@@ -326,3 +326,5 @@ body.chess-beast-v2 #specialModeBanner #specialModeBadge{
 @media(prefers-reduced-motion:reduce){
   body.chess-beast-v2 #thinkingBanner .spinner{animation:none}
 }
+
+body.chess-beast-v2 .play-hub-card[hidden],body.chess-beast-v2 #cardResumeLast[hidden]{display:none!important}
