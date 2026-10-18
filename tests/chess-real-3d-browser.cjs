@@ -18,7 +18,7 @@ class Real3DQa{
         if(!f.startsWith(root+path.sep))return res.writeHead(403).end();
         if(fs.statSync(f).isDirectory())f=path.join(f,'index.html');
         const ext=path.extname(f);
-        res.writeHead(200,{'Content-Type':{'.html':'text/html','.css':'text/css','.js':'text/javascript'}[ext]||'application/octet-stream','Cache-Control':'no-store'}).end(fs.readFileSync(f));
+        res.writeHead(200,{'Content-Type':{'.html':'text/html','.css':'text/css','.js':'text/javascript','.mjs':'text/javascript','.jpg':'image/jpeg','.gltf':'model/gltf+json'}[ext]||'application/octet-stream','Cache-Control':'no-store'}).end(fs.readFileSync(f));
       }catch{res.writeHead(404).end();}
     });
     await new Promise(resolve=>this.server.listen(0,'127.0.0.1',resolve));
