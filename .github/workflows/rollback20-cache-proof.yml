@@ -1,0 +1,34 @@
+name: VESA rollback 20-app cache proof
+on:
+  push:
+    branches: [fix/rollback20-mobile-cache-20261019]
+    paths: ['service-worker.js','apps/index.html','.github/workflows/rollback20-cache-proof.yml']
+permissions: {contents: read}
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Check unchanged 20 routes and fresh discovery caching
+        run: |
+          node --check service-worker.js
+          node --check js/app-catalogue.js
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
+          node - <<'JS'
+          const fs=require('fs'),assert=require('node:assert/strict'),vm=require('vm');
+          const html=fs.readFileSync('apps/index.html','utf8');
+          const js=fs.readFileSync('js/app-catalogue.js','utf8');
+          const sw=fs.readFileSync('service-worker.js','utf8');
+          const captured={};vm.runInNewContext(js,{window:captured});
+          assert.equal(captured.VesaAppCatalogue.enabled().length,20);
+          assert.match(html,/id="appCount">20</);
+          assert.match(html,/rollback=20261019-20/);
+          assert.match(sw,/vesa-v116-rollback20-cache-refresh/);
+          assert.match(sw,/fetch\(event.request, \{cache:'no-store'\}\)/);
+          assert.ok(!js.includes("marker-lab")&&!js.includes("artwork-cad-studio")&&!js.includes("pdf-template-studio"));
+          console.log('ROLLBACK20_CACHE_DISCOVERY_PASS');
+          JS
