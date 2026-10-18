@@ -52,6 +52,7 @@
         this.readout.value='Tilt '+Math.round(this.state.tilt)+'° · Orbit '+Math.round(this.state.yaw)+'° · Spin '+Math.round(this.state.spin)+'°';
         this.readout.textContent=this.readout.value;
       }
+      window.dispatchEvent(new CustomEvent('chess-beast-camera-change',{detail:{...this.state}}));
       if(this.tiltSlider){this.tiltSlider.value=String(Math.round(this.state.tilt));}
       if(this.tiltLabel){this.tiltLabel.textContent=Math.round(this.state.tilt)+'°';}
     }
