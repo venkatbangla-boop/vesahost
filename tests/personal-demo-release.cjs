@@ -32,7 +32,7 @@ assert.equal((catalog.match(/id:'fabric-supplier-comparison'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'claims-disputes'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'product-development'/g)||[]).length,1);
 assert(catalog.includes("route:'/apps/product-development/'")&&catalog.includes("order:190,openLabelKey:'openProductDevelopment'"));
-assert(sw.includes('vesa-v107-commission-g5-form-focus'));
+assert(sw.includes('vesa-v108-chess-clean-entry'));
 assert(sw.includes("'./css/vesa-login.css?v=20261018-login-r1'"));
 assert(sw.includes("'./css/vesa-admin.css?v=20261018-admin-r1'"));
 assert(sw.includes("'./css/vesa-app-centre.css?v=20261018-u02'"));
@@ -141,4 +141,6 @@ for(const url of ['./apps/product-development/','./apps/product-development/inde
 './apps/claims-disputes/src/i18n/app-copy.js',
 './apps/claims-disputes/src/application/workspace-controller.js'])
  assert(sw.includes("'"+url+"'"));
+assert(catalog.includes("id:'chess-360'")&&catalog.includes("route:'/apps/chess-360/'"));
+assert(sw.includes("'./apps/chess-360/index.html'"));
 console.log('VESA DEMO RELEASE SOURCE PASS: synthetic-only public disclaimer, exact catalogue routes, updated service-worker cache.');
