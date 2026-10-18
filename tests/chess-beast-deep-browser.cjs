@@ -49,7 +49,7 @@ class ChessBeastDeepBrowserQA {
     await page.locator('#btnOpenNewGame').click();
     await page.locator('#modalModeRow [data-mode="'+mode+'"]').click();
     const tier=page.locator('#modalLevelRow [data-lvl="'+level+'"]');
-    if(await tier.count())await tier.click();
+    if(await tier.isVisible())await tier.click();
     await page.locator('#btnConfirmStartGame').click();
     await page.locator('#newGameModal').waitFor({state:'hidden'});
   }
