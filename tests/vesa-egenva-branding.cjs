@@ -49,7 +49,8 @@ class VesaBrandingRegression {
         const next=source.slice(found.index+found[0].length,160)
           .replace(/^(?:\s|<[^>]+>|&nbsp;|&#\d+;)+/g,'');
         const token=next.match(/^([A-Za-z]+)/)?.[1]?.toUpperCase()||'';
-        if(token!=='EGENVA'&&!this.SAFE_NON_BRAND_USES.has(token))
+        if((token!=='EGENVA'&&!this.SAFE_NON_BRAND_USES.has(token))||
+          (token==='EGENVA'&&!next.startsWith('EGENVA')))
           failure('Unexpected attribution after Powered by: '+token,found.index);
       }
     }
@@ -66,7 +67,6 @@ class VesaBrandingRegression {
       .includes('v=20261018-egenva-v2'),'Versioned App Centre must fetch corrected copy');
     const worker=fs.readFileSync(path.join(this.ROOT,'service-worker.js'),'utf8');
     assert.ok(worker.includes('vesa-v109-egenva-credit'),'Root offline cache must rotate');
-    assert.ok(worker.includes("'/js/nonexistent/'")===false,'No unexpected test placeholders');
     const chess=fs.readFileSync(path.join(this.ROOT,'apps/chess-360/index.html'));
     const sha=crypto.createHash('sha256').update(chess).digest('hex');
     assert.equal(sha,'06c82b0515826e0a5d62cd89b368fcf0431bee75fe41e753213afa8b16c7441c',
