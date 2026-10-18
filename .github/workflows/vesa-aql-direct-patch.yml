@@ -30,11 +30,7 @@ jobs:
           const edits=[
             ['<body class="vesa-at-entrance">','<body>'],
             ['<main id="vesa-welcome" tabindex="-1"','<main id="vesa-welcome" hidden tabindex="-1"'],
-            ['globalThis.VESA_WELCOME.bind();',`globalThis.VESA_WELCOME.bind();
-// After every script has registered its handlers, open the original inspection root directly.
-// This preserves original init/resume/storage, avoids an extra user click and never clears records.
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>globalThis.VESA_WELCOME.enter(),{once:true});
-else globalThis.VESA_WELCOME.enter();`]
+          ['globalThis.VESA_WELCOME.bind();',"globalThis.VESA_WELCOME.bind();\n// Start after all inline scripts have registered, without extra click.\nif(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>globalThis.VESA_WELCOME.enter(),{once:true});\nelse globalThis.VESA_WELCOME.enter();"]
           ];
           let next=original;
           for(const [before,after] of edits){
