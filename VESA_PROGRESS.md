@@ -1,3 +1,7 @@
+> **2026-10-18 G5 FINAL VERIFICATION CHECKPOINT — PARTIAL:** Personal synthetic showcase scope is settled; preserve all completed G4/G5 work. See [19-app final completion evidence](docs/portfolio/VESA_360_FINAL_COMPLETION_REPORT.md). Original inspected main `afd3ab38ae733bb72d260457273bc591e08a45d1`; final [four-job independent G5 run](https://github.com/venkatbangla-boop/vesahost/actions/runs/39119684912) tests TNA/PPM/AQL and other 16 app routes; do not call pending/failed jobs PASS. Older main Pages job #39117706520 was SUCCESS, but a new exact public-byte verification is not yet established. Human UAT remains 1 PASS / 0 FAIL / 48 NOT TESTED; original CPM/baselines, 168 PPM checkpoints, AQL Ac/Re, source data and saved-copy engines unchanged. Never request old ZIP or re-open synthetic scope.
+
+---
+
 # VESA 360 - MASTER PROGRESS DASHBOARD
 
 ## 2026-10-18 — G5-13..16 VERIFIED; ALL 15 PORTFOLIO ACTIVE-FORM QA PASS; NEXT TNA
