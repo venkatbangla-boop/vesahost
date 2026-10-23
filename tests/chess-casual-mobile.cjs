@@ -43,7 +43,7 @@ class ChessCasualMobileQA {
    await page.locator('#btnTopStartPause').click();
    await page.locator('#chessboard [data-sq="52"]').click();
    await page.locator('#chessboard [data-sq="36"]').click();
-   await page.waitForFunction(()=>Number(document.getElementById('moveRewindScrubber').value)>=1,null,{timeout:20000});
+   await page.waitForFunction(()=>Number(document.getElementById('moveRewindScrubber').value)>=2,null,{timeout:20000});
    await page.locator('#chessCasualBar [data-chess-forward="btnStepFirst"]').click();
    await page.waitForFunction(()=>document.getElementById('moveRewindScrubber').value==='0');
    await page.locator('#chessCasualBar [data-chess-forward="btnStepLast"]').click();
