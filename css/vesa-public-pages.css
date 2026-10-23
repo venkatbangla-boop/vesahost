@@ -1,0 +1,18 @@
+/* Dedicated public sourcing pages. Existing home and 360 application styles unchanged. */
+.vesa-public .seo-hero{padding:66px 0 34px}
+.vesa-public .seo-hero h1{font-size:clamp(2.4rem,6vw,5rem);line-height:1.08;max-width:1000px}
+.vesa-public .seo-hero .lead{max-width:850px}
+.vesa-public .seo-breadcrumb{font-size:.92rem;color:var(--muted);margin:0 0 22px}
+.vesa-public .seo-content{padding:32px 0 70px;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(250px,.6fr);gap:34px;align-items:start}
+.vesa-public .seo-article h2{font-size:clamp(1.65rem,3.2vw,2.7rem);line-height:1.15;margin:38px 0 16px}
+.vesa-public .seo-article p{max-width:75ch}
+.vesa-public .seo-aside{padding:23px;border:1px solid var(--line);border-radius:24px;background:#fff}
+.vesa-public .seo-aside img{width:100%;height:auto;border-radius:14px;margin-bottom:22px}
+.vesa-public .seo-links{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0}
+.vesa-public .seo-links a{background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px 15px;color:var(--navy);font-weight:700}
+.vesa-public .seo-contact{background:#071a35;color:white;border-radius:24px;padding:28px;margin-bottom:60px}
+.vesa-public .seo-contact p,.vesa-public .seo-contact a{color:white}
+.vesa-public .seo-contact a{text-decoration:underline}
+.vesa-public a:focus-visible,.vesa-public button:focus-visible{outline:3px solid #b88d42;outline-offset:3px}
+@media(max-width:820px){.vesa-public .seo-content{grid-template-columns:1fr}.vesa-public .seo-hero{padding:42px 0 18px}}
+@media(max-width:560px){.vesa-public .seo-contact{padding:22px}.vesa-public .seo-aside{padding:18px}}
