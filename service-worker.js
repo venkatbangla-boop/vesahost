@@ -1,5 +1,5 @@
 // Rollback cache version must supersede all previously installed 21-23 app caches.
-const CACHE='vesa-v117-hero-company-label';
+const CACHE='vesa-v116-rollback20-cache-refresh';
 const ASSETS=[
   './',
   './index.html',
