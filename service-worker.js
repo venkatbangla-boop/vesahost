@@ -1,4 +1,5 @@
 // Rollback cache version must supersede all previously installed 21-23 app caches.
+// Prior rollback baseline: vesa-v116-rollback20-cache-refresh. The SEO version upgrades that cache without restoring removed apps.
 const CACHE='vesa-v117-rollback20-brand-seo';
 const ASSETS=[
   './',
