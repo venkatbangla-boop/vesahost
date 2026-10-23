@@ -1,0 +1,3 @@
+# VESA SEO metadata-only release
+
+Original homepage body, CSS, JavaScript, video, navigation, assets, apps, login and service worker remain unchanged. Changes limited to head canonical/social/schema, privacy/terms canonical, robots/sitemap and llms site URL. Domain from CNAME: vesaent.com. sitemap includes public home/privacy/terms; app and login routes intentionally omitted. Search Console and Bing verification/sitemap submission require owner permissions and are unverified. Do not invent verification tags, business address or search rankings. Rollback by reverting this commit, not force pushing main.
