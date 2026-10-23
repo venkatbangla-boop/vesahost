@@ -1,0 +1,91 @@
+# Validate the public IndexNow ownership key and notify participating engines of updated public URLs.
+# Not Google Search Console or Bing Webmaster Tools account verification; no changes to website HTML, apps or CSS.
+name: VESA Bing IndexNow public-key verification
+on:
+  push:
+    branches:
+      - main
+      - feature/vesa-indexnow-ownership-20261023
+    paths:
+      - 'a301d30793b2cb5159f0326adac0bdefd248ac54.txt'
+      - '.github/workflows/vesa-indexnow.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-boundary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Confirm VESA homepage and 20-app source unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git diff --name-only HEAD^ HEAD | sort)"
+          expected="$(printf '%s\n' '.github/workflows/vesa-indexnow.yml' 'a301d30793b2cb5159f0326adac0bdefd248ac54.txt' | sort)"
+          if [ "$actual" != "$expected" ]; then
+            echo "OUT_OF_SCOPE_FILES"
+            printf '%s\n' "$actual"
+            exit 1
+          fi
+          key="$(cat 'a301d30793b2cb5159f0326adac0bdefd248ac54.txt')"
+          [[ "$key" =~ ^[a-f0-9]{40}$ ]]
+          grep -q 'https://vesaent.com/sitemap.xml' robots.txt
+          grep -q 'https://vesaent.com/' sitemap.xml
+          grep -q 'id="vesaIntroVideo"' index.html
+          grep -q 'vesa-v116-rollback20-cache-refresh' service-worker.js
+          echo "INDEXNOW_SOURCE_BOUNDARY_PASS — no homepage, video, app, menu or cache change"
+  indexnow-notify:
+    if: github.ref == 'refs/heads/main'
+    needs: [source-boundary]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Bing ownership key is publicly available from GitHub Pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          found=0
+          for attempt in $(seq 1 45); do
+            if curl --fail --location --silent --show-error --max-time 20 \
+              --output /tmp/vesa-indexnow-live.txt \
+              "https://vesaent.com/a301d30793b2cb5159f0326adac0bdefd248ac54.txt" \
+              && cmp --silent 'a301d30793b2cb5159f0326adac0bdefd248ac54.txt' /tmp/vesa-indexnow-live.txt; then
+              echo "INDEXNOW_PUBLIC_KEY_VERIFIED attempt=$attempt"
+              found=1
+              break
+            fi
+            echo "PAGES_KEY_PENDING attempt=$attempt"
+            sleep 10
+          done
+          if [ "$found" != "1" ]; then
+            echo "INDEXNOW_PUBLIC_KEY_NOT_AVAILABLE"
+            exit 1
+          fi
+      - name: Submit updated homepage and policy URLs to Bing IndexNow
+        shell: bash
+        run: |
+          set -euo pipefail
+          key="$(cat 'a301d30793b2cb5159f0326adac0bdefd248ac54.txt')"
+          payload="$(printf '{"host":"vesaent.com","key":"%s","urlList":["https://vesaent.com/","https://vesaent.com/privacy.html","https://vesaent.com/terms.html"]}' "$key")"
+          status="$(curl --silent --show-error --max-time 60 \
+            --output /tmp/vesa-indexnow-response.txt \
+            --write-out '%{http_code}' \
+            --request POST \
+            --header 'Content-Type: application/json; charset=utf-8' \
+            --data "$payload" \
+            'https://www.bing.com/indexnow')"
+          echo "INDEXNOW_BING_HTTP_STATUS=$status"
+          case "$status" in
+            200) echo "INDEXNOW_URLS_RECEIVED — 3 URLs; indexing/ranking are not guaranteed" ;;
+            202) echo "INDEXNOW_URLS_RECEIVED_KEY_VALIDATION_PENDING — 3 URLs" ;;
+            *)
+              echo "INDEXNOW_SUBMISSION_FAILED"
+              head -c 1200 /tmp/vesa-indexnow-response.txt
+              exit 1
+              ;;
+          esac
