@@ -98,7 +98,7 @@
  }
  body.chess-beast-v2.chess-casual-mobile-active .tab-content.active{min-height:0}
  body.chess-beast-v2.chess-casual-mobile-active #tabPlay .chess-primary-history{min-height:0}
- body.chess-beast-v2.chess-casual-mobile-active .right-dock-footer{display:none}
+ body.chess-beast-v2.chess-casual-mobile-active .right-dock-footer{display:flex}
  body.chess-beast-v2.chess-casual-mobile-active .drawer-edge-handle{display:none!important}
  body.chess-beast-v2.chess-casual-mobile-active .chess-casual-bar button:active{transform:scale(.98)}
  @media(max-height:735px){
