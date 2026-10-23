@@ -5,6 +5,7 @@ on:
     paths:
       - 'apps/chess-360/**'
       - 'tests/chess-casual-mobile.cjs'
+      - 'tests/chess-panel-layout-qa.cjs'
       - '.github/workflows/chess-casual-mobile.yml'
   workflow_dispatch:
 permissions:
