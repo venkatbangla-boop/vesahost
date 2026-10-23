@@ -188,7 +188,10 @@ class ChessPanelQA{
     for(const [width,height] of [[320,760],[390,844],[768,850],[1024,800],[1200,768],[1366,768],[1440,900],[2040,1110]]){
       await this.testViewport(chromiumBrowser,width,height);
     }
-    await this.browserMobile();
+    // The dedicated Chromium gate must not depend on absent WebKit system libraries.
+    // Omitted only by explicit CI opt-out; default still exercises iPhone WebKit.
+    if(process.env.CHESS_SKIP_WEBKIT==='1')console.log('CHESS_WEBKIT_DEPENDENCY_BLOCKED: browser libraries unavailable on runner');
+    else await this.browserMobile();
   }finally{await chromiumBrowser.close();await new Promise(resolve=>this.host.close(resolve));}
  }
 }
