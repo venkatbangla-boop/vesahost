@@ -10,6 +10,7 @@
   const sound=document.getElementById('vesaIntroSound');
   const soundIcon=document.getElementById('vesaIntroSoundIcon');
   const soundLabel=document.getElementById('vesaIntroSoundLabel');
+  const skip=document.getElementById('vesaIntroSkip');
   if(!overlay||!video){root.classList.remove('vesa-intro-pending');return;}
   const background=[document.querySelector('header.site-header'),document.querySelector('main'),document.querySelector('footer.site-footer')].filter(Boolean);
   background.forEach(node=>{node.inert=true;});
@@ -51,9 +52,11 @@
     if(message)message.textContent=mode==='error'?'The welcome film could not load.':'Tap to continue playing the complete welcome film.';
     if(action)action.textContent=mode==='error'?'Open VESA website':'Play welcome film';
   }
-  function openSiteOnlyIfUnavailable(){
+  // Only an explicit user Skip (or unavailable-video recovery) bypasses the end-frame fade.
+  function openSiteImmediately(){
     if(completed)return;
     completed=true;clearTimeout(safetyTimer);
+    video.pause();
     release();
   }
   function playWithMuteFallback(){
@@ -61,16 +64,18 @@
     const attempt=video.play();
     if(!attempt||typeof attempt.then!=='function')return;
     attempt.then(()=>{
+      if(completed)return;
       overlay.classList.remove('is-paused','is-error');recoveryMode='';
       syncSound();
     }).catch(()=>{
       // Chrome / Safari block audible autoplay without a user gesture.
       // Always prioritize starting the film immediately, muted if necessary.
+      if(completed)return;
       video.muted=true;syncSound();
       const retry=video.play();
       if(retry&&typeof retry.then==='function'){
-        retry.then(()=>{overlay.classList.remove('is-paused','is-error');recoveryMode='';})
-          .catch(()=>showRecovery('paused'));
+        retry.then(()=>{if(completed)return;overlay.classList.remove('is-paused','is-error');recoveryMode='';})
+          .catch(()=>{if(completed)return;showRecovery('paused');});
       }
     });
   }
@@ -81,8 +86,9 @@
     syncSound();
     if(video.paused&&!video.ended)playWithMuteFallback();
   });
+  if(skip)skip.addEventListener('click',openSiteImmediately);
   if(action)action.addEventListener('click',()=>{
-    if(recoveryMode==='error')openSiteOnlyIfUnavailable();
+    if(recoveryMode==='error')openSiteImmediately();
     else playWithMuteFallback();
   });
   video.addEventListener('volumechange',syncSound);
@@ -95,6 +101,7 @@
     },10000);
   });
   video.addEventListener('playing',()=>{
+    if(completed)return;
     clearTimeout(safetyTimer);
     overlay.classList.remove('is-paused');
     overlay.classList.add('is-playing');
