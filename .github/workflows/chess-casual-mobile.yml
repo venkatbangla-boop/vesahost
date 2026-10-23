@@ -24,10 +24,11 @@ jobs:
           node --check apps/chess-360/chess-casual-mobile.js
           node --check apps/chess-360/sw.js
           node --check tests/chess-casual-mobile.cjs
-      - name: Install Chromium
+      - name: Install Chromium and WebKit browsers
         run: |
           npm install --no-save --no-package-lock playwright@1.56.0
-          npx playwright install --with-deps chromium webkit
+          # Avoid a full apt upgrade on ephemeral GitHub runners: it exceeded the CI time limit.
+          npx playwright install chromium webkit
       - name: Real phone layout and replay/save acceptance
         run: |
           node tests/chess-casual-mobile.cjs
