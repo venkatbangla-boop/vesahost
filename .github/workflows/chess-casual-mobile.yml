@@ -6,6 +6,7 @@ on:
       - 'apps/chess-360/**'
       - 'tests/chess-casual-mobile.cjs'
       - 'tests/chess-panel-layout-qa.cjs'
+      - 'tests/chess-real-3d-browser.cjs'
       - '.github/workflows/chess-casual-mobile.yml'
   workflow_dispatch:
 permissions:
