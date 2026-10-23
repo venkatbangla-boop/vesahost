@@ -13,7 +13,7 @@ permissions:
   contents: read
 jobs:
   chess-public:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +25,7 @@ jobs:
       - name: Install Chromium
         run: |
           npm install --no-save --no-package-lock playwright@1.56.0
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
       - name: Verify public exact bytes and live synthetic game
         env:
           CHESS_PUBLIC_ORIGIN: https://vesaent.com
