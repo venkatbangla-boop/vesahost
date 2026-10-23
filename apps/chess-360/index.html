@@ -1432,6 +1432,7 @@
 <link rel="stylesheet" href="./chess-pro-ux.css">
 <link rel="stylesheet" href="./chess-panel-ui.css">
 <link rel="stylesheet" href="./chess-real-3d.css">
+<link rel="stylesheet" href="./chess-casual-mobile.css">
 </head>
 <body class="chess-beast-v2" data-board-theme="green">
 
@@ -1442,7 +1443,7 @@
       <div class="brand-logo" aria-hidden="true">♞</div>
       <div class="brand-title">
         <span id="appTitleText">Chess Beast 360</span>
-        <span class="chess-brand-tagline">Offline Grandmaster</span>
+        <span class="chess-brand-tagline">Chess</span>
         <span class="brand-sub" id="appSubText">Powered by EGENVA</span>
       </div>
     </div>
@@ -1574,7 +1575,7 @@
           <div class="player-name-row">
             <span class="player-name" id="topPlayerName">Chess Beast AI</span>
             <span class="badge" id="topPlayerBadge">Lvl 1 • Easy</span>
-            <span class="badge" id="topStyleBadge" style="background:rgba(59,130,246,0.15);color:#60a5fa;border-color:rgba(59,130,246,0.3);">Carlsen Style</span>
+            <span class="badge" id="topStyleBadge" style="display:none" aria-hidden="true"></span>
           </div>
           <div class="captured-row" id="topCapturedRow"></div>
         </div>
@@ -1882,11 +1883,11 @@
       <!-- Move History Log + Time Travel Controls -->
       <div class="form-group">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span class="form-label" data-i18n="moveHistory">Move History & Time-Travel (Click any move)</span>
+          <span class="form-label" data-i18n="moveHistory">Moves</span>
           <span style="font-size:0.7rem; color:var(--text-secondary);" id="halfMoveCounter">Move 1</span>
         </div>
         <div class="rewind-scrubber-row" title="Drag Slider to Rewind or Fast-Forward Through Any Move!">
-          <span style="font-size:0.68rem; font-weight:800; color:#fbbf24;">⏪ Rewind</span>
+          <span style="font-size:0.68rem; font-weight:800; color:#fbbf24;">Review</span>
           <input type="range" id="moveRewindScrubber" class="rewind-slider" min="0" max="0" value="0">
           <button class="btn" id="btnInlineSaveGame" type="button" style="padding:0.16rem 0.48rem; font-size:0.66rem; background:#81b64c; color:#fff; border:none;">💾 Save</button>
         </div>
@@ -1996,7 +1997,7 @@
 
       <!-- 6 Universal AI Tiers -->
       <div class="form-group">
-        <span class="form-label" data-i18n="chooseLevel">🎯 AI Engine Tier (Beginner to Legend)</span>
+        <span class="form-label" data-i18n="chooseLevel">Difficulty</span>
         <div class="level-cards" id="levelCardsContainer">
           <div class="level-card selected" data-level="1">
             <div>
@@ -2044,7 +2045,7 @@
       </div>
 
       <div class="form-group">
-        <span class="form-label">AI Playing Personality</span>
+        <span class="form-label">Play style</span>
         <div class="option-row" id="personalityRow" style="grid-template-columns: repeat(2, 1fr);">
           <div class="opt-pill active" data-style="carlsen">👑 Carlsen (Balanced)</div>
           <div class="opt-pill" data-style="tal">🔥 Tal (Aggressive Attack)</div>
@@ -7506,5 +7507,6 @@
 })();
 </script>
 <script src="./chess-panel-ui.js"></script>
+<script src="./chess-casual-mobile.js"></script>
 </body>
 </html>
