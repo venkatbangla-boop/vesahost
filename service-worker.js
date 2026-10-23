@@ -1,8 +1,13 @@
 // Rollback cache version must supersede all previously installed 21-23 app caches.
-const CACHE='vesa-v116-rollback20-cache-refresh';
+const CACHE='vesa-v117-rollback20-brand-seo';
 const ASSETS=[
   './',
   './index.html',
+  './about/',
+  './apparel-sourcing/',
+  './sourcing-bangladesh/',
+  './sourcing-india/',
+  './css/vesa-public-pages.css',
   './privacy.html',
   './terms.html',
   './login/',
