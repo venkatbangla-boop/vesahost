@@ -1,0 +1,31 @@
+name: Chess casual mobile acceptance
+on:
+  push:
+    branches: [feature/chess-casual-mobile-20261023, main]
+    paths:
+      - 'apps/chess-360/**'
+      - 'tests/chess-casual-mobile.cjs'
+      - '.github/workflows/chess-casual-mobile.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  phone:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Parse chess UI and mobile acceptance
+        run: |
+          node --check apps/chess-360/chess-casual-mobile.js
+          node --check apps/chess-360/sw.js
+          node --check tests/chess-casual-mobile.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Real phone layout and replay/save acceptance
+        run: node tests/chess-casual-mobile.cjs
