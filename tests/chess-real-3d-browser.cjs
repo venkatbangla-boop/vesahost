@@ -454,7 +454,10 @@ class Real3DQa{
       await this.runChromium(browser,2040,1110);
       await this.runMotion(browser);
       await this.switchTo3DMidGame(browser);
-      await this.runWebkit();
+      // Chromium-only CI is separate from WebKit dependency installation on runners.
+      // Default behavior still exercises the iPhone/WebKit 3D path.
+      if(process.env.CHESS_SKIP_WEBKIT==='1')console.log('CHESS_REAL_3D_WEBKIT_DEPENDENCY_BLOCKED');
+      else await this.runWebkit();
     }finally{await browser.close();await new Promise(resolve=>this.server.close(resolve));}
   }
 }
