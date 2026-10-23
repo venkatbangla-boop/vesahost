@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vesaent.com/sitemap.xml
+Sitemap: https://www.vesaent.com/sitemap.xml

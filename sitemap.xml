@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://vesaent.com/</loc></url>
-  <url><loc>https://vesaent.com/about/</loc></url>
-  <url><loc>https://vesaent.com/apparel-sourcing/</loc></url>
-  <url><loc>https://vesaent.com/sourcing-bangladesh/</loc></url>
-  <url><loc>https://vesaent.com/sourcing-india/</loc></url>
-  <url><loc>https://vesaent.com/privacy.html</loc></url>
-  <url><loc>https://vesaent.com/terms.html</loc></url>
+  <url><loc>https://www.vesaent.com/</loc></url>
+  <url><loc>https://www.vesaent.com/login/</loc></url>
+  <url><loc>https://www.vesaent.com/apps/</loc></url>
+  <url><loc>https://www.vesaent.com/privacy.html</loc></url>
+  <url><loc>https://www.vesaent.com/terms.html</loc></url>
 </urlset>
