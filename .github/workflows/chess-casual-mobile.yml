@@ -28,4 +28,9 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
       - name: Real phone layout and replay/save acceptance
-        run: node tests/chess-casual-mobile.cjs
+        run: |
+          node tests/chess-casual-mobile.cjs
+          node tests/chess-beast-v2.cjs
+          node tests/chess-panel-layout-qa.cjs
+          node tests/chess-match-experience.cjs
+          node tests/chess-real-3d-browser.cjs
