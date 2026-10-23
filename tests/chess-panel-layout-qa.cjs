@@ -118,6 +118,16 @@ class ChessPanelQA{
   const before=await page.locator('#boardFrame').boundingBox();
   await page.locator('#btnCollapseDrawerInside').click();
   assert.equal(await page.locator('#rightSidebarDrawer').isVisible(),false);
+  if(width<=767){
+    // The phone uses its visible More/Moves rail instead of a floating edge tab.
+    assert.equal(await page.locator('#btnEdgeDrawerHandle').isVisible(),false);
+    await page.locator('#chessCasualMore').click();
+    assert.equal(await page.locator('#rightSidebarDrawer').isVisible(),true);
+    assert.equal(await page.locator('#tabLevels').isVisible(),true);
+    const after=await page.locator('#boardFrame').boundingBox();
+    assert.ok(after.width>0&&before.width>0);
+    return;
+  }
   assert.equal(await page.locator('#btnEdgeDrawerHandle').isVisible(),true);
   const state=await page.evaluate(()=>window.__chessPanelDiagnostics());
   assert.equal(state.rightHidden,true,'right state closed');
