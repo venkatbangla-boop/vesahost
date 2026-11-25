@@ -40,8 +40,11 @@ class VesaPPMSpanishCatalog {
     }
     for(const [k,v] of Object.entries(n)){
      if(['start','end','loc','raw','regex','value'].includes(k))continue;
-     if(Array.isArray(v))for(const c of v)if(c&&typeof c==='object')queue.push(c);
-     else if(v&&typeof v==='object')queue.push(v);
+     if(Array.isArray(v)){
+      for(const child of v)if(child&&typeof child==='object')queue.push(child);
+     }else if(v&&typeof v==='object'){
+      queue.push(v);
+     }
     }
    }
    if(file.endsWith('languages.js')){
