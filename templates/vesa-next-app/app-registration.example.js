@@ -14,7 +14,8 @@ const openLabels = Object.freeze({
   en: 'Open Next App',
   bn: 'Next App খুলুন',
   hi: 'Next App खोलें',
-  ta: 'Next App திறக்கவும்'
+  ta: 'Next App திறக்கவும்',
+  es: 'Abrir siguiente aplicación'
 });
 
 if (typeof module !== 'undefined') module.exports = { catalogueEntry, openLabels };
