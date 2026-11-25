@@ -1,0 +1,53 @@
+# Five-language final proof for the approved language-only feature branch.
+# Builds no application business data and does not deploy until verified.
+name: VESA five-language final compatibility proof
+on:
+  push:
+    branches: [feature/vesa-five-language-global-20261125]
+    paths:
+      - '.github/workflows/vesa-five-language-final-proof.yml'
+      - 'tests/vesa-translation-coverage.cjs'
+      - 'tests/vesa-global-language.cjs'
+      - 'js/vesa-app-centre.js'
+      - 'apps/*/src/i18n/app-copy.js'
+      - 'apps/*/index.html'
+      - 'apps/tna/src/bootstrap.js'
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  source-coverage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install read-only JavaScript parser
+        run: npm install --no-save --no-package-lock acorn@8.14.0
+      - name: Prove source dictionaries and future app contract
+        run: |
+          set -euo pipefail
+          node --check js/preferences.js
+          node --check js/vesa-app-centre.js
+          node --check apps/tna/src/bootstrap.js
+          for file in apps/*/src/i18n/app-copy.js; do node --check "$file"; done
+          node tests/vesa-translation-coverage.cjs
+          node tests/vesa-next-app-starter.cjs
+          node tests/vesa-global-language.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          git diff --check
+          echo 'VESA_FIVE_LANGUAGE_SOURCE_PASS'
+  browser-journeys:
+    needs: source-coverage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install Chromium on compatible runner
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Prove Login Spanish/Tamil continuity over all 20 apps
+        run: node tests/vesa-global-language.cjs --browser
