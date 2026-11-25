@@ -60,6 +60,7 @@ class VesaLocaleAudit {
     try{
      const node=acorn.parseExpressionAt(s,offset,{ecmaVersion:'latest'});
      const props=this.stringProperties(node);
+     if(out.length<1)console.log('AUDIT_AST_CANDIDATE '+JSON.stringify({offset,type:node.type,rawCount:node.properties?.length,stringCount:props.length,sample:s.slice(offset,offset+35)}));
      if(props.length>=10)out.push({start:offset,end:node.end,values:props});
      pattern.lastIndex=node.end;
     }catch(error){if(errs.length<4)errs.push({offset,message:error.message,snippet:s.slice(offset,offset+50)});continue;}
