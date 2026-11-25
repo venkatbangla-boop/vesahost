@@ -32,6 +32,7 @@ jobs:
           node --check tests/vesa-login-gif-spanish.cjs
           node tests/vesa-blueprint-integrity.cjs
           node tests/personal-demo-release.cjs
+          echo 'FIVE_LANGUAGE_CONTRACT_CHECK'
           git diff --check
           [ -s assets/vesa-intro-landscape.mp4 ]
           [ -f login/index.html ]
