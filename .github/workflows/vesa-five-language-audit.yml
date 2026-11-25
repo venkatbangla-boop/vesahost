@@ -1,0 +1,21 @@
+name: VESA five-language source audit (feature only)
+on:
+  push:
+    branches: [feature/vesa-five-language-global-20261125]
+    paths: ['tools/i18n/**','.github/workflows/vesa-five-language-audit.yml']
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  locale-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install CI-only source parser
+        run: npm install --no-save --no-package-lock acorn@8.14.0
+      - name: Discover all 20 UI dictionaries without executing applications
+        run: |
+          node --check tools/i18n/locale-audit.cjs
+          node tools/i18n/locale-audit.cjs
