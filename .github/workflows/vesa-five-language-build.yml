@@ -1,6 +1,9 @@
 # Language-only CI. Never runs app domain logic or uploads stored user records.
 # Collects public authored English UI strings; translates offline; appends Spanish dictionaries.
 name: VESA Spanish 20-app source build
+concurrency:
+  group: vesa-global-spanish-${{ github.ref }}
+  cancel-in-progress: true
 on:
   push:
     branches: [feature/vesa-five-language-global-20261125]
@@ -36,11 +39,14 @@ jobs:
           python -m py_compile tools/i18n/translate-static-spanish.py
           node tools/i18n/locale-audit.cjs
           node tools/i18n/build-spanish-catalog.cjs collect
+          node tools/i18n/build-ppm-spanish.cjs collect
       - name: Compile Spanish static UI text offline, preserving interpolation and data
         run: |
           set -euo pipefail
           python tools/i18n/translate-static-spanish.py
           node tools/i18n/build-spanish-catalog.cjs apply
+          node tools/i18n/build-ppm-spanish.cjs apply
+          node --check apps/ppm/languages.js
           node --check apps/tna/src/bootstrap.js
           for file in apps/*/src/i18n/app-copy.js; do node --check "$file"; done
           node tests/vesa-next-app-starter.cjs
@@ -54,7 +60,7 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add apps/*/src/i18n/app-copy.js apps/*/index.html apps/tna/src/bootstrap.js
+          git add apps/*/src/i18n/app-copy.js apps/*/index.html apps/tna/src/bootstrap.js apps/ppm/languages.js
           git diff --cached --name-only
           git diff --cached --check
           if git diff --cached --quiet; then echo "No locale differences"; exit 1; fi
@@ -68,5 +74,7 @@ jobs:
           path: |
             output/i18n/en-catalog.json
             output/i18n/es-catalog.json
+            output/i18n/ppm-en.json
+            output/i18n/ppm-es.json
           if-no-files-found: ignore
           retention-days: 7

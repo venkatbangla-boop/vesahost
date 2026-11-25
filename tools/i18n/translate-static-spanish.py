@@ -178,6 +178,17 @@ class VesaSpanishStaticTranslator:
         result["protectedTerms"] = self._protected_count
         target = self.OUTPUT / "es-catalog.json"
         target.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
+        ppm_source = self.OUTPUT / "ppm-en.json"
+        if ppm_source.exists():
+            ppm = json.loads(ppm_source.read_text())
+            if ppm.get("version") != 1 or not isinstance(ppm.get("phrases"), list):
+                raise RuntimeError("Unexpected PPM catalog")
+            ppm_translated = [self.translate_value(phrase) for phrase in ppm["phrases"]]
+            (self.OUTPUT / "ppm-es.json").write_text(
+                json.dumps({"version": 1, "language": "es",
+                            "phrases": ppm_translated}, ensure_ascii=False, indent=2) + "\n"
+            )
+            print("VESA_ES_PPM_CATALOG_READY", len(ppm_translated), flush=True)
         if len(result["entries"]) < 15 or total < 1700:
             raise RuntimeError("Spanish UI coverage below audited source floor")
         print("VESA_ES_CATALOG_READY",
