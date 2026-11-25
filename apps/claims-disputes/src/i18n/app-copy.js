@@ -84,7 +84,8 @@ reportPlanned:'வரைவு PDF/Excel அறிக்கைகள் தன�
 noApproval:'Claim liability, AQL, payment தானாக ஒப்புதல் அல்லது மாற்றம் இல்லை.',invalid:'ஆதாரம் சரிபார்க்கவும்',
 sourceOnly:'உள்ளூர் ஆதாரம் மட்டும்',noEmail:'Email/SMS அனுப்பப்படவில்லை',actual:'Receipt ஆதாரம்',
 draft:'Draft credit — payment அல்ல',disputed:'மறுக்கப்பட்டது',notLiability:'Liability ஒப்புதல் அல்ல'
-},
+,
+      externalSource:"மனிதர் பதிவிட்ட வெளிப்புற ஆவண ஆதாரம்; இந்த App இதை அங்கீகரிக்கவில்லை."},
 bn:{journeyTitle:"ক্লেইমের দশটি কাজের অংশ",journeyLead:"কাল্পনিক রিড-ওনলি কেসে 125.50 USD দাবি, 80.00 চুক্তি, 20.00 খসড়া ক্রেডিট, 30.00 রসিদ ও 50.00 বাকি দেখুন। দায় বা ব্যাংক পেমেন্ট নিশ্চিত নয়।",journeyOpen:"অনুশীলনের অংশ খুলুন",hintSummary:"অভিযোগ ও নথিভুক্ত বকেয়া আলাদা।",hintFindings:"অভিযোগের পরিমাণ ও অনুপস্থিত তথ্য।",hintEvidence:"AQL উৎস, পরিদর্শন অপরিবর্তিত।",hintResponses:"কাল্পনিক সরবরাহকারীর আপত্তি।",hintAgreements:"আলাদা উৎসভিত্তিক চুক্তি।",hintSettlements:"খসড়া ক্রেডিট বনাম রসিদ।",hintDecisions:"স্থানীয় রিভিউ, স্বয়ংক্রিয় বন্ধ নয়।",hintReferences:"AQL, Shipment, PO উৎসের শর্ত।",hintReports:"খসড়া Excel ও PDF।",hintHistory:"অপরিবর্তনীয় কেস ইতিহাস।",references:'পর্যালোচিত উৎস',referenceSelect:'মামলার প্রমাণ যোগ',refKind:'উৎস ধরন',sourceRecord:'উৎস রেকর্ড ID',localReviewer:'স্থানীয় পর্যালোচক',localReviewDate:'স্বাধীন পর্যালোচনার তারিখ',identityConfirmed:'এটি একই বায়ার ও PO-র দলিল কিনা যাচাই করেছি। এটি দায়, AQL বা ব্যাংক পেমেন্ট অনুমোদন নয়।',sourceNotice:'স্থানীয় AQL InspectionRef, ShipmentFile বা PO উৎস বেছে নিন। AQL-এর জন্য মানব পর্যালোচিত আলাদা উৎস ফাইল দরকার হতে পারে।',excel:'Excel ডাউনলোড',print:'PDF / প্রিন্ট',report:'খসড়া রিপোর্ট',selectAsOf:'রিপোর্ট তারিখ',asOf:'রিপোর্ট তারিখ',
 title:'ক্লেইম ও বিরোধ 360',lead:'উৎসভিত্তিক দাবি, তথ্য, জবাব এবং সমঝোতা নথি',
 notice:'শুধু ব্যক্তিগত অবাণিজ্যিক ডেমো; সিনথেটিক তথ্য। এটি বৈধ দায়, AQL পরিবর্তন বা ব্যাংক পেমেন্ট নয়।',
