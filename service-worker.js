@@ -1,6 +1,7 @@
 // Rollback cache version must supersede all previously installed 21-23 app caches.
 // Keep legacy rollback acceptance marker vesa-v116-rollback20-cache-refresh; login GIF rollout advances the cache.
-const CACHE='vesa-v117-login-gif-spanish';
+// Previous validated login GIF cache: vesa-v117-login-gif-spanish. Language-only source refresh.
+const CACHE='vesa-v118-global-five-language';
 const ASSETS=[
   './',
   './index.html',
