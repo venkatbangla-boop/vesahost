@@ -1,0 +1,79 @@
+# One-time reproducible conversion of the approved existing homepage landscape intro
+# into a silent, infinitely looping GIF for Login only. Does not alter the source film or apps.
+name: VESA login intro GIF conversion and Spanish browser proof
+on:
+  push:
+    branches:
+      - feature/vesa-login-gif-es-20261125
+    paths:
+      - '.github/workflows/vesa-login-gif-es.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  convert-test-and-commit:
+    if: github.ref == 'refs/heads/feature/vesa-login-gif-es-20261125'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify frozen source and two-change scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check js/preferences.js
+          node --check js/vesa-app-centre.js
+          node --check service-worker.js
+          node --check tests/vesa-login-gif-spanish.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
+          git diff --check
+          [ -s assets/vesa-intro-landscape.mp4 ]
+          [ -f login/index.html ]
+          echo "SOURCE_SCOPE_PASS source video and all business apps intact"
+      - name: Convert original VESA landscape intro MP4 to compressed infinite GIF
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -nostdin -y -loglevel error \
+            -i assets/vesa-intro-landscape.mp4 \
+            -filter_complex "[0:v]fps=8,scale=560:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5" \
+            -loop 0 assets/vesa-login-intro-loop.gif
+          file assets/vesa-login-intro-loop.gif
+          du -h assets/vesa-login-intro-loop.gif
+          sha256sum assets/vesa-intro-landscape.mp4 assets/vesa-login-intro-loop.gif
+          test "$(stat -c%s assets/vesa-login-intro-loop.gif)" -lt 16000000
+          grep -aq 'NETSCAPE2.0' assets/vesa-login-intro-loop.gif
+      - name: Install real Chromium on supported Linux runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Prove GIF, Spanish login and responsive behavior in Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tests/vesa-login-gif-spanish.cjs --browser
+      - name: Commit approved GIF asset only to feature branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/vesa-login-intro-loop.gif
+          git commit -m "assets(login): encode original VESA intro as infinite-loop GIF"
+          git push origin HEAD:refs/heads/feature/vesa-login-gif-es-20261125
+          echo "GIF_FEATURE_COMMITTED=$(git rev-parse HEAD)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-login-gif-spanish-browser-proof
+          path: output/playwright/vesa-login-gif-spanish-*.png
+          if-no-files-found: ignore
+          retention-days: 7
