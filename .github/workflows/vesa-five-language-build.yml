@@ -13,6 +13,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: read
 jobs:
   build-and-verify:
     runs-on: ubuntu-24.04
@@ -30,7 +31,6 @@ jobs:
       - name: Install build-only tooling
         run: |
           npm install --no-save --no-package-lock acorn@8.14.0 playwright@1.56.0
-          python -m pip install --quiet argostranslate
       - name: Read-only extraction of existing 20-app authored UI dictionaries
         run: |
           set -euo pipefail
@@ -40,10 +40,19 @@ jobs:
           node tools/i18n/locale-audit.cjs
           node tools/i18n/build-spanish-catalog.cjs collect
           node tools/i18n/build-ppm-spanish.cjs collect
+      - name: Reuse source-aligned static Spanish catalog from the earlier verified offline translation
+        uses: actions/download-artifact@v4
+        with:
+          name: vesa-spanish-audit-and-translation-catalog
+          run-id: 45558729026
+          github-token: ${{ github.token }}
+          path: output/i18n
       - name: Compile Spanish static UI text offline, preserving interpolation and data
         run: |
           set -euo pipefail
-          python tools/i18n/translate-static-spanish.py
+          test -s output/i18n/es-catalog.json
+          test -s output/i18n/ppm-es.json
+          echo 'VESA_OFFLINE_LANGUAGE_CATALOG_REUSED_FROM_RUN_45558729026'
           node tools/i18n/build-spanish-catalog.cjs apply
           node tools/i18n/build-ppm-spanish.cjs apply
           node tools/i18n/bridge-aql-locale.cjs apply

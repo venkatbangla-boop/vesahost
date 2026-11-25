@@ -84,8 +84,8 @@ class VesaPPMSpanishCatalog {
   const newSet="set(language){if(!['en','bn','hi','ta','es'].includes(language))return;this.language=language;try{localStorage.setItem('vesa.ppm.language',language);if(globalThis.VesaPrefs?.write){globalThis.VesaPrefs.write({...globalThis.VesaPrefs.read(),language});}}catch{}document.documentElement.lang=language}";
   if(content.split(oldSet).length!==2)throw Error('PPM setter no longer has reviewed language contract');
   content=content.replace(oldSet,newSet);
-  const oldTranslate="checkpoint(id,english){return PPM_SENTENCES[id]?.[this.language]||english}\n sentence(key,english){return PPM_SENTENCES[key]?.[this.language]||english}";
-  const newTranslate="checkpoint(id,english){return this.language==='es'?(PPM_ES_TEXT[english]||english):(PPM_SENTENCES[id]?.[this.language]||english)}\n sentence(key,english){return this.language==='es'?(PPM_ES_TEXT[english]||english):(PPM_SENTENCES[key]?.[this.language]||english)}";
+  const oldTranslate="checkpoint(id,english){return PPM_SENTENCES[id]?.[this.language]||english}\n  sentence(key,english){return PPM_SENTENCES[key]?.[this.language]||english}";
+  const newTranslate="checkpoint(id,english){return this.language==='es'?(PPM_ES_TEXT[english]||english):(PPM_SENTENCES[id]?.[this.language]||english)}\n  sentence(key,english){return this.language==='es'?(PPM_ES_TEXT[english]||english):(PPM_SENTENCES[key]?.[this.language]||english)}";
   if(content.split(oldTranslate).length!==2)throw Error('PPM locale translation contract no longer exact');
   content=content.replace(oldTranslate,newTranslate);
   fs.writeFileSync(file,content);
