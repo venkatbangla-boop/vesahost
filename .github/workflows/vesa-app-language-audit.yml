@@ -24,6 +24,11 @@ jobs:
               for match in list(re.finditer(re.escape(token),s,re.I))[:5]:
                   pos=match.start()
                   print(s[max(0,pos-220):pos+400].replace('\n',' '))
+          for token in ['button(label', 'button(text', 'b(label', 'b(text', 'openDialog(title', 'draftField(label', 'function refreshGuidance', 'function language(', 'function setLanguage', 'const dict={', 'refreshStatus(){', 'homeView(){', 'InspectionApp.prototype.homeView=function', 'this.app.step===', 'Open Saved Copy', 'Set the standard', 'Inspection Studio / Workspace', 'Portable file: not connected', 'class InspectionApp', 'window.__vesaApp', 'data-vesa-user', 'static language(', 'serviceWorker.register']:
+              print('=== DETAIL',token,'===')
+              for m in list(re.finditer(re.escape(token),s,re.I))[:3]:
+                  i=m.start()
+                  print(s[max(0,i-120):i+1600].replace('\n',' '))
           for p in [Path('apps/ppm/workspace.js'),Path('apps/ppm/languages.js'),Path('apps/chess-360/index.html'),Path('apps/tna/src/bootstrap.js')]+list(Path('apps').glob('*/src/application/workspace-controller.js'))+list(Path('apps').glob('*/index.html')):
               if p==Path('apps/aql/index.html'): continue
               v=p.read_text()
