@@ -1,0 +1,56 @@
+# Read-only proof that the exact tested GIF and login files are served by GitHub Pages.
+# Does not alter the public website, application state, authentication or user data.
+name: VESA login GIF and Spanish LIVE byte verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/vesa-login-intro-loop.gif'
+      - 'login/index.html'
+      - 'css/vesa-login.css'
+      - 'js/preferences.js'
+      - '.github/workflows/vesa-login-live-smoke.yml'
+permissions:
+  contents: read
+jobs:
+  public-byte-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify original video untouched and exact public files served
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://vesaent.com'
+          mkdir -p /tmp/vesa-public
+          success=0
+          for attempt in $(seq 1 54); do
+            if curl --fail --location --silent --show-error --max-time 40 \
+                -H 'Cache-Control: no-cache' "$base/login/?release=$GITHUB_SHA" \
+                -o /tmp/vesa-public/login.html \
+               && cmp --silent login/index.html /tmp/vesa-public/login.html \
+               && curl --fail --location --silent --show-error --max-time 40 \
+                -H 'Cache-Control: no-cache' "$base/assets/vesa-login-intro-loop.gif?release=$GITHUB_SHA" \
+                -o /tmp/vesa-public/intro.gif \
+               && cmp --silent assets/vesa-login-intro-loop.gif /tmp/vesa-public/intro.gif \
+               && curl --fail --location --silent --show-error --max-time 40 \
+                -H 'Cache-Control: no-cache' "$base/js/preferences.js?release=$GITHUB_SHA" \
+                -o /tmp/vesa-public/preferences.js \
+               && cmp --silent js/preferences.js /tmp/vesa-public/preferences.js; then
+              success=1
+              echo "VESA_LOGIN_GIF_LIVE_BYTES_MATCH attempt=$attempt"
+              break
+            fi
+            echo "VESA_LOGIN_GIF_LIVE_PENDING attempt=$attempt"
+            sleep 10
+          done
+          if [ "$success" != 1 ]; then
+            echo "VESA_LOGIN_GIF_LIVE_BYTES_NOT_VERIFIED"
+            exit 1
+          fi
+          grep -q '/assets/vesa-login-intro-loop.gif' /tmp/vesa-public/login.html
+          grep -q 'value="es">Spanish' /tmp/vesa-public/preferences.js
+          grep -q 'vesa-v116-rollback20-cache-refresh' service-worker.js
+          echo 'VESA_LOGIN_GIF_SPANISH_LIVE_VERIFIED exact checkout bytes, no homepage/app modifications'
+          sha256sum assets/vesa-login-intro-loop.gif /tmp/vesa-public/intro.gif
