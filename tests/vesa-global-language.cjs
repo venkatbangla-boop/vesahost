@@ -81,7 +81,7 @@ class VesaGlobalLanguageProof {
   assert.ok(tmpl.includes('EN/BN/HI/TA/ES'),'New apps cannot ship with four-language-only labels');
   const cat=this.source('js/app-catalogue.js');
   const apps=this.APPS.filter(a=>cat.includes("id:'"+a+"'")||cat.includes('id:"'+a+'"'));
-  const allRegistered=[...cat.matchAll(/\\bid:['"]([^'"]+)['"]/g)].map(m=>m[1]);
+  const allRegistered=[...cat.matchAll(/\bid:['"]([^'"]+)['"]/g)].map(m=>m[1]);
   assert.equal(apps.length,20,'Every original VESA app remains inside language gate');
   assert.deepEqual(allRegistered.slice().sort(),this.APPS.slice().sort(),
    'Future apps must be explicitly added to the five-language release gate');
