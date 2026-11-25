@@ -174,10 +174,17 @@
       window.addEventListener('vesa-preferences-change',translate);
       if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',translate);
       else translate();
-      if(VesaAuth.session())location.replace(next);
+      // Allow existing users to revisit Login solely to change the global language.
+      // Preserve their existing session and role; never silently replace it with demo.
+      const activeSession=VesaAuth.session();
+      const languageOnly=new URLSearchParams(location.search).has('language');
+      if(activeSession&&!languageOnly)location.replace(next);
       form.addEventListener('submit',async event=>{
         event.preventDefault();
         if(submit.disabled)return;
+        // Returning to Login to change language must not re-authenticate an
+        // already signed-in administrator/user as the public demo account.
+        if(activeSession&&languageOnly){location.replace(next);return;}
         submit.disabled=true;
         try{
           await VesaAuth.login(input.value,password.value);
