@@ -63,7 +63,9 @@ const translated={es:{"journeyTitle":"Explore siete pasos de etiqueta y obras de
  status:'খসড়া / উৎস পর্যালোচনা',needs:'তথ্য দরকার',noApproval:'এই অ্যাপ ক্রেতা, AQL বা PPM অনুমোদন দেয় না।',
  selectPreview:'স্থানীয় PNG/JPEG ছবি',clearPreview:'ছবি সরান',previewNotice:'শুধু ১ MiB-এর কম PNG/JPEG; আপলোড বা সেভ হয় না।',
  previewEmpty:'কোনো ছবি নির্বাচিত নেই',barcodeWarning:'বারকোড সতর্কতা',saved:'সেভ হয়েছে',localOnly:'এই ডিভাইসে সেভ',
- openRecords:'সেভ আর্টওয়ার্ক রেকর্ড',none:'কোনো রেকর্ড নেই',submit:'উৎস তথ্য সেভ',errors:'যাচাই করুন',close:'বন্ধ',reportPlanned:'রিপোর্ট পরবর্তী যাচাই ধাপে আসবে।'},
+ openRecords:'সেভ আর্টওয়ার্ক রেকর্ড',none:'কোনো রেকর্ড নেই',submit:'উৎস তথ্য সেভ',errors:'যাচাই করুন',close:'বন্ধ',reportPlanned:'রিপোর্ট পরবর্তী যাচাই ধাপে আসবে।',
+      fileTooLarge:"অস্থায়ী প্রিভিউর জন্য ১ MiB-এর কম আকারের ছোট ছবি অনুমোদিত।",
+      unsupportedImage:"প্রিভিউতে শুধু যাচাইকৃত PNG/JPEG ছবি সমর্থিত; SVG/PDF/HTML নয়।"},
  hi:{journeyTitle:"लेबल और आर्टवर्क के सात चरण",journeyLead:"काल्पनिक दो संस्करण, पुराना खरीदार दावा, बारकोड चेतावनी; GS1 या कानूनी मंजूरी नहीं, सेव नहीं होगा।",journeyOpen:"अभ्यास देखें",hintSummary:"नया संस्करण अभी लंबित।",hintRevisions:"माप और बारकोड चेतावनी।",hintReviews:"टिप्पणी और पुराना खरीदार स्रोत।",hintPreview:"अपनी PNG/JPEG चुनें।",hintReferences:"Tech Pack/सैंपलिंग स्रोत जांचें।",hintReports:"ड्राफ्ट रिपोर्ट और Excel/PDF।",hintHistory:"पुराना निर्णय इतिहास।",references:'सिर्फ़ पढ़ने योग्य स्रोत',referenceSelect:'समीक्षित स्रोत जोड़ें',refKind:'स्रोत प्रकार',sourceType:'स्रोत प्रकार',sourceApp:'स्रोत ऐप',sourceRecord:'स्रोत रिकॉर्ड',localReviewer:'स्थानीय समीक्षक',localReviewDate:'समीक्षा तारीख',identityConfirmed:'मैंने जाँचा कि यह स्रोत इसी स्टाइल, रंग और साइज का है। यह आर्टवर्क अनुमोदन नहीं है।',sourceNotice:'इस डिवाइस से Tech Pack या Sampling स्रोत फ़ाइल चुनें। दूसरे ऐप के रिकॉर्ड अपने-आप नहीं पढ़े जाएंगे।',excel:'Excel डाउनलोड',print:'PDF / प्रिंट',report:'रिपोर्ट बनाएं',title:'लेबल और आर्टवर्क अप्रूवल 360',lead:'लेबल और आर्टवर्क संस्करण व स्रोत समीक्षा',
  notice:'केवल व्यक्तिगत गैर-व्यावसायिक अभ्यास डेमो। खरीदार की मंजूरी, GS1 स्वामित्व या कानूनी लेबल सत्यापन नहीं।',
  warning:'बारकोड चेक डिजिट सही होने पर भी यह आधिकारिक मंजूरी नहीं है।',
@@ -80,7 +82,9 @@ const translated={es:{"journeyTitle":"Explore siete pasos de etiqueta y obras de
  status:'ड्राफ्ट / स्रोत समीक्षा',needs:'जानकारी चाहिए',noApproval:'यह ऐप खरीदार, AQL या PPM मंजूरी नहीं देता।',
  selectPreview:'स्थानीय PNG/JPEG चुनें',clearPreview:'इमेज हटाएं',previewNotice:'केवल 1 MiB से कम PNG/JPEG; अपलोड या सेव नहीं होता।',
  previewEmpty:'कोई इमेज नहीं चुनी गई',barcodeWarning:'बारकोड चेतावनी',saved:'सेव हुआ',localOnly:'इस डिवाइस में सेव',
- openRecords:'सेव आर्टवर्क रिकॉर्ड',none:'कोई रिकॉर्ड नहीं',submit:'स्रोत रिकॉर्ड सेव',errors:'जांचें',close:'बंद',reportPlanned:'रिपोर्ट अगले परीक्षण चरण में उपलब्ध होगी।'}
+ openRecords:'सेव आर्टवर्क रिकॉर्ड',none:'कोई रिकॉर्ड नहीं',submit:'स्रोत रिकॉर्ड सेव',errors:'जांचें',close:'बंद',reportPlanned:'रिपोर्ट अगले परीक्षण चरण में उपलब्ध होगी।',
+      fileTooLarge:"अस्थायी पूर्वावलोकन के लिए 1 MiB से छोटी छवि ही स्वीकार्य है।",
+      unsupportedImage:"पूर्वावलोकन केवल सत्यापित PNG/JPEG छवि स्वीकार करता है; SVG/PDF/HTML नहीं।"}
 };
 class ArtworkCopy{static language(){return root.VesaPrefs?.read?.()?.language||'en';}
  static t(key){return translated[this.language()]?.[key]||en[key]||key;}}
