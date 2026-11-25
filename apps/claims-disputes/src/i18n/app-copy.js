@@ -118,7 +118,8 @@ reportPlanned:'খসড়া PDF/Excel রিপোর্ট স্বাধ�
 noApproval:'স্বয়ংক্রিয় দায়, AQL পরিবর্তন, টাকা পাঠানো বা আইনি নিষ্পত্তি নয়।',
 invalid:'উৎস যাচাই করুন',sourceOnly:'স্থানীয় উৎস মাত্র',noEmail:'ইমেইল/SMS পাঠানো হয়নি',
 actual:'রসিদ উৎস',draft:'ড্রাফট ক্রেডিট — পেমেন্ট নয়',disputed:'বিতর্কিত',notLiability:'স্বীকৃত দায় নয়'
-},
+,
+      externalSource:"মানুষের দেওয়া বাহ্যিক নথিভিত্তিক উৎস; অ্যাপ এটি যাচাই করেনি।"},
 hi:{journeyTitle:"क्लेम के दस कार्य भाग",journeyLead:"काल्पनिक रीड-ओनली केस में 125.50 USD दावा, 80.00 समझौता, 20.00 ड्राफ्ट क्रेडिट, 30.00 रसीद और 50.00 बकाया देखें। कानूनी जिम्मेदारी या बैंक भुगतान प्रमाणित नहीं।",journeyOpen:"अभ्यास भाग खोलें",hintSummary:"आरोपित राशि और अलग बकाया।",hintFindings:"स्रोत मात्रा और अनिश्चित राशि।",hintEvidence:"AQL स्रोत, निरीक्षण अपरिवर्तित।",hintResponses:"काल्पनिक सप्लायर का विवादित उत्तर।",hintAgreements:"अलग स्रोत समझौता।",hintSettlements:"ड्राफ्ट क्रेडिट और रसीद अलग।",hintDecisions:"केवल स्थानीय समीक्षा, स्वतः बंद नहीं।",hintReferences:"AQL, Shipment और PO स्रोत शर्तें।",hintReports:"ड्राफ्ट Excel और PDF।",hintHistory:"अपरिवर्तनीय केस इतिहास।",references:'समीक्षित स्रोत',referenceSelect:'मूल केस स्रोत जोड़ें',refKind:'स्रोत प्रकार',sourceRecord:'स्रोत रिकॉर्ड ID',localReviewer:'स्थानीय समीक्षक',localReviewDate:'स्वतंत्र समीक्षा तारीख',identityConfirmed:'यह वही बायर और PO स्रोत है; यह दायित्व, AQL या बैंक भुगतान की मंजूरी नहीं है।',sourceNotice:'स्थानीय AQL InspectionRef, ShipmentFile या PO स्रोत चुनें। AQL के लिए अलग मानव-समीक्षित स्रोत फ़ाइल जरूरी हो सकती है।',excel:'Excel डाउनलोड',print:'PDF / प्रिंट',report:'ड्राफ्ट रिपोर्ट',selectAsOf:'रिपोर्ट तारीख चुनें',asOf:'रिपोर्ट तारीख',
 title:'दावे व विवाद 360',lead:'स्रोत आधारित क्लेम, प्रमाण, उत्तर और समझौते का रिकॉर्ड',
 notice:'केवल व्यक्तिगत गैर-व्यावसायिक डेमो। सिंथेटिक डेटा। यह कानूनी दायित्व, AQL संशोधन या बैंक भुगतान नहीं है।',
@@ -150,7 +151,8 @@ reportPlanned:'स्वतंत्र जांच के बाद ड्र�
 noApproval:'स्वतः दायित्व, AQL संशोधन, बैंक भुगतान या कानूनी निपटान नहीं।',
 invalid:'स्रोत जाँचें',sourceOnly:'स्थानीय स्रोत मात्र',noEmail:'ईमेल/SMS नहीं भेजा गया',
 actual:'रसीद प्रमाण',draft:'ड्राफ्ट क्रेडिट — भुगतान नहीं',disputed:'विवादित',notLiability:'स्वीकृत दायित्व नहीं'
-}
+,
+      externalSource:"व्यक्ति द्वारा दर्ज बाहरी दस्तावेज़ी स्रोत; ऐप ने इसकी पुष्टि नहीं की है।"}
 };
 class VesaClaimsCopy{
  static language(){return root.VesaPrefs?.read?.()?.language||'en';}
