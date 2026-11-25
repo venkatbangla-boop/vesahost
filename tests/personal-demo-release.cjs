@@ -33,7 +33,9 @@ assert.equal((catalog.match(/id:'claims-disputes'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'product-development'/g)||[]).length,1);
 assert(catalog.includes("route:'/apps/product-development/'")&&catalog.includes("order:190,openLabelKey:'openProductDevelopment'"));
 assert(sw.includes('vesa-v116-rollback20-cache-refresh'));
-assert(sw.includes("'./css/vesa-login.css?v=20261018-login-r1'"));
+// Verify the exact current Login stylesheet rather than a superseded cache revision.
+const loginStylesheet=read('login/index.html').match(/href="(\/css\/vesa-login\.css\?v=[^"]+)"/);
+assert(loginStylesheet && sw.includes("'."+loginStylesheet[1]+"'"),'Versioned Login stylesheet must exactly match the root offline manifest');
 assert(sw.includes("'./css/vesa-admin.css?v=20261018-admin-r1'"));
 assert(sw.includes("'./css/vesa-app-centre.css?v=20261018-u02'"));
 assert(sw.includes("'./js/vesa-app-centre.js?v=20261018-u03'"));

@@ -8,6 +8,7 @@ on:
       - 'login/index.html'
       - 'service-worker.js'
       - 'tests/vesa-login-gif-spanish.cjs'
+      - 'tests/personal-demo-release.cjs'
       - '.github/workflows/vesa-login-gif-fit.yml'
   workflow_dispatch:
 permissions:
@@ -31,6 +32,7 @@ jobs:
           node --check service-worker.js
           node --check tests/vesa-login-gif-spanish.cjs
           node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
           node tests/vesa-login-gif-spanish.cjs
       - name: Install real Chromium
         run: |
