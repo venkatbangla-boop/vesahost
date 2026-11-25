@@ -51,7 +51,7 @@ class VesaLocaleAudit {
  }
  static discover(s){
   const patterns=[/\ben\s*:\s*\{/g,/\bconst\s+en\s*=\s*\{/g,/\bconst\s+EN\s*=\s*\{/g];
-  const seen=new Set(),out=[],errs=[];
+  const seen=new Set(),out=[];
   for(const pattern of patterns){let match;
    while((match=pattern.exec(s))!==null){
     const offset=s.indexOf('{',match.index);
@@ -61,13 +61,11 @@ class VesaLocaleAudit {
      const node=acorn.parseExpressionAt(s,offset,{ecmaVersion:'latest'});
      const object=node.type==='SequenceExpression'?node.expressions.find(x=>x.type==='ObjectExpression'&&x.start===offset):node;
      const props=this.stringProperties(object);
-     if(out.length<1)console.log('AUDIT_AST_CANDIDATE '+JSON.stringify({offset,type:node.type,rawCount:object.properties?.length,stringCount:props.length,sample:s.slice(offset,offset+35)}));
      if(props.length>=10)out.push({start:offset,end:object.end,values:props});
      pattern.lastIndex=object.end;
-    }catch(error){if(errs.length<4)errs.push({offset,message:error.message,snippet:s.slice(offset,offset+50)});continue;}
+    }catch{continue;}
    }
   }
-  if(errs.length && !out.length)console.log('AST_PARSE_SKIP '+JSON.stringify(errs));
   return out.sort((a,b)=>a.start-b.start);
  }
  static run(){
@@ -92,4 +90,5 @@ class VesaLocaleAudit {
   assert.ok(sum>25,'No authored UI dictionaries found; parser extraction regression');
  }
 }
-VesaLocaleAudit.run();
+module.exports={VesaLocaleAudit};
+if(require.main===module)VesaLocaleAudit.run();
