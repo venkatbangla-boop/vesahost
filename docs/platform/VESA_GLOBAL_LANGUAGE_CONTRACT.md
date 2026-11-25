@@ -5,7 +5,7 @@
 - Supported locale values: `en` (English), `bn` (Bengali), `hi` (Hindi), `ta` (Tamil), `es` (Spanish).
 - Login selection is retained across Login -> App Centre -> every application -> Admin and across browser reload.
 - No app may silently reset a supported locale to English or introduce an independent language authority.
-- A user may change the language again via Login; existing Settings must remain consistent and use the same preference.
+- Only Login may modify the global language choice. Shared Settings shows the selected language read-only and links to Login for changes; theme controls remain independent. Existing app-local language handlers must not override the Login selection. The canonical nested preference outranks legacy compatibility keys.
 - Future apps must consume `VesaPrefs.read().language` and provide all five authored UI dictionaries, including source-driven reports.
 
 ## Translation boundaries
@@ -23,3 +23,6 @@
 
 ## Scope freeze
 No homepage, GIF/video, CSS/theme, app calculations, storage version, authentication model or existing user data changes are authorized by the global-language work.
+
+## Current verification boundary
+Shared platform text and language ownership are checked separately from app dictionaries. Full release still requires actual rendered labels, dialogs, report/print headings and app-local picker behavior in all five languages. Static key parity is not proof of complete visible translation.

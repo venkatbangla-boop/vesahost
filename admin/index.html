@@ -17,49 +17,49 @@
   <main class="admin-shell" id="vesaMainContent" tabindex="-1">
     <section class="app-centre-hero" tabindex="-1" aria-labelledby="adminTitle">
       <div class="admin-heading">
-        <span class="admin-eyebrow">WORKSPACE SETTINGS</span>
-        <h1 id="adminTitle">User Access</h1>
-        <p>Add users, manage local access and review the login activity stored on this device.</p>
+        <span class="admin-eyebrow" data-vesa-ui="WORKSPACE SETTINGS">WORKSPACE SETTINGS</span>
+        <h1 id="adminTitle" data-vesa-ui="User Access">User Access</h1>
+        <p data-vesa-ui="Add users, manage local access and review the login activity stored on this device.">Add users, manage local access and review the login activity stored on this device.</p>
       </div>
-      <div class="admin-context">Saved on this device</div>
+      <div class="admin-context" data-vesa-ui="Saved on this device">Saved on this device</div>
     </section>
 
-    <section class="admin-grid" aria-label="User administration">
+    <section class="admin-grid" aria-label="User administration" data-vesa-ui-aria="User administration">
       <form id="userForm" class="admin-panel" aria-labelledby="adminNewTitle">
-        <h2 id="adminNewTitle">Add a user</h2>
-        <p class="admin-panel-intro">Create a login for someone who uses this browser.</p>
-        <label for="newName">Name
+        <h2 id="adminNewTitle" data-vesa-ui="Add a user">Add a user</h2>
+        <p class="admin-panel-intro" data-vesa-ui="Create a login for someone who uses this browser.">Create a login for someone who uses this browser.</p>
+        <label for="newName"><span data-vesa-ui="Name">Name</span>
           <input class="input" id="newName" autocomplete="name" required>
         </label>
-        <label for="newEmail">User ID / email
+        <label for="newEmail"><span data-vesa-ui="User ID / email">User ID / email</span>
           <input class="input" id="newEmail" type="email" autocomplete="off" required>
         </label>
-        <label for="newPassword">Password
+        <label for="newPassword"><span data-vesa-ui="Password">Password</span>
           <input class="input" id="newPassword" type="password" autocomplete="new-password" minlength="6" required>
         </label>
-        <label for="newRole">Role
-          <select class="input" id="newRole"><option value="user">User</option><option value="admin">Admin</option></select>
+        <label for="newRole"><span data-vesa-ui="Role">Role</span>
+          <select class="input" id="newRole"><option value="user" data-vesa-ui="User">User</option><option value="admin" data-vesa-ui="Admin">Admin</option></select>
         </label>
-        <button class="btn primary" type="submit">Create User</button>
+        <button class="btn primary" type="submit" data-vesa-ui="Create User">Create User</button>
         <p id="adminMessage" class="auth-message" role="status" aria-live="polite"></p>
       </form>
 
       <section class="admin-panel" id="usersPanel" tabindex="-1" aria-labelledby="adminUsersTitle">
         <div class="admin-panel-heading">
-          <h2 id="adminUsersTitle">Users</h2>
-          <span class="admin-panel-caption">This browser</span>
+          <h2 id="adminUsersTitle" data-vesa-ui="Users">Users</h2>
+          <span class="admin-panel-caption" data-vesa-ui="This browser">This browser</span>
         </div>
         <div id="userList"></div>
       </section>
 
       <section class="admin-panel wide" id="eventsPanel" tabindex="-1" aria-labelledby="adminHistoryTitle">
         <div class="admin-history-head">
-          <h2 id="adminHistoryTitle">Login History</h2>
+          <h2 id="adminHistoryTitle" data-vesa-ui="Login History">Login History</h2>
           <div class="btn-row compact">
-            <button class="btn secondary" id="downloadEvents" type="button">Download CSV</button>
+            <button class="btn secondary" id="downloadEvents" type="button" data-vesa-ui="Download CSV">Download CSV</button>
           </div>
         </div>
-        <p class="admin-history-note">A local activity log for this device. Download a copy when needed.</p>
+        <p class="admin-history-note" data-vesa-ui="A local activity log for this device. Download a copy when needed.">A local activity log for this device. Download a copy when needed.</p>
         <div id="eventList"></div>
       </section>
     </section>
@@ -82,9 +82,11 @@
     });
     pageShell.mount();
     const esc=VesaAuth.safeText;
+    const ui=VesaPrefs.ui;
+    document.title=ui('User Access')+' | VESA 360';
     function render(){
       const store=VesaAuth.readStore();
-      document.getElementById('userList').innerHTML=store.users.map(u=>`<article class="admin-row"><div><b>${esc(u.name)}</b><small>${esc(u.email)} · ${esc(u.role)}${u.demo?' · built-in':''}${u.blocked?' · blocked':''}</small></div>${u.demo?'<button class="btn secondary" type="button" disabled>Built-in</button>':`<button class="btn secondary" data-user="${esc(u.email)}">${u.blocked?'Reactivate':'Block'}</button>`}</article>`).join('');
+      document.getElementById('userList').innerHTML=store.users.map(u=>`<article class="admin-row"><div><b>${esc(u.name)}</b><small>${esc(u.email)} · ${esc(ui(u.role==='admin'?'Admin':'User'))}${u.demo?' · '+esc(ui('Built-in')):''}${u.blocked?' · '+esc(ui('Blocked')):''}</small></div>${u.demo?`<button class="btn secondary" type="button" disabled>${esc(ui('Built-in'))}</button>`:`<button class="btn secondary" data-user="${esc(u.email)}">${esc(ui(u.blocked?'Reactivate':'Block'))}</button>`}</article>`).join('');
       document.querySelectorAll('[data-user]').forEach(btn=>btn.onclick=()=>{
         const s=VesaAuth.readStore();
         const user=s.users.find(u=>u.email===btn.dataset.user);
@@ -95,15 +97,15 @@
           render();
         }
       });
-      document.getElementById('eventList').innerHTML=store.events.slice(0,80).map(e=>`<article class="admin-row"><div><b>${esc(e.type)}</b><small>${esc(e.email||'')} · ${esc(new Date(e.at).toLocaleString())} · ${esc(e.detail||'')}</small></div></article>`).join('')||'<p>No login history yet.</p>';
+      document.getElementById('eventList').innerHTML=store.events.slice(0,80).map(e=>`<article class="admin-row"><div><b>${esc(e.type)}</b><small>${esc(e.email||'')} · ${esc(new Date(e.at).toLocaleString())} · ${esc(e.detail||'')}</small></div></article>`).join('')||`<p>${esc(ui('No login history yet.'))}</p>`;
     }
     document.getElementById('userForm').addEventListener('submit',async e=>{
       e.preventDefault();
       const msg=document.getElementById('adminMessage');
       try{
         await VesaAuth.createUser({name:newName.value,email:newEmail.value,password:newPassword.value,role:newRole.value});
-        msg.textContent='User created.';msg.className='auth-message good';e.target.reset();render();
-      }catch(err){msg.textContent=err.message;msg.className='auth-message bad';}
+        msg.textContent=ui('User created.');msg.className='auth-message good';e.target.reset();render();
+      }catch(err){msg.textContent=ui(err.message);msg.className='auth-message bad';}
     });
     document.getElementById('downloadEvents').onclick=()=>{
       const rows=VesaAuth.readStore().events;

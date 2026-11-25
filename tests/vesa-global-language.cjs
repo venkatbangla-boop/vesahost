@@ -87,6 +87,30 @@ class VesaGlobalLanguageProof {
    'Future apps must be explicitly added to the five-language release gate');
   console.log('VESA_GLOBAL_LANGUAGE_STATIC_PASS 20 apps x 5 supported language routes; future-app contract');
  }
+ static platformProof(){
+  const vm=require('node:vm');
+  const store=new Map();
+  const sandbox={location:{pathname:'/login/'},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},document:{readyState:'loading',documentElement:{dataset:{},style:{setProperty(){}}},querySelector(){return null;},addEventListener(){}},addEventListener(){}};
+  sandbox.window=sandbox;
+  vm.runInNewContext(this.source('js/preferences.js'),sandbox);
+  const prefs=sandbox.VesaPrefs;
+  for(const lang of this.FIVE){
+   prefs.write({...prefs.read(),language:lang});
+   assert.equal(prefs.read().language,lang);
+   assert.ok(!prefs.controls().includes('data-pref-language disabled'));
+   sandbox.location.pathname='/apps/';
+   store.set('vesa.app.language',lang==='en'?'es':'en');
+   assert.equal(prefs.read().language,lang,'canonical choice must outrank legacy key');
+   prefs.write({...prefs.read(),language:lang==='en'?'es':'en'});
+   assert.equal(prefs.read().language,lang,'only Login may change the canonical locale');
+   assert.ok(prefs.controls().includes('data-pref-language disabled'));
+   assert.ok(prefs.controls().includes('/login/?language=1'));
+   assert.ok(lang==='en'||prefs.ui('Settings')!=='Settings');
+   assert.ok(lang==='en'||prefs.ui('User Access')!=='User Access');
+   sandbox.location.pathname='/login/';
+  }
+  console.log('VESA_PLATFORM_LOCALE_OWNER_PASS five languages, canonical preference, shared Settings and Admin labels');
+ }
  static server(){
   const mime={'.html':'text/html; charset=utf-8','.js':'application/javascript','.css':'text/css',
    '.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.json':'application/json',
@@ -155,6 +179,6 @@ class VesaGlobalLanguageProof {
   }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
  }
 }
-(async()=>{VesaGlobalLanguageProof.staticProof();
+(async()=>{VesaGlobalLanguageProof.staticProof();VesaGlobalLanguageProof.platformProof();
  if(process.argv.includes('--browser'))await VesaGlobalLanguageProof.browserProof();
 })().catch(e=>{console.error(e);process.exitCode=1;});

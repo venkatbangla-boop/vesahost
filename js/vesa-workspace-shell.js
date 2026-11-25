@@ -4,6 +4,7 @@
 
   const MENU_ORDER = Object.freeze(['Home', 'File', 'Edit', 'View', 'Tools', 'Help']);
   const SAVE_STATES = Object.freeze({ saving: 'Saving…', saved: 'Saved on this device', unsaved: 'Unsaved changes', failed: 'Could not save — download a saved copy' });
+  const ui = value => global.VesaPrefs?.ui?.(value) || value;
   const text = value => String(value == null ? '' : value);
   const escape = value => text(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 
@@ -35,12 +36,12 @@
       if (this._mounted) return this.element;
       if (this.root.querySelector('.vesa-workspace')) throw new Error('A VESA workspace shell is already mounted in this root.');
       const target = this._prepareMainContent();
-      const nav = MENU_ORDER.map(name => `<button type="button" class="vesa-workspace__menu" data-vesa-menu="${name}" aria-label="${escape(this.descriptor.menuLabels[name] || name)}">${escape(this.descriptor.menuLabels[name] || name)}</button>`).join('');
+      const nav = MENU_ORDER.map(name => `<button type="button" class="vesa-workspace__menu" data-vesa-menu="${name}" aria-label="${escape(this.descriptor.menuLabels[name] || ui(name))}">${escape(this.descriptor.menuLabels[name] || ui(name))}</button>`).join('');
       const element = this.document.createElement('header');
       element.className = 'vesa-workspace';
       element.setAttribute('data-vesa-workspace', this.descriptor.id);
       element.setAttribute('data-menu-open', 'false');
-      element.innerHTML = `<a class="vesa-skip-link" data-vesa-skip href="#${escape(target?.id || 'vesaMainContent')}">Skip to main content</a><a class="vesa-workspace__brand" href="/" aria-label="VESA home"><img src="${escape(this.descriptor.logo)}" alt="VESA"></a><div class="vesa-workspace__breadcrumb" aria-label="Current VESA workspace"><a class="vesa-workspace__app-centre" href="${escape(this.descriptor.appCentreRoute)}">App Centre</a><span aria-hidden="true">›</span><a class="vesa-workspace__app vesa-workspace__app-current" href="${escape(this.descriptor.route)}" aria-current="page" title="${escape(this.descriptor.name)}"><span class="vesa-workspace__app-label">${escape(this.descriptor.name)}</span></a></div><button type="button" class="vesa-workspace__mobile-menu" data-vesa-mobile-menu aria-expanded="false" aria-controls="vesaWorkspaceDrawer">Menu</button><div class="vesa-workspace__drawer" id="vesaWorkspaceDrawer"><nav class="vesa-workspace__nav" aria-label="VESA workspace menu">${nav}</nav><div class="vesa-workspace__user"><span class="vesa-workspace__saved" data-vesa-saved role="status" aria-live="polite" aria-atomic="true">${escape(this.descriptor.savedState)}</span>${this.descriptor.userLabel ? `<span class="vesa-workspace__user-label">${escape(this.descriptor.userLabel)}</span>` : ''}<button type="button" data-vesa-user>Settings</button>${this.descriptor.userRole === 'admin' ? '<a href="/admin/" data-vesa-admin>Admin</a>' : ''}<button type="button" data-vesa-logout>Logout</button></div></div>`;
+      element.innerHTML = `<a class="vesa-skip-link" data-vesa-skip href="#${escape(target?.id || 'vesaMainContent')}">${escape(ui("Skip to main content"))}</a><a class="vesa-workspace__brand" href="/" aria-label="${escape(ui("VESA home"))}"><img src="${escape(this.descriptor.logo)}" alt="VESA"></a><div class="vesa-workspace__breadcrumb" aria-label="${escape(ui("Current VESA workspace"))}"><a class="vesa-workspace__app-centre" href="${escape(this.descriptor.appCentreRoute)}">${escape(ui("App Centre"))}</a><span aria-hidden="true">›</span><a class="vesa-workspace__app vesa-workspace__app-current" href="${escape(this.descriptor.route)}" aria-current="page" title="${escape(ui(this.descriptor.name))}"><span class="vesa-workspace__app-label">${escape(ui(this.descriptor.name))}</span></a></div><button type="button" class="vesa-workspace__mobile-menu" data-vesa-mobile-menu aria-expanded="false" aria-controls="vesaWorkspaceDrawer">${escape(ui("Menu"))}</button><div class="vesa-workspace__drawer" id="vesaWorkspaceDrawer"><nav class="vesa-workspace__nav" aria-label="${escape(ui("VESA workspace menu"))}">${nav}</nav><div class="vesa-workspace__user"><span class="vesa-workspace__saved" data-vesa-saved role="status" aria-live="polite" aria-atomic="true">${escape(ui(this.descriptor.savedState))}</span>${this.descriptor.userLabel ? `<span class="vesa-workspace__user-label">${escape(this.descriptor.userLabel)}</span>` : ''}<button type="button" data-vesa-user>${escape(ui("Settings"))}</button>${this.descriptor.userRole === 'admin' ? `<a href="/admin/" data-vesa-admin>${escape(ui("Admin"))}</a>` : ''}<button type="button" data-vesa-logout>${escape(ui("Logout"))}</button></div></div>`;
       const legacyAuthBar = this.root.querySelector(':scope > .app-user-bar');
       legacyAuthBar?.remove();
       this.document.documentElement?.style.removeProperty('--vesa-auth-bar-height');
@@ -91,7 +92,7 @@
     }
 
     setSavedState(state) {
-      const value = SAVE_STATES[state] || text(state);
+      const value = ui(SAVE_STATES[state] || text(state));
       const target = this.element?.querySelector('[data-vesa-saved]');
       if (target) target.textContent = value;
       return value;
@@ -105,7 +106,7 @@
         dialog.className = 'vesa-settings-dialog';
         dialog.setAttribute('data-vesa-settings', 'true');
         dialog.setAttribute('aria-labelledby', 'vesaSettingsTitle');
-        dialog.innerHTML = `<form method="dialog"><header><div><p class="vesa-settings-kicker">VESA</p><h2 id="vesaSettingsTitle">Settings</h2><p>Language and appearance apply to this browser. Saved records and entered values are unchanged.</p></div><button type="submit" aria-label="Close settings">×</button></header><div class="vesa-settings-body">${global.VesaPrefs.controls()}</div><footer><button type="submit">Close</button></footer></form>`;
+        dialog.innerHTML = `<form method="dialog"><header><div><p class="vesa-settings-kicker">VESA</p><h2 id="vesaSettingsTitle">Settings</h2><p>${escape(ui("Language and appearance apply to this browser. Saved records and entered values are unchanged."))}</p></div><button type="submit" aria-label="${escape(ui("Close settings"))}">×</button></header><div class="vesa-settings-body">${global.VesaPrefs.controls()}</div><footer><button type="submit">${escape(ui("Close"))}</button></footer></form>`;
         this.document.body.append(dialog);
         global.VesaPrefs.wire?.(dialog);
         dialog.addEventListener('close', () => {
@@ -116,7 +117,7 @@
         this._settingsDialog = dialog;
       }
       this._settingsReturnFocus = this.element?.querySelector('[data-vesa-user]') || this.element;
-      this._settingsDialog.querySelector('[data-pref-language]')?.focus({ preventScroll: true });
+      this._settingsDialog.querySelector('[data-pref-theme]')?.focus({ preventScroll: true });
       if (!this._settingsDialog.open) this._settingsDialog.showModal();
       return this._settingsDialog;
     }

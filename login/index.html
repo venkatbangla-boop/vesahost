@@ -13,7 +13,7 @@
   <script src="/js/app-catalogue.js?v=20261018-egenva-v2"></script>
 </head>
 <body class="app-centre-page vesa-login-page">
-  <a class="vesa-skip-link" href="#vesaMainContent">Skip to main content</a>
+  <a class="vesa-skip-link" href="#vesaMainContent" data-vesa-ui="Skip to main content">Skip to main content</a>
   <main class="auth-shell" id="vesaMainContent" tabindex="-1">
     <section class="login-story" aria-labelledby="storyTitle">
       <div class="login-story__top">
@@ -145,7 +145,7 @@
           if(typeof text==='string')node.textContent=text;
         });
         toggle.textContent=password.type==='password'?dict.show:dict.hide;
-        toggle.setAttribute('aria-label',password.type==='password'?dict.show+' password':dict.hide+' password');
+        toggle.setAttribute('aria-label',password.type==='password'?dict.show+' '+dict.password:dict.hide+' '+dict.password);
       }
       function safeNext(value){
         try{
@@ -190,7 +190,7 @@
           await VesaAuth.login(input.value,password.value);
           location.replace(next);
         }catch(error){
-          showMessage(error.message);
+          showMessage(VesaPrefs.ui(error.message));
           submit.disabled=false;
         }
       });

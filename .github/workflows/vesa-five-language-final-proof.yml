@@ -9,6 +9,10 @@ on:
       - 'tests/vesa-translation-coverage.cjs'
       - 'tests/vesa-global-language.cjs'
       - 'js/vesa-app-centre.js'
+      - 'js/preferences.js'
+      - 'js/vesa-workspace-shell.js'
+      - 'admin/index.html'
+      - 'login/index.html'
       - 'apps/*/src/i18n/app-copy.js'
       - 'apps/*/index.html'
       - 'apps/tna/src/bootstrap.js'
@@ -28,6 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check js/preferences.js
+          node --check js/vesa-workspace-shell.js
           node --check js/vesa-app-centre.js
           node --check apps/tna/src/bootstrap.js
           for file in apps/*/src/i18n/app-copy.js; do node --check "$file"; done
