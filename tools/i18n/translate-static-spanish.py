@@ -33,7 +33,7 @@ class VesaSpanishStaticTranslator:
     ROOT = Path(__file__).resolve().parents[2]
     OUTPUT = ROOT / "output" / "i18n"
     TOKEN = re.compile(
-        r"(\{\{[A-Za-z0-9_.:-]+\}\}|\$\{[^}]+\}|\{[A-Za-z_][A-Za-z0-9_]*\}"
+        r"(\([^)]{0,80}\d[^)]*\)|\{\{[A-Za-z0-9_.:-]+\}\}|\$\{[^}]+\}|\{[A-Za-z_][A-Za-z0-9_]*\}"
         r"|<[A-Za-z/][^>]{0,150}>|\b\d+(?:[.,]\d+)?\b|%(?:[sd]))"
     )
     LETTER = re.compile(r"[A-Za-z]{2,}")
@@ -139,7 +139,11 @@ class VesaSpanishStaticTranslator:
         old_tokens = self.TOKEN.findall(value)
         new_tokens = self.TOKEN.findall(result)
         if old_tokens != new_tokens:
-            raise RuntimeError(f"UI interpolation safety failed: {value[:90]} => {result[:90]}")
+            # Translation may glue a number to a word or move a format marker.
+            # Never ship a damaged placeholder: retain its authored English UI
+            # phrase and count it for the release-coverage report instead.
+            self._warnings.append(f"{value[:90]} => {result[:90]}")
+            return value
         return result
 
     def translate_value(self, value):
@@ -189,6 +193,13 @@ class VesaSpanishStaticTranslator:
                             "phrases": ppm_translated}, ensure_ascii=False, indent=2) + "\n"
             )
             print("VESA_ES_PPM_CATALOG_READY", len(ppm_translated), flush=True)
+        if len(self._warnings) > 30:
+            raise RuntimeError(
+                "Too many unsafe translated UI literals: " +
+                str(len(self._warnings)) + " examples=" + repr(self._warnings[:3])
+            )
+        print("VESA_ES_INTERPOLATION_SAFE_FALLBACKS",
+              len(self._warnings), flush=True)
         if len(result["entries"]) < 15 or total < 1700:
             raise RuntimeError("Spanish UI coverage below audited source floor")
         print("VESA_ES_CATALOG_READY",
