@@ -25,7 +25,8 @@ class VesaLoginGifSpanishProof {
   assert.ok(prefs.includes('<option value="es">Spanish</option>'),'Spanish in existing shared selector');
   assert.ok(prefs.includes("language:['en','ta','bn','hi','es']"),'Spanish saved successfully');
   assert.ok(css.includes('.vesa-login-page .login-story__gif'),'GIF styled only inside login');
-  assert.ok(sw.includes('vesa-v117-login-gif-spanish'),'new cache for existing browser users');
+  assert.ok(sw.includes('vesa-v119-login-gif-fit'),'new cache for existing browser users');
+  assert.ok(html.includes('vesa-login.css?v=20261125-login-gif-fit') && sw.includes('vesa-login.css?v=20261125-login-gif-fit'),'matching stylesheet cache version');
   assert.ok(sw.includes("'./"+this.GIF+"'"),'GIF pre-cached by refreshed service worker');
   console.log('LOGIN_GIF_SPANISH_STATIC_PASS '+gif.length+' bytes, infinite loop, original markup, five-language selector, cache');
  }
@@ -50,7 +51,7 @@ class VesaLoginGifSpanishProof {
   const browser=await chromium.launch({headless:true});
   const out=path.join(this.ROOT,'output','playwright');fs.mkdirSync(out,{recursive:true});
   try{
-   for(const width of [320,390,768,1024,1440]){
+   for(const width of [320,390,768,1024,1366,1440]){
     const context=await browser.newContext({viewport:{width,height:900},serviceWorkers:'block'});
     const page=await context.newPage(),errors=[];
     page.on('pageerror',e=>errors.push(e.message));
@@ -64,8 +65,19 @@ class VesaLoginGifSpanishProof {
     if(width>900){
      assert.ok(await img.isVisible(),'GIF visible in left navy panel');
      await img.evaluate(el=>el.decode());
-     const dimensions=await img.evaluate(el=>({width:el.naturalWidth,height:el.naturalHeight}));
+     // Compare the decoded image ratio and rendered box to its frame interior.
+     // A fixed-height frame with object-fit:contain would fail this check.
+     const dimensions=await img.evaluate(el=>{
+      const box=el.getBoundingClientRect(),frame=el.parentElement;
+      return {width:el.naturalWidth,height:el.naturalHeight,renderedWidth:box.width,
+       renderedHeight:box.height,frameWidth:frame.clientWidth,frameHeight:frame.clientHeight};
+     });
      assert.ok(dimensions.width>200&&dimensions.height>100,'original video GIF decodes');
+     assert.ok(Math.abs(dimensions.renderedHeight-dimensions.renderedWidth*dimensions.height/dimensions.width)<=1,
+      'GIF is neither stretched nor letterboxed at '+width);
+     assert.ok(Math.abs(dimensions.renderedWidth-dimensions.frameWidth)<=1 &&
+      Math.abs(dimensions.renderedHeight-dimensions.frameHeight)<=1,
+      'GIF fills its frame with no unused space at '+width);
     }else{
      assert.equal(await page.locator('.login-story').isVisible(),false,'original mobile form-only layout unchanged');
     }
@@ -90,7 +102,7 @@ class VesaLoginGifSpanishProof {
     assert.deepEqual(errors,[],'no script errors '+width);
     await context.close();
    }
-   console.log('LOGIN_GIF_SPANISH_BROWSER_PASS widths 320/390/768/1024/1440, GIF, translation, login, 20-app centre');
+   console.log('LOGIN_GIF_SPANISH_BROWSER_PASS widths 320/390/768/1024/1366/1440, GIF, translation, login, 20-app centre');
   }finally{await browser.close();await new Promise(resolve=>s.close(resolve));}
  }
 }

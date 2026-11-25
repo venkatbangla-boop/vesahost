@@ -156,3 +156,12 @@ Source regression: G3 TNA stylesheet code was published, but existing app-scoped
 
 ## Durable CONTINUE command
 In any new chat, the user may write only **Continue**. Fetch actual GitHub branches/main/CI; read `AGENTS.md`, `VESA_PROGRESS.md`, `VESA_RESUME_PROMPT.md`, `docs/ux/00_PREMIUM_ADAPTIVE_MASTER_PROMPT.md` and THIS tracker. Resume at **G3, or the first actually unfinished gate after latest GitHub SHA**, not at the beginning, and do not change public homepage or previously completed app engines. Work one auditable patch at a time; test, commit, record exact SHA and next action, then proceed inside available session. Do not claim background execution.
+
+## 2026-11-25 — Login GIF frame fit (isolated patch; verification pending)
+
+- Baseline: main `bb0e000ffa229dc8b4563723c5135f285df86f81`. Existing language feature branch is independent and untouched.
+- Owner-approved scope: remove the unused side space around the existing login GIF. `css/vesa-login.css` owns the image and frame geometry; let the decoded image supply its natural height. Keep the original border, radius, margin, login form and mobile breakpoint. No GIF/MP4 replacement or cropping/stretching.
+- `login/index.html` and `service-worker.js` own stylesheet reference and cache freshness only; synchronize the stylesheet revision and advance cache to v119. Do not touch routing, authentication, application logic, records, theme or calculations.
+- `tests/vesa-login-gif-spanish.cjs` owns the fit regression across existing widths plus the reported 1366 desktop width. Verify original GIF decoding, frame interior, natural image ratio, existing responsive behavior and Spanish login persistence. The dedicated read-only Actions workflow runs the same test and checks the source assets against the parent commit.
+- Frozen: GIF and original MP4 blobs, all app and language files, the home page and all other CSS. Rollback: revert this isolated patch as a group; never reuse a superseded cache version for a deployed rollback.
+- Status: proposed implementation on feature branch, not accepted/live until independent browser proof succeeds. No claim of completed deployment.
