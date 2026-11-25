@@ -6456,24 +6456,22 @@
     renderAll();
   }
 
+  // All language selectors publish through the shared platform owner, without modifying a match.
   document.getElementById('langSelectDropdown').addEventListener('change', (e) => {
-    // The login-selected VESA locale is the sole cross-app language preference.
-    // Update that owner, never a second Chess-only language key or any game record.
-    const nextLanguage=e.target.value;
-    if(window.VesaPrefs?.write){
-      const saved=window.VesaPrefs.write({...window.VesaPrefs.read(),language:nextLanguage});
-      window.VesaPrefs.apply(saved);
-    }
-    applyLanguageSelection(nextLanguage);
+    if(window.VesaPrefs?.setLanguage)window.VesaPrefs.setLanguage(e.target.value);
+    else applyLanguageSelection(e.target.value);
     showToast(window.VesaPrefs?.label?.('saved')||"Language saved for this browser");
   });
+  window.addEventListener('vesa-preferences-change',e=>{
+    if(e.detail?.language&&e.detail.language!==currentLang)applyLanguageSelection(e.detail.language);
+  });
   window.addEventListener('load', () => {
-    // Restore the exact Login preference after all gameplay controllers initialise.
     applyLanguageSelection(window.VesaPrefs?.read?.().language||'en');
   });
-
   document.getElementById('btnLangToggle').addEventListener('click', () => {
-    applyLanguageSelection(currentLang === 'en' ? 'ta' : 'en');
+    const next=currentLang==='en'?'ta':'en';
+    if(window.VesaPrefs?.setLanguage)window.VesaPrefs.setLanguage(next);
+    else applyLanguageSelection(next);
   });
 
   // New Game Modal Controls

@@ -25,7 +25,7 @@ class VesaLoginGifSpanishProof {
   assert.ok(prefs.includes('<option value="es">Spanish</option>'),'Spanish in existing shared selector');
   assert.ok(prefs.includes("language:['en','ta','bn','hi','es']"),'Spanish saved successfully');
   assert.ok(css.includes('.vesa-login-page .login-story__gif'),'GIF styled only inside login');
-  assert.ok(sw.includes("const CACHE='vesa-v120-global-five-language'"),'new cache for existing browser users');
+  assert.ok(sw.includes("const CACHE='vesa-v121-app-live-language'"),'new cache for existing browser users');
   assert.ok(html.includes('vesa-login.css?v=20261125-login-gif-fit') && sw.includes('vesa-login.css?v=20261125-login-gif-fit'),'matching stylesheet cache version');
   assert.ok(sw.includes("'./"+this.GIF+"'"),'GIF pre-cached by refreshed service worker');
   console.log('LOGIN_GIF_SPANISH_STATIC_PASS '+gif.length+' bytes, infinite loop, original markup, five-language selector, cache');

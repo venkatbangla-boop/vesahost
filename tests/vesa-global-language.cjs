@@ -40,8 +40,8 @@ class VesaGlobalLanguageProof {
   assert.ok(prefs.includes("LANG_KEYS.forEach(k=>setItem(k,s.language))"),
    'Login preference shared unchanged to legacy app-language keys');
   assert.ok(!prefs.includes("s.language==='es'?'en'"),'No English shadow language for Spanish');
-  assert.ok(prefs.includes("globalThis.app.locale.set(s.language)"),
-   'PPM receives selected locale unchanged');
+  assert.ok(prefs.includes("function setLanguage(language)"),
+   'One shared language action for Login and app Settings');
   for(const lang of this.FIVE)
    assert.ok(prefs.includes('<option value="'+lang+'">'),lang+' appears in shared language choices');
   assert.ok(login.includes("const languageOnly=new URLSearchParams(location.search).has('language')"),
@@ -74,7 +74,7 @@ class VesaGlobalLanguageProof {
   const chess=this.source('apps/chess-360/index.html');
   assert.ok(chess.includes('<option value="bn"'),'Chess has Bengali as fifth locale');
   assert.ok(chess.includes('<option value="es"'),'Chess has Spanish locale');
-  assert.ok(chess.includes('VesaPrefs.write('),'Chess changes shared locale, not game state');
+  assert.ok(chess.includes('VesaPrefs.setLanguage('),'Chess changes shared locale, not game state');
   assert.ok(chess.includes("'/js/preferences.js'")||chess.includes('src="/js/preferences.js"'),
    'Chess reads the same global language owner');
   const tmpl=this.source('templates/vesa-next-app/ACCEPTANCE.md');
@@ -90,26 +90,33 @@ class VesaGlobalLanguageProof {
  static platformProof(){
   const vm=require('node:vm');
   const store=new Map();
-  const sandbox={location:{pathname:'/login/'},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},document:{readyState:'loading',documentElement:{dataset:{},style:{setProperty(){}}},querySelector(){return null;},addEventListener(){}},addEventListener(){}};
+  const events=[];const sandbox={location:{pathname:'/login/'},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},document:{readyState:'loading',documentElement:{dataset:{},style:{setProperty(){}}},querySelector(){return null;},querySelectorAll(){return [];},addEventListener(){}},addEventListener(){},dispatchEvent:e=>events.push(e),CustomEvent:class{constructor(type,init){this.type=type;this.detail=init.detail;}}};
   sandbox.window=sandbox;
   vm.runInNewContext(this.source('js/preferences.js'),sandbox);
   const prefs=sandbox.VesaPrefs;
+  const aqlKey='vesa360-personal-appearance-v1';
+  prefs.write({...prefs.read(),theme:'midnight-mono'});
+  const appearance=JSON.parse(store.get(aqlKey));appearance.settings.reportStyle='review';appearance.settings.layout='compact';store.set(aqlKey,JSON.stringify(appearance));
+  const appearanceBefore=store.get(aqlKey);
   for(const lang of this.FIVE){
-   prefs.write({...prefs.read(),language:lang});
+   sandbox.location.pathname='/login/';
+   prefs.setLanguage(lang);
    assert.equal(prefs.read().language,lang);
    assert.ok(!prefs.controls().includes('data-pref-language disabled'));
    sandbox.location.pathname='/apps/';
    store.set('vesa.app.language',lang==='en'?'es':'en');
-   assert.equal(prefs.read().language,lang,'canonical choice must outrank legacy key');
-   prefs.write({...prefs.read(),language:lang==='en'?'es':'en'});
-   assert.equal(prefs.read().language,lang,'only Login may change the canonical locale');
-   assert.ok(prefs.controls().includes('data-pref-language disabled'));
-   assert.ok(prefs.controls().includes('/login/?language=1'));
+   assert.equal(prefs.read().language,lang,'canonical choice outranks stale compatibility key');
+   const next=lang==='en'?'es':'en';
+   prefs.setLanguage(next);
+   assert.equal(prefs.read().language,next,'app Settings must update the canonical locale');
+   assert.equal(events.at(-1).detail.language,next,'app adapter gets actual language event');
+   assert.ok(!prefs.controls().includes('data-pref-language disabled'));
+   assert.equal(store.get(aqlKey),appearanceBefore,'locale does not rewrite AQL appearance');
+   prefs.setLanguage(lang);
    assert.ok(lang==='en'||prefs.ui('Settings')!=='Settings');
    assert.ok(lang==='en'||prefs.ui('User Access')!=='User Access');
-   sandbox.location.pathname='/login/';
   }
-  console.log('VESA_PLATFORM_LOCALE_OWNER_PASS five languages, canonical preference, shared Settings and Admin labels');
+  console.log('VESA_PLATFORM_LOCALE_OWNER_PASS five languages, in-app switching, appearance preservation and shared Settings labels');
  }
  static server(){
   const mime={'.html':'text/html; charset=utf-8','.js':'application/javascript','.css':'text/css',
@@ -162,6 +169,24 @@ class VesaGlobalLanguageProof {
       assert.equal(locale,'es',app+' selected Login language preserved');
       total++;
     }
+    await page.goto(base+'/apps/aql/',{waitUntil:'domcontentloaded'});
+    const settingsButton=page.locator('[data-vesa-user]');
+    await settingsButton.waitFor({state:'attached',timeout:25000});
+    if(!await settingsButton.isVisible())await page.locator('[data-vesa-mobile-menu]').click();
+    await settingsButton.click();
+    const settings=page.locator('dialog[data-vesa-settings]');
+    await settings.waitFor();
+    const choice=settings.locator('[data-pref-language]');
+    const savedTheme=await page.evaluate(()=>VesaPrefs.read().theme);
+    for(const [locale,menu,title] of [['ta','முகப்பு','அமைப்புகள்'],['bn','হোম','সেটিংস'],['hi','होम','सेटिंग्स'],['en','Home','Settings'],['es','Inicio','Configuración']]){
+      await choice.selectOption(locale);
+      assert.equal(await page.evaluate(()=>VesaPrefs.read().language),locale,'live app settings preference');
+      assert.equal(await page.locator('[data-vesa-menu="Home"]').textContent(),menu,'live rendered shell menu');
+      assert.equal(await settings.locator('#vesaSettingsTitle').textContent(),title,'live rendered Settings dialog');
+      assert.equal(await page.evaluate(()=>VesaPrefs.read().theme),savedTheme,'theme unchanged by locale');
+    }
+    await settings.locator('footer button').click();
+    console.log('VESA_APP_SETTINGS_LIVE_PASS AQL five languages, menu and Settings, viewport='+width);
     await page.goto(base+'/login/?language=1',{waitUntil:'domcontentloaded'});
     await page.locator('[data-pref-language]').waitFor();
     assert.equal(await page.locator('[data-pref-language]').inputValue(),'es',

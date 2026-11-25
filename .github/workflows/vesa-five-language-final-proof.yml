@@ -16,6 +16,10 @@ on:
       - 'apps/*/src/i18n/app-copy.js'
       - 'apps/*/index.html'
       - 'apps/tna/src/bootstrap.js'
+      - 'apps/ppm/languages.js'
+      - 'apps/ppm/workspace.js'
+      - 'apps/*/service-worker.js'
+      - 'service-worker.js'
   workflow_dispatch:
 permissions: {contents: read}
 jobs:
@@ -35,6 +39,9 @@ jobs:
           node --check js/vesa-workspace-shell.js
           node --check js/vesa-app-centre.js
           node --check apps/tna/src/bootstrap.js
+          node --check apps/ppm/languages.js
+          node --check apps/ppm/workspace.js
+          node --check service-worker.js
           for file in apps/*/src/i18n/app-copy.js; do node --check "$file"; done
           node tests/vesa-translation-coverage.cjs
           node tests/vesa-next-app-starter.cjs

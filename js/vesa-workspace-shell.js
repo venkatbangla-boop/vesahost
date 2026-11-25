@@ -30,6 +30,8 @@
       this._onKeydown = event => this._handleKeydown(event);
       this._onDocumentClick = event => this._handleDocumentClick(event);
       this._onResize = () => this.measure();
+      this._savedSource = this.descriptor.savedState;
+      this._onLocale = () => this.refreshLocale();
     }
 
     mount() {
@@ -52,8 +54,41 @@
       this.element.addEventListener('keydown', this._onKeydown);
       this.document.addEventListener('click', this._onDocumentClick);
       global.addEventListener?.('resize', this._onResize, { passive: true });
+      global.addEventListener?.('vesa-preferences-change', this._onLocale);
+      this.refreshLocale();
       this.measure();
       return element;
+    }
+
+    /** Refresh only authored shell/dialog text in place. Command IDs and focused controls stay intact. */
+    refreshLocale() {
+      if (!this.element) return;
+      const setText=(selector,source)=>{const el=this.element.querySelector(selector);if(el)el.textContent=ui(source);};
+      const setAria=(selector,source)=>this.element.querySelector(selector)?.setAttribute('aria-label',ui(source));
+      for(const name of MENU_ORDER){
+        const node=this.element.querySelector('[data-vesa-menu="'+name+'"]');
+        if(node){const label=ui(name);node.textContent=label;node.setAttribute('aria-label',label);}
+      }
+      setText('[data-vesa-skip]','Skip to main content');
+      setText('.vesa-workspace__app-centre','App Centre');
+      setText('.vesa-workspace__app-label',this.descriptor.name);
+      this.element.querySelector('.vesa-workspace__app-current')?.setAttribute('title',ui(this.descriptor.name));
+      setText('[data-vesa-mobile-menu]','Menu');
+      setText('[data-vesa-saved]',this._savedSource);
+      setText('[data-vesa-user]','Settings');
+      setText('[data-vesa-admin]','Admin');
+      setText('[data-vesa-logout]','Logout');
+      setAria('.vesa-workspace__brand','VESA home');
+      setAria('.vesa-workspace__breadcrumb','Current VESA workspace');
+      setAria('.vesa-workspace__nav','VESA workspace menu');
+      const dialog=this._settingsDialog;
+      if(dialog){
+        dialog.querySelector('#vesaSettingsTitle').textContent=ui('Settings');
+        dialog.querySelector('header p:last-child').textContent=ui('Language and appearance apply to this browser. Saved records and entered values are unchanged.');
+        dialog.querySelector('header button').setAttribute('aria-label',ui('Close settings'));
+        dialog.querySelector('footer button').textContent=ui('Close');
+      }
+      this.measure();
     }
 
     measure() {
@@ -92,7 +127,8 @@
     }
 
     setSavedState(state) {
-      const value = ui(SAVE_STATES[state] || text(state));
+      this._savedSource=SAVE_STATES[state] || text(state);
+      const value = ui(this._savedSource);
       const target = this.element?.querySelector('[data-vesa-saved]');
       if (target) target.textContent = value;
       return value;
@@ -106,7 +142,7 @@
         dialog.className = 'vesa-settings-dialog';
         dialog.setAttribute('data-vesa-settings', 'true');
         dialog.setAttribute('aria-labelledby', 'vesaSettingsTitle');
-        dialog.innerHTML = `<form method="dialog"><header><div><p class="vesa-settings-kicker">VESA</p><h2 id="vesaSettingsTitle">Settings</h2><p>${escape(ui("Language and appearance apply to this browser. Saved records and entered values are unchanged."))}</p></div><button type="submit" aria-label="${escape(ui("Close settings"))}">×</button></header><div class="vesa-settings-body">${global.VesaPrefs.controls()}</div><footer><button type="submit">${escape(ui("Close"))}</button></footer></form>`;
+        dialog.innerHTML = `<form method="dialog"><header><div><p class="vesa-settings-kicker">VESA</p><h2 id="vesaSettingsTitle">${escape(ui("Settings"))}</h2><p>${escape(ui("Language and appearance apply to this browser. Saved records and entered values are unchanged."))}</p></div><button type="submit" aria-label="${escape(ui("Close settings"))}">×</button></header><div class="vesa-settings-body">${global.VesaPrefs.controls()}</div><footer><button type="submit">${escape(ui("Close"))}</button></footer></form>`;
         this.document.body.append(dialog);
         global.VesaPrefs.wire?.(dialog);
         dialog.addEventListener('close', () => {
@@ -117,7 +153,8 @@
         this._settingsDialog = dialog;
       }
       this._settingsReturnFocus = this.element?.querySelector('[data-vesa-user]') || this.element;
-      this._settingsDialog.querySelector('[data-pref-theme]')?.focus({ preventScroll: true });
+      this.refreshLocale();
+      this._settingsDialog.querySelector('[data-pref-language]')?.focus({ preventScroll: true });
       if (!this._settingsDialog.open) this._settingsDialog.showModal();
       return this._settingsDialog;
     }
@@ -168,6 +205,7 @@
       this.element.removeEventListener('keydown', this._onKeydown);
       this.document.removeEventListener('click', this._onDocumentClick);
       global.removeEventListener?.('resize', this._onResize);
+      global.removeEventListener?.('vesa-preferences-change', this._onLocale);
       this._settingsDialog?.remove();
       this._settingsDialog = null;
       if (this._mainContent?.dataset.vesaGeneratedMainId === 'true') { this._mainContent.removeAttribute('id'); delete this._mainContent.dataset.vesaGeneratedMainId; }

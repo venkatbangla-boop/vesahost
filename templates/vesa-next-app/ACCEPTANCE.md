@@ -7,7 +7,7 @@
 - [ ] Versioned local records survive save, browser reload and reopen without changing user values or identifiers.
 - [ ] Downloaded saved copies restore as a safe separate record; malformed, oversized and future versions fail without replacing good data.
 - [ ] Reports escape untrusted values, resist spreadsheet formulas, print cleanly and never imply an unrecorded approval or release.
-- [ ] English, Bengali, Hindi, Tamil and Spanish guidance changes visible UI labels and report chrome only, never buyer-entered data or engine decisions. Login-selected language persists across all routes and browser reload.
+- [ ] English, Bengali, Hindi, Tamil and Spanish guidance changes visible UI labels and report chrome only, never buyer-entered data or engine decisions. The global language can be selected at Login or in app Settings; visible authored labels update immediately and the same locale persists across all routes and browser reload.
 - [ ] 320/360/390/768/1024/1280/1440, 200% zoom, keyboard, focus, themes and print are reviewed.
 - [ ] Offline install/update/recovery is proven if a service worker is added.
 - [ ] TNA, PPM, AQL and shared-shell regressions pass at the acceptance boundary.

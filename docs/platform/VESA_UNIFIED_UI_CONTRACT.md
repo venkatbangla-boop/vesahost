@@ -141,7 +141,7 @@ A new page is **not accepted** when these checks are absent, even if its domain 
 
 ### Permanent owner rule — visual uniformity and `DEMO LIVE` gate (2026-10-14)
 
-This contract is the permanent visual standard for **all existing and future VESA applications**. Every interface change must first read and follow this contract. Reuse the shared VESA header, CSS, navigation, English/Bengali/Hindi/Tamil language system, theme, and common buttons, forms, tables, typography, spacing, save actions and responsive patterns. App-specific content may differ, but global visual ownership and presentation must not diverge.
+This contract is the permanent visual standard for **all existing and future VESA applications**. Every interface change must first read and follow this contract. Reuse the shared VESA header, CSS, navigation, English/Bengali/Hindi/Tamil/Spanish language system, theme, and common buttons, forms, tables, typography, spacing, save actions and responsive patterns. App-specific content may differ, but global visual ownership and presentation must not diverge.
 
 Before marking an application **`DEMO LIVE`**:
 

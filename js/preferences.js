@@ -22,6 +22,7 @@
   // Shared, authored interface wording only; never pass order/user fields to ui().
   const UI_LANGUAGES=['en','bn','hi','ta','es'];
   const PLATFORM_COPY=new Map([
+  ["Inspection Quality Suite","পরিদর্শন ও গুণমান স্যুট","निरीक्षण गुणवत्ता सुइट","ஆய்வு மற்றும் தரத் தொகுப்பு","Suite de inspección y calidad"],
   [
     "Home",
     "হোম",
@@ -395,7 +396,6 @@
   ]
 ].map(row=>[row[0],row]));
   function ui(source){const row=PLATFORM_COPY.get(source);return row?.[UI_LANGUAGES.indexOf(read().language)]||source;}
-  function isLogin(){return /^\/login(?:\/|$)/.test(window.location?.pathname||'');}
   const clean=value=>String(value||'').trim();
   function getItem(key){try{return localStorage.getItem(key)}catch{return null}}
   function setItem(key,value){try{localStorage.setItem(key,value)}catch{}}
@@ -407,22 +407,32 @@
     const lang=clean(v.language||getItem('vesa.app.language')||getItem('vesa-guide-language')||getItem('vesa.ppm.language')||DEFAULT.language);
     return {theme:THEMES[v.theme]?v.theme:(THEMES[seed.theme]?seed.theme:DEFAULT.theme),language:['en','ta','bn','hi','es'].includes(lang)?lang:DEFAULT.language,density:['compact','comfortable','touch'].includes(v.density)?v.density:(['compact','comfortable','touch'].includes(seed.density)?seed.density:DEFAULT.density),font:['modern','classic','spacious','editorial'].includes(v.font)?v.font:(['modern','classic','spacious','editorial'].includes(seed.font)?seed.font:DEFAULT.font)};
   }
-  // The nested saved Login choice outranks app-local compatibility keys.
+  // The nested global locale outranks app-local compatibility keys.
   function read(){const raw=readJson(KEY);return normalize({...raw,language:raw?.settings?.language||raw?.language});}
-  function write(settings){const s=normalize(settings);if(!isLogin())s.language=read().language;setItem(KEY,JSON.stringify({version:1,settings:s,updatedAt:new Date().toISOString()}));// The login-selected locale is the sole preference for every application (no English shadow value).
+  function write(settings){const s=normalize(settings);setItem(KEY,JSON.stringify({version:1,settings:s,updatedAt:new Date().toISOString()}));// One selected locale for Login and every app (no English shadow value).
     // Language metadata only: never modify any order, inspection, user record or saved-copy payload.
-    LANG_KEYS.forEach(k=>setItem(k,s.language));setItem(AQL_KEY,JSON.stringify({version:1,settings:{theme:s.theme,followDevice:false,font:s.font,text:'standard',density:s.density,layout:'guided',striping:true,stickyColumns:true,motion:'system',reportStyle:'classic',reportFont:'classic',reportSize:'standard',reportSpacing:'comfortable',reportAccent:'blue'}}));return s;}
+    LANG_KEYS.forEach(k=>setItem(k,s.language));
+    // Locale writes must not reset independent AQL appearance/report preferences.
+    const prior=aqlSeed();
+    if(!prior||prior.theme!==s.theme||prior.font!==s.font||prior.density!==s.density){
+      setItem(AQL_KEY,JSON.stringify({version:1,settings:{text:'standard',layout:'guided',striping:true,stickyColumns:true,motion:'system',reportStyle:'classic',reportFont:'classic',reportSize:'standard',reportSpacing:'comfortable',reportAccent:'blue',...prior,theme:s.theme,followDevice:false,font:s.font,density:s.density}}));
+    }
+    return s;
+  }
   function tokens(theme){const t=THEMES[theme]||THEMES[DEFAULT.theme];return {'--canvas':t.canvas,'--paper':t.paper,'--look-surface':t.surface,'--ink':t.ink,'--muted':t.muted,'--line':t.line,'--blue':t.accent,'--blue-light':t.soft,'--look-on-accent':t.on,'--look-sidebar':t.sidebar,'--look-side-ink':t.sideInk,'--look-side-muted':t.sideMuted,'--look-side-active':t.sideActive,'--look-side-accent':t.sideAccent,'--look-field':t.field,'--navy':t.sidebar,'--navy2':t.sideActive,'--teal':t.accent,'--teal2':t.accent,'--gold':t.accent,'--cream':t.canvas,'--ice':t.surface,'--ok':t.dark?'#9ce7c2':'#12633f','--okbg':t.dark?'#193b2c':'#e9f6ef','--action':t.dark?'#ffbdc9':'#a22643','--actionbg':t.dark?'#42222d':'#fceef1','--pending':t.dark?'#ffe09d':'#81520c','--pendingbg':t.dark?'#3d311a':'#fff4df','--shadow':t.dark?'0 16px 52px #0000003b':'0 14px 42px #2537560d'};}
   function fontStack(font){return ({modern:'"Segoe UI",Arial,system-ui,sans-serif',classic:'Arial,Helvetica,sans-serif',spacious:'Verdana,Geneva,sans-serif',editorial:'Arial,Helvetica,sans-serif'}[font]||'"Segoe UI",Arial,system-ui,sans-serif');}
   function apply(input){const s=normalize(input||read());const t=THEMES[s.theme],root=document.documentElement;root.dataset.vesaTheme=s.theme;root.dataset.dark=String(t.dark);root.dataset.density=s.density;root.lang=s.language;for(const [k,v] of Object.entries(tokens(s.theme)))root.style.setProperty(k,v);root.style.setProperty('--ui',fontStack(s.font));root.style.setProperty('--heading-font',s.font==='editorial'?'Georgia,"Times New Roman",serif':fontStack(s.font));document.querySelector('meta[name="theme-color"]')?.setAttribute('content',t.canvas);return s;}
   function label(key){const s=read();const value=(LABELS[s.language]||LABELS.en)[key]||LABELS.en[key]||key;return ui(value);}
   function translate(){const dict=LABELS[read().language]||LABELS.en;document.querySelectorAll('[data-vesa-ui]').forEach(el=>{el.textContent=ui(el.dataset.vesaUi);});document.querySelectorAll('[data-vesa-ui-aria]').forEach(el=>{el.setAttribute('aria-label',ui(el.dataset.vesaUiAria));});document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(dict[key])el.textContent=label(key);});document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const key=el.dataset.i18nPlaceholder;if(dict[key])el.setAttribute('placeholder',dict[key]);});}
-  function notifyApps(s){try{if(globalThis.app?.locale?.set){globalThis.app.locale.set(s.language);globalThis.app.render?.();}}catch{}}
-  function controls(){return `<div class="vesa-pref-controls" data-vesa-pref-controls><label><span data-i18n="language">${label('language')}</span><select data-pref-language${isLogin()?'':' disabled'}><option value="en">English</option><option value="ta">Tamil</option><option value="bn">Bengali</option><option value="hi">Hindi</option><option value="es">Spanish</option></select>${isLogin()?'':`<a href="/login/?language=1">${ui('Change language at Login')}</a>`}</label><label><span data-i18n="theme">${label('theme')}</span><select data-pref-theme>${Object.entries(THEMES).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select></label></div>`;}
-  function wire(root=document){root.querySelectorAll('[data-pref-language]').forEach(el=>{el.value=read().language;el.disabled=!isLogin();el.onchange=()=>{if(!isLogin()){el.value=read().language;return;}const s=write({...read(),language:el.value});apply(s);translate();syncControls();notifyApps(s);window.dispatchEvent(new CustomEvent('vesa-preferences-change',{detail:s}));};});root.querySelectorAll('[data-pref-theme]').forEach(el=>{el.value=read().theme;el.onchange=()=>{const s=write({...read(),theme:el.value});apply(s);translate();syncControls();notifyApps(s);window.dispatchEvent(new CustomEvent('vesa-preferences-change',{detail:s}));};});}
+  /** Publish presentation changes once. App adapters own their UI refresh; no record save/reload. */
+  function publish(s){apply(s);translate();syncControls();window.dispatchEvent(new CustomEvent('vesa-preferences-change',{detail:s}));return s;}
+  /** Login and every Settings control use this same validated global language entry. */
+  function setLanguage(language){if(!UI_LANGUAGES.includes(language))return read();return publish(write({...read(),language}));}
+  function controls(){return `<div class="vesa-pref-controls" data-vesa-pref-controls><label><span data-i18n="language">${label('language')}</span><select data-pref-language><option value="en">English</option><option value="ta">Tamil</option><option value="bn">Bengali</option><option value="hi">Hindi</option><option value="es">Spanish</option></select></label><label><span data-i18n="theme">${label('theme')}</span><select data-pref-theme>${Object.entries(THEMES).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select></label></div>`;}
+  function wire(root=document){root.querySelectorAll('[data-pref-language]').forEach(el=>{el.value=read().language;el.onchange=()=>setLanguage(el.value);});root.querySelectorAll('[data-pref-theme]').forEach(el=>{el.value=read().theme;el.onchange=()=>publish(write({...read(),theme:el.value}));});}
   function syncControls(){document.querySelectorAll('[data-pref-language]').forEach(el=>el.value=read().language);document.querySelectorAll('[data-pref-theme]').forEach(el=>el.value=read().theme);}
   function mount(){apply(write(read()));translate();document.querySelectorAll('[data-vesa-preferences]').forEach(el=>{if(!el.querySelector('[data-vesa-pref-controls]')){el.insertAdjacentHTML('beforeend',controls());wire(el);}});}
-  window.VesaPrefs={KEY,THEMES,LABELS,read,write,apply,label,ui,translate,controls,wire,mount};
+  window.VesaPrefs={KEY,THEMES,LABELS,read,write,setLanguage,apply,label,ui,translate,controls,wire,mount};
   apply(read());
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
 })();

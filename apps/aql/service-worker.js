@@ -1,4 +1,4 @@
-const CACHE = 'vesa-aql-2026-10-18-26';
+const CACHE = 'vesa-aql-2026-11-25-locale-27';
 const ASSETS = [
   './',
   './index.html',
@@ -31,12 +31,12 @@ self.addEventListener('fetch', event => {
   const shared = ['/js/auth.js','/js/preferences.js','/js/vesa-workspace-shell.js','/css/vesa-workspace.css'].includes(url.pathname);
   if (!url.pathname.startsWith('/apps/aql/') && !shared) return;
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+    caches.open(CACHE).then(cache=>cache.match(event.request)).then(cached => cached || fetch(event.request).then(response => {
       if (response.ok && url.origin === self.location.origin) {
         const copy = response.clone();
         caches.open(CACHE).then(cache => cache.put(event.request, copy));
       }
       return response;
-    }).catch(() => caches.match(shared ? event.request : './index.html')))
+    }).catch(() => caches.open(CACHE).then(cache=>cache.match(shared ? event.request : './index.html'))))
   );
 });

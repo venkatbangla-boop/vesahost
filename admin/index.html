@@ -118,6 +118,7 @@
       setTimeout(()=>URL.revokeObjectURL(a.href),5000);
     };
     render();
+    window.addEventListener('vesa-preferences-change',()=>{document.title=ui('User Access')+' | VESA 360';render();});
   </script>
 </body>
 </html>

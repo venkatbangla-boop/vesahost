@@ -12,7 +12,7 @@
  * This is an offline personal synthetic demo, not server-side authentication.
  */
 class TnaOfflineBundle {
-  static VERSION='20261018-g3-sheet-first-v1';
+  static VERSION='20261125-language-v2';
   static CACHE='vesa-tna-'+TnaOfflineBundle.VERSION;
   static FILES=Object.freeze([
     './',
