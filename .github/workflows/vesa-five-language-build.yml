@@ -1,0 +1,72 @@
+# Language-only CI. Never runs app domain logic or uploads stored user records.
+# Collects public authored English UI strings; translates offline; appends Spanish dictionaries.
+name: VESA Spanish 20-app source build
+on:
+  push:
+    branches: [feature/vesa-five-language-global-20261125]
+    paths:
+      - 'tools/i18n/**'
+      - '.github/workflows/vesa-five-language-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install build-only tooling
+        run: |
+          npm install --no-save --no-package-lock acorn@8.14.0
+          python -m pip install --quiet argostranslate
+      - name: Read-only extraction of existing 20-app authored UI dictionaries
+        run: |
+          set -euo pipefail
+          node --check tools/i18n/locale-audit.cjs
+          node --check tools/i18n/build-spanish-catalog.cjs
+          python -m py_compile tools/i18n/translate-static-spanish.py
+          node tools/i18n/locale-audit.cjs
+          node tools/i18n/build-spanish-catalog.cjs collect
+      - name: Compile Spanish static UI text offline, preserving interpolation and data
+        run: |
+          set -euo pipefail
+          python tools/i18n/translate-static-spanish.py
+          node tools/i18n/build-spanish-catalog.cjs apply
+          node --check apps/tna/src/bootstrap.js
+          for file in apps/*/src/i18n/app-copy.js; do node --check "$file"; done
+          node tests/vesa-next-app-starter.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          git diff --check
+          git diff --stat
+          echo "BUILD_SPANISH_DICTIONARY_PASS"
+      - name: Commit only approved language dictionaries on the feature branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/*/src/i18n/app-copy.js apps/*/index.html apps/tna/src/bootstrap.js
+          git diff --cached --name-only
+          git diff --cached --check
+          if git diff --cached --quiet; then echo "No locale differences"; exit 1; fi
+          git commit -m "i18n: add offline-generated Spanish source dictionaries to existing apps"
+          git push origin HEAD:refs/heads/feature/vesa-five-language-global-20261125
+          echo "SPANISH_DICTIONARIES_FEATURE_COMMITTED=$(git rev-parse HEAD)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-spanish-audit-and-translation-catalog
+          path: |
+            output/i18n/en-catalog.json
+            output/i18n/es-catalog.json
+          if-no-files-found: ignore
+          retention-days: 7
