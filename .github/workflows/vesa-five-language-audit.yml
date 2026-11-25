@@ -19,3 +19,26 @@ jobs:
         run: |
           node --check tools/i18n/locale-audit.cjs
           node tools/i18n/locale-audit.cjs
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Test local offline English-Spanish translation model for safe static UI build
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet argostranslate
+          python - <<'PY'
+          import argostranslate.package, argostranslate.translate
+          argostranslate.package.update_package_index()
+          packages=argostranslate.package.get_available_packages()
+          pairs={(p.from_code,p.to_code) for p in packages}
+          print("ARGOS_MODEL_PAIRS",[(a,b,(a,b) in pairs) for a,b in [("en","es"),("en","hi"),("en","bn"),("en","ta")]], flush=True)
+          chosen=next((p for p in packages if p.from_code=="en" and p.to_code=="es"),None)
+          assert chosen is not None,"No offline en->es model; stop rather than using online text API"
+          argostranslate.package.install_from_path(chosen.download())
+          samples=["Save Now","Needs Information","Download Saved Copy","No buyer approval has been recorded."]
+          for item in samples:
+              out=argostranslate.translate.translate(item,"en","es")
+              print("ARGOS_ES_SAMPLE",item,"=>",out,flush=True)
+              assert out.strip() and out!=item
+          print("ARGOS_OFFLINE_TRANSLATION_PROOF_PASS",flush=True)
+          PY
