@@ -1,0 +1,47 @@
+name: VESA AQL live authored language proof
+on:
+  push:
+    branches: [feature/vesa-five-language-global-20261125]
+    paths: ['tools/aql-live-ui-patch.cjs','tests/aql-live-ui-language.cjs','.github/workflows/vesa-aql-live-language.yml']
+permissions:
+  contents: write
+jobs:
+  verified-patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply exact authored AQL presentation anchors
+        run: |
+          set -euo pipefail
+          node --check tools/aql-live-ui-patch.cjs
+          node tools/aql-live-ui-patch.cjs
+          git diff --check
+          test "$(git diff --name-only)" = "apps/aql/index.html"
+      - name: Install synthetic browser proof tooling
+        run: |
+          npm install --no-save --no-package-lock acorn@8.14.0 playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Verify actual AQL UI, app continuity, and original blueprint integrity
+        run: |
+          set -euo pipefail
+          node tests/vesa-translation-coverage.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/vesa-global-language.cjs --browser
+          node tests/aql-live-ui-language.cjs
+      - name: Commit only the verified AQL presentation change
+        run: |
+          set -euo pipefail
+          git fetch origin feature/vesa-five-language-global-20261125
+          test "$(git rev-parse origin/feature/vesa-five-language-global-20261125)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/aql/index.html
+          git commit -m "fix(aql): connect authored inspection UI to live global language"
+          git push origin HEAD:refs/heads/feature/vesa-five-language-global-20261125
+          echo "AQL_VERIFIED_COMMIT=$(git rev-parse HEAD)"
