@@ -39,7 +39,7 @@ class VesaPPMSpanishCatalog {
      if(this.isEnglishText(v))phrases.add(v);
     }
     for(const [k,v] of Object.entries(n)){
-     if(['start','end','loc','raw','regex','value'].includes(k))continue;
+     if(['start','end','loc','raw','regex'].includes(k))continue;
      if(Array.isArray(v)){
       for(const child of v)if(child&&typeof child==='object')queue.push(child);
      }else if(v&&typeof v==='object'){
