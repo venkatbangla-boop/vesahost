@@ -1433,6 +1433,7 @@
 <link rel="stylesheet" href="./chess-panel-ui.css">
 <link rel="stylesheet" href="./chess-real-3d.css">
 <link rel="stylesheet" href="./chess-casual-mobile.css">
+<script src="/js/preferences.js"></script>
 </head>
 <body class="chess-beast-v2" data-board-theme="green">
 
@@ -1532,6 +1533,7 @@
         <option value="en" style="background:#262522; color:#ffffff;" selected>English</option>
         <option value="ta" style="background:#262522; color:#ffffff;">தமிழ் (Tamil)</option>
         <option value="hi" style="background:#262522; color:#ffffff;">हिन्दी</option>
+        <option value="bn" style="background:#262522; color:#ffffff;">বাংলা</option>
         <option value="es" style="background:#262522; color:#ffffff;">Español</option>
       </select>
       <button class="btn" id="btnLangToggle" type="button" style="display:none;"><span id="langLabel">Lang: EN</span></button>
@@ -4035,6 +4037,34 @@
       timeControl: "समय नियंत्रण",
       coachHeader: "🧠 AI कोच और ब्लंडर रडार"
     },
+    bn: {
+      startGame: "খেলা শুরু করুন",
+      autoWin: "স্বয়ংক্রিয় জয়",
+      resetGame: "রিসেট",
+      newGame: "নতুন খেলা",
+      puzzles: "কৌশলগত অবস্থান",
+      sound: "শব্দ",
+      undo: "পিছনে যান",
+      hint: "ইঙ্গিত",
+      flip: "বোর্ড ঘোরান",
+      evaluate: "মূল্যায়ন",
+      resign: "পরাজয় স্বীকার করুন",
+      heatmap: "অবস্থানের হিটম্যাপ",
+      threats: "হুমকির মানচিত্র",
+      drawArrow: "তীর আঁকুন",
+      clearArrows: "তীর সরান",
+      tabMatch: "📊 ম্যাচ",
+      tabLevels: "⚙️ AI স্তর",
+      tabGuide: "📚 দাবা নির্দেশিকা",
+      tabFen: "🛠️ FEN / PGN",
+      statDepth: "অনুসন্ধানের গভীরতা",
+      statNodes: "নোড / TT হিট",
+      statBest: "সেরা AI চাল",
+      moveHistory: "চালের ইতিহাস ও পুনরায় দেখা",
+      chooseLevel: "AI শক্তি নির্বাচন করুন (৬ স্তর)",
+      timeControl: "ঘড়ির সময় নিয়ন্ত্রণ",
+      coachHeader: "🧠 AI কোচ ও ভুল শনাক্তকারী"
+    },
     es: {
       startGame: "Iniciar",
       autoWin: "Auto-Victoria",
@@ -6414,7 +6444,7 @@
 
   // Language Selector Dropdown & Toggle (Default: 100% Pure English, Switchable to Tamil)
   function applyLanguageSelection(lang) {
-    currentLang = ['en', 'ta', 'hi', 'es'].includes(lang) ? lang : 'en';
+    currentLang = ['en', 'ta', 'hi', 'bn', 'es'].includes(lang) ? lang : 'en';
     const sel = document.getElementById('langSelectDropdown');
     if (sel) sel.value = currentLang;
     document.getElementById('langLabel').textContent = `Lang: ${currentLang.toUpperCase()}`;
@@ -6427,8 +6457,19 @@
   }
 
   document.getElementById('langSelectDropdown').addEventListener('change', (e) => {
-    applyLanguageSelection(e.target.value);
-    showToast(currentLang === 'ta' ? "தமிழ் மொழி தேர்ந்தெடுக்கப்பட்டது" : "Language set to English");
+    // The login-selected VESA locale is the sole cross-app language preference.
+    // Update that owner, never a second Chess-only language key or any game record.
+    const nextLanguage=e.target.value;
+    if(window.VesaPrefs?.write){
+      const saved=window.VesaPrefs.write({...window.VesaPrefs.read(),language:nextLanguage});
+      window.VesaPrefs.apply(saved);
+    }
+    applyLanguageSelection(nextLanguage);
+    showToast(window.VesaPrefs?.label?.('saved')||"Language saved for this browser");
+  });
+  window.addEventListener('load', () => {
+    // Restore the exact Login preference after all gameplay controllers initialise.
+    applyLanguageSelection(window.VesaPrefs?.read?.().language||'en');
   });
 
   document.getElementById('btnLangToggle').addEventListener('click', () => {
