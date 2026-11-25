@@ -1,0 +1,34 @@
+# Read-only source audit for user-approved live language switching.
+name: VESA app language switching source audit
+on:
+  push:
+    branches: [feature/vesa-five-language-global-20261125]
+    paths: ['.github/workflows/vesa-app-language-audit.yml']
+permissions: {contents: read}
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect actual AQL UI and language owners
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          p=Path('apps/aql/index.html')
+          s=p.read_text()
+          s=re.sub(r'data:[^\s"\x27<>]+;base64,[A-Za-z0-9+/=]{500,}', '[MEDIA]',s)
+          needles=['What are you inspecting today?', 'Your quality, clearly documented.', 'Learn. Inspect. Save. Continue.', 'Inspect with confidence.', 'Start stage inspection', 'One workspace. Every product.', 'Start my job', 'Save centre', 'No inspection open', 'Inspection Quality Suite', 'vesa-preferences-change', 'reportLanguage()', 'class KnowledgeAcademy', 'vesa-guide-language', 'VesaPrefs', 'new VesaWorkspaceShell', 'class App', 'renderHome()', 'home()', 'New inspection', 'Appearance']
+          for token in needles:
+              print('===',token,'===')
+              for match in list(re.finditer(re.escape(token),s,re.I))[:5]:
+                  pos=match.start()
+                  print(s[max(0,pos-220):pos+400].replace('\n',' '))
+          for p in [Path('apps/ppm/workspace.js'),Path('apps/ppm/languages.js'),Path('apps/chess-360/index.html'),Path('apps/tna/src/bootstrap.js')]+list(Path('apps').glob('*/src/application/workspace-controller.js'))+list(Path('apps').glob('*/index.html')):
+              if p==Path('apps/aql/index.html'): continue
+              v=p.read_text()
+              hits=[m.start() for m in re.finditer('vesa-preferences-change|VesaPrefs\\.write|VesaPrefs\\.read|locale\\.set|langSelectDropdown',v)]
+              if hits:
+                  print('===',p,'===')
+                  for pos in hits[:5]:print(v[max(0,pos-65):pos+150].replace('\n',' '))
+          PY
