@@ -51,7 +51,7 @@ class VesaLocaleAudit {
  }
  static discover(s){
   const patterns=[/\ben\s*:\s*\{/g,/\bconst\s+en\s*=\s*\{/g,/\bconst\s+EN\s*=\s*\{/g];
-  const seen=new Set(),out=[];
+  const seen=new Set(),out=[],errs=[];
   for(const pattern of patterns){let match;
    while((match=pattern.exec(s))!==null){
     const offset=s.indexOf('{',match.index);
@@ -62,9 +62,10 @@ class VesaLocaleAudit {
      const props=this.stringProperties(node);
      if(props.length>=10)out.push({start:offset,end:node.end,values:props});
      pattern.lastIndex=node.end;
-    }catch{continue;}
+    }catch(error){if(errs.length<4)errs.push({offset,message:error.message,snippet:s.slice(offset,offset+50)});continue;}
    }
   }
+  if(errs.length && !out.length)console.log('AST_PARSE_SKIP '+JSON.stringify(errs));
   return out.sort((a,b)=>a.start-b.start);
  }
  static run(){
