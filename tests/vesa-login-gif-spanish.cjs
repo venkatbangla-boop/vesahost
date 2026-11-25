@@ -84,7 +84,7 @@ class VesaLoginGifSpanishProof {
     if(width===1440){
      await page.locator('#loginSubmit').click();
      await page.waitForURL(u=>u.pathname==='/apps/',{timeout:20000});
-     assert.equal(await page.locator('[data-pref-language]').inputValue(),'es','Spanish remains after login');
+     assert.equal(await page.evaluate(()=>window.VesaPrefs?.read?.().language),'es','Spanish remains after login even when Settings is closed');
      assert.ok((await page.locator('body').textContent()).includes('Encuentra la herramienta adecuada'),'App Centre heading translated');
     }
     assert.deepEqual(errors,[],'no script errors '+width);
