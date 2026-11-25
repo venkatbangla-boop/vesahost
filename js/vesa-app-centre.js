@@ -29,6 +29,18 @@ const COPY=Object.freeze({
   groups:{planning:'Planning & quality',orders:'Orders & finance',
    product:'Product & sourcing',shipping:'Shipping & claims',partners:'Buyer & factory',games:'Games'}
  },
+ es:{
+  eyebrow:'TUS ESPACIOS DE TRABAJO',title:'Encuentra la herramienta adecuada',
+  intro:'Planificación, producción, abastecimiento e informes en un solo lugar.',
+  available:'Aplicaciones disponibles',search:'Buscar una aplicación',
+  placeholder:'Buscar aplicación, tarea o informe…',
+  all:'Todas las aplicaciones',showing:'Mostrando {shown} de {total} aplicaciones',
+  clear:'Borrar búsqueda',emptyTitle:'No se encontraron aplicaciones',
+  emptyText:'Prueba otra palabra o muestra todas las aplicaciones.',
+  reset:'Mostrar todas',open:'Abrir espacio de trabajo',
+  groups:{planning:'Planificación y calidad',orders:'Pedidos y finanzas',
+   product:'Producto y abastecimiento',shipping:'Envíos y reclamaciones',partners:'Clientes y fábricas',games:'Juegos'}
+ },
  bn:{
   eyebrow:'আপনার ওয়ার্কস্পেস',title:'কাজের জন্য সঠিক অ্যাপ বেছে নিন',
   intro:'পরিকল্পনা, উৎপাদন, সোর্সিং ও রিপোর্ট এক জায়গায়।',

@@ -140,6 +140,28 @@ html { scroll-behavior:auto; }
   letter-spacing:.08em;
 }
 
+/* Animated VESA intro: login's existing navy story panel only. GIF loops without controls.
+ * The hidden story panel below 900px retains the original mobile login layout. */
+.vesa-login-page .login-story__gif {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  width:100%;
+  height:clamp(155px,18vw,224px);
+  margin:12px 0 0;
+  overflow:hidden;
+  border:1px solid rgba(235,242,250,.27);
+  border-radius:14px;
+  background:rgba(4,18,36,.55);
+}
+.vesa-login-page .login-story__gif img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
 /* Focused, high-quality sign-in pane. */
 .vesa-login-page .auth-card {
   display:flex;
