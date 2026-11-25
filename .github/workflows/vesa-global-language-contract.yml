@@ -1,0 +1,37 @@
+# Future-app language gate. It checks authored presentation coverage only and never
+# reads, uploads or edits actual orders, inspections, prices, saved copies or user records.
+name: VESA global five-language contract
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'js/app-catalogue.js'
+      - 'js/preferences.js'
+      - 'login/index.html'
+      - 'apps/*/index.html'
+      - 'apps/*/src/i18n/app-copy.js'
+      - 'apps/ppm/languages.js'
+      - 'apps/tna/src/bootstrap.js'
+      - 'templates/vesa-next-app/**'
+      - 'tests/vesa-global-language.cjs'
+      - '.github/workflows/vesa-global-language-contract.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  five-language-coverage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Fail closed for untranslated new apps and language regressions
+        run: |
+          set -euo pipefail
+          node --check js/preferences.js
+          node --check apps/tna/src/bootstrap.js
+          for file in apps/*/src/i18n/app-copy.js; do node --check "$file"; done
+          node tests/vesa-next-app-starter.cjs
+          node tests/vesa-global-language.cjs
+          git diff --check
+          echo 'FIVE_LANGUAGE_NEW_APP_CONTRACT_ACCEPTED'
