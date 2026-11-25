@@ -1,0 +1,49 @@
+# Independent, read-only proof for the isolated Login GIF fit correction.
+name: VESA Login GIF frame fit proof
+on:
+  push:
+    branches: [feature/vesa-login-gif-fit-20261125, feature/vesa-five-language-global-20261125, main]
+    paths:
+      - 'css/vesa-login.css'
+      - 'login/index.html'
+      - 'service-worker.js'
+      - 'tests/vesa-login-gif-spanish.cjs'
+      - 'tests/personal-demo-release.cjs'
+      - '.github/workflows/vesa-login-gif-fit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fit-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check original media and source integrity
+        run: |
+          set -euo pipefail
+          git diff --exit-code HEAD~1 HEAD -- assets/vesa-login-intro-loop.gif assets/vesa-intro-landscape.mp4
+          git diff --check HEAD~1 HEAD
+          node --check service-worker.js
+          node --check tests/vesa-login-gif-spanish.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          node tests/personal-demo-release.cjs
+          node tests/vesa-login-gif-spanish.cjs
+      - name: Install real Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Verify full image fit, login and responsive behavior
+        run: node tests/vesa-login-gif-spanish.cjs --browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-login-gif-fit-screenshots
+          path: output/playwright/vesa-login-gif-spanish-*.png
+          if-no-files-found: ignore
+          retention-days: 7
