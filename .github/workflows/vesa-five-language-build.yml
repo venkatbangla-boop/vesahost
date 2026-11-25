@@ -29,7 +29,7 @@ jobs:
           python-version: '3.11'
       - name: Install build-only tooling
         run: |
-          npm install --no-save --no-package-lock acorn@8.14.0
+          npm install --no-save --no-package-lock acorn@8.14.0 playwright@1.56.0
           python -m pip install --quiet argostranslate
       - name: Read-only extraction of existing 20-app authored UI dictionaries
         run: |
@@ -46,14 +46,20 @@ jobs:
           python tools/i18n/translate-static-spanish.py
           node tools/i18n/build-spanish-catalog.cjs apply
           node tools/i18n/build-ppm-spanish.cjs apply
+          node tools/i18n/bridge-aql-locale.cjs apply
           node --check apps/ppm/languages.js
           node --check apps/tna/src/bootstrap.js
           for file in apps/*/src/i18n/app-copy.js; do node --check "$file"; done
           node tests/vesa-next-app-starter.cjs
+          node tests/vesa-global-language.cjs
           node tests/vesa-blueprint-integrity.cjs
           git diff --check
           git diff --stat
           echo "BUILD_SPANISH_DICTIONARY_PASS"
+      - name: Install Chromium on supported runner
+        run: npx playwright install --with-deps chromium
+      - name: Prove Login Spanish/Tamil continuity across 20 apps
+        run: node tests/vesa-global-language.cjs --browser
       - name: Commit only approved language dictionaries on the feature branch
         shell: bash
         run: |
