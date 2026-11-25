@@ -14,7 +14,7 @@ assert(product.includes('./src/domain/concept-register.js'));
 assert(read('apps/product-development/src/i18n/app-copy.js').includes("notice:'NON-COMMERCIAL PERSONAL DEMO."),
  'Product Development localized notice must retain the personal demo boundary');
 const productPrefs=read('js/preferences.js');
-assert.equal((productPrefs.match(/openProductDevelopment:/g)||[]).length,4,'App Centre must show Product Development in all four languages');
+assert.equal((productPrefs.match(/openProductDevelopment:/g)||[]).length,5,'App Centre must show Product Development in all five selectable languages');
 const catalog=read('js/app-catalogue.js'),sw=read('service-worker.js');
 assert.equal((catalog.match(/id:'packing-container'/g)||[]).length,1);
 assert.equal((catalog.match(/id:'order-commission'/g)||[]).length,1);
