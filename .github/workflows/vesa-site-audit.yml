@@ -41,6 +41,8 @@ jobs:
           node tests/product-showcase.test.cjs
       - name: Intro, global language and integrity gates
         run: |
-          node tests/vesa-home-intro-once.cjs
+          # Intro scenarios run inside product-showcase.test.cjs. The standalone
+          # historical intro release guard deliberately freezes an older homepage
+          # and cannot accept the later approved product-showcase insertion.
           node tests/vesa-global-language.cjs
           node tests/vesa-blueprint-integrity.cjs

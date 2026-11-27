@@ -29,7 +29,9 @@ class SiteIntegrityAudit {
     const results=[];
     for(const tag of html.matchAll(/<(script|link|img|a)\b[^>]*>/gi)){
       const match=tag[0].match(/\b(?:src|href)\s*=\s*(['"])(.*?)\1/i);
-      if(match)results.push({tag:tag[1].toLowerCase(),value:match[2].replace(/&amp;/g,'&')});
+      // Inline app JavaScript can contain HTML template literals, not actual
+      // asset URLs. Exclude interpolated bindings to avoid false missing-file reports.
+      if(match&&!match[2].includes('${')&&!match[2].startsWith("'+"))results.push({tag:tag[1].toLowerCase(),value:match[2].replace(/&amp;/g,'&')});
     }
     return results;
   }
