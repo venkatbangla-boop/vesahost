@@ -13,6 +13,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const { createHash } = require('node:crypto');
 const { execFileSync } = require('node:child_process');
+const { HomeIntroOnceVerifier } = require('./vesa-home-intro-once.cjs');
 
 /** Minimal inert element for owner-method tests; it does not simulate rendering. */
 class BoundedElement {
@@ -80,7 +81,7 @@ class ShowcaseReleaseVerifier {
     return result;
   }
 
-  /** Permit the homepage/cache edits and one exact legacy-test compatibility replacement. */
+  /** Permit the showcase scope plus the separately bounded first-visit intro repair. */
   frozenFiles() {
     const oldFiles = new Set(execFileSync('git', ['ls-tree', '-r', '--name-only', ShowcaseReleaseVerifier.BASELINE], {
       cwd: this.root, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024,
@@ -89,7 +90,9 @@ class ShowcaseReleaseVerifier {
       cwd: this.root, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024,
     }).trim().split('\n').filter(Boolean);
     const oldChanged = changed.filter(file => oldFiles.has(file)).sort();
-    assert.deepEqual(oldChanged, ['index.html', 'service-worker.js', 'tests/vesa-login-gif-spanish.cjs'], 'Unexpected original-file changes');
+    assert.deepEqual(oldChanged, ['index.html', 'js/vesa-home-intro.js', 'service-worker.js', 'tests/vesa-login-gif-spanish.cjs'], 'Unexpected original-file changes');
+    // The intro guard reconstructs its exact pre-repair sources; this is not a path exemption.
+    this.report.approved_intro_compatibility=new HomeIntroOnceVerifier(this.root).sourcePreservation();
     const compatibilityPath='tests/vesa-login-gif-spanish.cjs';
     const originalAssertion=`  assert.ok(sw.includes("const CACHE='vesa-v121-app-live-language'"),'new cache for existing browser users');`;
     const compatibleAssertion=[
@@ -103,14 +106,14 @@ class ShowcaseReleaseVerifier {
     const present=execFileSync('git',['ls-files','--cached','--others','--exclude-standard'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
     const added=present.filter(file=>!oldFiles.has(file));
     const runtime=/^product-showcase\/(?:index\.html|styles\.css|catalogue\.(?:js|json)|director\.js|garment-details\.js|experience\.js|bootstrap\.js|host\.(?:css|js)|assets\/[MLK]\d{2}\.webp)$/;
-    for(const file of added)assert.ok(runtime.test(file)||file.startsWith('docs/product-showcase/')||['tests/product-showcase.test.cjs','tests/product-showcase-assets.py'].includes(file),'Unapproved added path: '+file);
+    for(const file of added)assert.ok(runtime.test(file)||file.startsWith('docs/product-showcase/')||file==='docs/website/INTRO_FIRST_VISIT_RELEASE.md'||file.startsWith('docs/website/intro-first-visit/')||['tests/product-showcase.test.cjs','tests/product-showcase-assets.py','tests/vesa-home-intro-once.cjs'].includes(file),'Unapproved added path: '+file);
     this.report.original_files = {tracked_baseline: oldFiles.size, changed: oldChanged, all_other_original_paths_unchanged: true, exact_legacy_cache_test_replacement:true, added_paths_within_locked_scope:true};
   }
 
   /** Recreate baseline homepage after removing only explicitly approved insertions. */
   homepage() {
     const html = this.read('index.html');
-    let restored = html;
+    let restored = HomeIntroOnceVerifier.restoreHomepage(html);
     for (const part of ['HEAD', 'SECTION', 'MODAL', 'SCRIPT']) {
       const marker = new RegExp(`<!-- VESA SHOWCASE:${part}:START -->[\\s\\S]*?<!-- VESA SHOWCASE:${part}:END -->`, 'g');
       assert.equal((restored.match(marker) || []).length, 1, `${part}: exactly one bounded insertion`);
@@ -143,7 +146,8 @@ class ShowcaseReleaseVerifier {
     assert.match(html, /<dialog\b[^>]*id="vesa-showcase-dialog"/);
     this.report.homepage = {
       original_source_recreated: true,
-      existing_content_intro_scripts_preserved: true,
+      existing_content_and_original_intro_media_preserved: true,
+      approved_intro_eligibility_patch: true,
       menu_entries_added: 1,
       category_links: categoryLinks.length,
       location: 'after portfolio; before capability matrix',
@@ -151,7 +155,7 @@ class ShowcaseReleaseVerifier {
     };
   }
 
-  /** Require a strictly newer SW cache identity with no asset-list or fetch drift. */
+  /** Permit the newer cache identity and exact intro v4 request; other SW bytes stay frozen. */
   cache() {
     const before = this.baseline('service-worker.js');
     const after = this.read('service-worker.js');
@@ -161,8 +165,9 @@ class ShowcaseReleaseVerifier {
     assert.ok(oldName && newName, 'Known service-worker cache declaration');
     assert.notEqual(newName, oldName, 'Cache identity must advance');
     assert.ok(Number(newName.match(/^vesa-v(\d+)-/)?.[1]) > Number(oldName.match(/^vesa-v(\d+)-/)?.[1]), 'Cache version must increase');
-    assert.equal(after.replace(cache, "const CACHE='VERSION';"), before.replace(cache, "const CACHE='VERSION';"), 'Service-worker change exceeds the approved cache string');
-    this.report.cache = {before: oldName, after: newName, policy_asset_list_and_app_exclusions_unchanged: true};
+    const originalIntro=HomeIntroOnceVerifier.replaceOnce(after,"'./js/vesa-home-intro.js?v=4'","'./js/vesa-home-intro.js?v=3'",'Approved intro precache compatibility');
+    assert.equal(originalIntro.replace(cache, "const CACHE='VERSION';"), before.replace(cache, "const CACHE='VERSION';"), 'Service-worker change exceeds the approved cache/intro request');
+    this.report.cache = {before: oldName, after: newName, policy_and_app_exclusions_unchanged: true, only_intro_script_precache_advanced:true};
   }
 
   /** Compile actual modules without running entry points; checks current bytes only. */

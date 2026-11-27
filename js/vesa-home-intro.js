@@ -1,4 +1,9 @@
-/* The original 10-second film must finish before the already-rendered homepage is revealed. */
+/**
+ * Homepage film page entry. The early HomeIntroVisitGate owns visit persistence;
+ * this existing closure owns only media controls, the overlay and content release.
+ * A permitted first visit retains the original film, sound fallback, Skip and fade.
+ * Other visits release immediately without making the homepage inert or playing.
+ */
 (function(){
   'use strict';
   const root=document.documentElement;
@@ -12,9 +17,13 @@
   const soundLabel=document.getElementById('vesaIntroSoundLabel');
   const skip=document.getElementById('vesaIntroSkip');
   if(!overlay||!video){root.classList.remove('vesa-intro-pending');return;}
+  // Consume the head decision, not the marker it just wrote for the first visit.
+  if(root.dataset.vesaIntroDecision!=='play'||location.hash){
+    video.pause();overlay.remove();root.classList.remove('vesa-intro-pending');return;
+  }
   const background=[document.querySelector('header.site-header'),document.querySelector('main'),document.querySelector('footer.site-footer')].filter(Boolean);
   background.forEach(node=>{node.inert=true;});
-  let completed=false,recoveryMode='',safetyTimer;
+  let completed=false,recoveryMode='',safetyTimer,releaseTimer;
   video.playsInline=true;
   video.loop=false;
   video.playbackRate=1;
@@ -31,8 +40,11 @@
     if(soundLabel)soundLabel.textContent=on?'Music On':'Music Off';
   }
   function release(){
+    clearTimeout(safetyTimer);clearTimeout(releaseTimer);
     overlay.remove();root.classList.remove('vesa-intro-pending');
     background.forEach(node=>{node.inert=false;});
+    window.removeEventListener('hashchange',onSectionNavigation);
+    window.removeEventListener('pagehide',openSiteImmediately);
   }
   function finish(){
     if(completed||!video.ended)return;
@@ -41,7 +53,7 @@
     overlay.classList.add('is-exiting');
     overlay.setAttribute('aria-hidden','true');
     // Retain the very last frame through the fade to avoid revealing content too early.
-    setTimeout(release,matchMedia('(prefers-reduced-motion: reduce)').matches?170:980);
+    releaseTimer=setTimeout(release,matchMedia('(prefers-reduced-motion: reduce)').matches?170:980);
   }
   function showRecovery(mode){
     if(completed)return;
@@ -52,13 +64,15 @@
     if(message)message.textContent=mode==='error'?'The welcome film could not load.':'Tap to continue playing the complete welcome film.';
     if(action)action.textContent=mode==='error'?'Open VESA website':'Play welcome film';
   }
-  // Only an explicit user Skip (or unavailable-video recovery) bypasses the end-frame fade.
+  // Skip, unavailable-media recovery, or navigation releases even during the final fade.
   function openSiteImmediately(){
-    if(completed)return;
+    if(completed&&!overlay.isConnected)return;
     completed=true;clearTimeout(safetyTimer);
     video.pause();
     release();
   }
+  /** Preserve section navigation and its native URL/scroll behavior during playback. */
+  function onSectionNavigation(){if(location.hash)openSiteImmediately();}
   function playWithMuteFallback(){
     if(completed)return;
     const attempt=video.play();
@@ -87,6 +101,8 @@
     if(video.paused&&!video.ended)playWithMuteFallback();
   });
   if(skip)skip.addEventListener('click',openSiteImmediately);
+  window.addEventListener('hashchange',onSectionNavigation);
+  window.addEventListener('pagehide',openSiteImmediately);
   if(action)action.addEventListener('click',()=>{
     if(recoveryMode==='error')openSiteImmediately();
     else playWithMuteFallback();

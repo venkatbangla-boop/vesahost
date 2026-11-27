@@ -3,7 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script>document.documentElement.classList.add("vesa-intro-pending");</script>
+  <script id="vesa-home-intro-gate">
+  (function(){
+    'use strict';
+    /**
+     * Own the welcome film's first-visit decision before the page can be obscured.
+     * The inline entry supplies this document and browser. Only one persistent
+     * preference is touched; apps, accounts and other saved records are excluded.
+     * The deferred film controller consumes the per-document decision below.
+     */
+    class HomeIntroVisitGate {
+      /** Bind browser dependencies; construction does not read or write storage. */
+      constructor(root,browser){this.root=root;this.browser=browser;}
+
+      /** Claim this visit before playback; unavailable storage opens the page directly. */
+      start(){
+        this.root.dataset.vesaIntroDecision='skip';
+        this.root.classList.remove('vesa-intro-pending');
+        try{
+          const key='vesa.home.intro.seen.v1';
+          const storage=this.browser.localStorage;
+          const seen=storage.getItem(key)==='1';
+          // Record deep-link visits too; refreshing or returning must not start the film.
+          if(!seen)storage.setItem(key,'1');
+          const location=this.browser.location;
+          const navigation=this.browser.performance?.getEntriesByType?.('navigation')?.[0];
+          const returning=navigation?.type==='reload'||navigation?.type==='back_forward';
+          const referrer=this.browser.document.referrer;
+          const internal=referrer&&new URL(referrer,location.href).origin===location.origin;
+          const homepage=location.pathname==='/'||location.pathname==='/index.html';
+          if(!seen&&homepage&&!location.hash&&!returning&&!internal){
+            this.root.dataset.vesaIntroDecision='play';
+            this.root.classList.add('vesa-intro-pending');
+          }
+        }catch(_){
+          // Without durable memory, prefer the homepage over an intro that would repeat.
+        }
+      }
+    }
+    new HomeIntroVisitGate(document.documentElement,window).start();
+  })();
+  </script>
   <style>html.vesa-intro-pending,html.vesa-intro-pending body{overflow:hidden!important}html.vesa-intro-pending .vesa-home-intro{position:fixed;inset:0;z-index:2147483000;display:block;background:#090d14}</style>
   <title>VESA Enterprise Inc | Apparel Sourcing Partner Across Bangladesh & India</title>
   <meta name="description" content="VESA Enterprise Inc helps global retailers, importers and brands source garments across Bangladesh and India through product development, factory matching, production management, quality assurance and AI-enhanced workflow visibility.">
@@ -36,7 +76,7 @@
   <!-- VESA SHOWCASE:HEAD:START -->
   <link rel="stylesheet" href="/product-showcase/host.css?v=20261127-2">
   <!-- VESA SHOWCASE:HEAD:END -->
-  <script src="js/vesa-home-intro.js?v=3" defer></script>
+  <script src="js/vesa-home-intro.js?v=4" defer></script>
   <meta property="og:title" content="VESA Enterprise Inc | Apparel Sourcing Partner Across Bangladesh & India">
   <meta property="og:description" content="Premium design-to-delivery apparel sourcing for retailers, importers and brands. Buyer-focused apparel sourcing. Powered by experience. Enhanced by intelligence.">
   <meta property="og:type" content="website">
@@ -132,7 +172,7 @@
 <body data-version="v32-premium-editorial-sourcing" class="v30-premium-header-egenva v31-hero-video-loop v32-premium-editorial">
 <!-- Complete 10-second opening film overlays (but never replaces) the original homepage. -->
 <div class="vesa-home-intro" id="vesaHomeIntro" role="dialog" aria-modal="true" aria-label="VESA ten-second welcome film">
-  <video class="vesa-home-intro__video" id="vesaIntroVideo" autoplay playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-hidden="true">
+  <video class="vesa-home-intro__video" id="vesaIntroVideo" playsinline webkit-playsinline preload="none" disablepictureinpicture aria-hidden="true">
     <source src="assets/vesa-intro-portrait.mp4?v=2" type="video/mp4" media="(max-aspect-ratio: 4/3)">
     <source src="assets/vesa-intro-landscape.mp4?v=2" type="video/mp4">
   </video>

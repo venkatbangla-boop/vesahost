@@ -2,7 +2,7 @@
 // Keep legacy rollback acceptance marker vesa-v116-rollback20-cache-refresh; login GIF rollout advances the cache.
 // Previous verified cache: vesa-v117-login-gif-spanish. Login frame-only refresh.
 // Preserve the verified vesa-v119-login-gif-fit release when the five-language branch is integrated.
-const CACHE='vesa-v122-product-showcase';
+const CACHE='vesa-v123-home-intro-once';
 const ASSETS=[
   './',
   './index.html',
@@ -195,7 +195,7 @@ const ASSETS=[
   './icon-192.png',
   './icon-512.png',
   './css/vesa-home-intro.css?v=3',
-  './js/vesa-home-intro.js?v=3',
+  './js/vesa-home-intro.js?v=4',
   './assets/hero-video-poster.jpg',
   './assets/hero-background-loop.mp4',
   './assets/hero-background-loop.webm',

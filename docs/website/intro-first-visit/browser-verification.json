@@ -1,0 +1,27 @@
+{
+  "baseline": "f847ae5fbe2b2a5c502be25f4d1efc8b6e7376f5",
+  "method": "CUA real Chromium, managed preview at http://127.0.0.1:4173/",
+  "fixture_scope": "QA HTML outside repository; only vesa.home.intro.seen.v1 reset in local preview, never production storage.",
+  "checks": {
+    "first_root": "intro shown, decision play, script v4",
+    "refresh_during_intro": "intro element absent, decision skip, main not inert",
+    "first_portfolio": "no intro, correct section URL",
+    "portfolio_reload": "no intro, hash retained, section top 58.484375px",
+    "return_in_new_tab": "homepage directly",
+    "skip_then_reload": "no intro",
+    "natural_completion": "video currentTime 0.248619, paused false observed; overlay naturally detached within 20-second wait",
+    "hash_during_playback": "#contact removes overlay, content not inert, original document decision remains play",
+    "showcase_navigation": "menu opens M16; Home return no intro; category opens Ladies L29 popup"
+  },
+  "runtime_sha256": {
+    "index.html": "95af233678dfab337d103c21e725277747994f8bb1633b6545b2b407d882c040",
+    "js/vesa-home-intro.js": "71c1e24299e4952ad5c07d2a3bad2a3eb8b7b3dc8ebba2610e6f28434eba7cc4",
+    "service-worker.js": "435e09a0007e48f1b9874143882b337c7557a3de3e6f97fd8dd3a13c15c0631f"
+  },
+  "verdict": "browser candidate accepted",
+  "limits": [
+    "Desktop Chromium, not physical-device or cross-engine certification.",
+    "Storage failures and final-fade timer races are checked separately by bounded Node fixtures.",
+    "These are preview observations; public deployment is verified after publishing."
+  ]
+}
