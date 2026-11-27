@@ -1,0 +1,46 @@
+# Independent source and browser-facing verification for the public VESA site.
+# This file owns verification only; it neither deploys nor alters site/business data.
+name: VESA public site and showcase audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'product-showcase/**'
+      - 'tests/product-showcase*.cjs'
+      - 'tests/vesa-site-integrity.cjs'
+      - '.github/workflows/vesa-site-audit.yml'
+      - 'index.html'
+      - 'login/**'
+      - 'apps/**'
+      - 'js/**'
+      - 'css/**'
+      - 'service-worker.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  site-audit:
+    name: Static routes, product navigation and existing platform contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Public pages, links and required resources
+        run: node tests/vesa-site-integrity.cjs
+      - name: Product showcase source and navigation regressions
+        run: |
+          node --check product-showcase/experience.js
+          node --check product-showcase/category-navigation.js
+          node --check product-showcase/bootstrap.js
+          node tests/product-showcase-category.test.cjs
+          node tests/product-showcase.test.cjs
+      - name: Intro, global language and integrity gates
+        run: |
+          node tests/vesa-home-intro-once.cjs
+          node tests/vesa-global-language.cjs
+          node tests/vesa-blueprint-integrity.cjs
