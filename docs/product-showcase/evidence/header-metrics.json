@@ -1,0 +1,32 @@
+[
+  {
+    "brandGap": 7.359375,
+    "ctaGap": 7.359375,
+    "label": "Showcase",
+    "width": 966
+  },
+  {
+    "brandGap": 28.859375,
+    "ctaGap": 28.859375,
+    "label": "Showcase",
+    "width": 1009
+  },
+  {
+    "brandGap": 66.859375,
+    "ctaGap": 66.859375,
+    "label": "Showcase",
+    "width": 1085
+  },
+  {
+    "brandGap": 40.953125,
+    "ctaGap": 40.96875,
+    "label": "Product showcase",
+    "width": 1086
+  },
+  {
+    "brandGap": 80.453125,
+    "ctaGap": 80.46875,
+    "label": "Product showcase",
+    "width": 1165
+  }
+]

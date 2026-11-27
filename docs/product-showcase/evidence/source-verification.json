@@ -1,0 +1,86 @@
+{
+  "baseline": "9d5e9610d7176a557b0250e0a08eeb1c9f67824e",
+  "scope": "source parity, pure catalogue/navigation and bounded controller fixtures; browser proof is separate",
+  "original_files": {
+    "tracked_baseline": 665,
+    "changed": [
+      "index.html",
+      "service-worker.js"
+    ],
+    "all_other_original_paths_unchanged": true,
+    "added_paths_within_locked_scope": true
+  },
+  "homepage": {
+    "original_source_recreated": true,
+    "existing_content_intro_scripts_preserved": true,
+    "menu_entries_added": 1,
+    "category_links": 68,
+    "location": "after portfolio; before capability matrix",
+    "parent_owned_dialog": true
+  },
+  "cache": {
+    "before": "vesa-v121-app-live-language",
+    "after": "vesa-v122-product-showcase",
+    "policy_asset_list_and_app_exclusions_unchanged": true
+  },
+  "syntax_modules": [
+    "catalogue.js",
+    "director.js",
+    "garment-details.js",
+    "experience.js",
+    "bootstrap.js",
+    "host.js"
+  ],
+  "viewer": {
+    "annotation_owner_sha256": "5c7fbc212edd0ef67ea2fa7412a0420602c8adb747e9817e2921ce1d143c2a9b",
+    "reviewed_control_ids_retained": 39,
+    "unique_ids": true
+  },
+  "catalogue": {
+    "groups": {
+      "all": 91,
+      "men": 34,
+      "ladies": 29,
+      "boys": 12,
+      "girls": 12,
+      "baby": 4
+    },
+    "slide_visits": 182,
+    "collection_selections": 546,
+    "id_and_name_search_cases": 182,
+    "wrap_invalid_selection_and_immutability": true
+  },
+  "host": {
+    "route_records": 91,
+    "invalid_item_cases": 9,
+    "trusted_frames_only": true,
+    "height_bounds": true,
+    "lazy_load": true,
+    "intro_inert_preserved": true,
+    "modal_focus_scroll_overflow_restored": true,
+    "native_modifier_and_external_links_preserved": true,
+    "bfcache_host_survives": true
+  },
+  "bootstrap": {
+    "known_route_cases": 191,
+    "invalid_asset_urls_rejected": 5,
+    "parent_origin_source_version_and_value_guards": true,
+    "nested_index_escape_preserved": true,
+    "failed_image_recovers_and_ready_sent_once": true
+  },
+  "experience": {
+    "atomic_group_selection": true,
+    "external_suspension_preserves_play_preference": true,
+    "hidden_offscreen_blur_dialog_hover_inspection_holds": true,
+    "held_views_have_no_raf": true,
+    "keyboard_pause_durable": true,
+    "scene_arrows_and_space": true,
+    "button_native_keys_preserved": true
+  },
+  "render_races": {
+    "stale_initial_arrival_ignored": true,
+    "current_failure_and_recovery_reported": true,
+    "destroyed_arrival_ignored": true
+  },
+  "verdict": "accepted"
+}

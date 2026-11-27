@@ -1,0 +1,61 @@
+{
+  "scope": "Real Chromium browser with CUA; viewport fixtures are CSS-sized browsing contexts, not physical-device certification.",
+  "desktop": {
+    "viewport": "1363 \u00d7 936 browser content",
+    "intro_skip": "pass",
+    "portfolio_then_inline_then_matrix": "pass",
+    "side_model_selection": "M16 to M17, correct title and current image",
+    "top_inspection": "correct Printed Woven Shirt callout",
+    "expand_current_selection": "M17 retained",
+    "nested_index_search": "L29 returned only matching record",
+    "nested_escape": "search clears then inner dialog closes; outer stays until subsequent Escape",
+    "inline_focus_return": "View larger receives focus",
+    "category_popup": "L29 and K25 correct collections and products",
+    "menu_page": "standalone route opens",
+    "return_navigation": "category popup works after browser Back"
+  },
+  "mobile": {
+    "widths": [
+      320,
+      360,
+      390
+    ],
+    "horizontal_overflow": false,
+    "long_titles": [
+      "M07",
+      "M29"
+    ],
+    "bottom_inspection": "button works at360",
+    "host_width": 390,
+    "menu_toggle": "pass",
+    "category_popup": "L29 correct",
+    "close_focus": "returns to casual summer dresses link",
+    "close_body_overflow": "restored empty original value",
+    "inline_frame_height": 794,
+    "inline_content_height": 791.546875
+  },
+  "tablet": {
+    "width": 768,
+    "height": 900,
+    "horizontal_overflow": false,
+    "three_models_title_controls": "visible"
+  },
+  "header": {
+    "fixture_widths": [
+      981,
+      1024,
+      1100,
+      1101,
+      1180
+    ],
+    "minimum_brand_and_cta_gap_px": 7.359375,
+    "overlap": false,
+    "compact_label": "981 through1100 uses Showcase; accessible name Product showcase"
+  },
+  "limits": [
+    "No physical iOS/Android device certification or measured frame-rate claim.",
+    "All91 assets decoded and alpha/hash checked by source gate; representative UI journeys exercised in browser.",
+    "Preview files outside repository; production files kept unchanged by QA wrappers."
+  ],
+  "verdict": "accepted for authorized publication"
+}

@@ -1,0 +1,200 @@
+/* Frame-local product collection. CSS owns responsive geometry and resting poses;
+   SceneDirector owns temporary transitions, GarmentDetails owns annotations. This
+   stylesheet runs only in the dedicated viewer document, never in the homepage.
+   Inline mode uses content height independent of its own iframe viewport height. */
+body { margin: 0; background: #fbf8f1; }
+.vesa-showcase {
+  --ink: #172632; --muted: #5d6465; --accent: #7d7058;
+  --scene-rgb: 117, 140, 132; --px: 0px; --py: 0px;
+  color-scheme: light; color: var(--ink); font-family: Arial, Helvetica, sans-serif;
+  background: #fbf8f1; position: relative; isolation: isolate; display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto; height: 100svh; min-height: 660px;
+  overflow: hidden; padding-inline: clamp(22px, 5.2vw, 88px); touch-action: pan-y;
+}
+.vesa-showcase *, .vesa-showcase *::before, .vesa-showcase *::after { box-sizing: border-box; }
+.vesa-showcase button, .vesa-showcase input { font: inherit; }
+.vesa-showcase button { color: inherit; background: none; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.vesa-showcase button:focus-visible, .vesa-showcase input:focus-visible, .vesa-showcase .scene:focus-visible { outline: 2px solid #2a544c; outline-offset: 4px; }
+.vesa-showcase [hidden] { display: none !important; }
+.vesa-showcase .scenery { position: absolute; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+.vesa-showcase .environment { position: absolute; inset: -3%; background: radial-gradient(ellipse at 68% 33%, #fffdf8 0%, #fbf8f1 46%, rgba(var(--scene-rgb), .12) 100%); transform: translate(var(--px), var(--py)) scale(1.03); transition: transform .45s ease-out; }
+.vesa-showcase .light-beam { position: absolute; inset: -20% -10%; opacity: .24; background: linear-gradient(110deg, transparent 40%, #fff 51%, transparent 63%); animation: vesa-light-drift 18s ease-in-out infinite alternate; }
+.vesa-showcase[data-motion-paused="true"] .light-beam { animation-play-state: paused; }
+.vesa-showcase .masthead { z-index: 5; display: flex; align-items: center; justify-content: space-between; min-height: 78px; border-bottom: 1px solid #6a76651f; gap: 16px; }
+.vesa-showcase .brand-name { font-size: 32px; line-height: 1; font-weight: 800; letter-spacing: -1.8px; }
+.vesa-showcase .brand-dot { color: var(--accent); }
+.vesa-showcase .index-trigger { display: inline-flex; gap: 10px; align-items: center; min-height: 44px; padding: 8px 0 8px 8px; font-size: 14px; font-weight: 600; }
+.vesa-showcase .index-trigger svg { color: var(--accent); }
+.vesa-showcase .presentation { position: relative; min-height: 0; display: grid; grid-template-columns: minmax(0, .77fr) minmax(0, 1.63fr); gap: clamp(18px, 2.3vw, 36px); }
+.vesa-showcase .copy { align-self: center; min-width: 0; padding-block: 26px; z-index: 3; }
+.vesa-showcase .eyebrow { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--muted); }
+.vesa-showcase .headline-mask { margin: 14px 0 26px; }
+.vesa-showcase h1 { margin: 0; font: 400 clamp(35px, 4.1vw, 60px)/1.07 Georgia, 'Times New Roman', serif; letter-spacing: -.045em; overflow-wrap: anywhere; text-wrap: balance; }
+.vesa-showcase .garment-switch { display: flex; gap: 8px; flex-wrap: wrap; }
+.vesa-showcase .garment-switch button { display: inline-flex; gap: 8px; align-items: center; justify-content: center; min-height: 44px; min-width: 76px; padding: 10px 17px; border: 1px solid #7c887b61; border-radius: 24px; font-size: 14px; font-weight: 600; transition: background .16s, color .16s; }
+.vesa-showcase .garment-switch button::before { content: '+'; font-size: 17px; font-weight: 400; }
+.vesa-showcase .garment-switch button[aria-pressed="true"] { color: #fff; background: var(--ink); border-color: var(--ink); }
+.vesa-showcase .garment-switch button[aria-pressed="true"]::before { content: '−'; }
+.vesa-showcase .detail-slot { position: relative; min-height: 81px; padding-top: 14px; }
+.vesa-showcase .inspection-help { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.5; }
+.vesa-showcase .detail-summary { padding: 10px 13px; border-left: 2px solid #627768; background: #ffffff80; border-radius: 0 6px 6px 0; }
+.vesa-showcase .detail-meta { display: flex; gap: 5px; align-items: center; color: #506457; font-size: 13px; line-height: 1.4; margin-bottom: 3px; }
+.vesa-showcase .detail-summary strong, .vesa-showcase .garment-callout strong { display: block; font-size: 14px; line-height: 1.4; font-weight: 600; overflow-wrap: anywhere; }
+.vesa-showcase .scene { position: relative; min-width: 0; min-height: 0; margin-block: 24px 22px; }
+.vesa-showcase .architecture { position: absolute; inset: 0; pointer-events: none; transform: translate(calc(var(--px) * .5), calc(var(--py) * .35)); transition: transform .45s ease-out; }
+.vesa-showcase .portal-core { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: 80%; height: 99%; border-radius: 50% 50% 3px 3px / 32% 32% 3px 3px; background: linear-gradient(145deg, #ffffff6e, rgba(var(--scene-rgb), .12)); border: 1px solid #7b857717; }
+.vesa-showcase .floor { position: absolute; left: 15%; right: 15%; height: 15px; bottom: -1px; border-radius: 50%; background: #43534512; filter: blur(12px); }
+.vesa-showcase .actor-stage, .vesa-showcase .cast { position: absolute; inset: 0; pointer-events: none; }
+.vesa-showcase .actor { position: absolute; inset: 12px 27% 10px; display: flex; justify-content: center; align-items: flex-end; padding: 0; transform-origin: center bottom; }
+.vesa-showcase .actor img { display: block; height: 100%; width: 100%; object-fit: contain; object-position: center bottom; user-select: none; pointer-events: none; opacity: 1; filter: blur(0px) drop-shadow(3px 6px 8px #23302812); }
+.vesa-showcase .scene-error { position: absolute; inset: 20% 10%; display: grid; place-items: center; text-align: center; font-size: 16px; color: var(--muted); }
+.vesa-showcase .garment-callout { position: absolute; z-index: 8; width: max-content; min-width: 132px; max-width: 232px; background: #fffff9f5; border: 1px solid #a6b2a6; border-radius: 8px; padding: 12px 14px; box-shadow: 0 8px 24px #162b2312; pointer-events: none; animation: vesa-callout-in .16s ease-out; }
+.vesa-showcase .garment-pin { position: absolute; z-index: 9; width: 11px; height: 11px; transform: translate(-50%, -50%); border: 2px solid #fff; background: #526c59; border-radius: 50%; box-shadow: 0 0 0 4px #526c5929; pointer-events: none; }
+.vesa-showcase .garment-line { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 7; pointer-events: none; }
+.vesa-showcase .garment-line path { stroke: #69806c; stroke-width: 1; }
+.vesa-showcase .control-zone { position: relative; z-index: 4; display: flex; justify-content: space-between; align-items: center; gap: 28px; padding-block: 18px 24px; border-top: 1px solid #6a76652b; }
+.vesa-showcase .chapter-nav { display: flex; align-items: center; gap: clamp(14px, 2vw, 30px); }
+.vesa-showcase .chapter-nav button { position: relative; padding: 10px 2px; min-height: 44px; min-width: 44px; white-space: nowrap; font-size: 14px; color: var(--muted); }
+.vesa-showcase .chapter-nav button.active { font-weight: 600; color: var(--ink); }
+.vesa-showcase .chapter-nav button.active::after { content: ''; position: absolute; bottom: 1px; left: 2px; right: 2px; height: 2px; background: var(--accent); }
+.vesa-showcase .transport, .vesa-showcase .transport-actions { display: flex; align-items: center; gap: 10px; }
+.vesa-showcase .timeline { min-width: 85px; width: 110px; margin-right: 12px; }
+.vesa-showcase .count { font-size: 19px; font-weight: 600; line-height: 1.3; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.vesa-showcase .count-total { font-size: 13px; font-weight: 400; color: var(--muted); }
+.vesa-showcase .track { height: 2px; background: #89988547; overflow: hidden; margin-top: 5px; }
+.vesa-showcase .progress { width: 0; height: 100%; background: #506b59; }
+.vesa-showcase .arrow, .vesa-showcase .play, .vesa-showcase .close-button { display: grid; place-items: center; width: 44px; height: 44px; min-width: 44px; padding: 0; border: 1px solid #7c887b80; border-radius: 50%; }
+.vesa-showcase .arrow svg, .vesa-showcase .play svg, .vesa-showcase .close-button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.vesa-showcase .play { background: #ffffff6e; }
+.vesa-showcase .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.vesa-showcase .index-dialog { width: min(1030px, calc(100% - 28px)); max-height: 88svh; padding: 26px; background: #fbf8f1; color: var(--ink); border: 1px solid #bfc8bb; border-radius: 14px; box-shadow: 0 20px 80px #18291f29; overflow: auto; }
+.vesa-showcase .index-dialog::backdrop { background: #162d236e; backdrop-filter: blur(5px); }
+.vesa-showcase .drawer-head { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
+.vesa-showcase .drawer-head h2 { font: 400 clamp(27px, 4vw, 42px)/1.12 Georgia, serif; letter-spacing: -.035em; margin: 0 0 10px; }
+.vesa-showcase .drawer-note { font-size: 13px; line-height: 1.5; color: var(--muted); margin: 0 0 20px; }
+.vesa-showcase .index-dialog input { width: 100%; min-height: 48px; padding: 12px; border: 1px solid #9fab9e; border-radius: 7px; background: #fff; margin-bottom: 18px; font-size: 16px; }
+.vesa-showcase .index-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.vesa-showcase .index-item { display: flex; flex-direction: column; align-items: stretch; text-align: left; gap: 6px; padding: 12px; border-radius: 8px; border: 1px solid #81917a2b; background: #f4f0e7; }
+.vesa-showcase .index-item img { width: 100%; height: 152px; object-fit: contain; margin-bottom: 6px; }
+.vesa-showcase .index-item small { font-size: 12px; line-height: 1.4; color: #5d685c; }
+.vesa-showcase .index-item b { font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
+.vesa-showcase #empty { font-size: 16px; line-height: 1.5; }
+@media (hover: hover) {
+  .vesa-showcase .arrow:hover, .vesa-showcase .play:hover, .vesa-showcase .garment-switch button:not([aria-pressed="true"]):hover { background: #fff9; }
+  .vesa-showcase .index-item:hover { background: #eee8dc; border-color: #a19888; }
+}
+@media (max-width: 1000px) {
+  .vesa-showcase { padding-inline: 4%; }
+  .vesa-showcase .presentation { grid-template-columns: minmax(0, .8fr) minmax(0, 1.6fr); gap: 18px; }
+  .vesa-showcase h1 { font-size: clamp(35px, 4.9vw, 52px); }
+  .vesa-showcase .control-zone { gap: 18px; }
+  .vesa-showcase .chapter-nav { gap: 10px; }
+  .vesa-showcase .timeline { width: 80px; min-width: 60px; margin-right: 0; }
+  .vesa-showcase .transport, .vesa-showcase .transport-actions { gap: 7px; }
+}
+@media (max-width: 700px) {
+  .vesa-showcase { height: auto; min-height: 100svh; padding-inline: max(16px, 5%); overflow: hidden; }
+  .vesa-showcase .masthead { min-height: 62px; }
+  .vesa-showcase .brand-name { font-size: 28px; }
+  .vesa-showcase .index-trigger { font-size: 14px; }
+  .vesa-showcase .presentation { grid-template-columns: minmax(0, 1fr); grid-template-rows: 350px auto; gap: 0; }
+  .vesa-showcase .scene { order: -1; margin-block: 15px 10px; min-height: 255px; }
+  .vesa-showcase .actor { inset: 6px 27% 6px; }
+  .vesa-showcase .portal-core { width: 86%; }
+  .vesa-showcase .copy { padding-block: 9px 12px; align-self: start; }
+  .vesa-showcase .eyebrow { font-size: 14px; }
+  .vesa-showcase .headline-mask { margin: 7px 0 15px; }
+  .vesa-showcase h1 { font-size: clamp(28px, 7.6vw, 38px); line-height: 1.07; text-wrap: pretty; }
+  .vesa-showcase .garment-switch button { padding-inline: 16px; }
+  .vesa-showcase .detail-slot { min-height: 84px; padding-top: 11px; }
+  .vesa-showcase .detail-summary { padding-block: 9px; }
+  .vesa-showcase .detail-meta { font-size: 13px; }
+  .vesa-showcase .control-zone { display: flex; flex-direction: column; align-items: stretch; gap: 10px; padding-block: 8px max(18px, env(safe-area-inset-bottom)); }
+  .vesa-showcase .chapter-nav { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; }
+  .vesa-showcase .chapter-nav button { min-width: 0; padding-inline: 1px; }
+  .vesa-showcase .transport { justify-content: space-between; }
+  .vesa-showcase .timeline { display: flex; align-items: center; gap: 13px; width: 43%; max-width: 190px; }
+  .vesa-showcase .track { flex: 1; margin: 0; }
+  .vesa-showcase .transport-actions { gap: 8px; }
+  .vesa-showcase .index-dialog { padding: 18px; }
+  .vesa-showcase .index-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .vesa-showcase .index-item { padding: 9px; }
+  .vesa-showcase .index-item img { height: 124px; }
+  .vesa-showcase .index-item b { font-size: 14px; }
+}
+@media (max-width: 360px) {
+  .vesa-showcase .chapter-nav button { font-size: 13px; }
+  .vesa-showcase .index-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* Landscape phones retain natural content height and scroll; type and targets never shrink. */
+@media (min-width: 701px) and (max-height: 600px) {
+  .vesa-showcase { height: auto; min-height: 580px; }
+  .vesa-showcase .masthead { min-height: 62px; }
+  .vesa-showcase .presentation { min-height: 410px; }
+  .vesa-showcase .copy { padding-block: 20px; }
+  .vesa-showcase h1 { font-size: clamp(32px, 4vw, 44px); }
+  .vesa-showcase .scene { margin-block: 15px; }
+}
+@keyframes vesa-light-drift { from { transform: translateX(-3%); } to { transform: translateX(4%); } }
+@keyframes vesa-callout-in { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .vesa-showcase *, .vesa-showcase *::before, .vesa-showcase *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+
+/* Centre and adjacent actors share identical boxes so ID-based transitions can
+   interpolate between resting transforms without altering garment proportions. */
+.vesa-showcase .hero { z-index: 3; transform: translateX(0%) translateY(0px) scale(1); pointer-events: auto; }
+.vesa-showcase .side-model { z-index: 1; pointer-events: auto; border-radius: 12px; touch-action: pan-y; }
+.vesa-showcase .side-model[data-pos="-1"] { transform: translateX(-68%) translateY(-22px) scale(.70); }
+.vesa-showcase .side-model[data-pos="1"] { transform: translateX(68%) translateY(-22px) scale(.70); }
+.vesa-showcase .side-model img { opacity: .30; filter: blur(1px) drop-shadow(3px 6px 8px #23302812); }
+.vesa-showcase .side-model[data-image-ready="false"] img { visibility: hidden; }
+.vesa-showcase .side-model:focus-visible { outline: 3px solid #334e61; outline-offset: 3px; }
+.vesa-showcase .side-model:focus-visible img { opacity: .48; }
+.vesa-showcase[data-scene-ready="false"] .side-model { pointer-events: none; }
+.vesa-showcase .portal-core { width: 70%; border: 0; background: radial-gradient(ellipse at 50% 68%, rgba(var(--scene-rgb), .07), transparent 72%); }
+.vesa-showcase .floor { left: 25%; right: 25%; opacity: .55; }
+.vesa-showcase .viewer-actions { display: flex; align-items: center; justify-content: flex-end; gap: 16px; margin-left: auto; }
+.vesa-showcase #standalone-home { display: inline-flex; align-items: center; min-height: 52px; color: inherit; }
+.vesa-showcase #standalone-home img { display: block; width: 148px; height: auto; max-height: 58px; object-fit: contain; }
+.vesa-showcase #standalone-home:focus-visible { outline: 2px solid #334e61; outline-offset: 3px; }
+.vesa-showcase #showcase-heading { margin: 0; font: 700 clamp(18px, 2vw, 25px)/1.2 Arial, Helvetica, sans-serif; letter-spacing: -.025em; }
+.vesa-showcase #expand-view { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 9px 14px; border: 1px solid #7c887b61; border-radius: 24px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.vesa-showcase #expand-view svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.vesa-showcase #load-status { margin: 10px 0; font-size: 14px; line-height: 1.45; }
+.vesa-showcase #load-status:empty { display: none; }
+.vesa-showcase[data-mode="page"] #showcase-heading,
+.vesa-showcase[data-mode="page"] #expand-view,
+.vesa-showcase[data-mode="inline"] #standalone-home,
+.vesa-showcase[data-mode="modal"] #standalone-home,
+.vesa-showcase[data-mode="modal"] #showcase-heading,
+.vesa-showcase[data-mode="modal"] #expand-view { display: none; }
+/* Height comes from fixed stage + flowing copy/controls; iframe resize messages
+   therefore converge instead of feeding a viewport-unit sizing loop. */
+.vesa-showcase[data-mode="inline"] { height: auto; min-height: 0; padding-inline: clamp(18px, 3vw, 40px); }
+.vesa-showcase[data-mode="inline"] .presentation { min-height: 540px; }
+.vesa-showcase[data-mode="inline"] .masthead { min-height: 76px; }
+.vesa-showcase[data-mode="modal"] .masthead { min-height: 58px; }
+.vesa-showcase[data-mode="modal"] { min-height: 620px; }
+@media (hover: hover) {
+  .vesa-showcase .side-model:hover img { opacity: .42; }
+  .vesa-showcase #expand-view:hover { background: #fff9; }
+}
+@media (max-width: 700px) {
+  .vesa-showcase .masthead { flex-wrap: wrap; padding-block: 10px; gap: 8px; }
+  .vesa-showcase .viewer-actions { gap: 12px; }
+  .vesa-showcase #standalone-home img { width: 116px; max-height: 44px; }
+  .vesa-showcase[data-mode="inline"] .masthead { min-height: 96px; }
+  .vesa-showcase[data-mode="inline"] #showcase-heading { flex-basis: 100%; }
+  .vesa-showcase[data-mode="inline"] .presentation { min-height: 0; }
+  .vesa-showcase[data-mode="inline"] .scene { min-height: 0; }
+  .vesa-showcase[data-mode="modal"] { min-height: 0; height: auto; }
+  .vesa-showcase[data-mode="modal"] .masthead { min-height: 58px; }
+  .vesa-showcase .side-model[data-pos="-1"] { transform: translateX(-68%) translateY(-14px) scale(.70); }
+  .vesa-showcase .side-model[data-pos="1"] { transform: translateX(68%) translateY(-14px) scale(.70); }
+}
+@media (max-width: 360px) {
+  .vesa-showcase .presentation { grid-template-rows: 320px auto; }
+  .vesa-showcase .chapter-nav button { font-size: 14px; }
+}
