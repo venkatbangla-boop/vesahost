@@ -51,7 +51,7 @@ class MotionExperience {
     this.navigation=new CategoryNavigation(this.root.querySelector('#chapters'),this.catalogue,{
       onSelect:(group,id)=>{
         this.scene.focus({preventScroll:true});
-        this.select(group,id);
+        this.select(group,id,1,{pause:true});
       },
       onOpenChange:open=>{
         if(open){this.director.settle();this.details.clear()}
@@ -264,16 +264,22 @@ class MotionExperience {
    * Apply a validated route or neighbor selection, atomically. An item outside the
    * requested group is rejected rather than silently opening a different category.
    * Before start this only initializes state; afterward it renders changed selections.
+   * Explicit menu choices pass pause:true to keep the chosen product visible until
+   * Play, including a repeated choice. Other callers preserve the play preference.
    */
-  select(group,id=null,direction=1) {
+  select(group,id=null,direction=1,{pause=false}={}) {
     if(this.destroyed||!Object.hasOwn(this.catalogue.groups,group))return false;
     const record=id?this.catalogue.get(id):null;
     if(id&&(!record||(group!=='all'&&record.group!==group)))return false;
+    if(pause) {
+      this.playing=false;this.elapsed=0;this.hoverOverride=false;
+    }
     const before=this.selection;
     this.state.selectGroup(group);
     if(record)this.state.selectId(record.id);
     const changed=before.group!==this.state.group||before.item!==this.state.current.id;
     if(this.started&&changed)this.render(direction);
+    else if(this.started&&pause) {this.updateProgress();this.reconcileMotion()}
     return true;
   }
   /**

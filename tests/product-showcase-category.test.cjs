@@ -112,6 +112,140 @@ class CategoryReleaseVerifier {
     n.open('girls');n.destroy();assert.equal(n.events.signal.aborted,true);assert.equal(n.isOpen,false);assert.equal(timers.size,0);
     this.results.interactions={all121_item_choices:true,hover_without_selection:true,rightmost_panel_bounds:true,hover_bridge:true,escape_focus_return:true,outside_click:true,mobile_tap:true,collection_browse:true,cleanup:true};
   }
+  /** Run the queued browser-task boundary once, without bypassing cancellation. */
+  flushTimers(f){
+    for(const [id,callback]of [...f.timers]){
+      if(!f.timers.delete(id))continue;
+      callback();
+    }
+  }
+  /**
+   * Replay touch focus transfer before the compatibility click. activeElement is
+   * deliberately transient here: an internal relatedTarget must not dismiss the
+   * disclosure. This covers the event-order gap missed by direct-click fixtures.
+   */
+  touchFocus(){
+    const f=this.fixture(),{navigation:n,root,document,selected,timers}=f;
+    f.window.innerWidth=390;f.media.matches=false;
+    const rows=[...this.records,{...this.records.find(row=>row.id==='K28'),group:'all'}];
+    for(const row of rows){
+      const trigger=n.buttons.get(row.group),before=selected.length;
+      trigger.emit('click');document.activeElement=trigger;
+      const button=n.list.querySelectorAll('button[data-item]').find(node=>node.dataset.item===row.id);
+      root.emit('pointerenter',{pointerType:'touch'});
+      root.emit('pointerleave',{pointerType:'touch'});
+      document.activeElement=null;
+      root.emit('focusout',{target:trigger,relatedTarget:button});
+      assert.equal(n.isOpen,true,row.id+' internal touch focus keeps choices available');
+      assert.equal(n.panel.hidden,false,row.id+' product stays visible before click');
+      document.activeElement=button;root.emit('focusin',{target:button});
+      n.list.emit('click',{target:button});
+      this.flushTimers(f);
+      assert.equal(selected.length,before+1,row.id+' selects exactly once');
+      assert.deepEqual(selected.at(-1),{group:row.group,id:row.id,closed:true});
+    }
+    for(const cancelOnFocusIn of [false,true]){
+      n.open('baby');document.activeElement=null;
+      root.emit('focusout',{relatedTarget:null});
+      assert.equal(n.isOpen,true,'Unknown focus destination must wait for focus settlement');
+      assert.equal(timers.size,1,'Unknown focus has one cancellable deferred check');
+      const button=n.list.querySelectorAll('button[data-item]').find(node=>node.dataset.item==='K27');
+      document.activeElement=button;
+      if(cancelOnFocusIn){root.emit('focusin',{target:button});assert.equal(timers.size,0)}
+      this.flushTimers(f);assert.equal(n.isOpen,true,'Settled internal focus retains disclosure');
+      const before=selected.length;n.list.emit('click',{target:button});
+      assert.equal(selected.length,before+1);assert.equal(selected.at(-1).id,'K27');
+    }
+    n.open('baby');const outside=new CategoryElement(document);document.activeElement=outside;
+    root.emit('focusout',{relatedTarget:outside});this.flushTimers(f);
+    assert.equal(n.isOpen,false,'Actual keyboard focus exit dismisses disclosure');
+    for(const action of ['outside','escape','close']){
+      n.open('baby');document.activeElement=null;root.emit('focusout',{relatedTarget:null});
+      assert.equal(timers.size,1);
+      if(action==='outside')document.events.emit('pointerdown',{target:outside});
+      else if(action==='escape')document.events.emit('keydown',{key:'Escape',preventDefault(){},stopPropagation(){}});
+      else n.close();
+      assert.equal(n.isOpen,false,action+' closes a pending focus check');
+      assert.equal(timers.size,0,action+' cancels pending dismissal');
+    }
+    n.open('baby');document.activeElement=null;root.emit('focusout',{relatedTarget:null});
+    assert.equal(timers.size,1);const holds=f.holds.length;
+    n.destroy();assert.equal(timers.size,0);this.flushTimers(f);
+    assert.equal(f.holds.length,holds+1,'Destroy emits one close and no stale callback');
+    for(const action of ['close','destroy']){
+      const g=this.fixture(),nav=g.navigation;nav.open('baby');
+      const button=nav.list.querySelectorAll('button[data-item]')[0];g.document.activeElement=button;
+      let hidden=nav.panel.hidden;
+      // A browser can synchronously blur a focused descendant when hidden is set.
+      Object.defineProperty(nav.panel,'hidden',{get(){return hidden},set(value){
+        hidden=value;
+        if(value){g.document.activeElement=null;g.root.emit('focusout',{target:button,relatedTarget:null})}
+      }});
+      nav[action]();assert.equal(nav.isOpen,false);
+      assert.equal(g.timers.size,0,action+' cannot schedule new work from its own focusout');
+      nav.destroy();
+    }
+    this.results.touch_focus={individual_choices:121,all_collection_choice:true,baby_short_and_dress:true,internal_focus_before_click:true,null_destination_settlement:true,focusin_cancels_deferred_close:true,genuine_focus_exit:true,outside_escape_and_close:true,destroy_cancels_pending_work:true,teardown_focusout_cannot_schedule_work:true};
+  }
+  /**
+   * Wire the real controller start/select/play owners and real navigation. Only
+   * image rendering, layout observation and RAF scheduling are bounded substitutes;
+   * this fixture verifies the installed menu callback, not a copied callback.
+   */
+  controllerFixture(){
+    const f=this.fixture();f.navigation.destroy();f.root.querySelector('#collection-controls').replaceChildren();
+    f.root.id='chapters';f.window.innerWidth=390;f.media.matches=false;f.document.hidden=false;
+    const root=new CategoryElement(f.document);root.append(f.root);
+    for(const id of ['scene','index-dialog','search','index-grid','progress','previous','next','play','open-index','close-index','garment-switch']){
+      const node=new CategoryElement(f.document);node.id=id;root.append(node);
+    }
+    const controller=Object.create(f.owners.MotionExperience.prototype),renders=[],reconciliations=[];
+    Object.assign(controller,{root,catalogue:f.catalogue,state:new f.owners.CarouselState(f.catalogue),
+      scene:root.querySelector('#scene'),dialog:root.querySelector('#index-dialog'),search:root.querySelector('#search'),
+      grid:root.querySelector('#index-grid'),progress:root.querySelector('#progress'),reduced:f.media,events:new AbortController(),
+      navigation:null,started:false,destroyed:false,playing:true,duration:6000,elapsed:5900,last:0,frame:0,
+      keyboardFocus:false,hovered:false,hoverOverride:false,visible:true,windowActive:true,externalSuspended:false,
+      inputMode:'pointer',renderVersion:0,details:{inspecting:false,clear(){this.inspecting=false},destroy(){}},
+      director:{ready:true,settle(){},destroy(){},parallax(){}},
+      observeLayout(){},render(direction){renders.push({item:this.state.current.id,playing:this.playing,direction});return Promise.resolve(true)},
+      reconcileMotion(){reconciliations.push(this.canRun)}
+    });
+    controller.state.selectId('M16');controller.start();
+    return {...f,root,navRoot:f.root,navigation:controller.navigation,controller,renders,reconciliations};
+  }
+  /** Manual product choice stays visible until Play; routing retains its old default. */
+  manualSelection(){
+    const f=this.controllerFixture(),c=f.controller,n=f.navigation;
+    assert.equal(c.canRun,true);
+    for(const id of ['K27','K28','K28']){
+      c.playing=true;c.elapsed=5900;c.hoverOverride=true;
+      const same=c.state.current.id===id,beforeRenders=f.renders.length,beforeReconciles=f.reconciliations.length;
+      n.buttons.get('baby').emit('click');
+      assert.equal(c.canRun,false,'An open menu holds the eligible slideshow');
+      const button=n.list.querySelectorAll('button[data-item]').find(node=>node.dataset.item===id);
+      f.navRoot.emit('pointerleave',{pointerType:'touch'});f.document.activeElement=null;
+      f.navRoot.emit('focusout',{relatedTarget:button});
+      f.document.activeElement=button;f.navRoot.emit('focusin',{target:button});n.list.emit('click',{target:button});
+      assert.deepEqual({...c.selection},{group:'baby',item:id});
+      assert.equal(c.playing,false,id+' manual menu choice pauses slideshow');
+      assert.equal(c.canRun,false);assert.equal(c.elapsed,0);assert.equal(c.hoverOverride,false);
+      assert.equal(f.renders.length,beforeRenders+(same?0:1),'Same product is not needlessly re-rendered');
+      if(same){assert.equal(c.progress.style.transform,'scaleX(0)');assert.ok(f.reconciliations.length>beforeReconciles)}
+      else assert.equal(f.renders.at(-1).playing,false,'Render begins with manual playback preference');
+      c.tick(30000);assert.equal(c.state.current.id,id,'A later timer cannot replace the manually chosen product');
+      f.root.querySelector('#play').emit('click');
+      assert.equal(c.playing,true);assert.equal(c.canRun,true,'Installed Play control resumes eligible playback');
+    }
+    assert.equal(c.select('boys','K29'),true);assert.equal(c.playing,true,'Default route selection does not force pause');
+    assert.deepEqual({...c.selection},{group:'boys',item:'K29'});
+    const before={...c.selection,playing:c.playing,elapsed:c.elapsed};
+    assert.equal(c.select('baby','K29',1,{pause:true}),false);
+    assert.deepEqual({...c.selection,playing:c.playing,elapsed:c.elapsed},before,'Invalid manual requests remain atomic');
+    n.open('baby');n.browse.emit('click');
+    assert.equal(c.selection.group,'baby');assert.equal(c.playing,false,'View collection is also a manual navigation choice');
+    c.destroy();assert.equal(c.events.signal.aborted,true);assert.equal(n.destroyed,true);
+    this.results.manual_selection={actual_start_callback:true,baby_short_and_dress:true,same_item_pauses_without_reload:true,manual_choice_stays_until_play:true,installed_play_resumes:true,default_route_playback_preserved:true,invalid_request_atomic:true,collection_browse_pauses:true};
+  }
   /**
    * Execute the production annotation constructor/update for every manifest row.
    * This fixture replaces only image decoding; actual zone selection, reset and
@@ -194,7 +328,7 @@ class CategoryReleaseVerifier {
     assert.ok(!this.read('bootstrap.js').includes('review-embedded-assets'));
     this.results.markup={one_top_category_menu:true,no_preview_banner_or_embedded_adapters:true,intrinsic_inline_height:true};
   }
-  run(){const f=this.fixture();this.coverage(f);this.interactions(f);this.annotations();this.playback();this.markup();return {verdict:'accepted',scope:'bounded Node fixtures; browser proof separate',...this.results}}
+  run(){const f=this.fixture();this.coverage(f);this.interactions(f);this.touchFocus();this.manualSelection();this.annotations();this.playback();this.markup();return {verdict:'accepted',scope:'bounded Node fixtures; browser proof separate',...this.results}}
 }
 try{process.stdout.write(JSON.stringify(new CategoryReleaseVerifier(path.resolve(__dirname,'..')).run(),null,2)+'\n')}
 catch(error){process.stderr.write(error.stack+'\n');process.exitCode=1}

@@ -110,11 +110,7 @@ class CategoryNavigation {
       if (event.pointerType === 'mouse') this.scheduleClose();
     });
     this.listen(this.root, 'focusin', () => this.cancelClose());
-    this.listen(this.root, 'focusout', () => {
-      queueMicrotask(() => {
-        if (!this.destroyed && !this.root.contains(document.activeElement) && !this.pointerInside) this.close();
-      });
-    });
+    this.listen(this.root, 'focusout', event => this.onFocusOut(event));
     this.listen(this.root, 'keydown', event => this.onKeyDown(event));
     this.listen(this.list, 'click', event => this.choose(event));
     this.listen(this.browse, 'click', () => {
@@ -135,6 +131,22 @@ class CategoryNavigation {
     }, {capture:true});
     this.listen(this.desktop, 'change', () => this.close());
     this.listen(window, 'resize', () => this.positionPanel(), {passive:true});
+  }
+
+  /**
+   * Preserve focus moving between controls inside the disclosure. A touch tap can
+   * dispatch focusout while activeElement temporarily refers to the page body;
+   * closing in a microtask would hide the product before its click is delivered.
+   * For a missing/outside destination, use the existing cancellable timer to check
+   * the settled focus. Internal focusin, selection, dismissal and destroy cancel it.
+   */
+  onFocusOut(event) {
+    this.cancelClose();
+    if (this.destroyed || !this.isOpen || (event.relatedTarget && this.root.contains(event.relatedTarget))) return;
+    this.closeTimer = window.setTimeout(() => {
+      this.closeTimer = 0;
+      if (!this.destroyed && !this.root.contains(document.activeElement) && !this.pointerInside) this.close();
+    }, 0);
   }
 
   /**
