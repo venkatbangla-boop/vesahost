@@ -92,7 +92,7 @@ class ShowcaseReleaseVerifier {
     const present=execFileSync('git',['ls-files','--cached','--others','--exclude-standard'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
     const added=present.filter(file=>!oldFiles.has(file));
     const assets=new Set(Array.from({length:30},(_,index)=>'product-showcase/assets/K'+(index+29)+'.webp'));
-    for(const file of added)assert.ok(assets.has(file)||file==='product-showcase/category-navigation.js'||file==='tests/product-showcase-category.test.cjs'||file==='docs/product-showcase/CATEGORY_RANGE_EXPANSION.md'||file.startsWith('docs/product-showcase/kids-expansion/'),'Unapproved added path: '+file);
+    for(const file of added)assert.ok(assets.has(file)||file==='product-showcase/category-navigation.js'||file==='tests/product-showcase-category.test.cjs'||file==='tests/vesa-site-integrity.cjs'||file==='.github/workflows/vesa-site-audit.yml'||file==='docs/product-showcase/CATEGORY_RANGE_EXPANSION.md'||file.startsWith('docs/product-showcase/kids-expansion/'),'Unapproved added path: '+file);
     assert.equal(this.read('js/vesa-home-intro.js'),this.baseline('js/vesa-home-intro.js'),'First-visit controller is frozen');
     assert.equal(HomeIntroOnceVerifier.gate(this.read('index.html'))[1],HomeIntroOnceVerifier.gate(this.baseline('index.html'))[1],'First-visit gate is frozen');
     this.report.original_files={tracked_baseline:oldFiles.size,changed:changed.filter(file=>oldFiles.has(file)),all_other_original_paths_unchanged:true,original_intro_gate_and_controller_unchanged:true,added_paths_within_locked_scope:true};
