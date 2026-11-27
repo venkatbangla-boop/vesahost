@@ -1,6 +1,7 @@
 /**
  * Chess casual-phone browser acceptance.
- * Owns read-only geometry/interaction assertions in disposable Chromium; no
+ * Owns touchscreen-dispatched geometry/gameplay assertions in disposable
+ * Android-like Chromium emulation (not a physical phone); no
  * production game state, backend or user storage is touched.
  */
 'use strict';
@@ -22,7 +23,9 @@ class ChessCasualMobileQA {
   this.browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||undefined,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
  }
  async phone(width,height){
-  const ctx=await this.browser.newContext({viewport:{width,height},serviceWorkers:'block',reducedMotion:'reduce'});
+  const ctx=await this.browser.newContext({viewport:{width,height},
+   isMobile:true,hasTouch:true,deviceScaleFactor:2,
+   serviceWorkers:'block',reducedMotion:'reduce'});
   const page=await ctx.newPage(),errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   try{
@@ -40,15 +43,15 @@ class ChessCasualMobileQA {
    assert.ok(data.board.bottom<=data.player.top+5,'Board/player order '+JSON.stringify(data));
    assert.ok(data.player.bottom<=data.bar.top+5,'Player/review order '+JSON.stringify(data));
    assert.ok(data.bar.bottom<=height+135,'Review stays near board '+JSON.stringify(data));
-   await page.locator('#btnTopStartPause').click();
-   await page.locator('#chessboard [data-sq="52"]').click();
-   await page.locator('#chessboard [data-sq="36"]').click();
+   await page.locator('#btnTopStartPause').tap();
+   await page.locator('#chessboard [data-sq="52"]').tap();
+   await page.locator('#chessboard [data-sq="36"]').tap();
    await page.waitForFunction(()=>Number(document.getElementById('moveRewindScrubber').value)>=2,null,{timeout:20000});
-   await page.locator('#chessCasualBar [data-chess-forward="btnStepFirst"]').click();
+   await page.locator('#chessCasualBar [data-chess-forward="btnStepFirst"]').tap();
    await page.waitForFunction(()=>document.getElementById('moveRewindScrubber').value==='0');
-   await page.locator('#chessCasualBar [data-chess-forward="btnStepLast"]').click();
+   await page.locator('#chessCasualBar [data-chess-forward="btnStepLast"]').tap();
    await page.waitForFunction(()=>Number(document.getElementById('moveRewindScrubber').value)>=1);
-   await page.locator('#chessCasualSave').click();
+   await page.locator('#chessCasualSave').tap();
    assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem('chess3_offline_games_vault_v1')||'[]').length)>=1);
    assert.deepEqual(errors,[]);
    console.log('CHESS_CASUAL_MOBILE_PASS '+JSON.stringify({width,height,barBottom:Math.round(data.bar.bottom)}));

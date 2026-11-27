@@ -1,0 +1,162 @@
+# VESA 20-app release verification after the November 2026 showcase fixes.
+# Owns read-only, disposable synthetic E2E journeys and source-contract checks.
+# Desktop and Android-like Chromium touch modes are emulation, not physical-device UAT.
+# No login credentials, buyer records, shared server data or live app code are changed.
+name: VESA 20 app fresh E2E and touch-emulation
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/vesa-20-app-e2e.yml'
+      - 'tests/vesa-19-app-real-screens.cjs'
+      - 'tests/chess-casual-mobile.cjs'
+      - 'tests/vesa-platform-pages.cjs'
+      - 'tests/vesa-global-language.cjs'
+      - 'tests/vesa-accessibility.cjs'
+      - 'apps/**'
+      - 'js/**'
+      - 'css/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  route-touch:
+    name: 19 garment app journeys and Chess phone interaction
+    runs-on: ubuntu-latest
+    timeout-minutes: 48
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium for real DOM/touch events in emulator contexts
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: 19 apparel/business app opening and Android-like touch-dispatch
+        run: node tests/vesa-19-app-real-screens.cjs
+      - name: Chess 360 opening, board moves, rewind and local save via touch
+        run: node tests/chess-casual-mobile.cjs
+      - name: Login, App Centre and Admin page geometry
+        run: node tests/vesa-platform-pages.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-20-app-route-touch-evidence
+          path: |
+            output/vesa-19-real-screens/
+            output/playwright/
+          if-no-files-found: ignore
+          retention-days: 7
+  language-access:
+    name: All 20 language routes, settings and accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 42
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: All 20 apps retain shared Spanish then Tamil preference
+        run: node tests/vesa-global-language.cjs --browser
+      - name: Keyboard and skip-navigation accessibility
+        run: node tests/vesa-accessibility.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-20-app-language-access-evidence
+          path: output/playwright/
+          if-no-files-found: ignore
+          retention-days: 7
+  domain:
+    name: Synthetic domain tests for all 20 apps
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: AQL, PPM, TNA, Costing, Chess domain contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/aql/tests/a-g02-workflow.cjs
+          node apps/aql/tests/a-g03-sampling.cjs
+          node apps/ppm/tests/p-g00-baseline.cjs
+          node apps/tna/tests/g02-domain.test.js
+          node apps/costing/tests/costing.test.cjs
+          node tests/chess-beast-rules.cjs
+      - name: Sixteen sourcing and operations app domain scenarios
+        shell: bash
+        run: |
+          set -euo pipefail
+          for id in packing-container order-commission tech-pack-spec purchase-order lc-payment sampling-approval fabric-trims shipment-documentation production-tracker factory-vendor label-artwork-approval buyer-crm fabric-supplier-comparison claims-disputes product-development; do
+            echo "APP_DOMAIN_START $id"
+            node "apps/$id/tests/domain.test.cjs"
+            echo "APP_DOMAIN_PASS $id"
+          done
+          echo "VESA_DOMAIN_APPS_PASS 20"
+  business-browser:
+    name: Synthetic business workflow save/reopen and reports
+    runs-on: ubuntu-latest
+    timeout-minutes: 48
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [orders, sourcing]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Per-app workflow cases on disposable local fixture data
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.group }}" = "orders" ]; then
+            APPS="packing-container order-commission tech-pack-spec purchase-order lc-payment sampling-approval fabric-trims shipment-documentation"
+          else
+            APPS="production-tracker factory-vendor label-artwork-approval buyer-crm fabric-supplier-comparison claims-disputes product-development"
+          fi
+          for id in $APPS; do
+            echo "APP_BROWSER_START $id"
+            node "apps/$id/tests/browser-workflow.cjs"
+            echo "APP_BROWSER_PASS $id"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-20-app-browser-${{ matrix.group }}
+          path: output/playwright/
+          if-no-files-found: ignore
+          retention-days: 7
+  live-routes:
+    name: Published public routes match released source (read-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify all 20 HTML entries and Product Showcase from public CDN
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/vesa-20-live
+          for id in aql ppm tna costing packing-container order-commission tech-pack-spec purchase-order lc-payment sampling-approval fabric-trims shipment-documentation production-tracker factory-vendor label-artwork-approval buyer-crm fabric-supplier-comparison claims-disputes product-development chess-360; do
+            curl --retry 5 --retry-all-errors --retry-delay 4 --location --fail --silent --show-error --max-time 50 "https://vesaent.com/apps/$id/" -o "/tmp/vesa-20-live/$id.html"
+            cmp "apps/$id/index.html" "/tmp/vesa-20-live/$id.html"
+            echo "APP_PUBLIC_BYTE_PASS $id"
+          done
+          curl --retry 5 --retry-all-errors --retry-delay 4 --location --fail --silent --show-error --max-time 50 "https://vesaent.com/product-showcase/" -o /tmp/vesa-20-live/showcase.html
+          cmp product-showcase/index.html /tmp/vesa-20-live/showcase.html
+          echo "VESA_PUBLIC_20_APP_ROUTES_PASS"
