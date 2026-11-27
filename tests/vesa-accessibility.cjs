@@ -26,8 +26,17 @@ async function skip(page,label){
   if(label.startsWith('aql@')){
     // Direct-entry AQL intentionally focuses its new app heading. Test
     // keyboard skip access separately, not the retired splash-page Tab order.
-    assert.equal(await page.evaluate(()=>document.activeElement?.matches('#app h1,#app main')),true,
-      label+': direct AQL entry announces its inspection heading');
+    // App entry is asynchronous: its visible main can exist before its focus
+    // handoff completes. Wait for that handoff instead of racing DOM readiness.
+    const entryFocus=await page.waitForFunction(
+      ()=>document.activeElement?.matches('#app h1,#app main'),null,{timeout:6000}
+    ).then(()=>true).catch(()=>false);
+    const currentFocus=await page.evaluate(()=>({
+      tag:document.activeElement?.tagName,id:document.activeElement?.id,
+      text:document.activeElement?.textContent?.trim().slice(0,65)
+    }));
+    assert.equal(entryFocus,true,
+      label+': AQL heading/main focus not established after entry: '+JSON.stringify(currentFocus));
     await page.locator('.vesa-skip-link').focus();
   }else{
     await page.evaluate(()=>document.activeElement?.blur());
