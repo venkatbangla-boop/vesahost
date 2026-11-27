@@ -22,7 +22,7 @@ permissions:
 jobs:
   route-touch:
     name: 19 garment app journeys and Chess phone interaction
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 48
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
           retention-days: 7
   language-access:
     name: All 20 language routes, settings and accessibility
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 42
     steps:
       - uses: actions/checkout@v4
@@ -75,7 +75,7 @@ jobs:
           retention-days: 7
   domain:
     name: Synthetic domain tests for all 20 apps
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 24
     steps:
       - uses: actions/checkout@v4
@@ -104,7 +104,7 @@ jobs:
           echo "VESA_DOMAIN_APPS_PASS 20"
   business-browser:
     name: Synthetic business workflow save/reopen and reports
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 48
     strategy:
       fail-fast: false
@@ -143,7 +143,7 @@ jobs:
           retention-days: 7
   live-routes:
     name: Published public routes match released source (read-only)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
