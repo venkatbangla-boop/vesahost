@@ -83,16 +83,21 @@ class ShowcaseReleaseVerifier {
     return result;
   }
 
-  /** Freeze every original file except the explicitly approved expansion paths. */
+  /**
+   * Preserve the last accepted live release as the exact new-feature patch scope.
+   * The older immutable showcase baseline remains independently verified by
+   * homepage(), cache(), catalogue() and first-visit intro proof below.
+   */
   frozenFiles() {
-    const oldFiles=new Set(execFileSync('git',['ls-tree','-r','--name-only',ShowcaseReleaseVerifier.BASELINE],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n'));
-    const changed=execFileSync('git',['diff','--name-only',ShowcaseReleaseVerifier.BASELINE,'--'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
-    const allowed=new Set(['index.html','service-worker.js','product-showcase/index.html','product-showcase/styles.css','product-showcase/catalogue.js','product-showcase/catalogue.json','product-showcase/experience.js','product-showcase/bootstrap.js','product-showcase/host.js','product-showcase/director.js','product-showcase/garment-details.js','tests/product-showcase.test.cjs','tests/vesa-workspace-shell-contract.cjs','tests/product-showcase-assets.py']);
+    const scopeBaseline='dcef0cbb5764eaf221ccd3d5ba600d495435be5e';
+    const oldFiles=new Set(execFileSync('git',['ls-tree','-r','--name-only',scopeBaseline],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n'));
+    const changed=execFileSync('git',['diff','--name-only',scopeBaseline,'--'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
+    const allowed=new Set(['index.html','service-worker.js','product-showcase/index.html','product-showcase/styles.css','product-showcase/host.css','product-showcase/experience.js','product-showcase/bootstrap.js','product-showcase/host.js','tests/product-showcase.test.cjs']);
     for(const file of changed.filter(file=>oldFiles.has(file)))assert.ok(allowed.has(file),'Unexpected original-file change: '+file);
     const present=execFileSync('git',['ls-files','--cached','--others','--exclude-standard'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
     const added=present.filter(file=>!oldFiles.has(file));
-    const assets=new Set(Array.from({length:30},(_,index)=>'product-showcase/assets/K'+(index+29)+'.webp'));
-    for(const file of added)assert.ok(assets.has(file)||file==='product-showcase/category-navigation.js'||file==='tests/product-showcase-category.test.cjs'||file==='tests/vesa-site-integrity.cjs'||file==='tests/vesa-workspace-shell-contract.cjs'||file==='.github/workflows/vesa-site-audit.yml'||file==='docs/product-showcase/CATEGORY_RANGE_EXPANSION.md'||file.startsWith('docs/product-showcase/kids-expansion/'),'Unapproved added path: '+file);
+    const newFiles=new Set(['product-showcase/zoom.js','tests/product-showcase-zoom.browser.cjs','.github/workflows/vesa-showcase-zoom.yml']);
+    for(const file of added)assert.ok(newFiles.has(file),'Unapproved added path: '+file);
     assert.equal(this.read('js/vesa-home-intro.js'),this.baseline('js/vesa-home-intro.js'),'First-visit controller is frozen');
     assert.equal(HomeIntroOnceVerifier.gate(this.read('index.html'))[1],HomeIntroOnceVerifier.gate(this.baseline('index.html'))[1],'First-visit gate is frozen');
     this.report.original_files={tracked_baseline:oldFiles.size,changed:changed.filter(file=>oldFiles.has(file)),all_other_original_paths_unchanged:true,original_intro_gate_and_controller_unchanged:true,added_paths_within_locked_scope:true};
@@ -102,7 +107,8 @@ class ShowcaseReleaseVerifier {
   homepage() {
     const html=this.read('index.html');
     let restored=HomeIntroOnceVerifier.replaceOnce(html,'data-target="121"','data-target="91"','Category example count');
-    restored=HomeIntroOnceVerifier.replaceOnce(restored,'/product-showcase/host.js?v=20261127-4','/product-showcase/host.js?v=20261127-1','Showcase host cache version');
+    restored=HomeIntroOnceVerifier.replaceOnce(restored,'/product-showcase/host.css?v=20261128-zoom1','/product-showcase/host.css?v=20261127-2','Zoom host stylesheet version');
+    restored=HomeIntroOnceVerifier.replaceOnce(restored,'/product-showcase/host.js?v=20261128-zoom1','/product-showcase/host.js?v=20261127-1','Showcase host cache version');
     assert.equal(restored,this.baseline('index.html'),'Homepage changed beyond the count and host version');
     const portfolio=html.indexOf('id="portfolio"'),section=html.indexOf('id="product-showcase"'),matrix=html.indexOf('id="capability-matrix"');
     assert.ok(portfolio>=0&&section>portfolio&&matrix>section,'Original insertion position is preserved');
@@ -117,14 +123,14 @@ class ShowcaseReleaseVerifier {
   /** Only advance the existing cache identity; media, precache and routing stay frozen. */
   cache() {
     const after=this.read('service-worker.js');
-    const restored=HomeIntroOnceVerifier.replaceOnce(after,"const CACHE='vesa-v127-showcase-manual-selection';","const CACHE='vesa-v123-home-intro-once';",'Showcase cache identity');
+    const restored=HomeIntroOnceVerifier.replaceOnce(after,"const CACHE='vesa-v128-showcase-hidden-zoom';","const CACHE='vesa-v123-home-intro-once';",'Showcase cache identity');
     assert.equal(restored,this.baseline('service-worker.js'),'Service-worker policy changed');
-    this.report.cache={before:'vesa-v123-home-intro-once',after:'vesa-v127-showcase-manual-selection',all_other_bytes_unchanged:true};
+    this.report.cache={before:'vesa-v123-home-intro-once',after:'vesa-v128-showcase-hidden-zoom',all_other_bytes_unchanged:true};
   }
 
   /** Compile actual modules without running entry points; checks current bytes only. */
   syntax() {
-    const files = ['catalogue.js', 'category-navigation.js', 'director.js', 'garment-details.js', 'experience.js', 'bootstrap.js', 'host.js'];
+    const files = ['catalogue.js', 'category-navigation.js', 'director.js', 'garment-details.js', 'zoom.js', 'experience.js', 'bootstrap.js', 'host.js'];
     for (const file of files) new vm.Script(this.read('product-showcase/' + file), {filename: file});
     this.report.syntax_modules = files;
   }
@@ -289,7 +295,7 @@ class ShowcaseReleaseVerifier {
     const context=vm.createContext({URL,URLSearchParams,AbortController,document,window,location});
     vm.runInContext(this.read('product-showcase/bootstrap.js')+'\nthis.Owner=ShowcaseBootstrap;',context);
     const root=new BoundedElement();
-    for(const id of ['load-status','expand-view','index-dialog'])root.nodes.set('#'+id,new BoundedElement());
+    for(const id of ['load-status','expand-view','index-dialog','scene'])root.nodes.set('#'+id,new BoundedElement());
     const owner=new context.Owner(root),route=query=>{location.search=query;return {...owner.routeSelection(this.records)}};
     assert.deepEqual(route(''),{group:'all',item:'M16'});
     let routes=1;
@@ -316,7 +322,7 @@ class ShowcaseReleaseVerifier {
     assert.equal(suspensions.length,0);
     owner.onMessage({origin:location.origin,source:parent,data:message});assert.deepEqual(suspensions,[true]);
     owner.mode='inline';owner.onMessage({origin:location.origin,source:parent,data:{...message,type:'restore-focus'}});
-    assert.equal(root.querySelector('#expand-view').focuses,1);
+    assert.equal(root.querySelector('#scene').focuses,1);
     owner.mode='modal';const index=root.querySelector('#index-dialog');
     const escape=()=>({key:'Escape',defaultPrevented:false,preventDefault(){this.defaultPrevented=true},stopPropagation(){this.stopped=true}});
     index.open=true;const first=escape();owner.onEscape(first);assert.equal(first.defaultPrevented,false);assert.equal(parent.messages.length,0);

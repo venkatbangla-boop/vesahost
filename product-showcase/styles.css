@@ -257,3 +257,52 @@ body { margin: 0; background: #fbf8f1; }
 /* The host derives iframe height from content: never size inline content from
    its own iframe viewport, even after the extra navigation row is inserted. */
 .vesa-showcase.with-collections[data-mode="inline"] { height: auto; min-height: 0; }
+
+/* Zoom is a transient viewport overlay owned by ProductZoom, never a new carousel.
+   The main garment remains an uncluttered click/tap target; no zoom toolbars. */
+.vesa-showcase #expand-view { display: none !important; }
+.vesa-showcase .hero { cursor: zoom-in; }
+@media (hover:hover) and (pointer:fine) {
+  .vesa-showcase .hero img { transition: transform .24s ease-out; }
+  .vesa-showcase .hero:hover img { transform: scale(1.025); }
+}
+.vesa-showcase .zoom-dialog {
+  position: fixed; inset: 0; width: 100vw; height: 100dvh;
+  max-width: none; max-height: none; margin: 0; padding: 0;
+  border: 0; border-radius: 0; background: #fbf8f1; color: #172632;
+  overflow: hidden; overscroll-behavior: contain;
+}
+.vesa-showcase .zoom-dialog:not([open]) { display: none; }
+.vesa-showcase .zoom-dialog[open] { display: block; }
+.vesa-showcase .zoom-dialog::backdrop { background: rgba(6, 23, 47, .76); }
+.vesa-showcase .zoom-surface {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  overflow: hidden; touch-action: none; user-select: none;
+  -webkit-user-select: none; cursor: zoom-in; outline: none;
+}
+.vesa-showcase .zoom-surface[data-zoomed="true"] { cursor: grab; }
+.vesa-showcase .zoom-surface[data-zoomed="true"]:active { cursor: grabbing; }
+.vesa-showcase .zoom-image-placeholder { display: none; }
+.vesa-showcase #zoom-image {
+  display: block; width: 100%; height: 100%; object-fit: contain;
+  transform-origin: center center; pointer-events: none; user-select: none;
+  -webkit-user-select: none; -webkit-user-drag: none; will-change: transform;
+}
+.vesa-showcase .zoom-close {
+  position: absolute; z-index: 5;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  display: grid; place-items: center;
+  width: 48px; height: 48px; min-height: 48px; padding: 0;
+  font-size: 32px; line-height: 1; font-weight: 400; border-radius: 50%;
+  color: #172632; background: rgba(255, 255, 255, .92);
+  border: 1px solid rgba(6, 23, 47, .25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, .12);
+}
+.vesa-showcase .zoom-close:focus-visible { outline: 3px solid #2a544c; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .vesa-showcase .hero img { transition: none; }
+}
+
+/* Parent popup owns the sole Close button for homepage-initiated zoom. */
+.vesa-showcase[data-zoom-entry="true"] .zoom-close { display: none; }

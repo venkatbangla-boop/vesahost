@@ -7,13 +7,14 @@
   <meta name="description" content="Explore VESA apparel categories with individual model visuals and garment details.">
   <title>Product showcase | VESA Enterprise Inc</title>
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="styles.css?v=20261127-4">
+  <link rel="stylesheet" href="styles.css?v=20261128-zoom1">
   <script src="catalogue.js?v=20261127-4" defer></script>
   <script src="director.js?v=20261127-4" defer></script>
   <script src="garment-details.js?v=20261127-4" defer></script>
   <script src="category-navigation.js?v=20261127-5" defer></script>
-  <script src="experience.js?v=20261127-6" defer></script>
-  <script src="bootstrap.js?v=20261127-4" defer></script>
+  <script src="zoom.js?v=20261128-zoom1" defer></script>
+  <script src="experience.js?v=20261128-zoom1" defer></script>
+  <script src="bootstrap.js?v=20261128-zoom1" defer></script>
 </head>
 <body>
 <main class="vesa-showcase experience with-collections" id="experience" aria-label="VESA product showcase" aria-roledescription="carousel" data-mode="page" data-motion-paused="true" tabindex="-1">
@@ -82,6 +83,12 @@
   </footer>
   <div class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></div>
   <div class="sr-only" id="detail-announcement" aria-live="polite" aria-atomic="true"></div>
+  <dialog id="zoom-dialog" class="zoom-dialog" aria-label="Full-screen garment inspection">
+    <div id="zoom-surface" class="zoom-surface" tabindex="-1" role="img" aria-label="Zoomable product image">
+      <img id="zoom-image" alt="" draggable="false">
+    </div>
+    <button id="zoom-close" class="zoom-close" type="button" aria-label="Close zoom">&times;</button>
+  </dialog>
   <dialog id="index-dialog" class="index-dialog" aria-labelledby="index-title" aria-describedby="index-note">
     <div class="drawer-head">
       <div><h2 id="index-title">Product collection</h2><p id="index-note" class="drawer-note">AI-generated representative garment visuals.</p></div>

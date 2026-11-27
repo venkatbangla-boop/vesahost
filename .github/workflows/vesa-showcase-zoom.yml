@@ -1,0 +1,53 @@
+# VESA product showroom hidden-zoom acceptance, checked against immutable release.
+# Owner: tests only, not deploy. Chromium touch is simulated, not physical Android.
+name: VESA showroom hidden fullscreen zoom verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/vesa-showcase-zoom.yml'
+      - 'product-showcase/**'
+      - 'tests/product-showcase*.cjs'
+      - 'index.html'
+      - 'service-worker.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  zoom-proof:
+    name: Source contracts, desktop fullscreen and mobile pinch/tap
+    runs-on: ubuntu-24.04
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile feature owners and verify unchanged catalogue/intro
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check product-showcase/zoom.js
+          node --check product-showcase/experience.js
+          node --check product-showcase/bootstrap.js
+          node --check product-showcase/host.js
+          node --check tests/product-showcase-zoom.browser.cjs
+          node tests/product-showcase-category.test.cjs
+          node tests/product-showcase.test.cjs
+          node tests/vesa-site-integrity.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Open zoom, pinch, pan, doubletap, close and return on live DOM
+        run: node tests/product-showcase-zoom.browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vesa-hidden-zoom-browser-proof
+          path: output/showcase-zoom/
+          if-no-files-found: ignore
+          retention-days: 7

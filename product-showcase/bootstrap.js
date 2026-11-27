@@ -18,7 +18,9 @@ class ShowcaseBootstrap {
     this.mode=['inline','modal'].includes(new URLSearchParams(location.search).get('mode'))
       ?new URLSearchParams(location.search).get('mode'):'page';
     this.root.dataset.mode=this.mode;
-    this.experience=null;this.records=null;this.heightObserver=null;
+    // A homepage fullscreen entry exposes only the parent dialog's accessible X.
+    this.root.dataset.zoomEntry=this.mode==='modal'&&new URLSearchParams(location.search).get('zoom')==='1'?'true':'false';
+    this.experience=null;this.zoom=null;this.records=null;this.heightObserver=null;
     this.frame=0;this.lastHeight=0;this.fetchTimer=0;
     this.suspended=false;this.started=false;this.destroyed=false;this.readySent=false;
     this.channel='vesa-product-showcase';this.protocol=1;
@@ -62,14 +64,24 @@ class ShowcaseBootstrap {
       this.validateAssets(records);
       if(this.destroyed)return;
       this.records=records;
+      this.zoom=new ProductZoom(this.root,{onClose:()=>{
+        // The inline parent owns the outer fullscreen. Only a zoom-entry frame
+        // requests that parent close; ordinary modal/page zoom returns in-place.
+        if(this.mode==='modal'&&new URLSearchParams(location.search).get('zoom')==='1')this.send('close');
+      }});
       const initial=this.routeSelection(records);
       this.experience=new MotionExperience(this.root,records,{
         ...initial,playing:this.mode!=='modal',
         onSelection:selection=>this.onSelection(selection),
-        onSettled:(ready,selection)=>this.onSettled(ready,selection)
+        onSettled:(ready,selection)=>this.onSettled(ready,selection),
+        onExpand:selection=>this.requestZoom(selection)
       });
       this.experience.setSuspended(this.suspended);
-      await this.experience.start();
+      const ready=await this.experience.start();
+      // Homepage main-model taps open a browser-viewport parent dialog whose
+      // modal frame immediately enters the same reusable product zoom surface.
+      if(ready&&this.mode==='modal'&&new URLSearchParams(location.search).get('zoom')==='1')
+        this.openZoom(this.experience.selection);
     } catch(error) {
       if(this.destroyed)return;
       this.root.setAttribute('aria-busy','false');this.root.dataset.loadState='error';
@@ -144,6 +156,20 @@ class ShowcaseBootstrap {
     if(ready&&!this.readySent) {this.readySent=true;this.send('ready',selection)}
     this.measureSoon();
   }
+  /**
+   * Send inline requests to the validated parent. Standalone and standard popup
+   * viewers use the same local zoom controller without another navigation layer.
+   */
+  requestZoom(selection) {
+    if(this.mode==='inline')this.send('expand',selection);
+    else this.openZoom(selection);
+  }
+  /** Open a selected catalogue record without changing the active carousel item. */
+  openZoom(selection) {
+    const record=this.records?.find(item=>item.id===selection.item);
+    if(!record)return false;
+    return this.zoom?.open(record)===true;
+  }
   /** Send only to this frame's same-origin parent; a standalone page sends nothing. */
   send(type,fields={}) {
     if(window.parent===window||this.destroyed)return;
@@ -164,7 +190,7 @@ class ShowcaseBootstrap {
       (data.item==null||typeof data.item==='string')) {
       this.experience.select(data.group,data.item||null);
     } else if(data.type==='restore-focus'&&this.mode==='inline') {
-      this.root.querySelector('#expand-view').focus({preventScroll:true});
+      this.root.querySelector('#scene').focus({preventScroll:true});
     }
   }
   /**
@@ -174,7 +200,7 @@ class ShowcaseBootstrap {
    */
   onEscape(event) {
     if(event.key!=='Escape'||event.defaultPrevented||this.mode!=='modal'||window.parent===window)return;
-    if(this.root.querySelector('#index-dialog').open||this.experience?.navigation?.isOpen)return;
+    if(this.root.querySelector('#index-dialog').open||this.zoom?.dialog.open||this.experience?.navigation?.isOpen)return;
     event.preventDefault();event.stopPropagation();this.send('close');
   }
   /** Observe only intrinsic root size; iframe viewport height is never used as content height. */
@@ -204,7 +230,7 @@ class ShowcaseBootstrap {
     this.destroyed=true;this.events.abort();this.fetchController.abort();
     clearTimeout(this.fetchTimer);
     if(this.frame)cancelAnimationFrame(this.frame);
-    this.frame=0;this.heightObserver?.disconnect();this.experience?.destroy();
+    this.frame=0;this.heightObserver?.disconnect();this.zoom?.destroy();this.experience?.destroy();
   }
 }
 // Defer-script entry: a single local owner, with no application object exposed on window.
