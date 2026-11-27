@@ -22,7 +22,8 @@ assert(shell.includes('data-vesa-skip') && shell.includes('_focusMainContent'), 
 assert(shell.includes('role="status"') && shell.includes('aria-live="polite"') && shell.includes('aria-atomic="true"'), 'save state live semantics missing');
 assert(shell.includes('aria-current="page"') && shell.includes('contentTarget'), 'current-page or main-target semantics missing');
 assert(shell.includes('vesa-workspace__app-label'), 'shared truncating app identity owner missing');
-assert(shell.includes('title="${escape(this.descriptor.name)}"'), 'full app identity title missing');
+// App identity remains complete in the title, but follows the shared five-language UI.
+assert(shell.includes('title="${escape(ui(this.descriptor.name))}"'), 'localized full app identity title missing');
 assert(!/\b(?:tna|ppm|aql)\b/i.test(shell), 'platform shell must not hard-code an app id');
 assert(css.includes('.vesa-workspace') && css.includes('--vesa-brand'), 'shared shell CSS/tokens missing');
 for (const token of ['--vesa-bg: var(--canvas', '--vesa-surface: var(--paper', '--vesa-text: var(--ink', '--vesa-muted: var(--muted', '--vesa-border: var(--line', '--vesa-action: var(--blue', '--vesa-font-body: var(--ui', '--vesa-page-gutter:', '--vesa-radius-card:', '--vesa-control-height:']) {
