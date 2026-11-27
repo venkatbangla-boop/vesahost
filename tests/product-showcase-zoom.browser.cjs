@@ -26,7 +26,8 @@ class ZoomBrowserAcceptance {
       try {
         const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
         let file=path.resolve(this.root,'.'+pathname);
-        if(!file.startsWith(this.root+path.sep))return res.writeHead(403).end();
+        // The repository root is the homepage; accept it while rejecting traversal.
+        if(file!==this.root&&!file.startsWith(this.root+path.sep))return res.writeHead(403).end();
         if(fs.statSync(file).isDirectory())file=path.join(file,'index.html');
         const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css',
           '.json':'application/json','.webp':'image/webp','.png':'image/png',
