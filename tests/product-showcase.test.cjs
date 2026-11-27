@@ -117,9 +117,9 @@ class ShowcaseReleaseVerifier {
   /** Only advance the existing cache identity; media, precache and routing stay frozen. */
   cache() {
     const after=this.read('service-worker.js');
-    const restored=HomeIntroOnceVerifier.replaceOnce(after,"const CACHE='vesa-v126-showcase-menu-touch';","const CACHE='vesa-v123-home-intro-once';",'Showcase cache identity');
+    const restored=HomeIntroOnceVerifier.replaceOnce(after,"const CACHE='vesa-v127-showcase-manual-selection';","const CACHE='vesa-v123-home-intro-once';",'Showcase cache identity');
     assert.equal(restored,this.baseline('service-worker.js'),'Service-worker policy changed');
-    this.report.cache={before:'vesa-v123-home-intro-once',after:'vesa-v126-showcase-menu-touch',all_other_bytes_unchanged:true};
+    this.report.cache={before:'vesa-v123-home-intro-once',after:'vesa-v127-showcase-manual-selection',all_other_bytes_unchanged:true};
   }
 
   /** Compile actual modules without running entry points; checks current bytes only. */

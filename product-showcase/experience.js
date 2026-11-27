@@ -59,8 +59,8 @@ class MotionExperience {
       }
     });
     this.navigation.start();
-    this.listen(this.root.querySelector('#previous'),'click',()=>this.step(-1));
-    this.listen(this.root.querySelector('#next'),'click',()=>this.step(1));
+    this.listen(this.root.querySelector('#previous'),'click',()=>this.step(-1,{manual:true}));
+    this.listen(this.root.querySelector('#next'),'click',()=>this.step(1,{manual:true}));
     this.listen(this.root.querySelector('#play'),'click',()=>this.togglePlay());
     this.listen(this.root.querySelector('#open-index'),'click',()=>this.openIndex());
     this.listen(this.root.querySelector('#close-index'),'click',()=>this.dialog.close());
@@ -108,7 +108,7 @@ class MotionExperience {
     this.listen(this.scene,'wheel',event=>{
       if(Math.abs(event.deltaX)<=Math.abs(event.deltaY)||Math.abs(event.deltaX)<15)return;
       event.preventDefault();const now=performance.now();
-      if(now-this.wheelAt>650) {this.wheelAt=now;this.step(event.deltaX>0?1:-1)}
+      if(now-this.wheelAt>650) {this.wheelAt=now;this.step(event.deltaX>0?1:-1,{manual:true})}
     },{passive:false});
     this.listen(document,'visibilitychange',()=>{
       if(document.hidden)this.director.settle();
@@ -130,7 +130,7 @@ class MotionExperience {
     if(!button||!this.grid.contains(button)||!this.catalogue.get(button.dataset.id))return;
     const item=this.catalogue.get(button.dataset.id);
     const group=this.state.group==='all'||this.state.group===item.group?this.state.group:'all';
-    this.dialog.close();this.select(group,item.id);
+    this.dialog.close();this.select(group,item.id,1,{pause:true});
   }
   /**
    * Select a neighboring model without inspecting its clothing. Move focus to the
@@ -144,7 +144,7 @@ class MotionExperience {
     event.preventDefault();this.down=null;this.details.clear();
     this.scene.focus({preventScroll:true});
     const direction=Number(button.dataset.pos)<0?-1:1;
-    this.select(this.state.group,id,direction);
+    this.select(this.state.group,id,direction,{pause:true});
   }
   /**
    * Observe viewport/layout boundaries. Offscreen and held scenes have no RAF clock.
@@ -189,7 +189,7 @@ class MotionExperience {
     if(event.key==='Escape') {this.details.clear();this.reconcileMotion();return}
     if(control)return;
     if(event.key==='ArrowRight'||event.key==='ArrowLeft') {
-      event.preventDefault();this.step(event.key==='ArrowRight'?1:-1);
+      event.preventDefault();this.step(event.key==='ArrowRight'?1:-1,{manual:true});
     }
   }
   /** Capture main-area gestures; side buttons, controls and vertical scrolling stay native. */
@@ -203,7 +203,7 @@ class MotionExperience {
     if(!this.down||this.down.id!==event.pointerId)return;
     const dx=event.clientX-this.down.x,dy=event.clientY-this.down.y;this.down=null;
     if(this.scene.hasPointerCapture?.(event.pointerId))this.scene.releasePointerCapture(event.pointerId);
-    if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.2)this.step(dx<0?1:-1);
+    if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.2)this.step(dx<0?1:-1,{manual:true});
     else if(Math.abs(dx)<12&&Math.abs(dy)<12&&this.director.ready) {
       this.details.tap(event);this.reconcileMotion();
     }
@@ -250,9 +250,10 @@ class MotionExperience {
       return Boolean(ready);
     });
   }
-  /** Advance circularly in the selected group without changing the source catalogue. */
-  step(direction) {
+  /** Advance without modifying catalogue. Human navigation freezes autoplay; only the clock advances automatically. */
+  step(direction,{manual=false}={}) {
     if(this.destroyed)return;
+    if(manual){this.playing=false;this.elapsed=0;this.hoverOverride=false;}
     this.state.step(direction);return this.render(direction);
   }
   /** Select a group; repeated activation does not replay its current image. */

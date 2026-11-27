@@ -246,6 +246,29 @@ class CategoryReleaseVerifier {
     c.destroy();assert.equal(c.events.signal.aborted,true);assert.equal(n.destroyed,true);
     this.results.manual_selection={actual_start_callback:true,baby_short_and_dress:true,same_item_pauses_without_reload:true,manual_choice_stays_until_play:true,installed_play_resumes:true,default_route_playback_preserved:true,invalid_request_atomic:true,collection_browse_pauses:true};
   }
+  /** Verify all human navigation paths hold their chosen product until explicit Play. */
+  manualNavigationPaths(){
+    const f=this.controllerFixture(),c=f.controller;
+    c.playing=true;c.elapsed=5200;
+    c.step(1,{manual:true});assert.equal(c.playing,false);assert.equal(c.elapsed,0);
+    const afterStep=c.state.current.id;c.tick(70000);assert.equal(c.state.current.id,afterStep);
+    c.togglePlay();assert.equal(c.playing,true);
+    c.step(1);assert.equal(c.playing,true,'Clock advances without stopping playback');
+    const sideId='K27';c.scene.contains=()=>true;
+    const side={dataset:{selectId:sideId,pos:'1'}};
+    c.chooseNeighbor({target:{closest:()=>side},preventDefault(){}});
+    assert.equal(c.selection.item,sideId);assert.equal(c.playing,false,'Side preview pauses');
+    c.togglePlay();assert.equal(c.playing,true);
+    const item=f.catalogue.get('K28');
+    const button={dataset:{id:item.id}};
+    c.grid.contains=()=>true;c.dialog.close=()=>{};
+    c.chooseIndexItem({target:{closest:()=>button}});
+    assert.equal(c.selection.item,'K28');assert.equal(c.playing,false,'Search choice pauses');
+    c.togglePlay();assert.equal(c.playing,true);
+    const current=c.selection.item;
+    c.select('all',current,1,{pause:true});assert.equal(c.playing,false,'Repeated manual choice pauses');
+    c.destroy();this.results.manual_navigation_paths={previous_next:true,automatic_advance:true,side_preview:true,search_result:true,repeat_choice:true};
+  }
   /**
    * Execute the production annotation constructor/update for every manifest row.
    * This fixture replaces only image decoding; actual zone selection, reset and
@@ -328,7 +351,7 @@ class CategoryReleaseVerifier {
     assert.ok(!this.read('bootstrap.js').includes('review-embedded-assets'));
     this.results.markup={one_top_category_menu:true,no_preview_banner_or_embedded_adapters:true,intrinsic_inline_height:true};
   }
-  run(){const f=this.fixture();this.coverage(f);this.interactions(f);this.touchFocus();this.manualSelection();this.annotations();this.playback();this.markup();return {verdict:'accepted',scope:'bounded Node fixtures; browser proof separate',...this.results}}
+  run(){const f=this.fixture();this.coverage(f);this.interactions(f);this.touchFocus();this.manualSelection();this.manualNavigationPaths();this.annotations();this.playback();this.markup();return {verdict:'accepted',scope:'bounded Node fixtures; browser proof separate',...this.results}}
 }
 try{process.stdout.write(JSON.stringify(new CategoryReleaseVerifier(path.resolve(__dirname,'..')).run(),null,2)+'\n')}
 catch(error){process.stderr.write(error.stack+'\n');process.exitCode=1}
