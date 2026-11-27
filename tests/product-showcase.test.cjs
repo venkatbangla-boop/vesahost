@@ -87,7 +87,7 @@ class ShowcaseReleaseVerifier {
   frozenFiles() {
     const oldFiles=new Set(execFileSync('git',['ls-tree','-r','--name-only',ShowcaseReleaseVerifier.BASELINE],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n'));
     const changed=execFileSync('git',['diff','--name-only',ShowcaseReleaseVerifier.BASELINE,'--'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
-    const allowed=new Set(['index.html','service-worker.js','product-showcase/index.html','product-showcase/styles.css','product-showcase/catalogue.js','product-showcase/catalogue.json','product-showcase/experience.js','product-showcase/bootstrap.js','product-showcase/host.js','product-showcase/director.js','product-showcase/garment-details.js','tests/product-showcase.test.cjs','tests/product-showcase-assets.py']);
+    const allowed=new Set(['index.html','service-worker.js','product-showcase/index.html','product-showcase/styles.css','product-showcase/catalogue.js','product-showcase/catalogue.json','product-showcase/experience.js','product-showcase/bootstrap.js','product-showcase/host.js','product-showcase/director.js','product-showcase/garment-details.js','tests/product-showcase.test.cjs','tests/vesa-workspace-shell-contract.cjs','tests/product-showcase-assets.py']);
     for(const file of changed.filter(file=>oldFiles.has(file)))assert.ok(allowed.has(file),'Unexpected original-file change: '+file);
     const present=execFileSync('git',['ls-files','--cached','--others','--exclude-standard'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
     const added=present.filter(file=>!oldFiles.has(file));

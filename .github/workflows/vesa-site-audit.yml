@@ -45,4 +45,5 @@ jobs:
           # historical intro release guard deliberately freezes an older homepage
           # and cannot accept the later approved product-showcase insertion.
           node tests/vesa-global-language.cjs
+          node tests/vesa-workspace-shell-contract.cjs
           node tests/vesa-blueprint-integrity.cjs
