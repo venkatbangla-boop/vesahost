@@ -1,0 +1,27 @@
+{
+  "verdict": "accepted",
+  "scope": "catalogue metadata and original WebP bytes; no browser claims",
+  "records": 121,
+  "groups": {
+    "men": 34,
+    "ladies": 29,
+    "boys": 22,
+    "girls": 22,
+    "baby": 14
+  },
+  "unique_image_hashes": 121,
+  "decoded_with_alpha": 121,
+  "opaque_subject_canvas_edges": 0,
+  "image_bytes": 7596050,
+  "width_range": [
+    173,
+    1024
+  ],
+  "height_range": [
+    507,
+    1536
+  ],
+  "reviewed_source_sha256": "4a5fe692db19a23bb7967fd7de6827bfe8fae0632685ad20a826a343196a2126",
+  "original_91_exactly_preserved": true,
+  "new_individual_images": 30
+}

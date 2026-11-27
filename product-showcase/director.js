@@ -39,13 +39,14 @@ class SceneDirector {
       const actor=document.createElement(pos===0?'div':'button');
       actor.className=pos===0?'actor hero':'actor side-model';
       actor.dataset.id=item.id; actor.dataset.pos=String(pos);
+      if(item.frame==='portrait')actor.dataset.frame='portrait';
       if(pos!==0) {
         actor.type='button'; actor.dataset.selectId=item.id;
         actor.setAttribute('aria-label',`${pos<0?'Previous':'Next'} product: ${item.name}`);
         actor.title=item.name; actor.dataset.imageReady='false';
       }
       const image=document.createElement('img'); image.src=item.image;
-      image.alt=pos===0?item.name+' model':'';
+      image.alt=pos===0?item.name+(item.presentation==='product'?' product':' model'):'';
       image.draggable=false; image.decoding='async';
       actor.append(image); cast.append(actor);
     }

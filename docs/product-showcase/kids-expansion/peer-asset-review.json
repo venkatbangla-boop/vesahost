@@ -1,0 +1,592 @@
+{
+  "scope": "Independent review of other agents’ Boys and Girls masters K29–K48 only; Baby assets excluded to avoid self-review",
+  "reviewer": "baby_assets_30_expansion",
+  "method": "Each master individually viewed through view_image and compared with approved distinctForm/photographyBrief; PIL read-only alpha/dimensions/border/hash inspection",
+  "accepted": 20,
+  "rejected": [],
+  "blockingDefects": [],
+  "integrationNote": "Some model masters have only 5–10px head/foot padding. Subjects remain complete; keep contain sizing and full-frame base views. K38/K48 are product-only images and need the product layout. Actual website presentation is root-owned QA.",
+  "imageEditsApplied": false,
+  "records": [
+    {
+      "id": "K29",
+      "name": "Button-front shirt",
+      "decision": "accepted",
+      "sha256": "7c73254a925c509f3d927611cbc5edf50c8f06019693ac7a110810fd58aff154",
+      "constructionObserved": "Collar, full button placket and separate cuffs visible; shirt untucked over navy trousers.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 1,
+      "transparentFraction": 0.696,
+      "subjectBoundsAlpha128": [
+        248,
+        21,
+        755,
+        1515
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K29-button-front-shirt.png"
+    },
+    {
+      "id": "K30",
+      "name": "Chino trousers",
+      "decision": "accepted",
+      "sha256": "437bc6974367ee2598094db73d891afb355dcb23b8b522e664a7d1b1efa18bb6",
+      "constructionObserved": "Chino waistband, button/fly, belt loops and slant pockets visible; tee tucked and both ankle hems complete.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 1,
+      "transparentFraction": 0.7211,
+      "subjectBoundsAlpha128": [
+        274,
+        19,
+        723,
+        1514
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K30-chino-trousers.png"
+    },
+    {
+      "id": "K31",
+      "name": "Dungarees",
+      "decision": "accepted",
+      "sha256": "334561450e41b039d2ff5cee3db73fa82e4f35f721692976dea3836fd4829752",
+      "constructionObserved": "Bib pocket, two adjustable straps/fasteners and attached full-length legs clearly visible.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 1,
+      "transparentFraction": 0.6872,
+      "subjectBoundsAlpha128": [
+        232,
+        27,
+        769,
+        1518
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K31-dungarees.png"
+    },
+    {
+      "id": "K32",
+      "name": "Cardigan",
+      "decision": "accepted",
+      "sha256": "662d9fb38ead63cce8c71a361f36a65605bb14e4a02d231c0e885bd308adf48d",
+      "constructionObserved": "Fine knit cardigan has a full opening button placket, V neck and rib cuffs/hem.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 1,
+      "transparentFraction": 0.7079,
+      "subjectBoundsAlpha128": [
+        241,
+        18,
+        766,
+        1511
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K32-cardigan.png"
+    },
+    {
+      "id": "K33",
+      "name": "Zip-front woven jacket",
+      "decision": "accepted",
+      "sha256": "5afff6ca6ce32c4e36ac09193c660cbb46684c29aeb87bdc272cfadbc7550d9e",
+      "constructionObserved": "Stand-collar jacket has full zip, shaped panels and two welt pockets.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 1,
+      "transparentFraction": 0.6887,
+      "subjectBoundsAlpha128": [
+        235,
+        13,
+        761,
+        1521
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K33-zip-front-woven-jacket.png"
+    },
+    {
+      "id": "K34",
+      "name": "Zip-up tracksuit set",
+      "decision": "accepted",
+      "sha256": "bdfe500df5a49123a9d9e72b0c2f34b7a29d2ef0024380028b024d4e6f670b50",
+      "constructionObserved": "Matching panelled zip-front jacket and full-length track trousers worn as one coordinated outfit.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 5,
+      "transparentFraction": 0.6908,
+      "subjectBoundsAlpha128": [
+        229,
+        6,
+        788,
+        1528
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K34-zip-up-tracksuit-set.png"
+    },
+    {
+      "id": "K35",
+      "name": "Rashguard top",
+      "decision": "accepted",
+      "sha256": "0903f496dbf0897e3a109a0ce9bab2c2cf3367c387d6548f9e9051f6500e040e",
+      "constructionObserved": "Long-sleeve high-neck raglan swim top and separate navy shorts; no technical claims rendered.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 3,
+      "transparentFraction": 0.7019,
+      "subjectBoundsAlpha128": [
+        238,
+        11,
+        785,
+        1525
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K35-rashguard-top.png"
+    },
+    {
+      "id": "K36",
+      "name": "Two-piece pyjama set",
+      "decision": "accepted",
+      "sha256": "9d307ad558ef22aa0537c33a7ab01853f9bf5e5d58804cae350cb9aa1acc57e9",
+      "constructionObserved": "Matching button-front notched-collar sleep shirt and full-length trousers; grey slippers.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 5,
+      "transparentFraction": 0.6786,
+      "subjectBoundsAlpha128": [
+        249,
+        8,
+        747,
+        1525
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K36-two-piece-pyjama-set.png"
+    },
+    {
+      "id": "K37",
+      "name": "Denim jeans",
+      "decision": "accepted",
+      "sha256": "f36df1635236079b1d5aa5f76764432fe90f5d4e528c9bc2fdfaa1dbab2b704e",
+      "constructionObserved": "Denim waistband, button/fly, belt loops, front pockets, coin pocket, rivets and topstitching visible.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 3,
+      "transparentFraction": 0.7101,
+      "subjectBoundsAlpha128": [
+        250,
+        10,
+        780,
+        1527
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K37-denim-jeans.png"
+    },
+    {
+      "id": "K38",
+      "name": "Underwear briefs",
+      "decision": "accepted",
+      "sha256": "53236bb8b23ff454c0a9e79ad718bad626f99b6c023c3c1717d4259da1f39b2d",
+      "constructionObserved": "Single unworn navy brief, grey waistband and two bound leg openings. No person/mannequin/body parts.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 1,
+      "transparentFraction": 0.623,
+      "subjectBoundsAlpha128": [
+        30,
+        439,
+        995,
+        1204
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K38-underwear-briefs.png"
+    },
+    {
+      "id": "K39",
+      "name": "Button-front blouse",
+      "decision": "accepted",
+      "sha256": "93128ec0a8789e51fc6913ed5d7ce4764b9777d370072f04933f3beedcefb0c7",
+      "constructionObserved": "Blouse collar, full button placket and cuffs clearly visible; companion navy trousers.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 4,
+      "transparentFraction": 0.6742,
+      "subjectBoundsAlpha128": [
+        241,
+        11,
+        772,
+        1530
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K39-button-front-blouse.png"
+    },
+    {
+      "id": "K40",
+      "name": "Tailored trousers",
+      "decision": "accepted",
+      "sha256": "cf9166a976cec984f3e31d811d9a75944679168a45d592de3630f6009d90ad4f",
+      "constructionObserved": "Defined button waistband, belt loops, fly, straight legs and both plain ankle hems visible.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 0,
+      "transparentFraction": 0.7062,
+      "subjectBoundsAlpha128": [
+        271,
+        21,
+        736,
+        1515
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K40-tailored-trousers.png"
+    },
+    {
+      "id": "K41",
+      "name": "Cardigan",
+      "decision": "accepted",
+      "sha256": "4f1a72f4e1b69d6ec8a7d794e66ab35913f4d271fed5030d9673a896b9ccede0",
+      "constructionObserved": "Open fine-knit cardigan shows both buttons and buttonholes plus rib cuffs/hem over white tee.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 1,
+      "transparentFraction": 0.7046,
+      "subjectBoundsAlpha128": [
+        254,
+        50,
+        768,
+        1499
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K41-cardigan.png"
+    },
+    {
+      "id": "K42",
+      "name": "Zip-front woven jacket",
+      "decision": "accepted",
+      "sha256": "2b9286be3eac5d397152b51e9566ab609342c227c4e99f8190049d2a2350086d",
+      "constructionObserved": "Stand-collar hip-length woven jacket, central zip and two pockets visible.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 1,
+      "transparentFraction": 0.6857,
+      "subjectBoundsAlpha128": [
+        267,
+        20,
+        751,
+        1524
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K42-zip-front-woven-jacket.png"
+    },
+    {
+      "id": "K43",
+      "name": "Jumpsuit",
+      "decision": "accepted",
+      "sha256": "9aee557caccb803a884e448c29753d2107dfe377819d9e24e63d1bb668bc4aaa",
+      "constructionObserved": "Short-sleeve continuous jumpsuit with button bodice, defined elastic waist and two full trouser legs.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 1,
+      "transparentFraction": 0.6761,
+      "subjectBoundsAlpha128": [
+        239,
+        19,
+        740,
+        1519
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K43-jumpsuit.png"
+    },
+    {
+      "id": "K44",
+      "name": "Sports skort",
+      "decision": "accepted",
+      "sha256": "43d522ec86976cad0b2a4ab082ca6a8ae8efc8bcd0f79dc82cc15944a26da66a",
+      "constructionObserved": "Navy skort overlay with small viewer-right side opening and distinct inner-short hem edge naturally visible; no garment lifting.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 2,
+      "transparentFraction": 0.7009,
+      "subjectBoundsAlpha128": [
+        238,
+        17,
+        782,
+        1526
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K44-sports-skort.png"
+    },
+    {
+      "id": "K45",
+      "name": "Rashguard top",
+      "decision": "accepted",
+      "sha256": "552117f1b497ab72ef2f619aa352661b12bc94836fe8a4885cba7b36f151e230",
+      "constructionObserved": "Long-sleeve high-neck raglan-panel rashguard, knee-length swim shorts and complete water shoes.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 1,
+      "transparentFraction": 0.7172,
+      "subjectBoundsAlpha128": [
+        238,
+        22,
+        768,
+        1523
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K45-rashguard-top.png"
+    },
+    {
+      "id": "K46",
+      "name": "Two-piece pyjama set",
+      "decision": "accepted",
+      "sha256": "8cec72668667e4764d336f38c90054c2b9957b55778d819b4a40bbc9fb18cb8f",
+      "constructionObserved": "Matching lavender button-front sleep shirt and full trousers with contrast piping, complete slippers.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 7,
+      "transparentFraction": 0.6611,
+      "subjectBoundsAlpha128": [
+        261,
+        7,
+        763,
+        1531
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K46-two-piece-pyjama-set.png"
+    },
+    {
+      "id": "K47",
+      "name": "Zip-front hoodie",
+      "decision": "accepted",
+      "sha256": "6e70b401f531799f7d08755aa41ba52e17337257032758e66c89bb1bc8b1ade7",
+      "constructionObserved": "Cord-free hood, full zip, divided front pockets and rib cuffs/hem visible.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 1,
+      "transparentFraction": 0.693,
+      "subjectBoundsAlpha128": [
+        278,
+        17,
+        732,
+        1518
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K47-zip-front-hoodie.png"
+    },
+    {
+      "id": "K48",
+      "name": "Underwear briefs",
+      "decision": "accepted",
+      "sha256": "d9326a151004b5f2cd0594159c652bfb56c11e0f84db0904393e9dd56775eaf5",
+      "constructionObserved": "Single unworn plain pale-blue brief with bound waistband/leg openings and gusset seam. No person/mannequin/body parts.",
+      "singleSubject": true,
+      "fullFraming": true,
+      "noTextOrLogo": true,
+      "rgba": true,
+      "nativeSize": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "borderMaxAlpha": 3,
+      "transparentFraction": 0.5935,
+      "subjectBoundsAlpha128": [
+        8,
+        391,
+        1012,
+        1190
+      ],
+      "manifestHashMatch": true,
+      "masterFile": "K48-underwear-briefs.png"
+    }
+  ]
+}

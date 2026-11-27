@@ -54,7 +54,7 @@ class ShowcaseBootstrap {
     this.listen(this.root,'vesa:destroy',()=>this.destroy());
     this.observeHeight();
     try {
-      const source=new URL('catalogue.json?v=20261127-1',location.href);
+      const source=new URL('catalogue.json?v=20261127-4',location.href);
       this.fetchTimer=window.setTimeout(()=>this.fetchController.abort(),15000);
       const response=await fetch(source.href,{credentials:'same-origin',signal:this.fetchController.signal});
       if(!response.ok)throw new Error('Catalogue request failed');
@@ -84,10 +84,10 @@ class ShowcaseBootstrap {
   /**
    * Guard the network boundary. Names are rendered as text by the controller;
    * model URLs must be exactly the feature's own reviewed ID-derived WebP paths.
-   * GarmentCatalogue separately verifies the complete 91-item/group coverage.
+   * GarmentCatalogue separately verifies the complete 121-item/group coverage.
    */
   validateAssets(records) {
-    if(!Array.isArray(records)||records.length!==91)throw new Error('Invalid catalogue');
+    if(!Array.isArray(records)||records.length!==121)throw new Error('Invalid catalogue');
     const groups=new Set(['men','ladies','boys','girls','baby']);
     for(const item of records) {
       if(!item||typeof item.id!=='string'||!(/^[MLK]\d{2}$/).test(item.id)||
@@ -174,7 +174,7 @@ class ShowcaseBootstrap {
    */
   onEscape(event) {
     if(event.key!=='Escape'||event.defaultPrevented||this.mode!=='modal'||window.parent===window)return;
-    if(this.root.querySelector('#index-dialog').open)return;
+    if(this.root.querySelector('#index-dialog').open||this.experience?.navigation?.isOpen)return;
     event.preventDefault();event.stopPropagation();this.send('close');
   }
   /** Observe only intrinsic root size; iframe viewport height is never used as content height. */

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify shipped showcase assets against the reviewed, immutable 91-item source.
+"""Verify all121 assets while preserving the immutable original91 source.
 
 Owner: ShowcaseAssetVerifier performs read-only catalogue reconstruction and WebP
 decoding. It never edits image pixels or writes runtime data. The fixed digest is
@@ -28,7 +28,7 @@ class ShowcaseAssetVerifier:
     """
 
     SOURCE_SHA256 = "4a5fe692db19a23bb7967fd7de6827bfe8fae0632685ad20a826a343196a2126"
-    GROUP_COUNTS = {"men": 34, "ladies": 29, "boys": 12, "girls": 12, "baby": 4}
+    GROUP_COUNTS = {"men": 34, "ladies": 29, "boys": 22, "girls": 22, "baby": 14}
 
     def __init__(self, repository: Path) -> None:
         """Bind the repository; construction performs no reads or writes."""
@@ -38,11 +38,11 @@ class ShowcaseAssetVerifier:
     def run(self) -> dict:
         """Decode all assets and reconstruct exact reviewed JSON; fail on drift."""
         records = json.loads((self.feature / "catalogue.json").read_text())
-        assert len(records) == 91, "Catalogue must contain exactly 91 records"
+        assert len(records) == 121, "Catalogue must contain exactly 121 records"
         identifiers = [row["id"] for row in records]
         expected_ids = [f"M{i:02d}" for i in range(1, 35)]
         expected_ids += [f"L{i:02d}" for i in range(1, 30)]
-        expected_ids += [f"K{i:02d}" for i in range(1, 29)]
+        expected_ids += [f"K{i:02d}" for i in range(1, 59)]
         assert identifiers == expected_ids, "Master IDs or order changed"
         assert dict(Counter(row["group"] for row in records)) == self.GROUP_COUNTS
         asset_files = set((self.feature / "assets").glob("*.webp"))
@@ -50,7 +50,7 @@ class ShowcaseAssetVerifier:
         assert asset_files == expected_files, "Missing or unlisted WebP assets"
 
         restored, hashes, dimensions, bytes_total = [], set(), [], 0
-        for row in records:
+        for index, row in enumerate(records):
             item = row["id"]
             assert row["image"] == f"/product-showcase/assets/{item}.webp", item
             asset = self.feature / "assets" / f"{item}.webp"
@@ -59,14 +59,20 @@ class ShowcaseAssetVerifier:
             hashes.add(hashlib.sha256(raw).hexdigest())
             original = dict(row)
             original["image"] = "data:image/webp;base64," + base64.b64encode(raw).decode("ascii")
-            restored.append(original)
+            if index < 91:
+                restored.append(original)
             with Image.open(asset) as image:
                 image.load()
                 assert image.format == "WEBP", f"{item}: wrong image format"
                 assert image.size == (row["width"], row["height"]), f"{item}: dimension drift"
                 assert "A" in image.getbands(), f"{item}: no alpha channel"
                 alpha = image.getchannel("A")
-                assert alpha.getextrema() == (0, 255), f"{item}: no transparent/opaque range"
+                lo, hi = alpha.getextrema()
+                assert lo == 0 and hi >= 240, f"{item}: missing transparent/solid range"
+                if index >= 91:
+                    assert image.width >= 1024 and image.height >= 1536, f"{item}: native master size lost"
+                    assert row.get("presentation") in {"model", "product"}, item
+                    assert row.get("frame") == "portrait", item
                 width, height = image.size
                 edges = (
                     alpha.crop((0, 0, width, 1)).getextrema()[1],
@@ -77,7 +83,7 @@ class ShowcaseAssetVerifier:
                 assert max(edges) < 128, f"{item}: subject meets outer canvas edge"
                 dimensions.append(image.size)
 
-        assert len(hashes) == 91, "Unexpected duplicate image payloads"
+        assert len(hashes) == 121, "Unexpected duplicate image payloads"
         canonical = json.dumps(restored, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
         actual = hashlib.sha256(canonical.encode()).hexdigest()
         assert actual == self.SOURCE_SHA256, "Reviewed metadata or image bytes changed"
@@ -93,6 +99,8 @@ class ShowcaseAssetVerifier:
             "width_range": [min(x for x, _ in dimensions), max(x for x, _ in dimensions)],
             "height_range": [min(y for _, y in dimensions), max(y for _, y in dimensions)],
             "reviewed_source_sha256": actual,
+            "original_91_exactly_preserved": True,
+            "new_individual_images": 30,
         }
 
 

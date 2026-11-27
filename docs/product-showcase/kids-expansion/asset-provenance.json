@@ -1,0 +1,1033 @@
+{
+  "approval": "User approved generation and live integration of Boys10, Girls10, Baby10 on2026-11-27.",
+  "assetCount": 30,
+  "original91Changed": false,
+  "processing": "Native PNG to quality90 WebP encoding only; no crop, resizing, background removal or alpha normalization.",
+  "records": [
+    {
+      "id": "K29",
+      "group": "boys",
+      "name": "Button-front shirt",
+      "masterFile": "K29-button-front-shirt.png",
+      "masterSha256": "7c73254a925c509f3d927611cbc5edf50c8f06019693ac7a110810fd58aff154",
+      "webFile": "product-showcase/assets/K29.webp",
+      "webSha256": "9582848db3dc893011a1a2646a8b6e9ccdf37569b94257d0802295306d8f2e8b",
+      "webBytes": 109818,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Asset K29, Boys button-front shirt for VESA apparel catalogue. Create one high resolution 1024x1536 portrait photographic full-body catalogue cutout of ONE naturally proportioned South Asian boy aged about 8, short dark hair, gentle natural smile, wearing a clean solid light-blue full-button long-sleeve shirt and plain navy straight trousers with white low-top trainers. The shirt must have a proper collar, full-length front button placket, separate button cuffs, sleeves full length. Relaxed upright front-facing neutral pose, arms slightly clear of the torso and hands open, placket and cuffs fully visible. Head, hair, hands and both shoes completely inside frame with generous clear transparent margins, even soft studio light, realistic skin and textile detail, no excessive contrast. Genuine transparent RGBA background including spaces around arms and between legs. NO scenery, floor, grey or white background, checkerboard pattern, text, watermark, logo, props, extra garment, extra person, collage, red, yellow or fluorescent colour. This is one individual photorealistic clothed child catalogue asset, never a cartoon/mannequin.\n",
+      "observedGarments": {
+        "primary": "Light blue button-front shirt",
+        "companion": "Navy straight trousers",
+        "primaryType": "top",
+        "startY": 0.18,
+        "splitY": 0.53,
+        "endY": 0.92,
+        "coordinateNote": "Approximate normalized vertical coordinates in original 1024x1536 canvas, visually observed; not fabric specifications."
+      },
+      "generatorVisualReview": "One fully clothed boy, full collar/placket/cuffs visible, full head/hands/shoes, natural anatomy, no text or logos."
+    },
+    {
+      "id": "K30",
+      "group": "boys",
+      "name": "Chino trousers",
+      "masterFile": "K30-chino-trousers.png",
+      "masterSha256": "437bc6974367ee2598094db73d891afb355dcb23b8b522e664a7d1b1efa18bb6",
+      "webFile": "product-showcase/assets/K30.webp",
+      "webSha256": "a47ea215c1b13c615c742a8ffbd17bf84704a973a2887502697cd7ef9100e814",
+      "webBytes": 132372,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Create one 1024x1536 portrait, high-resolution photorealistic garment catalogue cutout, ONE South Asian boy about 9 years old wearing pale stone-beige straight-leg CHINO TROUSERS as the hero garment. Real woven chino construction: belt loops, visible waistband with button, fly front, slant side pockets, full-length straight legs, plain ankle hems, no cuffs or drawstrings. Wear a quiet light grey crewneck tee neatly tucked into waistband and plain white trainers. Neutral front three-quarter standing pose, hands out of pockets and arms relaxed clear of the waist, gentle natural smile, natural anatomy and real textile detail. Entire head, hands and shoes inside frame with 5% clear margin on all sides. Clean genuine transparent RGBA background, including between arms and body and between legs. Soft even photographic studio lighting. One model only. No ground/floor, shadow cloud, props, scenery, gradient backdrop, checkerboard, text, logo, labels, watermark, collage, red/yellow/fluorescent colours, cartoon or mannequin.\n",
+      "observedGarments": {
+        "primary": "Stone-beige chino trousers",
+        "companion": "Light grey crewneck tee",
+        "primaryType": "bottom",
+        "startY": 0.18,
+        "splitY": 0.42,
+        "endY": 0.92,
+        "coordinateNote": "Approximate normalized vertical coordinates in original 1024x1536 canvas, visually observed; not fabric specifications."
+      },
+      "generatorVisualReview": "One child; waistband, belt loops, fly and full straight legs clearly visible, complete head/hands/shoes."
+    },
+    {
+      "id": "K31",
+      "group": "boys",
+      "name": "Dungarees",
+      "masterFile": "K31-dungarees.png",
+      "masterSha256": "334561450e41b039d2ff5cee3db73fa82e4f35f721692976dea3836fd4829752",
+      "webFile": "product-showcase/assets/K31.webp",
+      "webSha256": "08626091556c8aa51b4eb724aeba033f668dde9f539757f90757cdf4487b14e5",
+      "webBytes": 199956,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Create one 1024x1536 portrait high-resolution photorealistic catalogue cutout of ONE South Asian boy about 7 years old wearing medium-blue denim FULL-LENGTH BIB DUNGAREES over a plain optic-white short sleeve tee, with quiet off-white trainers. Hero product must clearly have a bib front with a rectangular bib pocket, two shoulder straps with metal buckle fasteners, side buttons, and attached full-length trouser legs. Both straps and entire bib unobstructed. Natural relaxed front-facing upright standing pose, arms slightly away, hands visible, friendly neutral smile. Entire head/hair/hands/shoes in frame with 5% transparent margin on all sides. Natural anatomy, realistic fabric weave and seams, soft even studio lighting without harsh contrast. Genuine transparent RGBA background with no floor, backdrop, gradient, shadow cloud, checkerboard or scenery. One model only, one outfit, no collage or detached product. No text/logos/watermarks/props, red, yellow or fluorescent colours. Real photographic look, never cartoon or mannequin.\n",
+      "observedGarments": {
+        "primary": "Blue denim dungarees",
+        "companion": "White crewneck tee",
+        "primaryType": "garment",
+        "startY": 0.2,
+        "splitY": null,
+        "endY": 0.92,
+        "coordinateNote": "Approximate normalized vertical coordinates in original 1024x1536 canvas, visually observed; not fabric specifications."
+      },
+      "generatorVisualReview": "One child; both straps, metal fasteners, bib pocket and full-length legs visible, complete head/hands/shoes."
+    },
+    {
+      "id": "K32",
+      "group": "boys",
+      "name": "Cardigan",
+      "masterFile": "K32-cardigan.png",
+      "masterSha256": "662d9fb38ead63cce8c71a361f36a65605bb14e4a02d231c0e885bd308adf48d",
+      "webFile": "product-showcase/assets/K32.webp",
+      "webSha256": "ad0f94ccfe0ca948fee3f37a0d9d5e817f1e0b56367d430c7a805b68157bf050",
+      "webBytes": 126934,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. ONE 1024x1536 portrait high-resolution photorealistic full-body apparel catalogue cutout of a South Asian boy about 8 years old. Hero garment: navy knitted BUTTON-FRONT CARDIGAN with a V neck, full opening front, visible individual buttons, realistic fine knit texture, ribbed cuffs and hem, no hood. Worn neatly buttoned over a quiet white crew tee with stone-grey straight trousers and plain off-white trainers. Stand relaxed facing front, hands clear of all closures, arms slightly away from torso, natural friendly small smile. Entire head, fingers and both shoes visible, centered with substantial clear margin all round. One natural human model, normal age-appropriate clothing, realistic anatomy and fabric, soft even studio illumination. Genuine transparent alpha background, gaps between arms/body and legs transparent. No solid or gradient backdrop, floor, scenery, shadow cloud, checkerboard pattern, props, logos, text, watermark, duplicate model, collage, cartoon, mannequin, red/yellow/neon colours.\n",
+      "observedGarments": {
+        "primary": "Navy cardigan",
+        "companion": "Grey straight trousers; white tee visible at neckline",
+        "primaryType": "top",
+        "startY": 0.19,
+        "splitY": 0.52,
+        "endY": 0.92,
+        "coordinateNote": "Approximate normalized vertical coordinates in original 1024x1536 canvas, visually observed; not fabric specifications."
+      },
+      "generatorVisualReview": "One child; V-neck cardigan, full button placket, fine knit and ribbed hem/cuffs clearly visible; complete head/feet."
+    },
+    {
+      "id": "K33",
+      "group": "boys",
+      "name": "Zip-front woven jacket",
+      "masterFile": "K33-zip-front-woven-jacket.png",
+      "masterSha256": "5afff6ca6ce32c4e36ac09193c660cbb46684c29aeb87bdc272cfadbc7550d9e",
+      "webFile": "product-showcase/assets/K33.webp",
+      "webSha256": "23f12458960cdd53f116f811d176c08dcafe718ef23976e0992a822f66aac4ef",
+      "webBytes": 119468,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. ONE individual 1024x1536 portrait high-resolution photorealistic child clothing catalogue cutout. South Asian boy about 9 wearing a muted blue-grey HIP-LENGTH WOVEN OUTER JACKET, clearly a woven jacket rather than sweatshirt. Visible stand collar, full front zipper, two welt pockets, structured raglan/panel seams and straight woven hems, no hood, no rib-knit sweater texture. Zip mostly closed over a plain white tee, charcoal straight trousers, plain white trainers. Relaxed upright front facing neutral pose, arms slightly separated so zipper and pockets are unobstructed, hands visible, gentle smile, complete head and shoes with clear transparent margins. Soft natural studio lighting, detailed real fabric and anatomy. Genuine transparent RGBA cutout with no background, floor, gradient, shadow cloud, checkerboard pattern or scenery. One model only. No words, logos, watermarks, performance badges, extra products, collage, red, yellow, fluorescent colours, cartoon or mannequin.\n",
+      "observedGarments": {
+        "primary": "Blue-grey zip-front woven jacket",
+        "companion": "Charcoal straight trousers; white tee visible at neckline",
+        "primaryType": "top",
+        "startY": 0.18,
+        "splitY": 0.52,
+        "endY": 0.93,
+        "coordinateNote": "Approximate normalized vertical coordinates in original 1024x1536 canvas, visually observed; not fabric specifications."
+      },
+      "generatorVisualReview": "One child; woven jacket panels, stand collar, full zip and two welt pockets visible; complete head/feet."
+    },
+    {
+      "id": "K34",
+      "group": "boys",
+      "name": "Zip-up tracksuit set",
+      "masterFile": "K34-zip-up-tracksuit-set.png",
+      "masterSha256": "bdfe500df5a49123a9d9e72b0c2f34b7a29d2ef0024380028b024d4e6f670b50",
+      "webFile": "product-showcase/assets/K34.webp",
+      "webSha256": "3967aa740080b130eceb74d0d36e694ba07d97ae52de163ee0fe6c28fa7e09a6",
+      "webBytes": 115216,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. ONE 1024x1536 portrait high-resolution photorealistic child apparel catalogue cutout: South Asian boy about 9 wearing ONE coordinated navy ZIP-UP TRACKSUIT SET, jacket and matching full-length track pants on the same child. Jacket has stand collar, full front zipper, subtle slate-blue shoulder panel and matching narrow blue panel on the pants, zip pockets and tidy cuffs. Plain white tee barely visible at neckline, plain white trainers. This is a complete two-piece sports outfit, not a solo track pant. Neutral upright front-facing standing pose with arms a little apart, hands clear of seams, friendly small natural smile. Natural anatomy, realistic textile detail, soft even studio lighting. Entire head/hands/both shoes inside frame with generous transparent margins. Genuine RGBA transparent background including spaces between arms/body and legs. No backdrop, ground, gradient, cloud shadow, checkerboard, props, words, logos, technical claims, watermark, extra person, detached garments, collage, red, yellow, fluorescent colours or cartoon.\n",
+      "observedGarments": {
+        "primary": "Navy tracksuit set with blue panels",
+        "companion": "White tee visible at neckline",
+        "primaryType": "garment",
+        "startY": 0.17,
+        "splitY": null,
+        "endY": 0.93,
+        "coordinateNote": "Approximate normalized vertical coordinates in original 1024x1536 canvas, visually observed; not fabric specifications."
+      },
+      "generatorVisualReview": "One model in a matching navy/blue track jacket and trousers, visible full zip/stand collar/panel detail, complete head/shoes."
+    },
+    {
+      "id": "K35",
+      "group": "boys",
+      "name": "Rashguard top",
+      "masterFile": "K35-rashguard-top.png",
+      "masterSha256": "0903f496dbf0897e3a109a0ce9bab2c2cf3367c387d6548f9e9051f6500e040e",
+      "webFile": "product-showcase/assets/K35.webp",
+      "webSha256": "5f5ff457f4870b861f03acdeb455ceac34a2a6201afd751d3cd8d5b0e55b56b0",
+      "webBytes": 130660,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Create ONE 1024x1536 high-resolution portrait photorealistic apparel catalogue cutout of one South Asian boy about 8 in a full-coverage long-sleeve RASHGUARD SWIM TOP as the hero garment. Sky-blue body, navy raglan sleeves, high crew neck, visible raglan seam panels and flat seam details; a normal age-appropriate sports fit. Wear plain navy mid-thigh swim shorts with modest loose legs. Neutral upright front-facing standing pose, arms slightly away, hands visible, complete head and both bare feet, gentle natural smile. Realistic anatomy and fabric, soft even studio light, ample clear margin around the entire child. Genuine transparent RGBA background including arm and leg gaps. One model only, no pool or water or beach, no floor, no gradient, no shadow cloud, no checkerboard, text, logo, UPF/performance claim, watermark, props, collage, red/yellow/fluorescent colours, cartoon or mannequin.\n",
+      "observedGarments": {
+        "primary": "Blue rashguard top with navy raglan sleeves",
+        "companion": "Navy swim shorts",
+        "primaryType": "top",
+        "startY": 0.19,
+        "splitY": 0.52,
+        "endY": 0.66,
+        "coordinateNote": "Approximate normalized vertical coordinates in original 1024x1536 canvas, visually observed; not fabric specifications."
+      },
+      "generatorVisualReview": "One child wearing a full-coverage blue/navy raglan long-sleeve rashguard and loose navy swim shorts; complete head/bare feet, no performance claims."
+    },
+    {
+      "id": "K36",
+      "group": "boys",
+      "name": "Two-piece pyjama set",
+      "masterFile": "K36-two-piece-pyjama-set.png",
+      "masterSha256": "9d307ad558ef22aa0537c33a7ab01853f9bf5e5d58804cae350cb9aa1acc57e9",
+      "webFile": "product-showcase/assets/K36.webp",
+      "webSha256": "5596f30a1ad01e1651bae5247d2071c50c85dfcfdcac6f4d47a03f67750c5023",
+      "webBytes": 111346,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. ONE individual 1024x1536 portrait photorealistic full-body children's sleepwear catalogue cutout. One South Asian boy about 8 years old wearing a coordinated slate-blue TWO-PIECE PYJAMA SET: full-button-front long-sleeve sleep shirt with a notched collar, simple chest patch pocket and understated light grey piping, plus matching full-length relaxed straight sleep trousers. Plain quiet grey indoor slippers. Make the actual sleepwear construction clear, not a tee/jogger outfit. Calm neutral front-facing upright standing pose, hands clear of button placket, small natural smile; complete head, fingers and both slippers with clear transparent margins. Realistic child proportions, skin and fabric, soft studio lighting. Genuine transparent RGBA background, including all gaps, no scenery, bed, props, floor, backdrop, gradient, cloud shadow, checkerboard, words, logos, watermark, second model, detached garments or collage. No red/yellow/neon. One fully clothed model in one coordinated outfit.\n",
+      "observedGarments": {
+        "primary": "Slate-blue two-piece pyjama set with light grey piping",
+        "companion": "Grey indoor slippers",
+        "primaryType": "garment",
+        "startY": 0.17,
+        "splitY": null,
+        "endY": 0.94,
+        "coordinateNote": "Approximate normalized vertical coordinates in original 1024x1536 canvas, visually observed; not fabric specifications."
+      },
+      "generatorVisualReview": "One child in true button-front notched-collar pyjama shirt and matching full-length sleep trousers, grey slippers, complete head/feet."
+    },
+    {
+      "id": "K37",
+      "group": "boys",
+      "name": "Denim jeans",
+      "masterFile": "K37-denim-jeans.png",
+      "masterSha256": "f36df1635236079b1d5aa5f76764432fe90f5d4e528c9bc2fdfaa1dbab2b704e",
+      "webFile": "product-showcase/assets/K37.webp",
+      "webSha256": "c9c5b25c6da87af731bd2f2bbbdb8e60071fa53470c3b7093dd83b2e9eab09fa",
+      "webBytes": 165522,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. One 1024x1536 portrait high-resolution photorealistic full-body garment catalogue cutout of ONE South Asian boy about 9 wearing plain medium-blue FULL-LENGTH FIVE-POCKET DENIM JEANS as the hero product. Denim weave and visible contrasting topstitching, waistband and belt loops, a proper button and fly, front pocket curves, small coin pocket and metal rivets must be clear. Straight regular legs and plain full ankle hems, no rips, cuffing or distressed patches. Plain white short-sleeve tee neatly tucked enough to expose all waistband details; plain white trainers. Relaxed slight three-quarter frontal standing pose, hands out of pockets, arms slightly clear, gentle natural smile. Entire head/hands/shoes inside frame with generous transparent margins. Natural child proportions, realistic skin and cloth, soft even studio lighting. Genuine RGBA transparent background including all gaps. No backdrop, ground/floor, gradient, cloud shadow, checkerboard, scenery, props, text/logo/watermark, second person, collage, red/yellow/neon, cartoon or mannequin. Do not make chinos or joggers.\n",
+      "observedGarments": {
+        "primary": "Blue five-pocket denim jeans",
+        "companion": "White crewneck tee",
+        "primaryType": "bottom",
+        "startY": 0.18,
+        "splitY": 0.4,
+        "endY": 0.93,
+        "coordinateNote": "Approximate normalized vertical coordinates in original 1024x1536 canvas, visually observed; not fabric specifications."
+      },
+      "generatorVisualReview": "One child; true full-length blue denim with waistband, loops, button/fly, coin pocket, rivets and topstitching visible; head/hands/shoes complete."
+    },
+    {
+      "id": "K38",
+      "group": "boys",
+      "name": "Underwear briefs",
+      "masterFile": "K38-underwear-briefs.png",
+      "masterSha256": "53236bb8b23ff454c0a9e79ad718bad626f99b6c023c3c1717d4259da1f39b2d",
+      "webFile": "product-showcase/assets/K38.webp",
+      "webSha256": "3eb796f799fc6554c8caa8beafe2cdd3f14c6af2b554ea4e38ccd663a28f1949",
+      "webBytes": 191750,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "product",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Create ONE high-resolution 1024x1536 portrait ecommerce catalogue cutout of ONE UNWORN boys underwear brief, product only, front-facing symmetrical flat lay. The single garment is muted navy cotton-look jersey with a broad plain soft light-grey elastic waistband, neatly finished bound leg openings, visible natural seam stitching and a clean classic brief silhouette with two leg openings. No lettering or logo on waistband. Real photographic textile detail and gentle natural fabric folds, soft even product lighting. Centre the entire single garment in the canvas, use about 70% of canvas width and keep clear margins; no crop. Genuine transparent RGBA background, including openings or empty areas outside the product. Absolutely NO person, child, mannequin, body part, skin, hanger, packaging, additional garment, multipack or collage. No text, watermark, props, scenery, floor, gradient backdrop, checkerboard pattern, red/yellow/fluorescent colours.\n",
+      "observedGarments": {
+        "primary": "Navy underwear brief with grey waistband",
+        "companion": null,
+        "primaryType": "garment",
+        "startY": 0.29,
+        "splitY": null,
+        "endY": 0.79,
+        "coordinateNote": "Approximate normalized vertical coordinates in original 1024x1536 canvas, visually observed; not fabric specifications."
+      },
+      "generatorVisualReview": "Exactly one unworn navy brief with grey waistband, visible bound leg seams; no human, mannequin, skin, logos, text or extra garment."
+    },
+    {
+      "id": "K39",
+      "group": "girls",
+      "name": "Button-front blouse",
+      "masterFile": "K39-button-front-blouse.png",
+      "masterSha256": "93128ec0a8789e51fc6913ed5d7ce4764b9777d370072f04933f3beedcefb0c7",
+      "webFile": "product-showcase/assets/K39.webp",
+      "webSha256": "44f080bf4f288a9e4e10ace045f19439b946b3dbd13e8b9f2b64bc2a840a62b1",
+      "webBytes": 110224,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Create ONE photorealistic full-body fashion catalogue cutout for a girls' button-front blouse. Exactly one smiling South Asian girl aged about 8, natural age-appropriate proportions and neutral relaxed upright standing pose, looking at camera. Wear an opaque pale blue solid button-front blouse with a proper small collar, full visible button placket and neatly constructed long sleeves/cuffs, simple plain navy full-length trousers and white sneakers. The blouse is the focal garment; hands clear of the placket and slightly away from torso. Complete top of hair, hands and both shoes remain fully visible, with generous clean padding. Front view, even soft studio light, natural skin/fabric detail, restrained contrast. Portrait canvas 1024x1536 or higher. TRUE TRANSPARENT RGBA background, clean alpha around hair and clothes, no floor, scenery, props or baked checkerboard. No text, logos, watermarks, collage, second model, doll/cartoon rendering, red, yellow or fluorescent colours. One image, one child, one outfit.\n",
+      "observedGarments": [
+        {
+          "slot": "top",
+          "name": "Button-front blouse",
+          "color": "Pale blue",
+          "yStart": 0.18,
+          "yEnd": 0.54
+        },
+        {
+          "slot": "bottom",
+          "name": "Straight trousers",
+          "color": "Navy",
+          "yStart": 0.51,
+          "yEnd": 0.94
+        }
+      ],
+      "generatorVisualReview": "One photorealistic fully clothed child; collar, full button placket, cuffs visible; full head and both shoes in frame. Native alpha includes soft antialiased boundaries; root integration review still required."
+    },
+    {
+      "id": "K40",
+      "group": "girls",
+      "name": "Tailored trousers",
+      "masterFile": "K40-tailored-trousers.png",
+      "masterSha256": "cf9166a976cec984f3e31d811d9a75944679168a45d592de3630f6009d90ad4f",
+      "webFile": "product-showcase/assets/K40.webp",
+      "webSha256": "f43e6721e40590cfe04a97e2aa014023ea70d34ce3c37220ec6625551b778920",
+      "webBytes": 102768,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. ONE photorealistic full-body girls' clothing catalogue model, about 9 years old, South Asian child, naturally smiling and standing straight, hands fully visible slightly away from hips. Focal product: navy tailored straight-leg full-length trousers, clearly defined waistband, belt loops, front fly, subtle pressed creases and neat plain ankle hems, not leggings/joggers. Wear a plain opaque ivory crew-neck tee lightly tucked into the trousers and simple white low-top sneakers. Both trouser legs and waistband unobstructed. Camera pulled back enough to show complete hair, hands and both shoes with 8–10% transparent padding above head and below feet. Portrait 1024x1536 or higher, one person only, natural child proportions, crisp realistic fabric details, front-facing neutral catalogue pose, soft even studio light with no harsh contrast. Actual transparent RGBA background, isolated crisp cutout with clean edges and fine hair detail, no halo haze, vignette, floor shadow, floor, scene, props or checkerboard. No text, logos, watermark, collage, red/yellow/fluorescent tones, no doll/cartoon.\n",
+      "observedGarments": [
+        {
+          "slot": "top",
+          "name": "Crew-neck tee",
+          "color": "Ivory",
+          "yStart": 0.19,
+          "yEnd": 0.4
+        },
+        {
+          "slot": "bottom",
+          "name": "Tailored trousers",
+          "color": "Navy",
+          "yStart": 0.39,
+          "yEnd": 0.92
+        }
+      ],
+      "generatorVisualReview": "One photorealistic fully clothed child; navy tailored waistband/fly/belt loops and straight legs clearly visible, complete head and shoes. Root integration review still required."
+    },
+    {
+      "id": "K41",
+      "group": "girls",
+      "name": "Cardigan",
+      "masterFile": "K41-cardigan.png",
+      "masterSha256": "4f1a72f4e1b69d6ec8a7d794e66ab35913f4d271fed5030d9673a896b9ccede0",
+      "webFile": "product-showcase/assets/K41.webp",
+      "webSha256": "47e3056a06a980a5e639115dff8696fd8edc25373c0de015e2e600682945e83e",
+      "webBytes": 137198,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Generate a single photorealistic apparel catalogue cutout: ONE naturally smiling South Asian girl aged about 8 wearing a pale lavender button-front knitted cardigan as the focal garment. Cardigan has a full front opening, simple round neckline, visible small matching buttons, fine knit texture, ribbed cuffs and hem, no hood. Plain white tee under it, simple straight navy trousers and white sneakers. Relaxed front-facing standing catalogue pose, arms slightly clear of torso so cardigan edges and cuffs are visible, normal child proportions. Full head/hair, both hands and both shoes entirely in frame; camera pulled back, centered subject occupies only 80–85% of portrait canvas height with empty transparent margins. Portrait 1024x1536 or higher. Soft even studio lighting, realistic face and fabric, gentle contrast. TRUE TRANSPARENT RGBA BACKGROUND, clean isolated subject edges, no grey/white/black background plate, no halo or cast shadow, no floor, furniture, props, text, branding, watermark, doll/cartoon effect, collage or other people. No red, yellow, fluorescent colours.\n",
+      "observedGarments": [
+        {
+          "slot": "top",
+          "name": "Cardigan over white tee",
+          "color": "Lavender",
+          "yStart": 0.2,
+          "yEnd": 0.54
+        },
+        {
+          "slot": "bottom",
+          "name": "Straight trousers",
+          "color": "Navy",
+          "yStart": 0.48,
+          "yEnd": 0.92
+        }
+      ],
+      "generatorVisualReview": "One fully clothed model; open fine knit cardigan, buttonholes/buttons, ribbed cuffs and hem clear; white tee underneath, navy straight trousers, full head and shoes."
+    },
+    {
+      "id": "K42",
+      "group": "girls",
+      "name": "Zip-front woven jacket",
+      "masterFile": "K42-zip-front-woven-jacket.png",
+      "masterSha256": "2b9286be3eac5d397152b51e9566ab609342c227c4e99f8190049d2a2350086d",
+      "webFile": "product-showcase/assets/K42.webp",
+      "webSha256": "5974f453044c721e70aff00a7d10df3c685ec2d39c81af357aa378ea6bea1d69",
+      "webBytes": 100422,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. One photorealistic full-body catalogue image of exactly ONE South Asian girl aged about 9, natural cheerful expression, neutral upright front three-quarter pose. Featured garment: a pale slate-blue lightweight WOVEN jacket with stand collar, hip length, clearly visible full centre zipper and two shaped welt pockets. Woven smooth fabric, not a hoodie or knit sweatshirt, no hood, no cord. Worn over a simple white tee with straight navy trousers and clean white sneakers. Hands relaxed away from zipper/pockets, both sleeves and hem visible. Complete head including hair, hands, trouser hems and BOTH shoes fully inside frame; centered body occupies85% of portrait canvas height with transparent padding on every side. 1024x1536 or higher. Real photographic skin/hair and fabric, soft studio lighting, mild contrast. True transparent RGBA background, clean isolated cutout, no opaque backdrop, no vignette/haze/glowing halo, no cast shadow/floor/props/text/logo/watermark/collage/other people. Avoid red, yellow, fluorescent colours and cartoon/doll rendering. Do not add waterproof or technical claims.\n",
+      "observedGarments": [
+        {
+          "slot": "top",
+          "name": "Zip-front woven jacket over white tee",
+          "color": "Slate blue",
+          "yStart": 0.17,
+          "yEnd": 0.55
+        },
+        {
+          "slot": "bottom",
+          "name": "Straight trousers",
+          "color": "Navy",
+          "yStart": 0.51,
+          "yEnd": 0.94
+        }
+      ],
+      "generatorVisualReview": "One fully clothed model; full centre zipper, stand collar and two shaped pockets on woven jacket clear; full head and shoes."
+    },
+    {
+      "id": "K43",
+      "group": "girls",
+      "name": "Jumpsuit",
+      "masterFile": "K43-jumpsuit.png",
+      "masterSha256": "9aee557caccb803a884e448c29753d2107dfe377819d9e24e63d1bb668bc4aaa",
+      "webFile": "product-showcase/assets/K43.webp",
+      "webSha256": "18b89dbc79fa3221e47453f4b5f5cffa161d350a6aec748f6ff1b997cca92db8",
+      "webBytes": 105870,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Exactly ONE photorealistic South Asian girl about8 years old modelling a modest solid navy full-length short-sleeve JUMPSUIT in a fashion catalogue cutout. The jumpsuit is one continuous garment: collared short-sleeve button-front bodice connected at a clearly defined elastic waist to two straight full-length trouser legs. Plain no prints/logos, opaque woven fabric, unobstructed full garment. Neutral upright front pose, arms relaxed slightly apart from torso and legs naturally slightly separated so the two-leg construction is obvious, cheerful natural face. White sneakers. Complete head, hair, both hands and both shoes fully in frame. Full body centered, camera pulled back with10% empty transparent margin above and below. Native portrait1024x1536 or higher. Soft balanced studio illumination, natural skin/hair/anatomy, garment seams and fabric detail, restrained contrast. True transparent RGBA background and clean alpha edge; no backdrop, environment, props, floor/shadow, haze/halo, text/watermarks, collages or second person. No red, yellow, fluorescent colours, no stylized doll/cartoon.\n",
+      "observedGarments": [
+        {
+          "slot": "garment",
+          "name": "Short-sleeve full-length jumpsuit",
+          "color": "Navy",
+          "yStart": 0.18,
+          "yEnd": 0.94
+        }
+      ],
+      "generatorVisualReview": "One model wearing a single continuous collared button bodice, elastic waist and two full-length legs. Full head and both shoes visible."
+    },
+    {
+      "id": "K44",
+      "group": "girls",
+      "name": "Sports skort",
+      "masterFile": "K44-sports-skort.png",
+      "masterSha256": "43d522ec86976cad0b2a4ab082ca6a8ae8efc8bcd0f79dc82cc15944a26da66a",
+      "webFile": "product-showcase/assets/K44.webp",
+      "webSha256": "d4f3484c3ddf9b27d37d4b44ebe4598dcf4dac1b7869a7d0c0f231db0c31260e",
+      "webBytes": 129868,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. ONE photorealistic South Asian girl aged around9 in an ordinary youth sportswear catalogue photograph, neutral front-facing relaxed standing pose, natural smile, arms resting slightly away from sides. Featured garment: a plain navy sports SKORT with an age-appropriate modest skirt overlay reaching close to the knees and integrated opaque matching shorts underneath. A small natural side opening in the outer hem shows a narrow edge of the built-in shorts fabric; the child does NOT lift or touch the garment. Pair with a plain opaque light-blue short-sleeve polo tucked neatly at the waist, plain white ankle socks and white sports sneakers. Commercial garment construction focus, normal child proportions, no sporty action pose. Complete head, both hands and shoes fully visible; centered full body with generous transparent margins on portrait1024x1536 canvas. Natural skin and fabric texture, soft balanced studio light, restrained contrast. True transparent RGBA background, isolated clean alpha outline, no backdrop/floor/scenery/props/cast shadow/halo, no text/logo/watermark/collage/other people. No red/yellow/fluorescent tones, no doll or illustration.\n",
+      "observedGarments": [
+        {
+          "slot": "top",
+          "name": "Short-sleeve polo",
+          "color": "Light blue",
+          "yStart": 0.17,
+          "yEnd": 0.41
+        },
+        {
+          "slot": "bottom",
+          "name": "Sports skort",
+          "color": "Navy",
+          "yStart": 0.39,
+          "yEnd": 0.7
+        }
+      ],
+      "generatorVisualReview": "One model in neutral standing pose; near-knee navy skirt overlay, inner short edge visible naturally at viewer-right side opening, without touching/lifting garment. Full head and both shoes."
+    },
+    {
+      "id": "K45",
+      "group": "girls",
+      "name": "Rashguard top",
+      "masterFile": "K45-rashguard-top.png",
+      "masterSha256": "552117f1b497ab72ef2f619aa352661b12bc94836fe8a4885cba7b36f151e230",
+      "webFile": "product-showcase/assets/K45.webp",
+      "webSha256": "ed78652a9dcb30fc1ed611e274708c9fab84589396b565696fd23f9473bb8be1",
+      "webBytes": 116608,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Create ONE photorealistic full-body South Asian girl around9 years old modelling a girls' swim RASHGUARD TOP in a neutral youth clothing catalogue pose. Featured garment is opaque full-coverage high round-neck long-sleeve swim top: muted blue body, navy raglan sleeves/side panels, clearly visible flatlock-style panel seams, regular comfortable fit. Pair with plain navy loose knee-length swim shorts and simple navy water shoes. Natural upright stance, relaxed arms slightly away from body, fully visible hands, cheerful expression, normal child proportions. Show complete head/hair and both feet, whole body centered with generous transparent padding all around. Portrait1024x1536 or higher. Crisp realistic photographic fabric/skin, soft even studio light, low to moderate contrast. TRUE TRANSPARENT RGBA background, clean alpha cutout, no floor/scenery/water/props/shadow/haze/halo, no logos/text/watermarks, no UPF or performance claims, no collage or other people. Avoid red/yellow/fluorescent colours, dolls/cartoons and active action poses.\n",
+      "observedGarments": [
+        {
+          "slot": "top",
+          "name": "Long-sleeve rashguard top",
+          "color": "Muted blue with navy panels",
+          "yStart": 0.18,
+          "yEnd": 0.53
+        },
+        {
+          "slot": "bottom",
+          "name": "Swim shorts",
+          "color": "Navy",
+          "yStart": 0.51,
+          "yEnd": 0.7
+        }
+      ],
+      "generatorVisualReview": "One model in opaque full coverage long-sleeve high-neck rashguard with raglan panel seams; knee-length swim shorts, navy water shoes. Head/feet complete, no performance claims."
+    },
+    {
+      "id": "K46",
+      "group": "girls",
+      "name": "Two-piece pyjama set",
+      "masterFile": "K46-two-piece-pyjama-set.png",
+      "masterSha256": "8cec72668667e4764d336f38c90054c2b9957b55778d819b4a40bbc9fb18cb8f",
+      "webFile": "product-showcase/assets/K46.webp",
+      "webSha256": "733f9d7ad53a46f5005de0f236dae60b909868a11d140dd23c48f238954ab349",
+      "webBytes": 122192,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. ONE photorealistic full-body South Asian girl about8 years old in a modest two-piece pyjama set, neutral upright catalogue standing pose, natural smile, hands relaxed clear of the clothing. The focal set is pale lavender opaque woven pyjamas: a long-sleeve button-front sleep shirt with notched collar, small chest pocket and restrained navy piping on collar/front/cuffs; matching loose full-length sleep trousers with piped plain ankle hems. Both pieces clearly coordinate, comfortable regular fit, one outfit on one model. Simple plain light-grey closed slippers on feet. Show complete head/hair, both hands, trouser hems and both slippers fully in frame; centered full-body portrait1024x1536 or higher with generous transparent padding. Natural proportions and realistic face, skin and fabric texture, soft balanced studio lighting, no dramatic contrast. TRUE TRANSPARENT RGBA background, clean isolated cutout, no bed or bedroom, floor, scenery, props, cast shadow, haze/halo, no text/logos/watermark/collage/extra people. Avoid red/yellow/fluorescent colours and doll/cartoon styling.\n",
+      "observedGarments": [
+        {
+          "slot": "garment",
+          "name": "Button-front pyjama shirt and matching full-length trousers",
+          "color": "Lavender with navy piping",
+          "yStart": 0.17,
+          "yEnd": 0.94
+        }
+      ],
+      "generatorVisualReview": "One child in coordinated long-sleeve button sleep shirt with notched collar and chest pocket plus full trousers; piping visible. Full head, hands and slippers visible."
+    },
+    {
+      "id": "K47",
+      "group": "girls",
+      "name": "Zip-front hoodie",
+      "masterFile": "K47-zip-front-hoodie.png",
+      "masterSha256": "6e70b401f531799f7d08755aa41ba52e17337257032758e66c89bb1bc8b1ade7",
+      "webFile": "product-showcase/assets/K47.webp",
+      "webSha256": "6ecd62224b4d8e68fdd1dbfd2e30298ac373a9770b81c22577eba30bb0459e1c",
+      "webBytes": 127576,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Exactly ONE photorealistic South Asian girl around8 years old wearing a muted dusty-lilac ZIP-FRONT HOODIE as focal product. The knit hoodie has a real full-length visible centre zipper, plain cord-free hood resting behind neck, rib cuffs and hem, and two divided front pouch pockets. Wear over a plain white tee with simple straight navy trousers and white sneakers. The hood, zip, pocket openings, cuffs and hem all visible. Neutral relaxed front-facing catalogue standing pose, natural smile, hands resting clear of pockets, realistic child proportions. Complete hair/head, hands and both shoes inside frame; full body centered with generous empty transparent margins on portrait1024x1536 or higher canvas. Soft balanced studio lighting, crisp realistic skin/hair/fabric details, modest contrast. TRUE transparent RGBA background, clean isolated alpha edges; no scenery, floor, props, shadow or halo/haze; no logos/text/watermarks/collages/other people; no red/yellow/fluorescent colours; no doll/cartoon appearance.\n",
+      "observedGarments": [
+        {
+          "slot": "top",
+          "name": "Zip-front hoodie over white tee",
+          "color": "Dusty lilac",
+          "yStart": 0.18,
+          "yEnd": 0.54
+        },
+        {
+          "slot": "bottom",
+          "name": "Straight trousers",
+          "color": "Navy",
+          "yStart": 0.52,
+          "yEnd": 0.92
+        }
+      ],
+      "generatorVisualReview": "One model with cord-free hood, full zipper, divided pouch pockets, ribbed cuffs and hem; full head and shoes in frame."
+    },
+    {
+      "id": "K48",
+      "group": "girls",
+      "name": "Underwear briefs",
+      "masterFile": "K48-underwear-briefs.png",
+      "masterSha256": "d9326a151004b5f2cd0594159c652bfb56c11e0f84db0904393e9dd56775eaf5",
+      "webFile": "product-showcase/assets/K48.webp",
+      "webSha256": "066c61e5d90670fbfa5701209ef654f7756859485830f63b29a0ab4d943e0817",
+      "webBytes": 181750,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "product",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. A clean professional photographic product catalogue packshot of exactly ONE UNWORN plain girls' cotton-knit underwear brief, symmetrical front flat-lay view. Full-coverage classic brief shape, solid pale blue fabric, simple matching soft elastic waistband and matching bound leg openings, neat visible stitching and natural fine cotton texture. Plain practical children's garment, no lace, bows, frills, lingerie styling, prints or branding. One garment entirely inside frame, centered with generous empty transparent margin. No human, no mannequin, no body parts, no model, no hanger, packaging or additional products. Native portrait1024x1536 or higher. Soft even studio illumination, realistic cloth detail, restrained contrast. TRUE TRANSPARENT RGBA background, clean precise alpha edges including waistband and leg openings; no white/grey background plate, floor, cast shadow, halo, text, logos, watermarks or checkerboard. No red, yellow or fluorescent colours.\n",
+      "observedGarments": [
+        {
+          "slot": "garment",
+          "name": "Underwear briefs",
+          "color": "Pale blue",
+          "yStart": 0.25,
+          "yEnd": 0.78
+        }
+      ],
+      "generatorVisualReview": "Exactly one unworn plain brief, symmetrical front flat-lay, waistband and two bound leg seams visible. No model/mannequin/body parts/second product."
+    },
+    {
+      "id": "K49",
+      "group": "baby",
+      "name": "Short-leg romper",
+      "masterFile": "K49-short-leg-romper.png",
+      "masterSha256": "7b59c584dbb6d1a31497052b48e5114d3565b98f9d9e06fca2777bf588c16763",
+      "webFile": "product-showcase/assets/K49.webp",
+      "webSha256": "b92e8298b9ffe074d8ae750ebae3badf87dff301e072b6dc6d3114a548f45de4",
+      "webBytes": 148076,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Create ONE high-resolution photorealistic apparel catalogue cutout for VESA item K49, baby short-leg romper. Exactly one South Asian toddler about 20 months old, stable natural upright standing pose, gentle smile, front view, full head and both bare feet uncropped. Wearing a plain muted powder-blue short-sleeve one-piece outer romper, with TWO clearly formed short leg tubes ending above knees, visible small front button placket and subtle crotch fastenings. Modest roomy everyday baby clothing, not a legless bodysuit. Natural child anatomy and real photographic skin/fabric texture; no doll/cartoon appearance. Even soft studio light, neutral low-contrast catalogue colour, arms relaxed away from fastenings. Portrait canvas preferably 1024x1536 or higher, subject centered with clear top and bottom margins. True transparent RGBA background. Subject opaque with clean antialiased hair and garment edges. No wall, floor, scenic shadow, furniture, props, other people, collage, printed text, logo, watermark, labels, red, yellow or fluorescent colours. One model and one complete outfit only.",
+      "observedGarments": {
+        "mode": "one-garment",
+        "mainName": "Short-leg romper",
+        "color": "Powder blue",
+        "normalizedY": {
+          "garmentStart": 0.245,
+          "garmentEnd": 0.742
+        }
+      },
+      "generatorVisualReview": "One full-body toddler; complete head/feet; clear two short leg tubes and front placket; no props or text."
+    },
+    {
+      "id": "K50",
+      "group": "baby",
+      "name": "Dungarees",
+      "masterFile": "K50-dungarees.png",
+      "masterSha256": "7f5125273d8657503f4b665b427710205fdd1bb7ed77eaa7d6e084684732c5be",
+      "webFile": "product-showcase/assets/K50.webp",
+      "webSha256": "c6e176d9ab5945db4fa45abfece63a6dbfd89afa81a5d83b71d21fba33c1ff11",
+      "webBytes": 156358,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. ONE photorealistic apparel catalogue cutout, VESA K50 Baby Dungarees. Exactly one South Asian toddler about 22 months old in a natural stable standing pose, gentle smile, front view, complete head and both feet visible. Full-length muted light denim-blue bib dungarees over a plain optic-white short-sleeve tee. Clear bib chest panel, two shoulder straps with small silver buckles, open side construction, two distinct full trouser legs, simple front bib pocket. No printed design or logo. Simple white ankle socks, no props. Genuine photographic child and woven fabric texture, natural anatomy, no doll or illustration. Soft even studio lighting. Portrait 1024x1536 or higher. Frame the full body at only about85% of canvas height, leaving generous CLEAR TRANSPARENT SPACE above head and below feet and both sides; do not crop. True transparent RGBA background, opaque subject and clean fine hair edges. No wall, floor, scenery, furniture, shadow cloud, multiple people, garment lineup, collage, text, labels, watermarks, red/yellow/fluorescent colours. One model, one outfit.",
+      "observedGarments": {
+        "mode": "one-garment",
+        "mainName": "Dungarees",
+        "color": "Denim blue",
+        "companion": "White T-shirt and socks",
+        "normalizedY": {
+          "garmentStart": 0.294,
+          "garmentEnd": 0.86
+        }
+      },
+      "generatorVisualReview": "One full-body toddler, two clear bib straps/buckles and front pocket, full-length trouser legs, full head/feet, generous padding."
+    },
+    {
+      "id": "K51",
+      "group": "baby",
+      "name": "Pull-on trousers",
+      "masterFile": "K51-pull-on-trousers.png",
+      "masterSha256": "02fed98fbca7ad7ebbcb2c9ebf019459c737003566e41ddfb8150ecf4764a3cd",
+      "webFile": "product-showcase/assets/K51.webp",
+      "webSha256": "997929dc294038851c8a6ebb8cdd898bb85d63ddd8cdc30aab88992cc0f04140",
+      "webBytes": 136210,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Photorealistic apparel catalogue cutout for VESA K51 Baby Pull-on Trousers. Exactly ONE South Asian toddler around 22 months old, natural stable standing front pose with gentle smile, relaxed arms at sides, fingers clear of waistband. Complete head and both socked feet visible. Main product: plain muted navy soft pull-on full-length trousers with visibly gathered elastic waistband, relaxed straight legs and simple ankle hems, no cargo pockets or print. Plain short-sleeve optic-white tee neatly tucked in so the waistband is entirely unobscured. White ankle socks. Genuine photographic baby proportions, skin and fabric detail, not a doll or cartoon. Even soft studio light. Portrait1024x1536 or higher; full body occupies about82% of height with generous clear transparent margin above hair and below feet. TRUE transparent RGBA background, subject fully opaque with clean edges. No background, no floor, props, furniture, decorative text, watermark, label, logo, other models, collage, red/yellow/fluorescent colour, harsh contrast or cast shadow cloud. One model wearing one outfit.",
+      "observedGarments": {
+        "mode": "top-bottom",
+        "main": "bottom",
+        "topName": "White T-shirt",
+        "topColor": "White",
+        "bottomName": "Pull-on trousers",
+        "bottomColor": "Navy",
+        "normalizedY": {
+          "shoulder": 0.24,
+          "waistSplit": 0.45,
+          "bottomHem": 0.92
+        }
+      },
+      "generatorVisualReview": "One toddler; visible gathered waistband, full trousers with ankle hems, tucked neutral tee; complete head/feet."
+    },
+    {
+      "id": "K52",
+      "group": "baby",
+      "name": "Cardigan",
+      "masterFile": "K52-cardigan.png",
+      "masterSha256": "97bc042c7d8394c2669d94294be4fad4bf6dbb1beea984b9d0dc629349d75cdb",
+      "webFile": "product-showcase/assets/K52.webp",
+      "webSha256": "e6670fa36034514b4f1ed7da294372ca0b3b6874d6148ff53786f8728640a438",
+      "webBytes": 198164,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Create ONE photorealistic catalogue cutout for VESA K52 Baby Cardigan. Exactly one South Asian toddler about20 months old in a calm natural stable standing pose facing camera, gentle smile, hands relaxed clear of buttons. Main garment is a soft muted sage-grey fine-knit long-sleeve button-front cardigan with visible rib knit cuffs/hem, five small tonal buttons down a fully opening front, neckline and placket clear. Wear over a simple optic-white tee and plain cream full-length trousers, white ankle socks; quiet companion garments. Not a sweatshirt or closed pullover. Real photographic child anatomy, skin and natural knit stitch detail, no doll/cartoon appearance. Soft even studio light, low contrast. Portrait1024x1536 or higher, full body entirely in frame, at least5% clear margin above hair and below feet. True transparent RGBA background, opaque subject, clean hair and clothing edges. No scene, wall, floor, shadow cloud, furniture, props, text, label, logo, watermark, extra people, collage, red/yellow/fluorescent colours. Exactly one model, one outfit.",
+      "observedGarments": {
+        "mode": "top-bottom",
+        "main": "top",
+        "topName": "Cardigan",
+        "topColor": "Sage grey",
+        "bottomName": "Cream trousers",
+        "bottomColor": "Cream",
+        "underlayer": "White T-shirt",
+        "normalizedY": {
+          "shoulder": 0.24,
+          "waistSplit": 0.58,
+          "bottomHem": 0.94
+        }
+      },
+      "generatorVisualReview": "One toddler, sage-grey knit opening cardigan with five buttons and rib hem; cream trousers, white tee and socks; complete head/feet."
+    },
+    {
+      "id": "K53",
+      "group": "baby",
+      "name": "Zip-front jacket",
+      "masterFile": "K53-zip-front-jacket.png",
+      "masterSha256": "f5d0dd7f0042d5a6768ef576e5b6de72ca9f1a04cf210e4776904baf68bb2cae",
+      "webFile": "product-showcase/assets/K53.webp",
+      "webSha256": "229e0ac00a21a6eb37539a50549b8fef56e3d375da26b78bf01bd48ae0f16c30",
+      "webBytes": 118190,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "ONE photorealistic catalogue cutout for VESA K53 Baby Zip-front Jacket. Exactly one South Asian toddler about22 months old, natural stable standing pose, slight smile facing camera, arms relaxed away from front zipper and pockets. Main product: plain muted steel-blue woven lightweight stand-collar jacket, full center-front zipper closed, two clearly visible simple welt pockets, small cuff seam and hem. No hood, no drawcords, no logos, no excessive padding. Companion plain light-grey full-length trousers and white ankle socks; small plain white inner tee only at neckline. Photograph realistic child proportions, face, hands and woven cloth texture; no cartoon/doll. Soft even studio light with gentle contrast. Vertical1024x1536 or greater. Full head and feet UNCROPPED, body smaller within frame with generous transparent padding at top/bottom. True transparent RGBA background, opaque body, clean hair/garment edge. No scene, furniture, floor, halo shadow cloud, props, other people, detached garments, text/labels/watermark/red/yellow/fluorescent colours. Just one toddler wearing one outfit.",
+      "observedGarments": {
+        "mode": "top-bottom",
+        "main": "top",
+        "topName": "Zip-front jacket",
+        "topColor": "Steel blue",
+        "bottomName": "Grey trousers",
+        "bottomColor": "Light grey",
+        "underlayer": "White T-shirt",
+        "normalizedY": {
+          "shoulder": 0.22,
+          "waistSplit": 0.58,
+          "bottomHem": 0.93
+        }
+      },
+      "generatorVisualReview": "One toddler; steel-blue stand collar woven jacket with full front zip and welt pockets, grey trousers and white socks; full body visible."
+    },
+    {
+      "id": "K54",
+      "group": "baby",
+      "name": "Footed sleepsuit",
+      "masterFile": "K54-footed-sleepsuit.png",
+      "masterSha256": "ffaf15ff12f29755e334b29b58fcd03563cfa2815274759d0b37f7e49774358a",
+      "webFile": "product-showcase/assets/K54.webp",
+      "webSha256": "1d8a1c3582a013168af4225eb34b1f717383a5ecac4bfb23514d7a0615a6f0f0",
+      "webBytes": 182946,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. ONE photorealistic baby garment catalogue cutout, VESA K54 Footed Sleepsuit. Exactly one South Asian toddler about20 months old in a calm stable standing front-facing pose, small natural smile, relaxed hands. Wearing ONE plain soft light-grey long-sleeve footed sleepsuit: continuous torso and FULL-LENGTH legs, BOTH FEET fully enclosed in the SAME attached garment fabric, clear center-front zipper running from neck towards one ankle, zipper guard at neckline, simple rib sleeve cuffs. No separate socks or shoes, no separate trouser waistband. Modest loose comfortable silhouette, not tight. Real photographic child face/hands and fine jersey texture, not doll/cartoon. Soft even studio light. Portrait1024x1536 or higher, full head/hair and both enclosed feet uncropped; ample clear margin above and below. Genuine transparent RGBA background and opaque subject with clean edges. No bed/crib, blanket, toy, furniture, wall, floor, shadow cloud, logos, text, watermark, other people, collage, red/yellow/fluorescent colours. One model in one one-piece outfit.",
+      "observedGarments": {
+        "mode": "one-garment",
+        "mainName": "Footed sleepsuit",
+        "color": "Light grey",
+        "normalizedY": {
+          "garmentStart": 0.24,
+          "garmentEnd": 0.99
+        }
+      },
+      "generatorVisualReview": "One toddler in one-piece grey sleepsuit; front-to-ankle zip visible, both feet enclosed by continuous fabric, complete body."
+    },
+    {
+      "id": "K55",
+      "group": "baby",
+      "name": "Wearable sleep bag",
+      "masterFile": "K55-wearable-sleep-bag.png",
+      "masterSha256": "beacca26a1ec5953d0bce2684821ee849aae3038813334e299400ea560817dac",
+      "webFile": "product-showcase/assets/K55.webp",
+      "webSha256": "7d4151e290ad953d2176204e0362b74932eb59f73b8dbba8cdf70d4285e5fcd0",
+      "webBytes": 218842,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "product",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. ONE SINGLE UNWORN BABY WEARABLE SLEEP BAG, VESA K55. Professional photorealistic front-facing flat-lay product cutout on TRUE transparent RGBA background. No person, infant, child, mannequin or body parts. Sleeveless wearable sleep bag in muted soft sage-grey cotton-look fabric, two armholes and rounded neckline clearly visible at top, a neat center-front zipper with small zipper guard, gently widened elongated bag-shaped lower body FULLY CLOSED with one rounded bottom hem. NO separate leg tubes, NO feet, NO trousers, NO sleeves. One complete single garment only, laid smooth symmetrically with realistic subtle fabric folds and stitching; soft even studio lighting. Portrait1024x1536 or higher, product centered at about80% canvas height with clear transparent padding on all four sides, all edges intact. Subject opaque, clean antialiased garment edges. No floor/backdrop/shadow cloud/hanger/packaging/accessories/text/brand/logo/watermark/collage/extra garments/red/yellow/fluorescent colours. Do not add any sleep-safety or fabric-performance text.",
+      "observedGarments": {
+        "mode": "one-product",
+        "mainName": "Wearable sleep bag",
+        "color": "Sage grey",
+        "normalizedY": {
+          "garmentStart": 0.05,
+          "garmentEnd": 0.97
+        }
+      },
+      "generatorVisualReview": "Single unworn sage-grey sleeveless sleep bag; clear neckline, arm openings, center zipper and fully closed rounded bag lower section; no person/mannequin."
+    },
+    {
+      "id": "K56",
+      "group": "baby",
+      "name": "Two-piece pyjama set",
+      "masterFile": "K56-two-piece-pyjama-set.png",
+      "masterSha256": "5f84c17b2d6b2c8df78384b837fa168c5b127b4fbd9c359db72d605c182776fa",
+      "webFile": "product-showcase/assets/K56.webp",
+      "webSha256": "5a14d036bd380cc5113c54fe90eb2b1724605f9fd03d81f3b4302d67f3abb1e9",
+      "webBytes": 140102,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "ONE photorealistic baby apparel catalogue cutout, VESA K56 Two-piece Pyjama Set. Exactly one South Asian toddler about22 months old, stable relaxed front-facing standing pose with a gentle smile and hands clear of waist. Wearing one coordinated TWO-PIECE sleep outfit: plain muted pale powder-blue long-sleeve pyjama top with round neck and rib cuffs, and matching FULL-LENGTH loose sleep trousers with ankle cuffs. Clearly visible separate top hem at waist over trousers, not a one-piece onesie, not shorts. White ankle socks. Tiny subtle tonal navy crescent/moon print sparingly scattered on the outfit, no writing or logos. Real photographic child anatomy, skin and soft jersey detail; no doll/cartoon. Soft even studio lighting, neutral low contrast. Portrait1024x1536 or higher, full head and both feet inside frame, clear transparent margin above/below and sides. TRUE transparent RGBA background and opaque subject with clean hair/fabric edge. No room/bed/crib/blanket/toys/floor/furniture/scenery/shadow cloud/other people/separate garment lineup/collage/text/watermark/red/yellow/fluorescent colours. One model, one coordinated worn outfit.",
+      "observedGarments": {
+        "mode": "one-garment",
+        "mainName": "Two-piece pyjama set",
+        "color": "Pale blue with navy crescent print",
+        "normalizedY": {
+          "garmentStart": 0.23,
+          "waistSplit": 0.565,
+          "garmentEnd": 0.93
+        }
+      },
+      "generatorVisualReview": "One toddler wearing coordinated pale-blue moon-print pyjama top and matching full trousers; clearly separate top hem, rib cuffs, white socks, full body."
+    },
+    {
+      "id": "K57",
+      "group": "baby",
+      "name": "One-piece swim rash suit",
+      "masterFile": "K57-one-piece-swim-rash-suit.png",
+      "masterSha256": "b4a206b6f643bfba516ee0f7575048539ad7adefebdf0b4ed992acc560bd3b4c",
+      "webFile": "product-showcase/assets/K57.webp",
+      "webSha256": "ffc4297f37db02755805c8e56a98f73c6f6d219397bdfe93748702b887955a57",
+      "webBytes": 133318,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "model",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. Create ONE photorealistic catalogue cutout for VESA K57 Baby One-piece Swim Rash Suit. Exactly one South Asian toddler about22 months old standing naturally and stably facing camera, gentle smile, hands clear of garment front. Wearing a modest ONE-PIECE swimming rash suit: long sleeves, high crew neckline, a functional visible short front zip with neckline guard, torso continuing into TWO mid-thigh short leg tubes, smooth navy swim-jersey fabric with muted powder-blue raglan sleeves and restrained side panels. No separate waistband or separate top, no legless bodysuit. Loose comfortable age-appropriate fit, bare feet. Real photographic face/body proportions and fabric texture, no cartoon/doll. Soft even studio lighting, low contrast. Portrait1024x1536 or higher with full head and both feet completely in frame and transparent margins. True transparent RGBA background, fully opaque subject and clean hair/garment edges. No swimming pool/water/room/floor/furniture/toys/props/scene/halo shadow cloud. No extra people, text, brand/logo/watermark/collage, red/yellow/fluorescent. No UPF or performance claims. Exactly one model wearing one garment.",
+      "observedGarments": {
+        "mode": "one-garment",
+        "mainName": "One-piece swim rash suit",
+        "color": "Navy with powder-blue sleeves/panels",
+        "normalizedY": {
+          "garmentStart": 0.235,
+          "garmentEnd": 0.73
+        }
+      },
+      "generatorVisualReview": "One toddler in navy/blue long-sleeve one-piece rash suit with center zip and short legs, clear continuous torso, full head/feet."
+    },
+    {
+      "id": "K58",
+      "group": "baby",
+      "name": "Nappy cover",
+      "masterFile": "K58-nappy-cover.png",
+      "masterSha256": "8d4e2c7cfd58e1c42327bee83a38e32329e46699d963c179a4cb3a863948b510",
+      "webFile": "product-showcase/assets/K58.webp",
+      "webSha256": "c2a0223a4593fadb19ae68b9a578f127cb133e853c0946717c29e85b24267373",
+      "webBytes": 212368,
+      "nativeDimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "nativeAlphaPreservedExactly": true,
+      "presentation": "product",
+      "generation": "AI-generated photographic catalogue example, not a product specification or actual photograph",
+      "prompt": "Use case: product-mockup. A SINGLE UNWORN BABY NAPPY COVER for VESA K58. Professional photorealistic front-facing symmetrical flat-lay isolated on TRUE transparent RGBA background. One plain soft muted light-blue nappy cover, gently gathered elastic waistband, TWO clearly visible curved elastic leg openings, roomy rounded legless cover silhouette with a crotch panel, fine cotton-look fabric and subtle real stitches. It must be one separate garment, not shorts, not a bodysuit, no torso panel or sleeves, no absorbent insert or diaper pack. NO person, baby, child, mannequin, body part, hanger or accessories. One garment only, no duplicates, multipacks or alternative views. Product opaque with clean antialiased edges; even soft studio light, subtle natural fabric folds, no harsh contrast. Portrait1024x1536 high resolution, product centered with ample transparent space around all edges, width about80% of canvas. No wall, floor, background, gradient, cast shadow cloud, packaging, text, logos, labels, watermark, collage, red/yellow/fluorescent colours. No absorbency or training claims.",
+      "observedGarments": {
+        "mode": "one-product",
+        "mainName": "Nappy cover",
+        "color": "Powder blue",
+        "normalizedY": {
+          "garmentStart": 0.247,
+          "garmentEnd": 0.808
+        }
+      },
+      "generatorVisualReview": "Single unworn powder-blue nappy cover, gathered waistband and curved elastic leg openings, closed crotch panel, no infant/body/mannequin."
+    }
+  ]
+}

@@ -198,3 +198,62 @@ body { margin: 0; background: #fbf8f1; }
   .vesa-showcase .presentation { grid-template-rows: 320px auto; }
   .vesa-showcase .chapter-nav button { font-size: 14px; }
 }
+
+/* CategoryNavigation owns the single flowing category row. The existing stage
+   and annotation geometry remain isolated inside this viewer document. */
+.vesa-showcase.with-collections { grid-template-rows: auto auto minmax(0, 1fr) auto; height: 100svh; min-height: 760px; }
+.vesa-showcase.with-collections .collection-nav { position: relative; z-index: 20; padding-block: 18px; }
+.vesa-showcase .collection-controls { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.vesa-showcase .collection-trigger { display: flex; align-items: center; justify-content: center; gap: 12px; min-width: 0; min-height: 50px; padding: 12px; border: 1px solid #9da7aa61; border-radius: 7px; color: #42505a; background: #ffffff54; font-size: 14px; font-weight: 600; transition: color .16s, background .16s, border-color .16s; }
+.vesa-showcase .collection-trigger.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.vesa-showcase .collection-trigger[aria-expanded="true"]:not(.active) { background: #fffefa; border-color: #586b78; color: var(--ink); }
+.vesa-showcase .collection-chevron { width: 14px; height: 14px; flex: 0 0 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: transform .18s ease; }
+.vesa-showcase .collection-trigger[aria-expanded="true"] .collection-chevron { transform: rotate(180deg); }
+.vesa-showcase .collection-panel { position: absolute; top: calc(100% - 6px); left: 0; width: min(720px, 64vw); padding: 16px 20px 20px; color: var(--ink); background: #fffdf8; border: 1px solid #bac2c6; border-radius: 10px; box-shadow: 0 16px 40px #1726321f; animation: vesa-collection-enter .16s ease-out; }
+.vesa-showcase .collection-panel::before { content: ''; position: absolute; height: 14px; left: 0; right: 0; top: -14px; }
+.vesa-showcase .collection-panel-head { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #dce0df; }
+.vesa-showcase .collection-panel-head h2 { margin: 0; font: 600 18px/1.25 Arial, Helvetica, sans-serif; }
+.vesa-showcase .collection-browse { min-height: 44px; margin-left: auto; padding: 8px 2px 8px 10px; font-size: 14px; text-decoration: underline; text-underline-offset: 4px; }
+.vesa-showcase .collection-close { display: grid; place-items: center; min-width: 44px; width: 44px; height: 44px; border: 1px solid #bec7ca; border-radius: 50%; }
+.vesa-showcase .collection-close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+.vesa-showcase .collection-list { max-height: min(48svh, 405px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #9aa6ab transparent; padding: 3px 7px 5px 3px; }
+.vesa-showcase .collection-list-columns { columns: 2; column-gap: 24px; }
+.vesa-showcase .collection-family { break-inside: avoid; margin: 0 0 22px; }
+.vesa-showcase .collection-family h3 { margin: 0 0 6px; padding: 0 10px; color: #5b6d77; font-size: 13px; font-weight: 600; line-height: 1.4; }
+.vesa-showcase .collection-family ul { margin: 0; padding: 0; list-style: none; }
+.vesa-showcase .collection-product { display: block; width: 100%; min-height: 44px; padding: 10px; border-radius: 5px; text-align: left; font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+.vesa-showcase .collection-product[aria-current="true"] { background: #edf0ed; box-shadow: inset 2px 0 #586f64; font-weight: 600; }
+.vesa-showcase.with-collections .control-zone { justify-content: flex-end; }
+@media (hover: hover) {
+  .vesa-showcase .collection-trigger:not(.active):hover { background: #fffefa; border-color: #687c87; }
+  .vesa-showcase .collection-product:hover, .vesa-showcase .collection-close:hover { background: #eef1ed; }
+}
+@media (max-width: 700px) {
+  .vesa-showcase.with-collections { height: auto; min-height: 100svh; grid-template-rows: auto auto auto auto; }
+  .vesa-showcase.with-collections .collection-nav { padding-block: 12px 10px; }
+  .vesa-showcase .collection-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+  .vesa-showcase .collection-trigger { min-height: 46px; gap: 7px; padding: 10px 6px; }
+  .vesa-showcase .collection-chevron { width: 12px; height: 12px; flex-basis: 12px; }
+  .vesa-showcase .collection-panel { top: calc(100% - 2px); width: 100%; padding: 12px; border-radius: 8px; }
+  .vesa-showcase .collection-panel-head { gap: 8px; padding-bottom: 8px; margin-bottom: 8px; }
+  .vesa-showcase .collection-panel-head h2 { font-size: 16px; }
+  .vesa-showcase .collection-browse { max-width: 122px; padding-inline: 2px; font-size: 14px; }
+  .vesa-showcase .collection-list { max-height: min(52svh, 440px); padding-inline: 2px; }
+  .vesa-showcase .collection-list-columns { columns: 1; }
+  .vesa-showcase .collection-family { margin-bottom: 16px; }
+  .vesa-showcase .collection-product { min-height: 46px; padding-block: 11px; }
+  .vesa-showcase.with-collections .transport { width: 100%; }
+}
+@media (min-width: 701px) and (max-height: 600px) {
+  .vesa-showcase.with-collections { height: auto; min-height: 660px; }
+  .vesa-showcase .collection-list { max-height: 300px; }
+}
+@keyframes vesa-collection-enter { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Generated portrait masters retain their native transparent canvas. Let their
+   full height determine scale without compressing the cutout into the old narrow
+   image rectangle. Original assets retain their previous geometry. */
+.vesa-showcase .actor[data-frame="portrait"] img { width: auto; max-width: none; }
+/* The host derives iframe height from content: never size inline content from
+   its own iframe viewport, even after the extra navigation row is inserted. */
+.vesa-showcase.with-collections[data-mode="inline"] { height: auto; min-height: 0; }

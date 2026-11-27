@@ -22,7 +22,7 @@ class MotionExperience {
     this.director=new SceneDirector(root,this.reduced); this.details=new GarmentDetails(root);
     this.scene=root.querySelector('#scene'); this.dialog=root.querySelector('#index-dialog');
     this.search=root.querySelector('#search'); this.grid=root.querySelector('#index-grid');
-    this.progress=root.querySelector('#progress'); this.buttons=new Map(); this.events=new AbortController();
+    this.progress=root.querySelector('#progress'); this.navigation=null; this.events=new AbortController();
     this.playing=options.playing!==false&&!this.reduced.matches;
     this.duration=6000; this.elapsed=0; this.last=0; this.frame=0;
     this.down=null; this.wheelAt=0; this.keyboardFocus=false; this.inputMode='pointer';
@@ -48,13 +48,17 @@ class MotionExperience {
   start() {
     if(this.started||this.destroyed)return this.startPromise||Promise.resolve(false);
     this.started=true;
-    const tabs=this.root.querySelector('#chapters');
-    const names={all:'All',men:"Men's",ladies:"Ladies'",boys:'Boys',girls:'Girls',baby:'Baby'};
-    for(const [group,label]of Object.entries(names)) {
-      const button=document.createElement('button');button.type='button';button.dataset.group=group;
-      button.setAttribute('aria-pressed','false');button.textContent=label;
-      this.listen(button,'click',()=>this.group(group));tabs.append(button);this.buttons.set(group,button);
-    }
+    this.navigation=new CategoryNavigation(this.root.querySelector('#chapters'),this.catalogue,{
+      onSelect:(group,id)=>{
+        this.scene.focus({preventScroll:true});
+        this.select(group,id);
+      },
+      onOpenChange:open=>{
+        if(open){this.director.settle();this.details.clear()}
+        this.reconcileMotion();
+      }
+    });
+    this.navigation.start();
     this.listen(this.root.querySelector('#previous'),'click',()=>this.step(-1));
     this.listen(this.root.querySelector('#next'),'click',()=>this.step(1));
     this.listen(this.root.querySelector('#play'),'click',()=>this.togglePlay());
@@ -170,7 +174,7 @@ class MotionExperience {
    * on the scene and activation of Play keep their actual toggle semantics.
    */
   onKeyDown(event) {
-    if(event.defaultPrevented)return;
+    if(event.defaultPrevented||this.navigation?.isOpen||this.root.querySelector('#chapters').contains(event.target))return;
     this.inputMode='keyboard';
     const control=event.target.closest('input, textarea, select, button, a, [contenteditable]:not([contenteditable="false"]), [role="textbox"]');
     const playActivation=event.target===this.root.querySelector('#play')&&
@@ -206,7 +210,7 @@ class MotionExperience {
   }
   /** Use settled central geometry for mouse labels; side previews are navigation only. */
   onPointerMove(event) {
-    if(event.pointerType!=='mouse'||this.dialog.open)return;
+    if(event.pointerType!=='mouse'||this.dialog.open||this.navigation?.isOpen)return;
     const rect=this.scene.getBoundingClientRect();
     this.director.parallax((event.clientX-rect.left)/rect.width*2-1,(event.clientY-rect.top)/rect.height*2-1);
     if(event.target.closest('.side-model')) {
@@ -232,10 +236,7 @@ class MotionExperience {
     }
     this.root.querySelector('#count').textContent=String(index+1).padStart(2,'0');
     this.root.querySelector('#total').textContent=' / '+count;
-    for(const [group,button]of this.buttons) {
-      button.classList.toggle('active',group===this.state.group);
-      button.setAttribute('aria-pressed',String(group===this.state.group));
-    }
+    this.navigation?.syncSelection(this.selection);
     const announcement=this.root.querySelector('#announcement');
     announcement.setAttribute('aria-live',this.playing&&!this.keyboardFocus?'off':'polite');
     announcement.textContent=current.name+', product '+(index+1)+' of '+count;
@@ -302,7 +303,7 @@ class MotionExperience {
   /** Compute effective playback; parent suspension and visibility always win. */
   get canRun() {
     return this.started&&!this.destroyed&&this.playing&&!document.hidden&&this.windowActive&&
-      this.visible&&!this.externalSuspended&&!this.dialog.open&&!this.keyboardFocus&&
+      this.visible&&!this.externalSuspended&&!this.dialog.open&&!this.navigation?.isOpen&&!this.keyboardFocus&&
       (!this.hovered||this.hoverOverride)&&!this.details.inspecting&&this.director.ready;
   }
   /** Keep the control's accessible name aligned to the user's playback preference. */
@@ -337,6 +338,7 @@ class MotionExperience {
   }
   /** Open the local catalogue dialog after settling the main image and clearing details. */
   openIndex() {
+    this.navigation?.close();
     this.director.settle();this.details.clear();this.search.value='';this.renderIndex('');
     if(!this.dialog.open)this.dialog.showModal();
     this.search.focus();this.reconcileMotion();
@@ -363,7 +365,7 @@ class MotionExperience {
     if(this.frame)cancelAnimationFrame(this.frame);this.frame=0;
     this.resizeObserver?.disconnect();this.intersectionObserver?.disconnect();
     if(this.dialog.open)this.dialog.close();
-    this.details.destroy();this.director.destroy();this.buttons.clear();
+    this.navigation?.destroy();this.details.destroy();this.director.destroy();
     this.onSelection=null;this.onSettled=null;
   }
 }

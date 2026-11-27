@@ -1,0 +1,40 @@
+{
+  "reviewedAtUtc": "2026-11-27T16:38:29.075952+00:00",
+  "environment": "Chrome browser; managed preview of the exact repository files. Mobile checks use320px and390px iframe viewports, not physical-device certification.",
+  "dependencyVersion": "20261127-4",
+  "cacheIdentity": "vesa-v125-showcase-121",
+  "independentAssetReview": {
+    "boys": 10,
+    "girls": 10,
+    "baby": 10,
+    "blockers": 0
+  },
+  "independentSourceReview": {
+    "reviewer": "boys_assets_30_expansion",
+    "accepted": true,
+    "rootReviewedAgentTestChanges": true
+  },
+  "browserObservations": {
+    "newK29BesideOriginalK12": "Complete portrait, head and feet preserved; faded adjacent models fit.",
+    "desktopHover": "Boys hover disclosed22 products without changing the active image.",
+    "mobile320and390": "3-by2 category buttons, scrolling product lists, visible controls and complete models; no horizontal overflow observed.",
+    "productOnlyFrames": [
+      "K38",
+      "K48",
+      "K55",
+      "K58"
+    ],
+    "productOnlyCorrection": "Removed repeated Product / Product text. Finalv4 visibly reports Product / Unworn view.",
+    "babyK50": "Full original canvas retained; natural extra margin reviewed and accepted, main model remains larger than adjacent previews.",
+    "homepageInline": "Top category menu renders in the existing section; iframe height791px remained stable across popup open/close.",
+    "popup": "View larger opened, K58 selection updated Full page link; inner Escape closed only menu; closing parent restored iframe focus and original body overflow.",
+    "mixedAll": "Homepage visibly advanced between collections and preserved faded neighboring models.",
+    "intro": "No overlay on the homepage section link. Unchanged gate/controller and36 behavior cases pass in source fixture gate."
+  },
+  "notClaimed": [
+    "all browser engines",
+    "physical touch-device testing",
+    "visual pixel segmentation accuracy",
+    "new product manufacturing or compliance certification"
+  ]
+}

@@ -1,0 +1,323 @@
+{
+  "reviewer": "girls_assets_30_expansion",
+  "independentFromAssetGenerator": true,
+  "scope": "K49–K58 Baby masters only; no production or image edits",
+  "method": "Individually inspected all10 actual PNGs using view_image. Independently read PNG dimensions/mode/alpha statistics and compared hashes with generating manifest. No compositing/retouching/alpha modification performed.",
+  "status": "passed_asset_review",
+  "blockingFindings": [],
+  "items": [
+    {
+      "id": "K49",
+      "visuallyInspectedIndividualImage": true,
+      "approvedProductMatches": true,
+      "observations": "One toddler wearing powder-blue short-sleeve romper with full front placket, visible crotch fastenings and two short leg tubes. Full head, both hands and bare feet visible; no obvious anatomy defect.",
+      "subjectCount": 1,
+      "subjectType": "clothed_model",
+      "headAndFeet": "fully_visible",
+      "obviousAnatomyBlockerObserved": false,
+      "mode": "RGBA",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 1009750,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sourceHashMatches": true,
+      "blockingFindings": [],
+      "masterFile": "K49-short-leg-romper.png"
+    },
+    {
+      "id": "K50",
+      "visuallyInspectedIndividualImage": true,
+      "approvedProductMatches": true,
+      "observations": "One toddler in denim-blue bib dungarees with two straps/buckles, bib pocket and full-length legs over a white tee; socked feet complete. More transparent framing margin than the other models.",
+      "subjectCount": 1,
+      "subjectType": "clothed_model",
+      "headAndFeet": "fully_visible",
+      "obviousAnatomyBlockerObserved": false,
+      "mode": "RGBA",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 1172140,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sourceHashMatches": true,
+      "blockingFindings": [],
+      "masterFile": "K50-dungarees.png"
+    },
+    {
+      "id": "K51",
+      "visuallyInspectedIndividualImage": true,
+      "approvedProductMatches": true,
+      "observations": "One toddler in navy pull-on full-length trousers, gathered elastic waistband unobscured by tucked white tee. Both hands, head and socked feet complete.",
+      "subjectCount": 1,
+      "subjectType": "clothed_model",
+      "headAndFeet": "fully_visible",
+      "obviousAnatomyBlockerObserved": false,
+      "mode": "RGBA",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 1037861,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sourceHashMatches": true,
+      "blockingFindings": [],
+      "masterFile": "K51-pull-on-trousers.png"
+    },
+    {
+      "id": "K52",
+      "visuallyInspectedIndividualImage": true,
+      "approvedProductMatches": true,
+      "observations": "One toddler in sage-grey opening knit cardigan with five buttons, visible knit texture and rib cuffs/hem; cream full trousers. Complete head, hands and feet.",
+      "subjectCount": 1,
+      "subjectType": "clothed_model",
+      "headAndFeet": "fully_visible",
+      "obviousAnatomyBlockerObserved": false,
+      "mode": "RGBA",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 997654,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sourceHashMatches": true,
+      "blockingFindings": [],
+      "masterFile": "K52-cardigan.png"
+    },
+    {
+      "id": "K53",
+      "visuallyInspectedIndividualImage": true,
+      "approvedProductMatches": true,
+      "observations": "One toddler in steel-blue stand-collar woven jacket with full front zipper and two welt pockets, grey trousers; complete head, hands and socked feet.",
+      "subjectCount": 1,
+      "subjectType": "clothed_model",
+      "headAndFeet": "fully_visible",
+      "obviousAnatomyBlockerObserved": false,
+      "mode": "RGBA",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 1026145,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sourceHashMatches": true,
+      "blockingFindings": [],
+      "masterFile": "K53-zip-front-jacket.png"
+    },
+    {
+      "id": "K54",
+      "visuallyInspectedIndividualImage": true,
+      "approvedProductMatches": true,
+      "observations": "One toddler in light-grey one-piece footed sleepsuit; zipper extends from neck along one leg; both feet enclosed in continuous garment fabric. No separate socks/shoes or trouser waistband.",
+      "subjectCount": 1,
+      "subjectType": "clothed_model",
+      "headAndFeet": "fully_visible",
+      "obviousAnatomyBlockerObserved": false,
+      "mode": "RGBA",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 1001750,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sourceHashMatches": true,
+      "blockingFindings": [],
+      "masterFile": "K54-footed-sleepsuit.png"
+    },
+    {
+      "id": "K55",
+      "visuallyInspectedIndividualImage": true,
+      "approvedProductMatches": true,
+      "observations": "Exactly one unworn sleeveless sleep bag, sage-grey, neckline and arm openings, center zipper and fully closed rounded bottom. No person, mannequin, body part, detached accessory or extra garment.",
+      "subjectCount": 1,
+      "subjectType": "unworn_product",
+      "headAndFeet": "not_applicable_product_only",
+      "obviousAnatomyBlockerObserved": false,
+      "mode": "RGBA",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 577539,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sourceHashMatches": true,
+      "blockingFindings": [],
+      "masterFile": "K55-wearable-sleep-bag.png"
+    },
+    {
+      "id": "K56",
+      "visuallyInspectedIndividualImage": true,
+      "approvedProductMatches": true,
+      "observations": "One toddler wearing a coordinated pale-blue crescent-print long-sleeve top and separate matching full-length trousers. Distinct top hem and trouser cuffs visible; complete head and socked feet.",
+      "subjectCount": 1,
+      "subjectType": "clothed_model",
+      "headAndFeet": "fully_visible",
+      "obviousAnatomyBlockerObserved": false,
+      "mode": "RGBA",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 1032091,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sourceHashMatches": true,
+      "blockingFindings": [],
+      "masterFile": "K56-two-piece-pyjama-set.png"
+    },
+    {
+      "id": "K57",
+      "visuallyInspectedIndividualImage": true,
+      "approvedProductMatches": true,
+      "observations": "One toddler in a navy/powder-blue long-sleeve one-piece swim rash suit, short center zipper and two short leg tubes, continuous body with no separate waistband. Head, hands and bare feet complete.",
+      "subjectCount": 1,
+      "subjectType": "clothed_model",
+      "headAndFeet": "fully_visible",
+      "obviousAnatomyBlockerObserved": false,
+      "mode": "RGBA",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 1046771,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sourceHashMatches": true,
+      "blockingFindings": [],
+      "masterFile": "K57-one-piece-swim-rash-suit.png"
+    },
+    {
+      "id": "K58",
+      "visuallyInspectedIndividualImage": true,
+      "approvedProductMatches": true,
+      "observations": "Exactly one unworn light-blue nappy cover, gathered elastic waist, two curved bound leg openings and roomy closed crotch. No person, mannequin, body part or duplicate product.",
+      "subjectCount": 1,
+      "subjectType": "unworn_product",
+      "headAndFeet": "not_applicable_product_only",
+      "obviousAnatomyBlockerObserved": false,
+      "mode": "RGBA",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 840548,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sourceHashMatches": true,
+      "blockingFindings": [],
+      "masterFile": "K58-nappy-cover.png"
+    }
+  ],
+  "presentationNotes": [
+    {
+      "id": "K50",
+      "severity": "placement_note",
+      "observation": "Subject bounds at alpha128 are y156–1394, about81% of canvas height, whereas most other Baby model subjects occupy96–99%.",
+      "recommendation": "Check rendered visual height/foot alignment on actual stage; metadata/CSS framing may need normalization without changing image pixels."
+    },
+    {
+      "ids": [
+        "K49",
+        "K51",
+        "K52",
+        "K53",
+        "K54",
+        "K56",
+        "K57"
+      ],
+      "severity": "non_blocking",
+      "observation": "Head/feet are uncropped but several originals have only10–32px top/bottom margin.",
+      "recommendation": "Ensure stage object-fit/transform does not cut these edges."
+    }
+  ],
+  "remainingRootGate": "Final target-background alpha appearance and desktop/mobile stage placement are browser integration checks owned by root. Native alpha0–254 is preserved; report does not claim byte opacity255 or product performance/safety certification."
+}

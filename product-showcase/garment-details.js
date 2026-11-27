@@ -47,6 +47,41 @@ class GarmentDetails {
       L01:['top','Navy trousers',.49,.94],L02:['top','Dark trousers',.49,.94],L03:['top','Beige trousers',.49,.94],L04:['top','Grey trousers',.49,.94],L05:['top','Cream trousers',.49,.94],L06:['top','Beige trousers',.49,.94],L07:['top','Beige trousers',.49,.94],L08:['top','Wide-leg trousers',.40,.94],L09:['top','Navy trousers',.51,.94],L10:['top','Dark trousers',.51,.94],L11:['top','Navy trousers',.49,.94],L12:['top','Black trousers',.47,.94],L13:['top','Beige trousers',.49,.94],L14:['top','Denim jeans',.52,.94],L15:['top','Denim jeans',.51,.94],L16:['top','White trousers',.61,.94],L17:['bottom','Sweatshirt',.51,.94],L18:['bottom','Crew-neck tee',.42,.65],L19:['bottom','Crew-neck tee',.42,.64],L20:['bottom','Crew-neck tee',.44,.65],L21:['bottom','Crew-neck tee',.44,.64],L22:['bottom','Blouse',.48,.93],L23:['bottom','Sweatshirt',.50,.94],L24:['bottom','Short-sleeve top',.43,.94],L25:['bottom','Crew-neck tee',.40,.79],L26:['bottom','Crew-neck tee',.39,.65],L27:['one',null,.79],L28:['one',null,.80],L29:['one',null,.80],
       K01:['top','Beige trousers',.49,.92],K02:['top','Navy trousers',.49,.92],K03:['top','Navy trousers',.49,.92],K04:['top','Cargo shorts',.49,.70],K05:['top','Dark trousers',.52,.92],K06:['top','Navy trousers',.52,.92],K07:['bottom','Tank top',.49,.70],K08:['bottom','Color-block tee',.50,.72],K09:['bottom','Pocket tee',.50,.69],K10:['bottom','Rashguard top',.49,.68],K11:['bottom','Graphic tee',.49,.92],K12:['bottom','Crew-neck tee',.48,.92],K13:['top','Denim shorts',.46,.66],K14:['top','Pink shorts',.46,.66],K15:['top','Sport shorts',.48,.66],K16:['bottom','Hoodie',.49,.92],K17:['bottom','Crew-neck tee',.43,.67],K18:['bottom','Short-sleeve top',.43,.65],K19:['bottom','Printed top',.44,.66],K20:['one',null,.72],K21:['one',null,.67],K22:['bottom','Printed shirt',.43,.67],K23:['top','Denim shorts',.44,.65],K24:['top','Navy joggers',.49,.92],K25:['one',null,.70],K26:['top','Blue shorts',.55,.75],K27:['bottom','Striped polo',.58,.77],K28:['one',null,.76]
     });
+    // New assets retain their full native portrait canvas. The final value is the
+    // observed shoulder/product start in that canvas; original91 bands stay frozen.
+    // Whole outfits and unworn products expose one band, with no invented companion.
+    this.expandedLooks = Object.freeze({
+      K29:['top','Navy straight trousers',.53,.92,.18],
+      K30:['bottom','Light grey crew-neck tee',.42,.92,.18],
+      K31:['one',null,.92,null,.20],
+      K32:['top','Grey straight trousers',.52,.92,.19],
+      K33:['top','Charcoal straight trousers',.52,.93,.18],
+      K34:['one',null,.93,null,.17],
+      K35:['top','Navy swim shorts',.52,.66,.19],
+      K36:['one',null,.94,null,.17],
+      K37:['bottom','White crew-neck tee',.40,.93,.18],
+      K38:['one',null,.79,null,.29],
+      K39:['top','Navy straight trousers',.53,.94,.18],
+      K40:['bottom','Ivory crew-neck tee',.40,.92,.19],
+      K41:['top','Navy straight trousers',.53,.92,.20],
+      K42:['top','Navy straight trousers',.54,.94,.17],
+      K43:['one',null,.94,null,.18],
+      K44:['bottom','Light blue polo',.40,.70,.17],
+      K45:['top','Navy swim shorts',.52,.70,.18],
+      K46:['one',null,.94,null,.17],
+      K47:['top','Navy straight trousers',.54,.92,.18],
+      K48:['one',null,.78,null,.25],
+      K49:['one',null,.742,null,.245],
+      K50:['one',null,.86,null,.294],
+      K51:['bottom','White T-shirt',.45,.92,.24],
+      K52:['top','Cream trousers',.58,.94,.24],
+      K53:['top','Grey trousers',.58,.93,.22],
+      K54:['one',null,.99,null,.24],
+      K55:['one',null,.97,null,.05],
+      K56:['one',null,.93,null,.23],
+      K57:['one',null,.73,null,.235],
+      K58:['one',null,.808,null,.247]
+    });
   }
 
   /**
@@ -56,13 +91,13 @@ class GarmentDetails {
    */
   update(record) {
     this.clear();
-    const specification = this.looks[record.id];
+    const specification = this.looks[record.id] || this.expandedLooks[record.id];
     if (!specification) throw new Error('Missing garment annotation: ' + record.id);
     this.record = record;
     const [primary, companion, split, end] = specification;
-    const start = record.group === 'baby' ? .29 : ['boys', 'girls'].includes(record.group) ? .19 : .17;
+    const start = specification[4] ?? (record.group === 'baby' ? .29 : ['boys', 'girls'].includes(record.group) ? .19 : .17);
     this.zones = primary === 'one'
-      ? [{ key: 'one', kind: 'Garment', name: record.name, primary: true, start, end: split }]
+      ? [{ key: 'one', kind: record.presentation === 'product' ? 'Product' : 'Garment', name: record.name, primary: true, start, end: split }]
       : [
         { key: 'top', kind: 'Top', name: primary === 'top' ? record.name : companion, primary: primary === 'top', start, end: split },
         { key: 'bottom', kind: 'Bottom', name: primary === 'bottom' ? record.name : companion, primary: primary === 'bottom', start: split, end }
@@ -72,6 +107,7 @@ class GarmentDetails {
       const zone = this.zones.find(item => item.key === button.dataset.zone);
       button.hidden = !zone;
       button.setAttribute('aria-pressed', 'false');
+      if (button.dataset.zone === 'one') button.textContent = zone?.kind || 'Garment';
       if (zone) button.setAttribute('aria-label', 'Inspect ' + zone.kind.toLowerCase() + ': ' + zone.name);
     }
     if (previouslyFocused && this.controls.contains(previouslyFocused) && previouslyFocused.hidden) {
@@ -176,7 +212,7 @@ class GarmentDetails {
       ? { x: (point.x - rectangle.left) / rectangle.width, y: (point.y - rectangle.top) / rectangle.height }
       : null;
     if (changed) {
-      const role = zone.primary ? 'Product' : 'Styled with';
+      const role = zone.kind === 'Product' ? 'Unworn view' : zone.primary ? 'Product' : 'Styled with';
       for (const prefix of ['detail', 'callout']) {
         this.root.querySelector('#' + prefix + '-kind').textContent = zone.kind;
         this.root.querySelector('#' + prefix + '-name').textContent = zone.name;

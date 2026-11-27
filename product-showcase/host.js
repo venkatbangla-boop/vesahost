@@ -29,7 +29,7 @@ class ShowcaseHost {
     const groups=new Set(['all','men','ladies','boys','girls','baby']);
     const group=groups.has(input.group)?input.group:'all';
     const raw=String(input.item||'');
-    const limits={M:34,L:29,K:28};
+    const limits={M:34,L:29,K:58};
     const valid=/^[MLK]\d{2}$/.test(raw)&&Number(raw.slice(1))>=1&&Number(raw.slice(1))<=limits[raw[0]];
     return {group,item:valid?raw:''};
   }
@@ -86,7 +86,7 @@ class ShowcaseHost {
       if(this.dialog.open)this.send(this.modal,'suspend',{value:document.hidden});
     });
   }
-  /** Start only the inline viewer, not 91 eager images. A failed initialization
+  /** Start only the inline viewer, not the entire image collection. A failed initialization
    * exposes a genuine standalone link; a late successful ready message clears it. */
   load() {
     if(this.loaded)return;this.loaded=true;

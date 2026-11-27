@@ -1,0 +1,57 @@
+{
+  "verdict": "accepted",
+  "scope": "bounded Node fixtures; browser proof separate",
+  "coverage": {
+    "total": 121,
+    "groups": {
+      "men": 34,
+      "ladies": 29,
+      "boys": 22,
+      "girls": 22,
+      "baby": 14
+    },
+    "mixed_initial_cycle": [
+      "M16",
+      "L02",
+      "K02",
+      "K14",
+      "K26"
+    ]
+  },
+  "interactions": {
+    "all121_item_choices": true,
+    "hover_without_selection": true,
+    "rightmost_panel_bounds": true,
+    "hover_bridge": true,
+    "escape_focus_return": true,
+    "outside_click": true,
+    "mobile_tap": true,
+    "collection_browse": true,
+    "cleanup": true
+  },
+  "annotations": {
+    "actual_updates": 121,
+    "valid_ordered_bands": true,
+    "one_primary_per_record": true,
+    "product_only_ids": [
+      "K38",
+      "K48",
+      "K55",
+      "K58"
+    ],
+    "product_only_controls": true,
+    "unknown_ids_fail_closed": true
+  },
+  "playback": {
+    "actual_canRun_predicate": true,
+    "menu_holds_execution": true,
+    "closing_restores_only_eligible_playback": true,
+    "explicit_pause_preserved": true,
+    "parent_suspension_preserved": true
+  },
+  "markup": {
+    "one_top_category_menu": true,
+    "no_preview_banner_or_embedded_adapters": true,
+    "intrinsic_inline_height": true
+  }
+}
