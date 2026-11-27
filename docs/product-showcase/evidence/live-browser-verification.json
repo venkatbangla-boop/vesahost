@@ -1,0 +1,40 @@
+{
+  "deployed_commit": "41b6ec870a32ce8a050dc4f43b6aff3db16fbfba",
+  "pages_run": 46019476802,
+  "recorded_at": "2026-11-27T15:00:36.409564+00:00",
+  "method": "Actual public Chromium interaction through CUA; no local fixture in these captures.",
+  "verified_urls": [
+    "https://vesaent.com/",
+    "https://vesaent.com/#product-showcase",
+    "https://vesaent.com/product-showcase/?item=M16"
+  ],
+  "checks": {
+    "ordinary_homepage": "New menu exists; original introduction skipped through its own control.",
+    "inline_placement": "Below existing portfolio cards, above original category matrix.",
+    "inline_images": "Three image elements decoded; large main model and two smaller faded side models visible.",
+    "side_selection": "Next side model changed main product from M18 to M19, with correct title and neighbours.",
+    "expand": "View larger opened M19 in parent-owned popup.",
+    "category": "Existing Ladies L29 category link opened Casual Summer Dress in correct collection, 29 of 29.",
+    "menu": "Product showcase link opened standalone page, default M16.",
+    "home_return": "Standalone home link returned to ordinary https://vesaent.com/ with new menu present.",
+    "direct_section_link": "https://vesaent.com/#product-showcase displayed the inline viewer."
+  },
+  "cache_observation": "Old open tab initially retained old homepage; updated normal root observed after normal service-worker lifecycle. No storage clearing or cache-policy changes.",
+  "root_http": {
+    "url": "https://vesaent.com/",
+    "status": 200,
+    "bytes": 41970,
+    "sha256": "2ad6e56b4447b14d2fe3140fa08e5da8228732537630aaae7999503b9402df9f",
+    "matches_committed_index": true
+  },
+  "screenshots": {
+    "live-homepage.jpg": "Ordinary homepage direct section URL, M16 selected.",
+    "live-popup.jpg": "Actual public homepage category popup, Ladies L29."
+  },
+  "limits": [
+    "Representative desktop public journeys, not every asset interaction or every device.",
+    "Separate public byte report verifies all 91 assets.",
+    "Responsive fixture results are documented separately in browser-verification.json."
+  ],
+  "verdict": "accepted"
+}

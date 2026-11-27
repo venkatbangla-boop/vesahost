@@ -80,7 +80,7 @@ class ShowcaseReleaseVerifier {
     return result;
   }
 
-  /** Permit only the approved homepage/SW changes among pre-existing tracked files. */
+  /** Permit the homepage/cache edits and one exact legacy-test compatibility replacement. */
   frozenFiles() {
     const oldFiles = new Set(execFileSync('git', ['ls-tree', '-r', '--name-only', ShowcaseReleaseVerifier.BASELINE], {
       cwd: this.root, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024,
@@ -89,12 +89,22 @@ class ShowcaseReleaseVerifier {
       cwd: this.root, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024,
     }).trim().split('\n').filter(Boolean);
     const oldChanged = changed.filter(file => oldFiles.has(file)).sort();
-    assert.deepEqual(oldChanged, ['index.html', 'service-worker.js'], 'Unexpected original-file changes');
+    assert.deepEqual(oldChanged, ['index.html', 'service-worker.js', 'tests/vesa-login-gif-spanish.cjs'], 'Unexpected original-file changes');
+    const compatibilityPath='tests/vesa-login-gif-spanish.cjs';
+    const originalAssertion=`  assert.ok(sw.includes("const CACHE='vesa-v121-app-live-language'"),'new cache for existing browser users');`;
+    const compatibleAssertion=[
+      '  // Later releases may advance the cache; retain the minimum login rollout version.',
+      "  const cacheVersion=Number(sw.match(/^const CACHE='vesa-v([1-9]\\d*)-[a-z0-9]+(?:-[a-z0-9]+)*';$/m)?.[1]);",
+      "  assert.ok(Number.isSafeInteger(cacheVersion) && cacheVersion>=121,'new cache for existing browser users');",
+    ].join('\n');
+    const originalTest=this.baseline(compatibilityPath);
+    assert.equal(originalTest.split(originalAssertion).length-1,1,'Known baseline cache assertion occurs once');
+    assert.equal(this.read(compatibilityPath),originalTest.replace(originalAssertion,compatibleAssertion),'Legacy test changed beyond the exact cache compatibility correction');
     const present=execFileSync('git',['ls-files','--cached','--others','--exclude-standard'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
     const added=present.filter(file=>!oldFiles.has(file));
     const runtime=/^product-showcase\/(?:index\.html|styles\.css|catalogue\.(?:js|json)|director\.js|garment-details\.js|experience\.js|bootstrap\.js|host\.(?:css|js)|assets\/[MLK]\d{2}\.webp)$/;
     for(const file of added)assert.ok(runtime.test(file)||file.startsWith('docs/product-showcase/')||['tests/product-showcase.test.cjs','tests/product-showcase-assets.py'].includes(file),'Unapproved added path: '+file);
-    this.report.original_files = {tracked_baseline: oldFiles.size, changed: oldChanged, all_other_original_paths_unchanged: true, added_paths_within_locked_scope:true};
+    this.report.original_files = {tracked_baseline: oldFiles.size, changed: oldChanged, all_other_original_paths_unchanged: true, exact_legacy_cache_test_replacement:true, added_paths_within_locked_scope:true};
   }
 
   /** Recreate baseline homepage after removing only explicitly approved insertions. */

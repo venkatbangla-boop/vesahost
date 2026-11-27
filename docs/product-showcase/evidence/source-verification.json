@@ -5,9 +5,11 @@
     "tracked_baseline": 665,
     "changed": [
       "index.html",
-      "service-worker.js"
+      "service-worker.js",
+      "tests/vesa-login-gif-spanish.cjs"
     ],
     "all_other_original_paths_unchanged": true,
+    "exact_legacy_cache_test_replacement": true,
     "added_paths_within_locked_scope": true
   },
   "homepage": {

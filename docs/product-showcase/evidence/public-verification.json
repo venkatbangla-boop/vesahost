@@ -1,0 +1,2674 @@
+{
+  "commit": "41b6ec870a32ce8a050dc4f43b6aff3db16fbfba",
+  "pages_run": 46019476802,
+  "origin": "https://vesaent.com",
+  "started_at": "2026-11-27T14:52:57.559309+00:00",
+  "finished_at": "2026-11-27T14:55:03.261531+00:00",
+  "method": "Read-only HTTPS GET; SHA-256 and byte length compared with git show at exact deployed commit",
+  "concurrency": 6,
+  "timeout_seconds": 20,
+  "retry_policy": "At most once for network exceptions or HTTP 408/429/500/502/503/504; no retry for mismatch or 404",
+  "unique_files": 105,
+  "requests": 106,
+  "assets": 91,
+  "matched": 106,
+  "failed": 0,
+  "served_bytes": 3590787,
+  "unique_expected_bytes": 3584606,
+  "retried": 0,
+  "failures": [],
+  "results": [
+    {
+      "path": "css/style.css",
+      "url": "https://vesaent.com/css/style.css",
+      "expected_bytes": 95144,
+      "expected_sha256": "c2172b0fed7ad14788cfb087365649ca6fec6aa7b3cee459054a3db1a6abb5f5",
+      "status": 200,
+      "bytes": 95144,
+      "sha256": "c2172b0fed7ad14788cfb087365649ca6fec6aa7b3cee459054a3db1a6abb5f5",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6542,
+          "bytes": 95144,
+          "sha256": "c2172b0fed7ad14788cfb087365649ca6fec6aa7b3cee459054a3db1a6abb5f5",
+          "response_url": "https://vesaent.com/css/style.css",
+          "content_type": "text/css; charset=utf-8",
+          "etag": "\"6b0998da-173a8\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "index.html",
+      "url": "https://vesaent.com/",
+      "expected_bytes": 41970,
+      "expected_sha256": "2ad6e56b4447b14d2fe3140fa08e5da8228732537630aaae7999503b9402df9f",
+      "status": 200,
+      "bytes": 41970,
+      "sha256": "2ad6e56b4447b14d2fe3140fa08e5da8228732537630aaae7999503b9402df9f",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 9916,
+          "bytes": 41970,
+          "sha256": "2ad6e56b4447b14d2fe3140fa08e5da8228732537630aaae7999503b9402df9f",
+          "response_url": "https://vesaent.com/",
+          "content_type": "text/html; charset=utf-8",
+          "etag": "\"6b0998da-a3f2\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "js/main.js",
+      "url": "https://vesaent.com/js/main.js",
+      "expected_bytes": 10820,
+      "expected_sha256": "259ce1c4f7f95c68dc30adbe01ca8b6a2150acea9d2a0270007e516fdf4ba556",
+      "status": 200,
+      "bytes": 10820,
+      "sha256": "259ce1c4f7f95c68dc30adbe01ca8b6a2150acea9d2a0270007e516fdf4ba556",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6436,
+          "bytes": 10820,
+          "sha256": "259ce1c4f7f95c68dc30adbe01ca8b6a2150acea9d2a0270007e516fdf4ba556",
+          "response_url": "https://vesaent.com/js/main.js",
+          "content_type": "application/javascript; charset=utf-8",
+          "etag": "\"6b0998da-2a44\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K01.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K01.webp",
+      "expected_bytes": 41598,
+      "expected_sha256": "d65a0aedd79ab90bf89033fe7e6964d0b0a6cbb04e78245c6e3452c7bac7073c",
+      "status": 200,
+      "bytes": 41598,
+      "sha256": "d65a0aedd79ab90bf89033fe7e6964d0b0a6cbb04e78245c6e3452c7bac7073c",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 9862,
+          "bytes": 41598,
+          "sha256": "d65a0aedd79ab90bf89033fe7e6964d0b0a6cbb04e78245c6e3452c7bac7073c",
+          "response_url": "https://vesaent.com/product-showcase/assets/K01.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-a27e\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K02.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K02.webp",
+      "expected_bytes": 23186,
+      "expected_sha256": "baa80f0747c0671376a192cf25e111ac2309d9a94dd36cd36b6b0d3ef746388f",
+      "status": 200,
+      "bytes": 23186,
+      "sha256": "baa80f0747c0671376a192cf25e111ac2309d9a94dd36cd36b6b0d3ef746388f",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 9905,
+          "bytes": 23186,
+          "sha256": "baa80f0747c0671376a192cf25e111ac2309d9a94dd36cd36b6b0d3ef746388f",
+          "response_url": "https://vesaent.com/product-showcase/assets/K02.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-5a92\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K03.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K03.webp",
+      "expected_bytes": 20206,
+      "expected_sha256": "68d8e382c8291114070cdffc001b224986fb49724e82477efc16991acf425b91",
+      "status": 200,
+      "bytes": 20206,
+      "sha256": "68d8e382c8291114070cdffc001b224986fb49724e82477efc16991acf425b91",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 9892,
+          "bytes": 20206,
+          "sha256": "68d8e382c8291114070cdffc001b224986fb49724e82477efc16991acf425b91",
+          "response_url": "https://vesaent.com/product-showcase/assets/K03.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-4eee\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K04.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K04.webp",
+      "expected_bytes": 23362,
+      "expected_sha256": "e8c5687b54bbf0aa4ddf4017f75c602cc87eb3fd7f5cf989754fcf1c03826a8d",
+      "status": 200,
+      "bytes": 23362,
+      "sha256": "e8c5687b54bbf0aa4ddf4017f75c602cc87eb3fd7f5cf989754fcf1c03826a8d",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 9895,
+          "bytes": 23362,
+          "sha256": "e8c5687b54bbf0aa4ddf4017f75c602cc87eb3fd7f5cf989754fcf1c03826a8d",
+          "response_url": "https://vesaent.com/product-showcase/assets/K04.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-5b42\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K05.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K05.webp",
+      "expected_bytes": 24082,
+      "expected_sha256": "fca347c78160b4b757319faace0a3874ad794d95404b7dd7210360debd32da4c",
+      "status": 200,
+      "bytes": 24082,
+      "sha256": "fca347c78160b4b757319faace0a3874ad794d95404b7dd7210360debd32da4c",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6880,
+          "bytes": 24082,
+          "sha256": "fca347c78160b4b757319faace0a3874ad794d95404b7dd7210360debd32da4c",
+          "response_url": "https://vesaent.com/product-showcase/assets/K05.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-5e12\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K06.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K06.webp",
+      "expected_bytes": 20388,
+      "expected_sha256": "d35bbbd49142c4a3ad8bf8c9a7d513fae75098ef4046a93e358f072a428ddf60",
+      "status": 200,
+      "bytes": 20388,
+      "sha256": "d35bbbd49142c4a3ad8bf8c9a7d513fae75098ef4046a93e358f072a428ddf60",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6907,
+          "bytes": 20388,
+          "sha256": "d35bbbd49142c4a3ad8bf8c9a7d513fae75098ef4046a93e358f072a428ddf60",
+          "response_url": "https://vesaent.com/product-showcase/assets/K06.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-4fa4\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K07.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K07.webp",
+      "expected_bytes": 24866,
+      "expected_sha256": "82c1561d9dcf53d69207cd8c76ab613efa67cd5d1374f49044f847846c522a97",
+      "status": 200,
+      "bytes": 24866,
+      "sha256": "82c1561d9dcf53d69207cd8c76ab613efa67cd5d1374f49044f847846c522a97",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6861,
+          "bytes": 24866,
+          "sha256": "82c1561d9dcf53d69207cd8c76ab613efa67cd5d1374f49044f847846c522a97",
+          "response_url": "https://vesaent.com/product-showcase/assets/K07.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-6122\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K08.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K08.webp",
+      "expected_bytes": 44876,
+      "expected_sha256": "a7daf466140c794f791772cf1d51a385eb6a050d171e15bb0a27ef657636ed29",
+      "status": 200,
+      "bytes": 44876,
+      "sha256": "a7daf466140c794f791772cf1d51a385eb6a050d171e15bb0a27ef657636ed29",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6813,
+          "bytes": 44876,
+          "sha256": "a7daf466140c794f791772cf1d51a385eb6a050d171e15bb0a27ef657636ed29",
+          "response_url": "https://vesaent.com/product-showcase/assets/K08.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-af4c\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K09.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K09.webp",
+      "expected_bytes": 53910,
+      "expected_sha256": "7cf5d029fc16b561d87b862c842c8067399c7715481fe46a156cd3c83d9a1f63",
+      "status": 200,
+      "bytes": 53910,
+      "sha256": "7cf5d029fc16b561d87b862c842c8067399c7715481fe46a156cd3c83d9a1f63",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6793,
+          "bytes": 53910,
+          "sha256": "7cf5d029fc16b561d87b862c842c8067399c7715481fe46a156cd3c83d9a1f63",
+          "response_url": "https://vesaent.com/product-showcase/assets/K09.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-d296\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K10.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K10.webp",
+      "expected_bytes": 54692,
+      "expected_sha256": "b7d695431d75605bcf7bfb9fecd18d72cdce0fdc9c581abb5cd4e5b0220c4c0a",
+      "status": 200,
+      "bytes": 54692,
+      "sha256": "b7d695431d75605bcf7bfb9fecd18d72cdce0fdc9c581abb5cd4e5b0220c4c0a",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6796,
+          "bytes": 54692,
+          "sha256": "b7d695431d75605bcf7bfb9fecd18d72cdce0fdc9c581abb5cd4e5b0220c4c0a",
+          "response_url": "https://vesaent.com/product-showcase/assets/K10.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-d5a4\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K11.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K11.webp",
+      "expected_bytes": 25218,
+      "expected_sha256": "731810f262189439995180fdc6f49987a78afdf4b6baea6ad8281db49e6a5ff8",
+      "status": 200,
+      "bytes": 25218,
+      "sha256": "731810f262189439995180fdc6f49987a78afdf4b6baea6ad8281db49e6a5ff8",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7112,
+          "bytes": 25218,
+          "sha256": "731810f262189439995180fdc6f49987a78afdf4b6baea6ad8281db49e6a5ff8",
+          "response_url": "https://vesaent.com/product-showcase/assets/K11.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-6282\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K12.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K12.webp",
+      "expected_bytes": 47924,
+      "expected_sha256": "cac73d257a5d3e5990b26e962b7fa99fefc6e0bd1756c2f40c9fe92da01d1486",
+      "status": 200,
+      "bytes": 47924,
+      "sha256": "cac73d257a5d3e5990b26e962b7fa99fefc6e0bd1756c2f40c9fe92da01d1486",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7113,
+          "bytes": 47924,
+          "sha256": "cac73d257a5d3e5990b26e962b7fa99fefc6e0bd1756c2f40c9fe92da01d1486",
+          "response_url": "https://vesaent.com/product-showcase/assets/K12.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-bb34\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K13.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K13.webp",
+      "expected_bytes": 17394,
+      "expected_sha256": "421bf2cfef61a39121b600e35ed4bb66d663e23b0aeda43ac4c41efe7618829b",
+      "status": 200,
+      "bytes": 17394,
+      "sha256": "421bf2cfef61a39121b600e35ed4bb66d663e23b0aeda43ac4c41efe7618829b",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7100,
+          "bytes": 17394,
+          "sha256": "421bf2cfef61a39121b600e35ed4bb66d663e23b0aeda43ac4c41efe7618829b",
+          "response_url": "https://vesaent.com/product-showcase/assets/K13.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-43f2\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K14.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K14.webp",
+      "expected_bytes": 20152,
+      "expected_sha256": "e47e7f999e4381c6640184447f7bb1081a688f69f8577c436047dd7ea52f8eb4",
+      "status": 200,
+      "bytes": 20152,
+      "sha256": "e47e7f999e4381c6640184447f7bb1081a688f69f8577c436047dd7ea52f8eb4",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7083,
+          "bytes": 20152,
+          "sha256": "e47e7f999e4381c6640184447f7bb1081a688f69f8577c436047dd7ea52f8eb4",
+          "response_url": "https://vesaent.com/product-showcase/assets/K14.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-4eb8\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K15.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K15.webp",
+      "expected_bytes": 18674,
+      "expected_sha256": "56f035e30a5d5e631d1df4533964b490b07697c0608e473b5bd3f86d3839d3ad",
+      "status": 200,
+      "bytes": 18674,
+      "sha256": "56f035e30a5d5e631d1df4533964b490b07697c0608e473b5bd3f86d3839d3ad",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7067,
+          "bytes": 18674,
+          "sha256": "56f035e30a5d5e631d1df4533964b490b07697c0608e473b5bd3f86d3839d3ad",
+          "response_url": "https://vesaent.com/product-showcase/assets/K15.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-48f2\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K16.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K16.webp",
+      "expected_bytes": 17744,
+      "expected_sha256": "0d2df5ac29a19b067970a27773ec7bd37ef00208b117400feb1fa8cf909d19ec",
+      "status": 200,
+      "bytes": 17744,
+      "sha256": "0d2df5ac29a19b067970a27773ec7bd37ef00208b117400feb1fa8cf909d19ec",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7052,
+          "bytes": 17744,
+          "sha256": "0d2df5ac29a19b067970a27773ec7bd37ef00208b117400feb1fa8cf909d19ec",
+          "response_url": "https://vesaent.com/product-showcase/assets/K16.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-4550\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K17.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K17.webp",
+      "expected_bytes": 42278,
+      "expected_sha256": "4e10fc397c074769ce80b3945ffaa577edca2bfde0ba24248dfb77f37d068040",
+      "status": 200,
+      "bytes": 42278,
+      "sha256": "4e10fc397c074769ce80b3945ffaa577edca2bfde0ba24248dfb77f37d068040",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6740,
+          "bytes": 42278,
+          "sha256": "4e10fc397c074769ce80b3945ffaa577edca2bfde0ba24248dfb77f37d068040",
+          "response_url": "https://vesaent.com/product-showcase/assets/K17.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-a526\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K18.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K18.webp",
+      "expected_bytes": 23582,
+      "expected_sha256": "4cff567bdcc6b92b901116153aefd5123bffcbe38df0fffbcc9b41afb510876a",
+      "status": 200,
+      "bytes": 23582,
+      "sha256": "4cff567bdcc6b92b901116153aefd5123bffcbe38df0fffbcc9b41afb510876a",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6703,
+          "bytes": 23582,
+          "sha256": "4cff567bdcc6b92b901116153aefd5123bffcbe38df0fffbcc9b41afb510876a",
+          "response_url": "https://vesaent.com/product-showcase/assets/K18.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-5c1e\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K19.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K19.webp",
+      "expected_bytes": 71442,
+      "expected_sha256": "e4a06c6a95f8ca22087424271c2d5013cf5e34171f39e07aa94d4926611f6291",
+      "status": 200,
+      "bytes": 71442,
+      "sha256": "e4a06c6a95f8ca22087424271c2d5013cf5e34171f39e07aa94d4926611f6291",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6684,
+          "bytes": 71442,
+          "sha256": "e4a06c6a95f8ca22087424271c2d5013cf5e34171f39e07aa94d4926611f6291",
+          "response_url": "https://vesaent.com/product-showcase/assets/K19.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-11712\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K20.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K20.webp",
+      "expected_bytes": 33398,
+      "expected_sha256": "44f31774671c0b6d47997d1543bc33cb78298bbdf020171b555547acc6e70213",
+      "status": 200,
+      "bytes": 33398,
+      "sha256": "44f31774671c0b6d47997d1543bc33cb78298bbdf020171b555547acc6e70213",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6735,
+          "bytes": 33398,
+          "sha256": "44f31774671c0b6d47997d1543bc33cb78298bbdf020171b555547acc6e70213",
+          "response_url": "https://vesaent.com/product-showcase/assets/K20.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-8276\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K21.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K21.webp",
+      "expected_bytes": 71226,
+      "expected_sha256": "81a0a873dffbe0243667d05d65fb584319e4fa3ababa063bdf33fddded9b0518",
+      "status": 200,
+      "bytes": 71226,
+      "sha256": "81a0a873dffbe0243667d05d65fb584319e4fa3ababa063bdf33fddded9b0518",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6723,
+          "bytes": 71226,
+          "sha256": "81a0a873dffbe0243667d05d65fb584319e4fa3ababa063bdf33fddded9b0518",
+          "response_url": "https://vesaent.com/product-showcase/assets/K21.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-1163a\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K22.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K22.webp",
+      "expected_bytes": 22670,
+      "expected_sha256": "b5f44e87392e4c9a26f0972e18a5dde4ba280eaf8f2c658f563d26df8f4182a0",
+      "status": 200,
+      "bytes": 22670,
+      "sha256": "b5f44e87392e4c9a26f0972e18a5dde4ba280eaf8f2c658f563d26df8f4182a0",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6733,
+          "bytes": 22670,
+          "sha256": "b5f44e87392e4c9a26f0972e18a5dde4ba280eaf8f2c658f563d26df8f4182a0",
+          "response_url": "https://vesaent.com/product-showcase/assets/K22.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-588e\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K23.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K23.webp",
+      "expected_bytes": 25780,
+      "expected_sha256": "eebf1b2958876230fd9f7d21945c87ab5c677b4eadb3db9796b39586a53b71ab",
+      "status": 200,
+      "bytes": 25780,
+      "sha256": "eebf1b2958876230fd9f7d21945c87ab5c677b4eadb3db9796b39586a53b71ab",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6628,
+          "bytes": 25780,
+          "sha256": "eebf1b2958876230fd9f7d21945c87ab5c677b4eadb3db9796b39586a53b71ab",
+          "response_url": "https://vesaent.com/product-showcase/assets/K23.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-64b4\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K24.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K24.webp",
+      "expected_bytes": 19728,
+      "expected_sha256": "145d933722fdd8e60374d1305a3c77c80ab0cd54e8ef06aaf4173683c3b046b1",
+      "status": 200,
+      "bytes": 19728,
+      "sha256": "145d933722fdd8e60374d1305a3c77c80ab0cd54e8ef06aaf4173683c3b046b1",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6624,
+          "bytes": 19728,
+          "sha256": "145d933722fdd8e60374d1305a3c77c80ab0cd54e8ef06aaf4173683c3b046b1",
+          "response_url": "https://vesaent.com/product-showcase/assets/K24.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-4d10\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K25.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K25.webp",
+      "expected_bytes": 21084,
+      "expected_sha256": "5f0ac5092cfa4d6b517180ed582222d770dbdc4a491519003a1fbc294c0f7a49",
+      "status": 200,
+      "bytes": 21084,
+      "sha256": "5f0ac5092cfa4d6b517180ed582222d770dbdc4a491519003a1fbc294c0f7a49",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6373,
+          "bytes": 21084,
+          "sha256": "5f0ac5092cfa4d6b517180ed582222d770dbdc4a491519003a1fbc294c0f7a49",
+          "response_url": "https://vesaent.com/product-showcase/assets/K25.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-525c\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K26.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K26.webp",
+      "expected_bytes": 62504,
+      "expected_sha256": "4ff0cb0556cc7be8a55cb04b0269a9a6a21bd8f4a09ff08928cbd85014a220ef",
+      "status": 200,
+      "bytes": 62504,
+      "sha256": "4ff0cb0556cc7be8a55cb04b0269a9a6a21bd8f4a09ff08928cbd85014a220ef",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6511,
+          "bytes": 62504,
+          "sha256": "4ff0cb0556cc7be8a55cb04b0269a9a6a21bd8f4a09ff08928cbd85014a220ef",
+          "response_url": "https://vesaent.com/product-showcase/assets/K26.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-f428\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K27.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K27.webp",
+      "expected_bytes": 57836,
+      "expected_sha256": "50bcff5b7cfdf2665010ce00b39234c61047141cb4dd74d92e9f12e38b8a75ab",
+      "status": 200,
+      "bytes": 57836,
+      "sha256": "50bcff5b7cfdf2665010ce00b39234c61047141cb4dd74d92e9f12e38b8a75ab",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6577,
+          "bytes": 57836,
+          "sha256": "50bcff5b7cfdf2665010ce00b39234c61047141cb4dd74d92e9f12e38b8a75ab",
+          "response_url": "https://vesaent.com/product-showcase/assets/K27.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-e1ec\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/K28.webp",
+      "url": "https://vesaent.com/product-showcase/assets/K28.webp",
+      "expected_bytes": 20880,
+      "expected_sha256": "496dcba611dbc9da6b5c5bba4340291763c41e3ad0c7306b5cd5604407550924",
+      "status": 200,
+      "bytes": 20880,
+      "sha256": "496dcba611dbc9da6b5c5bba4340291763c41e3ad0c7306b5cd5604407550924",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6423,
+          "bytes": 20880,
+          "sha256": "496dcba611dbc9da6b5c5bba4340291763c41e3ad0c7306b5cd5604407550924",
+          "response_url": "https://vesaent.com/product-showcase/assets/K28.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-5190\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L01.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L01.webp",
+      "expected_bytes": 37868,
+      "expected_sha256": "95666e796efa0e4aa50a1163383223e360b13c8585f8d2791cfd2768dca3c173",
+      "status": 200,
+      "bytes": 37868,
+      "sha256": "95666e796efa0e4aa50a1163383223e360b13c8585f8d2791cfd2768dca3c173",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7723,
+          "bytes": 37868,
+          "sha256": "95666e796efa0e4aa50a1163383223e360b13c8585f8d2791cfd2768dca3c173",
+          "response_url": "https://vesaent.com/product-showcase/assets/L01.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-93ec\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L02.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L02.webp",
+      "expected_bytes": 43954,
+      "expected_sha256": "0ef8897e7c4210c57bda533b7b906dd220709bb43ea0c3fb15ccafd839cf3a9a",
+      "status": 200,
+      "bytes": 43954,
+      "sha256": "0ef8897e7c4210c57bda533b7b906dd220709bb43ea0c3fb15ccafd839cf3a9a",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7725,
+          "bytes": 43954,
+          "sha256": "0ef8897e7c4210c57bda533b7b906dd220709bb43ea0c3fb15ccafd839cf3a9a",
+          "response_url": "https://vesaent.com/product-showcase/assets/L02.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-abb2\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L03.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L03.webp",
+      "expected_bytes": 42666,
+      "expected_sha256": "015039a7445cbaf5aa8e4f85832fd4b3435691edbf5e3279fdcdbaba6e0969e2",
+      "status": 200,
+      "bytes": 42666,
+      "sha256": "015039a7445cbaf5aa8e4f85832fd4b3435691edbf5e3279fdcdbaba6e0969e2",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7621,
+          "bytes": 42666,
+          "sha256": "015039a7445cbaf5aa8e4f85832fd4b3435691edbf5e3279fdcdbaba6e0969e2",
+          "response_url": "https://vesaent.com/product-showcase/assets/L03.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-a6aa\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L04.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L04.webp",
+      "expected_bytes": 44518,
+      "expected_sha256": "f488907f02eaf0ff7fdcb57f4e882084a1b77d928812ea69f4ba568019949532",
+      "status": 200,
+      "bytes": 44518,
+      "sha256": "f488907f02eaf0ff7fdcb57f4e882084a1b77d928812ea69f4ba568019949532",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7555,
+          "bytes": 44518,
+          "sha256": "f488907f02eaf0ff7fdcb57f4e882084a1b77d928812ea69f4ba568019949532",
+          "response_url": "https://vesaent.com/product-showcase/assets/L04.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-ade6\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L05.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L05.webp",
+      "expected_bytes": 43174,
+      "expected_sha256": "2ff6c4bbd2e33ddda7292f2ae4b6664e0c991110bdac6299df08d8ac8e4a67b3",
+      "status": 200,
+      "bytes": 43174,
+      "sha256": "2ff6c4bbd2e33ddda7292f2ae4b6664e0c991110bdac6299df08d8ac8e4a67b3",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7565,
+          "bytes": 43174,
+          "sha256": "2ff6c4bbd2e33ddda7292f2ae4b6664e0c991110bdac6299df08d8ac8e4a67b3",
+          "response_url": "https://vesaent.com/product-showcase/assets/L05.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-a8a6\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L06.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L06.webp",
+      "expected_bytes": 41820,
+      "expected_sha256": "eaf7d5802b052014398e78d3a77343d649240336b2dd5f88ce17bf805f46b3ea",
+      "status": 200,
+      "bytes": 41820,
+      "sha256": "eaf7d5802b052014398e78d3a77343d649240336b2dd5f88ce17bf805f46b3ea",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7545,
+          "bytes": 41820,
+          "sha256": "eaf7d5802b052014398e78d3a77343d649240336b2dd5f88ce17bf805f46b3ea",
+          "response_url": "https://vesaent.com/product-showcase/assets/L06.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-a35c\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L07.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L07.webp",
+      "expected_bytes": 44608,
+      "expected_sha256": "3a31fbe94cf7320b89f3a31a249ef5828b63e64b22d8c987a5d0262d85dab19e",
+      "status": 200,
+      "bytes": 44608,
+      "sha256": "3a31fbe94cf7320b89f3a31a249ef5828b63e64b22d8c987a5d0262d85dab19e",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6520,
+          "bytes": 44608,
+          "sha256": "3a31fbe94cf7320b89f3a31a249ef5828b63e64b22d8c987a5d0262d85dab19e",
+          "response_url": "https://vesaent.com/product-showcase/assets/L07.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-ae40\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L08.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L08.webp",
+      "expected_bytes": 40128,
+      "expected_sha256": "cff4e9a261e4cc4ea40982919e52e0ffac063e235db5ffefbd6997b7b438a186",
+      "status": 200,
+      "bytes": 40128,
+      "sha256": "cff4e9a261e4cc4ea40982919e52e0ffac063e235db5ffefbd6997b7b438a186",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6480,
+          "bytes": 40128,
+          "sha256": "cff4e9a261e4cc4ea40982919e52e0ffac063e235db5ffefbd6997b7b438a186",
+          "response_url": "https://vesaent.com/product-showcase/assets/L08.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-9cc0\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L09.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L09.webp",
+      "expected_bytes": 44844,
+      "expected_sha256": "07c2c1ddc0aa40d3296daab26177dfc11bf5fd05824cfe6a07438b8de03b2ad3",
+      "status": 200,
+      "bytes": 44844,
+      "sha256": "07c2c1ddc0aa40d3296daab26177dfc11bf5fd05824cfe6a07438b8de03b2ad3",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6474,
+          "bytes": 44844,
+          "sha256": "07c2c1ddc0aa40d3296daab26177dfc11bf5fd05824cfe6a07438b8de03b2ad3",
+          "response_url": "https://vesaent.com/product-showcase/assets/L09.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-af2c\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L10.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L10.webp",
+      "expected_bytes": 40792,
+      "expected_sha256": "a0a4299d8e9bcb359ed7d1d9e22a1e98f7a37e5fa5c814e04115b65bfd15be17",
+      "status": 200,
+      "bytes": 40792,
+      "sha256": "a0a4299d8e9bcb359ed7d1d9e22a1e98f7a37e5fa5c814e04115b65bfd15be17",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6582,
+          "bytes": 40792,
+          "sha256": "a0a4299d8e9bcb359ed7d1d9e22a1e98f7a37e5fa5c814e04115b65bfd15be17",
+          "response_url": "https://vesaent.com/product-showcase/assets/L10.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-9f58\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L11.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L11.webp",
+      "expected_bytes": 37230,
+      "expected_sha256": "70cadc6bed0bee2b5a9931ae7b8dc33492c0087bc014a643b4b0920965ac7885",
+      "status": 200,
+      "bytes": 37230,
+      "sha256": "70cadc6bed0bee2b5a9931ae7b8dc33492c0087bc014a643b4b0920965ac7885",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6571,
+          "bytes": 37230,
+          "sha256": "70cadc6bed0bee2b5a9931ae7b8dc33492c0087bc014a643b4b0920965ac7885",
+          "response_url": "https://vesaent.com/product-showcase/assets/L11.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-916e\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L12.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L12.webp",
+      "expected_bytes": 34204,
+      "expected_sha256": "3713b3e51709fa99acf7c63aaebb8352795c2600136c23a7f212d69584e349d0",
+      "status": 200,
+      "bytes": 34204,
+      "sha256": "3713b3e51709fa99acf7c63aaebb8352795c2600136c23a7f212d69584e349d0",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6457,
+          "bytes": 34204,
+          "sha256": "3713b3e51709fa99acf7c63aaebb8352795c2600136c23a7f212d69584e349d0",
+          "response_url": "https://vesaent.com/product-showcase/assets/L12.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-859c\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L13.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L13.webp",
+      "expected_bytes": 53480,
+      "expected_sha256": "d1f9fe87c54813b27bca1d72b23fab74ce1fd3b4e60155b79a3a3b5f48b71ba2",
+      "status": 200,
+      "bytes": 53480,
+      "sha256": "d1f9fe87c54813b27bca1d72b23fab74ce1fd3b4e60155b79a3a3b5f48b71ba2",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6484,
+          "bytes": 53480,
+          "sha256": "d1f9fe87c54813b27bca1d72b23fab74ce1fd3b4e60155b79a3a3b5f48b71ba2",
+          "response_url": "https://vesaent.com/product-showcase/assets/L13.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-d0e8\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L14.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L14.webp",
+      "expected_bytes": 47014,
+      "expected_sha256": "f6752e31da14dbc2691bdca1766ba5215bc5b288f37750b827d021aa3de00a0f",
+      "status": 200,
+      "bytes": 47014,
+      "sha256": "f6752e31da14dbc2691bdca1766ba5215bc5b288f37750b827d021aa3de00a0f",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6424,
+          "bytes": 47014,
+          "sha256": "f6752e31da14dbc2691bdca1766ba5215bc5b288f37750b827d021aa3de00a0f",
+          "response_url": "https://vesaent.com/product-showcase/assets/L14.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-b7a6\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L15.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L15.webp",
+      "expected_bytes": 56484,
+      "expected_sha256": "461c01458031bb8f933e87cd44d32889da492f47fbb84e07f9929b0a076a91d4",
+      "status": 200,
+      "bytes": 56484,
+      "sha256": "461c01458031bb8f933e87cd44d32889da492f47fbb84e07f9929b0a076a91d4",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6437,
+          "bytes": 56484,
+          "sha256": "461c01458031bb8f933e87cd44d32889da492f47fbb84e07f9929b0a076a91d4",
+          "response_url": "https://vesaent.com/product-showcase/assets/L15.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-dca4\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L16.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L16.webp",
+      "expected_bytes": 58710,
+      "expected_sha256": "ac8f4a91b04522ab1f2a886d9f2d0bc19b529f707b688f241a726ad5c651f159",
+      "status": 200,
+      "bytes": 58710,
+      "sha256": "ac8f4a91b04522ab1f2a886d9f2d0bc19b529f707b688f241a726ad5c651f159",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6440,
+          "bytes": 58710,
+          "sha256": "ac8f4a91b04522ab1f2a886d9f2d0bc19b529f707b688f241a726ad5c651f159",
+          "response_url": "https://vesaent.com/product-showcase/assets/L16.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-e556\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L17.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L17.webp",
+      "expected_bytes": 40050,
+      "expected_sha256": "0aec81d9eec86e382fc483be78204508231a8fa7eaa73afbf017c90adc157da1",
+      "status": 200,
+      "bytes": 40050,
+      "sha256": "0aec81d9eec86e382fc483be78204508231a8fa7eaa73afbf017c90adc157da1",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6367,
+          "bytes": 40050,
+          "sha256": "0aec81d9eec86e382fc483be78204508231a8fa7eaa73afbf017c90adc157da1",
+          "response_url": "https://vesaent.com/product-showcase/assets/L17.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-9c72\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L18.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L18.webp",
+      "expected_bytes": 29066,
+      "expected_sha256": "fdbfb43559e9b680e2a430759046d602b2d3e72e06209052521799d02abf1eed",
+      "status": 200,
+      "bytes": 29066,
+      "sha256": "fdbfb43559e9b680e2a430759046d602b2d3e72e06209052521799d02abf1eed",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6371,
+          "bytes": 29066,
+          "sha256": "fdbfb43559e9b680e2a430759046d602b2d3e72e06209052521799d02abf1eed",
+          "response_url": "https://vesaent.com/product-showcase/assets/L18.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-718a\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L19.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L19.webp",
+      "expected_bytes": 27064,
+      "expected_sha256": "2a51c09c7a2661f6a57e837455ea23ac44893bddaeae6f5cd2dedcd29af77134",
+      "status": 200,
+      "bytes": 27064,
+      "sha256": "2a51c09c7a2661f6a57e837455ea23ac44893bddaeae6f5cd2dedcd29af77134",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7091,
+          "bytes": 27064,
+          "sha256": "2a51c09c7a2661f6a57e837455ea23ac44893bddaeae6f5cd2dedcd29af77134",
+          "response_url": "https://vesaent.com/product-showcase/assets/L19.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-69b8\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L20.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L20.webp",
+      "expected_bytes": 28992,
+      "expected_sha256": "79689ae57df8a7d0ffbcfaf13c8b53b4454188570e6eed4a9a4dbbd954f932e0",
+      "status": 200,
+      "bytes": 28992,
+      "sha256": "79689ae57df8a7d0ffbcfaf13c8b53b4454188570e6eed4a9a4dbbd954f932e0",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7035,
+          "bytes": 28992,
+          "sha256": "79689ae57df8a7d0ffbcfaf13c8b53b4454188570e6eed4a9a4dbbd954f932e0",
+          "response_url": "https://vesaent.com/product-showcase/assets/L20.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-7140\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L21.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L21.webp",
+      "expected_bytes": 30872,
+      "expected_sha256": "5c3052a2182ca55af282e9af4862761dc3ad54bbacfdc6406003b400ead483bd",
+      "status": 200,
+      "bytes": 30872,
+      "sha256": "5c3052a2182ca55af282e9af4862761dc3ad54bbacfdc6406003b400ead483bd",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7083,
+          "bytes": 30872,
+          "sha256": "5c3052a2182ca55af282e9af4862761dc3ad54bbacfdc6406003b400ead483bd",
+          "response_url": "https://vesaent.com/product-showcase/assets/L21.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-7898\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L22.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L22.webp",
+      "expected_bytes": 40210,
+      "expected_sha256": "d09301079525cf6a48099def730d0445cc93653715c8ee8744526c4d37cd959c",
+      "status": 200,
+      "bytes": 40210,
+      "sha256": "d09301079525cf6a48099def730d0445cc93653715c8ee8744526c4d37cd959c",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6976,
+          "bytes": 40210,
+          "sha256": "d09301079525cf6a48099def730d0445cc93653715c8ee8744526c4d37cd959c",
+          "response_url": "https://vesaent.com/product-showcase/assets/L22.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-9d12\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L23.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L23.webp",
+      "expected_bytes": 44418,
+      "expected_sha256": "27d4a2e45814bf74265ad5919c796a24e5265cbd872185483931e03402269e09",
+      "status": 200,
+      "bytes": 44418,
+      "sha256": "27d4a2e45814bf74265ad5919c796a24e5265cbd872185483931e03402269e09",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7032,
+          "bytes": 44418,
+          "sha256": "27d4a2e45814bf74265ad5919c796a24e5265cbd872185483931e03402269e09",
+          "response_url": "https://vesaent.com/product-showcase/assets/L23.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-ad82\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L24.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L24.webp",
+      "expected_bytes": 51048,
+      "expected_sha256": "2b0ec281bb596634461c06a03064affbdf23d0e36eefad7b69e32bb2ff8589ce",
+      "status": 200,
+      "bytes": 51048,
+      "sha256": "2b0ec281bb596634461c06a03064affbdf23d0e36eefad7b69e32bb2ff8589ce",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7030,
+          "bytes": 51048,
+          "sha256": "2b0ec281bb596634461c06a03064affbdf23d0e36eefad7b69e32bb2ff8589ce",
+          "response_url": "https://vesaent.com/product-showcase/assets/L24.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-c768\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L25.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L25.webp",
+      "expected_bytes": 43628,
+      "expected_sha256": "6b5fc83b032af8ef2c5036450ae4a2ac51b706c3bc6a90d5812e61a962ebb729",
+      "status": 200,
+      "bytes": 43628,
+      "sha256": "6b5fc83b032af8ef2c5036450ae4a2ac51b706c3bc6a90d5812e61a962ebb729",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6432,
+          "bytes": 43628,
+          "sha256": "6b5fc83b032af8ef2c5036450ae4a2ac51b706c3bc6a90d5812e61a962ebb729",
+          "response_url": "https://vesaent.com/product-showcase/assets/L25.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-aa6c\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L26.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L26.webp",
+      "expected_bytes": 51648,
+      "expected_sha256": "64dfa5044319b49b007f2d54f686879f0a888dc619cb0be1e2f797ef1cbc899e",
+      "status": 200,
+      "bytes": 51648,
+      "sha256": "64dfa5044319b49b007f2d54f686879f0a888dc619cb0be1e2f797ef1cbc899e",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6368,
+          "bytes": 51648,
+          "sha256": "64dfa5044319b49b007f2d54f686879f0a888dc619cb0be1e2f797ef1cbc899e",
+          "response_url": "https://vesaent.com/product-showcase/assets/L26.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-c9c0\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L27.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L27.webp",
+      "expected_bytes": 43290,
+      "expected_sha256": "987c1dd36522f6b9c7963f2188102fc0a945a41a618b82d7d391c9ce99e64b43",
+      "status": 200,
+      "bytes": 43290,
+      "sha256": "987c1dd36522f6b9c7963f2188102fc0a945a41a618b82d7d391c9ce99e64b43",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6441,
+          "bytes": 43290,
+          "sha256": "987c1dd36522f6b9c7963f2188102fc0a945a41a618b82d7d391c9ce99e64b43",
+          "response_url": "https://vesaent.com/product-showcase/assets/L27.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-a91a\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L28.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L28.webp",
+      "expected_bytes": 76042,
+      "expected_sha256": "2e199e83becba9cb7a2937e0cd05d55325f04a6ae27e116af9ba98384583d48e",
+      "status": 200,
+      "bytes": 76042,
+      "sha256": "2e199e83becba9cb7a2937e0cd05d55325f04a6ae27e116af9ba98384583d48e",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6331,
+          "bytes": 76042,
+          "sha256": "2e199e83becba9cb7a2937e0cd05d55325f04a6ae27e116af9ba98384583d48e",
+          "response_url": "https://vesaent.com/product-showcase/assets/L28.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-1290a\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/L29.webp",
+      "url": "https://vesaent.com/product-showcase/assets/L29.webp",
+      "expected_bytes": 80328,
+      "expected_sha256": "e854d7654d1fd5c46abb376df9c4b03ae7cf26d8680207d56e37465c9def4903",
+      "status": 200,
+      "bytes": 80328,
+      "sha256": "e854d7654d1fd5c46abb376df9c4b03ae7cf26d8680207d56e37465c9def4903",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6497,
+          "bytes": 80328,
+          "sha256": "e854d7654d1fd5c46abb376df9c4b03ae7cf26d8680207d56e37465c9def4903",
+          "response_url": "https://vesaent.com/product-showcase/assets/L29.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-139c8\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M01.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M01.webp",
+      "expected_bytes": 23232,
+      "expected_sha256": "762292fdd39d5844c30a50b7ad251f0b16f385118a48a47d99b3f131bfe4e252",
+      "status": 200,
+      "bytes": 23232,
+      "sha256": "762292fdd39d5844c30a50b7ad251f0b16f385118a48a47d99b3f131bfe4e252",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6308,
+          "bytes": 23232,
+          "sha256": "762292fdd39d5844c30a50b7ad251f0b16f385118a48a47d99b3f131bfe4e252",
+          "response_url": "https://vesaent.com/product-showcase/assets/M01.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-5ac0\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M02.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M02.webp",
+      "expected_bytes": 24134,
+      "expected_sha256": "d7f959268a2038cd666da660fb090739f59ebcbf3a4942b41eaad5d1a7a30475",
+      "status": 200,
+      "bytes": 24134,
+      "sha256": "d7f959268a2038cd666da660fb090739f59ebcbf3a4942b41eaad5d1a7a30475",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7048,
+          "bytes": 24134,
+          "sha256": "d7f959268a2038cd666da660fb090739f59ebcbf3a4942b41eaad5d1a7a30475",
+          "response_url": "https://vesaent.com/product-showcase/assets/M02.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-5e46\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M03.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M03.webp",
+      "expected_bytes": 29476,
+      "expected_sha256": "2138d8134b0f45a3b3d9da6560e08b90c325ba8c3e3e8708b95aba0cccfd5eee",
+      "status": 200,
+      "bytes": 29476,
+      "sha256": "2138d8134b0f45a3b3d9da6560e08b90c325ba8c3e3e8708b95aba0cccfd5eee",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7043,
+          "bytes": 29476,
+          "sha256": "2138d8134b0f45a3b3d9da6560e08b90c325ba8c3e3e8708b95aba0cccfd5eee",
+          "response_url": "https://vesaent.com/product-showcase/assets/M03.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-7324\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M04.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M04.webp",
+      "expected_bytes": 25312,
+      "expected_sha256": "fe503068c6156aecbf67c378843f75a92f34f477f15db1573a0452aa6dcc2167",
+      "status": 200,
+      "bytes": 25312,
+      "sha256": "fe503068c6156aecbf67c378843f75a92f34f477f15db1573a0452aa6dcc2167",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6996,
+          "bytes": 25312,
+          "sha256": "fe503068c6156aecbf67c378843f75a92f34f477f15db1573a0452aa6dcc2167",
+          "response_url": "https://vesaent.com/product-showcase/assets/M04.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-62e0\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M05.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M05.webp",
+      "expected_bytes": 23034,
+      "expected_sha256": "cee4d10d48d028533510a4fc5de863d6105ed9afcc025508fe5fa1ea108cffe8",
+      "status": 200,
+      "bytes": 23034,
+      "sha256": "cee4d10d48d028533510a4fc5de863d6105ed9afcc025508fe5fa1ea108cffe8",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6968,
+          "bytes": 23034,
+          "sha256": "cee4d10d48d028533510a4fc5de863d6105ed9afcc025508fe5fa1ea108cffe8",
+          "response_url": "https://vesaent.com/product-showcase/assets/M05.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-59fa\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M06.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M06.webp",
+      "expected_bytes": 24846,
+      "expected_sha256": "3390c4c0143caabe02ca4a294b62adad123546b812e7a4075cdefdb6d302b342",
+      "status": 200,
+      "bytes": 24846,
+      "sha256": "3390c4c0143caabe02ca4a294b62adad123546b812e7a4075cdefdb6d302b342",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6930,
+          "bytes": 24846,
+          "sha256": "3390c4c0143caabe02ca4a294b62adad123546b812e7a4075cdefdb6d302b342",
+          "response_url": "https://vesaent.com/product-showcase/assets/M06.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-610e\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M07.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M07.webp",
+      "expected_bytes": 23846,
+      "expected_sha256": "795bc806a681252f886778b5b94b523d7dde41131ffb972bf7a37f5a272dec01",
+      "status": 200,
+      "bytes": 23846,
+      "sha256": "795bc806a681252f886778b5b94b523d7dde41131ffb972bf7a37f5a272dec01",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6831,
+          "bytes": 23846,
+          "sha256": "795bc806a681252f886778b5b94b523d7dde41131ffb972bf7a37f5a272dec01",
+          "response_url": "https://vesaent.com/product-showcase/assets/M07.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-5d26\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M08.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M08.webp",
+      "expected_bytes": 24564,
+      "expected_sha256": "5f1c61d5a6325d5bc98cce2bd157c35fcc042529e01a254b9c921192e0eb8e8b",
+      "status": 200,
+      "bytes": 24564,
+      "sha256": "5f1c61d5a6325d5bc98cce2bd157c35fcc042529e01a254b9c921192e0eb8e8b",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 8044,
+          "bytes": 24564,
+          "sha256": "5f1c61d5a6325d5bc98cce2bd157c35fcc042529e01a254b9c921192e0eb8e8b",
+          "response_url": "https://vesaent.com/product-showcase/assets/M08.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-5ff4\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M09.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M09.webp",
+      "expected_bytes": 24092,
+      "expected_sha256": "02a445f8c6eb111589f0d7f29a08c55e1ddb4062d9f8833c5712546aa4ddc19d",
+      "status": 200,
+      "bytes": 24092,
+      "sha256": "02a445f8c6eb111589f0d7f29a08c55e1ddb4062d9f8833c5712546aa4ddc19d",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 8088,
+          "bytes": 24092,
+          "sha256": "02a445f8c6eb111589f0d7f29a08c55e1ddb4062d9f8833c5712546aa4ddc19d",
+          "response_url": "https://vesaent.com/product-showcase/assets/M09.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-5e1c\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M10.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M10.webp",
+      "expected_bytes": 23976,
+      "expected_sha256": "e0220f248eff516ba356e157be326b7eb24586bce9efa85d555a85e47ab1b81d",
+      "status": 200,
+      "bytes": 23976,
+      "sha256": "e0220f248eff516ba356e157be326b7eb24586bce9efa85d555a85e47ab1b81d",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 8081,
+          "bytes": 23976,
+          "sha256": "e0220f248eff516ba356e157be326b7eb24586bce9efa85d555a85e47ab1b81d",
+          "response_url": "https://vesaent.com/product-showcase/assets/M10.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-5da8\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M11.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M11.webp",
+      "expected_bytes": 23564,
+      "expected_sha256": "a9808eb4d08456c2c41f6d36dbf27fe7fbfa052718814e60dcd3844e3a198d28",
+      "status": 200,
+      "bytes": 23564,
+      "sha256": "a9808eb4d08456c2c41f6d36dbf27fe7fbfa052718814e60dcd3844e3a198d28",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7804,
+          "bytes": 23564,
+          "sha256": "a9808eb4d08456c2c41f6d36dbf27fe7fbfa052718814e60dcd3844e3a198d28",
+          "response_url": "https://vesaent.com/product-showcase/assets/M11.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-5c0c\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M12.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M12.webp",
+      "expected_bytes": 23220,
+      "expected_sha256": "4ceda7849c20272d7addb6f3726e58d21fc34c84262199ee5ca98273cfe429b5",
+      "status": 200,
+      "bytes": 23220,
+      "sha256": "4ceda7849c20272d7addb6f3726e58d21fc34c84262199ee5ca98273cfe429b5",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7834,
+          "bytes": 23220,
+          "sha256": "4ceda7849c20272d7addb6f3726e58d21fc34c84262199ee5ca98273cfe429b5",
+          "response_url": "https://vesaent.com/product-showcase/assets/M12.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-5ab4\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M13.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M13.webp",
+      "expected_bytes": 24472,
+      "expected_sha256": "89c4aa33e0e64c7702e6405458af908c862a1807b478acd243b5a5c422c4dda5",
+      "status": 200,
+      "bytes": 24472,
+      "sha256": "89c4aa33e0e64c7702e6405458af908c862a1807b478acd243b5a5c422c4dda5",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7869,
+          "bytes": 24472,
+          "sha256": "89c4aa33e0e64c7702e6405458af908c862a1807b478acd243b5a5c422c4dda5",
+          "response_url": "https://vesaent.com/product-showcase/assets/M13.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-5f98\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M14.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M14.webp",
+      "expected_bytes": 25228,
+      "expected_sha256": "17e95e6573d5d3533f1fb47cd891adcbe5aa1468c6bb5372de0aacb31d62a0e7",
+      "status": 200,
+      "bytes": 25228,
+      "sha256": "17e95e6573d5d3533f1fb47cd891adcbe5aa1468c6bb5372de0aacb31d62a0e7",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 8144,
+          "bytes": 25228,
+          "sha256": "17e95e6573d5d3533f1fb47cd891adcbe5aa1468c6bb5372de0aacb31d62a0e7",
+          "response_url": "https://vesaent.com/product-showcase/assets/M14.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-628c\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M15.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M15.webp",
+      "expected_bytes": 23938,
+      "expected_sha256": "9896961e6fd92a48bcd90591740b1053feddc3168fdda48acf170f4e76f43d5b",
+      "status": 200,
+      "bytes": 23938,
+      "sha256": "9896961e6fd92a48bcd90591740b1053feddc3168fdda48acf170f4e76f43d5b",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 8048,
+          "bytes": 23938,
+          "sha256": "9896961e6fd92a48bcd90591740b1053feddc3168fdda48acf170f4e76f43d5b",
+          "response_url": "https://vesaent.com/product-showcase/assets/M15.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-5d82\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M16.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M16.webp",
+      "expected_bytes": 43382,
+      "expected_sha256": "ef620a6839bbf7fcf2061c4dcbf0d589a413eb49fa420b8e2daa72d8aabdcbf5",
+      "status": 200,
+      "bytes": 43382,
+      "sha256": "ef620a6839bbf7fcf2061c4dcbf0d589a413eb49fa420b8e2daa72d8aabdcbf5",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 8058,
+          "bytes": 43382,
+          "sha256": "ef620a6839bbf7fcf2061c4dcbf0d589a413eb49fa420b8e2daa72d8aabdcbf5",
+          "response_url": "https://vesaent.com/product-showcase/assets/M16.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-a976\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M17.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M17.webp",
+      "expected_bytes": 60708,
+      "expected_sha256": "7593e71fe5667725ab22e248aab8288d8a61a5713f2cd6e943abaa5e8b8eb53f",
+      "status": 200,
+      "bytes": 60708,
+      "sha256": "7593e71fe5667725ab22e248aab8288d8a61a5713f2cd6e943abaa5e8b8eb53f",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7908,
+          "bytes": 60708,
+          "sha256": "7593e71fe5667725ab22e248aab8288d8a61a5713f2cd6e943abaa5e8b8eb53f",
+          "response_url": "https://vesaent.com/product-showcase/assets/M17.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-ed24\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M18.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M18.webp",
+      "expected_bytes": 60916,
+      "expected_sha256": "0c5728f15568fa6d3da7ca568eb861e8720605619f111091821159b180cfbf48",
+      "status": 200,
+      "bytes": 60916,
+      "sha256": "0c5728f15568fa6d3da7ca568eb861e8720605619f111091821159b180cfbf48",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7941,
+          "bytes": 60916,
+          "sha256": "0c5728f15568fa6d3da7ca568eb861e8720605619f111091821159b180cfbf48",
+          "response_url": "https://vesaent.com/product-showcase/assets/M18.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-edf4\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M19.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M19.webp",
+      "expected_bytes": 53754,
+      "expected_sha256": "431e2478f94daf9ff9032b4bf92842975268bf83389d159746081c0512a0481c",
+      "status": 200,
+      "bytes": 53754,
+      "sha256": "431e2478f94daf9ff9032b4bf92842975268bf83389d159746081c0512a0481c",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 7875,
+          "bytes": 53754,
+          "sha256": "431e2478f94daf9ff9032b4bf92842975268bf83389d159746081c0512a0481c",
+          "response_url": "https://vesaent.com/product-showcase/assets/M19.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-d1fa\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M20.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M20.webp",
+      "expected_bytes": 38596,
+      "expected_sha256": "cd41edf5eee30ce910eeaf11af880fd2174c40b658c5a7837aa4f2ae1286e1b0",
+      "status": 200,
+      "bytes": 38596,
+      "sha256": "cd41edf5eee30ce910eeaf11af880fd2174c40b658c5a7837aa4f2ae1286e1b0",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6131,
+          "bytes": 38596,
+          "sha256": "cd41edf5eee30ce910eeaf11af880fd2174c40b658c5a7837aa4f2ae1286e1b0",
+          "response_url": "https://vesaent.com/product-showcase/assets/M20.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-96c4\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M21.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M21.webp",
+      "expected_bytes": 43496,
+      "expected_sha256": "c8137d99aab51b69e5970bb7427353a9905f5251c207931ef5539211ede6ee87",
+      "status": 200,
+      "bytes": 43496,
+      "sha256": "c8137d99aab51b69e5970bb7427353a9905f5251c207931ef5539211ede6ee87",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6040,
+          "bytes": 43496,
+          "sha256": "c8137d99aab51b69e5970bb7427353a9905f5251c207931ef5539211ede6ee87",
+          "response_url": "https://vesaent.com/product-showcase/assets/M21.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-a9e8\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M22.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M22.webp",
+      "expected_bytes": 44434,
+      "expected_sha256": "6025e63088f4e5e45cc78cba400f699365cc968b7dc786177e05b57badc765a1",
+      "status": 200,
+      "bytes": 44434,
+      "sha256": "6025e63088f4e5e45cc78cba400f699365cc968b7dc786177e05b57badc765a1",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6156,
+          "bytes": 44434,
+          "sha256": "6025e63088f4e5e45cc78cba400f699365cc968b7dc786177e05b57badc765a1",
+          "response_url": "https://vesaent.com/product-showcase/assets/M22.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-ad92\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M23.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M23.webp",
+      "expected_bytes": 49210,
+      "expected_sha256": "355c738ca5cfed6be35fab68774ce7618ce86938a60e99939223202d7cad2427",
+      "status": 200,
+      "bytes": 49210,
+      "sha256": "355c738ca5cfed6be35fab68774ce7618ce86938a60e99939223202d7cad2427",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6078,
+          "bytes": 49210,
+          "sha256": "355c738ca5cfed6be35fab68774ce7618ce86938a60e99939223202d7cad2427",
+          "response_url": "https://vesaent.com/product-showcase/assets/M23.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-c03a\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M24.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M24.webp",
+      "expected_bytes": 43076,
+      "expected_sha256": "6fc5bb2a93fce2d618f5445ab2049a691ec44db215a997f605def5b341dcfa4a",
+      "status": 200,
+      "bytes": 43076,
+      "sha256": "6fc5bb2a93fce2d618f5445ab2049a691ec44db215a997f605def5b341dcfa4a",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6172,
+          "bytes": 43076,
+          "sha256": "6fc5bb2a93fce2d618f5445ab2049a691ec44db215a997f605def5b341dcfa4a",
+          "response_url": "https://vesaent.com/product-showcase/assets/M24.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-a844\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M25.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M25.webp",
+      "expected_bytes": 25748,
+      "expected_sha256": "e3cb8be4f959cac8953a9e015d46bb0627d84c869427665e9bfab52ee66a016d",
+      "status": 200,
+      "bytes": 25748,
+      "sha256": "e3cb8be4f959cac8953a9e015d46bb0627d84c869427665e9bfab52ee66a016d",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6062,
+          "bytes": 25748,
+          "sha256": "e3cb8be4f959cac8953a9e015d46bb0627d84c869427665e9bfab52ee66a016d",
+          "response_url": "https://vesaent.com/product-showcase/assets/M25.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-6494\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M26.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M26.webp",
+      "expected_bytes": 31570,
+      "expected_sha256": "e8e9a0ea6792cdd1d50a77b693bb310f2573c14495bcb5a57232fad8224b0a2d",
+      "status": 200,
+      "bytes": 31570,
+      "sha256": "e8e9a0ea6792cdd1d50a77b693bb310f2573c14495bcb5a57232fad8224b0a2d",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6493,
+          "bytes": 31570,
+          "sha256": "e8e9a0ea6792cdd1d50a77b693bb310f2573c14495bcb5a57232fad8224b0a2d",
+          "response_url": "https://vesaent.com/product-showcase/assets/M26.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-7b52\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M27.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M27.webp",
+      "expected_bytes": 25340,
+      "expected_sha256": "ca5142373e8ef784b0a694b8e3154cc01ac0188f1e270a9850bb2ffe1b5f765e",
+      "status": 200,
+      "bytes": 25340,
+      "sha256": "ca5142373e8ef784b0a694b8e3154cc01ac0188f1e270a9850bb2ffe1b5f765e",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6308,
+          "bytes": 25340,
+          "sha256": "ca5142373e8ef784b0a694b8e3154cc01ac0188f1e270a9850bb2ffe1b5f765e",
+          "response_url": "https://vesaent.com/product-showcase/assets/M27.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-62fc\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M28.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M28.webp",
+      "expected_bytes": 24274,
+      "expected_sha256": "9662fef1058b2b4f9b4081cf654b5dfff11a7020e3a7a506d5b7f2fd9780eff4",
+      "status": 200,
+      "bytes": 24274,
+      "sha256": "9662fef1058b2b4f9b4081cf654b5dfff11a7020e3a7a506d5b7f2fd9780eff4",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6304,
+          "bytes": 24274,
+          "sha256": "9662fef1058b2b4f9b4081cf654b5dfff11a7020e3a7a506d5b7f2fd9780eff4",
+          "response_url": "https://vesaent.com/product-showcase/assets/M28.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-5ed2\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M29.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M29.webp",
+      "expected_bytes": 25502,
+      "expected_sha256": "6d3b1c2635cb8641fcd04628d017923fb1673678dd5e58556d7b4e0a720a0173",
+      "status": 200,
+      "bytes": 25502,
+      "sha256": "6d3b1c2635cb8641fcd04628d017923fb1673678dd5e58556d7b4e0a720a0173",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6331,
+          "bytes": 25502,
+          "sha256": "6d3b1c2635cb8641fcd04628d017923fb1673678dd5e58556d7b4e0a720a0173",
+          "response_url": "https://vesaent.com/product-showcase/assets/M29.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-639e\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M30.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M30.webp",
+      "expected_bytes": 25312,
+      "expected_sha256": "dead0e9534afa99c8eabb4e35a0d6f8ddcd32fda7a1752f814b247fe436d8414",
+      "status": 200,
+      "bytes": 25312,
+      "sha256": "dead0e9534afa99c8eabb4e35a0d6f8ddcd32fda7a1752f814b247fe436d8414",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6238,
+          "bytes": 25312,
+          "sha256": "dead0e9534afa99c8eabb4e35a0d6f8ddcd32fda7a1752f814b247fe436d8414",
+          "response_url": "https://vesaent.com/product-showcase/assets/M30.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-62e0\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M31.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M31.webp",
+      "expected_bytes": 24882,
+      "expected_sha256": "6db24123d7bb4ae5532cc77a7dab4f2dfd9a34f25a38b58017e31c3e2b40f5bc",
+      "status": 200,
+      "bytes": 24882,
+      "sha256": "6db24123d7bb4ae5532cc77a7dab4f2dfd9a34f25a38b58017e31c3e2b40f5bc",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6212,
+          "bytes": 24882,
+          "sha256": "6db24123d7bb4ae5532cc77a7dab4f2dfd9a34f25a38b58017e31c3e2b40f5bc",
+          "response_url": "https://vesaent.com/product-showcase/assets/M31.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-6132\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M32.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M32.webp",
+      "expected_bytes": 27168,
+      "expected_sha256": "667f47de610f7d90051e527ae26efa2102a80e0e7e6e6266dc844df929cc4e37",
+      "status": 200,
+      "bytes": 27168,
+      "sha256": "667f47de610f7d90051e527ae26efa2102a80e0e7e6e6266dc844df929cc4e37",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6408,
+          "bytes": 27168,
+          "sha256": "667f47de610f7d90051e527ae26efa2102a80e0e7e6e6266dc844df929cc4e37",
+          "response_url": "https://vesaent.com/product-showcase/assets/M32.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-6a20\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M33.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M33.webp",
+      "expected_bytes": 24614,
+      "expected_sha256": "2a5ce0e25e793a8f4ccb7888d0c118c9f33105afed66d8e781e56974efe8fbb7",
+      "status": 200,
+      "bytes": 24614,
+      "sha256": "2a5ce0e25e793a8f4ccb7888d0c118c9f33105afed66d8e781e56974efe8fbb7",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6340,
+          "bytes": 24614,
+          "sha256": "2a5ce0e25e793a8f4ccb7888d0c118c9f33105afed66d8e781e56974efe8fbb7",
+          "response_url": "https://vesaent.com/product-showcase/assets/M33.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998da-6026\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/assets/M34.webp",
+      "url": "https://vesaent.com/product-showcase/assets/M34.webp",
+      "expected_bytes": 26212,
+      "expected_sha256": "68cc3ab6cb08026941c340f49567a3137564322e3ecd08807f921d070e15d26a",
+      "status": 200,
+      "bytes": 26212,
+      "sha256": "68cc3ab6cb08026941c340f49567a3137564322e3ecd08807f921d070e15d26a",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6391,
+          "bytes": 26212,
+          "sha256": "68cc3ab6cb08026941c340f49567a3137564322e3ecd08807f921d070e15d26a",
+          "response_url": "https://vesaent.com/product-showcase/assets/M34.webp",
+          "content_type": "image/webp",
+          "etag": "\"6b0998d9-6664\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/bootstrap.js",
+      "url": "https://vesaent.com/product-showcase/bootstrap.js",
+      "expected_bytes": 10574,
+      "expected_sha256": "6abcb06c0d3e954ad39e73066224cd81aa6e919b8bdecc07d4fd660e8cc5bc92",
+      "status": 200,
+      "bytes": 10574,
+      "sha256": "6abcb06c0d3e954ad39e73066224cd81aa6e919b8bdecc07d4fd660e8cc5bc92",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6380,
+          "bytes": 10574,
+          "sha256": "6abcb06c0d3e954ad39e73066224cd81aa6e919b8bdecc07d4fd660e8cc5bc92",
+          "response_url": "https://vesaent.com/product-showcase/bootstrap.js",
+          "content_type": "application/javascript; charset=utf-8",
+          "etag": "\"6b0998da-294e\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/catalogue.js",
+      "url": "https://vesaent.com/product-showcase/catalogue.js",
+      "expected_bytes": 3157,
+      "expected_sha256": "424dccff1bb27d2f57693f09af3e0f9e9374e5186a6f6376a8d18e673898508b",
+      "status": 200,
+      "bytes": 3157,
+      "sha256": "424dccff1bb27d2f57693f09af3e0f9e9374e5186a6f6376a8d18e673898508b",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6270,
+          "bytes": 3157,
+          "sha256": "424dccff1bb27d2f57693f09af3e0f9e9374e5186a6f6376a8d18e673898508b",
+          "response_url": "https://vesaent.com/product-showcase/catalogue.js",
+          "content_type": "application/javascript; charset=utf-8",
+          "etag": "\"6b0998da-c55\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/catalogue.json",
+      "url": "https://vesaent.com/product-showcase/catalogue.json",
+      "expected_bytes": 14500,
+      "expected_sha256": "427d0f991e0083380e2519e374c02a4b01581bc7ded863ca6c67028eb1bcba66",
+      "status": 200,
+      "bytes": 14500,
+      "sha256": "427d0f991e0083380e2519e374c02a4b01581bc7ded863ca6c67028eb1bcba66",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6268,
+          "bytes": 14500,
+          "sha256": "427d0f991e0083380e2519e374c02a4b01581bc7ded863ca6c67028eb1bcba66",
+          "response_url": "https://vesaent.com/product-showcase/catalogue.json",
+          "content_type": "application/json; charset=utf-8",
+          "etag": "\"6b0998da-38a4\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/director.js",
+      "url": "https://vesaent.com/product-showcase/director.js",
+      "expected_bytes": 8685,
+      "expected_sha256": "7e1179c9b7981e4a7dc27ceb75302ef235e3fdff03a0e3407cac17f8f09ab43e",
+      "status": 200,
+      "bytes": 8685,
+      "sha256": "7e1179c9b7981e4a7dc27ceb75302ef235e3fdff03a0e3407cac17f8f09ab43e",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6514,
+          "bytes": 8685,
+          "sha256": "7e1179c9b7981e4a7dc27ceb75302ef235e3fdff03a0e3407cac17f8f09ab43e",
+          "response_url": "https://vesaent.com/product-showcase/director.js",
+          "content_type": "application/javascript; charset=utf-8",
+          "etag": "\"6b0998d9-21ed\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/experience.js",
+      "url": "https://vesaent.com/product-showcase/experience.js",
+      "expected_bytes": 19949,
+      "expected_sha256": "634be106b7455c0caafca3b44c4506cb7a187252925d243b6ea0a62365385828",
+      "status": 200,
+      "bytes": 19949,
+      "sha256": "634be106b7455c0caafca3b44c4506cb7a187252925d243b6ea0a62365385828",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6513,
+          "bytes": 19949,
+          "sha256": "634be106b7455c0caafca3b44c4506cb7a187252925d243b6ea0a62365385828",
+          "response_url": "https://vesaent.com/product-showcase/experience.js",
+          "content_type": "application/javascript; charset=utf-8",
+          "etag": "\"6b0998da-4ded\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/garment-details.js",
+      "url": "https://vesaent.com/product-showcase/garment-details.js",
+      "expected_bytes": 15761,
+      "expected_sha256": "5c7fbc212edd0ef67ea2fa7412a0420602c8adb747e9817e2921ce1d143c2a9b",
+      "status": 200,
+      "bytes": 15761,
+      "sha256": "5c7fbc212edd0ef67ea2fa7412a0420602c8adb747e9817e2921ce1d143c2a9b",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6445,
+          "bytes": 15761,
+          "sha256": "5c7fbc212edd0ef67ea2fa7412a0420602c8adb747e9817e2921ce1d143c2a9b",
+          "response_url": "https://vesaent.com/product-showcase/garment-details.js",
+          "content_type": "application/javascript; charset=utf-8",
+          "etag": "\"6b0998da-3d91\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/host.css",
+      "url": "https://vesaent.com/product-showcase/host.css",
+      "expected_bytes": 4350,
+      "expected_sha256": "717b9d4a75b5d577545e2ca06d3595d167e2b3ba81a584b536e25133148682cd",
+      "status": 200,
+      "bytes": 4350,
+      "sha256": "717b9d4a75b5d577545e2ca06d3595d167e2b3ba81a584b536e25133148682cd",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6401,
+          "bytes": 4350,
+          "sha256": "717b9d4a75b5d577545e2ca06d3595d167e2b3ba81a584b536e25133148682cd",
+          "response_url": "https://vesaent.com/product-showcase/host.css",
+          "content_type": "text/css; charset=utf-8",
+          "etag": "\"6b0998d9-10fe\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/host.js",
+      "url": "https://vesaent.com/product-showcase/host.js",
+      "expected_bytes": 9158,
+      "expected_sha256": "bee18b26360e1cfd65c6970c77b0a20b54f343dcf76fef3383d8efd31a385047",
+      "status": 200,
+      "bytes": 9158,
+      "sha256": "bee18b26360e1cfd65c6970c77b0a20b54f343dcf76fef3383d8efd31a385047",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6443,
+          "bytes": 9158,
+          "sha256": "bee18b26360e1cfd65c6970c77b0a20b54f343dcf76fef3383d8efd31a385047",
+          "response_url": "https://vesaent.com/product-showcase/host.js",
+          "content_type": "application/javascript; charset=utf-8",
+          "etag": "\"6b0998d9-23c6\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/index.html",
+      "url": "https://vesaent.com/product-showcase/",
+      "expected_bytes": 6181,
+      "expected_sha256": "3f6ebe35206eec0d31bd3c350a7d6ee6274dc11793a6a53c390bcf45203aef1c",
+      "route_alias": true,
+      "status": 200,
+      "bytes": 6181,
+      "sha256": "3f6ebe35206eec0d31bd3c350a7d6ee6274dc11793a6a53c390bcf45203aef1c",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6427,
+          "bytes": 6181,
+          "sha256": "3f6ebe35206eec0d31bd3c350a7d6ee6274dc11793a6a53c390bcf45203aef1c",
+          "response_url": "https://vesaent.com/product-showcase/",
+          "content_type": "text/html; charset=utf-8",
+          "etag": "\"6b0998da-1825\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:06 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/index.html",
+      "url": "https://vesaent.com/product-showcase/index.html",
+      "expected_bytes": 6181,
+      "expected_sha256": "3f6ebe35206eec0d31bd3c350a7d6ee6274dc11793a6a53c390bcf45203aef1c",
+      "status": 200,
+      "bytes": 6181,
+      "sha256": "3f6ebe35206eec0d31bd3c350a7d6ee6274dc11793a6a53c390bcf45203aef1c",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6372,
+          "bytes": 6181,
+          "sha256": "3f6ebe35206eec0d31bd3c350a7d6ee6274dc11793a6a53c390bcf45203aef1c",
+          "response_url": "https://vesaent.com/product-showcase/index.html",
+          "content_type": "text/html; charset=utf-8",
+          "etag": "\"6b0998d9-1825\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "product-showcase/styles.css",
+      "url": "https://vesaent.com/product-showcase/styles.css",
+      "expected_bytes": 18292,
+      "expected_sha256": "7faba9d39957f4e988b2f9c716b964622d700bb62816331f0f63e9f82750ba8b",
+      "status": 200,
+      "bytes": 18292,
+      "sha256": "7faba9d39957f4e988b2f9c716b964622d700bb62816331f0f63e9f82750ba8b",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 6540,
+          "bytes": 18292,
+          "sha256": "7faba9d39957f4e988b2f9c716b964622d700bb62816331f0f63e9f82750ba8b",
+          "response_url": "https://vesaent.com/product-showcase/styles.css",
+          "content_type": "text/css; charset=utf-8",
+          "etag": "\"6b0998d9-4774\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    },
+    {
+      "path": "service-worker.js",
+      "url": "https://vesaent.com/service-worker.js",
+      "expected_bytes": 12107,
+      "expected_sha256": "c8fff4e124d1be8410a3bd29e36da47895db6f324811efa6e423658f6de817f9",
+      "status": 200,
+      "bytes": 12107,
+      "sha256": "c8fff4e124d1be8410a3bd29e36da47895db6f324811efa6e423658f6de817f9",
+      "matches": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": 200,
+          "elapsed_ms": 9864,
+          "bytes": 12107,
+          "sha256": "c8fff4e124d1be8410a3bd29e36da47895db6f324811efa6e423658f6de817f9",
+          "response_url": "https://vesaent.com/service-worker.js",
+          "content_type": "application/javascript; charset=utf-8",
+          "etag": "\"6b0998d9-2f4b\"",
+          "last_modified": "Fri, 27 Nov 2026 14:51:05 GMT",
+          "cache_control": "max-age=600",
+          "age": "0"
+        }
+      ]
+    }
+  ],
+  "verdict": "accepted"
+}

@@ -10,7 +10,7 @@ The owner approved the concrete homepage insertion, separate menu page and categ
 - Existing Pages deployment was successful. Historical unrelated application QA failures are not acceptance evidence for this feature.
 
 ## Locked patch scope
-Existing files: `index.html` (one menu link, one section after portfolio, category anchor wrappers, isolated host assets/dialog) and `service-worker.js` (cache version only).
+Existing files: `index.html` (one menu link, one section after portfolio, category anchor wrappers, isolated host assets/dialog), `service-worker.js` (cache version only), and `tests/vesa-login-gif-spanish.cjs` (only the exact cache-version compatibility correction documented below; all other assertions and browser checks remain unchanged).
 
 New runtime files: `product-showcase/index.html`, `styles.css`, `catalogue.js`, `catalogue.json`, `director.js`, `garment-details.js`, `experience.js`, `bootstrap.js`, `host.css`, `host.js`, and `assets/<catalogue-id>.webp` for exactly M01–M34, L01–L29, K01–K28.
 
@@ -46,6 +46,13 @@ Bump the root cache version without changing its asset list, fetch policy or app
 
 Rollback: revert this bounded release and publish a newer cache identifier, preserving intervening changes. Never force-push main, clear user records or restore an obsolete cache name.
 
+## Release verification compatibility correction
+The first published showcase commit, `41b6ec870a32ce8a050dc4f43b6aff3db16fbfba`, passed Pages deployment in run `46019476802`. Its Login GIF frame fit workflow newly failed in run `46019476858`, job `140575070334`: the static assertion required the exact previous cache name `vesa-v121-app-live-language`, while the approved homepage update correctly advanced the cache to `vesa-v122-product-showcase`. Baseline run `45618327149` had passed. This is a newly triggered test compatibility failure, not a pre-existing CI failure or evidence that the unchanged login GIF/runtime regressed.
+
+The necessary correction is limited to parsing the active cache declaration and requiring a valid safe-integer version of at least 121. It retains the GIF bytes/loop, original login markup, Spanish selector, exact login stylesheet version, GIF precache and all browser assertions. The showcase source verifier reconstructs the entire baseline login test with only that exact known replacement; it does not broadly exempt the test file from preservation checks. No production code, cache policy, application assets or workflow is changed by this correction.
+
+Local verification for the correction: `node tests/vesa-login-gif-spanish.cjs` and `node tests/product-showcase.test.cjs`. Final CI and deployment verification for the follow-up commit remain pending until that exact commit completes its workflow runs.
+
 ## Current gate
 Prepublication source and browser gates: **accepted**. This record describes the tested release candidate; publication is verified separately against the exact GitHub Pages commit after the guarded main update.
 
@@ -53,6 +60,13 @@ Independent source verification passed after the BFCache fix, stale-image readin
 
 Real Chromium browser review covered desktop side-model selection, top details, expansion with current selection, category-specific L29/K25 popups, catalogue search, nested Escape behavior, standalone navigation and browser return. Responsive browsing-context checks covered 320/360/390px viewers, a390px homepage/menu/popup,768px tablet and981/1024/1100/1101/1180px headers. Closing the mobile popup returns focus and releases scroll. Header overlap found at981px was fixed by shortening only the new link at981–1100px; original navigation styling stays intact.
 
-Evidence is in `evidence/`: source/asset/browser verification JSON, desktop/mobile/tablet screenshots and header geometry. These screenshots show the tested local release candidate, not a claim that the public deployment has already completed.
+Evidence is in `evidence/`: source/asset/browser verification JSON, desktop/mobile/tablet screenshots and header geometry. Screenshots without the `live-` prefix show the tested local release candidate. `live-homepage.jpg` and `live-popup.jpg` are actual public-site captures after the first release deployed.
+
+## Public deployment proof
+The first release `41b6ec870a32ce8a050dc4f43b6aff3db16fbfba` completed GitHub Pages run `46019476802` successfully. `evidence/public-verification.json` records 106 successful HTTPS comparisons across 105 unique files, including all 91 model assets. The homepage root `/` was also independently checked against the committed index bytes.
+
+Live Chromium interaction confirmed the ordinary homepage, its scroll-visible section, side-model selection from M18 to M19, expansion retaining M19, the category link opening the Ladies L29 popup, and the menu opening the standalone M16 route. The direct homepage link `https://vesaent.com/#product-showcase` and standalone URL `https://vesaent.com/product-showcase/?item=M16` were observed in the browser. An existing tab initially retained the previous homepage cache; after the normal service-worker lifecycle, returning through the standalone Home link loaded the updated ordinary `/` homepage without a query string. No user storage was cleared or service-worker policy changed. See `evidence/live-browser-verification.json` for the bounded observations.
+
+The follow-up compatibility patch changes verification and documentation only. Runtime bytes remain identical to the verified first release. Its exact-SHA Pages and Login GIF workflow results must be checked after publication; this document does not predeclare those future results.
 
 Material limits: representative AI-generated garment visuals, not verified inventory photography; existing source resolutions retained. Original alpha-aware top/bottom hit bands are preserved. CSS-sized browser checks are not certification on physical phones or every browser; no unmeasured FPS/performance claim is made. Historical unrelated business-application CI/human UAT remains outside this release.
