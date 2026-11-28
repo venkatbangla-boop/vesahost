@@ -104,5 +104,50 @@ class ShowcaseAssetVerifier:
         }
 
 
+class HdZoomAssetVerifier:
+    """Read-only proof of approved HD pixel content, independent of the build job.
+
+    Run after ShowcaseAssetVerifier, which independently proves the original
+    catalogue and 121 original files. No writes; missing/extra assets, wrong
+    dimensions, lost transparency or changed visible pixels fail the release.
+    Fully transparent RGB is canonicalized because it has no visual effect.
+    """
+
+    APPROVED_PIXELS = "28fe6451b378f3cf2a7d3f2a1d554807bd319ab5d686cbcec9ac2a6ce5106a77"
+
+    def __init__(self, repository: Path) -> None:
+        """Bind the read-only product showcase directory."""
+        self.feature = repository / "product-showcase"
+
+    def run(self) -> dict:
+        """Return counts, aggregate decoded pixel digest and payload size."""
+        records = json.loads((self.feature / "catalogue.json").read_text())
+        legacy = sorted(records[:91], key=lambda row: row["id"])
+        folder = self.feature / "hd-assets"
+        assert {p.name for p in folder.iterdir()} == {
+            row["id"] + ".webp" for row in legacy
+        }, "HD file set drift"
+        digest = hashlib.sha256()
+        total = 0
+        for row in legacy:
+            item = row["id"]
+            file = folder / (item + ".webp")
+            scale = 2 if row["height"] >= 800 else 3
+            with Image.open(file) as image:
+                assert image.format == "WEBP" and "A" in image.getbands(), item
+                assert image.size == (row["width"] * scale, row["height"] * scale), item
+                rgba = image.convert("RGBA")
+                assert rgba.getchannel("A").getextrema()[0] == 0, item
+                normalized = Image.composite(rgba, Image.new("RGBA", rgba.size),
+                    rgba.getchannel("A").point(lambda value: 255 if value else 0))
+                digest.update(item.encode("ascii") + b"\x00" + normalized.tobytes())
+            total += file.stat().st_size
+        assert digest.hexdigest() == self.APPROVED_PIXELS, "Approved HD pixels changed"
+        return {"count": len(legacy), "bytes": total, "visible_rgba_sha256": digest.hexdigest()}
+
+
 if __name__ == "__main__":
-    print(json.dumps(ShowcaseAssetVerifier(Path(__file__).resolve().parents[1]).run(), indent=2))
+    root = Path(__file__).resolve().parents[1]
+    result = ShowcaseAssetVerifier(root).run()
+    result["hd_zoom"] = HdZoomAssetVerifier(root).run()
+    print(json.dumps(result, indent=2))
