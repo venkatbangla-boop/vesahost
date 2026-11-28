@@ -92,12 +92,20 @@ class ShowcaseReleaseVerifier {
     const scopeBaseline='dcef0cbb5764eaf221ccd3d5ba600d495435be5e';
     const oldFiles=new Set(execFileSync('git',['ls-tree','-r','--name-only',scopeBaseline],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n'));
     const changed=execFileSync('git',['diff','--name-only',scopeBaseline,'--'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
-    const allowed=new Set(['index.html','service-worker.js','product-showcase/index.html','product-showcase/styles.css','product-showcase/host.css','product-showcase/experience.js','product-showcase/bootstrap.js','product-showcase/host.js','tests/product-showcase.test.cjs']);
+    const allowed=new Set(['index.html','service-worker.js','product-showcase/index.html','product-showcase/styles.css','product-showcase/host.css','product-showcase/experience.js','product-showcase/bootstrap.js','product-showcase/host.js','tests/product-showcase.test.cjs','tests/product-showcase-assets.py']);
     for(const file of changed.filter(file=>oldFiles.has(file)))assert.ok(allowed.has(file),'Unexpected original-file change: '+file);
     const present=execFileSync('git',['ls-files','--cached','--others','--exclude-standard'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
     const added=present.filter(file=>!oldFiles.has(file));
     const newFiles=new Set(['product-showcase/zoom.js','tests/product-showcase-zoom.browser.cjs','.github/workflows/vesa-showcase-zoom.yml']);
+    newFiles.add('docs/product-showcase/HD_UPGRADE.md');
+    for(const record of this.records.slice(0,91))newFiles.add('product-showcase/hd-assets/'+record.id+'.webp');
     for(const file of added)assert.ok(newFiles.has(file),'Unapproved added path: '+file);
+    // The HD release adds no new owner to the homepage or app workspaces.
+    const hdBaseline='ad73eccf57c281d6c9a0595bc01d1c2f1c95502c';
+    const hdAllowed=new Set(['product-showcase/zoom.js','product-showcase/index.html','service-worker.js','tests/product-showcase.test.cjs','tests/product-showcase-assets.py','tests/product-showcase-zoom.browser.cjs','docs/product-showcase/HD_UPGRADE.md']);
+    for(const record of this.records.slice(0,91))hdAllowed.add('product-showcase/hd-assets/'+record.id+'.webp');
+    const hdChanged=execFileSync('git',['diff','--name-only',hdBaseline,'--'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
+    for(const file of hdChanged)assert.ok(hdAllowed.has(file),'Unapproved HD release change: '+file);
     assert.equal(this.read('js/vesa-home-intro.js'),this.baseline('js/vesa-home-intro.js'),'First-visit controller is frozen');
     assert.equal(HomeIntroOnceVerifier.gate(this.read('index.html'))[1],HomeIntroOnceVerifier.gate(this.baseline('index.html'))[1],'First-visit gate is frozen');
     this.report.original_files={tracked_baseline:oldFiles.size,changed:changed.filter(file=>oldFiles.has(file)),all_other_original_paths_unchanged:true,original_intro_gate_and_controller_unchanged:true,added_paths_within_locked_scope:true};
@@ -123,9 +131,9 @@ class ShowcaseReleaseVerifier {
   /** Only advance the existing cache identity; media, precache and routing stay frozen. */
   cache() {
     const after=this.read('service-worker.js');
-    const restored=HomeIntroOnceVerifier.replaceOnce(after,"const CACHE='vesa-v128-showcase-hidden-zoom';","const CACHE='vesa-v123-home-intro-once';",'Showcase cache identity');
+    const restored=HomeIntroOnceVerifier.replaceOnce(after,"const CACHE='vesa-v129-showcase-hd-zoom';","const CACHE='vesa-v123-home-intro-once';",'Showcase cache identity');
     assert.equal(restored,this.baseline('service-worker.js'),'Service-worker policy changed');
-    this.report.cache={before:'vesa-v123-home-intro-once',after:'vesa-v128-showcase-hidden-zoom',all_other_bytes_unchanged:true};
+    this.report.cache={before:'vesa-v123-home-intro-once',after:'vesa-v129-showcase-hd-zoom',all_other_bytes_unchanged:true};
   }
 
   /** Compile actual modules without running entry points; checks current bytes only. */

@@ -1,0 +1,97 @@
+# Temporary staging build only. Never merge this file or publish directly.
+name: VESA HD zoom staged release proof
+on:
+  push:
+    branches: [staging/showcase-hd-20261128]
+    paths: ['.github/workflows/vesa-showcase-hd-stage.yml']
+permissions:
+  contents: write
+jobs:
+  candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build approved pixel copies from immutable original files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install Pillow==12.3.0
+          git reset --soft ad73eccf57c281d6c9a0595bc01d1c2f1c95502c
+          git rm -f .github/workflows/vesa-showcase-hd-stage.yml
+          python - <<'PY'
+          """Build only the fixed 91 HD zoom copies; no changes to original assets."""
+          from pathlib import Path
+          import json
+          from PIL import Image
+          class HdZoomAssetBuilder:
+              """Own this one-shot staging build; no runtime state or original writes."""
+              def __init__(self, feature):
+                  """Bind original catalogue and output paths."""
+                  self.feature = feature
+              def run(self):
+                  """Resize the reviewed IDs into a new directory; any failure aborts."""
+                  rows = json.loads((self.feature / "catalogue.json").read_text())
+                  assert len(rows) == 121
+                  target = self.feature / "hd-assets"
+                  target.mkdir(exist_ok=False)
+                  for row in rows[:91]:
+                      item = row["id"]
+                      original = self.feature / "assets" / (item + ".webp")
+                      scale = 2 if row["height"] >= 800 else 3
+                      with Image.open(original) as source:
+                          assert source.size == (row["width"], row["height"])
+                          rgba = source.convert("RGBA")
+                          rgba.resize((rgba.width * scale, rgba.height * scale),
+                                      Image.Resampling.LANCZOS).save(
+                              target / (item + ".webp"), "WEBP",
+                              lossless=True, quality=80, method=4)
+          HdZoomAssetBuilder(Path("product-showcase")).run()
+          PY
+          git add -f product-showcase/hd-assets
+          git diff --cached --check
+          git config user.name "VESA release verification"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Load verified lossless HD images only for garment zoom"
+          echo "CANDIDATE=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Verify original and approved HD assets and frozen source
+        run: |
+          set -euo pipefail
+          python tests/product-showcase-assets.py
+          node tests/product-showcase-category.test.cjs
+          node tests/product-showcase.test.cjs
+          node tests/vesa-site-integrity.cjs
+          node tests/vesa-blueprint-integrity.cjs
+          git diff --exit-code
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.0
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - name: Verify real desktop, mobile and homepage iframe zoom
+        run: node tests/product-showcase-zoom.browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hd-zoom-browser-evidence
+          path: output/showcase-zoom/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Save exact verified candidate to separate release branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          test "$(git rev-parse HEAD^)" = "ad73eccf57c281d6c9a0595bc01d1c2f1c95502c"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "ad73eccf57c281d6c9a0595bc01d1c2f1c95502c"
+          git diff --exit-code
+          git push origin HEAD:refs/heads/release/showcase-hd-20261128
+          echo "Verified candidate: $CANDIDATE" >> "$GITHUB_STEP_SUMMARY"

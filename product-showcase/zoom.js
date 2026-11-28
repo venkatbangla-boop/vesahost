@@ -18,8 +18,17 @@ class ProductZoom {
     this.onClose=typeof onClose==='function'?onClose:null;
     this.level=1;this.x=0;this.y=0;this.pointers=new Map();
     this.pinch=null;this.drag=null;this.lastTap=null;this.destroyed=false;
+    this.hdFallback=null;
     this.listen(this.closeButton,'click',()=>this.dialog.close());
     this.listen(this.dialog,'close',()=>this.finished());
+    // A missing or undecodable zoom copy must not strand the original garment.
+    this.listen(this.image,'error',()=>{
+      const original=this.hdFallback;
+      if(!this.dialog.open||!original||
+          this.image.getAttribute('src')!==original.replace('/assets/','/hd-assets/'))return;
+      this.hdFallback=null;
+      this.image.src=original;
+    });
     this.listen(this.surface,'pointerdown',event=>this.pointerDown(event));
     this.listen(this.surface,'pointermove',event=>this.pointerMove(event));
     this.listen(this.surface,'pointerup',event=>this.pointerEnd(event));
@@ -44,7 +53,12 @@ class ProductZoom {
     if(this.destroyed||!record||!/^\/product-showcase\/assets\/[MLK]\d{2}\.webp$/.test(record.image))return false;
     if(this.dialog.open)return true;
     this.reset();
-    this.image.src=record.image;
+    // Only the 91 reviewed legacy IDs have HD copies. Native K29-K58 stay unchanged.
+    const [,group,digits]=record.image.match(/\/([MLK])(\d{2})\.webp$/);
+    const number=Number(digits);
+    const legacy=number>=1&&number<=({M:34,L:29,K:28}[group]);
+    this.hdFallback=legacy?record.image:null;
+    this.image.src=legacy?record.image.replace('/assets/','/hd-assets/'):record.image;
     this.image.alt=record.name+' garment, zoomable full-screen view';
     this.surface.setAttribute('aria-label','Zoom '+record.name+'. Pinch or double tap to enlarge; drag to inspect.');
     this.dialog.showModal();
@@ -54,7 +68,7 @@ class ProductZoom {
   /** Clear per-photo pan, scale and gesture ownership on every new inspection. */
   reset() {
     this.level=1;this.x=0;this.y=0;this.pinch=null;this.drag=null;
-    this.pointers.clear();this.lastTap=null;this.paint();
+    this.pointers.clear();this.lastTap=null;this.hdFallback=null;this.paint();
   }
   /** Render compositor-only transforms; no layout work occurs on animation frames. */
   paint() {
