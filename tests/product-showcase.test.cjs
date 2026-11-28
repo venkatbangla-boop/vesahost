@@ -104,6 +104,7 @@ class ShowcaseReleaseVerifier {
     const hdBaseline='ad73eccf57c281d6c9a0595bc01d1c2f1c95502c';
     const hdAllowed=new Set(['product-showcase/zoom.js','product-showcase/index.html','service-worker.js','tests/product-showcase.test.cjs','tests/product-showcase-assets.py','tests/product-showcase-zoom.browser.cjs','docs/product-showcase/HD_UPGRADE.md']);
     for(const record of this.records.slice(0,91))hdAllowed.add('product-showcase/hd-assets/'+record.id+'.webp');
+    for(const file of ['index.html','product-showcase/styles.css','product-showcase/host.css','product-showcase/experience.js','product-showcase/bootstrap.js','product-showcase/host.js','.github/workflows/vesa-showcase-zoom.yml'])hdAllowed.add(file);
     const hdChanged=execFileSync('git',['diff','--name-only',hdBaseline,'--'],{cwd:this.root,encoding:'utf8',maxBuffer:4*1024*1024}).trim().split('\n').filter(Boolean);
     for(const file of hdChanged)assert.ok(hdAllowed.has(file),'Unapproved HD release change: '+file);
     assert.equal(this.read('js/vesa-home-intro.js'),this.baseline('js/vesa-home-intro.js'),'First-visit controller is frozen');
@@ -115,8 +116,8 @@ class ShowcaseReleaseVerifier {
   homepage() {
     const html=this.read('index.html');
     let restored=HomeIntroOnceVerifier.replaceOnce(html,'data-target="121"','data-target="91"','Category example count');
-    restored=HomeIntroOnceVerifier.replaceOnce(restored,'/product-showcase/host.css?v=20261128-zoom1','/product-showcase/host.css?v=20261127-2','Zoom host stylesheet version');
-    restored=HomeIntroOnceVerifier.replaceOnce(restored,'/product-showcase/host.js?v=20261128-zoom1','/product-showcase/host.js?v=20261127-1','Showcase host cache version');
+    restored=HomeIntroOnceVerifier.replaceOnce(restored,'/product-showcase/host.css?v=20261128-nozoom1','/product-showcase/host.css?v=20261127-2','Zoom host stylesheet version');
+    restored=HomeIntroOnceVerifier.replaceOnce(restored,'/product-showcase/host.js?v=20261128-nozoom1','/product-showcase/host.js?v=20261127-1','Showcase host cache version');
     assert.equal(restored,this.baseline('index.html'),'Homepage changed beyond the count and host version');
     const portfolio=html.indexOf('id="portfolio"'),section=html.indexOf('id="product-showcase"'),matrix=html.indexOf('id="capability-matrix"');
     assert.ok(portfolio>=0&&section>portfolio&&matrix>section,'Original insertion position is preserved');
@@ -131,9 +132,9 @@ class ShowcaseReleaseVerifier {
   /** Only advance the existing cache identity; media, precache and routing stay frozen. */
   cache() {
     const after=this.read('service-worker.js');
-    const restored=HomeIntroOnceVerifier.replaceOnce(after,"const CACHE='vesa-v129-showcase-hd-zoom';","const CACHE='vesa-v123-home-intro-once';",'Showcase cache identity');
+    const restored=HomeIntroOnceVerifier.replaceOnce(after,"const CACHE='vesa-v130-showcase-nozoom';","const CACHE='vesa-v123-home-intro-once';",'Showcase cache identity');
     assert.equal(restored,this.baseline('service-worker.js'),'Service-worker policy changed');
-    this.report.cache={before:'vesa-v123-home-intro-once',after:'vesa-v129-showcase-hd-zoom',all_other_bytes_unchanged:true};
+    this.report.cache={before:'vesa-v123-home-intro-once',after:'vesa-v130-showcase-nozoom',all_other_bytes_unchanged:true};
   }
 
   /** Compile actual modules without running entry points; checks current bytes only. */
@@ -151,6 +152,7 @@ class ShowcaseReleaseVerifier {
     const html=this.read('product-showcase/index.html');
     const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(match=>match[1]);
     assert.equal(new Set(ids).size,ids.length,'Viewer IDs are unique');
+    assert.ok(!ids.includes('zoom-dialog')&&!ids.includes('expand-view')&&!html.includes('src="zoom.js'),'Removed zoom must not be mounted');
     const required=['experience','open-index','copy','chapter','headline','style-name','style-id','garment-switch','detail-hint','detail-summary','detail-kind','detail-role','detail-name','scene','actor-stage','garment-callout','callout-kind','callout-role','callout-name','garment-pin','garment-line','callout-path','chapters','count','total','progress','previous','play','play-icon','next','announcement','detail-announcement','index-dialog','index-title','index-note','close-index','search','index-grid','empty'];
     for(const id of required)assert.ok(ids.includes(id),'Retained viewer ID: '+id);
     assert.ok(!/\.gif\b|<video\b/i.test(html),'Presentation uses individual static assets');
@@ -272,8 +274,7 @@ class ShowcaseReleaseVerifier {
     assert.deepEqual({...scrolls.at(-1)},{left:7,top:1380,behavior:'instant'});
     const closedLink=host.pageLink.href;deliver(host.modal,'selection',{group:'men',item:'M01'});
     assert.equal(host.pageLink.href,closedLink,'Closed modal cannot mutate host');
-    deliver(host.inline,'expand',{group:'girls',item:'K20'});assert.equal(dialog.open,true);
-    dialog.close();assert.equal(sent.at(-1).data.type,'restore-focus');
+    deliver(host.inline,'expand',{group:'girls',item:'K20'});assert.equal(dialog.open,false,'Stale image zoom requests must do nothing');
     const link=new BoundedElement();link.href='https://vesaent.com/product-showcase/?group=men&item=M06';
     link.closest=selector=>selector==='a[data-vesa-product]'?link:null;
     const event=extra=>({target:link,button:0,defaultPrevented:false,preventDefault(){this.defaultPrevented=true},...extra});

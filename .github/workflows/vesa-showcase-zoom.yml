@@ -1,6 +1,6 @@
-# VESA product showroom hidden-zoom acceptance, checked against immutable release.
+# VESA product showroom zoom-removal acceptance, checked against immutable release.
 # Owner: tests only, not deploy. Chromium touch is simulated, not physical Android.
-name: VESA showroom hidden fullscreen zoom verification
+name: VESA showroom zoom removal verification
 on:
   push:
     branches: [main]
@@ -15,7 +15,7 @@ permissions:
   contents: read
 jobs:
   zoom-proof:
-    name: Source contracts, desktop fullscreen and mobile pinch/tap
+    name: Source contracts, inert desktop click and mobile tap
     runs-on: ubuntu-24.04
     timeout-minutes: 24
     steps:
@@ -42,7 +42,7 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.0
           npx playwright install --with-deps chromium
           echo "CHROMIUM_PATH=$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')" >> "$GITHUB_ENV"
-      - name: Open zoom, pinch, pan, doubletap, close and return on live DOM
+      - name: Verify no image zoom and preserved ordinary product browsing
         run: node tests/product-showcase-zoom.browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()

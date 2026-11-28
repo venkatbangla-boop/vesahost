@@ -32,7 +32,6 @@ class MotionExperience {
     this.renderVersion=0; this.resizeObserver=null; this.intersectionObserver=null;
     this.onSelection=typeof options.onSelection==='function'?options.onSelection:null;
     this.onSettled=typeof options.onSettled==='function'?options.onSettled:null;
-    this.onExpand=typeof options.onExpand==='function'?options.onExpand:null;
     if(options.group||options.item)this.select(options.group||'all',options.item||null);
   }
   /** Return a read-only route snapshot; callers cannot mutate navigation state. */
@@ -187,10 +186,6 @@ class MotionExperience {
     this.resumeFocusNode=null;this.keyboardFocus=true;this.playing=false;this.hoverOverride=false;
     this.reconcileMotion();
     if(this.dialog.open)return;
-    // Enter on the scene is the button-free keyboard equivalent of tapping the main model.
-    if(event.key==='Enter'&&event.target===this.scene) {
-      event.preventDefault();this.requestExpand();return;
-    }
     if(event.key==='Escape') {this.details.clear();this.reconcileMotion();return}
     if(control)return;
     if(event.key==='ArrowRight'||event.key==='ArrowLeft') {
@@ -203,27 +198,15 @@ class MotionExperience {
     this.down={x:event.clientX,y:event.clientY,id:event.pointerId,hero:Boolean(event.target.closest('.hero'))};
     if(typeof this.scene.setPointerCapture==='function')this.scene.setPointerCapture(event.pointerId);
   }
-  /** Resolve a dominant horizontal swipe or a tap on the decoded main model only. */
+  /** Preserve swipes and non-model detail taps; main-model taps have no action. */
   endGesture(event) {
     if(!this.down||this.down.id!==event.pointerId)return;
     const dx=event.clientX-this.down.x,dy=event.clientY-this.down.y,hero=this.down.hero;this.down=null;
     if(this.scene.hasPointerCapture?.(event.pointerId))this.scene.releasePointerCapture(event.pointerId);
     if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.2)this.step(dx<0?1:-1,{manual:true});
     else if(Math.abs(dx)<12&&Math.abs(dy)<12&&this.director.ready) {
-      if(hero)this.requestExpand();
-      else {this.details.tap(event);this.reconcileMotion();}
+      if(!hero) {this.details.tap(event);this.reconcileMotion();}
     }
-  }
-  /**
-   * A main-model click is a deliberate human selection. Stop autoplay before
-   * requesting a full-screen inspection, so closing never skips to another look.
-   * The bootstrap decides whether the fullscreen is local or parent-owned.
-   */
-  requestExpand() {
-    if(this.destroyed||!this.director.ready||this.dialog.open||this.navigation?.isOpen)return false;
-    this.playing=false;this.elapsed=0;this.hoverOverride=false;
-    this.details.clear();this.reconcileMotion();
-    this.onExpand?.(this.selection);return true;
   }
   /** Use settled central geometry for mouse labels; side previews are navigation only. */
   onPointerMove(event) {
@@ -390,6 +373,6 @@ class MotionExperience {
     this.resizeObserver?.disconnect();this.intersectionObserver?.disconnect();
     if(this.dialog.open)this.dialog.close();
     this.navigation?.destroy();this.details.destroy();this.director.destroy();
-    this.onSelection=null;this.onSettled=null;this.onExpand=null;
+    this.onSelection=null;this.onSettled=null;
   }
 }

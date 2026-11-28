@@ -1,7 +1,7 @@
 /**
- * Full browser regression for the hidden full-screen product zoom.
+ * Browser regression for removal of main-model zoom.
  * Owner: ZoomBrowserAcceptance verifies real DOM, iframe routing and Chromium
- * touch-pointer/wheel interactions, using a disposable local server only.
+ * touch interactions, using a disposable local server only.
  * Access: node tests/product-showcase-zoom.browser.cjs after installing Playwright.
  * No production data, accounts, sessions, service worker or website are modified.
  * Chromium touch dispatch is an emulator, NOT a physical Android device test.
@@ -48,129 +48,69 @@ class ZoomBrowserAcceptance {
       document.querySelector('#style-id')?.textContent===expected,id,{timeout:25000});
     assert.equal(await page.locator('.hero').count(),1);
   }
-  /** Desktop cursor/scroll/double click and close must not change the item. */
+  /** Main-model clicks are inert; navigation and the index still work. */
   async desktop() {
-    const context=await this.browser.newContext({viewport:{width:1440,height:900},
-      serviceWorkers:'block',reducedMotion:'reduce'});
+    const context=await this.browser.newContext({viewport:{width:1440,height:900},serviceWorkers:'block',reducedMotion:'reduce'});
     const page=await context.newPage(),errors=[],hdRequests=[];
     page.on('pageerror',error=>errors.push(error.message));
     page.on('request',request=>{if(request.url().includes('/hd-assets/'))hdRequests.push(request.url());});
     try {
       await page.goto(this.base+'/product-showcase/?item=K27',{waitUntil:'domcontentloaded'});
       await this.mainReady(page,'K27');
-      assert.deepEqual(hdRequests,[],'Normal browsing does not preload HD');
-      assert.equal(await page.locator('#expand-view').isVisible(),false,'No visible zoom toolbar');
-      assert.equal(await page.locator('.hero').evaluate(el=>getComputedStyle(el).cursor),'zoom-in');
+      assert.equal(await page.locator('#zoom-dialog,#expand-view').count(),0);
+      assert.notEqual(await page.locator('.hero').evaluate(el=>getComputedStyle(el).cursor),'zoom-in');
       await page.locator('.hero').click();
-      await page.locator('#zoom-dialog[open]').waitFor({timeout:10000});
-      assert.equal(await page.locator('#zoom-image').getAttribute('src'),'/product-showcase/hd-assets/K27.webp');
-      await page.waitForFunction(()=>document.querySelector('#zoom-image').naturalHeight>1000);
-      assert.equal(await page.locator('#experience').getAttribute('data-playback'),'paused');
-      const bounds=await page.locator('#zoom-dialog').boundingBox();
-      assert.ok(bounds.width>=1439&&bounds.height>=899,'Full viewport zoom overlay');
-      await page.locator('#zoom-surface').hover();
-      await page.mouse.wheel(0,-900);
-      await page.waitForFunction(()=>new DOMMatrix(getComputedStyle(document.querySelector('#zoom-image')).transform).a===4);
-      await page.waitForFunction(()=>document.querySelector('#zoom-surface')?.dataset.zoomed==='true');
-      await page.locator('#zoom-surface').dblclick({position:{x:700,y:430}});
-      await page.waitForFunction(()=>document.querySelector('#zoom-surface')?.dataset.zoomed==='false');
-      await page.locator('#zoom-close').click();
-      assert.equal(await page.locator('#zoom-dialog').evaluate(el=>el.open),false);
+      await page.locator('.hero').dblclick();
+      await page.locator('#scene').press('Enter');
+      assert.equal(await page.locator('dialog[open]').count(),0);
       assert.equal(await page.locator('#style-id').textContent(),'K27');
-      assert.equal(await page.locator('#experience').getAttribute('data-playback'),'paused');
-      await page.screenshot({path:path.join(this.out,'desktop-after-close.png'),animations:'disabled'});
-      assert.deepEqual(errors,[],'Desktop show/zoom/close has no page errors');
-      this.cases.push('desktop standalone HD wheel 4x, double click, close');
-      // The 30 native images never receive a new image path.
-      await page.goto(this.base+'/product-showcase/?item=K29',{waitUntil:'domcontentloaded'});
-      await this.mainReady(page,'K29');
-      await page.locator('.hero').click();
-      await page.locator('#zoom-dialog[open]').waitFor({timeout:10000});
-      assert.equal(await page.locator('#zoom-image').getAttribute('src'),'/product-showcase/assets/K29.webp');
-      await page.waitForFunction(()=>document.querySelector('#zoom-image').naturalHeight>=1536);
-      await page.locator('#zoom-close').click();
-      // Network failure falls back once, to the same immutable original.
-      await page.route('**/product-showcase/hd-assets/K27.webp',route=>route.abort());
-      await page.goto(this.base+'/product-showcase/?item=K27',{waitUntil:'domcontentloaded'});
-      await this.mainReady(page,'K27');
-      await page.locator('.hero').click();
-      await page.waitForFunction(()=>{const image=document.querySelector('#zoom-image');return image.getAttribute('src')==='/product-showcase/assets/K27.webp'&&image.naturalHeight>0;});
-      await page.locator('#zoom-close').click();
-      assert.deepEqual(errors,[],'Native and original fallback remain usable');
-      this.cases.push('native K29 and missing HD fallback K27');
+      assert.deepEqual(hdRequests,[]);
+      await page.locator('#next').click();
+      await this.mainReady(page,'K28');
+      await page.locator('#open-index').click();
+      assert.equal(await page.locator('#index-dialog').evaluate(el=>el.open),true);
+      await page.locator('#close-index').click();
+      assert.deepEqual(errors,[]);
+      this.cases.push('desktop no zoom; next and index work');
     }finally{await context.close();}
   }
-  /** Real emulated touch streams: pinch, pan, double tap, close and item hold. */
+  /** Touch and legacy zoom URL do not open an overlay. */
   async mobileStandalone() {
-    const context=await this.browser.newContext({viewport:{width:390,height:844},
-      isMobile:true,hasTouch:true,deviceScaleFactor:2,
-      serviceWorkers:'block',reducedMotion:'reduce'});
+    const context=await this.browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2,serviceWorkers:'block',reducedMotion:'reduce'});
     const page=await context.newPage(),errors=[];
     page.on('pageerror',error=>errors.push(error.message));
     try {
-      await page.goto(this.base+'/product-showcase/?group=baby&item=K28',{waitUntil:'domcontentloaded'});
+      await page.goto(this.base+'/product-showcase/?mode=modal&zoom=1&group=baby&item=K28',{waitUntil:'domcontentloaded'});
       await this.mainReady(page,'K28');
       await page.locator('.hero').tap();
-      await page.locator('#zoom-dialog[open]').waitFor({timeout:12000});
-      assert.equal(await page.locator('#zoom-image').getAttribute('src'),'/product-showcase/hd-assets/K28.webp');
-      await page.waitForFunction(()=>document.querySelector('#zoom-image').naturalHeight>1000);
-      const surface=await page.locator('#zoom-surface').boundingBox();
-      const cx=surface.x+surface.width/2,cy=surface.y+surface.height/2;
-      const session=await context.newCDPSession(page);
-      await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[
-        {x:cx-25,y:cy},{x:cx+25,y:cy}]});
-      await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[
-        {x:cx-110,y:cy},{x:cx+110,y:cy}]});
-      await session.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
-      await page.waitForFunction(()=>document.querySelector('#zoom-surface')?.dataset.zoomed==='true',{timeout:6000}).catch(()=>{});
-      assert.equal(await page.locator('#zoom-surface').getAttribute('data-zoomed'),'true','Pinch enlarged garment');
-      await page.waitForFunction(()=>new DOMMatrix(getComputedStyle(document.querySelector('#zoom-image')).transform).a===4);
-      await page.touchscreen.tap(cx,cy);
-      await page.waitForTimeout(70);
-      await page.touchscreen.tap(cx,cy);
-      await page.waitForFunction(()=>document.querySelector('#zoom-surface')?.dataset.zoomed==='false',{timeout:6000}).catch(()=>{});
-      assert.equal(await page.locator('#zoom-surface').getAttribute('data-zoomed'),'false','Double-tap reset');
-      await page.locator('#zoom-close').tap();
-      assert.equal(await page.locator('#zoom-dialog').evaluate(el=>el.open),false);
-      assert.equal(await page.locator('#style-id').textContent(),'K28','Same baby garment after close');
-      assert.equal(await page.locator('#experience').getAttribute('data-playback'),'paused');
-      await page.screenshot({path:path.join(this.out,'mobile-after-close.png'),animations:'disabled'});
-      assert.deepEqual(errors,[],'Touch inspect should not trigger page errors');
-      this.cases.push('mobile standalone pinch, double-tap, close');
+      await page.locator('.hero').tap();
+      assert.equal(await page.locator('dialog[open]').count(),0);
+      assert.equal(await page.locator('#style-id').textContent(),'K28');
+      assert.deepEqual(errors,[]);
+      this.cases.push('mobile no zoom');
     }finally{await context.close();}
   }
-  /** Homepage iframe must route main tap to a real viewport-sized parent dialog. */
+  /** Embedded model taps are inert; normal homepage product links still open. */
   async homepage() {
-    const context=await this.browser.newContext({viewport:{width:390,height:844},
-      isMobile:true,hasTouch:true,deviceScaleFactor:2,
-      serviceWorkers:'block',reducedMotion:'reduce'});
+    const context=await this.browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2,serviceWorkers:'block',reducedMotion:'reduce'});
     const page=await context.newPage(),errors=[];
     page.on('pageerror',error=>errors.push(error.message));
     try {
       await page.goto(this.base+'/#product-showcase',{waitUntil:'domcontentloaded'});
       await page.locator('#product-showcase').scrollIntoViewIfNeeded();
       const inline=page.frameLocator('#vesa-showcase-inline');
-      await inline.locator('.hero').waitFor({timeout:30000});
       await inline.locator('#experience[data-scene-ready="true"]').waitFor({timeout:30000});
       const before=await inline.locator('#style-id').textContent();
       await inline.locator('.hero').tap();
-      await page.locator('#vesa-showcase-dialog[open][data-zoom="true"]').waitFor({timeout:15000});
-      const frame=page.frameLocator('#vesa-showcase-modal-frame');
-      await frame.locator('#zoom-dialog[open]').waitFor({timeout:25000});
-      assert.equal(await frame.locator('#style-id').textContent(),before);
-      const isLegacy=before.startsWith('M')||before.startsWith('L')||Number(before.slice(1))<=28;
-      assert.equal(await frame.locator('#zoom-image').getAttribute('src'),'/product-showcase/'+(isLegacy?'hd-assets':'assets')+'/'+before+'.webp');
-      await frame.locator('#zoom-image').evaluate(image=>image.decode());
-      assert.equal(await frame.locator('#zoom-close').isVisible(),false,'Only parent X in homepage fullscreen');
-      assert.equal(await page.locator('#vesa-showcase-close').isVisible(),true,'Accessible Close in parent');
-      const dialog=await page.locator('#vesa-showcase-dialog').boundingBox();
-      assert.ok(dialog.width>=389&&dialog.height>=843,'Homepage zoom fills phone viewport');
+      assert.equal(await page.locator('#vesa-showcase-dialog').evaluate(el=>el.open),false);
+      assert.equal(await inline.locator('dialog[open]').count(),0);
+      assert.equal(await inline.locator('#style-id').textContent(),before);
+      await page.locator('a[data-vesa-product]').first().click();
+      await page.locator('#vesa-showcase-dialog[open]').waitFor({timeout:15000});
       await page.locator('#vesa-showcase-close').tap();
       assert.equal(await page.locator('#vesa-showcase-dialog').evaluate(el=>el.open),false);
-      assert.equal(await inline.locator('#style-id').textContent(),before,'Close restored original item');
-      await page.screenshot({path:path.join(this.out,'homepage-touch-after-close.png'),animations:'disabled'});
-      assert.deepEqual(errors,[],'Homepage host must not throw');
-      this.cases.push('homepage iframe touch expands fullscreen and restores same item');
+      assert.deepEqual(errors,[]);
+      this.cases.push('homepage no image zoom; product links work');
     }finally{await context.close();}
   }
   /** Independent test proof with cleanup, never a physical Android claim. */
@@ -178,10 +118,10 @@ class ZoomBrowserAcceptance {
     await this.start();
     try{await this.desktop();await this.mobileStandalone();await this.homepage();}
     finally{await this.browser.close();await new Promise(resolve=>this.server.close(resolve));}
-    console.log('VESA_HIDDEN_ZOOM_BROWSER_PASS '+JSON.stringify({cases:this.cases,
+    console.log('VESA_NO_ZOOM_BROWSER_PASS '+JSON.stringify({cases:this.cases,
       physicalAndroid:false,scope:'Chromium desktop and touch emulation'}));
   }
 }
 new ZoomBrowserAcceptance().run().catch(error=>{
-  console.error('VESA_HIDDEN_ZOOM_BROWSER_FAIL',error);process.exitCode=1;
+  console.error('VESA_NO_ZOOM_BROWSER_FAIL',error);process.exitCode=1;
 });

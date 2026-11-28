@@ -125,23 +125,19 @@ class ShowcaseHost {
       if(inline)this.inlineSelection=selected;
       if(modal)this.pageLink.href=this.url(selected).href;
     }
-    if(data.type==='expand'&&inline)this.open(this.selection(data),this.inline,{zoom:true});
     if(data.type==='close'&&modal)this.dialog.close();
   }
   /** Open a user-requested product in a parent-owned modal. Focus and scroll are
    * saved before native showModal(); the original intro's inert state is respected. */
-  open(input,invoker,{zoom=false}={}) {
+  open(input,invoker) {
     if(this.dialog.open||this.section.closest('[inert]'))return;
     const selected=this.selection(input);
     if(typeof this.dialog.showModal!=='function'){location.assign(this.url(selected).href);return}
     this.invoker=invoker;this.scroll={x:window.scrollX,y:window.scrollY};
     this.previousOverflow=document.body.style.overflow;
     this.pageLink.href=this.url(selected).href;
-    this.dialog.dataset.zoom=zoom?'true':'false';
-    this.closeButton.setAttribute('aria-label',zoom?'Close product zoom':'Close product showcase');
-    const frameUrl=this.url(selected,'modal');
-    if(zoom)frameUrl.searchParams.set('zoom','1');
-    this.modal.src=frameUrl.href;
+    this.closeButton.setAttribute('aria-label','Close product showcase');
+    this.modal.src=this.url(selected,'modal').href;
     this.dialog.showModal();
     document.body.style.overflow='hidden';
     document.body.classList.add('vesa-showcase-modal-open');
@@ -152,7 +148,7 @@ class ShowcaseHost {
   restore() {
     document.body.style.overflow=this.previousOverflow;
     document.body.classList.remove('vesa-showcase-modal-open','vesa-showcase-pointer');
-    this.modal.removeAttribute('src');this.dialog.dataset.zoom='false';this.suspendInline();
+    this.modal.removeAttribute('src');this.suspendInline();
     if(this.invoker?.isConnected)this.invoker.focus({preventScroll:true});
     if(this.scroll)window.scrollTo({left:this.scroll.x,top:this.scroll.y,behavior:'instant'});
     // A launcher inside the inline document must recover its own keyboard focus.
