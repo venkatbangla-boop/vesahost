@@ -1,0 +1,70 @@
+# Read-only verification branch; never merge or deploy this file.
+name: VESA HD zoom public byte verification
+on:
+  push:
+    branches: [verify/showcase-hd-live-20261128]
+    paths: ['.github/workflows/vesa-showcase-hd-public-proof.yml']
+permissions:
+  contents: read
+jobs:
+  public-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: d1b4e87f3ece8ccf29aed2e0022976e5a2ed2b90
+      - name: Verify actual public site bytes against exact deployed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          """Read-only public delivery proof; no user records or server writes."""
+          from concurrent.futures import ThreadPoolExecutor
+          import hashlib
+          import time
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          class PublicShowcaseProof:
+              """Own exact-commit comparison of static public files, with bounded retries."""
+              def __init__(self, root, sha):
+                  """Bind the read-only checkout and fixed public VESA origin."""
+                  self.root, self.sha = root, sha
+                  self.base = "https://vesaent.com"
+              def compare(self, relative):
+                  """Fetch one asset, return its exact byte length or fail on drift."""
+                  expected = (self.root / relative).read_bytes()
+                  path = "/" if relative == "index.html" else "/" + relative
+                  req = Request(self.base + path + "?verify=" + self.sha,
+                      headers={"Cache-Control": "no-cache", "User-Agent": "VESA public release verifier"})
+                  with urlopen(req, timeout=25) as response:
+                      assert response.status == 200 and response.url.startswith(self.base + "/")
+                      actual = response.read(len(expected) + 1)
+                  assert actual == expected, f"Public bytes differ: {relative}"
+                  return len(actual)
+              def run(self):
+                  """Wait for bounded release visibility, then compare all catalogue and zoom files."""
+                  for attempt in range(36):
+                      try:
+                          self.compare("product-showcase/zoom.js")
+                          self.compare("product-showcase/hd-assets/M30.webp")
+                          break
+                      except Exception as exc:
+                          print(f"Deployment visibility attempt {attempt+1}: {exc}", flush=True)
+                          if attempt == 35:
+                              raise
+                          time.sleep(10)
+                  feature = self.root / "product-showcase"
+                  originals = sorted((feature / "assets").glob("*.webp"))
+                  upgraded = sorted((feature / "hd-assets").glob("*.webp"))
+                  assert len(originals) == 121 and len(upgraded) == 91
+                  runtime = sorted(p for p in feature.iterdir()
+                      if p.is_file() and p.suffix in {".js", ".html", ".json", ".css"})
+                  files = ["index.html", "service-worker.js"] + [
+                      p.relative_to(self.root).as_posix() for p in runtime + originals + upgraded]
+                  with ThreadPoolExecutor(max_workers=4) as pool:
+                      total = sum(pool.map(self.compare, files))
+                  print(f"PUBLIC_HD_BYTE_PASS exact commit {self.sha}: {len(files)} files, "
+                        f"121 originals + 91 HD zoom assets, {total} bytes", flush=True)
+          PublicShowcaseProof(Path(".").resolve(), "d1b4e87f3ece8ccf29aed2e0022976e5a2ed2b90").run()
+          PY
